@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DiagnoseController;
-use App\Http\Controllers\DoctorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RecipientController;
@@ -118,38 +115,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{section}', [SectionController::class, 'edit'])->name('edit');
         Route::put('update/{section}', [SectionController::class, 'update'])->name('update');
         Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('doctors')->name('doctors.')->group(function () {
-        Route::get('index', [DoctorController::class, 'index'])->name('index');
-        Route::get('create', [DoctorController::class, 'create'])->name('create');
-        Route::get('show/{doctor}', [DoctorController::class, 'show'])->name('show');
-        Route::post('store', [DoctorController::class, 'store'])->name('store');
-        Route::get('edit/{doctor}', [DoctorController::class, 'edit'])->name('edit');
-        Route::put('update/{doctor}', [DoctorController::class, 'update'])->name('update');
-        Route::get('destroy/{doctor}', [DoctorController::class, 'destroy'])->name('destroy');
-    });
-
-
-    Route::prefix('appointments')->name('appointments.')->group(function () {
-        Route::get('index', [AppointmentController::class, 'index'])->name('index');
-        Route::get('create', [AppointmentController::class, 'create'])->name('create');
-        Route::get('show/{appointment}', [AppointmentController::class, 'show'])->name('show');
-        Route::post('store', [AppointmentController::class, 'store'])->name('store');
-        Route::get('edit/{appointment}', [AppointmentController::class, 'edit'])->name('edit');
-        Route::put('update/{appointment}', [AppointmentController::class, 'update'])->name('update');
-        Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('diagnoses')->name('diagnoses.')->group(function () {
-        Route::get('index', [DiagnoseController::class, 'index'])->name('index');
-        Route::get('create_diagnose/{appointment}', [DiagnoseController::class, 'createDiagnose'])->name('create_diagnose');
-        Route::get('create', [DiagnoseController::class, 'create'])->name('create');
-        Route::get('show/{diagnose}', [DiagnoseController::class, 'show'])->name('show');
-        Route::post('store', [DiagnoseController::class, 'store'])->name('store');
-        Route::get('edit/{diagnose}', [DiagnoseController::class, 'edit'])->name('edit');
-        Route::put('update/{diagnose}', [DiagnoseController::class, 'update'])->name('update');
-        Route::get('destroy/{diagnose}', [DiagnoseController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');

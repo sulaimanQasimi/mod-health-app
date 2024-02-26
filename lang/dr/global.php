@@ -421,6 +421,25 @@ return [
     'waiting_for_instruction' => 'منتظر به هدایت',
     'waiting_for_sign' => 'منتظر به امضاء',
     'mark_all_as_read' => 'همه خوانده شدند',
-    'avatar' => 'عکس'
+    'avatar' => 'عکس',
+    'reception' => 'پذیرش',
+    'appointments' => 'ملاقات ها',
+    'create_patient' => 'ثبت مریض',
+    'last_name' => 'تخلص',
+    'phone' => 'شماره تماس',
+    'patients_list' => 'لیست مریضان',
+    'view_patient' => 'جزيات مریض',
+    'assign_appointment' => 'تعین ملاقات',
+    'print_card' => 'چاپ کارت',
+    'all_appointments' => 'ملاقات های قبلی',
+    'doctor_name' => 'نام داکتر',
+    'all_diagnoses' => 'تشخیص های قبلی',
+    'current_diagnoses' => 'تشخیص های موجود',
+    'appointments_list' => 'لیست ملاقات ها',
+    'patient_name' => 'نام مریض',
+    'doctors' => 'داکتران',
+    'departments' => 'دیپارتمنت ها',
+    'sections' => 'بخش ها',
+    'create_doctor' => 'اضافه نمودن داکتر'
 
 ];

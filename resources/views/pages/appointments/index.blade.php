@@ -6,22 +6,24 @@
         <div class="col-xl">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.create_new_permission') }}</h5>
+                    <h5 class="mb-0">{{ localize('global.appointments_list') }}</h5>
                 </div>
                 <div class="card-body">
 
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Patient Name</th>
-                                <th>Last Name</th>
-                                <th>Date</th>
-                                <th>Action</th>
+                                <th>{{localize('global.number')}}</th>
+                                <th>{{localize('global.patient_name')}}</th>
+                                <th>{{localize('global.last_name')}}</th>
+                                <th>{{localize('global.date')}}</th>
+                                <th>{{localize('global.actions')}}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($appointments as $appointment)
                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $appointment->patient->name }}</td>
                                     <td>{{ $appointment->patient->last_name }}</td>
                                     <td>{{ $appointment->created_at }}</td>

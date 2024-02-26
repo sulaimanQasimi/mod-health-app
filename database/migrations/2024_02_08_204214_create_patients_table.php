@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('last_name');
             $table->string('phone');
+            $table->string('qr_code');
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

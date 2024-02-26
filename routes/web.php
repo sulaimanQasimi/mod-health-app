@@ -97,6 +97,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [PatientController::class, 'store'])->name('store');
         Route::get('edit/{patient}', [PatientController::class, 'edit'])->name('edit');
         Route::put('update/{patient}', [PatientController::class, 'update'])->name('update');
+        Route::get('/print-card/{patient}', [PatientController::class, 'printCard'])->name('print-card');
         Route::get('destroy/{patient}', [PatientController::class, 'destroy'])->name('destroy');
     });
 

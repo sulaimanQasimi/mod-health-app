@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.4",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-html": "^3.2",
         "spatie/laravel-permission": "^5.10"
     },

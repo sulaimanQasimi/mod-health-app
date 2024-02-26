@@ -12,7 +12,7 @@ class Patient extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','last_name','phone'];
+    protected $fillable = ['name','last_name','phone','qr_code'];
 
     public static function boot()
     {

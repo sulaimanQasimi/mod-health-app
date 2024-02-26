@@ -32,7 +32,7 @@
         <li
             class="menu-item {{ Route::is('users.index') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-wrench"></i>
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
                 <div>{{ localize('global.reception') }}</div>
             </a>
 
@@ -43,12 +43,17 @@
                     </a>
                 </li>
 
-
+                <li class="menu-item {{ Route::is('patients.index') ? 'active' : '' }}">
+                    <a href="{{ route('patients.index') }}" class="menu-link">
+                        <div>{{ localize('global.patients_list') }}</div>
+                    </a>
+                </li>
             </ul>
         </li>
 
         <li class="menu-item {{ Route::is('appointments.index') ? 'active' : '' }}">
             <a href="{{ route('appointments.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-time-five"></i>
                 <div>{{ localize('global.appointments') }}</div>
             </a>
         </li>

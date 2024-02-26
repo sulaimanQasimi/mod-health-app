@@ -38,4 +38,9 @@ class Diagnose extends Model
     {
         return $this->belongsTo(Patient::class);
     }
+
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class, 'id', 'created_by');
+    }
 }

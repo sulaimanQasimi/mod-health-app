@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class PatientController extends Controller
 {
     public function index()
     {
-        $patients = Patient::all();
+        $patients = Patient::latest()->paginate(10);
         return view('pages.patients.index', compact('patients'));
     }
 
@@ -27,7 +30,8 @@ class PatientController extends Controller
             'phone' => 'required',
         ]);
 
-        Patient::create($data);
+        $patient = Patient::create($data);
+
 
         return redirect()->route('patients.index')->with('success', 'Patient created successfully.');
     }
@@ -61,5 +65,10 @@ class PatientController extends Controller
         $patient->delete();
 
         return redirect()->route('patients.index')->with('success', 'Patient deleted successfully.');
+    }
+
+    public function printCard(Patient $patient)
+    {
+        return view('pages.patients.print_card', compact('patient'));
     }
 }

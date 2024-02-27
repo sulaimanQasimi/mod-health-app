@@ -13,24 +13,31 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Patient's Name</th>
-                                    <th>Discription</th>
-                                    <th>Action</th>
+                                    <th>{{localize('global.number')}}</th>
+                                    <th>{{localize('global.patient_name')}}</th>
+                                    <th>{{localize('global.description')}}</th>
+                                    <th>{{localize('global.actions')}}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($diagnoses as $diagnose)
                                     <tr>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $diagnose->patient->name }}</td>
                                         <td>{{ $diagnose->description }}</td>
                                         <td>
-                                            <a href="{{ route('diagnoses.show', $diagnose) }}">View</a>
-                                            <a href="{{ route('diagnoses.edit', $diagnose) }}">Edit</a>
-                                            <form action="{{ route('diagnoses.destroy', $diagnose) }}" method="POST">
+                                            <a href="{{ route('diagnoses.show', $diagnose) }}"><i class="bx bx-show-alt"></i></a>
+                                            <a href="{{ route('diagnoses.edit', $diagnose) }}"><i class="bx bx-message-square-edit"></i></a>
+                                            <!-- Using an <a> tag -->
+                                            {{-- <a href="{{ route('diagnoses.destroy', $diagnose) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
+                                                <i class="bx bx-trash"></i>
+                                            </a>
+
+                                            <!-- Using a <form> element -->
+                                            <form id="delete-form" action="{{ route('diagnoses.destroy', $diagnose) }}" method="POST" style="display: none;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit">Delete</button>
-                                            </form>
+                                            </form> --}}
                                         </td>
                                     </tr>
                                 @endforeach

@@ -6,12 +6,14 @@ use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LabController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\SectionController;
 
 /*
@@ -151,6 +153,26 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{diagnose}', [DiagnoseController::class, 'edit'])->name('edit');
         Route::put('update/{diagnose}', [DiagnoseController::class, 'update'])->name('update');
         Route::get('destroy/{diagnose}', [DiagnoseController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
+        Route::get('index', [PrescriptionController::class, 'index'])->name('index');
+        Route::get('create', [PrescriptionController::class, 'create'])->name('create');
+        Route::get('show/{prescription}', [PrescriptionController::class, 'show'])->name('show');
+        Route::post('store', [PrescriptionController::class, 'store'])->name('store');
+        Route::get('edit/{prescription}', [PrescriptionController::class, 'edit'])->name('edit');
+        Route::put('update/{prescription}', [PrescriptionController::class, 'update'])->name('update');
+        Route::get('destroy/{prescription}', [PrescriptionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
+        Route::get('index', [LabController::class, 'index'])->name('index');
+        Route::get('create', [LabController::class, 'create'])->name('create');
+        Route::get('show/{prescription}', [LabController::class, 'show'])->name('show');
+        Route::post('store', [LabController::class, 'store'])->name('store');
+        Route::get('edit/{prescription}', [LabController::class, 'edit'])->name('edit');
+        Route::put('update/{prescription}', [LabController::class, 'update'])->name('update');
+        Route::get('destroy/{prescription}', [LabController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');

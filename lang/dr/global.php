@@ -453,5 +453,10 @@ return [
     'prescriptions' => 'نسخه ها',
     'lab_tests' => 'لابراتوار',
     'diagnoses' => 'تشخیصات',
+    'referred_by' => 'مرجع معرفی کننده',
+    'father_name' => 'نام پدر',
+    'nid' => 'نمبر تذکره',
+    'create_appointment' => 'تعین ملاقات',
+    'time' => 'ساعت',
 
 ];

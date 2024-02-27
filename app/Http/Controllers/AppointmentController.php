@@ -31,6 +31,8 @@ class AppointmentController extends Controller
         $validatedData = $request->validate([
             'patient_id' => 'required',
             'doctor_id' => 'required',
+            'date' => 'required',
+            'time' => 'required',
             // Add any other validation rules as needed
         ]);
 

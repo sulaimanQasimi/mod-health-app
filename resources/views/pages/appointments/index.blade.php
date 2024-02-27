@@ -17,6 +17,7 @@
                                 <th>{{localize('global.patient_name')}}</th>
                                 <th>{{localize('global.last_name')}}</th>
                                 <th>{{localize('global.date')}}</th>
+                                <th>{{localize('global.time')}}</th>
                                 <th>{{localize('global.actions')}}</th>
                             </tr>
                         </thead>
@@ -26,7 +27,8 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $appointment->patient->name }}</td>
                                     <td>{{ $appointment->patient->last_name }}</td>
-                                    <td>{{ $appointment->created_at }}</td>
+                                    <td>{{ $appointment->date }}</td>
+                                    <td>{{ $appointment->time }}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDiagnoseModal{{ $appointment->id }}">Create Diagnose</button>
                                     </td>

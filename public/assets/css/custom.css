@@ -1,0 +1,112 @@
+.btn-justify {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 20px;
+}
+.div-padding {
+    padding-top: 10px;
+}
+
+.display-error {
+    color: #ff3e1d;
+    display: block;
+    width: 100%;
+    margin-top: 0.3rem;
+    font-size: 85%;
+}
+
+.badge {
+    text-transform: none !important;
+}
+table th {
+    text-transform: none !important;
+}
+
+.text-light2 {
+    color: #484848 !important;
+}
+[dir="rtl"] .form-check {
+    padding-left: 0;
+    padding-right: 3.7em;
+}
+
+.pagination p {
+    display: none;
+}
+
+.order_details {
+    display: none;
+}
+
+[dir="rtl"] .menu-icon-dr {
+    margin-right: 0;
+    margin-left: 0.1rem;
+}
+
+[dir="rtl"] .bl-1 {
+    border-left: 1px solid #696cff;
+}
+[dir="ltr"] .bl-1 {
+    border-right: 1px solid #696cff;
+}
+
+[dir="ltr"] .doc-type-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #696cff;
+    font-size: 40px;
+}
+
+[dir="rtl"] .doc-type-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    color: #696cff;
+    font-size: 40px;
+}
+
+.custom-active {
+    background-color: #696cff !important;
+    color: #fff;
+}
+.font-large {
+    font-size: 12rem;
+    color: #ccc;
+}
+
+.custom-avatar {
+    width: 3.2rem !important;
+    height: 3.2rem !important;
+}
+
+.card-active {
+    background-color: #1e1f42;
+}
+
+.bold-label {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.remove-recipient {
+    position: relative;
+    top: -62px;
+    right: -22px;
+    color: #ff3e1d;
+    cursor: pointer;
+}
+
+.request_summary {
+    color: #03a6c9 !important;
+}
+
+.has-error {
+    border-color: #ff3e1d;
+}
+.order-index {
+    padding: 18px;
+}
+.pointer-event {
+    cursor: pointer;
+}

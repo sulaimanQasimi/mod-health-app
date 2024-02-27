@@ -236,7 +236,7 @@ return [
     'recipients' => 'ادارات',
     'add_success_recipient' => 'اداره موفقانه اضافه شد',
     'show' => 'نمایش',
-    'system_name' => 'سیستم اسناد',
+    'system_name' => 'سیستم صحی',
     'edit_notice' => 'ویرایش اطلاعیه',
     'notice_update_success' => 'اطلاعیه موفقانه ویرایش شد',
     'notice_create_success' => 'اطلاعیه موفقانه ثبت شد',
@@ -440,6 +440,18 @@ return [
     'doctors' => 'داکتران',
     'departments' => 'دیپارتمنت ها',
     'sections' => 'بخش ها',
-    'create_doctor' => 'اضافه نمودن داکتر'
+    'create_doctor' => 'اضافه نمودن داکتر',
+    'create_section' => 'اضافه نمودن بخش',
+    'list_section' => 'بخش های موجود',
+    'related_department' => 'دیپارتمنت مربوطه',
+    'create_department' => 'اضافه نمودن دیپارتمنت',
+    'list_departments' => 'دیپارتمنت های موجود',
+    'related_section' => 'بخش مربوطه',
+    'list_doctors' => 'لیست داکتران',
+    'department' => 'دیپارتمنت',
+    'section' => 'بخش',
+    'prescriptions' => 'نسخه ها',
+    'lab_tests' => 'لابراتوار',
+    'diagnoses' => 'تشخیصات',
 
 ];

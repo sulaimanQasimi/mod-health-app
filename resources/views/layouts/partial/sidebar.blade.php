@@ -2,11 +2,7 @@
     <div class="app-brand demo">
         <a href="{{route('home')}}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <svg class="w-[45px] h-[45px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M6 18H2V3h3v1a1 1 0 0 0 0 2h2.758l2-2H7V2h3v1.779c.546-.5 1.26-.777 2-.779h5a2 2 0 0 0-2-2h-3.278A1.992 1.992 0 0 0 10 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h4a.972.972 0 0 0 .474-.136A4.01 4.01 0 0 1 6 18Z"/>
-                    <path d="M12 5a1 1 0 0 0-.707.293l-3 3A1 1 0 0 0 8 9h4V5Z"/>
-                    <path d="M18.067 5H14v4a2 2 0 0 1-2 2H8v7a1.969 1.969 0 0 0 1.933 2h8.134A1.97 1.97 0 0 0 20 18V7a1.97 1.97 0 0 0-1.933-2Z"/>
-                  </svg>
+                  <svg class="w-[45px] h-[45px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M15 2.013H9V9H2v6h7v6.987h6V15h7V9h-7z"></path></svg>
             </span>
             <span class="app-brand-text demo menu-text fw-bolder ms-2">{{ localize('global.system_name') }}</span>
         </a>
@@ -55,6 +51,26 @@
             <a href="{{ route('appointments.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-time-five"></i>
                 <div>{{ localize('global.appointments') }}</div>
+            </a>
+        </li>
+        <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
+            <a href="{{ route('prescriptions.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-notepad"></i>
+                <div>{{ localize('global.prescriptions') }}</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
+            <a href="{{ route('lab_tests.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-hard-hat"></i>
+                <div>{{ localize('global.lab_tests') }}</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ Route::is('diagnoses.index') ? 'active' : '' }}">
+            <a href="{{ route('diagnoses.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-popsicle"></i>
+                <div>{{ localize('global.diagnoses') }}</div>
             </a>
         </li>
 

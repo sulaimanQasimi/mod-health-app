@@ -27,7 +27,6 @@ class CreateUserRequest extends FormRequest
             'name_dr' => 'required|max:120',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
-            'sector' => 'required',
         ];
     }
 
@@ -39,7 +38,6 @@ class CreateUserRequest extends FormRequest
             'name_dr.required' => localize('global.user_name_dr_required'),
             'email.required' => localize('global.user_email_required'),
             'password.required' => localize('global.user_password_required'),
-            'sector.required' => localize('global.user_sector_required')
         ];
     }
 }

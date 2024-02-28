@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
+            $table->string('date');
+            $table->string('time');
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

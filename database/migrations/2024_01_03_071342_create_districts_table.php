@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
-            $table->integer('province_id')->unsigned();
-            $table->string('name_en')->nullable();
-            $table->string('name_dr')->nullable();
-            $table->string('name_pa')->nullable();
+            $table->integer('province_id')->nullable();
+            $table->string('name_en', 255)->nullable();
+            $table->string('name_dr', 255)->nullable();
+            $table->string('name_pa', 255)->nullable();
+            $table->timestamps();
         });
     }
 

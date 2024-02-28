@@ -12,7 +12,7 @@ class Patient extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','last_name','phone','qr_code'];
+    protected $fillable = ['name','last_name','phone','father_name','nid','province_id','district_id','referred_by','image'];
 
     public static function boot()
     {
@@ -65,5 +65,13 @@ class Patient extends Model
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+    public function province()
+    {
+        return $this->hasOne(Province::class, 'id', 'province_id');
+    }
+    public function district()
+    {
+        return $this->hasOne(District::class, 'id', 'district_id');
     }
 }

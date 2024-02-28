@@ -15,7 +15,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label for="department_id">Doctor</label>
+                                        <label for="department_id">{{localize('global.doctor_name')}}</label>
                                         <select class="form-control select2" name="department_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($doctors as $value)
@@ -25,9 +25,17 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="date">{{localize('global.date')}}</label>
+                                        <input type="date" class="form-control" name="date"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="time">{{localize('global.time')}}</label>
+                                        <input type="time" class="form-control" name="time"/>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>
                         </form>
                     </div>
                 </div>

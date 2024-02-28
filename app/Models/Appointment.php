@@ -12,7 +12,7 @@ class Appointment extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['patient_id','doctor_id'];
+    protected $fillable = ['patient_id','doctor_id','date','time'];
 
     public static function boot()
     {

@@ -103,4 +103,26 @@ class PatientController extends Controller
 
         return redirect()->back()->with('error', 'No image uploaded.');
     }
+
+    public function scanQrCode(Request $request)
+    {
+        // Get the scanned QR code data
+        $qrCodeData = $request->input('qrCodeData');
+
+        // Find the patient based on the QR code data
+        $patient = Patient::where('id', $qrCodeData)->first();
+
+        if ($patient) {
+            // Redirect to the patient's show page
+            return redirect()->route('patients.show', $patient->id);
+        } else {
+            // Handle the case when the patient is not found
+            return redirect()->back()->with('error', 'Patient not found.');
+        }
+    }
+
+    public function scanCode()
+    {
+        return view('pages.patients.scan');
+    }
 }

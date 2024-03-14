@@ -33,6 +33,11 @@
             </a>
 
             <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('scanCode') ? 'active' : '' }}">
+                    <a href="{{ route('scanCode') }}" class="menu-link">
+                        <div>{{ localize('global.scan_qrcode') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('patients.create') ? 'active' : '' }}">
                     <a href="{{ route('patients.create') }}" class="menu-link">
                         <div>{{ localize('global.create_patient') }}</div>

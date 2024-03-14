@@ -178,6 +178,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');
     Route::get('mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('mark_all_as_read');
+    Route::get('/scan-qr-code', [PatientController::class, 'scanQrCode'])->name('scanQRCode');
+    Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
 
 });
 

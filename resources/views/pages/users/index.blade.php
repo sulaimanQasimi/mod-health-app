@@ -110,12 +110,11 @@
                                 <th>{{ localize('global.avatar') }}</th>
                                 <th>{{ localize('global.name_dr') }}</th>
                                 <th>{{ localize('global.email') }}</th>
-                                @can('deactivate-users')
+                                {{-- @can('deactivate-users') --}}
                                 <th>{{ localize('global.status') }}</th>
-                                @endcan
+                                {{-- @endcan --}}
                                 <th>{{ localize('global.roles') }}</th>
                                 {{-- <th>{{ localize('global.recipients') }}</th> --}}
-                                <th>{{ localize('global.user_recipients') }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -209,18 +208,6 @@
                                 });
 
                                 return rolesHtml;
-                            }
-                        },
-                        {
-                            data: 'recipients',
-                            render: function(data) {
-                                var recipientsHtml = '';
-
-                                data.forEach(function(recipient) {
-                                    recipientsHtml += '<span class="badge rounded-pill bg-label-primary">' + recipient.name_dr + '</span>&nbsp;';
-                                });
-
-                                return recipientsHtml;
                             }
                         },
 

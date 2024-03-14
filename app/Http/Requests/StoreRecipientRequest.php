@@ -18,7 +18,6 @@ class StoreRecipientRequest extends FormRequest
     {
         return [
             'name_dr'=>'required|unique:recipients,name_dr',
-            'sector_id'=>'required',
         ];
     }
 
@@ -27,7 +26,6 @@ class StoreRecipientRequest extends FormRequest
 
         return [
             'name_dr.required'  => localize('global.recipient_name_required'),
-            'sector_id.required'  => localize('global.recipient_sector_name_required'),
         ];
     }
 }

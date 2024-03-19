@@ -71,7 +71,7 @@
                                 {!! QrCode::size(100)->generate($patient->id) !!}
                             </div>
                             <div class="col-md-6">
-                                <img src="{{ asset('images/patients/' . $patient->image) }}" alt="Patient Image" width="100">
+                                <img src="{{ asset($patient->image) }}" alt="Patient Image" width="100">
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -86,11 +86,8 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-12">
-                                <form action="{{ route('patients.addImage', ['id' => $patient->id]) }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="file" name="image" accept="image/*" capture="camera">
-                                    <button type="submit">Upload Image</button>
-                                </form>                            </div>
+                                <a  class="btn btn-success" href="{{route('patients.webcam',$patient)}}">{{localize('global.take_image')}}</a>
+                            </div>
                         </div>
                     </div>
 

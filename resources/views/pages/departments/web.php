@@ -95,6 +95,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{patient}', [PatientController::class, 'edit'])->name('edit');
         Route::put('update/{patient}', [PatientController::class, 'update'])->name('update');
         Route::get('destroy/{patient}', [PatientController::class, 'destroy'])->name('destroy');
+
+
     });
 
     Route::prefix('departments')->name('departments.')->group(function () {

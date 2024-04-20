@@ -88,6 +88,25 @@
                                     </div>
                                 @endif
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.branch') }}</label>
+                                    <select class="form-control select2" name="branch_id">
+                                        <option value="">{{ localize('global.select') }}</option>
+                                        @foreach($branches as $value)
+                                            <option value="{{ $value->id }}"
+                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                            {{ $value->name }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+                                @if ($errors->first('branch'))
+                                    <div class="display-error">
+                                        {{ $errors->first('branch') }}
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                             <div class="col-12 mb-3 mt-3">
                                 <h5>{{ localize('global.roles') }}</h5>

@@ -12,7 +12,7 @@ class Section extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','department_id'];
+    protected $fillable = ['name','department_id', 'branch_id'];
 
     public static function boot()
     {

@@ -10,7 +10,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('departments.store') }}" method="POST">
+                        <form action="{{ route('branches.store') }}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="col-md-4">
@@ -19,7 +19,6 @@
                                         <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control">
                                     </div>
                                 </div>
-                                <input type="hidden" name="branch_id" value="{{Auth::user()->branch_id}}">
                             </div>
                             <button type="submit" class="btn btn-primary">Create</button>
                         </form>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Branch;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -50,7 +51,8 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('pages.users.create',compact('roles'));
+        $branches = Branch::all();
+        return view('pages.users.create',compact('roles','branches'));
     }
 
     /**
@@ -63,6 +65,7 @@ class UserController extends Controller
         $user->name_en = $request->name_en;
         $user->name_dr = $request->name_dr;
         $user->email = $request->email;
+        $user->branch_id = $request->branch_id;
         $user->password = Hash::make($request->password);
 
         $user->save();

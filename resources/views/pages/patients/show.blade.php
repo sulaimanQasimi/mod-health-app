@@ -75,17 +75,15 @@
                             </div>
                         </div>
                         <div class="row mt-3">
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <a href="{{ route('patients.print-card', $patient->id) }}" target="_blank" class="btn btn-primary">{{localize('global.print_card')}}</a>
                             </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
+
+                            <div class="col-md-4">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">{{localize('global.assign_appointment')}}</button>
                             </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
+
+                            <div class="col-md-4">
                                 <a  class="btn btn-success" href="{{route('patients.webcam',$patient)}}">{{localize('global.take_image')}}</a>
                             </div>
                         </div>

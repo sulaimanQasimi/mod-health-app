@@ -32,6 +32,7 @@
 
                                         </select>
                                     </div>
+                                    <input type="hidden" name="branch_id" value="{{Auth::user()->branch_id}}">
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary">{{ localize('global.create') }}</button>

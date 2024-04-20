@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('department_id');
+            $table->integer('branch_id')->nullable();
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

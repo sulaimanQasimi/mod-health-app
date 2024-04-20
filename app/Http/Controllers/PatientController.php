@@ -39,6 +39,7 @@ class PatientController extends Controller
             'province_id' => 'required',
             'district_id' => 'required',
             'referred_by' => 'required',
+            'branch_id' => 'required',
         ]);
 
         $patient = Patient::create($data);

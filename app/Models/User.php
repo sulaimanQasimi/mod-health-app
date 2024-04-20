@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'status',
         'avatar',
+        'branch_id',
     ];
 
     /**
@@ -45,5 +46,5 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'recipients' => 'array',
     ];
-    
+
 }

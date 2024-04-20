@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Section;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class SectionController extends Controller
     public function create()
     {
         $departments = Department::all();
-        return view('pages.sections.create',compact('departments'));
+        $branches = Branch::all();
+        return view('pages.sections.create',compact('departments','branches'));
     }
 
     /**

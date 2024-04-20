@@ -12,7 +12,7 @@ class Doctor extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','department_id','section_id'];
+    protected $fillable = ['name','department_id','section_id','branch_id'];
 
     public static function boot()
     {

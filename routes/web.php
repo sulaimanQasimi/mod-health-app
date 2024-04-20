@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
@@ -176,6 +177,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{prescription}', [LabController::class, 'edit'])->name('edit');
         Route::put('update/{prescription}', [LabController::class, 'update'])->name('update');
         Route::get('destroy/{prescription}', [LabController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('branches')->name('branches.')->group(function () {
+        Route::get('index', [BranchController::class, 'index'])->name('index');
+        Route::get('create', [BranchController::class, 'create'])->name('create');
+        Route::get('show/{branch}', [BranchController::class, 'show'])->name('show');
+        Route::post('store', [BranchController::class, 'store'])->name('store');
+        // Route::get('edit/{prescription}', [BranchController::class, 'edit'])->name('edit');
+        // Route::put('update/{prescription}', [BranchController::class, 'update'])->name('update');
+        // Route::get('destroy/{prescription}', [BranchController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');

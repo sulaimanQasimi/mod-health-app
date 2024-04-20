@@ -128,6 +128,11 @@
                         <div>{{ localize('global.sections') }}</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Route::is('branches.index') ? 'active' : '' }}">
+                    <a href="{{ route('branches.index') }}" class="menu-link">
+                        <div>{{ localize('global.branches') }}</div>
+                    </a>
+                </li>
 
             </ul>
         </li>

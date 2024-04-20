@@ -7,7 +7,7 @@
 </script>
 <html lang="en-US" class="h-full"><head>
     <meta charset="utf-8">
-    <title>Transactions - Haircare Card - Kale DuBuque - Reward Loyalty</title>
+    <title>{{localize('global.patients card')}}</title>
     <script src="https://reward-loyalty-demo.nowsquare.com/en-us/scripts/language.js"></script>
     <link rel="preload" as="style" href="https://reward-loyalty-demo.nowsquare.com/build/assets/app.ccd0ac6e.css"><link rel="preload" as="style" href="https://reward-loyalty-demo.nowsquare.com/build/assets/app.f737ef5e.css"><link rel="modulepreload" href="https://reward-loyalty-demo.nowsquare.com/build/assets/app.ab197204.js"><link rel="stylesheet" href="https://reward-loyalty-demo.nowsquare.com/build/assets/app.ccd0ac6e.css"><link rel="stylesheet" href="https://reward-loyalty-demo.nowsquare.com/build/assets/app.f737ef5e.css"><script type="module" src="https://reward-loyalty-demo.nowsquare.com/build/assets/app.ab197204.js"></script>    <meta name="robots" content="noindex, nofollow">
     <meta name="robots" content="noindex, nofollow">
@@ -36,17 +36,17 @@
         <div class="flex items-start">
             <div class="flex-grow min-w-0">
                 <div class="flex items-center text-lg font-medium">
-                                                                                                        <span class="tracking-tight truncate">Haircare Card</span>
+                                                                                                        <span class="tracking-tight truncate">{{$patient->name}}</span>
 
                                     </div>
             </div>
             <div class="flex-none text-right w-24">
-                                    <div class="text-xs font-extralight textLabelColor_card_8g77tnnu7ios">Balance</div>
+                                    <div class="text-xs font-extralight textLabelColor_card_8g77tnnu7ios">ID</div>
                                             <div class="flex items-center justify-end">
                             <svg class="textColor_card_8g77tnnu7ios w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"></path>
     </svg>
-                                                            <div class="text-lg font-medium format-number">1,798</div>
+                                                            <div class="text-lg font-medium format-number">{{$patient->id}}</div>
                                                     </div>
                                                                 </div>
         </div>

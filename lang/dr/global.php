@@ -458,5 +458,8 @@ return [
     'nid' => 'نمبر تذکره',
     'create_appointment' => 'تعین ملاقات',
     'time' => 'ساعت',
+    'take_image' => 'گرفتن عکس',
+    'branches' => 'شفاخانه ها',
+    'branch' => 'شفاخانه'
 
 ];

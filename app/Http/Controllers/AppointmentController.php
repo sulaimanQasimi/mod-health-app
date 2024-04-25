@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\LabType;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -70,7 +71,9 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
-        return view('pages.appointments.show',compact('appointment'));
+        $labTypes = LabType::all();
+        $doctors = Doctor::all();
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors'));
     }
 
     public function destroy(Appointment $appointment)
@@ -84,7 +87,7 @@ class AppointmentController extends Controller
 
     public function doctorAppointments()
     {
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)->where('diagnosed','0')->get();
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)->get();
 
         return view('pages.appointments.index', compact('appointments'));
     }

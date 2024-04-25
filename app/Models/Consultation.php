@@ -12,7 +12,7 @@ class Consultation extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date'];
+    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time'];
 
     public static function boot()
     {

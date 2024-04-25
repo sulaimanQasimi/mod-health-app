@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->text('result',2000)->nullable();
             $table->date('date');
+            $table->string('time');
 
 
             $table->foreign('branch_id')

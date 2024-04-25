@@ -171,11 +171,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
         Route::get('index', [LabController::class, 'index'])->name('index');
         Route::get('create', [LabController::class, 'create'])->name('create');
-        Route::get('show/{labTest}', [LabController::class, 'show'])->name('show');
+        Route::get('show/{lab}', [LabController::class, 'show'])->name('show');
         Route::post('store', [LabController::class, 'store'])->name('store');
-        Route::get('edit/{labTest}', [LabController::class, 'edit'])->name('edit');
-        Route::put('update/{labTest}', [LabController::class, 'update'])->name('update');
-        Route::get('destroy/{labTest}', [LabController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{lab}', [LabController::class, 'edit'])->name('edit');
+        Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
+        Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('lab_types')->name('lab_types.')->group(function () {

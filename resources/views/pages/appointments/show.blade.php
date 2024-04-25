@@ -105,7 +105,200 @@
                         </table>
 
                         </div>
+
+
+
+
                         <hr>
+                        <h5 class="mb-3">{{ localize('global.lab_tests') }}</h5>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createLabModal{{ $appointment->id }}"><span><i class="bx bx-plus"></i></span></button>
+                                <!-- Create  Lab Modal -->
+                                <div class="modal fade" id="createLabModal{{ $appointment->id }}" tabindex="-1" aria-labelledby="createLabModalLabel{{ $appointment->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="createLabModalLabel{{ $appointment->id }}">{{localize('global.add_lab_test')}}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('lab_tests.store') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id" value="{{ $appointment->patient_id }}">
+                                                    <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id" value="{{ $appointment->id }}">
+                                                    <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ $appointment->doctor->id }}">
+                                                    <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
+
+                                                    <div class="form-group">
+
+                                                        <label for="lab_type_id{{ $appointment->id }}">{{localize('global.lab_type')}}</label>
+                                                        <select class="form-control select2" name="lab_type_id">
+                                                            <option value="">{{ localize('global.select') }}</option>
+                                                            @foreach($labTypes as $value)
+                                                                <option value="{{ $value->id }}"
+                                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+                
+                                                            </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
+                                                <button type="submit" class="btn btn-primary">{{localize('global.save')}}</button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Create Lab Modal -->
+                        <div class="col-md-12 mt-4">
+
+
+
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{localize('global.number')}}</th>
+                                    <th>{{localize('global.result')}}</th>
+                                    <th>{{localize('global.result_file')}}</th>
+                                    <th>{{localize('global.actions')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($appointment->labs as $lab)
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$lab->result}}</td>
+                                    <td>
+                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
+                                            <i class="fa fa-file"></i> Open File
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{route('lab_tests.edit', $lab->id)}}"><span><i class="bx bx-edit"></i></span></a>
+                                        <a href="{{route('lab_tests.destroy', $lab->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
+
+                                    </td>
+                                </tr>
+                                @empty
+
+                                    <p class="text-center badge bg-primary">
+
+                                        {{ localize('global.no_previous_labs') }}
+                                    </p>
+                            @endforelse
+                            </tbody>
+                        </table>
+
+                        </div>
+
+
+
+                        <hr>
+                        <h5 class="mb-3">{{ localize('global.consultations') }}</h5>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createConsultationModal{{ $appointment->id }}"><span><i class="bx bx-plus"></i></span></button>
+                                <!-- Create  Lab Modal -->
+                                <div class="modal fade" id="createConsultationModal{{ $appointment->id }}" tabindex="-1" aria-labelledby="createConsultationModalLabel{{ $appointment->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="createConsultationModalLabel{{ $appointment->id }}">{{localize('global.add_lab_test')}}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('consultations.store') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id" value="{{ $appointment->patient_id }}">
+                                                    <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id" value="{{ $appointment->id }}">
+                                                    <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
+
+                                                    <div class="form-group">
+
+                                                        <label for="title{{ $appointment->id }}">{{localize('global.title')}}</label>
+                                                        <input type="text" class="form-control" name="title">
+
+                                                        <label for="doctor_id{{ $appointment->id }}">{{localize('global.doctors')}}</label>
+                                                        <select class="form-control select2" name="doctor_id">
+                                                            <option value="">{{ localize('global.select') }}</option>
+                                                            @foreach($doctors as $value)
+                                                                <option value="{{ $value->id }}"
+                                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+                
+                                                            </option>
+                                                            @endforeach
+                                                        </select>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label for="date">{{localize('global.date')}}</label>
+                                                            <input type="date" class="form-control" name="date"/>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="time">{{localize('global.time')}}</label>
+                                                            <input type="time" class="form-control" name="time"/>
+                                                        </div>
+                                                        
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
+                                                <button type="submit" class="btn btn-primary">{{localize('global.save')}}</button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Create Lab Modal -->
+                        <div class="col-md-12 mt-4">
+
+
+
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{localize('global.number')}}</th>
+                                    <th>{{localize('global.title')}}</th>
+                                    <th>{{localize('global.doctors')}}</th>
+                                    <th>{{localize('global.result')}}</th>
+                                    <th>{{localize('global.actions')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($appointment->consultations as $consultation)
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$consultation->title}}</td>
+                                    <td>
+                                        {{$consultation->doctors}}
+                                    </td>
+                                    <td>
+                                        {{$consultation->result}}
+                                    </td>
+                                    <td>
+                                        <a href="{{route('consultations.edit', $consultation->id)}}"><span><i class="bx bx-edit"></i></span></a>
+                                        <a href="{{route('consultations.destroy', $consultation->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
+
+                                    </td>
+                                </tr>
+                                @empty
+
+                                    <p class="text-center badge bg-primary">
+
+                                        {{ localize('global.no_previous_consultations') }}
+                                    </p>
+                            @endforelse
+                            </tbody>
+                        </table>
+
+                        </div>
+
+
+
 
 
                     </div>

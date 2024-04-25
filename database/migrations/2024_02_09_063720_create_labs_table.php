@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('labs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('diagnose_id');
+            $table->string('result',1000)->nullable();
+            $table->string('result_file',500)->nullable();
+            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('lab_type_id');
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
 
-            $table->foreign('diagnose_id')
+            $table->foreign('branch_id')
                   ->references('id')
                   ->on('diagnoses');
 
@@ -34,6 +37,11 @@ return new class extends Migration
                   ->references('id')
                   ->on('users');
 
+            $table->foreign('appointment_id')
+                  ->references('id')
+                  ->on('appointments');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

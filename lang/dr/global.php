@@ -462,5 +462,11 @@ return [
     'branches' => 'شفاخانه ها',
     'branch' => 'شفاخانه',
     'consultations' => 'مشوره ها',
+    'scan_qrcode' => 'سکن QR',
+    'lab_types' => 'نوعیت تست ها',
+    'appointment_details' => 'جزئیات ملاقات',
+    'diagnosed_by' => 'تشخیص شده توسط',
+    'diagnose' => 'تشخیص',
+    'add_diagnose' => 'اضافه نمودن تشخیص',
 
 ];

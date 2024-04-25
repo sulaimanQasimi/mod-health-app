@@ -17,7 +17,7 @@ class StoreRecipientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_dr'=>'required|unique:recipients,name_dr',
+            'name'=>'required|unique:recipients,name',
         ];
     }
 
@@ -25,7 +25,7 @@ class StoreRecipientRequest extends FormRequest
     {
 
         return [
-            'name_dr.required'  => localize('global.recipient_name_required'),
+            'name.required'  => localize('global.recipient_name_required'),
         ];
     }
 }

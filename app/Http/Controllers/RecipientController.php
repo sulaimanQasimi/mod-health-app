@@ -20,7 +20,7 @@ class RecipientController extends Controller
     public function index(Request $request)
 {
     if ($request->ajax()) {
-        $recipients = Recipient::with('children')->get();
+        $recipients = Recipient::all();
 
         if ($recipients) {
             return response()->json([
@@ -52,6 +52,7 @@ class RecipientController extends Controller
      */
     public function store(StoreRecipientRequest $request)
     {
+
         DB::beginTransaction();
         try {
             Recipient::create($request->input());
@@ -63,14 +64,6 @@ class RecipientController extends Controller
 
                 return redirect()->back()->with('error',$e->getMessage());
             }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Recipient $recipient)
-    {
-        return view('pages.recipients.show', compact('recipient'));
     }
 
     /**
@@ -103,39 +96,4 @@ class RecipientController extends Controller
         return redirect()->back();
     }
 
-    public function getRecipients(Request $request)
-    {
-        $recipientIds = $request->input('recipient_ids', []);
-
-        // Retrieve the recipient names based on the IDs
-        $recipients = Recipient::whereIn('id', $recipientIds)->get();
-
-        return response()->json($recipients);
-    }
-
-
-    public function ajaxSearch(Request $request)
-    {
-
-      $search = $request->searchTerm;
-      if ($search) {
-
-        $recipients = Recipient::select('name_dr', 'id')->where('order_or_document', '0')->where('name_dr', 'LIKE', '%' . $search . '%')->limit(20)->get();
-        if ($request->search_type == 1) {
-
-          $recipients = Recipient::select('name_dr', 'id')->where('order_or_document', '0')->where('name_dr', 'LIKE', '%' . $search . '%')->limit(20)->get();
-          return response()->json($recipients);
-        } else {
-          $data = array();
-          foreach ($recipients as $item) {
-            $data[] = array('id' => $item->id, 'text' => $item->name_dr);
-          }
-          return json_encode($data);
-        }
-      } elseif (isset($request->dep_type) && $request->dep_type == 6) {
-
-        $recipients = Recipient::select('name_dr', 'id', 'parent_id')->where('order_or_document', '0')->whereCategory('6')->get();
-        return response()->json($recipients);
-      }
-    }
 }

@@ -27,10 +27,8 @@
                         <tr>
                             <th></th>
                             <th>{{ localize('global.number') }}</th>
-                            <th>{{ localize('global.name_dr') }}</th>
-                            <th>{{ localize('global.type') }}</th>
-                            <th>{{ localize('global.recipientType') }}</th>
-                            <th>{{ localize('global.children') }}</th>
+                            <th>{{ localize('global.name') }}</th>
+                            <th>{{ localize('global.description') }}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -101,40 +99,11 @@
                             data: 'id'
                         },
                         {
-                            data: 'name_dr'
+                            data: 'name'
                         },
-                        {
-                            data: 'type',
-                            render: function(data) {
-                                var type = parseInt(data, 10); // Convert the data to an integer
 
-                                if (type === 1) {
-                                    return '{{ localize('global.external') }}';
-                                } else if (type === 0) {
-                                    return '{{ localize('global.internal') }}';
-                                } else {
-                                    return 'unknown';
-                                }
-                            }
-                        },
                         {
-                            data: 'recipient_type.name',
-                            render: function(data) {
-                                return data ? data : 'نامعلوم'; // Display 'Unknown' if data is not available
-                            }
-                        },
-                        {
-                            data: 'children',
-                            render: function(data) {
-
-                                if (data.length > 0) {
-                                    var names = data.map(function(recipient) {
-                                        return '<span class="badge rounded-pill bg-label-primary">' + recipient.name_dr + '</span>&nbsp;';
-                                    });
-                                    return names.join(' ');
-                                }
-                                return '';
-                            }
+                            data: 'description'
                         },
                         {
                             data: ''

@@ -33,7 +33,6 @@ class AppointmentController extends Controller
             'doctor_id' => 'required',
             'date' => 'required',
             'time' => 'required',
-            // Add any other validation rules as needed
         ]);
 
         // Create a new appointment
@@ -66,6 +65,14 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Appointment $appointment)
+    {
+        return view('pages.appointments.show',compact('appointment'));
+    }
+
     public function destroy(Appointment $appointment)
     {
         // Delete the appointment
@@ -74,4 +81,12 @@ class AppointmentController extends Controller
         // Redirect to the appointments index page with a success message
         return redirect()->route('appointments.index')->with('success', 'Appointment deleted successfully.');
     }
+
+    public function doctorAppointments()
+    {
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)->where('diagnosed','0')->get();
+
+        return view('pages.appointments.index', compact('appointments'));
+    }
+
 }

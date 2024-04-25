@@ -11,23 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('diagnoses', function (Blueprint $table) {
+        Schema::create('lab_types', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
-            $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('appointment_id');
+            $table->string('name');
+            $table->unsignedBigInteger('branch_id');
+
+            $table->foreign('branch_id')
+            ->references('id')
+            ->on('branches');
+
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
-
-            $table->foreign('patient_id')
-                  ->references('id')
-                  ->on('patients');
-            $table->foreign('appointment_id')
-                  ->references('id')
-                  ->on('appointments');
         });
     }
 
@@ -36,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('diagnoses');
+        Schema::dropIfExists('lab_types');
     }
 };

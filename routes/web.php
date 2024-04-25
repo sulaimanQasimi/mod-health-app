@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LabController;
+use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
@@ -45,11 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [RecipientController::class, 'store'])->name('store');
         Route::get('edit/{recipient}', [RecipientController::class, 'edit'])->name('edit');
         Route::put('update/{recipient}', [RecipientController::class, 'update'])->name('update');
-        Route::get('show/{recipient}', [RecipientController::class, 'show'])->name('show');
         Route::get('destroy/{recipient}', [RecipientController::class, 'destroy'])->name('destroy');
-        Route::get('get-search/{name?}', [RecipientController::class, 'recipientSearch'])->name('get-search');
-        Route::post('get-search/{name?}', [RecipientController::class, 'recipientSearch'])->name('get-search-post');
-        Route::post('get-recipients', [RecipientController::class, 'getRecipients'])->name('get-recipients');
 
     });
 
@@ -140,6 +138,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('index', [AppointmentController::class, 'index'])->name('index');
+        Route::get('doctorAppointments', [AppointmentController::class, 'doctorAppointments'])->name('doctorAppointments');
         Route::get('create', [AppointmentController::class, 'create'])->name('create');
         Route::get('show/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::post('store', [AppointmentController::class, 'store'])->name('store');
@@ -172,11 +171,21 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
         Route::get('index', [LabController::class, 'index'])->name('index');
         Route::get('create', [LabController::class, 'create'])->name('create');
-        Route::get('show/{prescription}', [LabController::class, 'show'])->name('show');
+        Route::get('show/{labTest}', [LabController::class, 'show'])->name('show');
         Route::post('store', [LabController::class, 'store'])->name('store');
-        Route::get('edit/{prescription}', [LabController::class, 'edit'])->name('edit');
-        Route::put('update/{prescription}', [LabController::class, 'update'])->name('update');
-        Route::get('destroy/{prescription}', [LabController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{labTest}', [LabController::class, 'edit'])->name('edit');
+        Route::put('update/{labTest}', [LabController::class, 'update'])->name('update');
+        Route::get('destroy/{labTest}', [LabController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('lab_types')->name('lab_types.')->group(function () {
+        Route::get('index', [LabTypeController::class, 'index'])->name('index');
+        Route::get('create', [LabTypeController::class, 'create'])->name('create');
+        Route::get('show/{labType}', [LabTypeController::class, 'show'])->name('show');
+        Route::post('store', [LabTypeController::class, 'store'])->name('store');
+        Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('branches')->name('branches.')->group(function () {
@@ -193,6 +202,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('mark_all_as_read');
     Route::get('/scan-qr-code', [PatientController::class, 'scanQrCode'])->name('scanQRCode');
     Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
+
+    Route::prefix('consultations')->name('consultations.')->group(function () {
+        Route::get('index', [ConsultationController::class, 'index'])->name('index');
+        Route::get('create', [ConsultationController::class, 'create'])->name('create');
+        Route::get('show/{consultation}', [ConsultationController::class, 'show'])->name('show');
+        Route::post('store', [ConsultationController::class, 'store'])->name('store');
+        Route::get('edit/{consultation}', [ConsultationController::class, 'edit'])->name('edit');
+        Route::put('update/{consultation}', [ConsultationController::class, 'update'])->name('update');
+        Route::get('destroy/{consultation}', [ConsultationController::class, 'destroy'])->name('destroy');
+    });
 
 });
 

@@ -33,12 +33,13 @@ class DiagnoseController extends Controller
 
         $data = $request->validate([
             'description' => 'required',
-            'patient_id' => 'required'
+            'patient_id' => 'required',
+            'appointment_id' => 'required',
         ]);
 
         Diagnose::create($data);
 
-        return redirect()->route('diagnoses.index')->with('success', 'Diagnose created successfully.');
+        return redirect()->back()->with('success', 'Diagnose created successfully.');
     }
 
     /**

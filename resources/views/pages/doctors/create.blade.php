@@ -13,13 +13,27 @@
                         <form action="{{ route('doctors.store') }}" method="POST">
                             @csrf
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="name">{{localize('global.name')}}</label>
                                         <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="branch_id">{{localize('global.branch')}}</label>
+                                        <select class="form-control select2" name="branch_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($branches as $value)
+                                                <option value="{{ $value->id }}"
+                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                {{ $value->name }}</option>
+                                            @endforeach
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="department_id">{{localize('global.department')}}</label>
                                         <select class="form-control select2" name="department_id">
@@ -33,7 +47,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="section_id">{{localize('global.section')}}</label>
                                         <select class="form-control select2" name="section_id">

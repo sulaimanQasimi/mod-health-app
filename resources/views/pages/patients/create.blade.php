@@ -53,7 +53,7 @@
                                             @foreach($recipients as $value)
                                                 <option value="{{ $value->id }}"
                                                     {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name_dr }}</option>
+                                                {{ $value->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>

@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
-class Recipient extends Model
+class Consultation extends Model
 {
-
+    use HasFactory;
     use SoftDeletes;
 
-    protected $fillable=['name','description','created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date'];
 
     public static function boot()
     {

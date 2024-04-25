@@ -460,6 +460,7 @@ return [
     'time' => 'ساعت',
     'take_image' => 'گرفتن عکس',
     'branches' => 'شفاخانه ها',
-    'branch' => 'شفاخانه'
+    'branch' => 'شفاخانه',
+    'consultations' => 'مشوره ها',
 
 ];

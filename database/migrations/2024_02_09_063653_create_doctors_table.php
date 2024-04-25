@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('department_id');
             $table->unsignedBigInteger('section_id');
             $table->softDeletes();
@@ -22,6 +23,9 @@ return new class extends Migration
             $table->integer('updated_by')->nullable();
             $table->timestamps();
 
+            $table->foreign('branch_id')
+            ->references('id')
+            ->on('branches');
             $table->foreign('department_id')
                   ->references('id')
                   ->on('departments');

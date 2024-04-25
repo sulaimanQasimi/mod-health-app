@@ -15,13 +15,15 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label for="department_id">{{localize('global.doctor_name')}}</label>
-                                        <select class="form-control select2" name="department_id">
+                                        <label for="doctor_id">{{localize('global.doctor_name')}}</label>
+                                        <select class="form-control select2" name="doctor_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($doctors as $value)
                                                 <option value="{{ $value->id }}"
                                                     {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name }}</option>
+                                                {{ $value->name }}
+
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -35,6 +37,8 @@
                                     </div>
                                 </div>
                             </div>
+                            <input type="hidden" name="diagnosed" value="1">
+
                             <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>
                         </form>
                     </div>

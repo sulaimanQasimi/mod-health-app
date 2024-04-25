@@ -30,12 +30,14 @@
                                     <td>{{ $appointment->date }}</td>
                                     <td>{{ $appointment->time }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDiagnoseModal{{ $appointment->id }}">Create Diagnose</button>
+                                        {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDiagnoseModal{{ $appointment->id }}">Create Diagnose</button> --}}
+                                        <a href="{{route('appointments.show', $appointment->id)}}"><span><i class="bx bx-show"></i></span></a>
+
                                     </td>
                                 </tr>
 
                                 <!-- Create Diagnose Modal -->
-                                <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1" aria-labelledby="createDiagnoseModalLabel{{ $appointment->id }}" aria-hidden="true">
+                                {{-- <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1" aria-labelledby="createDiagnoseModalLabel{{ $appointment->id }}" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -59,7 +61,7 @@
                                             </form>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <!-- End Create Diagnose Modal -->
                             @endforeach
                         </tbody>

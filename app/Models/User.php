@@ -47,4 +47,9 @@ class User extends Authenticatable
         'recipients' => 'array',
     ];
 
+    public function branch()
+    {
+        return $this->hasOne(Branch::class, 'id', 'branch_id');
+    }
+
 }

@@ -28,7 +28,19 @@ class HospitalizationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'reason' => 'required',
+            'remarks' => 'required',
+            'room_id' => 'required',
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'bed_id' => 'required',
+            'appointment_id' => 'required',
+        ]);
+
+        Hospitalization::create($data);
+
+        return redirect()->route('hospitalizations.index')->with('success', 'Hospitalization created successfully.');
     }
 
     /**

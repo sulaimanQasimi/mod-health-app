@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BedController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DepartmentController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HospitalizationController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\RecipientController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SectionController;
 
 /*
@@ -123,6 +126,36 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{section}', [SectionController::class, 'edit'])->name('edit');
         Route::put('update/{section}', [SectionController::class, 'update'])->name('update');
         Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('rooms')->name('rooms.')->group(function () {
+        Route::get('index', [RoomController::class, 'index'])->name('index');
+        Route::get('create', [RoomController::class, 'create'])->name('create');
+        Route::get('show/{room}', [RoomController::class, 'show'])->name('show');
+        Route::post('store', [RoomController::class, 'store'])->name('store');
+        Route::get('edit/{room}', [RoomController::class, 'edit'])->name('edit');
+        Route::put('update/{room}', [RoomController::class, 'update'])->name('update');
+        Route::get('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('beds')->name('beds.')->group(function () {
+        Route::get('index', [BedController::class, 'index'])->name('index');
+        Route::get('create', [BedController::class, 'create'])->name('create');
+        Route::get('show/{bed}', [BedController::class, 'show'])->name('show');
+        Route::post('store', [BedController::class, 'store'])->name('store');
+        Route::get('edit/{bed}', [BedController::class, 'edit'])->name('edit');
+        Route::put('update/{bed}', [BedController::class, 'update'])->name('update');
+        Route::get('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
+        Route::get('index', [HospitalizationController::class, 'index'])->name('index');
+        Route::get('create', [HospitalizationController::class, 'create'])->name('create');
+        Route::get('show/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
+        Route::post('store', [HospitalizationController::class, 'store'])->name('store');
+        Route::get('edit/{hospitalization}', [HospitalizationController::class, 'edit'])->name('edit');
+        Route::put('update/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
+        Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('doctors')->name('doctors.')->group(function () {

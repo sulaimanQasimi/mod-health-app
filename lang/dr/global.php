@@ -468,5 +468,18 @@ return [
     'diagnosed_by' => 'تشخیص شده توسط',
     'diagnose' => 'تشخیص',
     'add_diagnose' => 'اضافه نمودن تشخیص',
+    'branches_list' => 'لیست شفاخانه ها',
+    'referred_to' => 'معرفی شده به',
+    'add_lab_test' => 'تعین نمودن تست',
+    'lab_type' => 'نوعیت تست',
+    'test_name' => 'نام تست',
+    'result' => 'نتیجه',
+    'result_file' => 'فایل تست',
+    'rooms' => 'اطاق ها',
+    'beds' => 'بستر ها',
+    'prescription' => 'نسخه',
+    'hospitalize' => 'بستر نمودن',
+    'room' => 'اطاق',
+    'bed' => 'بستر',
 
 ];

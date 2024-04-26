@@ -143,6 +143,16 @@
                         <div>{{ localize('global.sections') }}</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Route::is('rooms.index') ? 'active' : '' }}">
+                    <a href="{{ route('rooms.index') }}" class="menu-link">
+                        <div>{{ localize('global.rooms') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('beds.index') ? 'active' : '' }}">
+                    <a href="{{ route('beds.index') }}" class="menu-link">
+                        <div>{{ localize('global.beds') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('lab_types.index') ? 'active' : '' }}">
                     <a href="{{ route('lab_types.index') }}" class="menu-link">
                         <div>{{ localize('global.lab_types') }}</div>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Bed;
 use App\Models\Doctor;
 use App\Models\LabType;
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -73,7 +75,9 @@ class AppointmentController extends Controller
     {
         $labTypes = LabType::all();
         $doctors = Doctor::all();
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors'));
+        $rooms = Room::all();
+        $beds = Bed::all();
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds'));
     }
 
     public function destroy(Appointment $appointment)

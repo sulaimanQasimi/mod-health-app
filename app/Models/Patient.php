@@ -74,4 +74,9 @@ class Patient extends Model
     {
         return $this->hasOne(District::class, 'id', 'district_id');
     }
+
+    public function recipient()
+    {
+        return $this->belongsTo(Recipient::class, 'referred_by');
+    }
 }

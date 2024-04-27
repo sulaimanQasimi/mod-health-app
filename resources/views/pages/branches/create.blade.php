@@ -6,7 +6,7 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.create_department') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.create_branch') }}</h5>
                     </div>
 
                     <div class="card-body">
@@ -20,7 +20,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>
                         </form>
                     </div>
                 </div>

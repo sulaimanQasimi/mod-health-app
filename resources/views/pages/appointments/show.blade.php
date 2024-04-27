@@ -95,15 +95,16 @@
                                     </td>
                                 </tr>
                                 @empty
-
-                                    <p class="text-center badge bg-primary">
-
-                                        {{ localize('global.no_previous_diagnoses') }}
-                                    </p>
-                            @endforelse
                             </tbody>
                         </table>
-
+                        <div class="container">
+                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                <div class=" badge bg-label-danger mt-4">
+                                    {{ localize('global.no_previous_diagnoses') }}
+                                </div>
+                            </div>
+                        </div>
+                        @endforelse
                         </div>
 
 
@@ -118,7 +119,7 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="createPrescriptionModalLabel{{ $appointment->id }}">{{localize('global.add_diagnose')}}</h5>
+                                                <h5 class="modal-title" id="createPrescriptionModalLabel{{ $appointment->id }}">{{localize('global.add_prescription')}}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
@@ -170,15 +171,16 @@
                                     </td>
                                 </tr>
                                 @empty
-
-                                    <p class="text-center badge bg-primary">
-
-                                        {{ localize('global.no_previous_prescriptions') }}
-                                    </p>
-                            @endforelse
                             </tbody>
                         </table>
-
+                        <div class="container">
+                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                <div class=" badge bg-label-danger mt-4">
+                                    {{ localize('global.no_previous_prescriptions') }}
+                                </div>
+                            </div>
+                        </div>
+                        @endforelse
                         </div>
 
 
@@ -259,15 +261,16 @@
                                     </td>
                                 </tr>
                                 @empty
-
-                                    <p class="text-center badge bg-primary">
-
-                                        {{ localize('global.no_previous_labs') }}
-                                    </p>
-                            @endforelse
                             </tbody>
                         </table>
-
+                        <div class="container">
+                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                <div class=" badge bg-label-danger mt-4">
+                                    {{ localize('global.no_previous_labs') }}
+                                </div>
+                            </div>
+                        </div>
+                        @endforelse
                         </div>
 
 
@@ -333,42 +336,43 @@
 
 
 
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{localize('global.number')}}</th>
-                                    <th>{{localize('global.title')}}</th>
-                                    <th>{{localize('global.doctors')}}</th>
-                                    <th>{{localize('global.result')}}</th>
-                                    <th>{{localize('global.actions')}}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($appointment->consultations as $consultation)
-                                <tr>
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>{{$consultation->title}}</td>
-                                    <td>
-                                        {{$consultation->doctors}}
-                                    </td>
-                                    <td>
-                                        {{$consultation->result}}
-                                    </td>
-                                    <td>
-                                        <a href="{{route('consultations.edit', $consultation->id)}}"><span><i class="bx bx-edit"></i></span></a>
-                                        <a href="{{route('consultations.destroy', $consultation->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
-
-                                    </td>
-                                </tr>
-                                @empty
-
-                                    <p class="text-center badge bg-primary">
-
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{localize('global.number')}}</th>
+                                        <th>{{localize('global.title')}}</th>
+                                        <th>{{localize('global.doctors')}}</th>
+                                        <th>{{localize('global.result')}}</th>
+                                        <th>{{localize('global.actions')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($appointment->consultations as $consultation)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$consultation->title}}</td>
+                                        <td>
+                                            {{$consultation->doctors}}
+                                        </td>
+                                        <td>
+                                            {{$consultation->result}}
+                                        </td>
+                                        <td>
+                                            <a href="{{route('consultations.edit', $consultation->id)}}"><span><i class="bx bx-edit"></i></span></a>
+                                            <a href="{{route('consultations.destroy', $consultation->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                </tbody>
+                            </table>
+                            <div class="container">
+                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                    <div class=" badge bg-label-danger mt-4">
                                         {{ localize('global.no_previous_consultations') }}
-                                    </p>
+                                    </div>
+                                </div>
+                            </div>
                             @endforelse
-                            </tbody>
-                        </table>
 
                         </div>
 
@@ -478,15 +482,16 @@
                                     </td>
                                 </tr>
                                 @empty
-
-                                    <p class="text-center badge bg-primary">
-
-                                        {{ localize('global.no_previous_hospitalizations') }}
-                                    </p>
-                            @endforelse
                             </tbody>
                         </table>
-
+                        <div class="container">
+                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                <div class=" badge bg-label-danger mt-4">
+                                    {{ localize('global.no_previous_hospitalizations') }}
+                                </div>
+                            </div>
+                        </div>
+                        @endforelse
                         </div>
 
 

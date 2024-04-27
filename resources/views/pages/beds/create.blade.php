@@ -6,7 +6,7 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.create_department') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.create_bed') }}</h5>
                     </div>
 
                     <div class="card-body">
@@ -15,7 +15,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="number">{{ localize('global.room_number') }}</label>
+                                        <label for="number">{{ localize('global.bed_number') }}</label>
                                         <input type="text" name="number" id="number" value="{{ old('number') }}" class="form-control">
                                     </div>
                                 </div>
@@ -34,7 +34,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>
                         </form>
                     </div>
                 </div>

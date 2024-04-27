@@ -5,12 +5,12 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card mt-4">
-                <div class="card-header">{{ __('Scan QR Code') }}</div>
+                <div class="card-header">{{ localize('global.please_scan_card') }}</div>
 
                 <div class="card-body">
                     <form id="scanForm" action="{{ route('scanQRCode') }}" method="GET">
                         <div class="mb-3">
-                            <label for="qrCodeData" class="form-label">{{ __('QR Code Data') }}</label>
+                            <label for="qrCodeData" class="form-label">{{ localize('global.qr_code_data') }}</label>
                             <input id="qrCodeData" type="text" name="qrCodeData" class="form-control" placeholder="Scan QR code" required autofocus>
                         </div>
                     </form>

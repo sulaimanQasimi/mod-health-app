@@ -27,10 +27,11 @@
                                     <textarea name="description" class="form-control">{{ old('description') }}</textarea>
                                 </div>
                                 <div class="col-md-6">
-                                    <a href="{{ route('recipients.index') }}"><button type="button"
-                                                class="btn btn-danger">{{ localize('global.back') }}</button>
+                                    
                                         <button type="submit"
                                                 class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                <a href="{{ route('recipients.index') }}"><button type="button"
+                                                    class="btn btn-danger">{{ localize('global.back') }}</button>
                                 </div>
                             </div>
                         </form>

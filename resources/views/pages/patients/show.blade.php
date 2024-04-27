@@ -75,7 +75,13 @@
                                 {!! QrCode::size(100)->generate($patient->id) !!}
                             </div>
                             <div class="col-md-6 d-flex justify-content-start align-items-center">
+                                @isset($patient->image)
                                 <img src="{{ asset($patient->image) }}" alt="Patient Image" width="100" height="100">
+                            @else
+                            <div class=" badge bg-label-danger mt-4">
+                                {{ localize('global.no_image') }}
+                            </div>
+                            @endisset
                             </div>
                         </div>
                         <div class="row mt-3">

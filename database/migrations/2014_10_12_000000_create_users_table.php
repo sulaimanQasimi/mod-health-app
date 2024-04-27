@@ -34,6 +34,7 @@ return new class extends Migration
             $table->integer('status')->default(1)->comment('1 active,0 inactive');
             $table->string('position_dr', 191)->nullable();
             $table->integer('sector_id')->nullable();
+            $table->integer('branch_id')->nullable();
             $table->integer('recipient_id')->nullable();
             $table->integer('user_change_password_status')->default(0)->comment('0->not changed 1->changed');
             $table->string('lang', 5)->default('dr');

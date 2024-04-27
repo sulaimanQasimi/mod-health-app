@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('nid')->nullable();
             $table->string('image')->nullable();
+            $table->integer('branch_id')->nullable();
             $table->unsignedBigInteger('province_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('referred_by');

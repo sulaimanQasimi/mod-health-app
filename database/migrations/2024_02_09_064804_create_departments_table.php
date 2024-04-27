@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('branch_id')->nullable();
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

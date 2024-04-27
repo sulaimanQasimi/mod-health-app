@@ -12,7 +12,7 @@ class Doctor extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','department_id','section_id'];
+    protected $fillable = ['name','branch_id','department_id','section_id'];
 
     public static function boot()
     {
@@ -53,4 +53,5 @@ class Doctor extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
 }

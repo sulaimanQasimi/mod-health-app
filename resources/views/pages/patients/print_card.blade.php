@@ -1,200 +1,219 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Patient Card</title>
 
-    <style>
-        body {
-  background: #dd3f3e;
-  font-family: 'Montserrat', sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-.ticket {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 700px;
-  margin: 20px auto;
-
-  .stub, .check {
-    box-sizing: border-box;
-  }
-}
-
-.stub {
-  background: #ef5658;
-  height: 250px;
-  width: 250px;
-  color: white;
-  padding: 20px;
-  position: center;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    border-top: 20px solid #dd3f3e;
-    border-left: 20px solid #ef5658;
-    width: 0;
-  }
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: 0; right: 0;
-    border-bottom: 20px solid #dd3f3e;
-    border-left: 20px solid #ef5658;
-    width: 0;
-  }
-
-  .top {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    text-transform: uppercase;
-
-    .line {
-      display: block;
-      background: #fff;
-      height: 40px;
-      width: 3px;
-      margin: 0 20px;
-    }
-    .num {
-      font-size: 10px;
-      span {
-        color: #000;
-      }
-    }
-  }
-  .number {
-    position: absolute;
-    left: 40px;
-    font-size: 150px;
-  }
-  .invite {
-    position: absolute;
-    left: 150px;
-    bottom: 45px;
-    color: #000;
-    width: 20%;
-
-    &:before {
-      content: '';
-      background: #fff;
-      display: block;
-      width: 40px;
-      height: 3px;
-      margin-bottom: 5px;
-    }
-  }
-}
-
-.check {
-  background: #fff;
-  height: 250px;
-  width: 450px;
-  padding: 40px;
-  position: relative;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    border-top: 20px solid #dd3f3e;
-    border-right: 20px solid #fff;
-    width: 0;
-  }
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    border-bottom: 20px solid #dd3f3e;
-    border-right: 20px solid #fff;
-    width: 0;
-  }
-
-  .big {
-    font-size: 30px;
-    font-weight: 900;
-    line-height: .8em;
-  }
-  .number {
-    position: absolute;
-    top: 50px;
-    right: 50px;
-    color: #ef5658;
-    font-size: 40px;
-  }
-  .info {
-    display: flex;
-    justify-content: flex-start;
-
-    font-size: 12px;
-    margin-top: 20px;
-    width: 100%;
-
-    section {
-      margin-right: 50px;
-      &:before {
-        content: '';
-        background: #ef5658;
-        display: block;
-        width: 40px;
-        height: 3px;
-        margin-bottom: 5px;
-      }
-      .title {
-        font-size: 10px;
-        text-transform: uppercase;
-      }
-    }
-  }
-}
-    </style>
-</head>
-<body>
-    {{-- <div class="card">
-        <h3>Patient Card</h3>
-        <p><strong>Patient ID:</strong> {{ $patient->id }}</p>
-        <p><strong>Name:</strong> {{ $patient->name }}</p>
-        <p><strong>Date:</strong> {{ date('Y-m-d') }}</p>
-        <div class="qr-code">
-            <img src="{{ QrCode::size(150)->generate($patient->id) }}" alt="QR Code">
-        </div>
-    </div> --}}
-    <div class="ticket">
-        <div class="stub">
-            <img src="{{ QrCode::size(150)->generate($patient->id) }}"></img>
-        </div>
-        <div class="check">
-          <div class="big">
-            {{ $patient->name }} -             {{$patient->last_name }}
-
-          </div>
-          <div class="number">{{ $patient->id }}</div>
-          <div class="info">
-            <section>
-              <div class="title">Date</div>
-              <div>4/27/2016</div>
-            </section>
-            <section>
-              <div class="title">Issued By</div>
-              <div>Ampersand</div>
-            </section>
-            <section>
-              <div class="title">Invite Number</div>
-              <div>31415926</div>
-            </section>
-          </div>
-        </div>
-      </div>
-</body>
-</html>
 
 <script>
     window.onload = function() {
         window.print();
     };
 </script>
+
+
+
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                    <title>{{localize('global.patient_card')}}</title>
+                <style>
+*{
+    margin: 00px;
+    padding: 00px;
+    box-sizing: content-box;
+}
+
+.container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e6ebe0;
+    flex-direction: row;
+    flex-flow: wrap;
+
+}
+
+.font{
+    height: 375px;
+    width: 250px;
+    position: relative;
+    border-radius: 10px;
+}
+
+.top{
+    height: 30%;
+    width: 100%;
+    background-color: #8338ec;
+    position: relative;
+    z-index: 5;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.bottom{
+    height: 70%;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.top img{
+    height: 100px;
+    width: 100px;
+    background-color: #e6ebe0;
+    border-radius: 10px;
+    position: absolute;
+    top:60px;
+    left: 75px;
+}
+.bottom p{
+    position: relative;
+    top: 60px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: bold;
+    font-size: 20px;
+    text-emphasis: spacing;
+}
+.bottom .desi{
+    font-size:12px;
+    color: grey;
+    font-weight: normal;
+}
+.bottom .no{
+    font-size: 15px;
+    font-weight: normal;
+}
+.barcode img
+{
+    height: 65px;
+    width: 65px;
+    text-align: center;
+    margin: 5px;
+}
+.barcode{
+    text-align: center;
+    position: relative;
+    top: 70px;
+}
+
+.back
+{
+    height: 375px;
+    width: 250px;
+    border-radius: 10px;
+    background-color: #8338ec;
+
+}
+.qr img{
+    height: 80px;
+    width: 100%;
+    margin: 20px;
+    background-color: white;
+}
+.Details {
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 25px;
+}
+
+
+.details-info{
+    color: white;
+    text-align: left;
+    padding: 5px;
+    line-height: 20px;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 20px;
+    line-height: 22px;
+}
+
+.logo {
+    height: 40px;
+    width: 150px;
+    padding: 40px;
+}
+
+.logo img{
+    height: 100%;
+    width: 100%;
+    color: white ;
+
+}
+.padding{
+    padding-right: 20px;
+}
+
+@media screen and (max-width:400px)
+{
+    .container{
+        height: 130vh;
+    }
+    .container .front{
+        margin-top: 50px;
+    }
+}
+@media screen and (max-width:600px)
+{
+    .container{
+        height: 130vh;
+    }
+    .container .front{
+        margin-top: 50px;
+    }
+
+}
+                    </style>
+
+                </head>
+                <body>
+                        <div class="container">
+                            <div class="padding">
+
+                                <div class="font">
+
+                                    <div class="top">
+                                        <p style="text-align: center; padding: 10%; color:white;"> {{\Auth::user()->branch->name}} </p>
+                                        <img src="{{ asset($patient->image) }}">
+
+                                    </div>
+                                    <div class="bottom">
+                                        <p>{{$patient->name}}</p>
+                                        <p class="desi">{{$patient->last_name}}</p>
+                                        <div class="barcode">
+                                            {{ QrCode::size(75)->generate($patient->id) }}
+                                        </div>
+                                        <br>
+                                        <p class="no">{{$patient->phone}}</p>
+                                        <p class="no">{{$patient->recipient->name}}</p>
+                                        <p class="no">{{$patient->district->name_dr}} - {{$patient->province->name_dr}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- <div class="back">
+                                <h1 class="Details">information</h1>
+                                <hr class="hr">
+                                <div class="details-info">
+                                    <p><b>Email : </b></p>
+                                    <p>Planicsdevloper@gmail.com</p>
+                                    <p><b>Mobile No: </b></p>
+                                    <p>8460304196</p>
+                                    <p><b>Office Address:</b></p>
+                                    <p>part-1,89 harinadad d...sdv..sdf..sfd..sd.road,india</p>
+                                    </div>
+                                    <div class="logo">
+                                        <img src="barcode.PNG">
+                                    </div>
+
+
+                                    <hr>
+                                </div> --}}
+                            </div>
+                        </div>
+                </body>
+                </html>

@@ -13,6 +13,20 @@ return new class extends Migration
     {
         Schema::create('hospitalizations', function (Blueprint $table) {
             $table->id();
+            $table->text('reason', 2000);
+            $table->text('remarks',2000);
+            $table->unsignedBigInteger('room_id');
+            $table->foreign('room_id')->references('id')->on('rooms');
+            $table->unsignedBigInteger('bed_id');
+            $table->foreign('bed_id')->references('id')->on('beds');
+            $table->unsignedBigInteger('appointment_id');
+            $table->foreign('appointment_id')->references('id')->on('appointments');
+            $table->unsignedBigInteger('doctor_id');
+            $table->foreign('doctor_id')->references('id')->on('doctors');
+            $table->unsignedBigInteger('patient_id');
+            $table->foreign('patient_id')->references('id')->on('patients');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

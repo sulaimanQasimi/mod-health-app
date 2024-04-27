@@ -12,7 +12,7 @@ class Diagnose extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['description','patient_id'];
+    protected $fillable = ['description','patient_id','appointment_id'];
 
     public static function boot()
     {
@@ -42,5 +42,10 @@ class Diagnose extends Model
     public function doctor()
     {
         return $this->hasOne(Doctor::class, 'id', 'created_by');
+    }
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
     }
 }

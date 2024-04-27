@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\Section;
@@ -25,7 +26,8 @@ class DoctorController extends Controller
     {
         $departments = Department::all();
         $sections = Section::all();
-        return view('pages.doctors.create',compact('departments','sections'));
+        $branches = Branch::all();
+        return view('pages.doctors.create',compact('departments','sections','branches'));
     }
 
     /**
@@ -35,8 +37,9 @@ class DoctorController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'branch_id' => 'required',
             'department_id' => 'required',
-            'section_id' => 'required'
+            'section_id' => 'required',
         ]);
 
         Doctor::create($data);

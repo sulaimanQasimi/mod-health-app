@@ -1,12 +1,17 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HospitalizationController;
 use App\Http\Controllers\LabController;
+use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
@@ -14,6 +19,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SectionController;
 
 /*
@@ -44,11 +50,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [RecipientController::class, 'store'])->name('store');
         Route::get('edit/{recipient}', [RecipientController::class, 'edit'])->name('edit');
         Route::put('update/{recipient}', [RecipientController::class, 'update'])->name('update');
-        Route::get('show/{recipient}', [RecipientController::class, 'show'])->name('show');
         Route::get('destroy/{recipient}', [RecipientController::class, 'destroy'])->name('destroy');
-        Route::get('get-search/{name?}', [RecipientController::class, 'recipientSearch'])->name('get-search');
-        Route::post('get-search/{name?}', [RecipientController::class, 'recipientSearch'])->name('get-search-post');
-        Route::post('get-recipients', [RecipientController::class, 'getRecipients'])->name('get-recipients');
 
     });
 
@@ -101,7 +103,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{patient}', [PatientController::class, 'update'])->name('update');
         Route::get('/print-card/{patient}', [PatientController::class, 'printCard'])->name('print-card');
         Route::get('destroy/{patient}', [PatientController::class, 'destroy'])->name('destroy');
-        Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');
+        // Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');
+        Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
+        Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
     });
 
     Route::prefix('departments')->name('departments.')->group(function () {
@@ -124,6 +128,36 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('rooms')->name('rooms.')->group(function () {
+        Route::get('index', [RoomController::class, 'index'])->name('index');
+        Route::get('create', [RoomController::class, 'create'])->name('create');
+        Route::get('show/{room}', [RoomController::class, 'show'])->name('show');
+        Route::post('store', [RoomController::class, 'store'])->name('store');
+        Route::get('edit/{room}', [RoomController::class, 'edit'])->name('edit');
+        Route::put('update/{room}', [RoomController::class, 'update'])->name('update');
+        Route::get('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('beds')->name('beds.')->group(function () {
+        Route::get('index', [BedController::class, 'index'])->name('index');
+        Route::get('create', [BedController::class, 'create'])->name('create');
+        Route::get('show/{bed}', [BedController::class, 'show'])->name('show');
+        Route::post('store', [BedController::class, 'store'])->name('store');
+        Route::get('edit/{bed}', [BedController::class, 'edit'])->name('edit');
+        Route::put('update/{bed}', [BedController::class, 'update'])->name('update');
+        Route::get('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
+        Route::get('index', [HospitalizationController::class, 'index'])->name('index');
+        Route::get('create', [HospitalizationController::class, 'create'])->name('create');
+        Route::get('show/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
+        Route::post('store', [HospitalizationController::class, 'store'])->name('store');
+        Route::get('edit/{hospitalization}', [HospitalizationController::class, 'edit'])->name('edit');
+        Route::put('update/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
+        Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('index', [DoctorController::class, 'index'])->name('index');
         Route::get('create', [DoctorController::class, 'create'])->name('create');
@@ -137,6 +171,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('index', [AppointmentController::class, 'index'])->name('index');
+        Route::get('doctorAppointments', [AppointmentController::class, 'doctorAppointments'])->name('doctorAppointments');
         Route::get('create', [AppointmentController::class, 'create'])->name('create');
         Route::get('show/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::post('store', [AppointmentController::class, 'store'])->name('store');
@@ -169,15 +204,47 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
         Route::get('index', [LabController::class, 'index'])->name('index');
         Route::get('create', [LabController::class, 'create'])->name('create');
-        Route::get('show/{prescription}', [LabController::class, 'show'])->name('show');
+        Route::get('show/{lab}', [LabController::class, 'show'])->name('show');
         Route::post('store', [LabController::class, 'store'])->name('store');
-        Route::get('edit/{prescription}', [LabController::class, 'edit'])->name('edit');
-        Route::put('update/{prescription}', [LabController::class, 'update'])->name('update');
-        Route::get('destroy/{prescription}', [LabController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{lab}', [LabController::class, 'edit'])->name('edit');
+        Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
+        Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('lab_types')->name('lab_types.')->group(function () {
+        Route::get('index', [LabTypeController::class, 'index'])->name('index');
+        Route::get('create', [LabTypeController::class, 'create'])->name('create');
+        Route::get('show/{labType}', [LabTypeController::class, 'show'])->name('show');
+        Route::post('store', [LabTypeController::class, 'store'])->name('store');
+        Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('branches')->name('branches.')->group(function () {
+        Route::get('index', [BranchController::class, 'index'])->name('index');
+        Route::get('create', [BranchController::class, 'create'])->name('create');
+        Route::get('show/{branch}', [BranchController::class, 'show'])->name('show');
+        Route::post('store', [BranchController::class, 'store'])->name('store');
+        // Route::get('edit/{prescription}', [BranchController::class, 'edit'])->name('edit');
+        // Route::put('update/{prescription}', [BranchController::class, 'update'])->name('update');
+        // Route::get('destroy/{prescription}', [BranchController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');
     Route::get('mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('mark_all_as_read');
+    Route::get('/scan-qr-code', [PatientController::class, 'scanQrCode'])->name('scanQRCode');
+    Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
+
+    Route::prefix('consultations')->name('consultations.')->group(function () {
+        Route::get('index', [ConsultationController::class, 'index'])->name('index');
+        Route::get('create', [ConsultationController::class, 'create'])->name('create');
+        Route::get('show/{consultation}', [ConsultationController::class, 'show'])->name('show');
+        Route::post('store', [ConsultationController::class, 'store'])->name('store');
+        Route::get('edit/{consultation}', [ConsultationController::class, 'edit'])->name('edit');
+        Route::put('update/{consultation}', [ConsultationController::class, 'update'])->name('update');
+        Route::get('destroy/{consultation}', [ConsultationController::class, 'destroy'])->name('destroy');
+    });
 
 });
 

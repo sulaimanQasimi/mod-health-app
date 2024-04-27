@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,8 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        $rooms = Room::all();
+        return view('pages.rooms.index',compact('rooms'));
     }
 
     /**
@@ -20,7 +22,8 @@ class RoomController extends Controller
      */
     public function create()
     {
-        //
+        $branches = Branch::all();
+        return view('pages.rooms.create', compact('branches'));
     }
 
     /**
@@ -28,7 +31,14 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'branch_id' => 'required',
+        ]);
+
+        Room::create($data);
+
+        return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
     }
 
     /**

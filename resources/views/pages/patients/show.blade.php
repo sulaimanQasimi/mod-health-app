@@ -5,92 +5,97 @@
     <div class="content-wrapper">
         <div class="col-xl">
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.view_patient') }}</h5>
-                </div>
-                <div class="card-body">
 
+                <div class="card-body">
+                    <h5 class="mb-4 p-3 bg-label-primary text-center">{{ localize('global.view_patient') }}</h5>
             <div class="container">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="row">
-                            <div class="col-md-6">
-                                <!-- Content for the first column on the right side -->
-                                <label for="label1">{{localize('global.name')}}</label>
-                                <span id="label1" class="text-center">{{ $patient->name }}</span>
-                            </div>
-                            <div class="col-md-6">
-                                <!-- Content for the second column on the right side -->
-                                <label for="label2">{{localize('global.last_name')}}</label>
-                                <span id="label2" class="text-end">{{ $patient->last_name }}</span>
-                            </div>
-                        </div>
+                            <div class="col-md-3">
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <!-- Content for the first column on the right side -->
-                                <label for="label1">{{localize('global.father_name')}}</label>
-                                <span id="label1" class="text-center">{{ $patient->father_name }}</span>
+                                    <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
+                                    <div>
+                                        {{$patient->name}}
+                                    </div>
                             </div>
-                            <div class="col-md-6">
-                                <!-- Content for the second column on the right side -->
-                                <label for="label2">{{localize('global.nid')}}</label>
-                                <span id="label2" class="text-end">{{ $patient->nid }}</span>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.last_name') }}</h5>
+                                    <div>
+                                        {{$patient->last_name}}
+                                    </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.phone') }}</h5>
+                                    <div>
+                                        {{$patient->phone}}
+                                    </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.nid') }}</h5>
+                                    <div>
+                                        {{$patient->nid}}
+                                    </div>
                             </div>
                         </div>
+                        <br>
                         <div class="row">
-                            <div class="col-md-6">
-                                <!-- Content for the first column on the right side -->
-                                <label for="label1">{{localize('global.phone')}}</label>
-                                <span id="label1" class="text-center">{{ $patient->phone }}</span>
+                            <div class="col-md-3">
+
+                                    <h5 class="mb-2">{{ localize('global.province') }}</h5>
+                                    <div>
+                                        {{$patient->province->name_dr}}
+                                    </div>
                             </div>
-                            <div class="col-md-6">
-                                <!-- Content for the second column on the right side -->
-                                <label for="label2">{{localize('global.referred_by')}}</label>
-                                <span id="label2" class="text-end">{{ $patient->referred_by }}</span>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.district') }}</h5>
+                                    <div>
+                                        {{$patient->district->name_dr}}
+                                    </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <!-- Content for the first column on the right side -->
-                                <label for="label1">{{localize('global.province')}}</label>
-                                <span id="label1" class="text-center">{{ $patient->province->name_dr }}</span>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.referred_by') }}</h5>
+                                    <div>
+                                        {{$patient->recipient->name}}
+                                    </div>
                             </div>
-                            <div class="col-md-6">
-                                <!-- Content for the second column on the right side -->
-                                <label for="label2">{{localize('global.district')}}</label>
-                                <span id="label2" class="text-end">{{ $patient->district->name_dr }}</span>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
+                                    <div>
+                                        {{$patient->created_at}}
+                                    </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4 card p-2 border border-info">
+                    <div class="col-md-4 card p-1">
                         <!-- Left side content -->
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
                                 {!! QrCode::size(100)->generate($patient->id) !!}
                             </div>
-                            <div class="col-md-6">
-                                <img src="{{ asset('images/patients/' . $patient->image) }}" alt="Patient Image" width="100">
+                            <div class="col-md-6 d-flex justify-content-start align-items-center">
+                                @isset($patient->image)
+                                <img src="{{ asset($patient->image) }}" alt="Patient Image" width="100" height="100">
+                            @else
+                            <div class=" badge bg-label-danger mt-4">
+                                {{ localize('global.no_image') }}
+                            </div>
+                            @endisset
                             </div>
                         </div>
                         <div class="row mt-3">
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <a href="{{ route('patients.print-card', $patient->id) }}" target="_blank" class="btn btn-primary">{{localize('global.print_card')}}</a>
                             </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
+
+                            <div class="col-md-4">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">{{localize('global.assign_appointment')}}</button>
                             </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <form action="{{ route('patients.addImage', ['id' => $patient->id]) }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="file" name="image" accept="image/*" capture="camera">
-                                    <button type="submit">Upload Image</button>
-                                </form>                            </div>
+
+                            <div class="col-md-4">
+                                <a  class="btn btn-success" href="{{route('patients.webcam',$patient)}}">{{localize('global.take_image')}}</a>
+                            </div>
                         </div>
                     </div>
 
@@ -98,7 +103,7 @@
             </div>
 
                 <hr>
-                <h5 class="mb-0 p-3">{{ localize('global.all_appointments') }}</h5>
+                <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_appointments') }}</h5>
 
                 <table class="table">
                     <thead>
@@ -119,7 +124,7 @@
                     </tbody>
                 </table>
                 <hr>
-                <h5 class="mb-0 p-3">{{ localize('global.all_diagnoses') }}</h5>
+                <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_diagnoses') }}</h5>
 
                 <table class="table">
                     <thead>

@@ -15,65 +15,9 @@
                           @csrf
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">{{ localize('global.name_dr') }}</label>
-                                    <input type="text" class="form-control" name="name_dr" value="{{$recipient->name_dr }}">
+                                    <label class="form-label">{{ localize('global.name') }}</label>
+                                    <input type="text" class="form-control" name="name" value="{{$recipient->name }}">
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">{{ localize('global.name_en') }}</label>
-                                    <input type="text" class="form-control" name="name_en" value="{{ $recipient->name_en }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="sector_id">{{ localize('global.sector') }}</label>
-                                    <select class="form-control select2" name="sector_id">
-                                        <option value="">{{ localize('global.select') }}</option>
-                                        @foreach ($sector as $value)
-                                            <option value="{{ $value->id }}"
-                                                    {{ old('sector_id') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name_dr }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label" for="type">{{ localize('global.type') }}</label>
-                                    <select class="form-control select2" name="type">
-                                        <option value="">{{ localize('global.select') }}</option>
-                                        <option value="0" {{ old('type') == 0 ? 'selected' : '' }}>داخلی</option>
-                                        <option value="1" {{ old('type') == 1 ? 'selected' : '' }}>خارجی</option>
-
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label"
-                                           for="parent_id">{{ localize('global.recipient_parent') }}</label>
-                                    <select class="form-control select2" name="parent_id">
-                                        <option value="">{{ localize('global.select') }}</option>
-                                        @foreach ($recipients as $value)
-                                            <option value="{{ $value->id }}"
-                                                    {{ old('parent_id') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name_dr }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label"
-                                           for="parent_id">{{ localize('global.recipient_type') }}</label>
-                                    <select class="form-control select2" name="category">
-                                        <option value="">{{ localize('global.select') }}</option>
-                                        @foreach($recipientTypes as $value)
-                                            <option value="{{ $value->id }}"
-                                                {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}</option>
-                                        @endforeach
-
-                                    </select>
-                                </div>
-                                @if ($errors->first('recipient_type'))
-                                    <div class="display-error mb-3">
-                                        {{ $errors->first('recipient_type') }}
-                                    </div>
-                                @endif
                                 <div class="col-md-12">
                                     <label class="form-label">{{ localize('global.description') }}</label>
                                     <textarea name="description" class="form-control">{{ $recipient->description }}</textarea>

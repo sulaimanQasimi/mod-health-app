@@ -12,7 +12,7 @@ class Patient extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','last_name','phone','father_name','nid','province_id','district_id','referred_by','image'];
+    protected $fillable = ['name','last_name','phone','father_name','nid','province_id','district_id','referred_by','image','branch_id'];
 
     public static function boot()
     {
@@ -73,5 +73,10 @@ class Patient extends Model
     public function district()
     {
         return $this->hasOne(District::class, 'id', 'district_id');
+    }
+
+    public function recipient()
+    {
+        return $this->belongsTo(Recipient::class, 'referred_by');
     }
 }

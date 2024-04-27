@@ -12,7 +12,8 @@ class LabController extends Controller
      */
     public function index()
     {
-        //
+        $labs = Lab::where('branch_id', auth()->user()->branch_id)->get();
+        return view('pages.labs.index',compact('labs'));
     }
 
     /**
@@ -28,7 +29,17 @@ class LabController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'lab_type_id' => 'required',
+            'appointment_id' => 'required',
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'branch_id' => 'required',
+        ]);
+
+        Lab::create($data);
+
+        return redirect()->back()->with('success', 'Lab Test created successfully.');
     }
 
     /**
@@ -44,7 +55,7 @@ class LabController extends Controller
      */
     public function edit(Lab $lab)
     {
-        //
+        return view('pages.labs.edit',compact('lab'));
     }
 
     /**
@@ -52,7 +63,26 @@ class LabController extends Controller
      */
     public function update(Request $request, Lab $lab)
     {
-        //
+        $data = $request->validate([
+            'result' => 'required',
+            'result_file' => 'nullable|mimes:pdf,jpeg,png,jpg,gif|max:2048'
+        ]);
+    
+        // Handle the result file upload
+        if ($request->hasFile('result_file')) {
+            $resultFile = $request->file('result_file');
+            $resultFileName = time().'.'.$resultFile->getClientOriginalExtension();
+    
+            // Store the result file in the storage/app/public directory
+            $resultFile->storeAs('public', $resultFileName);
+    
+            // Update the result_file field
+            $data['result_file'] = $resultFileName;
+        }
+    
+        $lab->update($data);
+    
+        return redirect()->back()->with('success', 'Lab Test updated successfully.');
     }
 
     /**

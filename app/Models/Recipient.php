@@ -12,7 +12,7 @@ class Recipient extends Model
 
     use SoftDeletes;
 
-    protected $fillable=['name_dr','name_en','name_pa','type','sector_id','category','parent_id','created_by', 'updated_by', 'deleted_by'];
+    protected $fillable=['name','description','created_by', 'updated_by', 'deleted_by'];
 
     public static function boot()
     {
@@ -33,48 +33,5 @@ class Recipient extends Model
             $model->save();
         });
     }
-
-    public function order_copies() {
-        return $this->hasMany('App\Models\OrderCopy');
-    }
-
-
-    public function parent() {
-    return $this->BelongsTo('App\Models\Recipient', 'parent_id', 'id');
-    }
-
-    public function children() {
-    return $this->hasMany('App\Models\Recipient', 'parent_id', 'id');
-    }
-
-    public function recipientType()
-    {
-        return $this->belongsTo(RecipientType::class, 'category');
-    }
-
-
-    public function sector() {
-        return $this->belongsTo('App\Models\Sector');
-    }
-
-    public function roles()
-    {
-        return $this->hasMany(Role::class, function ($query) {
-            $query->whereJsonContains('recipients', (string) $this->getKey());
-        }, 'recipients');
-    }
-
-    public function scopeUserBasedRecipient($query, $user)
-    {
-        if ($user->can('executive')) {
-            return $query;
-        } else if ($user->can('specialist') || $user->can('directorate')) {
-            return $query->WhereIn('id', getUserRecipientsIds());
-        }
-         else {
-            return $query->where('sector_id', $user->sector_id);
-        }
-    }
-
 
 }

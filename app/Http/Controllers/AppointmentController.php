@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Bed;
 use App\Models\Doctor;
+use App\Models\LabType;
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -33,7 +36,6 @@ class AppointmentController extends Controller
             'doctor_id' => 'required',
             'date' => 'required',
             'time' => 'required',
-            // Add any other validation rules as needed
         ]);
 
         // Create a new appointment
@@ -66,6 +68,18 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Appointment $appointment)
+    {
+        $labTypes = LabType::all();
+        $doctors = Doctor::all();
+        $rooms = Room::all();
+        $beds = Bed::all();
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds'));
+    }
+
     public function destroy(Appointment $appointment)
     {
         // Delete the appointment
@@ -74,4 +88,12 @@ class AppointmentController extends Controller
         // Redirect to the appointments index page with a success message
         return redirect()->route('appointments.index')->with('success', 'Appointment deleted successfully.');
     }
+
+    public function doctorAppointments()
+    {
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)->get();
+
+        return view('pages.appointments.index', compact('appointments'));
+    }
+
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('description');
             $table->unsignedBigInteger('patient_id');
+            $table->unsignedBigInteger('appointment_id');
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
@@ -24,6 +25,9 @@ return new class extends Migration
             $table->foreign('patient_id')
                   ->references('id')
                   ->on('patients');
+            $table->foreign('appointment_id')
+                  ->references('id')
+                  ->on('appointments');
         });
     }
 

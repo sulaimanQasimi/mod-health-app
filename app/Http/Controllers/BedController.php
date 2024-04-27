@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bed;
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class BedController extends Controller
@@ -12,7 +13,8 @@ class BedController extends Controller
      */
     public function index()
     {
-        //
+        $beds = Bed::all();
+        return view('pages.beds.index',compact('beds'));
     }
 
     /**
@@ -20,7 +22,8 @@ class BedController extends Controller
      */
     public function create()
     {
-        //
+        $rooms = Room::all();
+        return view('pages.beds.create', compact('rooms'));
     }
 
     /**
@@ -28,7 +31,14 @@ class BedController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'number' => 'required',
+            'room_id' => 'required',
+        ]);
+
+        Bed::create($data);
+
+        return redirect()->route('beds.index')->with('success', 'Bed created successfully.');
     }
 
     /**

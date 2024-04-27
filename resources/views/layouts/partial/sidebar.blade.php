@@ -33,6 +33,11 @@
             </a>
 
             <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('scanCode') ? 'active' : '' }}">
+                    <a href="{{ route('scanCode') }}" class="menu-link">
+                        <div>{{ localize('global.scan_qrcode') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('patients.create') ? 'active' : '' }}">
                     <a href="{{ route('patients.create') }}" class="menu-link">
                         <div>{{ localize('global.create_patient') }}</div>
@@ -44,15 +49,35 @@
                         <div>{{ localize('global.patients_list') }}</div>
                     </a>
                 </li>
+
+                <li class="menu-item {{ Route::is('appointments.index') ? 'active' : '' }}">
+                    <a href="{{ route('appointments.index') }}" class="menu-link">
+                        <div>{{ localize('global.appointments') }}</div>
+                    </a>
+                </li>
             </ul>
         </li>
 
-        <li class="menu-item {{ Route::is('appointments.index') ? 'active' : '' }}">
-            <a href="{{ route('appointments.index') }}" class="menu-link">
+        <li class="menu-item {{ Route::is('appointments.doctorAppointments') ? 'active' : '' }}">
+            <a href="{{ route('appointments.doctorAppointments') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-time-five"></i>
                 <div>{{ localize('global.appointments') }}</div>
             </a>
         </li>
+
+        <li class="menu-item {{ Route::is('diagnoses.index') ? 'active' : '' }}">
+            <a href="{{ route('diagnoses.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-popsicle"></i>
+                <div>{{ localize('global.diagnoses') }}</div>
+            </a>
+        </li>
+        <li class="menu-item {{ Route::is('consultations.index') ? 'active' : '' }}">
+            <a href="{{ route('consultations.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-chat"></i>
+                <div>{{ localize('global.consultations') }}</div>
+            </a>
+        </li>
+
         <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
             <a href="{{ route('prescriptions.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-notepad"></i>
@@ -67,12 +92,7 @@
             </a>
         </li>
 
-        <li class="menu-item {{ Route::is('diagnoses.index') ? 'active' : '' }}">
-            <a href="{{ route('diagnoses.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-popsicle"></i>
-                <div>{{ localize('global.diagnoses') }}</div>
-            </a>
-        </li>
+
 
         <li
             class="menu-item {{ Route::is('users.index') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') ? 'active open' : '' }}">
@@ -121,6 +141,26 @@
                 <li class="menu-item {{ Route::is('sections.index') ? 'active' : '' }}">
                     <a href="{{ route('sections.index') }}" class="menu-link">
                         <div>{{ localize('global.sections') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('rooms.index') ? 'active' : '' }}">
+                    <a href="{{ route('rooms.index') }}" class="menu-link">
+                        <div>{{ localize('global.rooms') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('beds.index') ? 'active' : '' }}">
+                    <a href="{{ route('beds.index') }}" class="menu-link">
+                        <div>{{ localize('global.beds') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('lab_types.index') ? 'active' : '' }}">
+                    <a href="{{ route('lab_types.index') }}" class="menu-link">
+                        <div>{{ localize('global.lab_types') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('branches.index') ? 'active' : '' }}">
+                    <a href="{{ route('branches.index') }}" class="menu-link">
+                        <div>{{ localize('global.branches') }}</div>
                     </a>
                 </li>
 

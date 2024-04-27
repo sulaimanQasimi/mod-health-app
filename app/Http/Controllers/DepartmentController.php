@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Department;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,8 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-        return view('pages.departments.create');
+        $branches = Branch::all();
+        return view('pages.departments.create', compact('branches'));
     }
 
     /**
@@ -31,6 +33,7 @@ class DepartmentController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'branch_id' => 'required',
         ]);
 
         Department::create($data);

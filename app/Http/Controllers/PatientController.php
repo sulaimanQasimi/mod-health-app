@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Province;
 use App\Models\Recipient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -38,6 +39,7 @@ class PatientController extends Controller
             'province_id' => 'required',
             'district_id' => 'required',
             'referred_by' => 'required',
+            'branch_id' => 'required',
         ]);
 
         $patient = Patient::create($data);
@@ -83,24 +85,61 @@ class PatientController extends Controller
         return view('pages.patients.print_card', compact('patient'));
     }
 
-    public function addImage(Request $request, $id)
+    public function webcam(Patient $patient)
     {
-        // Find the patient by ID
-        $patient = Patient::findOrFail($id);
+        return view('pages.patients.webcam', compact('patient'));
+    }
 
-        // Handle the image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/patients'), $imageName);
 
-            // Update the patient record with the image path
-            $patient->image = $imageName;
-            $patient->save();
 
-            return redirect()->back()->with('success', 'Image added successfully.');
+public function addImage(Request $request, $id)
+{
+    $patient = Patient::findOrFail($id);
+    $img = $request->image;
+
+    $folderPath = "images/patients/";
+
+    $image_parts = explode(";base64,", $img);
+    $image_type_aux = explode("image/", $image_parts[0]);
+    $image_type = $image_type_aux[1];
+
+    $image_base64 = base64_decode($image_parts[1]);
+
+    $fileName = uniqid() . '.png';
+
+    $file = $folderPath . $fileName;
+
+    // Save the image to the public folder
+    $publicPath = public_path($file);
+    File::put($publicPath, $image_base64);
+
+    // Update the patient's image column with the image path
+    $patient->image = $file;
+    $patient->save();
+
+    return redirect()->route('patients.show',$patient)->with('success', 'Image added successfully.');
+}
+
+
+    public function scanQrCode(Request $request)
+    {
+        // Get the scanned QR code data
+        $qrCodeData = $request->input('qrCodeData');
+
+        // Find the patient based on the QR code data
+        $patient = Patient::where('id', $qrCodeData)->first();
+
+        if ($patient) {
+            // Redirect to the patient's show page
+            return redirect()->route('patients.show', $patient->id);
+        } else {
+            // Handle the case when the patient is not found
+            return redirect()->back()->with('error', 'Patient not found.');
         }
+    }
 
-        return redirect()->back()->with('error', 'No image uploaded.');
+    public function scanCode()
+    {
+        return view('pages.patients.scan');
     }
 }

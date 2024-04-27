@@ -88,92 +88,26 @@
                                     </div>
                                 @endif
                             </div>
-                        </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.branch') }}</label>
+                                    <select class="form-control select2" name="branch_id">
+                                        <option value="">{{ localize('global.select') }}</option>
+                                        @foreach($branches as $value)
+                                            <option value="{{ $value->id }}"
+                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                            {{ $value->name }}</option>
+                                        @endforeach
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="sector_id">{{ localize('global.sector') }}</label>
-                                        <select class="form-control select2" name="sector">
-                                            <option value="">{{ localize('global.select') }}</option>
-                                            @foreach ($sectors as $value)
-                                                <option value="{{ $value->id }}"
-                                                        {{ old('sector') == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name_dr }}</option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->first('sector_id'))
-                                            <div class="display-error mb-3">
-                                                {{ $errors->first('sector_id') }}
-                                            </div>
-                                        @endif
-                                    </div>
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label"
-                                               for="recipients">{{ localize('global.recipients') }}</label>
-                                        <select class="form-control select2" name="recipient_id">
-                                            <option value="">{{ localize('global.select') }}</option>
-                                            @foreach ($recipients as $value)
-                                                <option value="{{ $value->id }}"
-                                                        {{ old('recipient_id') == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name_dr }}</option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->first('recipient_id'))
-                                            <div class="display-error mb-3">
-                                                {{ $errors->first('recipient_id') }}
-                                            </div>
-                                        @endif
+                                @if ($errors->first('branch'))
+                                    <div class="display-error">
+                                        {{ $errors->first('branch') }}
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label"
-                                               for="recipients">{{ localize('global.user_recipients') }}</label>
-                                        <select class="form-control select2" name="recipients[]" multiple>
-                                            <option value="" disabled >{{ localize('global.select') }}</option>
-                                            @foreach ($recipients as $value)
-                                                
-                                                 <option value="{{$value->id}}" {{old('recipients') && in_array($value->id , old('recipients') ) ? 'selected' : '' }}>{{$value->name_dr}}</option>
-                                           
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->first('recipients'))
-                                            <div class="display-error mb-3">
-                                                {{ $errors->first('recipients') }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label"
-                                               for="document_type">{{ localize('global.document_type_columns') }}</label>
-                                        <select class="form-control select2" name="document_type[]" multiple>
-                                            <option value="" disabled >{{ localize('global.select') }}</option>
-                                            @foreach ($document_type as $value)
-                                                
-                                                 <option value="{{$value->id}}" {{old('document_type') && in_array($value->id , old('document_type') ) ? 'selected' : '' }}>{{$value->document_type}}</option>
-                                           
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->first('document_type'))
-                                            <div class="display-error mb-3">
-                                                {{ $errors->first('document_type') }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
+                                @endif
                             </div>
-
-
-
-
-
-
-
+                        </div>
                             <div class="col-12 mb-3 mt-3">
                                 <h5>{{ localize('global.roles') }}</h5>
                                 @foreach ($roles as $value)

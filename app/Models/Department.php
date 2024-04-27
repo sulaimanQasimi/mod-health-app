@@ -12,7 +12,7 @@ class Department extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name','branch_id'];
 
     public static function boot()
     {

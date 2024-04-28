@@ -22,6 +22,7 @@
                                     <label class="form-label">{{ localize('global.result_file') }}</label>
                                     <input type="file" name="result_file" class="form-control">{{ $lab->result_file }}</textarea>
                                 </div>
+                                <input type="hidden" name="status" value="1">
                                 <div class="col-md-6">
                                     <a href="{{ route('lab_tests.index') }}"><button type="button"
                                                 class="btn btn-danger">{{ localize('global.back') }}</button>

@@ -95,16 +95,17 @@
                                     </td>
                                 </tr>
                                 @empty
+                                <div class="container">
+                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                        <div class=" badge bg-label-danger mt-4">
+                                            {{ localize('global.no_previous_diagnoses') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforelse
                             </tbody>
                         </table>
-                        <div class="container">
-                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                <div class=" badge bg-label-danger mt-4">
-                                    {{ localize('global.no_previous_diagnoses') }}
-                                </div>
-                            </div>
-                        </div>
-                        @endforelse
+
                         </div>
 
 
@@ -130,11 +131,10 @@
                                                     <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
                                                     <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ auth()->user()->id }}">
                                                     <!-- Add other diagnosis form fields as needed -->
-                                                    <div class="form-group">
+                                                    <div class="form-group" id="prescription-items">
+
                                                         <label for="description{{ $appointment->id }}">{{localize('global.description')}}</label>
-
-                                                        <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="6" dir="ltr"></textarea>
-
+                                                        <input type="text" class="form-control" id="description{{ $appointment->id }}" name="description[]" dir="ltr" placeholder="Enter name">
                                                     </div>
                                             </div>
                                             <div class="modal-footer">
@@ -171,16 +171,17 @@
                                     </td>
                                 </tr>
                                 @empty
+                                <div class="container">
+                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                        <div class=" badge bg-label-danger mt-4">
+                                            {{ localize('global.no_previous_prescriptions') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforelse
                             </tbody>
                         </table>
-                        <div class="container">
-                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                <div class=" badge bg-label-danger mt-4">
-                                    {{ localize('global.no_previous_prescriptions') }}
-                                </div>
-                            </div>
-                        </div>
-                        @endforelse
+
                         </div>
 
 
@@ -203,6 +204,7 @@
                                                     <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id" value="{{ $appointment->id }}">
                                                     <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ $appointment->doctor->id }}">
                                                     <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
+                                                    <input type="hidden" id="status{{ $appointment->id }}" name="status" value="0">
 
                                                     <div class="form-group">
 
@@ -238,6 +240,7 @@
                                 <tr>
                                     <th>{{localize('global.number')}}</th>
                                     <th>{{localize('global.test_name')}}</th>
+                                    <th>{{localize('global.test_status')}}</th>
                                     <th>{{localize('global.result')}}</th>
                                     <th>{{localize('global.result_file')}}</th>
                                     <th>{{localize('global.actions')}}</th>
@@ -248,29 +251,47 @@
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$lab->labType->name}}</td>
+                                    <td>
+                                        @if($lab->status == '0')
+                                        <span class="badge bg-danger">{{localize('global.not_tested')}}</span>
+                                        @else
+                                        <span class="badge bg-success">{{localize('global.tested')}}</span>
+                                        @endif
+                                    </td>
                                     <td>{{$lab->result}}</td>
                                     <td>
+                                        @isset($lab->result_file)
                                         <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                            <i class="fa fa-file"></i> Open File
+                                            <i class="fa fa-file"></i> {{localize('global.file')}}
                                         </a>
+                                        @endisset
+
                                     </td>
                                     <td>
                                         <a href="{{route('lab_tests.edit', $lab->id)}}"><span><i class="bx bx-edit"></i></span></a>
                                         <a href="{{route('lab_tests.destroy', $lab->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
 
                                     </td>
+
                                 </tr>
+
                                 @empty
+                                <div class="container">
+                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                        <div class=" badge bg-label-danger mt-4">
+                                            {{ localize('global.no_previous_labs') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforelse
+
                             </tbody>
                         </table>
-                        <div class="container">
-                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                <div class=" badge bg-label-danger mt-4">
-                                    {{ localize('global.no_previous_labs') }}
-                                </div>
-                            </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <form action="{{route('lab_tests.print-card', ['appointment' => $appointment->id])}}" method="GET" target="_blank">
+                                <button class="btn btn-primary" type="submit"><span class="bx bx-printer me-1"></span>{{localize('global.print_test_ticket')}}</button>
+                            </form>
                         </div>
-                        @endforelse
                         </div>
 
 
@@ -363,16 +384,17 @@
                                         </td>
                                     </tr>
                                     @empty
+                                    <div class="container">
+                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                            <div class=" badge bg-label-danger mt-4">
+                                                {{ localize('global.no_previous_consultations') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforelse
                                 </tbody>
                             </table>
-                            <div class="container">
-                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                    <div class=" badge bg-label-danger mt-4">
-                                        {{ localize('global.no_previous_consultations') }}
-                                    </div>
-                                </div>
-                            </div>
-                            @endforelse
+
 
                         </div>
 
@@ -396,6 +418,7 @@
                                                     <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id" value="{{ $appointment->patient_id }}">
                                                     <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id" value="{{ $appointment->id }}">
                                                     <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ auth()->user()->id }}">
+
 
 
                                                     <div class="form-group">
@@ -482,16 +505,17 @@
                                     </td>
                                 </tr>
                                 @empty
+                                <div class="container">
+                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                        <div class=" badge bg-label-danger mt-4">
+                                            {{ localize('global.no_previous_hospitalizations') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforelse
                             </tbody>
                         </table>
-                        <div class="container">
-                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                <div class=" badge bg-label-danger mt-4">
-                                    {{ localize('global.no_previous_hospitalizations') }}
-                                </div>
-                            </div>
-                        </div>
-                        @endforelse
+
                         </div>
 
 

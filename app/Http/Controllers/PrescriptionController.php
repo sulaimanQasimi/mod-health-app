@@ -28,6 +28,7 @@ class PrescriptionController extends Controller
      */
     public function store(Request $request)
     {
+
         $data = $request->validate([
             'description' => 'required',
             'appointment_id' => 'required',
@@ -35,8 +36,10 @@ class PrescriptionController extends Controller
             'branch_id' => 'required',
             'doctor_id' => 'required',
         ]);
+        $data['description'] = json_encode($data['description']);
 
-        $patient = Prescription::create($data);
+
+        Prescription::create($data);
 
 
         return redirect()->back()->with('success', 'Patient created successfully.');

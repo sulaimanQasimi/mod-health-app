@@ -498,5 +498,9 @@ return [
     'qr_code_data' => 'نتیجه سکن',
     'patient_card' => 'کارت مریض',
     'no_image' => 'عکس موجود نیست!',
+    'test_status' => 'حالت تست',
+    'not_tested' => 'تست نشده',
+    'tested' => 'تست شده',
+    'print_test_ticket' => 'چاپ کارت'
 
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Lab;
 use Illuminate\Http\Request;
 
@@ -35,6 +36,7 @@ class LabController extends Controller
             'patient_id' => 'required',
             'doctor_id' => 'required',
             'branch_id' => 'required',
+            'status' => 'required',
         ]);
 
         Lab::create($data);
@@ -65,23 +67,24 @@ class LabController extends Controller
     {
         $data = $request->validate([
             'result' => 'required',
-            'result_file' => 'nullable|mimes:pdf,jpeg,png,jpg,gif|max:2048'
+            'result_file' => 'nullable|mimes:pdf,jpeg,png,jpg,gif|max:2048',
+            'status' => 'required',
         ]);
-    
+
         // Handle the result file upload
         if ($request->hasFile('result_file')) {
             $resultFile = $request->file('result_file');
             $resultFileName = time().'.'.$resultFile->getClientOriginalExtension();
-    
+
             // Store the result file in the storage/app/public directory
             $resultFile->storeAs('public', $resultFileName);
-    
+
             // Update the result_file field
             $data['result_file'] = $resultFileName;
         }
-    
+
         $lab->update($data);
-    
+
         return redirect()->back()->with('success', 'Lab Test updated successfully.');
     }
 
@@ -91,5 +94,19 @@ class LabController extends Controller
     public function destroy(Lab $lab)
     {
         //
+    }
+
+    public function printCard($appointmentId)
+    {
+        $appointment = Appointment::with(['labs' =>
+            function ($query)
+            {
+                $query->where('status',0);
+            }, 'patient'
+           ])->findOrFail($appointmentId);
+
+        $labs = $appointment->labs;
+        $patient = $appointment->patient;
+        return view('pages.labs.print_card', compact('labs','patient'));
     }
 }

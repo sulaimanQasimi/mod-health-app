@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('result',1000)->nullable();
             $table->string('result_file',500)->nullable();
+            $table->integer('status')->default('0');
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('lab_type_id');

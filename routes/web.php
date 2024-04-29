@@ -199,6 +199,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{prescription}', [PrescriptionController::class, 'edit'])->name('edit');
         Route::put('update/{prescription}', [PrescriptionController::class, 'update'])->name('update');
         Route::get('destroy/{prescription}', [PrescriptionController::class, 'destroy'])->name('destroy');
+        Route::get('/print-card/{appointment}', [PrescriptionController::class, 'printCard'])->name('print-card');
+
     });
 
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {

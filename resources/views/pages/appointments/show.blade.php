@@ -116,7 +116,7 @@
 
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPrescriptionModal{{ $appointment->id }}"><span><i class="bx bx-plus"></i></span></button>
                                 <!-- Create Diagnose Modal -->
-                                <div class="modal fade" id="createPrescriptionModal{{ $appointment->id }}" tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
+                                <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}" tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -132,10 +132,25 @@
                                                     <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ auth()->user()->id }}">
                                                     <!-- Add other diagnosis form fields as needed -->
                                                     <div class="form-group" id="prescription-items">
-
-                                                        <label for="description{{ $appointment->id }}">{{localize('global.description')}}</label>
-                                                        <input type="text" class="form-control" id="description{{ $appointment->id }}" name="description[]" dir="ltr" placeholder="Enter name">
+                                                        <label>{{localize('global.description')}}</label>
+                                                        <div id="prescription-input-container">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <input type="text" class="form-control" name="description[]" dir="ltr" placeholder="Enter name">
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="text" class="form-control" name="dosage[]" placeholder="Dosage">
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="text" class="form-control" name="frequency[]" placeholder="Frequency">
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <input type="text" class="form-control" name="amount[]" placeholder="Amount">
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
+                                                    <button type="button" class="btn btn-primary" id="addPrescriptionInput"><i class="bx bx-plus"></i> Add Prescription</button>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
@@ -151,37 +166,72 @@
 
 
 
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{localize('global.number')}}</th>
-                                    <th>{{localize('global.description')}}</th>
-                                    <th>{{localize('global.actions')}}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($appointment->prescription as $prescription)
-                                <tr>
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>{{$prescription->description}}</td>
-                                    <td>
-                                        <a href="{{route('prescriptions.edit', $prescription->id)}}"><span><i class="bx bx-edit"></i></span></a>
-                                        <a href="{{route('prescriptions.destroy', $prescription->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
-
-                                    </td>
-                                </tr>
-                                @empty
-                                <div class="container">
-                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                        <div class=" badge bg-label-danger mt-4">
-                                            {{ localize('global.no_previous_prescriptions') }}
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforelse
-                            </tbody>
-                        </table>
-
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{localize('global.number')}}</th>
+                                        <th>{{localize('global.description')}}</th>
+                                        <th>{{localize('global.dosage')}}</th>
+                                        <th>{{localize('global.frequency')}}</th>
+                                        <th>{{localize('global.amount')}}</th>
+                                        <th>{{localize('global.actions')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (is_array($appointment->prescription) || is_object($appointment->prescription))
+                                        @forelse ($appointment->prescription as $prescription)
+                                            @php
+                                                $descriptions = is_array($prescription->description) ? $prescription->description : json_decode($prescription->description, true);
+                                                $dosages = is_array($prescription->dosage) ? $prescription->dosage : json_decode($prescription->dosage, true);
+                                                $frequencies = is_array($prescription->frequency) ? $prescription->frequency : json_decode($prescription->frequency, true);
+                                                $amounts = is_array($prescription->amount) ? $prescription->amount : json_decode($prescription->amount, true);
+                                            @endphp
+                                            @foreach ($descriptions as $key => $description)
+                                                <tr>
+                                                    <td>{{ $loop->parent->iteration }}</td>
+                                                    <td>{{ $description }}</td>
+                                                    <td>{{ $dosages[$key] }}</td>
+                                                    <td>{{ $frequencies[$key] }}</td>
+                                                    <td>{{ $amounts[$key] }}</td>
+                                                    <td>
+                                                        <a href="{{ route('prescriptions.edit', $prescription->id) }}"><span><i class="bx bx-edit"></i></span></a>
+                                                        <a href="{{ route('prescriptions.destroy', $prescription->id) }}"><span><i class="bx bx-trash text-danger"></i></span></a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="5">
+                                                    <div class="container">
+                                                        <div class="col-md-12 d-flex justify-content-center align-items-center">
+                                                            <div class="badge bg-label-danger mt-4">
+                                                                {{ localize('global.no_previous_prescriptions') }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    @else
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="container">
+                                                    <div class="col-md-12 d-flex justify-content-center align-items-center">
+                                                        <div class="badge bg-label-danger mt-4">
+                                                            {{ localize('global.no_previous_prescriptions') }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-center mt-4">
+                                <form action="{{route('prescriptions.print-card', ['appointment' => $appointment->id])}}" method="GET" target="_blank">
+                                    <button class="btn btn-primary" type="submit"><span class="bx bx-printer me-1"></span>{{localize('global.print_prescription')}}</button>
+                                </form>
+                            </div>
                         </div>
 
 
@@ -287,6 +337,7 @@
 
                             </tbody>
                         </table>
+                        
                         <div class="d-flex justify-content-center mt-4">
                             <form action="{{route('lab_tests.print-card', ['appointment' => $appointment->id])}}" method="GET" target="_blank">
                                 <button class="btn btn-primary" type="submit"><span class="bx bx-printer me-1"></span>{{localize('global.print_test_ticket')}}</button>
@@ -528,4 +579,73 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Get the add button and prescription input container
+    const addButton = document.getElementById('addPrescriptionInput');
+    const prescriptionContainer = document.getElementById('prescription-input-container');
+
+    // Add click event listener to the add button
+    addButton.addEventListener('click', function() {
+        // Create a new row div
+        const newRow = document.createElement('div');
+        newRow.className = 'row';
+
+        // Create the description input field
+        const descriptionInput = document.createElement('input');
+        descriptionInput.type = 'text';
+        descriptionInput.className = 'form-control';
+        descriptionInput.name = 'description[]';
+        descriptionInput.dir = 'ltr';
+        descriptionInput.placeholder = 'Enter name';
+
+        // Create the dosage input field
+        const dosageInput = document.createElement('input');
+        dosageInput.type = 'text';
+        dosageInput.className = 'form-control';
+        dosageInput.name = 'dosage[]';
+        dosageInput.placeholder = 'Dosage';
+
+        // Create the frequency input field
+        const frequencyInput = document.createElement('input');
+        frequencyInput.type = 'text';
+        frequencyInput.className = 'form-control';
+        frequencyInput.name = 'frequency[]';
+        frequencyInput.placeholder = 'Frequency';
+
+        // Create the amount input field
+        const amountInput = document.createElement('input');
+        amountInput.type = 'text';
+        amountInput.className = 'form-control';
+        amountInput.name = 'amount[]';
+        amountInput.placeholder = 'Amount';
+
+        // Create the column divs
+        const descriptionCol = document.createElement('div');
+        descriptionCol.className = 'col-md-4';
+        const dosageCol = document.createElement('div');
+        dosageCol.className = 'col-md-3';
+        const frequencyCol = document.createElement('div');
+        frequencyCol.className = 'col-md-3';
+        const amountCol = document.createElement('div');
+        amountCol.className = 'col-md-2';
+
+        // Append the input fields to their respective column divs
+        descriptionCol.appendChild(descriptionInput);
+        dosageCol.appendChild(dosageInput);
+        frequencyCol.appendChild(frequencyInput);
+        amountCol.appendChild(amountInput);
+
+        // Append the column divs to the new row div
+        newRow.appendChild(descriptionCol);
+        newRow.appendChild(dosageCol);
+        newRow.appendChild(frequencyCol);
+        newRow.appendChild(amountCol);
+
+        // Append the new row div to the prescription input container
+        prescriptionContainer.appendChild(newRow);
+    });
+</script>
 @endsection

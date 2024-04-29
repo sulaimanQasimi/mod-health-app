@@ -501,6 +501,7 @@ return [
     'test_status' => 'حالت تست',
     'not_tested' => 'تست نشده',
     'tested' => 'تست شده',
-    'print_test_ticket' => 'چاپ کارت'
+    'print_test_ticket' => 'چاپ کارت',
+    'print_prescription' => 'چاپ نسخه'
 
 ];

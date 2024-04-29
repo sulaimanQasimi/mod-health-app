@@ -40,7 +40,7 @@ class HospitalizationController extends Controller
 
         Hospitalization::create($data);
 
-        return redirect()->route('hospitalizations.index')->with('success', 'Hospitalization created successfully.');
+        return redirect()->back()->with('success', 'Hospitalization created successfully.');
     }
 
     /**

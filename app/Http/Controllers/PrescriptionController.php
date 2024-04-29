@@ -39,11 +39,13 @@ class PrescriptionController extends Controller
             'dosage' => 'required',
             'frequency' => 'required',
             'amount' => 'required',
+            'type' => 'required',
         ]);
         $data['description'] = json_encode($data['description']);
         $data['dosage'] = json_encode($data['dosage']);
         $data['frequency'] = json_encode($data['frequency']);
         $data['amount'] = json_encode($data['amount']);
+        $data['type'] = json_encode($data['type']);
 
 
         Prescription::create($data);

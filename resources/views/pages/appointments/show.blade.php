@@ -135,22 +135,25 @@
                                                         <label>{{localize('global.description')}}</label>
                                                         <div id="prescription-input-container">
                                                             <div class="row">
-                                                                <div class="col-md-4">
-                                                                    <input type="text" class="form-control" name="description[]" dir="ltr" placeholder="Enter name">
+                                                                <div class="col-md-3">
+                                                                    <input type="text" class="form-control mt-2" name="description[]" dir="ltr" placeholder="Enter name">
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    <input type="text" class="form-control" name="dosage[]" placeholder="Dosage">
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <input type="text" class="form-control" name="frequency[]" placeholder="Frequency">
+                                                                    <input type="text" class="form-control mt-2" name="dosage[]" placeholder="Dosage">
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <input type="text" class="form-control" name="amount[]" placeholder="Amount">
+                                                                    <input type="text" class="form-control mt-2" name="frequency[]" placeholder="Frequency">
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <input type="text" class="form-control mt-2" name="amount[]" placeholder="Amount">
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <input type="text" class="form-control mt-2" name="type[]" placeholder="Type">
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="button" class="btn btn-primary" id="addPrescriptionInput"><i class="bx bx-plus"></i> Add Prescription</button>
+                                                    <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput"><i class="bx bx-plus"></i>{{localize('global.add_prescription_item')}}</button>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
@@ -170,6 +173,7 @@
                                 <thead>
                                     <tr>
                                         <th>{{localize('global.number')}}</th>
+                                        <th>{{localize('global.type')}}</th>
                                         <th>{{localize('global.description')}}</th>
                                         <th>{{localize('global.dosage')}}</th>
                                         <th>{{localize('global.frequency')}}</th>
@@ -185,10 +189,12 @@
                                                 $dosages = is_array($prescription->dosage) ? $prescription->dosage : json_decode($prescription->dosage, true);
                                                 $frequencies = is_array($prescription->frequency) ? $prescription->frequency : json_decode($prescription->frequency, true);
                                                 $amounts = is_array($prescription->amount) ? $prescription->amount : json_decode($prescription->amount, true);
+                                                $types = is_array($prescription->type) ? $prescription->type : json_decode($prescription->type, true);
                                             @endphp
                                             @foreach ($descriptions as $key => $description)
                                                 <tr>
                                                     <td>{{ $loop->parent->iteration }}</td>
+                                                    <td>{{ $types[$key] }}</td>
                                                     <td>{{ $description }}</td>
                                                     <td>{{ $dosages[$key] }}</td>
                                                     <td>{{ $frequencies[$key] }}</td>
@@ -337,7 +343,7 @@
 
                             </tbody>
                         </table>
-                        
+
                         <div class="d-flex justify-content-center mt-4">
                             <form action="{{route('lab_tests.print-card', ['appointment' => $appointment->id])}}" method="GET" target="_blank">
                                 <button class="btn btn-primary" type="submit"><span class="bx bx-printer me-1"></span>{{localize('global.print_test_ticket')}}</button>
@@ -596,7 +602,7 @@
         // Create the description input field
         const descriptionInput = document.createElement('input');
         descriptionInput.type = 'text';
-        descriptionInput.className = 'form-control';
+        descriptionInput.className = 'form-control mt-2';
         descriptionInput.name = 'description[]';
         descriptionInput.dir = 'ltr';
         descriptionInput.placeholder = 'Enter name';
@@ -604,45 +610,56 @@
         // Create the dosage input field
         const dosageInput = document.createElement('input');
         dosageInput.type = 'text';
-        dosageInput.className = 'form-control';
+        dosageInput.className = 'form-control mt-2';
         dosageInput.name = 'dosage[]';
         dosageInput.placeholder = 'Dosage';
 
         // Create the frequency input field
         const frequencyInput = document.createElement('input');
         frequencyInput.type = 'text';
-        frequencyInput.className = 'form-control';
+        frequencyInput.className = 'form-control mt-2';
         frequencyInput.name = 'frequency[]';
         frequencyInput.placeholder = 'Frequency';
 
         // Create the amount input field
         const amountInput = document.createElement('input');
         amountInput.type = 'text';
-        amountInput.className = 'form-control';
+        amountInput.className = 'form-control mt-2';
         amountInput.name = 'amount[]';
         amountInput.placeholder = 'Amount';
 
+        // Create the amount input field
+        const typeInput = document.createElement('input');
+        typeInput.type = 'text';
+        typeInput.className = 'form-control mt-2';
+        typeInput.name = 'type[]';
+        typeInput.placeholder = 'Type';
+
         // Create the column divs
         const descriptionCol = document.createElement('div');
-        descriptionCol.className = 'col-md-4';
+        descriptionCol.className = 'col-md-3';
         const dosageCol = document.createElement('div');
         dosageCol.className = 'col-md-3';
         const frequencyCol = document.createElement('div');
-        frequencyCol.className = 'col-md-3';
+        frequencyCol.className = 'col-md-2';
         const amountCol = document.createElement('div');
         amountCol.className = 'col-md-2';
+        const typeCol = document.createElement('div');
+        typeCol.className = 'col-md-2';
 
         // Append the input fields to their respective column divs
         descriptionCol.appendChild(descriptionInput);
         dosageCol.appendChild(dosageInput);
         frequencyCol.appendChild(frequencyInput);
         amountCol.appendChild(amountInput);
+        typeCol.appendChild(typeInput);
 
         // Append the column divs to the new row div
         newRow.appendChild(descriptionCol);
         newRow.appendChild(dosageCol);
         newRow.appendChild(frequencyCol);
         newRow.appendChild(amountCol);
+        newRow.appendChild(typeCol);
 
         // Append the new row div to the prescription input container
         prescriptionContainer.appendChild(newRow);

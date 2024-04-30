@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
-use App\Models\LabType;
+use App\Models\OperationType;
 use Illuminate\Http\Request;
 
-class LabTypeController extends Controller
+class OperationTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $labTypes = LabType::all();
-        return view('pages.lab_types.index',compact('labTypes'));
+        $operationTypes = OperationType::all();
+        return view('pages.operation_types.index',compact('operationTypes'));
     }
 
     /**
@@ -23,7 +23,7 @@ class LabTypeController extends Controller
     public function create()
     {
         $branches = Branch::all();
-        return view('pages.lab_types.create',compact('branches'));
+        return view('pages.operation_types.create',compact('branches'));
     }
 
     /**
@@ -36,15 +36,15 @@ class LabTypeController extends Controller
             'branch_id' => 'required',
         ]);
 
-        LabType::create($data);
+        OperationType::create($data);
 
-        return redirect()->route('lab_types.index')->with('success', 'Lab Type created successfully.');
+        return redirect()->route('operation_types.index')->with('success', 'Operation Type created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(LabType $labType)
+    public function show(OperationType $operationType)
     {
         //
     }
@@ -52,7 +52,7 @@ class LabTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(LabType $labType)
+    public function edit(OperationType $operationType)
     {
         //
     }
@@ -60,7 +60,7 @@ class LabTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, LabType $labType)
+    public function update(Request $request, OperationType $operationType)
     {
         //
     }
@@ -68,7 +68,7 @@ class LabTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(LabType $labType)
+    public function destroy(OperationType $operationType)
     {
         //
     }

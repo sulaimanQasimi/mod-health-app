@@ -331,33 +331,29 @@
                                 <tr style="
     background: #ccc;
 ">
+                                    <th width="100px" style="text-align: center; "><b>No.</b></th>
                                     <th width="150px" style="text-align: center; "><b>Type</b></th>
-                                    <th style="text-align: center; width: 350px;"><b>Name Of Medicine</b></th>
+                                    <th style="text-align: center; width: 400px;"><b>Name Of Medicine</b></th>
                                     <th style="text-align: center;width: 250px;"><b>Dosage</b></th>
-                                    <th style="text-align: center;width: 250px;"><b>Amount</b></th>
-                                    <th style="text-align: center; width: 250px;"><b>Frequency</b></th>
+                                    <th style="text-align: center;width: 250px;"><b>Frequency</b></th>
+                                    <th style="text-align: center; width: 150px;"><b>Amount</b></th>
                                 </tr>
                                 @foreach ($prescriptions as $prescription)
                                                 @php
                                                     $descriptions = is_array($prescription->description) ? $prescription->description : json_decode($prescription->description, true);
+                                                    $dosages = is_array($prescription->dosage) ? $prescription->dosage : json_decode($prescription->dosage, true);
+                                                    $frequencies = is_array($prescription->frequency) ? $prescription->frequency : json_decode($prescription->frequency, true);
+                                                    $amounts = is_array($prescription->amount) ? $prescription->amount : json_decode($prescription->amount, true);
+                                                    $types = is_array($prescription->type) ? $prescription->type : json_decode($prescription->type, true);
                                                 @endphp
-                                                @foreach ($descriptions as $description)
+                                                @foreach ($descriptions as $key => $description)
                                                 <tr>
-                                                    <td>
-                                                    <p>{{ $description }}</p>
-                                                    </td>
-                                                    <td>
-                                                    <p>{{ $description }}</p>
-                                                    </td>
-                                                    <td>
-                                                    <p>{{ $description }}</p>
-                                                    </td>
-                                                    <td>
-                                                    <p>{{ $description }}</p>
-                                                    </td>
-                                                    <td>
-                                                    <p>{{ $description }}</p>
-                                                    </td>
+                                                    <td style="text-align: center;">{{ $loop->iteration }}</td>
+                                                    <td style="text-align: center;">{{ $types[$key] }}</td>
+                                                    <td style="text-align: center;">{{ $description }}</td>
+                                                    <td style="text-align: center;">{{ $dosages[$key] }}</td>
+                                                    <td style="text-align: center;">{{ $frequencies[$key] }}</td>
+                                                    <td style="text-align: center;">{{ $amounts[$key] }}</td>
                                                 </tr>
                                                 @endforeach
                                             @endforeach

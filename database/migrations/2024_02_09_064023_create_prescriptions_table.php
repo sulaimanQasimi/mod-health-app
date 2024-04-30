@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('dosage', 191);
             $table->string('frequency', 191);
             $table->string('amount', 191);
+            $table->string('type', 191);
 
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
@@ -25,7 +26,7 @@ return new class extends Migration
 
             $table->foreign('branch_id')
                   ->references('id')
-                  ->on('diagnoses');
+                  ->on('branches');
 
             $table->foreign('patient_id')
                   ->references('id')
@@ -33,7 +34,7 @@ return new class extends Migration
 
             $table->foreign('doctor_id')
                   ->references('id')
-                  ->on('users');
+                  ->on('doctors');
 
             $table->foreign('appointment_id')
                   ->references('id')

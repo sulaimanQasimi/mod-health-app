@@ -471,7 +471,7 @@ return [
     'branches_list' => 'لیست شفاخانه ها',
     'referred_to' => 'معرفی شده به',
     'add_lab_test' => 'تعین نمودن تست',
-    'lab_type' => 'نوعیت تست',
+    'lab_type' => 'نوعیت تست ها',
     'test_name' => 'نام تست',
     'result' => 'نتیجه',
     'result_file' => 'فایل تست',
@@ -502,6 +502,16 @@ return [
     'not_tested' => 'تست نشده',
     'tested' => 'تست شده',
     'print_test_ticket' => 'چاپ کارت',
-    'print_prescription' => 'چاپ نسخه'
+    'print_prescription' => 'چاپ نسخه',
+    'creation_date' => 'تاریخ ثبت',
+    'dosage' => 'دوز',
+    'frequency' => 'دفعات',
+    'amount' => 'تعداد',
+    'add_prescription_item' => 'قلم جدید',
+    'new_tests' => 'تست های جدید',
+    'anastasia' => 'اناستیزی',
+    'operations' => 'عملیات',
+    'hospitalized_patients' => 'مریضان داخل بستر',
+    'operation_types' => 'نوعیت عملیات ها'
 
 ];

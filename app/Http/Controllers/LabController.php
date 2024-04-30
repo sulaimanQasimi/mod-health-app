@@ -13,7 +13,7 @@ class LabController extends Controller
      */
     public function index()
     {
-        $labs = Lab::where('branch_id', auth()->user()->branch_id)->get();
+        $labs = Lab::where('branch_id', auth()->user()->branch_id)->where('result',null)->get();
         return view('pages.labs.index',compact('labs'));
     }
 
@@ -85,7 +85,7 @@ class LabController extends Controller
 
         $lab->update($data);
 
-        return redirect()->back()->with('success', 'Lab Test updated successfully.');
+        return redirect()->route('lab_tests.index')->with('success', 'Lab Test updated successfully.');
     }
 
     /**

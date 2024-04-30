@@ -17,6 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OperationTypeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\RoomController;
@@ -248,6 +249,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{consultation}', [ConsultationController::class, 'edit'])->name('edit');
         Route::put('update/{consultation}', [ConsultationController::class, 'update'])->name('update');
         Route::get('destroy/{consultation}', [ConsultationController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('operation_types')->name('operation_types.')->group(function () {
+        Route::get('index', [OperationTypeController::class, 'index'])->name('index');
+        Route::get('create', [OperationTypeController::class, 'create'])->name('create');
+        Route::get('show/{consultation}', [OperationTypeController::class, 'show'])->name('show');
+        Route::post('store', [OperationTypeController::class, 'store'])->name('store');
+        Route::get('edit/{consultation}', [OperationTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{consultation}', [OperationTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{consultation}', [OperationTypeController::class, 'destroy'])->name('destroy');
     });
 
 });

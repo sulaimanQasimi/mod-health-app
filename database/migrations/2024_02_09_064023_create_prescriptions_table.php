@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('frequency', 191);
             $table->string('amount', 191);
             $table->string('type', 191);
+            $table->tinyInteger('is_delivered')->default('0');
 
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');

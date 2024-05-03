@@ -1,10 +1,12 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
         <a href="{{route('home')}}" class="app-brand-link">
+            <div class="d-flex">
             <span class="app-brand-logo demo">
-                  <svg class="w-[45px] h-[45px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M15 2.013H9V9H2v6h7v6.987h6V15h7V9h-7z"></path></svg>
+                  <svg class="w-[45px] h-[45px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24"><path d="M15 2.013H9V9H2v6h7v6.987h6V15h7V9h-7z"></path></svg>
             </span>
             <span class="app-brand-text demo menu-text fw-bolder ms-2">{{ localize('global.system_name') }}</span>
+        </div>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -18,7 +20,7 @@
         <!-- Dashboards -->
         <li class="menu-item {{ Route::is('home') ? 'active' : '' }}">
             <a href="{{ route('home') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <i class="menu-icon tf-icons bx bx-home text-primary"></i>
                 <div>{{ localize('global.dashboard') }}</div>
             </a>
         </li>
@@ -26,9 +28,9 @@
         <!-- Layouts -->
 
         <li
-            class="menu-item {{ Route::is('users.index') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') ? 'active open' : '' }}">
+            class="menu-item {{ Route::is('patients.*') || Route::is('scanCode') || Route::is('appointments.index') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <i class="menu-icon tf-icons bx bx-info-circle text-info"></i>
                 <div>{{ localize('global.reception') }}</div>
             </a>
 
@@ -52,7 +54,7 @@
 
                 <li class="menu-item {{ Route::is('appointments.index') ? 'active' : '' }}">
                     <a href="{{ route('appointments.index') }}" class="menu-link">
-                        <div>{{ localize('global.appointments') }}</div>
+                        <div>{{ localize('global.all_appointments') }}</div>
                     </a>
                 </li>
             </ul>
@@ -60,8 +62,8 @@
 
         <li class="menu-item {{ Route::is('appointments.doctorAppointments') ? 'active' : '' }}">
             <a href="{{ route('appointments.doctorAppointments') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-time-five"></i>
-                <div>{{ localize('global.appointments') }}</div>
+                <i class="menu-icon tf-icons bx bx-time-five text-primary"></i>
+                <div>{{ localize('global.my_appointments') }}</div>
             </a>
         </li>
 {{--
@@ -73,50 +75,96 @@
         </li> --}}
         <li class="menu-item {{ Route::is('consultations.index') ? 'active' : '' }}">
             <a href="{{ route('consultations.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-chat"></i>
-                <div>{{ localize('global.consultations') }}</div>
+                <i class="menu-icon tf-icons bx bx-chat text-primary"></i>
+                <div>{{ localize('global.my_consultations') }}</div>
             </a>
         </li>
 
-        <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
-            <a href="{{ route('prescriptions.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-notepad"></i>
+        <li
+            class="menu-item {{ Route::is('prescriptions.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-receipt text-primary"></i>
                 <div>{{ localize('global.prescriptions') }}</div>
             </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
+                    <a href="{{ route('prescriptions.index') }}" class="menu-link">
+                        <div>{{ localize('global.undelivered_prescriptions') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('prescriptions.delivered') ? 'active' : '' }}">
+                    <a href="{{ route('prescriptions.delivered') }}" class="menu-link">
+                        <div>{{ localize('global.delivered_prescriptions') }}</div>
+                    </a>
+                </li>
+            </ul>
         </li>
 
-        <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
-            <a href="{{ route('prescriptions.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-bed"></i>
+        <li class="menu-item {{ Route::is('visits.index') ? 'active' : '' }}">
+            <a href="{{ route('visits.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-bed text-primary"></i>
                 <div>{{ localize('global.hospitalized_patients') }}</div>
             </a>
         </li>
 
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-hard-hat"></i>
+                <i class="menu-icon tf-icons bx bx-test-tube text-primary"></i>
                 <div>{{ localize('global.lab_tests') }}</div>
             </a>
         </li>
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-face"></i>
+                <i class="menu-icon tf-icons bx bx-first-aid text-danger"></i>
                 <div>{{ localize('global.anastasia') }}</div>
             </a>
         </li>
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-cut"></i>
+                <i class="menu-icon tf-icons bx bx-cut text-danger"></i>
                 <div>{{ localize('global.operations') }}</div>
             </a>
         </li>
+        <li
+        class="menu-item {{ Route::is('reports.*') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-line-chart text-primary"></i>
+            <div>{{ localize('global.reports') }}</div>
+        </a>
+
+        <ul class="menu-sub">
+            <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
+                <a href="#" class="menu-link">
+                    <div>{{ localize('global.reports') }}</div>
+                </a>
+            </li>
+            <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
+                <a href="#" class="menu-link">
+                    <div>{{ localize('global.reports') }}</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
+                <a href="#" class="menu-link">
+                    <div>{{ localize('global.reports') }}</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
+                <a href="#" class="menu-link">
+                    <div>{{ localize('global.reports') }}</div>
+                </a>
+            </li>
+        </ul>
+    </li>
 
 
 
         <li
             class="menu-item {{ Route::is('users.index') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-wrench"></i>
+                <i class="menu-icon tf-icons bx bx-cog text-primary"></i>
                 <div>{{ localize('global.settings') }}</div>
             </a>
 

@@ -138,7 +138,7 @@
                     <td width="50%">
                         <span class="title">Doctor's Name:</span>
                         <span class="data">
-                            {{$appointment->patient->name}}
+                            {{$appointment->doctor->name}}
                         </span>
                     </td>
                 </tr>

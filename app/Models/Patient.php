@@ -79,4 +79,5 @@ class Patient extends Model
     {
         return $this->belongsTo(Recipient::class, 'referred_by');
     }
+
 }

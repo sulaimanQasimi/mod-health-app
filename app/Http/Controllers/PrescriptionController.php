@@ -13,7 +13,17 @@ class PrescriptionController extends Controller
      */
     public function index()
     {
-        //
+        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_delivered',false)->latest()->paginate(10);
+        return view('pages.prescriptions.index',compact('prescriptions'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function delivered()
+    {
+        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_delivered',true)->latest()->paginate(10);
+        return view('pages.prescriptions.delivered',compact('prescriptions'));
     }
 
     /**
@@ -40,6 +50,7 @@ class PrescriptionController extends Controller
             'frequency' => 'required',
             'amount' => 'required',
             'type' => 'required',
+            'is_delivered' => 'required',
         ]);
         $data['description'] = json_encode($data['description']);
         $data['dosage'] = json_encode($data['dosage']);
@@ -51,7 +62,7 @@ class PrescriptionController extends Controller
         Prescription::create($data);
 
 
-        return redirect()->back()->with('success', 'Patient created successfully.');
+        return redirect()->back()->with('success', 'Prescription created successfully.');
     }
 
     /**
@@ -59,7 +70,7 @@ class PrescriptionController extends Controller
      */
     public function show(Prescription $prescription)
     {
-        //
+        return view('pages.prescriptions.show',compact('prescription'));
     }
 
     /**
@@ -95,5 +106,25 @@ class PrescriptionController extends Controller
         $patient = $appointment->patient;
 
         return view('pages.prescriptions.print_card', compact('appointment','prescriptions','patient'));
+    }
+
+    public function issue(Prescription $prescription)
+    {
+
+        $prescription = Prescription::findOrFail($prescription->id);
+        $prescription->update(['is_delivered' => true]);
+        $prescription->save();
+
+
+        return redirect()->route('prescriptions.index');
+    }
+
+    public function reject(Prescription $prescription)
+    {
+        $prescription = Prescription::findOrFail($prescription->id);
+        $prescription->update(['is_delivered' => false]);
+        $prescription->save();
+
+        return redirect()->route('prescriptions.index');
     }
 }

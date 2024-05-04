@@ -17,7 +17,7 @@ class PatientController extends Controller
 {
     public function index()
     {
-        $patients = Patient::latest()->paginate(10);
+        $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
         return view('pages.patients.index', compact('patients'));
     }
 
@@ -127,14 +127,14 @@ public function addImage(Request $request, $id)
         $qrCodeData = $request->input('qrCodeData');
 
         // Find the patient based on the QR code data
-        $patient = Patient::where('id', $qrCodeData)->first();
+        $patient = Patient::where('id', $qrCodeData)->where('branch_id',auth()->user()->branch_id)->first();
 
         if ($patient) {
             // Redirect to the patient's show page
             return redirect()->route('patients.show', $patient->id);
         } else {
             // Handle the case when the patient is not found
-            return redirect()->back()->with('error', 'Patient not found.');
+            return redirect()->back()->with('error', localize('global.patient_not_found'));
         }
     }
 

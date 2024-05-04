@@ -11,7 +11,7 @@ class Hospitalization extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id'];
+    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id'];
 
     public function room()
     {
@@ -22,5 +22,21 @@ class Hospitalization extends Model
     {
         return $this->belongsTo(Bed::class);
     }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
+    }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
+
 
 }

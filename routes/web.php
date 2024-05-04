@@ -1,13 +1,9 @@
 <?php
 
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\BedController;
-use App\Http\Controllers\BranchController;
-use App\Http\Controllers\ConsultationController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DiagnoseController;
-use App\Http\Controllers\DoctorController;
+
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HospitalizationController;
 use App\Http\Controllers\LabController;
@@ -20,8 +16,17 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OperationTypeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DiagnoseController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\VisitController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,17 +39,29 @@ use App\Http\Controllers\SectionController;
 |
 */
 
-
+/*
+|--------------------------------------------------------------------------
+| Auth Middleware
+|--------------------------------------------------------------------------
+|
+| By default all routes are protected with auth middleware, which means users
+| have to login before using any route.
+|
+*/
 Route::group(['middleware' => ['auth']], function () {
+
+    // Home default route
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/home_filter/{departmentFilter?}', [HomeController::class, 'index'])->name('home_filter');
+
+    // Log viewer route
     Route::get('/log-viewer', function() {
         return route('log-viewer');
     })->name('log-viewer');
+
+    // Language change route
     Route::get('change_language/{lang?}', [HomeController::class, 'changeLanguage'])->name('change_language');
 
-    // recipient routes
-
+    // Recipients routes
     Route::prefix('recipients')->name('recipients.')->group(function () {
         Route::get('index', [RecipientController::class, 'index'])->name('index');
         Route::get('create', [RecipientController::class, 'create'])->name('create');
@@ -55,8 +72,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     });
 
-    // User routes
-
+    // Users routes
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('index', [UserController::class, 'index'])->name('index');
         Route::get('create', [UserController::class, 'create'])->name('create');
@@ -72,8 +88,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update-avatar', [UserController::class, 'updateAvatar'])->name('update-avatar');
     });
 
-    // roles and permissions
-
+    // Roles routes
     Route::prefix('roles')->name('roles.')->group(function () {
         Route::get('', [RoleController::class, 'index'])->name('index');
         Route::get('create', [RoleController::class, 'create'])->name('create');
@@ -84,7 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{role}', [RoleController::class, 'destroy'])->name('destroy');
     });
 
-    // Permission Resources
+    // Permissions routes
     Route::prefix('permissions')->name('permissions.')->group(function () {
         Route::get('', [PermissionController::class, 'index'])->name('index');
         Route::get('create', [PermissionController::class, 'create'])->name('create');
@@ -95,6 +110,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{permission}', [PermissionController::class, 'destroy'])->name('destroy');
     });
 
+    // Patients routes
     Route::prefix('patients')->name('patients.')->group(function () {
         Route::get('index', [PatientController::class, 'index'])->name('index');
         Route::get('create', [PatientController::class, 'create'])->name('create');
@@ -104,11 +120,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{patient}', [PatientController::class, 'update'])->name('update');
         Route::get('/print-card/{patient}', [PatientController::class, 'printCard'])->name('print-card');
         Route::get('destroy/{patient}', [PatientController::class, 'destroy'])->name('destroy');
-        // Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');
+        Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
         Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
     });
 
+    // Departments routes
     Route::prefix('departments')->name('departments.')->group(function () {
         Route::get('index', [DepartmentController::class, 'index'])->name('index');
         Route::get('create', [DepartmentController::class, 'create'])->name('create');
@@ -119,6 +136,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
     });
 
+    //Sections routes
     Route::prefix('sections')->name('sections.')->group(function () {
         Route::get('index', [SectionController::class, 'index'])->name('index');
         Route::get('create', [SectionController::class, 'create'])->name('create');
@@ -129,6 +147,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
     });
 
+    // Rooms routes
     Route::prefix('rooms')->name('rooms.')->group(function () {
         Route::get('index', [RoomController::class, 'index'])->name('index');
         Route::get('create', [RoomController::class, 'create'])->name('create');
@@ -139,6 +158,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
     });
 
+    // Beds routes
     Route::prefix('beds')->name('beds.')->group(function () {
         Route::get('index', [BedController::class, 'index'])->name('index');
         Route::get('create', [BedController::class, 'create'])->name('create');
@@ -149,6 +169,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
     });
 
+    // Hospitalizations routes
     Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
         Route::get('index', [HospitalizationController::class, 'index'])->name('index');
         Route::get('create', [HospitalizationController::class, 'create'])->name('create');
@@ -159,6 +180,18 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
     });
 
+    // Visits routes
+    Route::prefix('visits')->name('visits.')->group(function () {
+        Route::get('index', [VisitController::class, 'index'])->name('index');
+        Route::get('create', [VisitController::class, 'create'])->name('create');
+        Route::get('show/{visit}', [VisitController::class, 'show'])->name('show');
+        Route::post('store', [VisitController::class, 'store'])->name('store');
+        Route::get('edit/{visit}', [VisitController::class, 'edit'])->name('edit');
+        Route::put('update/{visit}', [VisitController::class, 'update'])->name('update');
+        Route::get('destroy/{visit}', [VisitController::class, 'destroy'])->name('destroy');
+    });
+
+    // Doctors routes
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('index', [DoctorController::class, 'index'])->name('index');
         Route::get('create', [DoctorController::class, 'create'])->name('create');
@@ -169,7 +202,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{doctor}', [DoctorController::class, 'destroy'])->name('destroy');
     });
 
-
+    // Appointments routes
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('index', [AppointmentController::class, 'index'])->name('index');
         Route::get('doctorAppointments', [AppointmentController::class, 'doctorAppointments'])->name('doctorAppointments');
@@ -181,6 +214,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
     });
 
+    // Diagnoses routes
     Route::prefix('diagnoses')->name('diagnoses.')->group(function () {
         Route::get('index', [DiagnoseController::class, 'index'])->name('index');
         Route::get('create_diagnose/{appointment}', [DiagnoseController::class, 'createDiagnose'])->name('create_diagnose');
@@ -192,8 +226,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{diagnose}', [DiagnoseController::class, 'destroy'])->name('destroy');
     });
 
+    // Prescriptions routes
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
         Route::get('index', [PrescriptionController::class, 'index'])->name('index');
+        Route::get('delivered', [PrescriptionController::class, 'delivered'])->name('delivered');
         Route::get('create', [PrescriptionController::class, 'create'])->name('create');
         Route::get('show/{prescription}', [PrescriptionController::class, 'show'])->name('show');
         Route::post('store', [PrescriptionController::class, 'store'])->name('store');
@@ -201,9 +237,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{prescription}', [PrescriptionController::class, 'update'])->name('update');
         Route::get('destroy/{prescription}', [PrescriptionController::class, 'destroy'])->name('destroy');
         Route::get('/print-card/{appointment}', [PrescriptionController::class, 'printCard'])->name('print-card');
+        Route::get('/issue/{prescription}', [PrescriptionController::class, 'issue'])->name('issue');
+        Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
 
     });
 
+    // Labratory routes
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
         Route::get('index', [LabController::class, 'index'])->name('index');
         Route::get('create', [LabController::class, 'create'])->name('create');
@@ -213,9 +252,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
         Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
         Route::get('/print-card/{appointment}', [LabController::class, 'printCard'])->name('print-card');
-
     });
 
+    // Laboratory test types routes
     Route::prefix('lab_types')->name('lab_types.')->group(function () {
         Route::get('index', [LabTypeController::class, 'index'])->name('index');
         Route::get('create', [LabTypeController::class, 'create'])->name('create');
@@ -226,6 +265,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
 
+    // Branches routes
     Route::prefix('branches')->name('branches.')->group(function () {
         Route::get('index', [BranchController::class, 'index'])->name('index');
         Route::get('create', [BranchController::class, 'create'])->name('create');
@@ -236,11 +276,7 @@ Route::group(['middleware' => ['auth']], function () {
         // Route::get('destroy/{prescription}', [BranchController::class, 'destroy'])->name('destroy');
     });
 
-    Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');
-    Route::get('mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('mark_all_as_read');
-    Route::get('/scan-qr-code', [PatientController::class, 'scanQrCode'])->name('scanQRCode');
-    Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
-
+    // Consultations routes
     Route::prefix('consultations')->name('consultations.')->group(function () {
         Route::get('index', [ConsultationController::class, 'index'])->name('index');
         Route::get('create', [ConsultationController::class, 'create'])->name('create');
@@ -251,6 +287,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{consultation}', [ConsultationController::class, 'destroy'])->name('destroy');
     });
 
+    // Operations routes
     Route::prefix('operation_types')->name('operation_types.')->group(function () {
         Route::get('index', [OperationTypeController::class, 'index'])->name('index');
         Route::get('create', [OperationTypeController::class, 'create'])->name('create');
@@ -261,6 +298,19 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{consultation}', [OperationTypeController::class, 'destroy'])->name('destroy');
     });
 
+    // Reports routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('index', [ReportController::class, 'index'])->name('index');
+
+    });
+
+    // General routes
+    Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');
+    Route::get('mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('mark_all_as_read');
+    Route::get('/scan-qr-code', [PatientController::class, 'scanQrCode'])->name('scanQRCode');
+    Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
+
 });
 
-Auth::routes();
+// Register route should be disabled be default.
+Auth::routes(['register' => false]);

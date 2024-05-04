@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Checkup;
 use Illuminate\Http\Request;
 
-class CheckupController extends Controller
+class ReportController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +33,7 @@ class CheckupController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Checkup $checkup)
+    public function show(string $id)
     {
         //
     }
@@ -42,7 +41,7 @@ class CheckupController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Checkup $checkup)
+    public function edit(string $id)
     {
         //
     }
@@ -50,7 +49,7 @@ class CheckupController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Checkup $checkup)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -58,7 +57,7 @@ class CheckupController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Checkup $checkup)
+    public function destroy(string $id)
     {
         //
     }

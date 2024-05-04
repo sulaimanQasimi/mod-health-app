@@ -103,7 +103,7 @@
             </div>
 
                 <hr>
-                <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_appointments') }}</h5>
+                <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.previous_appointments') }}</h5>
 
                 <table class="table">
                     <thead>
@@ -162,6 +162,7 @@
                             <div class="mb-3">
                                 <label for="doctor_name">{{localize('global.doctor_name')}}</label>
                             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                            <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
                             <!-- Add other appointment form fields as needed -->
                             <select class="form-control select2" name="doctor_id">
                                 <option value="">{{ localize('global.select') }}</option>

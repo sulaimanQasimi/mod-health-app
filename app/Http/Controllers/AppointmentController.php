@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Diagnose;
 use App\Models\Doctor;
 use App\Models\LabType;
 use App\Models\Room;
@@ -17,7 +18,7 @@ class AppointmentController extends Controller
     public function index()
     {
         // Retrieve all appointments
-        $appointments = Appointment::all();
+        $appointments = Appointment::where('branch_id', auth()->user()->branch_id)->latest()->paginate(10);
 
         return view('pages.appointments.index', compact('appointments'));
     }
@@ -34,6 +35,7 @@ class AppointmentController extends Controller
         $validatedData = $request->validate([
             'patient_id' => 'required',
             'doctor_id' => 'required',
+            'branch_id' => 'required',
             'date' => 'required',
             'time' => 'required',
         ]);
@@ -77,7 +79,9 @@ class AppointmentController extends Controller
         $doctors = Doctor::all();
         $rooms = Room::all();
         $beds = Bed::all();
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds'));
+        $patient = $appointment->patient;
+        $previousDiagnoses = $patient->diagnoses;
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses'));
     }
 
     public function destroy(Appointment $appointment)
@@ -91,7 +95,7 @@ class AppointmentController extends Controller
 
     public function doctorAppointments()
     {
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)->get();
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)->latest()->paginate(10);
 
         return view('pages.appointments.index', compact('appointments'));
     }

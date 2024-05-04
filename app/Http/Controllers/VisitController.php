@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hospitalization;
+use App\Models\Visit;
 use Illuminate\Http\Request;
 
-class HospitalizationController extends Controller
+class VisitController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('pages.hospitalizations.index');
+        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)->latest()->paginate(10);
+
+        return view('pages.hospitalizations.index',compact('hospitalizations'));
     }
 
     /**
@@ -28,35 +31,35 @@ class HospitalizationController extends Controller
      */
     public function store(Request $request)
     {
+
         $data = $request->validate([
-            'reason' => 'required',
-            'remarks' => 'required',
-            'room_id' => 'required',
+            'description' => 'required',
             'patient_id' => 'required',
             'doctor_id' => 'required',
-            'bed_id' => 'required',
-            'appointment_id' => 'required',
-            'is_discharged' => 'required',
-            'branch_id' => 'required',
+            'hospitalization_id' => 'required',
+
         ]);
 
-        Hospitalization::create($data);
 
-        return redirect()->back()->with('success', 'Hospitalization created successfully.');
+
+        Visit::create($data);
+
+
+        return redirect()->back()->with('success', 'Visit created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Hospitalization $hospitalization)
+    public function show(Visit $visit)
     {
-        return view('pages.hospitalizations.show',compact('hospitalization'));
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Hospitalization $hospitalization)
+    public function edit(Visit $visit)
     {
         //
     }
@@ -64,7 +67,7 @@ class HospitalizationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Hospitalization $hospitalization)
+    public function update(Request $request, Visit $visit)
     {
         //
     }
@@ -72,7 +75,7 @@ class HospitalizationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Hospitalization $hospitalization)
+    public function destroy(Visit $visit)
     {
         //
     }

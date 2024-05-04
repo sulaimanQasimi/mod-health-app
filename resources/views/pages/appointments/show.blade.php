@@ -37,6 +37,26 @@
                             </div>
                         </div>
                         </div>
+                        <div class="row p-4">
+                            <div class="mb-4">
+                                <div class="col-md-12 d-flex justify-content-center">
+                                    <h5 class="mb-4 p-1 bg-label-primary mt-4"><i class="bx bx-history p-1"></i>{{ localize('global.patient_history') }}</h5>
+                                </div>
+
+                                @php
+                                    $sortedDiagnoses = $previousDiagnoses->sortByDesc('created_at');
+                                @endphp
+
+                                @forelse ($sortedDiagnoses as $diagnose )
+
+                                    <li>{{localize('global.patient_was_diagnosed_with'). ' '. $diagnose->description . ' '. localize('global.at'). ' '. $diagnose->created_at}}</li>
+
+                                @empty
+                                    No previous diagnoses
+                                @endforelse
+                            </div>
+                            </div>
+                        </div>
                         </div>
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i class="bx bx-popsicle p-1"></i>{{localize('global.diagnose') }}</h5>
@@ -130,6 +150,7 @@
                                                     <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id" value="{{ $appointment->id }}">
                                                     <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
                                                     <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ auth()->user()->id }}">
+                                                    <input type="hidden" id="is_delivered{{ $appointment->id }}" name="is_delivered" value="0">
                                                     <!-- Add other diagnosis form fields as needed -->
                                                     <div class="form-group" id="prescription-items">
                                                         <label>{{localize('global.description')}}</label>
@@ -475,8 +496,8 @@
                                                     <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id" value="{{ $appointment->patient_id }}">
                                                     <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id" value="{{ $appointment->id }}">
                                                     <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id" value="{{ auth()->user()->id }}">
-
-
+                                                    <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
+                                                    <input type="hidden" id="is_discharged{{ $appointment->id }}" name="is_discharged" value="0">
 
                                                     <div class="form-group">
 
@@ -574,6 +595,40 @@
                         </table>
 
                         </div>
+<div class="col-md-12 d-flex justify-content-center">
+    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{localize('global.number')}}</th>
+                <th>{{localize('global.description')}}</th>
+                <th>{{localize('global.visit_date')}}</th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach ($appointment->hospitalization as $single_hospitaliztion)
+    @forelse($single_hospitaliztion->visits as $visit)
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$visit->description}}</td>
+                                    <td>
+                                        {{$visit->created_at}}
+                                    </td>
+                                </tr>
+                                @empty
+                                <div class="container">
+                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                        <div class=" badge bg-label-danger mt-4">
+                                            {{ localize('global.no_previous_visits') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforelse
+                                @endforeach
+        </tbody>
+    </table>
+
 
 
 

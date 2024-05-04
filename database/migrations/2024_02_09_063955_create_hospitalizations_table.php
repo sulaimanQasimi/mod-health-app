@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->text('reason', 2000);
             $table->text('remarks',2000);
+            $table->tinyInteger('is_discharged')->default(false);
             $table->unsignedBigInteger('room_id');
             $table->foreign('room_id')->references('id')->on('rooms');
+            $table->unsignedBigInteger('branch_id');
+            $table->foreign('branch_id')->references('id')->on('branches');
             $table->unsignedBigInteger('bed_id');
             $table->foreign('bed_id')->references('id')->on('beds');
             $table->unsignedBigInteger('appointment_id');

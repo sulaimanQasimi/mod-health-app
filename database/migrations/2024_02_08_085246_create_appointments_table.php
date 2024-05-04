@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('branch_id');
             $table->string('date');
             $table->string('time');
             $table->softDeletes();
@@ -26,6 +27,9 @@ return new class extends Migration
             $table->foreign('patient_id')
                   ->references('id')
                   ->on('patients');
+            $table->foreign('branch_id')
+                  ->references('id')
+                  ->on('branches');
             $table->foreign('doctor_id')
                 ->references('id')
                 ->on('doctors');

@@ -63,7 +63,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="province_id">{{localize('global.province')}}</label>
-                                        <select class="form-control select2" name="province_id">
+                                        <select class="form-control select2" name="province_id" id="province_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($provinces as $value)
                                                 <option value="{{ $value->id }}"
@@ -76,7 +76,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="district_id">{{localize('global.district')}}</label>
-                                        <select class="form-control select2" name="district_id">
+                                        <select class="form-control select2" name="district_id" id="district_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($districts as $value)
                                                 <option value="{{ $value->id }}"
@@ -95,4 +95,30 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+
+<script>
+    $(document).ready(function()
+{
+    $('#province_id').on('change', function()
+{
+    var provinceID = $(this).val();
+    if(provinceID !== '')
+    {
+        $.ajax({
+            url: '/get_districts/' + provinceID,
+            type: 'GET',
+            success: function(response)
+            {
+
+                $('#district_id').html(response);
+            }
+        })
+    }
+})
+})
+</script>
+
 @endsection

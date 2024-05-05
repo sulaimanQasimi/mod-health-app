@@ -6,11 +6,11 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.create_room') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.create_floor') }}</h5>
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('rooms.store') }}" method="POST">
+                        <form action="{{ route('floors.store') }}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="col-md-4">
@@ -21,10 +21,10 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label for="name">{{ localize('global.floor') }}</label>
-                                        <select class="form-control select2" name="floor_id">
+                                        <label for="name">{{ localize('global.branch') }}</label>
+                                        <select class="form-control select2" name="branch_id">
                                             <option value="">{{ localize('global.select') }}</option>
-                                            @foreach($floors as $value)
+                                            @foreach($branches as $value)
                                                 <option value="{{ $value->id }}"
                                                     {{ old('name') == $value->id ? 'selected' : '' }}>
                                                 {{ $value->name }}</option>
@@ -33,7 +33,6 @@
                                         </select>
                                     </div>
                                 </div>
-                                <input type="hidden" name="branch_id" value="{{Auth::user()->branch_id}}">
                             </div>
                             <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>
                             <a href="{{ route('recipients.index') }}"><button type="button"

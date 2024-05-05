@@ -210,6 +210,11 @@
                         <div>{{ localize('global.sections') }}</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Route::is('floors.index') ? 'active' : '' }}">
+                    <a href="{{ route('floors.index') }}" class="menu-link">
+                        <div>{{ localize('global.floors') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('rooms.index') ? 'active' : '' }}">
                     <a href="{{ route('rooms.index') }}" class="menu-link">
                         <div>{{ localize('global.rooms') }}</div>

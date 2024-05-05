@@ -4,18 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Floor;
-use App\Models\Room;
 use Illuminate\Http\Request;
 
-class RoomController extends Controller
+class FloorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $rooms = Room::all();
-        return view('pages.rooms.index',compact('rooms'));
+        $floors = Floor::all();
+        return view('pages.floors.index',compact('floors'));
     }
 
     /**
@@ -24,8 +23,7 @@ class RoomController extends Controller
     public function create()
     {
         $branches = Branch::all();
-        $floors = Floor::all();
-        return view('pages.rooms.create', compact('branches','floors'));
+        return view('pages.floors.create', compact('branches'));
     }
 
     /**
@@ -36,18 +34,17 @@ class RoomController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'branch_id' => 'required',
-            'floor_id' => 'required',
         ]);
 
-        Room::create($data);
+        Floor::create($data);
 
-        return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
+        return redirect()->route('floors.index')->with('success', 'Floor created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Room $room)
+    public function show(Floor $floor)
     {
         //
     }
@@ -55,7 +52,7 @@ class RoomController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Room $room)
+    public function edit(Floor $floor)
     {
         //
     }
@@ -63,7 +60,7 @@ class RoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Room $room)
+    public function update(Request $request, Floor $floor)
     {
         //
     }
@@ -71,7 +68,7 @@ class RoomController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Room $room)
+    public function destroy(Floor $floor)
     {
         //
     }

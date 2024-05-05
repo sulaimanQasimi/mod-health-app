@@ -530,6 +530,9 @@ return [
     'patient_history' => 'تاریخچه مریض',
     'patient_was_diagnosed_with' => 'تشخیص که برای این مریض شده بود عبارت است از: ',
     'at' => 'که به تاریخ ذیل انجام شده بود',
-    'patient_not_found' => 'مریض مورد نظر یافت نشد'
+    'patient_not_found' => 'مریض مورد نظر یافت نشد',
+    'floors' => 'منزل ها',
+    'floor' => 'منزل',
+    'create_floor' => 'ایجاد منزل'
 
 ];

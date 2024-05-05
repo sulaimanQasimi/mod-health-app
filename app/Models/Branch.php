@@ -11,4 +11,8 @@ class Branch extends Model
 
     protected $fillable = ['name'];
 
+    public function  departments()
+    {
+        return $this->hasMany(Department::class);
+    }
 }

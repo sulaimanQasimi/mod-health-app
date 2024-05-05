@@ -26,6 +26,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\FloorController;
 use App\Http\Controllers\VisitController;
 
 /*
@@ -145,6 +146,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{section}', [SectionController::class, 'edit'])->name('edit');
         Route::put('update/{section}', [SectionController::class, 'update'])->name('update');
         Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
+    });
+
+    // Rooms routes
+    Route::prefix('floors')->name('floors.')->group(function () {
+        Route::get('index', [FloorController::class, 'index'])->name('index');
+        Route::get('create', [FloorController::class, 'create'])->name('create');
+        Route::get('show/{floor}', [FloorController::class, 'show'])->name('show');
+        Route::post('store', [FloorController::class, 'store'])->name('store');
+        Route::get('edit/{floor}', [FloorController::class, 'edit'])->name('edit');
+        Route::put('update/{floor}', [FloorController::class, 'update'])->name('update');
+        Route::get('destroy/{floor}', [FloorController::class, 'destroy'])->name('destroy');
     });
 
     // Rooms routes
@@ -309,6 +321,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('mark-as-read', [NotificationController::class, 'markAllAsRead'])->name('mark_all_as_read');
     Route::get('/scan-qr-code', [PatientController::class, 'scanQrCode'])->name('scanQRCode');
     Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
+    Route::get('/get_districts/{provinceId}', [HomeController::class, 'getRelatedDistricts']);
+    Route::get('/get_departments/{branchId}', [HomeController::class, 'getRelatedDepartments']);
+    Route::get('/get_sections/{depId}', [HomeController::class, 'getRelatedSections']);
 
 });
 

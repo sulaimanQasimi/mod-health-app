@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rooms', function (Blueprint $table) {
+        Schema::create('floors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('branch_id');
-            $table->unsignedBigInteger('floor_id');
-            $table->foreign('branch_id')->references('id')->on('branches');
-            $table->foreign('floor_id')->references('id')->on('floors');
+
+            $table->foreign('branch_id')
+                  ->references('id')
+                  ->on('branches');
+
             $table->softDeletes();
             $table->timestamps();
         });
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rooms');
+        Schema::dropIfExists('floors');
     }
 };

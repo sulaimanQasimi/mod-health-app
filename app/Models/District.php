@@ -11,4 +11,9 @@ class District extends Model
     public $timestamps = false;
 
     protected $fillable  = ['id', 'province_id', 'name_en', 'name_dr', 'name_pa'];
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
+    }
 }

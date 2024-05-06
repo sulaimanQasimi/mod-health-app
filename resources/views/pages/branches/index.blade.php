@@ -22,6 +22,7 @@
                             <tr>
                                 <th>{{localize('global.number')}}</th>
                                 <th>{{localize('global.name')}}</th>
+                                <th>{{localize('global.address')}}</th>
                                 <th>{{localize('global.actions')}}</th>
                             </tr>
                         </thead>
@@ -30,6 +31,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $branch->name }}</td>
+                                    <td>{{ $branch->address }}</td>
                                     <td>
                                         {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDiagnoseModal{{ $branch->id }}">Create Diagnose</button> --}}
                                     </td>

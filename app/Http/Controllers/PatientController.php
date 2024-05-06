@@ -7,6 +7,7 @@ use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Province;
 use App\Models\Recipient;
+use App\Models\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,8 @@ class PatientController extends Controller
         $recipients = Recipient::all();
         $provinces = Province::all();
         $districts = District::all();
-        return view('pages.patients.create',compact('recipients','provinces','districts'));
+        $relations = Relation::all();
+        return view('pages.patients.create',compact('recipients','provinces','districts','relations'));
     }
 
     public function store(Request $request)
@@ -38,8 +40,11 @@ class PatientController extends Controller
             'nid' => 'required',
             'province_id' => 'required',
             'district_id' => 'required',
+            'relation_id' => 'required',
             'referred_by' => 'required',
             'branch_id' => 'required',
+            'job' => 'nullable',
+            'rank' => 'nullable',
         ]);
 
         $patient = Patient::create($data);

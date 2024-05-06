@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Branch;
-use App\Models\Department;
-use App\Models\Floor;
-use App\Models\Room;
+use App\Models\Relation;
 use Illuminate\Http\Request;
 
-class RoomController extends Controller
+class RelationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $rooms = Room::all();
-        return view('pages.rooms.index',compact('rooms'));
+        $relations = Relation::all();
+        return view('pages.relations.index',compact('relations'));
     }
 
     /**
@@ -24,10 +21,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        $branches = Branch::all();
-        $floors = Floor::all();
-        $departments = Department::all();
-        return view('pages.rooms.create', compact('branches','floors','departments'));
+        return view('pages.relations.create');
     }
 
     /**
@@ -37,20 +31,17 @@ class RoomController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'branch_id' => 'required',
-            'floor_id' => 'required',
-            'department_id' => 'required',
         ]);
 
-        Room::create($data);
+        Relation::create($data);
 
-        return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
+        return redirect()->route('relations.index')->with('success', 'Relation created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Room $room)
+    public function show(Relation $relation)
     {
         //
     }
@@ -58,7 +49,7 @@ class RoomController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Room $room)
+    public function edit(Relation $relation)
     {
         //
     }
@@ -66,7 +57,7 @@ class RoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Room $room)
+    public function update(Request $request, Relation $relation)
     {
         //
     }
@@ -74,7 +65,7 @@ class RoomController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Room $room)
+    public function destroy(Relation $relation)
     {
         //
     }

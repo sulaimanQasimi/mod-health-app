@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Department;
 use App\Models\OperationType;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,8 @@ class OperationTypeController extends Controller
     public function create()
     {
         $branches = Branch::all();
-        return view('pages.operation_types.create',compact('branches'));
+        $departments = Department::all();
+        return view('pages.operation_types.create',compact('branches','departments'));
     }
 
     /**
@@ -34,6 +36,7 @@ class OperationTypeController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'branch_id' => 'required',
+            'department_id' => 'required',
         ]);
 
         OperationType::create($data);

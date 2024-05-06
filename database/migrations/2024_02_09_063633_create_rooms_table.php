@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('floor_id');
+            $table->unsignedBigInteger('department_id');
             $table->foreign('branch_id')->references('id')->on('branches');
             $table->foreign('floor_id')->references('id')->on('floors');
+            $table->foreign('department_id')->references('id')->on('departments');
             $table->softDeletes();
             $table->timestamps();
         });

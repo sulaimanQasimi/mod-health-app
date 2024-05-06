@@ -533,6 +533,14 @@ return [
     'patient_not_found' => 'مریض مورد نظر یافت نشد',
     'floors' => 'منزل ها',
     'floor' => 'منزل',
-    'create_floor' => 'ایجاد منزل'
+    'create_floor' => 'ایجاد منزل',
+    'job' => 'وظیفه',
+    'rank' => 'رتبه',
+    'relation' => 'ارتباط خانواده گی',
+    'relations' => 'ارتباط های خانواده گی',
+    'lab_type_sections' => 'نوعیت معاینات',
+    'create_relation' => 'ایجاد ارتباط خانواده گی',
+    'create_lab_type_section' => 'اضافه نموده نوعیت معاینات',
+    'parent_test' => 'تست مافوق',
 
 ];

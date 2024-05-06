@@ -27,6 +27,8 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\LabTypeSectionController;
+use App\Http\Controllers\RelationController;
 use App\Http\Controllers\VisitController;
 
 /*
@@ -264,6 +266,28 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
         Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
         Route::get('/print-card/{appointment}', [LabController::class, 'printCard'])->name('print-card');
+    });
+
+    // Relations routes
+    Route::prefix('relations')->name('relations.')->group(function () {
+        Route::get('index', [RelationController::class, 'index'])->name('index');
+        Route::get('create', [RelationController::class, 'create'])->name('create');
+        Route::get('show/{relation}', [RelationController::class, 'show'])->name('show');
+        Route::post('store', [RelationController::class, 'store'])->name('store');
+        Route::get('edit/{relation}', [RelationController::class, 'edit'])->name('edit');
+        Route::put('update/{relation}', [RelationController::class, 'update'])->name('update');
+        Route::get('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Laboratory test type sections routes
+    Route::prefix('lab_type_sections')->name('lab_type_sections.')->group(function () {
+        Route::get('index', [LabTypeSectionController::class, 'index'])->name('index');
+        Route::get('create', [LabTypeSectionController::class, 'create'])->name('create');
+        Route::get('show/{labTypeSection}', [LabTypeSectionController::class, 'show'])->name('show');
+        Route::post('store', [LabTypeSectionController::class, 'store'])->name('store');
+        Route::get('edit/{labTypeSection}', [LabTypeSectionController::class, 'edit'])->name('edit');
+        Route::put('update/{labTypeSection}', [LabTypeSectionController::class, 'update'])->name('update');
+        Route::get('destroy/{labTypeSection}', [LabTypeSectionController::class, 'destroy'])->name('destroy');
     });
 
     // Laboratory test types routes

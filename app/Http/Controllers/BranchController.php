@@ -25,6 +25,7 @@ class BranchController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'address' => 'required',
         ]);
 
         $branch = Branch::create($data);

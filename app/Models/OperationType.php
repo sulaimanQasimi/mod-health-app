@@ -12,5 +12,10 @@ class OperationType extends Model
 
     use SoftDeletes;
 
-    protected $fillable = ['name','branch_id'];
+    protected $fillable = ['name','branch_id','department_id'];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 }

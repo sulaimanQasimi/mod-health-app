@@ -33,6 +33,20 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="name">{{ localize('global.department') }}</label>
+                                        <select class="form-control select2" name="department_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($departments as $value)
+                                                <option value="{{ $value->id }}"
+                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                {{ $value->name }}</option>
+                                            @endforeach
+
+                                        </select>
+                                    </div>
+                                </div>
                                 <input type="hidden" name="branch_id" value="{{Auth::user()->branch_id}}">
                             </div>
                             <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>

@@ -21,10 +21,12 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             DoctorSeeder::class,
             RecipientSeeder::class,
+            LabTypeSectionSeeder::class,
             LabTypeSeeder::class,
             FloorSeeder::class,
             RoomSeeder::class,
             BedSeeder::class,
+            RelationSeeder::class,
             PatientSeeder::class,
             OperationTypeSeeder::class,
 

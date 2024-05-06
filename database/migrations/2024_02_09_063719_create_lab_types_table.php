@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('section_id');
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('lab_types');
+            $table->foreign('section_id')->references('id')->on('lab_type_sections');
 
             $table->foreign('branch_id')
             ->references('id')

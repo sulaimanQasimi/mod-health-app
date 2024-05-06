@@ -12,7 +12,7 @@ class LabType extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','branch_id'];
+    protected $fillable = ['name','branch_id','parent_id','section_id'];
 
     public static function boot()
     {

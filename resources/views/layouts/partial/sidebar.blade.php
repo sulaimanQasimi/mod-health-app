@@ -199,7 +199,11 @@
                         <div>{{ localize('global.doctors') }}</div>
                     </a>
                 </li>
-
+                <li class="menu-item {{ Route::is('relations.index') ? 'active' : '' }}">
+                    <a href="{{ route('relations.index') }}" class="menu-link">
+                        <div>{{ localize('global.relations') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('departments.index') ? 'active' : '' }}">
                     <a href="{{ route('departments.index') }}" class="menu-link">
                         <div>{{ localize('global.departments') }}</div>
@@ -223,6 +227,11 @@
                 <li class="menu-item {{ Route::is('beds.index') ? 'active' : '' }}">
                     <a href="{{ route('beds.index') }}" class="menu-link">
                         <div>{{ localize('global.beds') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('lab_type_sections.index') ? 'active' : '' }}">
+                    <a href="{{ route('lab_type_sections.index') }}" class="menu-link">
+                        <div>{{ localize('global.lab_type_sections') }}</div>
                     </a>
                 </li>
                 <li class="menu-item {{ Route::is('lab_types.index') ? 'active' : '' }}">

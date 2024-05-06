@@ -14,9 +14,9 @@ class OperationTypeSeeder extends Seeder
     public function run(): void
     {
         $operationTypes = [
-            ['id' => '1','name' => 'Appendices','branch_id' => '1','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
-            ['id' => '2','name' => 'Throat','branch_id' => '1','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
-            ['id' => '3','name' => 'Eye','branch_id' => '1','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '1','name' => 'Appendices','branch_id' => '1','department_id' =>'1','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '2','name' => 'Throat','branch_id' => '1','department_id' =>'1','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '3','name' => 'Eye','branch_id' => '1','department_id' =>'1','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
         ];
 
         foreach($operationTypes as $operationType){

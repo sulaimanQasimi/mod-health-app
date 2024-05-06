@@ -35,6 +35,7 @@ class DiagnoseController extends Controller
             'description' => 'required',
             'patient_id' => 'required',
             'appointment_id' => 'required',
+            'type' => 'required',
         ]);
 
         Diagnose::create($data);

@@ -542,5 +542,10 @@ return [
     'create_relation' => 'ایجاد ارتباط خانواده گی',
     'create_lab_type_section' => 'اضافه نموده نوعیت معاینات',
     'parent_test' => 'تست مافوق',
+    'diagnose_type' => 'نوعیت تشخیص',
+    'primary' => 'ابتدایی',
+    'final' => 'نهایی',
+    'primary_diagnoses' => 'تشخیص های ابتدایی',
+    'final_diagnoses' => 'تشخیص های نهایی',
 
 ];

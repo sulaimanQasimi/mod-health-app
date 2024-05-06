@@ -108,23 +108,19 @@ class PrescriptionController extends Controller
         return view('pages.prescriptions.print_card', compact('appointment','prescriptions','patient'));
     }
 
-    public function issue(Prescription $prescription)
-    {
+    public function updateStatus($prescriptionId, $key)
+{
+    // Find the prescription by ID
+    $prescription = Prescription::findOrFail($prescriptionId);
 
-        $prescription = Prescription::findOrFail($prescription->id);
-        $prescription->update(['is_delivered' => true]);
-        $prescription->save();
+    // Update the status of the specified key
+    $statuses = is_array($prescription->is_delivered) ? $prescription->is_delivered : json_decode($prescription->is_delivered, true);
+    $updatedStatus = $statuses[$key] === 0 ? 1 : 0;
+    $statuses[$key] = $updatedStatus;
+    $prescription->is_delivered = json_encode($statuses);
+    $prescription->save();
 
-
-        return redirect()->route('prescriptions.index');
-    }
-
-    public function reject(Prescription $prescription)
-    {
-        $prescription = Prescription::findOrFail($prescription->id);
-        $prescription->update(['is_delivered' => false]);
-        $prescription->save();
-
-        return redirect()->route('prescriptions.index');
-    }
+    // Return a response
+    return response()->json(['status' => 'success']);
+}
 }

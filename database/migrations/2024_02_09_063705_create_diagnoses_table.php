@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('diagnoses', function (Blueprint $table) {
             $table->id();
             $table->string('description');
+            $table->tinyInteger('type');
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('appointment_id');
             $table->softDeletes();

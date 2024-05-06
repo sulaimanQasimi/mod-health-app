@@ -12,7 +12,7 @@ class Diagnose extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['description','patient_id','appointment_id'];
+    protected $fillable = ['description','patient_id','appointment_id','type'];
 
     public static function boot()
     {

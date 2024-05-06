@@ -57,6 +57,7 @@ class PrescriptionController extends Controller
         $data['frequency'] = json_encode($data['frequency']);
         $data['amount'] = json_encode($data['amount']);
         $data['type'] = json_encode($data['type']);
+        $data['is_delivered'] = json_encode($data['is_delivered']);
 
 
         Prescription::create($data);
@@ -109,18 +110,40 @@ class PrescriptionController extends Controller
     }
 
     public function updateStatus($prescriptionId, $key)
-{
-    // Find the prescription by ID
-    $prescription = Prescription::findOrFail($prescriptionId);
+    {
+        // Find the prescription by ID
+        $prescription = Prescription::findOrFail($prescriptionId);
 
-    // Update the status of the specified key
-    $statuses = is_array($prescription->is_delivered) ? $prescription->is_delivered : json_decode($prescription->is_delivered, true);
-    $updatedStatus = $statuses[$key] === 0 ? 1 : 0;
-    $statuses[$key] = $updatedStatus;
-    $prescription->is_delivered = json_encode($statuses);
-    $prescription->save();
+        // Update the status of the specified key
+        $statuses = is_array($prescription->is_delivered) ? $prescription->is_delivered : json_decode($prescription->is_delivered, true);
+        $updatedStatus = $statuses[$key] === "0" ? "1" : "0";
+        $statuses[$key] = $updatedStatus;
+        $prescription->is_delivered = json_encode($statuses);
+        $prescription->save();
 
-    // Return a response
-    return response()->json(['status' => 'success']);
-}
+        // Return a response
+        return response()->json(['status' => 'success']);
+    }
+
+    public function scanQrCode(Request $request)
+    {
+        // Get the scanned QR code data
+        $qrCodeData = $request->input('qrCodeData');
+
+        // Find the patient based on the QR code data
+        $prescription = Prescription::where('id', $qrCodeData)->where('branch_id',auth()->user()->branch_id)->first();
+
+        if ($prescription) {
+            // Redirect to the patient's show page
+            return redirect()->route('prescriptions.show', $prescription->id);
+        } else {
+            // Handle the case when the patient is not found
+            return redirect()->back()->with('error', localize('global.prescription_not_found'));
+        }
+    }
+
+    public function scanCode()
+    {
+        return view('pages.prescriptions.scan');
+    }
 }

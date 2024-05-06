@@ -38,6 +38,7 @@
             $amounts = is_array($prescription->amount) ? $prescription->amount : json_decode($prescription->amount, true);
             $types = is_array($prescription->type) ? $prescription->type : json_decode($prescription->type, true);
             $statuses = is_array($prescription->is_delivered) ? $prescription->is_delivered : json_decode($prescription->is_delivered, true);
+            // dd($statuses);
         @endphp
         @foreach ($descriptions as $key => $description)
             <tr>
@@ -48,7 +49,7 @@
                 <td>{{ $frequencies[$key] }}</td>
                 <td>{{ $amounts[$key] }}</td>
                 <td>
-                    <button type="button" class="btn btn-primary type-button" data-type="{{ $statuses[$key] }}">{{ $statuses[$key] }}</button>
+                    <a href="" class="type-button" data-type="{{ $statuses[$key] }}"><i class="{{ $statuses[$key] == 0 ? 'bx bx-x bg-danger' : 'bx bx-check bg-success' }}"></i></a>
             <input type="hidden" name="is_delivered[]" value="{{ $statuses[$key] }}">
                 </td>
             </tr>
@@ -71,8 +72,8 @@
     $(document).ready(function() {
     $('.type-button').click(function() {
         var button = $(this);
-        var currentType = parseInt(button.attr('data-type'));
-        var updatedType = currentType === 0 ? 1 : 0;
+        var currentType = button.attr('data-type');
+        var updatedType = currentType == "0" ? "1" : "0";
 
         button.attr('data-type', updatedType);
         button.text(updatedType);
@@ -91,8 +92,11 @@
         $.ajax({
             url: "{{url('prescriptions/update-status/')}}/" + prescriptionId + '/' + key,
             type: 'POST',
-            _method:'POST',
-            
+            data: {
+                updatedType: updatedType,
+            },
+
+
             success: function(response) {
                 console.log('Status updated successfully');
             },

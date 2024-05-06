@@ -88,6 +88,11 @@
             </a>
 
             <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('prescriptions.scanCode') ? 'active' : '' }}">
+                    <a href="{{ route('prescriptions.scanCode') }}" class="menu-link">
+                        <div>{{ localize('global.scan_prescription') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
                     <a href="{{ route('prescriptions.index') }}" class="menu-link">
                         <div>{{ localize('global.undelivered_prescriptions') }}</div>

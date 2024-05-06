@@ -215,8 +215,7 @@
                                                 value="{{ auth()->user()->branch_id }}">
                                             <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
                                                 value="{{ auth()->user()->id }}">
-                                            <input type="hidden" id="is_delivered{{ $appointment->id }}"
-                                                name="is_delivered" value="0">
+
                                             <!-- Add other diagnosis form fields as needed -->
                                             <div class="form-group" id="prescription-items">
                                                 <label>{{ localize('global.description') }}</label>
@@ -242,6 +241,10 @@
                                                         <div class="col-md-2">
                                                             <input type="text" class="form-control mt-2"
                                                                 name="type[]" placeholder="Type">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                        <input type="hidden" class="form-control mt-2"
+                                                name="is_delivered[]" value="0">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -838,6 +841,13 @@
             typeInput.name = 'type[]';
             typeInput.placeholder = 'Type';
 
+            // Create the delivery input field
+            const deliveryInput = document.createElement('input');
+            deliveryInput.type = 'hidden';
+            deliveryInput.className = 'form-control mt-2';
+            deliveryInput.name = 'is_delivered[]';
+            deliveryInput.value = 0;
+
             // Create the column divs
             const descriptionCol = document.createElement('div');
             descriptionCol.className = 'col-md-3';
@@ -850,12 +860,17 @@
             const typeCol = document.createElement('div');
             typeCol.className = 'col-md-2';
 
+            const deliveryCol = document.createElement('div');
+            deliveryCol.className = 'col-md-2';
+
+
             // Append the input fields to their respective column divs
             descriptionCol.appendChild(descriptionInput);
             dosageCol.appendChild(dosageInput);
             frequencyCol.appendChild(frequencyInput);
             amountCol.appendChild(amountInput);
             typeCol.appendChild(typeInput);
+            deliveryCol.appendChild(deliveryInput);
 
             // Append the column divs to the new row div
             newRow.appendChild(descriptionCol);
@@ -863,6 +878,7 @@
             newRow.appendChild(frequencyCol);
             newRow.appendChild(amountCol);
             newRow.appendChild(typeCol);
+            newRow.appendChild(deliveryCol);
 
             // Append the new row div to the prescription input container
             prescriptionContainer.appendChild(newRow);

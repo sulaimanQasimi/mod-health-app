@@ -100,8 +100,8 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="mb-3">
-                                        <label for="realtion_id">{{localize('global.relation')}}</label>
-                                        <select class="form-control select2" name="realtion_id" id="realtion_id">
+                                        <label for="relation_id">{{localize('global.relation')}}</label>
+                                        <select class="form-control select2" name="relation_id" id="relation_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($relations as $value)
                                                 <option value="{{ $value->id }}"

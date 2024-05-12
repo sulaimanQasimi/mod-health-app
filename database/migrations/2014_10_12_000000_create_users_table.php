@@ -23,8 +23,18 @@ return new class extends Migration
             $table->string('last_name_dr', 191)->nullable();
             $table->integer('status')->default(1)->comment('1 active,0 inactive');
             $table->integer('branch_id')->nullable();
+            $table->unsignedBigInteger('department_id');
+            $table->unsignedBigInteger('section_id');
             $table->integer('user_change_password_status')->default(0)->comment('0->not changed 1->changed');
             $table->string('lang', 5)->default('dr');
+
+            $table->foreign('department_id')
+            ->references('id')
+            ->on('departments');
+      $table->foreign('section_id')
+            ->references('id')
+            ->on('sections');
+            
             $table->timestamps();
             $table->softDeletes();
             $table->integer('created_by')->nullable();

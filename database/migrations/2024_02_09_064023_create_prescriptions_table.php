@@ -35,7 +35,7 @@ return new class extends Migration
 
             $table->foreign('doctor_id')
                   ->references('id')
-                  ->on('doctors');
+                  ->on('users');
 
             $table->foreign('appointment_id')
                   ->references('id')

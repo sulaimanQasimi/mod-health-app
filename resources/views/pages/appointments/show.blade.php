@@ -525,7 +525,7 @@
 
                                                 <label
                                                     for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
-                                                <select class="form-control select2" name="doctor_id">
+                                                <select class="form-control select2" name="doctor_id[]" multiple>
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($doctors as $value)
                                                         <option value="{{ $value->id }}"

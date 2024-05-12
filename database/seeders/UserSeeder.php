@@ -20,6 +20,8 @@ class UserSeeder extends Seeder
             'password' => Hash::make('123456789'),
             'status' =>'1',
             'branch_id' => '1',
+            'department_id' => '1',
+            'section_id' => '1',
             'lang' => 'dr'
 
         ]);

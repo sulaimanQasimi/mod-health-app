@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->unsignedBigInteger('branch_id');
+            $table->text('doctor_id')->nullable();
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('patient_id');
             $table->text('result',2000)->nullable();
@@ -33,7 +34,7 @@ return new class extends Migration
             $table->foreign('patient_id')
             ->references('id')
             ->on('patients');
-
+            
             $table->softDeletes();
             $table->timestamps();
         });

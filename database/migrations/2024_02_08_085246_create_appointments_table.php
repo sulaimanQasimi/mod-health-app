@@ -32,7 +32,7 @@ return new class extends Migration
                   ->on('branches');
             $table->foreign('doctor_id')
                 ->references('id')
-                ->on('doctors');
+                ->on('users');
         });
     }
 

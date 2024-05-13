@@ -76,4 +76,18 @@ class HomeController extends Controller
 
         return $options;
     }
+
+    public function getRelatedDoctors($departmentId)
+    {
+        $department = Department::findOrFail($departmentId);
+        $doctors = $department->doctors;
+        $options = '<option value = "">Select Department</option>';
+
+        foreach($doctors as $doctor)
+        {
+            $options .='<option value = "' .$doctor->id . '">' . $doctor->name_en. '</option>';
+        }
+
+        return $options;
+    }
 }

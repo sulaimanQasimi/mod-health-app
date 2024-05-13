@@ -121,6 +121,12 @@
         </li>
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
+                <div>{{ localize('global.icu') }}</div>
+            </a>
+        </li>
+        <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
+            <a href="{{ route('lab_tests.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-first-aid text-danger"></i>
                 <div>{{ localize('global.anastasia') }}</div>
             </a>

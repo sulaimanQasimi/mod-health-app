@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
 use App\Models\Patient;
@@ -55,8 +56,9 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
+        $departments = Department::all();
         $doctors = Doctor::all();
-        return view('pages.patients.show', compact('patient','doctors'));
+        return view('pages.patients.show', compact('patient','departments','doctors'));
     }
 
     public function edit(Patient $patient)

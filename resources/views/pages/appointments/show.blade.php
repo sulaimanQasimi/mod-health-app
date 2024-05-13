@@ -278,6 +278,7 @@
                                         <th>{{ localize('global.dosage') }}</th>
                                         <th>{{ localize('global.frequency') }}</th>
                                         <th>{{ localize('global.amount') }}</th>
+                                        <th>{{ localize('global.status') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -300,6 +301,9 @@
                                                 $types = is_array($prescription->type)
                                                     ? $prescription->type
                                                     : json_decode($prescription->type, true);
+                                                    $statuses = is_array($prescription->is_delivered)
+                                        ? $prescription->is_delivered
+                                        : json_decode($prescription->is_delivered, true);
                                             @endphp
                                             @foreach ($descriptions as $key => $description)
                                                 <tr>
@@ -309,6 +313,11 @@
                                                     <td>{{ $dosages[$key] }}</td>
                                                     <td>{{ $frequencies[$key] }}</td>
                                                     <td>{{ $amounts[$key] }}</td>
+                                                    <td>
+                                                        <a href="" class="type-button" data-type="{{ $statuses[$key] }}"><i
+                                                                class="{{ $statuses[$key] == 0 ? 'bx bx-x bg-danger' : 'bx bx-check bg-success' }}"></i></a>
+                                                        <input type="hidden" name="is_delivered[]" value="{{ $statuses[$key] }}">
+                                                    </td>
                                                     <td>
                                                         <a href="{{ route('prescriptions.edit', $prescription->id) }}"><span><i
                                                                     class="bx bx-edit"></i></span></a>

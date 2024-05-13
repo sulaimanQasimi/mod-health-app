@@ -549,6 +549,7 @@ return [
     'final_diagnoses' => 'تشخیص های نهایی',
     'please_scan_prescription' => 'لطفا نسخه را سکن نمایید',
     'scan_prescription' => 'سکن نمودن نسخه',
-    'prescription_not_found' => 'نسخه مورد نظر یافت نشد'
+    'prescription_not_found' => 'نسخه مورد نظر یافت نشد',
+    'icu' => 'مریضان داخل ICU'
 
 ];

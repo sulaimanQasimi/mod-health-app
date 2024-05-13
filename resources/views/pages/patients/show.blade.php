@@ -160,16 +160,25 @@
                         <form id="createAppointmentForm" action="{{ route('appointments.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="doctor_name">{{localize('global.doctor_name')}}</label>
+                                <label for="department">{{localize('global.department')}}</label>
+                                <select class="form-control select2" name="department_id" id="department_id">
+                                    <option value="">{{ localize('global.select') }}</option>
+                                    @foreach($departments as $value)
+                                        <option value="{{ $value->id }}"
+                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                        {{ $value->name }}</option>
+                                    @endforeach
+                                </select>
                             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                             <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
                             <!-- Add other appointment form fields as needed -->
-                            <select class="form-control select2" name="doctor_id">
+                            <label for="doctor_name">{{localize('global.doctor_name')}}</label>
+                            <select class="form-control select2" name="doctor_id" id="doctor_id">
                                 <option value="">{{ localize('global.select') }}</option>
                                 @foreach($doctors as $value)
                                     <option value="{{ $value->id }}"
                                         {{ old('name') == $value->id ? 'selected' : '' }}>
-                                    {{ $value->name }}</option>
+                                    {{ $value->name_dr }}</option>
                                 @endforeach
                             </select>
                             </div>
@@ -192,6 +201,32 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('scripts')
+
+<script>
+    $(document).ready(function()
+{
+    $('#department_id').on('change', function()
+{
+    var departmentID = $(this).val();
+    if(departmentID !== '')
+    {
+        $.ajax({
+            url: '/get_doctors/' + departmentID,
+            type: 'GET',
+            success: function(response)
+            {
+
+                $('#doctor_id').html(response);
+            }
+        })
+    }
+})
+})
+</script>
 
 @endsection
 

@@ -7,6 +7,7 @@ use App\Models\Bed;
 use App\Models\Diagnose;
 use App\Models\Doctor;
 use App\Models\LabType;
+use App\Models\LabTypeSection;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -79,9 +80,10 @@ class AppointmentController extends Controller
         $doctors = Doctor::all();
         $rooms = Room::all();
         $beds = Bed::all();
+        $labTypeSections = LabTypeSection::all();
         $patient = $appointment->patient;
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections'));
     }
 
     public function destroy(Appointment $appointment)

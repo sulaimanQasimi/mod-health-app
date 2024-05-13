@@ -352,6 +352,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/scan-qr-code-prescription', [PrescriptionController::class, 'scanQrCode'])->name('prescriptions.scanQRCode');
     Route::get('/scan-qr-code-page-prescription', [PrescriptionController::class, 'scanCode'])->name('prescriptions.scanCode');
     Route::get('/get_doctors/{departmentId}', [HomeController::class, 'getRelatedDoctors']);
+    Route::get('/get_labTypes/{labTypeId}', [HomeController::class, 'getRelatedLabTypes']);
+    Route::get('/lab-tests/{labTypeId}', [HomeController::class, 'getLabTypeTests']);
 
 });
 

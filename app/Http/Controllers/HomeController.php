@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\LabType;
+use App\Models\LabTypeSection;
 use App\Models\Province;
 
 class HomeController extends Controller
@@ -89,5 +91,28 @@ class HomeController extends Controller
         }
 
         return $options;
+    }
+
+    public function getRelatedLabTypes($labTypeId)
+    {
+        $labTypeSection = LabTypeSection::findOrFail($labTypeId);
+        $labTypes = $labTypeSection->labTypes;
+        $options = '<option value = "">Select Department</option>';
+
+        foreach($labTypes as $labType)
+        {
+            $options .='<option value = "' .$labType->id . '">' . $labType->name. '</option>';
+        }
+
+        return $options;
+    }
+
+    public function getLabTypeTests($labTypeId)
+    {
+         // Retrieve the lab type tests based on the $labTypeId
+         $labTypeTests = LabType::where('parent_id', $labTypeId)->get();
+
+         // Return the lab type tests as JSON response
+         return response()->json($labTypeTests);
     }
 }

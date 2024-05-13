@@ -402,8 +402,21 @@
                                             <div class="form-group">
 
                                                 <label
+                                                    for="lab_type_section{{ $appointment->id }}">{{ localize('global.lab_type_section') }}</label>
+                                                <select class="form-control select2" name="lab_type_section" id="lab_type_section">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($labTypeSections as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->section }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <label
                                                     for="lab_type_id{{ $appointment->id }}">{{ localize('global.lab_type') }}</label>
-                                                <select class="form-control select2" name="lab_type_id">
+                                                <select class="form-control select2" name="lab_type_id" id="lab_type_id" onchange="loadLabTypeTests()">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($labTypes as $value)
                                                         <option value="{{ $value->id }}"
@@ -413,6 +426,8 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
+
+                                                <div id="labTypeTestsContainer"></div>
                                             </div>
                                     </div>
                                     <div class="modal-footer">
@@ -893,4 +908,73 @@
             prescriptionContainer.appendChild(newRow);
         });
     </script>
+
+<script>
+    $(document).ready(function()
+{
+    $('#lab_type_section').on('change', function()
+{
+    var labSectionID = $(this).val();
+    if(labSectionID !== '')
+    {
+        $.ajax({
+            url: '/get_labTypes/' + labSectionID,
+            type: 'GET',
+            success: function(response)
+            {
+
+                $('#lab_type_id').html(response);
+            }
+        })
+    }
+})
+})
+</script>
+
+<script>
+    function loadLabTypeTests() {
+        var labTypeId = document.getElementById('lab_type_id').value;
+        var labTypeTestsContainer = document.getElementById('labTypeTestsContainer');
+        labTypeTestsContainer.innerHTML = ''; // Clear previous checkboxes
+
+        // Make an AJAX request to fetch the lab type tests based on the selected lab_type_id
+        fetch('/lab-tests/' + labTypeId)
+            .then(response => response.json())
+            .then(data => {
+                // Create checkboxes for each lab type test
+                data.forEach(function(test) {
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'lab_type_tests[]'; // Use an array to submit multiple values
+                    checkbox.value = test.id;
+
+                    // Update the lab_type_id value when a checkbox is checked/unchecked
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            // Append the test id to the lab_type_id value
+                            document.getElementById('lab_type_id').value += ',' + this.value;
+                        } else {
+                            // Remove the test id from the lab_type_id value
+                            var labTypeIdValue = document.getElementById('lab_type_id').value;
+                            labTypeIdValue = labTypeIdValue.replace(',' + this.value, '');
+                            labTypeIdValue = labTypeIdValue.replace(this.value + ',', '');
+                            labTypeIdValue = labTypeIdValue.replace(this.value, '');
+                            document.getElementById('lab_type_id').value = labTypeIdValue;
+                        }
+                    });
+
+                    // Create a label for the checkbox
+                    var label = document.createElement('label');
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(test.name));
+
+                    // Append the checkbox to the labTypeTestsContainer
+                    labTypeTestsContainer.appendChild(label);
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+</script>
 @endsection

@@ -10,4 +10,9 @@ class LabTypeSection extends Model
     use HasFactory;
 
     protected $fillable = ['section'];
+
+    public function labTypes()
+    {
+        return $this->hasMany(LabType::class, 'section_id', 'id');
+    }
 }

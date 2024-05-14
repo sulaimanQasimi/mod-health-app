@@ -12,7 +12,7 @@
                                 <h5 class="mb-4 p-3 bg-label-primary text-center">
                                     {{ localize('global.appointment_details') }}</h5>
 
-                                <div class="row p-2">
+                                <div class="row p-2 text-center">
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
                                         <div>
@@ -46,8 +46,8 @@
                                             </h5>
                                         </div>
                                         @php
-                                            $primaryDiagnoses = $previousDiagnoses->where('type',0);
-                                            $finalDiagnoses = $previousDiagnoses->where('type',1);
+                                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
+                                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
                                         @endphp
 
                                         <div class="container">
@@ -70,18 +70,20 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        @foreach($primaryDiagnoses as $diagnose)
-                                                        <li class="m-1 p-1">
-                                                        <span class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                        {{$diagnose->description}}
-                                                        </li>
+                                                        @foreach ($primaryDiagnoses as $diagnose)
+                                                            <li class="m-1 p-1">
+                                                                <span
+                                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                {{ $diagnose->description }}
+                                                            </li>
                                                         @endforeach
                                                     </div>
                                                     <div class="col-md-6">
-                                                        @foreach($finalDiagnoses as $diagnose)
-                                                        <li class="m-1 p-1">
-                                                            <span class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                            {{$diagnose->description}}
+                                                        @foreach ($finalDiagnoses as $diagnose)
+                                                            <li class="m-1 p-1">
+                                                                <span
+                                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                {{ $diagnose->description }}
                                                             </li>
                                                         @endforeach
                                                     </div>
@@ -123,8 +125,8 @@
                                                     for="type{{ $appointment->id }}">{{ localize('global.diagnose_type') }}</label>
                                                 <select class="form-control select2" name="type">
                                                     <option value="">{{ localize('global.select') }}</option>
-                                                    <option value="0">{{localize('global.primary')}}</option>
-                                                    <option value="1">{{localize('global.final')}}</option>
+                                                    <option value="0">{{ localize('global.primary') }}</option>
+                                                    <option value="1">{{ localize('global.final') }}</option>
 
                                                 </select>
                                                 <label
@@ -194,8 +196,9 @@
                             data-bs-target="#createPrescriptionModal{{ $appointment->id }}"><span><i
                                     class="bx bx-plus"></i></span></button>
                         <!-- Create Diagnose Modal -->
-                        <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}" tabindex="-1"
-                            aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
+                        <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}"
+                            tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}"
+                            aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -243,8 +246,8 @@
                                                                 name="type[]" placeholder="Type">
                                                         </div>
                                                         <div class="col-md-2">
-                                                        <input type="hidden" class="form-control mt-2"
-                                                name="is_delivered[]" value="0">
+                                                            <input type="hidden" class="form-control mt-2"
+                                                                name="is_delivered[]" value="0">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -301,9 +304,9 @@
                                                 $types = is_array($prescription->type)
                                                     ? $prescription->type
                                                     : json_decode($prescription->type, true);
-                                                    $statuses = is_array($prescription->is_delivered)
-                                        ? $prescription->is_delivered
-                                        : json_decode($prescription->is_delivered, true);
+                                                $statuses = is_array($prescription->is_delivered)
+                                                    ? $prescription->is_delivered
+                                                    : json_decode($prescription->is_delivered, true);
                                             @endphp
                                             @foreach ($descriptions as $key => $description)
                                                 <tr>
@@ -314,9 +317,8 @@
                                                     <td>{{ $frequencies[$key] }}</td>
                                                     <td>{{ $amounts[$key] }}</td>
                                                     <td>
-                                                        <a href="" class="type-button" data-type="{{ $statuses[$key] }}"><i
-                                                                class="{{ $statuses[$key] == 0 ? 'bx bx-x bg-danger' : 'bx bx-check bg-success' }}"></i></a>
-                                                        <input type="hidden" name="is_delivered[]" value="{{ $statuses[$key] }}">
+                                                        <span><i
+                                                                class="{{ $statuses[$key] == 0 ? 'bx bx-x text-danger' : 'bx bx-check text-success' }}"></i></span>
                                                     </td>
                                                     <td>
                                                         <a href="{{ route('prescriptions.edit', $prescription->id) }}"><span><i
@@ -403,7 +405,8 @@
 
                                                 <label
                                                     for="lab_type_section{{ $appointment->id }}">{{ localize('global.lab_type_section') }}</label>
-                                                <select class="form-control select2" name="lab_type_section" id="lab_type_section">
+                                                <select class="form-control select2" name="lab_type_section"
+                                                    id="lab_type_section">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($labTypeSections as $value)
                                                         <option value="{{ $value->id }}"
@@ -416,7 +419,8 @@
 
                                                 <label
                                                     for="lab_type_id{{ $appointment->id }}">{{ localize('global.lab_type') }}</label>
-                                                <select class="form-control select2" name="lab_type_id[]" id="lab_type_id" onchange="loadLabTypeTests()">
+                                                <select class="form-control select2" name="lab_type_id[]"
+                                                    id="lab_type_id" onchange="loadLabTypeTests()">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($labTypes as $value)
                                                         <option value="{{ $value->id }}"
@@ -909,72 +913,68 @@
         });
     </script>
 
-<script>
-    $(document).ready(function()
-{
-    $('#lab_type_section').on('change', function()
-{
-    var labSectionID = $(this).val();
-    if(labSectionID !== '')
-    {
-        $.ajax({
-            url: '/get_labTypes/' + labSectionID,
-            type: 'GET',
-            success: function(response)
-            {
+    <script>
+        $(document).ready(function() {
+            $('#lab_type_section').on('change', function() {
+                var labSectionID = $(this).val();
+                if (labSectionID !== '') {
+                    $.ajax({
+                        url: '/get_labTypes/' + labSectionID,
+                        type: 'GET',
+                        success: function(response) {
 
-                $('#lab_type_id').html(response);
-            }
-        })
-    }
-})
-})
-</script>
-
-<script>
-    function loadLabTypeTests() {
-        var labTypeId = document.getElementById('lab_type_id').value;
-        var labTypeTestsContainer = document.getElementById('labTypeTestsContainer');
-        labTypeTestsContainer.innerHTML = ''; // Clear previous checkboxes
-
-        // Make an AJAX request to fetch the lab type tests based on the selected lab_type_id
-        fetch('/lab-tests/' + labTypeId)
-            .then(response => response.json())
-            .then(data => {
-                // Create checkboxes for each lab type test
-                data.forEach(function(test) {
-                    var checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'lab_type_id[]'; // Use an array to submit multiple values
-                    checkbox.value = test.id;
-
-                    // Update the lab_type_id value when a checkbox is checked/unchecked
-                    checkbox.addEventListener('change', function() {
-                        if (this.checked) {
-                            // Append the test id to the lab_type_id value
-                            document.getElementById('lab_type_id').value += ',' + this.value;
-                        } else {
-                            // Remove the test id from the lab_type_id value
-                            var labTypeIdValue = document.getElementById('lab_type_id').value;
-                            labTypeIdValue = labTypeIdValue.replace(',' + this.value, '');
-                            labTypeIdValue = labTypeIdValue.replace(this.value + ',', '');
-                            labTypeIdValue = labTypeIdValue.replace(this.value, '');
-                            document.getElementById('lab_type_id').value = labTypeIdValue;
+                            $('#lab_type_id').html(response);
                         }
-                    });
-
-                    // Create a label for the checkbox
-                    var label = document.createElement('label');
-                    label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(test.name));
-
-                    // Append the checkbox to the labTypeTestsContainer
-                    labTypeTestsContainer.appendChild(label);
-                });
+                    })
+                }
             })
-            .catch(error => {
-                console.log(error);
-            });
-    }
-</script>
+        })
+    </script>
+
+    <script>
+        function loadLabTypeTests() {
+            var labTypeId = document.getElementById('lab_type_id').value;
+            var labTypeTestsContainer = document.getElementById('labTypeTestsContainer');
+            labTypeTestsContainer.innerHTML = ''; // Clear previous checkboxes
+
+            // Make an AJAX request to fetch the lab type tests based on the selected lab_type_id
+            fetch('/lab-tests/' + labTypeId)
+                .then(response => response.json())
+                .then(data => {
+                    // Create checkboxes for each lab type test
+                    data.forEach(function(test) {
+                        var checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.name = 'lab_type_id[]'; // Use an array to submit multiple values
+                        checkbox.value = test.id;
+
+                        // Update the lab_type_id value when a checkbox is checked/unchecked
+                        checkbox.addEventListener('change', function() {
+                            if (this.checked) {
+                                // Append the test id to the lab_type_id value
+                                document.getElementById('lab_type_id').value += ',' + this.value;
+                            } else {
+                                // Remove the test id from the lab_type_id value
+                                var labTypeIdValue = document.getElementById('lab_type_id').value;
+                                labTypeIdValue = labTypeIdValue.replace(',' + this.value, '');
+                                labTypeIdValue = labTypeIdValue.replace(this.value + ',', '');
+                                labTypeIdValue = labTypeIdValue.replace(this.value, '');
+                                document.getElementById('lab_type_id').value = labTypeIdValue;
+                            }
+                        });
+
+                        // Create a label for the checkbox
+                        var label = document.createElement('label');
+                        label.appendChild(checkbox);
+                        label.appendChild(document.createTextNode(test.name));
+
+                        // Append the checkbox to the labTypeTestsContainer
+                        labTypeTestsContainer.appendChild(label);
+                    });
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    </script>
 @endsection

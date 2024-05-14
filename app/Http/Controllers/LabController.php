@@ -29,20 +29,26 @@ class LabController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'lab_type_id' => 'required',
-            'appointment_id' => 'required',
-            'patient_id' => 'required',
-            'doctor_id' => 'required',
-            'branch_id' => 'required',
-            'status' => 'required',
-        ]);
+{
+    $data = $request->validate([
+        'lab_type_id' => 'required|array',
+        'appointment_id' => 'required',
+        'patient_id' => 'required',
+        'doctor_id' => 'required',
+        'branch_id' => 'required',
+        'status' => 'required',
+    ]);
 
-        Lab::create($data);
+    $labTypeIds = $data['lab_type_id'];
+    unset($data['lab_type_id']);
 
-        return redirect()->back()->with('success', 'Lab Test created successfully.');
+    foreach ($labTypeIds as $labTypeId) {
+        $labData = array_merge($data, ['lab_type_id' => $labTypeId]);
+        Lab::create($labData);
     }
+
+    return redirect()->back()->with('success', 'Lab Tests created successfully.');
+}
 
     /**
      * Display the specified resource.

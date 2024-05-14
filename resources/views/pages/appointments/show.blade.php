@@ -416,7 +416,7 @@
 
                                                 <label
                                                     for="lab_type_id{{ $appointment->id }}">{{ localize('global.lab_type') }}</label>
-                                                <select class="form-control select2" name="lab_type_id" id="lab_type_id" onchange="loadLabTypeTests()">
+                                                <select class="form-control select2" name="lab_type_id[]" id="lab_type_id" onchange="loadLabTypeTests()">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($labTypes as $value)
                                                         <option value="{{ $value->id }}"
@@ -945,7 +945,7 @@
                 data.forEach(function(test) {
                     var checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.name = 'lab_type_tests[]'; // Use an array to submit multiple values
+                    checkbox.name = 'lab_type_id[]'; // Use an array to submit multiple values
                     checkbox.value = test.id;
 
                     // Update the lab_type_id value when a checkbox is checked/unchecked

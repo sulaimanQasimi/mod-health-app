@@ -19,4 +19,9 @@ class Consultation extends Model
     {
         return $this->belongsTo(Appointment::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(ConsultationComment::class);
+    }
 }

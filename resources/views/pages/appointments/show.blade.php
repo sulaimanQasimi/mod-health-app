@@ -318,7 +318,7 @@
                                                     <td>{{ $amounts[$key] }}</td>
                                                     <td>
                                                         <span><i
-                                                                class="{{ $statuses[$key] == 0 ? 'bx bx-x text-danger' : 'bx bx-check text-success' }}"></i></span>
+                                                                class="{{ $statuses[$key] == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
                                                     </td>
                                                     <td>
                                                         <a href="{{ route('prescriptions.edit', $prescription->id) }}"><span><i

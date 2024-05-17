@@ -61,7 +61,7 @@
                                         <td>{{ $amounts[$key] }}</td>
                                         <td>
                                             <a href="" class="type-button" data-type="{{ $statuses[$key] }}"><i
-                                                    class="{{ $statuses[$key] == 0 ? 'bx bx-x bg-danger' : 'bx bx-check bg-success' }}"></i></a>
+                                                    class="{{ $statuses[$key] == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></a>
                                             <input type="hidden" name="is_delivered[]" value="{{ $statuses[$key] }}">
                                         </td>
                                     </tr>

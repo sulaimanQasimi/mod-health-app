@@ -57,8 +57,9 @@ class ConsultationController extends Controller
     public function show(Consultation $consultation)
     {
         $patient = $consultation->appointment->patient;
+        $appointment = $consultation->appointment;
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.consultations.show',compact('consultation','previousDiagnoses'));
+        return view('pages.consultations.show',compact('consultation','previousDiagnoses','appointment'));
 
     }
 
@@ -75,7 +76,7 @@ class ConsultationController extends Controller
      */
     public function update(Request $request, Consultation $consultation)
     {
-        
+
     }
 
     /**

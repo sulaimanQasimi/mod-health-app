@@ -22,6 +22,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\ConsultationCommentController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
@@ -322,6 +323,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{consultation}', [ConsultationController::class, 'edit'])->name('edit');
         Route::put('update/{consultation}', [ConsultationController::class, 'update'])->name('update');
         Route::get('destroy/{consultation}', [ConsultationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Consultations routes
+    Route::prefix('consultation_comments')->name('consultation_comments.')->group(function () {
+        Route::get('index', [ConsultationCommentController::class, 'index'])->name('index');
+        Route::get('create', [ConsultationCommentController::class, 'create'])->name('create');
+        Route::get('show/{comment}', [ConsultationCommentController::class, 'show'])->name('show');
+        Route::post('store', [ConsultationCommentController::class, 'store'])->name('store');
+        Route::get('edit/{comment}', [ConsultationCommentController::class, 'edit'])->name('edit');
+        Route::put('update/{comment}', [ConsultationCommentController::class, 'update'])->name('update');
+        Route::get('destroy/{comment}', [ConsultationCommentController::class, 'destroy'])->name('destroy');
     });
 
     // Operations routes

@@ -13,6 +13,40 @@ return new class extends Migration
     {
         Schema::create('anesthesias', function (Blueprint $table) {
             $table->id();
+            $table->text('plan',2000)->nullable();
+            $table->string('date');
+            $table->string('time');
+            $table->string('planned_duration',192)->nullable();
+            $table->string('position_on_bed',192)->nullable();
+            $table->string('estimated_blood_waste',192)->nullable();
+            $table->string('other_problems',192)->nullable();
+            $table->tinyInteger('status')->default('0');
+            $table->text('anesthesia_log_reply',2000)->nullable();
+
+            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('appointment_id');
+            $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('patient_id');
+            $table->unsignedBigInteger('operation_type_id');
+
+            $table->foreign('branch_id')
+            ->references('id')
+            ->on('branches');
+            $table->foreign('appointment_id')
+            ->references('id')
+            ->on('appointments');
+            $table->foreign('doctor_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('patient_id')
+            ->references('id')
+            ->on('patients');
+            $table->foreign('operation_type_id')
+            ->references('id')
+            ->on('operation_types');
+
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

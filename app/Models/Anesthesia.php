@@ -9,6 +9,16 @@ class Anesthesia extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['description','patient_id','appointment_id','branch_id','date','time'];
+    protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id'];
+
+    public function operationType()
+    {
+        return $this->belongsTo(OperationType::class, 'operation_type_id','id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
+    }
 
 }

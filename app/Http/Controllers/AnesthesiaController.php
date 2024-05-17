@@ -28,7 +28,29 @@ class AnesthesiaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the input
+        $validatedData = $request->validate([
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'branch_id' => 'required',
+            'appointment_id' => 'required',
+            'operation_type_id' => 'required',
+            'date' => 'required',
+            'time' => 'required',
+            'plan' => 'required',
+            'position_on_bed' => 'required',
+            'planned_duration' => 'required',
+            'estimated_blood_waste' => 'required',
+            'other_problems' => 'required',
+            'status' => 'nullable',
+            'anesthesia_log_reply' => 'nullable',
+        ]);
+
+        // Create a new appointment
+        Anesthesia::create($validatedData);
+
+        // Redirect to the appointments index page with a success message
+        return redirect()->route('anesthesias.index')->with('success', 'Anesthesia created successfully.');
     }
 
     /**

@@ -68,4 +68,9 @@ class Appointment extends Model
     {
         return $this->hasMany(Hospitalization::class);
     }
+
+    public function anesthesia()
+    {
+        return $this->hasMany(Anesthesia::class);
+    }
 }

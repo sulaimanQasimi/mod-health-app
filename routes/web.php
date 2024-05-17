@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\AnesthesiaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -325,7 +325,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{consultation}', [ConsultationController::class, 'destroy'])->name('destroy');
     });
 
-    // Consultations routes
+    // Consultation comments routes
     Route::prefix('consultation_comments')->name('consultation_comments.')->group(function () {
         Route::get('index', [ConsultationCommentController::class, 'index'])->name('index');
         Route::get('create', [ConsultationCommentController::class, 'create'])->name('create');
@@ -345,6 +345,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{consultation}', [OperationTypeController::class, 'edit'])->name('edit');
         Route::put('update/{consultation}', [OperationTypeController::class, 'update'])->name('update');
         Route::get('destroy/{consultation}', [OperationTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Anesthesia routes
+    Route::prefix('anesthesias')->name('anesthesias.')->group(function () {
+        Route::get('index', [AnesthesiaController::class, 'index'])->name('index');
+        Route::get('create', [AnesthesiaController::class, 'create'])->name('create');
+        Route::get('show/{anesthesia}', [AnesthesiaController::class, 'show'])->name('show');
+        Route::post('store', [AnesthesiaController::class, 'store'])->name('store');
+        Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
+        Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
+        Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

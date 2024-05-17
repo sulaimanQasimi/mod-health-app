@@ -115,4 +115,18 @@ class HomeController extends Controller
          // Return the lab type tests as JSON response
          return response()->json($labTypeTests);
     }
+
+    public function getBranchDoctors($branchId)
+    {
+        $branch = Branch::findOrFail($branchId);
+        $doctors = $branch->doctors;
+        $options = '<option value = "">Select Doctor</option>';
+
+        foreach($doctors as $doctor)
+        {
+            $options .='<option value = "' .$doctor->id . '">' . $doctor->name_en. '</option>';
+        }
+
+        return $options;
+    }
 }

@@ -552,13 +552,26 @@
                                                 <input type="text" class="form-control" name="title">
 
                                                 <label
+                                                    for="branch{{ $appointment->id }}">{{ localize('global.branch') }}</label>
+                                                    <select class="form-control select2" name="branch" id="branch">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($branches as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name_en') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                <label
                                                     for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
-                                                <select class="form-control select2" name="doctor_id[]" multiple>
+                                                <select class="form-control select2" name="doctor_id[]" id="doctor_id" multiple>
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($doctors as $value)
                                                         <option value="{{ $value->id }}"
                                                             {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
+                                                            {{ $value->name_en }}
 
                                                         </option>
                                                     @endforeach
@@ -928,6 +941,23 @@
                     })
                 }
             })
+
+            $('#branch').on('change', function()
+{
+    var branchID = $(this).val();
+    if(branchID !== '')
+    {
+        $.ajax({
+            url: '/get_branch_doctors/' + branchID,
+            type: 'GET',
+            success: function(response)
+            {
+
+                $('#doctor_id').html(response);
+            }
+        })
+    }
+})
         })
     </script>
 

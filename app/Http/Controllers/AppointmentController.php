@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Branch;
 use App\Models\Diagnose;
 use App\Models\Doctor;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -77,13 +79,14 @@ class AppointmentController extends Controller
     public function show(Appointment $appointment)
     {
         $labTypes = LabType::all();
-        $doctors = Doctor::all();
+        $doctors = User::all();
         $rooms = Room::all();
         $beds = Bed::all();
         $labTypeSections = LabTypeSection::all();
+        $branches = Branch::all();
         $patient = $appointment->patient;
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches'));
     }
 
     public function destroy(Appointment $appointment)

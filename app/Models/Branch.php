@@ -15,4 +15,9 @@ class Branch extends Model
     {
         return $this->hasMany(Department::class);
     }
+
+    public function doctors()
+    {
+        return $this->hasMany(User::class, 'branch_id');
+    }
 }

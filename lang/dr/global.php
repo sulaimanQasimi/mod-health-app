@@ -550,6 +550,19 @@ return [
     'please_scan_prescription' => 'لطفا نسخه را سکن نمایید',
     'scan_prescription' => 'سکن نمودن نسخه',
     'prescription_not_found' => 'نسخه مورد نظر یافت نشد',
-    'icu' => 'مریضان داخل ICU'
+    'icu' => 'مریضان داخل ICU',
+    'checkups' => 'معاینات',
+    'lab_type_section' => 'دیپارتمنت مربوطه',
+    'consultation_details' => 'جزئیات مشوره',
+    'doctors_comments' => 'نظریات داکتران',
+    'no_comments_yet' => 'نظریات موجود نیست',
+    'add_comment' => 'اضافه نمودن نظر',
+    'add_consultation_comment' => 'اضافه نمودن نظر به مشوره',
+    'consultation_comment' => 'نظریه',
+    'refere_to_anasthesia' => 'معرفی به انستیزی',
+    'operation_type' => 'نوعیت عملیات',
+    'approve' => 'تائید',
+    'anesthesia_log_reply' => 'جواب انستیزی لوگ'
+
 
 ];

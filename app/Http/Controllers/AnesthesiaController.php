@@ -12,7 +12,9 @@ class AnesthesiaController extends Controller
      */
     public function index()
     {
-        //
+        $anesthesias = Anesthesia::all();
+
+        return view('pages.anesthesias.index', compact('anesthesias'));
     }
 
     /**
@@ -58,7 +60,7 @@ class AnesthesiaController extends Controller
      */
     public function show(Anesthesia $anesthesia)
     {
-        //
+        return view('pages.anesthesias.show',compact('anesthesia'));
     }
 
     /**
@@ -74,7 +76,14 @@ class AnesthesiaController extends Controller
      */
     public function update(Request $request, Anesthesia $anesthesia)
     {
-        //
+        $data = $request->validate([
+            'anesthesia_log_reply' => 'required',
+            'status' => 'required',
+        ]);
+
+        $anesthesia->update($data);
+
+        return redirect()->route('anesthesias.index')->with('success', 'Anesthesia updated successfully.');
     }
 
     /**

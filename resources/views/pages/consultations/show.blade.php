@@ -163,7 +163,7 @@
                                         <div class="form-group">
 
                                             <label
-                                                for="comment{{ $appointment->id }}">{{ localize('global.comment') }}</label>
+                                                for="comment{{ $appointment->id }}">{{ localize('global.consultation_comment') }}</label>
                                                 <textarea class="form-control mt-2" id="reason{{ $appointment->id }}" name="comment" rows="3"></textarea>
                                         </div>
                                 </div>

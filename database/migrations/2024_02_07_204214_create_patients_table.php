@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('job')->nullable();
             $table->string('rank')->nullable();
             $table->string('image')->nullable();
-            $table->integer('branch_id')->nullable();
-            $table->integer('relation_id')->nullable();
+            $table->unsignedBigInteger('branch_id')->nullable();
+            $table->unsignedBigInteger('relation_id')->nullable();
             $table->unsignedBigInteger('province_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('referred_by');
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->foreign('district_id')->references('id')->on('districts');
             $table->foreign('referred_by')->references('id')->on('recipients');
             $table->foreign('relation_id')->references('id')->on('relations');
+            $table->foreign('branch_id')->references('id')->on('branches');
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

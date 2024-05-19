@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Role;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Auth;
@@ -52,7 +54,9 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $branches = Branch::all();
-        return view('pages.users.create',compact('roles','branches'));
+        $departments = Department::all();
+        $sections = Section::all();
+        return view('pages.users.create',compact('roles','branches','departments','sections'));
     }
 
     /**
@@ -62,10 +66,12 @@ class UserController extends Controller
     {
 
         $user = new User;
-        $user->name_en = $request->name_en;
-        $user->name_dr = $request->name_dr;
+        $user->name = $request->name;
+        $user->last_name = $request->last_name;
         $user->email = $request->email;
         $user->branch_id = $request->branch_id;
+        $user->department_id = $request->department_id;
+        $user->section_id = $request->section_id;
         $user->password = Hash::make($request->password);
 
         $user->save();
@@ -99,8 +105,11 @@ class UserController extends Controller
     {
 
         $roles = Role::all();
+        $branches = Branch::all();
+        $departments = Department::all();
+        $sections = Section::all();
 
-        return view('pages.users.edit',compact('user','roles'));
+        return view('pages.users.edit',compact('user','roles','branches','departments','sections'));
     }
 
     /**

@@ -19,6 +19,12 @@
                                         <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control">
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="address">{{ localize('global.address') }}</label>
+                                        <input type="text" name="address" id="address" value="{{ old('address') }}" class="form-control">
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">{{localize('global.create')}}</button>
                         </form>

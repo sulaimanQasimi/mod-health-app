@@ -375,7 +375,10 @@
         <tbody>
             <tr>
                 <td align="center" style="padding:0px; border: none !important;">
-                    <img src="{{asset('assets/img/test_header.jpg')}}" alt="" height="300">
+                    <img src="{{asset('assets/img/test_header.jpg')}}" alt="" height="150">
+                </td>
+                <td>
+                    {{ QrCode::size(75)->generate($prescription->id) }}
                 </td>
             </tr>
         </tbody>

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Province;
 use App\Models\Recipient;
+use App\Models\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -15,9 +17,28 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PatientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
+        // $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
+        // return view('pages.patients.index', compact('patients'));
+
+        if ($request->ajax()) {
+            $patients = Patient::where('branch_id',auth()->user()->branch_id)->with('province')->get();
+    
+                if ($patients) {
+                    return response()->json([
+                        'data' => $patients,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+    
+        $patients = Patient::where('branch_id',auth()->user()->branch_id)->get();
         return view('pages.patients.index', compact('patients'));
     }
 
@@ -26,20 +47,25 @@ class PatientController extends Controller
         $recipients = Recipient::all();
         $provinces = Province::all();
         $districts = District::all();
-        return view('pages.patients.create',compact('recipients','provinces','districts'));
+        $relations = Relation::all();
+        return view('pages.patients.create',compact('recipients','provinces','districts','relations'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
+            'last_name' => 'nullable',
+            'phone' => 'nullable',
+            'age' => 'required',
             'nid' => 'required',
             'province_id' => 'required',
             'district_id' => 'required',
+            'relation_id' => 'nullable',
             'referred_by' => 'required',
             'branch_id' => 'required',
+            'job' => 'nullable',
+            'rank' => 'nullable',
         ]);
 
         $patient = Patient::create($data);
@@ -50,13 +76,19 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
+        $departments = Department::all();
         $doctors = Doctor::all();
-        return view('pages.patients.show', compact('patient','doctors'));
+        $previousDiagnoses = $patient->diagnoses;
+        return view('pages.patients.show', compact('patient','departments','doctors','previousDiagnoses'));
     }
 
     public function edit(Patient $patient)
     {
-        return view('pages.patients.edit', compact('patient'));
+        $recipients = Recipient::all();
+        $provinces = Province::all();
+        $districts = District::all();
+        $relations = Relation::all();
+        return view('pages.patients.edit',compact('recipients','provinces','districts','relations','patient'));
     }
 
     public function update(Request $request, Patient $patient)

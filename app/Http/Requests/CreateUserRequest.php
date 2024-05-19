@@ -23,10 +23,13 @@ class CreateUserRequest extends FormRequest
     {
 
         return [
-            'name_en' => 'required|max:120',
-            'name_dr' => 'required|max:120',
+            'name' => 'required|max:120',
+            'last_name' => 'required|max:120',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
+            'branch_id' => 'required',
+            'department_id' => 'required',
+            'section_id' => 'required',
         ];
     }
 

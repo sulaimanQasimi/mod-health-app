@@ -31,7 +31,7 @@
                 <td>{{ $hospitalization->bed->number }}</td>
                 <td>{{ $hospitalization->created_at }}</td>
                 <td>
-                    <a href="{{ route('hospitalizations.show', $hospitalization) }}"><i class="bx bx-show-alt"></i></a>
+                    <a href="{{ route('hospitalizations.show', $hospitalization) }}"><i class="bx bx-expand"></i></a>
                 </td>
             </tr>
         @endforeach

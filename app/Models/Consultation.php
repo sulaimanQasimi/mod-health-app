@@ -12,7 +12,16 @@ class Consultation extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time'];
+    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time','doctor_id'];
 
 
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(ConsultationComment::class);
+    }
 }

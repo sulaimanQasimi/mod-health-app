@@ -18,13 +18,15 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name_en',
-        'name_dr',
+        'name',
+        'last_name',
         'email',
         'password',
         'status',
         'avatar',
         'branch_id',
+        'department_id',
+        'section_id',
     ];
 
     /**
@@ -51,5 +53,27 @@ class User extends Authenticatable
     {
         return $this->hasOne(Branch::class, 'id', 'branch_id');
     }
+
+    public function patients()
+    {
+        return $this->hasMany(Patient::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+
 
 }

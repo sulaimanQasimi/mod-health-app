@@ -16,6 +16,7 @@
                                 <th>{{localize('global.number')}}</th>
                                 <th>{{localize('global.patient_name')}}</th>
                                 <th>{{localize('global.last_name')}}</th>
+                                <th>{{localize('global.referred_to')}}</th>
                                 <th>{{localize('global.date')}}</th>
                                 <th>{{localize('global.time')}}</th>
                                 <th>{{localize('global.actions')}}</th>
@@ -27,10 +28,11 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $appointment->patient->name }}</td>
                                     <td>{{ $appointment->patient->last_name }}</td>
+                                    <td>{{ $appointment->doctor->name }}</td>
                                     <td>{{ $appointment->date }}</td>
                                     <td>{{ $appointment->time }}</td>
                                     <td>
-                                        <a href="{{route('appointments.show', $appointment->id)}}"><span><i class="bx bx-show"></i></span></a>
+                                        <a href="{{route('appointments.show', $appointment->id)}}"><span><i class="bx bx-expand"></i></span></a>
                                     </td>
                                 </tr>
                             @endforeach

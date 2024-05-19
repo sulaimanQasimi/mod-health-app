@@ -26,7 +26,7 @@ return new class extends Migration
                   ->on('hospitalizations');
             $table->foreign('doctor_id')
                   ->references('id')
-                  ->on('doctors');
+                  ->on('users');
 
             $table->softDeletes();
             $table->timestamps();

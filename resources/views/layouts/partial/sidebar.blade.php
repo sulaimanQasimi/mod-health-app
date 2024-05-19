@@ -88,6 +88,11 @@
             </a>
 
             <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('prescriptions.scanCode') ? 'active' : '' }}">
+                    <a href="{{ route('prescriptions.scanCode') }}" class="menu-link">
+                        <div>{{ localize('global.scan_prescription') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('prescriptions.index') ? 'active' : '' }}">
                     <a href="{{ route('prescriptions.index') }}" class="menu-link">
                         <div>{{ localize('global.undelivered_prescriptions') }}</div>
@@ -116,6 +121,12 @@
         </li>
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
+                <div>{{ localize('global.icu') }}</div>
+            </a>
+        </li>
+        <li class="menu-item {{ Route::is('anesthesias.index') ? 'active' : '' }}">
+            <a href="{{ route('anesthesias.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-first-aid text-danger"></i>
                 <div>{{ localize('global.anastasia') }}</div>
             </a>
@@ -199,7 +210,11 @@
                         <div>{{ localize('global.doctors') }}</div>
                     </a>
                 </li>
-
+                <li class="menu-item {{ Route::is('relations.index') ? 'active' : '' }}">
+                    <a href="{{ route('relations.index') }}" class="menu-link">
+                        <div>{{ localize('global.relations') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('departments.index') ? 'active' : '' }}">
                     <a href="{{ route('departments.index') }}" class="menu-link">
                         <div>{{ localize('global.departments') }}</div>
@@ -210,6 +225,11 @@
                         <div>{{ localize('global.sections') }}</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Route::is('floors.index') ? 'active' : '' }}">
+                    <a href="{{ route('floors.index') }}" class="menu-link">
+                        <div>{{ localize('global.floors') }}</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ Route::is('rooms.index') ? 'active' : '' }}">
                     <a href="{{ route('rooms.index') }}" class="menu-link">
                         <div>{{ localize('global.rooms') }}</div>
@@ -218,6 +238,11 @@
                 <li class="menu-item {{ Route::is('beds.index') ? 'active' : '' }}">
                     <a href="{{ route('beds.index') }}" class="menu-link">
                         <div>{{ localize('global.beds') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('lab_type_sections.index') ? 'active' : '' }}">
+                    <a href="{{ route('lab_type_sections.index') }}" class="menu-link">
+                        <div>{{ localize('global.lab_type_sections') }}</div>
                     </a>
                 </li>
                 <li class="menu-item {{ Route::is('lab_types.index') ? 'active' : '' }}">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\LabType;
+use App\Models\LabTypeSection;
 use Illuminate\Http\Request;
 
 class LabTypeController extends Controller
@@ -23,7 +24,9 @@ class LabTypeController extends Controller
     public function create()
     {
         $branches = Branch::all();
-        return view('pages.lab_types.create',compact('branches'));
+        $labTypes = LabType::all();
+        $labTypeSections = LabTypeSection::all();
+        return view('pages.lab_types.create',compact('branches','labTypes','labTypeSections'));
     }
 
     /**
@@ -34,6 +37,8 @@ class LabTypeController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'branch_id' => 'required',
+            'section_id' => 'required',
+            'parent_id' => 'nullable',
         ]);
 
         LabType::create($data);

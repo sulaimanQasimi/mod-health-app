@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hospitalization;
+use App\Models\LabType;
+use App\Models\LabTypeSection;
+use App\Models\OperationType;
 use Illuminate\Http\Request;
 
 class HospitalizationController extends Controller
@@ -36,7 +39,8 @@ class HospitalizationController extends Controller
             'doctor_id' => 'required',
             'bed_id' => 'required',
             'appointment_id' => 'required',
-            'is_discharged' => 'required',
+            'is_discharged' => 'nullable',
+            'discharge_remark' => 'nullable',
             'branch_id' => 'required',
         ]);
 
@@ -50,7 +54,12 @@ class HospitalizationController extends Controller
      */
     public function show(Hospitalization $hospitalization)
     {
-        return view('pages.hospitalizations.show',compact('hospitalization'));
+
+        $labTypeSections = LabTypeSection::all();
+        $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
+        $labTypes = LabType::all();
+
+        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes'));
     }
 
     /**
@@ -66,7 +75,14 @@ class HospitalizationController extends Controller
      */
     public function update(Request $request, Hospitalization $hospitalization)
     {
-        //
+        $data = $request->validate([
+            'is_discharged' => 'required',
+            'discharge_remark' => 'required',
+        ]);
+
+        $hospitalization->update($data);
+
+        return redirect()->route('visits.index')->with('success', 'Hospitalization updated successfully.');
     }
 
     /**

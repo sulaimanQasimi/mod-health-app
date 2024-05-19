@@ -91,7 +91,7 @@
             <!-- Users List Table -->
             <div class="card">
                 <div class="card-header border-bottom">
-                    <div class="pt-3 pt-md-0 text-end">
+                    <div class="text-end">
 
                         <a class="btn btn-secondary create-new btn-primary" href="{{ route('users.create') }}"
                            type="button">
@@ -101,20 +101,19 @@
 
                     </div>
                 </div>
-                <div class="card-datatable table-responsive">
+                <div class="card-datatable table-responsive p-2">
                     <table class="datatables-basic table border-top">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>{{ localize('global.number') }}</th>
                                 <th>{{ localize('global.avatar') }}</th>
-                                <th>{{ localize('global.name_dr') }}</th>
+                                <th>{{ localize('global.name') }}</th>
                                 <th>{{ localize('global.email') }}</th>
                                 {{-- @can('deactivate-users') --}}
                                 <th>{{ localize('global.status') }}</th>
                                 {{-- @endcan --}}
                                 <th>{{ localize('global.roles') }}</th>
-                                {{-- <th>{{ localize('global.recipients') }}</th> --}}
                                 <th></th>
                             </tr>
                         </thead>
@@ -171,12 +170,12 @@
                             data: 'avatar',
                             render: function(data, type, full, meta) {
                                 var avatarUrl = data ? '{{ asset("storage") }}' + '/' + data : '{{ asset("assets/img/avatars/1.png") }}';
-                                var avatarHtml = '<img src="' + avatarUrl + '" alt="' + full['name_dr'] + '" class="user-avatar">';
+                                var avatarHtml = '<img src="' + avatarUrl + '" alt="' + full['name'] + '" class="user-avatar">';
                                 return avatarHtml;
                             }
                         },
                         {
-                            data: 'name_dr'
+                            data: 'name'
                         },
                         {
                             data: 'email'

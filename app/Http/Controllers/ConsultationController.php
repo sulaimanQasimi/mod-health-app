@@ -12,7 +12,11 @@ class ConsultationController extends Controller
      */
     public function index()
     {
-        $consultations = Consultation::all();
+        $userId = auth()->user()->id;
+
+        $consultations = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$userId\"')")->paginate(10);
+
+        // return $consultations;
         return view('pages.consultations.index',compact('consultations'));
     }
 
@@ -39,6 +43,9 @@ class ConsultationController extends Controller
             'time' => 'required',
         ]);
 
+        $data['doctor_id'] = json_encode($data['doctor_id']);
+
+
         Consultation::create($data);
 
         return redirect()->back()->with('success', 'Consultation created successfully.');
@@ -47,50 +54,35 @@ class ConsultationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Lab $lab)
+    public function show(Consultation $consultation)
     {
-        //
+        $patient = $consultation->appointment->patient;
+        $appointment = $consultation->appointment;
+        $previousDiagnoses = $patient->diagnoses;
+        return view('pages.consultations.show',compact('consultation','previousDiagnoses','appointment'));
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Lab $lab)
+    public function edit(Consultation $consultation)
     {
-        return view('pages.labs.edit',compact('lab'));
+        return view('pages.consultations.edit',compact('consultation'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Lab $lab)
+    public function update(Request $request, Consultation $consultation)
     {
-        $data = $request->validate([
-            'result' => 'required',
-            'result_file' => 'nullable|mimes:pdf,jpeg,png,jpg,gif|max:2048'
-        ]);
-    
-        // Handle the result file upload
-        if ($request->hasFile('result_file')) {
-            $resultFile = $request->file('result_file');
-            $resultFileName = time().'.'.$resultFile->getClientOriginalExtension();
-    
-            // Store the result file in the storage/app/public directory
-            $resultFile->storeAs('public', $resultFileName);
-    
-            // Update the result_file field
-            $data['result_file'] = $resultFileName;
-        }
-    
-        $lab->update($data);
-    
-        return redirect()->back()->with('success', 'Lab Test updated successfully.');
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Lab $lab)
+    public function destroy(Consultation $consultation)
     {
         //
     }

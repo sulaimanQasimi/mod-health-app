@@ -23,8 +23,8 @@ class UpdateUserRequest extends FormRequest
     {
 
         return [
-            'name_en' => 'required|max:120',
-            'name_dr' => 'required|max:120',
+            'name' => 'required|max:120',
+            'last_name' => 'required|max:120',
             'email' => 'required|email',
         ];
     }
@@ -33,8 +33,8 @@ class UpdateUserRequest extends FormRequest
     {
 
         return [
-            'name_en.required' => localize('global.user_name_en_required'),
-            'name_dr.required' => localize('global.user_name_dr_required'),
+            'name.required' => localize('global.user_name_en_required'),
+            'last_name.required' => localize('global.user_name_dr_required'),
             'email.required' => localize('global.user_email_required'),
         ];
     }

@@ -41,7 +41,7 @@ class Appointment extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsTo(User::class);
     }
 
     public function diagnose()
@@ -51,7 +51,7 @@ class Appointment extends Model
 
     public function labs()
     {
-        return $this->hasMany(Lab::class);
+        return $this->hasMany(Lab::class)->whereNull('hospitalization_id');
     }
 
     public function consultations()
@@ -67,5 +67,10 @@ class Appointment extends Model
     public function hospitalization()
     {
         return $this->hasMany(Hospitalization::class);
+    }
+
+    public function anesthesia()
+    {
+        return $this->hasMany(Anesthesia::class);
     }
 }

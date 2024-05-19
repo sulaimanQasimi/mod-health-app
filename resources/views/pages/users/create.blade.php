@@ -14,25 +14,25 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.name_en') }}</label>
-                                        <input type="text" class="form-control" name="name_en"
-                                               value="{{ old('name_en') }}">
+                                        <label class="form-label">{{ localize('global.name') }}</label>
+                                        <input type="text" class="form-control" name="name"
+                                               value="{{ old('name') }}">
                                     </div>
-                                    @if ($errors->first('name_en'))
+                                    @if ($errors->first('name'))
                                         <div class="display-error">
-                                            {{ $errors->first('name_en') }}
+                                            {{ $errors->first('name') }}
                                         </div>
                                     @endif
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.name_dr') }}</label>
-                                        <input type="text" class="form-control" name="name_dr"
-                                               value="{{ old('name_dr') }}">
+                                        <label class="form-label">{{ localize('global.last_name') }}</label>
+                                        <input type="text" class="form-control" name="last_name"
+                                               value="{{ old('last_name') }}">
                                     </div>
-                                    @if ($errors->first('name_dr'))
+                                    @if ($errors->first('last_name'))
                                         <div class="display-error">
-                                            {{ $errors->first('name_dr') }}
+                                            {{ $errors->first('last_name') }}
                                         </div>
                                     @endif
                                 </div>
@@ -52,18 +52,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.last_name_dr') }}</label>
-                                        <input type="text" class="form-control" name="last_name_dr"
-                                               value="{{ old('last_name_dr') }}">
-                                    </div>
-                                    @if ($errors->first('last_name_dr'))
-                                        <div class="display-error">
-                                            {{ $errors->first('last_name_dr') }}
-                                        </div>
-                                    @endif
-                                </div>
+
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label">{{ localize('global.password') }}</label>
@@ -107,6 +96,34 @@
                                     </div>
                                 @endif
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="department_id">{{localize('global.department')}}</label>
+                                    <select class="form-control select2" name="department_id" id="department_id">
+                                        <option value="">{{ localize('global.select') }}</option>
+                                        @foreach($departments as $value)
+                                            <option value="{{ $value->id }}"
+                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                            {{ $value->name }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="section_id">{{localize('global.section')}}</label>
+                                    <select class="form-control select2" name="section_id" id="section_id">
+                                        <option value="">{{ localize('global.select') }}</option>
+                                        @foreach($sections as $value)
+                                            <option value="{{ $value->id }}"
+                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                            {{ $value->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
                             <div class="col-12 mb-3 mt-3">
                                 <h5>{{ localize('global.roles') }}</h5>
@@ -135,6 +152,40 @@
     <script>
         $(document).ready(function() {
             $('.select2').select2();
+
+            $('#branch_id').on('change', function()
+    {
+        var branchID = $(this).val();
+        if(branchID !== '')
+        {
+            $.ajax({
+                url: '/get_departments/' + branchID,
+                type: 'GET',
+                success: function(response)
+                {
+
+                    $('#department_id').html(response);
+                }
+            })
+        }
+    })
+
+    $('#department_id').on('change', function()
+    {
+        var depID = $(this).val();
+        if(depID !== '')
+        {
+            $.ajax({
+                url: '/get_sections/' + depID,
+                type: 'GET',
+                success: function(response)
+                {
+
+                    $('#section_id').html(response);
+                }
+            })
+        }
+    })
         });
     </script>
 @endpush

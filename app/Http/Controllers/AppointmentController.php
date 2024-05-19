@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Branch;
 use App\Models\Diagnose;
 use App\Models\Doctor;
 use App\Models\LabType;
+use App\Models\LabTypeSection;
+use App\Models\OperationType;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -76,12 +80,15 @@ class AppointmentController extends Controller
     public function show(Appointment $appointment)
     {
         $labTypes = LabType::all();
-        $doctors = Doctor::all();
+        $doctors = User::all();
         $rooms = Room::all();
         $beds = Bed::all();
+        $labTypeSections = LabTypeSection::all();
+        $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
+        $branches = Branch::all();
         $patient = $appointment->patient;
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes'));
     }
 
     public function destroy(Appointment $appointment)

@@ -15,10 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('department_id');
 
             $table->foreign('branch_id')
                   ->references('id')
                   ->on('branches');
+            $table->foreign('department_id')
+                  ->references('id')
+                  ->on('departments');
+
             $table->softDeletes();
             $table->timestamps();
         });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Department;
+use App\Models\Floor;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -23,7 +25,9 @@ class RoomController extends Controller
     public function create()
     {
         $branches = Branch::all();
-        return view('pages.rooms.create', compact('branches'));
+        $floors = Floor::all();
+        $departments = Department::all();
+        return view('pages.rooms.create', compact('branches','floors','departments'));
     }
 
     /**
@@ -34,6 +38,8 @@ class RoomController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'branch_id' => 'required',
+            'floor_id' => 'required',
+            'department_id' => 'required',
         ]);
 
         Room::create($data);

@@ -125,8 +125,56 @@
                 </table>
                 <hr>
                 <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_diagnoses') }}</h5>
+                <div class="row p-4">
+                    <div class="mb-4">
+                        @php
+                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
+                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
+                        @endphp
 
-                <table class="table">
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @foreach ($primaryDiagnoses as $diagnose)
+                                            <li class="m-1 p-1">
+                                                <span
+                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                {{ $diagnose->description }}
+                                            </li>
+                                        @endforeach
+                                    </div>
+                                    <div class="col-md-6">
+                                        @foreach ($finalDiagnoses as $diagnose)
+                                            <li class="m-1 p-1">
+                                                <span
+                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                {{ $diagnose->description }}
+                                            </li>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- <table class="table">
                     <thead>
                         <tr>
                             <th>{{localize('global.number')}}</th>
@@ -145,7 +193,7 @@
                         </tr>
                         @endforeach
                     </tbody>
-                </table>
+                </table> --}}
             </div>
             </div>
         </div>
@@ -160,16 +208,25 @@
                         <form id="createAppointmentForm" action="{{ route('appointments.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="doctor_name">{{localize('global.doctor_name')}}</label>
+                                <label for="department">{{localize('global.department')}}</label>
+                                <select class="form-control select2" name="department_id" id="department_id">
+                                    <option value="">{{ localize('global.select') }}</option>
+                                    @foreach($departments as $value)
+                                        <option value="{{ $value->id }}"
+                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                        {{ $value->name }}</option>
+                                    @endforeach
+                                </select>
                             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                             <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
                             <!-- Add other appointment form fields as needed -->
-                            <select class="form-control select2" name="doctor_id">
+                            <label for="doctor_name">{{localize('global.doctor_name')}}</label>
+                            <select class="form-control select2" name="doctor_id" id="doctor_id">
                                 <option value="">{{ localize('global.select') }}</option>
                                 @foreach($doctors as $value)
                                     <option value="{{ $value->id }}"
                                         {{ old('name') == $value->id ? 'selected' : '' }}>
-                                    {{ $value->name }}</option>
+                                    {{ $value->name_dr }}</option>
                                 @endforeach
                             </select>
                             </div>
@@ -192,6 +249,32 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('scripts')
+
+<script>
+    $(document).ready(function()
+{
+    $('#department_id').on('change', function()
+{
+    var departmentID = $(this).val();
+    if(departmentID !== '')
+    {
+        $.ajax({
+            url: '/get_doctors/' + departmentID,
+            type: 'GET',
+            success: function(response)
+            {
+
+                $('#doctor_id').html(response);
+            }
+        })
+    }
+})
+})
+</script>
 
 @endsection
 

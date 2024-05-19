@@ -426,7 +426,7 @@ return [
     'appointments' => 'ملاقات ها',
     'my_appointments' => 'ملاقات های من',
     'all_appointments' => ' همه ملاقات ها',
-    'create_patient' => 'ثبت مریض',
+    'create_patient' => 'ثبت مریض جدید',
     'last_name' => 'تخلص',
     'phone' => 'شماره تماس',
     'patients_list' => 'لیست مریضان',
@@ -465,7 +465,7 @@ return [
     'branch' => 'شفاخانه',
     'consultations' => 'مشوره ها',
     'my_consultations' => 'مشوره های من',
-    'scan_qrcode' => 'سکن QR',
+    'scan_qrcode' => 'سکن نمودن کارت',
     'lab_types' => 'نوعیت تست ها',
     'appointment_details' => 'جزئیات ملاقات',
     'diagnosed_by' => 'تشخیص شده توسط',
@@ -562,7 +562,9 @@ return [
     'refere_to_anasthesia' => 'معرفی به انستیزی',
     'operation_type' => 'نوعیت عملیات',
     'approve' => 'تائید',
-    'anesthesia_log_reply' => 'جواب انستیزی لوگ'
+    'anesthesia_log_reply' => 'جواب انستیزی لوگ',
+    'age' => 'سن',
+    'edit_patient' => 'تصحیح معلومات مریض'
 
 
 ];

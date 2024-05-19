@@ -14,25 +14,25 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.name_en') }}</label>
-                                        <input type="text" class="form-control" name="name_en"
-                                               value="{{ old('name_en') }}">
+                                        <label class="form-label">{{ localize('global.name') }}</label>
+                                        <input type="text" class="form-control" name="name"
+                                               value="{{ old('name') }}">
                                     </div>
-                                    @if ($errors->first('name_en'))
+                                    @if ($errors->first('name'))
                                         <div class="display-error">
-                                            {{ $errors->first('name_en') }}
+                                            {{ $errors->first('name') }}
                                         </div>
                                     @endif
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.name_dr') }}</label>
-                                        <input type="text" class="form-control" name="name_dr"
-                                               value="{{ old('name_dr') }}">
+                                        <label class="form-label">{{ localize('global.last_name') }}</label>
+                                        <input type="text" class="form-control" name="last_name"
+                                               value="{{ old('last_name') }}">
                                     </div>
-                                    @if ($errors->first('name_dr'))
+                                    @if ($errors->first('last_name'))
                                         <div class="display-error">
-                                            {{ $errors->first('name_dr') }}
+                                            {{ $errors->first('last_name') }}
                                         </div>
                                     @endif
                                 </div>
@@ -52,18 +52,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.last_name_dr') }}</label>
-                                        <input type="text" class="form-control" name="last_name_dr"
-                                               value="{{ old('last_name_dr') }}">
-                                    </div>
-                                    @if ($errors->first('last_name_dr'))
-                                        <div class="display-error">
-                                            {{ $errors->first('last_name_dr') }}
-                                        </div>
-                                    @endif
-                                </div>
+
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label">{{ localize('global.password') }}</label>

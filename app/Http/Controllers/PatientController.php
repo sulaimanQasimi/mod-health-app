@@ -36,12 +36,13 @@ class PatientController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
+            'last_name' => 'nullable',
+            'phone' => 'nullable',
+            'age' => 'required',
             'nid' => 'required',
             'province_id' => 'required',
             'district_id' => 'required',
-            'relation_id' => 'required',
+            'relation_id' => 'nullable',
             'referred_by' => 'required',
             'branch_id' => 'required',
             'job' => 'nullable',
@@ -58,12 +59,17 @@ class PatientController extends Controller
     {
         $departments = Department::all();
         $doctors = Doctor::all();
-        return view('pages.patients.show', compact('patient','departments','doctors'));
+        $previousDiagnoses = $patient->diagnoses;
+        return view('pages.patients.show', compact('patient','departments','doctors','previousDiagnoses'));
     }
 
     public function edit(Patient $patient)
     {
-        return view('pages.patients.edit', compact('patient'));
+        $recipients = Recipient::all();
+        $provinces = Province::all();
+        $districts = District::all();
+        $relations = Relation::all();
+        return view('pages.patients.edit',compact('recipients','provinces','districts','relations','patient'));
     }
 
     public function update(Request $request, Patient $patient)

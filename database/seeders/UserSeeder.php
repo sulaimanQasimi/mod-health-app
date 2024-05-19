@@ -15,14 +15,15 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            'name_en' => 'Super Admin',
+            'name' => 'Super Admin',
+            'last_name' => 'Admin',
             'email' => 'test@test.com',
             'password' => Hash::make('123456789'),
             'status' =>'1',
             'branch_id' => '1',
             'department_id' => '1',
             'section_id' => '1',
-            'lang' => 'dr'
+            'lang' => 'dr',
 
         ]);
     }

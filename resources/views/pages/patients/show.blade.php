@@ -125,8 +125,56 @@
                 </table>
                 <hr>
                 <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_diagnoses') }}</h5>
+                <div class="row p-4">
+                    <div class="mb-4">
+                        @php
+                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
+                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
+                        @endphp
 
-                <table class="table">
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @foreach ($primaryDiagnoses as $diagnose)
+                                            <li class="m-1 p-1">
+                                                <span
+                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                {{ $diagnose->description }}
+                                            </li>
+                                        @endforeach
+                                    </div>
+                                    <div class="col-md-6">
+                                        @foreach ($finalDiagnoses as $diagnose)
+                                            <li class="m-1 p-1">
+                                                <span
+                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                {{ $diagnose->description }}
+                                            </li>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- <table class="table">
                     <thead>
                         <tr>
                             <th>{{localize('global.number')}}</th>
@@ -145,7 +193,7 @@
                         </tr>
                         @endforeach
                     </tbody>
-                </table>
+                </table> --}}
             </div>
             </div>
         </div>

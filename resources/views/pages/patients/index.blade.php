@@ -14,8 +14,10 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
             <th>{{localize('global.last_name')}}</th>
+            <th>{{localize('global.province')}}</th>
             <th>{{localize('global.phone')}}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
@@ -23,22 +25,14 @@
     <tbody>
         @foreach ($patients as $patient)
             <tr>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $patient->name }}</td>
                 <td>{{ $patient->last_name }}</td>
+                <td>{{ $patient->province->name_en }}</td>
                 <td>{{ $patient->phone }}</td>
                 <td>
-                    <a href="{{ route('patients.show', $patient) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('patients.edit', $patient) }}"><i class="bx bx-message-square-edit"></i></a>
-                    <!-- Using an <a> tag -->
-                    {{-- <a href="{{ route('patients.destroy', $patient) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
-                    </a>
-
-                    <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('patients.destroy', $patient) }}" method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form> --}}
+                    <a href="{{ route('patients.show', $patient) }}"><i class="bx bx-expand"></i></a>
+                    <a href="{{ route('patients.edit', $patient) }}"><i class="bx bx-edit"></i></a>
                 </td>
             </tr>
         @endforeach

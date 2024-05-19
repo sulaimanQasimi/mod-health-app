@@ -66,8 +66,8 @@ class UserController extends Controller
     {
 
         $user = new User;
-        $user->name_en = $request->name_en;
-        $user->name_dr = $request->name_dr;
+        $user->name = $request->name;
+        $user->last_name = $request->last_name;
         $user->email = $request->email;
         $user->branch_id = $request->branch_id;
         $user->department_id = $request->department_id;
@@ -105,8 +105,11 @@ class UserController extends Controller
     {
 
         $roles = Role::all();
+        $branches = Branch::all();
+        $departments = Department::all();
+        $sections = Section::all();
 
-        return view('pages.users.edit',compact('user','roles'));
+        return view('pages.users.edit',compact('user','roles','branches','departments','sections'));
     }
 
     /**

@@ -36,7 +36,8 @@ class LabController extends Controller
         'patient_id' => 'required',
         'doctor_id' => 'required',
         'branch_id' => 'required',
-        'status' => 'required',
+        'status' => 'nullable',
+        'hospitalization_id' => 'nullable',
     ]);
 
     $labTypeIds = $data['lab_type_id'];

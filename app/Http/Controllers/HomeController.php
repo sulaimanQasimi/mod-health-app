@@ -87,7 +87,7 @@ class HomeController extends Controller
 
         foreach($doctors as $doctor)
         {
-            $options .='<option value = "' .$doctor->id . '">' . $doctor->name_en. '</option>';
+            $options .='<option value = "' .$doctor->id . '">' . $doctor->name. '</option>';
         }
 
         return $options;
@@ -124,7 +124,7 @@ class HomeController extends Controller
 
         foreach($doctors as $doctor)
         {
-            $options .='<option value = "' .$doctor->id . '">' . $doctor->name_en. '</option>';
+            $options .='<option value = "' .$doctor->id . '">' . $doctor->name. '</option>';
         }
 
         return $options;

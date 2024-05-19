@@ -525,7 +525,7 @@ return [
     'hospitalization_date' => 'تاریخ بستر',
     'related_visits' => 'بازدید های مرتبط',
     'visit_date' => 'تاریخ بازدید',
-    'hospitalization_details' => 'حزئیات مریض داخل بستر',
+    'hospitalization_details' => 'جزئیات مریض داخل بستر',
     'visits' => 'بازدید ها',
     'patient_history' => 'تاریخچه مریض',
     'patient_was_diagnosed_with' => 'تشخیص که برای این مریض شده بود عبارت است از: ',
@@ -564,7 +564,13 @@ return [
     'approve' => 'تائید',
     'anesthesia_log_reply' => 'جواب انستیزی لوگ',
     'age' => 'سن',
-    'edit_patient' => 'تصحیح معلومات مریض'
+    'edit_patient' => 'تصحیح معلومات مریض',
+    'id' => 'آی دی',
+    'not_referred_to_anesthesia' => 'مریض به انستیزی معرفی نشده',
+    'no_previous_visits' => 'بازدید قبلی وجود ندارد',
+    'by' => 'توسط',
+    'hospitalization_checkups' => 'معاینات داخل بستر',
+    'discharge_patient' => 'رخصت نمودن مریض'
 
 
 ];

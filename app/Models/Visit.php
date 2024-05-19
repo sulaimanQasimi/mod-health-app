@@ -17,4 +17,9 @@ class Visit extends Model
     {
         return $this->belongsTo(Hospitalization::class);
     }
+
+    public function doctor()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

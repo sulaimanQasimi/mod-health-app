@@ -17,9 +17,28 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PatientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
+        // $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
+        // return view('pages.patients.index', compact('patients'));
+
+        if ($request->ajax()) {
+            $patients = Patient::where('branch_id',auth()->user()->branch_id)->with('province')->get();
+    
+                if ($patients) {
+                    return response()->json([
+                        'data' => $patients,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+    
+        $patients = Patient::where('branch_id',auth()->user()->branch_id)->get();
         return view('pages.patients.index', compact('patients'));
     }
 

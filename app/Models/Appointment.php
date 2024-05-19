@@ -51,7 +51,7 @@ class Appointment extends Model
 
     public function labs()
     {
-        return $this->hasMany(Lab::class);
+        return $this->hasMany(Lab::class)->whereNull('hospitalization_id');
     }
 
     public function consultations()

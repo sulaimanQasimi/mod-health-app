@@ -398,6 +398,8 @@
                                                 value="{{ $appointment->doctor->id }}">
                                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                                 value="{{ auth()->user()->branch_id }}">
+                                            <input type="hidden" id="hospitalization_id{{ $appointment->id }}" name="hospitalization_id"
+                                                value="">
                                             <input type="hidden" id="status{{ $appointment->id }}" name="status"
                                                 value="0">
 
@@ -446,10 +448,6 @@
                         </div>
                         <!-- End Create Lab Modal -->
                         <div class="col-md-12 mt-4">
-
-
-
-
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -513,6 +511,69 @@
                                             class="bx bx-printer me-1"></span>{{ localize('global.print_test_ticket') }}</button>
                                 </form>
                             </div>
+
+                            <div class="col-md-12 d-flex justify-content-center">
+                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                        class="bx bx-hard-hat p-1"></i>{{ localize('global.hospitalization_checkups') }}</h5>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.test_name') }}</th>
+                                        <th>{{ localize('global.test_status') }}</th>
+                                        <th>{{ localize('global.result') }}</th>
+                                        <th>{{ localize('global.result_file') }}</th>
+                                        <th>{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($appointment->hospitalization as $single_hospitalization)
+                                    @forelse ($single_hospitalization->labs as $lab)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $lab->labType->name }}</td>
+                                            <td>
+                                                @if ($lab->status == '0')
+                                                    <span
+                                                        class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                @else
+                                                    <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $lab->result }}</td>
+                                            <td>
+                                                @isset($lab->result_file)
+                                                    <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
+                                                        <i class="fa fa-file"></i> {{ localize('global.file') }}
+                                                    </a>
+                                                @endisset
+
+                                            </td>
+                                            <td>
+                                                {{-- <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
+                                                            class="bx bx-edit"></i></span></a>
+                                                <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
+                                                            class="bx bx-trash text-danger"></i></span></a> --}}
+
+                                            </td>
+
+                                        </tr>
+
+                                    @empty
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.no_previous_labs') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforelse
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+
                         </div>
 
 
@@ -796,6 +857,7 @@
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
                                     <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.by') }}</th>
                                     <th>{{ localize('global.visit_date') }}</th>
                                 </tr>
                             </thead>
@@ -805,6 +867,7 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
+                                            <td>{{ $visit->doctor->name }}</td>
                                             <td>
                                                 {{ $visit->created_at }}
                                             </td>
@@ -826,7 +889,7 @@
                         {{-- To anasthesia --}}
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-bed p-1"></i>{{ localize('global.refere_to_anasthesia') }}</h5>
+                                class="bx bx-first-aid p-1"></i>{{ localize('global.refere_to_anasthesia') }}</h5>
 
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
                             data-bs-target="#createAnasthesiaModal{{ $appointment->id }}"><span><i
@@ -968,23 +1031,14 @@
                                         <div class="container">
                                             <div class="col-md-12 d-flex justify-content-center align-itmes-center">
                                                 <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_hospitalizations') }}
+                                                    {{ localize('global.not_referred_to_anesthesia') }}
                                                 </div>
                                             </div>
                                         </div>
                                     @endforelse
                                 </tbody>
                             </table>
-
                         </div>
-
-
-
-
-
-
-
-
                     </div>
                 </div>
             </div>

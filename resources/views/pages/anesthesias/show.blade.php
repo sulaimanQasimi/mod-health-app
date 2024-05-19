@@ -20,7 +20,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.referred_to') }}</h5>
+                                        <h5 class="mb-2">{{ localize('global.operation_type') }}</h5>
                                         <div>
                                             {{ $anesthesia->operationType->name }}
                                         </div>
@@ -39,9 +39,15 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 d-flex justify-content-center mb-2">
+                                    @if($anesthesia->status == 0)
                                     <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                     data-bs-target="#createAnasthesiaModal{{ $anesthesia->id }}"><span><i
                                             class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
+                                    @else
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#createAnasthesiaRejectModal{{ $anesthesia->id }}"><span><i
+                                            class="bx bx-x"></i>{{localize('global.reject')}}</span></button>
+                                    @endif
                                 </div>
 
 
@@ -51,7 +57,7 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="createAnasthesiaModalLabel{{ $anesthesia->id }}">
-                                                    {{ localize('global.refere_to_anasthesia') }}</h5>
+                                                    {{ localize('global.refere_to_operation') }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
@@ -68,6 +74,44 @@
                                                             <label
                                                                 for="anesthesia_log_reply{{ $anesthesia->id }}">{{ localize('global.anesthesia_log_reply') }}</label>
                                                             <textarea class="form-control" id="anesthesia_log_reply{{ $anesthesia->id }}" name="anesthesia_log_reply" rows="3"></textarea>
+                                                        </div>
+
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                <button type="submit"
+                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="createAnasthesiaRejectModal{{ $anesthesia->id }}" tabindex="-1"
+                                    aria-labelledby="createAnasthesiaRejectModalLabel{{ $anesthesia->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="createAnasthesiaRejectModalLabel{{ $anesthesia->id }}">
+                                                    {{ localize('global.rejection_reason') }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('anesthesias.update', $anesthesia) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden"
+                                                        name="status" value="0">
+        
+                                                    <div class="form-group">
+        
+                                                        <div class="form-group">
+                                                            <label
+                                                                for="rejection_reason{{ $anesthesia->id }}">{{ localize('global.rejection_reason') }}</label>
+                                                            <textarea class="form-control" id="rejection_reason{{ $anesthesia->id }}" name="anesthesia_log_reply" rows="3"></textarea>
                                                         </div>
 
                                                     </div>

@@ -10,11 +10,18 @@ class AnesthesiaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function unapproved()
     {
-        $anesthesias = Anesthesia::all();
+        $anesthesias = Anesthesia::where('status', '0')->latest()->paginate(1);
 
-        return view('pages.anesthesias.index', compact('anesthesias'));
+        return view('pages.anesthesias.unapproved', compact('anesthesias'));
+    }
+
+    public function approved()
+    {
+        $anesthesias = Anesthesia::where('status', '1')->latest()->paginate(1);
+
+        return view('pages.anesthesias.approved', compact('anesthesias'));
     }
 
     /**
@@ -52,7 +59,7 @@ class AnesthesiaController extends Controller
         Anesthesia::create($validatedData);
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('anesthesias.index')->with('success', 'Anesthesia created successfully.');
+        return redirect()->back()->with('success', 'Anesthesia created successfully.');
     }
 
     /**
@@ -83,7 +90,7 @@ class AnesthesiaController extends Controller
 
         $anesthesia->update($data);
 
-        return redirect()->route('anesthesias.index')->with('success', 'Anesthesia updated successfully.');
+        return redirect()->back()->with('success', 'Anesthesia updated successfully.');
     }
 
     /**

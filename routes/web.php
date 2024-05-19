@@ -350,6 +350,8 @@ Route::group(['middleware' => ['auth']], function () {
     // Anesthesia routes
     Route::prefix('anesthesias')->name('anesthesias.')->group(function () {
         Route::get('index', [AnesthesiaController::class, 'index'])->name('index');
+        Route::get('approved', [AnesthesiaController::class, 'approved'])->name('approved');
+        Route::get('unapproved', [AnesthesiaController::class, 'unapproved'])->name('unapproved');
         Route::get('create', [AnesthesiaController::class, 'create'])->name('create');
         Route::get('show/{anesthesia}', [AnesthesiaController::class, 'show'])->name('show');
         Route::post('store', [AnesthesiaController::class, 'store'])->name('store');

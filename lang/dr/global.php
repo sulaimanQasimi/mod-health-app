@@ -570,7 +570,20 @@ return [
     'no_previous_visits' => 'بازدید قبلی وجود ندارد',
     'by' => 'توسط',
     'hospitalization_checkups' => 'معاینات داخل بستر',
-    'discharge_patient' => 'رخصت نمودن مریض'
+    'discharge_patient' => 'رخصت نمودن مریض',
+    'plan' => 'پلان عملیات',
+    'other_problems' => 'مشکلات مشخص دیگر',
+    'planned_duration' => 'وقت تخمینی عملیات',
+    'position_on_bed' => 'موقعیت مریض بالای میز',
+    'estimated_blood_waste' => 'مقدار تخمینی ضایعات خون',
+    'anesthesia_details' => 'جزئیات انستیزی',
+    'approved_anesthesias' => 'انستیزی های تائید شده',
+    'unapproved_anesthesias' => 'انستیزی های تائید نا شده',
+    'anesthesias' => 'انستیزی ها',
+    'reject' => 'مسترد نمودن',
+    'rejection_reason' => 'علت مستردی',
+    'refere_to_operation' => 'معرفی به عملیات',
+    'new_anesthesias' => 'انستیزی های جدید'
 
 
 ];

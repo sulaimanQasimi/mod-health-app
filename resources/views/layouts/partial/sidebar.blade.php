@@ -125,11 +125,25 @@
                 <div>{{ localize('global.icu') }}</div>
             </a>
         </li>
-        <li class="menu-item {{ Route::is('anesthesias.index') ? 'active' : '' }}">
-            <a href="{{ route('anesthesias.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-first-aid text-danger"></i>
-                <div>{{ localize('global.anastasia') }}</div>
+        <li
+            class="menu-item {{ Route::is('anesthesias.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-first-aid text-primary"></i>
+                <div>{{ localize('global.anesthesias') }}</div>
             </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('anesthesias.unapproved') ? 'active' : '' }}">
+                    <a href="{{ route('anesthesias.unapproved') }}" class="menu-link">
+                        <div>{{ localize('global.new_anesthesias') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('anesthesias.approved') ? 'active' : '' }}">
+                    <a href="{{ route('anesthesias.approved') }}" class="menu-link">
+                        <div>{{ localize('global.approved_anesthesias') }}</div>
+                    </a>
+                </li>
+            </ul>
         </li>
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">

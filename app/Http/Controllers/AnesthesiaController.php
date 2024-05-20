@@ -53,6 +53,7 @@ class AnesthesiaController extends Controller
             'other_problems' => 'required',
             'status' => 'nullable',
             'anesthesia_log_reply' => 'nullable',
+            'is_operation_done' => 'nullable',
         ]);
 
         // Create a new appointment
@@ -85,7 +86,9 @@ class AnesthesiaController extends Controller
     {
         $data = $request->validate([
             'anesthesia_log_reply' => 'required',
-            'status' => 'required',
+            'status' => 'nullable',
+            'is_operation_done' => 'nullable',
+            'operation_remark' => 'nullable',
         ]);
 
         $anesthesia->update($data);

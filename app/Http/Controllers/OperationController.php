@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anesthesia;
 use App\Models\Operation;
 use Illuminate\Http\Request;
 
@@ -10,9 +11,18 @@ class OperationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function new()
     {
-        //
+        $operations = Anesthesia::where('status', '1')->latest()->paginate(15);
+
+        return view('pages.operations.new', compact('operations'));
+    }
+
+    public function completed()
+    {
+        $operations = Anesthesia::where('is_operation_done', '1')->latest()->paginate(15);
+
+        return view('pages.operations.completed', compact('operations'));
     }
 
     /**

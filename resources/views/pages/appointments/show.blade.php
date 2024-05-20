@@ -1082,7 +1082,7 @@
                                             <div class="container">
                                                 <div class="col-md-12 d-flex justify-content-center align-itmes-center">
                                                     <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.not_referred_to_anesthesia') }}
+                                                        {{ localize('global.not_referred_to_operation') }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1189,7 +1189,7 @@
                         </div>
                         <div class="col-md-12 d-flex justify-content-center">
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+                                    class="bx bx-glasses p-1"></i>{{ localize('global.related_icu_visits') }}</h5>
                         </div>
                         <table class="table">
                             <thead>

@@ -73,7 +73,7 @@ class ICUController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ICU $iCU)
+    public function edit(ICU $icu)
     {
         //
     }
@@ -81,7 +81,7 @@ class ICUController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ICU $iCU)
+    public function update(Request $request, ICU $icu)
     {
         //
     }
@@ -89,7 +89,7 @@ class ICUController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ICU $iCU)
+    public function destroy(ICU $icu)
     {
         //
     }

@@ -21,7 +21,9 @@ return new class extends Migration
             $table->string('estimated_blood_waste',192)->nullable();
             $table->string('other_problems',192)->nullable();
             $table->tinyInteger('status')->default('0');
+            $table->tinyInteger('is_operation_done')->default('0');
             $table->text('anesthesia_log_reply',2000)->nullable();
+            $table->text('operation_remark',2000)->nullable();
 
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');

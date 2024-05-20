@@ -9,7 +9,7 @@ class Anesthesia extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id'];
+    protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id','is_operation_done','operation_remark'];
 
     public function operationType()
     {

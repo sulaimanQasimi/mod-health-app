@@ -145,11 +145,25 @@
                 </li>
             </ul>
         </li>
-        <li class="menu-item {{ Route::is('operations.index') ? 'active' : '' }}">
-            <a href="{{ route('operations.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-cut text-danger"></i>
+        <li
+            class="menu-item {{ Route::is('operations.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-first-aid text-primary"></i>
                 <div>{{ localize('global.operations') }}</div>
             </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('operations.new') ? 'active' : '' }}">
+                    <a href="{{ route('operations.new') }}" class="menu-link">
+                        <div>{{ localize('global.new_operations') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('operations.completed') ? 'active' : '' }}">
+                    <a href="{{ route('operations.completed') }}" class="menu-link">
+                        <div>{{ localize('global.completed_operations') }}</div>
+                    </a>
+                </li>
+            </ul>
         </li>
         <li
         class="menu-item {{ Route::is('reports.*') ? 'active open' : '' }}">

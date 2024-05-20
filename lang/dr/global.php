@@ -587,6 +587,8 @@ return [
     'discharge_remark' => 'ملاحظات رخصت نمودن',
     'refere_to_icu' => 'معرفی به ICU',
     'not_referred_to_icu' => 'مریض به ICU معرفی نشده است',
+    'not_referred_to_operation' => 'مریض عملیات آماده ندارد',
+    'related_icu_visits' => 'بازدیدهای ICU'
 
-
+ 
 ];

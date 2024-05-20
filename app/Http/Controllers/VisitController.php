@@ -51,7 +51,8 @@ class VisitController extends Controller
             'description' => 'required',
             'patient_id' => 'required',
             'doctor_id' => 'required',
-            'hospitalization_id' => 'required',
+            'hospitalization_id' => 'nullable',
+            'i_c_u_id' => 'nullable',
 
         ]);
 

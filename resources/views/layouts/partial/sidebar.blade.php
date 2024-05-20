@@ -116,11 +116,11 @@
         <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
             <a href="{{ route('lab_tests.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-test-tube text-primary"></i>
-                <div>{{ localize('global.lab_tests') }}</div>
+                <div>{{ localize('global.checkups') }}</div>
             </a>
         </li>
-        <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
-            <a href="{{ route('lab_tests.index') }}" class="menu-link">
+        <li class="menu-item {{ Route::is('icus.index') ? 'active' : '' }}">
+            <a href="{{ route('icus.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
                 <div>{{ localize('global.icu') }}</div>
             </a>
@@ -145,8 +145,8 @@
                 </li>
             </ul>
         </li>
-        <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
-            <a href="{{ route('lab_tests.index') }}" class="menu-link">
+        <li class="menu-item {{ Route::is('operations.index') ? 'active' : '' }}">
+            <a href="{{ route('operations.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-cut text-danger"></i>
                 <div>{{ localize('global.operations') }}</div>
             </a>

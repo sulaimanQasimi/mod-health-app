@@ -985,10 +985,6 @@
                         </div>
                         <!-- End Create Lab Modal -->
                         <div class="col-md-12 mt-4">
-
-
-
-
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -1001,7 +997,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($appointment->anesthesia as $anesthesia)
+                                    @forelse ($appointment->unapproved_anesthesias as $anesthesia)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $anesthesia->operationType->name }}</td>
@@ -1039,6 +1035,198 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                            class="bx bx-cut p-1"></i>{{ localize('global.operations') }}</h5>
+
+                            <div class="col-md-12 mt-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.operation_type') }}</th>
+                                            <th>{{ localize('global.patient_name') }}</th>
+                                            <th>{{ localize('global.status') }}</th>
+                                            <th>{{ localize('global.date') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($appointment->approved_anesthesias as $anesthesia)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $anesthesia->operationType->name }}</td>
+                                                <td>
+                                                    {{ $anesthesia->patient->name }}
+                                                </td>
+                                                <td>
+                                                    @if ($anesthesia->status == '0')
+                                                        <span
+                                                            class="bx bx-x-circle text-danger"></span>
+                                                    @else
+                                                        <span class="bx bx-check-circle text-success"></span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $anesthesia->date }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+    
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.not_referred_to_anesthesia') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+                            {{-- icu starts here  --}}
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#createICUModal{{ $appointment->id }}"><span><i
+                                    class="bx bx-plus"></i></span></button>
+                        <!-- Create  Lab Modal -->
+                        <div class="modal fade" id="createICUModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="createICUModalLabel{{ $appointment->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createICUModalLabel{{ $appointment->id }}">
+                                            {{ localize('global.refere_to_icu') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('icus.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}"
+                                                name="patient_id" value="{{ $appointment->patient_id }}">
+                                            <input type="hidden" id="appointment_id{{ $appointment->id }}"
+                                                name="appointment_id" value="{{ $appointment->id }}">
+                                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
+                                                value="{{ auth()->user()->id }}">
+                                            <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
+                                                value="{{ auth()->user()->branch_id }}">
+
+                                            <div class="form-group">
+
+                                                <div class="form-group">
+                                                    <label
+                                                        for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
+                                                    <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Create Lab Modal -->
+                        <div class="col-md-12 mt-4">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.patient_name') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.date') }}</th>
+                                        <th>{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($appointment->icu as $icu)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                {{ $icu->patient->name }}
+                                            </td>
+                                            <td>
+                                                {{ $icu->description }}
+                                            </td>
+                                            <td>
+                                                {{ $icu->created_at }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('icus.edit', $icu->id) }}"><span><i
+                                                            class="bx bx-edit"></i></span></a>
+                                                <a href="{{ route('icus.destroy', $icu->id) }}"><span><i
+                                                            class="bx bx-trash text-danger"></i></span></a>
+
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.not_referred_to_icu') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.by') }}</th>
+                                    <th>{{ localize('global.visit_date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($appointment->icu as $icu)
+                                    @forelse($icu->visits as $visit)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $visit->description }}</td>
+                                            <td>{{ $visit->doctor->name }}</td>
+                                            <td>
+                                                {{ $visit->created_at }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.no_previous_visits') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforelse
+                                @endforeach
+                            </tbody>
+                        </table>
+
+
+
+
                     </div>
                 </div>
             </div>

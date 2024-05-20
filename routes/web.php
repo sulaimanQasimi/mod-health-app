@@ -28,7 +28,9 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\ICUController;
 use App\Http\Controllers\LabTypeSectionController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\VisitController;
 
@@ -336,15 +338,37 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{comment}', [ConsultationCommentController::class, 'destroy'])->name('destroy');
     });
 
-    // Operations routes
+    // Operation types routes
     Route::prefix('operation_types')->name('operation_types.')->group(function () {
         Route::get('index', [OperationTypeController::class, 'index'])->name('index');
         Route::get('create', [OperationTypeController::class, 'create'])->name('create');
-        Route::get('show/{consultation}', [OperationTypeController::class, 'show'])->name('show');
+        Route::get('show/{operationType}', [OperationTypeController::class, 'show'])->name('show');
         Route::post('store', [OperationTypeController::class, 'store'])->name('store');
-        Route::get('edit/{consultation}', [OperationTypeController::class, 'edit'])->name('edit');
-        Route::put('update/{consultation}', [OperationTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{consultation}', [OperationTypeController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{operationType}', [OperationTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{operationType}', [OperationTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Operations routes
+    Route::prefix('operations')->name('operations.')->group(function () {
+        Route::get('index', [OperationController::class, 'index'])->name('index');
+        Route::get('create', [OperationController::class, 'create'])->name('create');
+        Route::get('show/{operation}', [OperationController::class, 'show'])->name('show');
+        Route::post('store', [OperationController::class, 'store'])->name('store');
+        Route::get('edit/{operation}', [OperationController::class, 'edit'])->name('edit');
+        Route::put('update/{operation}', [OperationController::class, 'update'])->name('update');
+        Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
+    });
+
+    // ICUs routes
+    Route::prefix('icus')->name('icus.')->group(function () {
+        Route::get('index', [ICUController::class, 'index'])->name('index');
+        Route::get('create', [ICUController::class, 'create'])->name('create');
+        Route::get('show/{icu}', [ICUController::class, 'show'])->name('show');
+        Route::post('store', [ICUController::class, 'store'])->name('store');
+        Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
+        Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
+        Route::get('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
     });
 
     // Anesthesia routes

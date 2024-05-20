@@ -19,8 +19,6 @@ class PatientController extends Controller
 {
     public function index(Request $request)
     {
-        // $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
-        // return view('pages.patients.index', compact('patients'));
 
         if ($request->ajax()) {
             $patients = Patient::where('branch_id',auth()->user()->branch_id)->with('province')->get();

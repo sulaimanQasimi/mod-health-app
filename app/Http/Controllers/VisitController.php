@@ -11,11 +11,26 @@ class VisitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)->latest()->paginate(10);
+        if ($request->ajax()) {
+            $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
 
-        return view('pages.hospitalizations.index',compact('hospitalizations'));
+                if ($hospitalizations) {
+                    return response()->json([
+                        'data' => $hospitalizations,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+    
+        $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
+        return view('pages.hospitalizations.index', compact('hospitalizations'));
     }
 
     /**

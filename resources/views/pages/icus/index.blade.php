@@ -1,4 +1,3 @@
-
 @extends('layouts.master')
 
 @section('content')
@@ -11,18 +10,16 @@
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.patients_list') }}</h5>
+                    <h5 class="mb-0">{{ localize('global.hospitalized_patients') }}</h5>
                 </div>
                 <div class="card-datatable table-responsive">
                     <table class="datatables-basic table border-top">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>{{localize('global.id')}}</th>
-                                <th>{{localize('global.patient_name')}}</th>
-                                <th>{{localize('global.room')}}</th>
-                                <th>{{localize('global.bed')}}</th>
-                                <th>{{localize('global.hospitalization_date')}}</th>
+                                <th>{{ localize('global.id') }}</th>
+                                <th>{{ localize('global.description') }}</th>
+                                <th>{{ localize('global.register_date') }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -66,7 +63,7 @@
 
             if (dt_basic_table.length) {
                 dt_basic = dt_basic_table.DataTable({
-                    ajax: "{{ route('visits.index') }}",
+                    ajax: "{{ route('icus.index') }}",
                     columns: [{
                             data: 'id'
                         },
@@ -75,22 +72,7 @@
                             data: 'id'
                         },
                         {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'room',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'bed',
-                            render: function(data) {
-                                return data ? data.number : '';
-                            }
+                            data: 'description',
                         },
                         {
                             data: 'created_at'
@@ -121,10 +103,9 @@
                             searchable: false,
                             render: function(data, type, full, meta) {
                                 return (
-                                    `<a href="{{ url('patients/show/') }}` + `/` + full['id'] +
-                                    `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>` +
-                                    `<a href="{{ url('patients/edit/') }}` + `/` + full['id'] +
-                                    `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-edit"></i></a>`
+                                    `<a href="{{ url('icus/show/') }}` + `/` +
+                                    full['id'] +
+                                    `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>`
                                 );
                             }
                         }
@@ -182,4 +163,3 @@
         });
     </script>
 @endpush
-

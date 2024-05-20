@@ -10,7 +10,7 @@ class Visit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name_en','description','hospitalization_id','patient_id','doctor_id'
+        'name_en','description','hospitalization_id','patient_id','doctor_id','icu_id'
     ];
 
     public function hospitalization()
@@ -21,5 +21,10 @@ class Visit extends Model
     public function doctor()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function icu()
+    {
+        return $this->belongsTo(ICU::class);
     }
 }

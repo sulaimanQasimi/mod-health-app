@@ -583,7 +583,10 @@ return [
     'reject' => 'مسترد نمودن',
     'rejection_reason' => 'علت مستردی',
     'refere_to_operation' => 'معرفی به عملیات',
-    'new_anesthesias' => 'انستیزی های جدید'
+    'new_anesthesias' => 'انستیزی های جدید',
+    'discharge_remark' => 'ملاحظات رخصت نمودن',
+    'refere_to_icu' => 'معرفی به ICU',
+    'not_referred_to_icu' => 'مریض به ICU معرفی نشده است',
 
 
 ];

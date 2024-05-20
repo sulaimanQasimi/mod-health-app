@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->text('description', 5000);
             $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('hospitalization_id');
+            $table->unsignedBigInteger('hospitalization_id')->nullable();
             $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('i_c_u_id')->nullable();
 
             $table->foreign('patient_id')
                   ->references('id')
@@ -27,6 +28,9 @@ return new class extends Migration
             $table->foreign('doctor_id')
                   ->references('id')
                   ->on('users');
+            $table->foreign('i_c_u_id')
+                  ->references('id')
+                  ->on('i_c_u_s');
 
             $table->softDeletes();
             $table->timestamps();

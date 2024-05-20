@@ -73,4 +73,19 @@ class Appointment extends Model
     {
         return $this->hasMany(Anesthesia::class);
     }
+
+    public function unapproved_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', '0');
+    }
+
+    public function approved_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', '1');
+    }
+
+    public function icu()
+    {
+        return $this->hasMany(ICU::class);
+    }
 }

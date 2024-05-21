@@ -588,7 +588,10 @@ return [
     'refere_to_icu' => 'معرفی به ICU',
     'not_referred_to_icu' => 'مریض به ICU معرفی نشده است',
     'not_referred_to_operation' => 'مریض عملیات آماده ندارد',
-    'related_icu_visits' => 'بازدیدهای ICU'
+    'related_icu_visits' => 'بازدیدهای ICU',
+    'new_operations' => 'عملیات های جدید',
+    'completed_operations' => 'عملیات های تکمیل شده',
+    'register_date' => 'تاریخ ثبت'
 
  
 ];

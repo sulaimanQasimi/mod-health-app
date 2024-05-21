@@ -591,7 +591,23 @@ return [
     'related_icu_visits' => 'بازدیدهای ICU',
     'new_operations' => 'عملیات های جدید',
     'completed_operations' => 'عملیات های تکمیل شده',
-    'register_date' => 'تاریخ ثبت'
+    'register_date' => 'تاریخ ثبت',
+    'all_patients' => ' مریض ها',
+    'all_hospitalized_patients' => 'بستر شده',
+    'all_doctors' => 'داکتران',
+    'all_icu_patients' => 'مریض های ICU',
+    'all_prescriptions' => 'نسخه ها',
+    'all_operations' => 'جراحی ها',
+    'all_registered_patients' => 'همه مریضان ثبت شده',
+    'all_registered_appointments' => 'همه ملاقات های تعیین شده',
+    'all_registered_consultations' => 'همه مشوره های ثبت شده',
+    'all_registered_hospitalizations' => 'مریضان ثبت بستر',
+    'all_registered_doctors' => 'داکتران ثبت شده',
+    'all_registered_icu' => 'مریضان ثبت شده در ICU',
+    'all_registered_prescriptions' => 'نسخه های ثبت شده',
+    'all_registered_operations' => 'جراحی های ثبت شده',
+    'patients_comparison_graph' => 'گراف مقایسوی ثبت مریضان',
+    'appointments_comparison_graph' => 'گراف مقایسوی ثبت ملاقات ها',
 
  
 ];

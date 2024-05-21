@@ -30,7 +30,7 @@
         <li
             class="menu-item {{ Route::is('patients.*') || Route::is('scanCode') || Route::is('appointments.index') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-info-circle text-info"></i>
+                <i class="menu-icon tf-icons bx bx-info-circle text-primary"></i>
                 <div>{{ localize('global.reception') }}</div>
             </a>
 

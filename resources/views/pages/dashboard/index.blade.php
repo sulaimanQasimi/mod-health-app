@@ -204,17 +204,31 @@
                                   <i class="bx bx-line-chart text-primary"></i>
                                     <h5 class="card-title text-center">
                                         {{ localize('global.appointments_comparison_graph') }}</h5>
-                                    <canvas id="appointmentsTrendChart"></canvas>
+                                        <canvas id="appointmentsTrendChart"></canvas>
                                 </div>
                             </div>
                         </div>
+                        
+                        
+                        
 
                         <!-- Add similar cards for other trend charts -->
                     </div>
 
+                    <div class="col-md-12 mt-3">
+                      <div class="card">
+                          <div class="card-body">
+                            <i class="bx bx-line-chart text-primary"></i>
+                              <h5 class="card-title text-center">
+                                  {{ localize('global.doctors_activity_graph') }}</h5>
+                                  <figure class="highcharts-figure">
+                                    <div id="container"></div>
+                                </figure>
+                          </div>
+                      </div>
+                  </div>
+
                 </div>
-
-
 
             </div>
         </div>
@@ -226,10 +240,15 @@
 
         <div class="content-backdrop fade"></div>
     </div>
+
 @endsection
 
 @section('scripts')
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.js"></script>
+    <script src="
+https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js
+"></script>
     <script>
         // Render the patients trend chart
         const patientsTrendData = @json($patientsTrendData);
@@ -296,4 +315,41 @@
             }
         });
     </script>
+
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/wordcloud.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script>
+
+const data = <?php echo json_encode($wordCloudData); ?>;
+Highcharts.chart('container', {
+    accessibility: {
+        // ...
+    },
+    series: [{
+        type: 'wordcloud',
+        data,
+        name: "{{localize('global.occurred_count')}}"
+    }],
+    title: {
+        text: null
+    },
+    credits: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size: 16px"><b>{point.key}</b>' +
+            '</span><br>'
+    }
+});
+</script>
+
+
 @endsection

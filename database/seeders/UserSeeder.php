@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
         DB::table('users')->insert([
             'name' => 'Super Admin',
             'last_name' => 'Admin',
@@ -26,5 +28,20 @@ class UserSeeder extends Seeder
             'lang' => 'dr',
 
         ]);
+        $faker = Faker::create();
+
+        for ($i = 0; $i < 100; $i++) {
+            DB::table('users')->insert([
+                'name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'email' => $faker->unique()->safeEmail,
+                'password' => Hash::make('123456789'),
+                'status' => '1',
+                'branch_id' => '1',
+                'department_id' => '1',
+                'section_id' => '1',
+                'lang' => 'dr',
+            ]);
+        }
     }
 }

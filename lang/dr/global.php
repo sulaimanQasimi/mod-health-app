@@ -608,6 +608,8 @@ return [
     'all_registered_operations' => 'جراحی های ثبت شده',
     'patients_comparison_graph' => 'گراف مقایسوی ثبت مریضان',
     'appointments_comparison_graph' => 'گراف مقایسوی ثبت ملاقات ها',
+    'occurred_count' => 'تعداد تکرار',
+    'doctors_activity_graph' => 'گراف فعالیت داکتران'
 
  
 ];

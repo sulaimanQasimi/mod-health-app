@@ -54,6 +54,28 @@ public function index()
     $appointmentsTrendData = $this->getAppointmentsTrendData();
     // ... (similar for other entities)
 
+    $wordCloudData = User::withCount([
+        'appointments',
+        'consultations',
+        'anesthesias',
+        'consultation_comments',
+        'hospitalizations',
+        'i_c_u_s',
+        'labs',
+        'prescriptions',
+        'visits'
+    ])
+    ->get()
+    ->map(function ($user) {
+        return [
+            'name' => $user->name,
+            'weight' => max($user->appointments_count, $user->patients_count),
+        ];
+    })
+    ->values()
+    ->toArray();
+
+// return $wordCloudData;
     return view('pages.dashboard.index', [
         'totalPatients' => $totalPatients,
         'totalDoctors' => $totalDoctors,
@@ -65,6 +87,7 @@ public function index()
         'totalInPatientAdmissions' => $totalInPatientAdmissions,
         'patientsTrendData' => $patientsTrendData,
         'appointmentsTrendData' => $appointmentsTrendData,
+        'wordCloudData' => $wordCloudData
         // ... (similar for other trend data)
     ]);
 }

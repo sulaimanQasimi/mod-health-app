@@ -54,11 +54,6 @@ class User extends Authenticatable
         return $this->hasOne(Branch::class, 'id', 'branch_id');
     }
 
-    public function patients()
-    {
-        return $this->hasMany(Patient::class);
-    }
-
     public function department()
     {
         return $this->belongsTo(Department::class);
@@ -71,7 +66,52 @@ class User extends Authenticatable
 
     public function appointments()
     {
-        return $this->hasMany(Appointment::class);
+        return $this->hasMany(Appointment::class, 'doctor_id', 'id');
+    }
+
+    public function patients()
+    {
+        return $this->hasMany(Patient::class);
+    }
+
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class, 'doctor_id', 'id');
+    }
+
+    public function anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class, 'doctor_id', 'id');
+    }
+
+    public function consultation_comments()
+    {
+        return $this->hasMany(ConsultationComment::class, 'doctor_id', 'id');
+    }
+
+    public function hospitalizations()
+    {
+        return $this->hasMany(Hospitalization::class, 'doctor_id', 'id');
+    }
+
+    public function i_c_u_s()
+    {
+        return $this->hasMany(ICU::class, 'doctor_id', 'id');
+    }
+
+    public function labs()
+    {
+        return $this->hasMany(Lab::class, 'doctor_id', 'id');
+    }
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class, 'doctor_id', 'id');
+    }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class, 'doctor_id', 'id');
     }
 
 

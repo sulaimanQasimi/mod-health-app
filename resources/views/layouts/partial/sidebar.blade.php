@@ -148,7 +148,7 @@
         <li
             class="menu-item {{ Route::is('operations.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-first-aid text-primary"></i>
+                <i class="menu-icon tf-icons bx bx-cut text-primary"></i>
                 <div>{{ localize('global.operations') }}</div>
             </a>
 

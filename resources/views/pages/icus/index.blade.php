@@ -10,7 +10,7 @@
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.hospitalized_patients') }}</h5>
+                    <h5 class="mb-0">{{ localize('global.icu') }}</h5>
                 </div>
                 <div class="card-datatable table-responsive">
                     <table class="datatables-basic table border-top">

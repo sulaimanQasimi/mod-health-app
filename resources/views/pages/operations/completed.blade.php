@@ -6,7 +6,7 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.unapproved_operations') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.completed_operations') }}</h5>
                     </div>
                     <div class="card-body">
 
@@ -22,22 +22,32 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($operations as $operation)
+                                @foreach ($operations as $operation
+                                
+                                )
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $operation->patient->name }}</td>
-                                        <td>{{ $operation->operationType->name }}</td>
+                                        <td>{{ $operation
+                                        
+                                        ->operationType->name }}</td>
                                         <td>
-                                            @if ($operation->status == '0')
+                                            @if ($operation
+                                            
+                                            ->status == '0')
                                                 <span class="bx bx-x-circle text-danger"></span>
                                             @else
                                                 <span class="bx bx-check-circle text-success"></span>
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ route('operations.show', $operation) }}"><i
+                                            <a href="{{ route('operations.show', $operation
+                                            
+                                            ) }}"><i
                                                     class="bx bx-expand"></i></a>
-                                            {{-- <a href="{{ route('operations.edit', $operation) }}"><i class="bx bx-message-square-edit"></i></a> --}}
+                                            {{-- <a href="{{ route('operations.edit', $operation
+                                            
+                                            ) }}"><i class="bx bx-message-square-edit"></i></a> --}}
                                             <!-- Using an <a> tag -->
                                             {{-- <a href="{{ route('beds.destroy', $bed) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
                         <i class="bx bx-trash"></i>

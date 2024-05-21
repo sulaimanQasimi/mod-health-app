@@ -6,7 +6,7 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.approved_operations') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.new_operations') }}</h5>
                     </div>
                     <div class="card-body">
 

@@ -55,6 +55,16 @@ class HomeController extends Controller
         $appointmentsTrendData = $this->getAppointmentsTrendData();
         // ... (similar for other entities)
 
+        // Retrieve models percentage changes
+        $patientPercentageChange = $this->getPercentageChange(Patient::class);
+        $doctorPercentageChange = $this->getPercentageChange(User::class);
+        $appointmentPercentageChange = $this->getPercentageChange(Appointment::class);
+        $prescriptionPercentageChange = $this->getPercentageChange(Prescription::class);
+        $consultationPercentageChange = $this->getPercentageChange(Consultation::class);
+        $operationPercentageChange = $this->getPercentageChange(Anesthesia::class);
+        $icuPercentageChange = $this->getPercentageChange(ICU::class);
+        $hospitalizationPercentageChange = $this->getPercentageChange(Hospitalization::class);
+
         $wordCloudData = User::withCount([
             'appointments',
             'consultations',
@@ -78,6 +88,7 @@ class HomeController extends Controller
             ->values()
             ->toArray();
 
+
         return view('pages.dashboard.index', [
             'totalPatients' => $totalPatients,
             'totalDoctors' => $totalDoctors,
@@ -89,8 +100,15 @@ class HomeController extends Controller
             'totalInPatientAdmissions' => $totalInPatientAdmissions,
             'patientsTrendData' => $patientsTrendData,
             'appointmentsTrendData' => $appointmentsTrendData,
-            'wordCloudData' => $wordCloudData
-            // ... (similar for other trend data)
+            'wordCloudData' => $wordCloudData,
+            'patientPercentageChange' => $patientPercentageChange,
+            'doctorPercentageChange' => $doctorPercentageChange,
+            'appointmentPercentageChange' => $appointmentPercentageChange,
+            'prescriptionPercentageChange' => $prescriptionPercentageChange,
+            'consultationPercentageChange' => $consultationPercentageChange,
+            'operationPercentageChange' => $operationPercentageChange,
+            'icuPercentageChange' => $icuPercentageChange,
+            'hospitalizationPercentageChange' => $hospitalizationPercentageChange
         ]);
     }
 
@@ -146,6 +164,34 @@ class HomeController extends Controller
             'labels' => $labels,
             'data' => $data
         ];
+    }
+
+    private function getPercentageChange($model)
+    {
+        // Get the current month and year
+        $currentMonth = Carbon::now()->format('m');
+        $currentYear = Carbon::now()->format('Y');
+
+        // Get the model count for the current month
+        $currentMonthCount = $model::whereMonth('created_at', $currentMonth)
+                             ->whereYear('created_at', $currentYear)
+                             ->count();
+
+        // Get the model count for the previous month
+        $previousMonth = Carbon::now()->subMonth(1)->format('m');
+        $previousYear = Carbon::now()->subMonth(1)->format('Y');
+        $previousMonthCount = $model::whereMonth('created_at', $previousMonth)
+                             ->whereYear('created_at', $previousYear)
+                             ->count();
+
+        // Calculate the percentage change
+        if ($previousMonthCount > 0) {
+            $percentageChange = round(($currentMonthCount - $previousMonthCount) / $previousMonthCount * 100, 2);
+        } else {
+            $percentageChange = 0;
+        }
+
+        return $percentageChange;
     }
 
     public function changeLanguage($lang)

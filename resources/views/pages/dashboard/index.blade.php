@@ -14,7 +14,13 @@
                                             <h4>{{ localize('global.all_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalPatients }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                @if ($patientPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $patientPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $patientPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_patients') }}</p>
                                         </div>
@@ -35,8 +41,15 @@
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_appointments') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalAppointments }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalAppointments }}
+                                                </h4>
+                                                @if ($appointmentPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $appointmentPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $appointmentPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_appointments') }}</p>
                                         </div>
@@ -57,8 +70,15 @@
                                         <div class="content-left">
                                             <h4>{{ localize('global.consultations') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalConsultations }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalConsultations }}
+                                                </h4>
+                                                @if ($consultationPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $consultationPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $consultationPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_consultations') }}</p>
                                         </div>
@@ -79,8 +99,15 @@
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_hospitalized_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalInPatientAdmissions }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                    {{ $totalInPatientAdmissions }}</h4>
+                                                    @if ($hospitalizationPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $hospitalizationPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $hospitalizationPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_hospitalizations') }}</p>
                                         </div>
@@ -102,7 +129,13 @@
                                             <h4>{{ localize('global.all_doctors') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalDoctors }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                @if ($doctorPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $doctorPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $doctorPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_doctors') }}</p>
                                         </div>
@@ -123,8 +156,15 @@
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_icu_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalIcuAdmissions }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                    {{ $totalIcuAdmissions }}</h4>
+                                                    @if ($icuPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $icuPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $icuPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_icu') }}</p>
                                         </div>
@@ -145,8 +185,15 @@
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_prescriptions') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalPrescriptions }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                    {{ $totalPrescriptions }}</h4>
+                                                    @if ($prescriptionPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $prescriptionPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $prescriptionPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_prescriptions') }}</p>
                                         </div>
@@ -167,8 +214,15 @@
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_operations') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalOperations }}</h4>
-                                                <small class="text-success">(+29%)</small>
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalOperations }}
+                                                </h4>
+                                                @if ($operationPercentageChange > 0)
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <small class="text-success">{{ $operationPercentageChange }}%</small>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
+                                                    <small class="text-danger">{{ $operationPercentageChange }}%</small>
+                                                @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_operations') }}</p>
                                         </div>
@@ -187,7 +241,7 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body">
-                                  <i class="bx bx-line-chart text-primary"></i>
+                                    <i class="bx bx-line-chart text-primary"></i>
                                     <h5 class="card-title text-center">{{ localize('global.patients_comparison_graph') }}
                                     </h5>
                                     <canvas id="patientsTrendChart"></canvas>
@@ -197,27 +251,27 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body">
-                                  <i class="bx bx-line-chart text-primary"></i>
+                                    <i class="bx bx-line-chart text-primary"></i>
                                     <h5 class="card-title text-center">
                                         {{ localize('global.appointments_comparison_graph') }}</h5>
-                                        <canvas id="appointmentsTrendChart"></canvas>
+                                    <canvas id="appointmentsTrendChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-12 mt-3">
-                      <div class="card">
-                          <div class="card-body">
-                            <i class="bx bx-line-chart text-primary"></i>
-                              <h5 class="card-title text-center">
-                                  {{ localize('global.doctors_activity_graph') }}</h5>
-                                  <figure class="highcharts-figure">
+                        <div class="card">
+                            <div class="card-body">
+                                <i class="bx bx-line-chart text-primary"></i>
+                                <h5 class="card-title text-center">
+                                    {{ localize('global.doctors_activity_graph') }}</h5>
+                                <figure class="highcharts-figure">
                                     <div id="container"></div>
                                 </figure>
-                          </div>
-                      </div>
-                  </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -228,15 +282,13 @@
 
         <div class="content-backdrop fade"></div>
     </div>
-
 @endsection
 
 @section('scripts')
-
-    <script src="{{asset('assets/js/chartjs.js')}}"></script>
-    <script src="{{asset('assets/js/echarts.js')}}"></script>
-    <script src="{{asset('assets/js/highcharts.js')}}"></script>
-    <script src="{{asset('assets/js/wordcloud.js')}}"></script>
+    <script src="{{ asset('assets/js/chartjs.js') }}"></script>
+    <script src="{{ asset('assets/js/echarts.js') }}"></script>
+    <script src="{{ asset('assets/js/highcharts.js') }}"></script>
+    <script src="{{ asset('assets/js/wordcloud.js') }}"></script>
 
     <script>
         // Render the patients trend chart
@@ -306,36 +358,33 @@
     </script>
 
 
-{{-- <script src="https://code.highcharts.com/highcharts.js"></script> --}}
-{{-- <script src="https://code.highcharts.com/modules/wordcloud.js"></script> --}}
+    {{-- <script src="https://code.highcharts.com/highcharts.js"></script> --}}
+    {{-- <script src="https://code.highcharts.com/modules/wordcloud.js"></script> --}}
 
-<script>
-
-const data = <?php echo json_encode($wordCloudData); ?>;
-Highcharts.chart('container', {
-    accessibility: {
-        // ...
-    },
-    series: [{
-        type: 'wordcloud',
-        data,
-        name: "{{localize('global.occurred_count')}}"
-    }],
-    title: {
-        text: null
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size: 16px"><b>{point.key}</b>' +
-            '</span><br>'
-    }
-});
-</script>
-
-
+    <script>
+        const data = <?php echo json_encode($wordCloudData); ?>;
+        Highcharts.chart('container', {
+            accessibility: {
+                // ...
+            },
+            series: [{
+                type: 'wordcloud',
+                data,
+                name: "{{ localize('global.occurred_count') }}"
+            }],
+            title: {
+                text: null
+            },
+            credits: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size: 16px"><b>{point.key}</b>' +
+                    '</span><br>'
+            }
+        });
+    </script>
 @endsection

@@ -233,11 +233,11 @@
                         <div>{{ localize('global.recipients') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('doctors.index') ? 'active' : '' }}">
+                {{-- <li class="menu-item {{ Route::is('doctors.index') ? 'active' : '' }}">
                     <a href="{{ route('doctors.index') }}" class="menu-link">
                         <div>{{ localize('global.doctors') }}</div>
                     </a>
-                </li>
+                </li> --}}
                 <li class="menu-item {{ Route::is('relations.index') ? 'active' : '' }}">
                     <a href="{{ route('relations.index') }}" class="menu-link">
                         <div>{{ localize('global.relations') }}</div>

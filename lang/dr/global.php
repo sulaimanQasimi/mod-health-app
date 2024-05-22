@@ -614,7 +614,12 @@ return [
     'operation_details' => 'جزئیات عملیات',
     'new_prescriptions' => 'نسخه های جدید',
     'created_at' => 'تاریخ ثبت',
-    'related_comments' => 'نظریه های داده شده'
+    'related_comments' => 'نظریه های داده شده',
+    'add_visit' =>'اضافه نمودن بازدید',
+    'complete_operation' => 'تکمیل شدن عملیات',
+    'success' => 'موفق',
+    'fail' => 'ناکام',
+    'operation_remark' => 'ملاحظات عملیات',
 
  
 ];

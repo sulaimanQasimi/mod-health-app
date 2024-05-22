@@ -713,18 +713,20 @@
                         <div class="container">
                             <div class="col-md-12">
                                 <div class="row">
-                                    @forelse ($consultation->comments as $comment )
-                                        <div class="col-md-2">
-                                            <i class="bx bx-check-circle text-success"></i>
-                                            <span
-                                            class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                        </div>
-                                        <div class="col-md-10" style="text-align: justify;">
-                                            {{ $comment->comment }}
-                                        </div>
-                                        <div class="white-space">
-                                            <hr>
-                                        </div>
+
+                                    @foreach ($appointment->consultations as $consultation)
+                                    @forelse($consultation->comments as $comment)
+                                    <div class="col-md-2">
+                                        <i class="bx bx-check-circle text-success"></i>
+                                        <span
+                                        class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
+                                    </div>
+                                    <div class="col-md-10" style="text-align: justify;">
+                                        {{ $comment->comment }}
+                                    </div>
+                                    <div class="white-space">
+                                        <hr>
+                                    </div>
                                     @empty
                                     <div class="container">
                                         <div class="col-md-12 d-flex justify-content-center align-itmes-center">
@@ -733,8 +735,8 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     @endforelse
+                                @endforeach
                                 </div>
                             </div>
                         </div>

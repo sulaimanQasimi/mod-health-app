@@ -620,6 +620,7 @@ return [
     'success' => 'موفق',
     'fail' => 'ناکام',
     'operation_remark' => 'ملاحظات عملیات',
+    'icu_details' => 'جزئیات مریض ICU'
 
  
 ];

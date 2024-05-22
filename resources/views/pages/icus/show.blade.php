@@ -9,7 +9,7 @@
         <div class="col-xl">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.hospitalization_details') }}</h5>
+                    <h5 class="mb-0">{{ localize('global.icu_details') }}</h5>
                     <div class="pt-3 pt-md-0 text-end">
                         <a class="btn btn-danger" href="{{ url()->previous() }}"
                            type="button">
@@ -22,7 +22,7 @@
 
                     <div class="col-md-12">
                         <div class="border border-label-primary mb-4 text-center">
-                            <h5 class="mb-4 p-3 bg-label-primary text-center">{{ localize('global.hospitalization_details') }}</h5>
+                            <h5 class="mb-4 p-3 bg-label-primary text-center">{{ localize('global.icu_details') }}</h5>
 
                         <div class="row p-2">
                             <div class="col-md-3">
@@ -52,16 +52,11 @@
                         </div>
                         
                         <div class="row text-start m-4">
-                            <div class="col-md-12 mt-2 mb-2">
-                            <h5 class="mb-2">{{ localize('global.reason') }}</h5>
-                            <div>
-                                {{$icu->reason}}
-                            </div>
-                        </div>
+
                         <div class="col-md-12 mt-2 mb-2">
-                            <h5 class="mb-2">{{ localize('global.remarks') }}</h5>
+                            <h5 class="mb-2">{{ localize('global.description') }}</h5>
                             <div>
-                                {{$icu->remarks}}
+                                {{$icu->description}}
                             </div>
                         </div>
                         </div>

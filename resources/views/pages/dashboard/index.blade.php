@@ -2,8 +2,6 @@
 <title>{{ localize('global.home_page') }}</title>
 @section('content')
     <div class="content-wrapper">
-        <!-- Content -->
-
         <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row">
                 <div class="col-md-12 order-3 order-md-2">
@@ -183,9 +181,7 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
 
                     <div class="row">
                         <div class="col-md-6">
@@ -208,11 +204,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
-                        
-
-                        <!-- Add similar cards for other trend charts -->
                     </div>
 
                     <div class="col-md-12 mt-3">
@@ -227,12 +218,9 @@
                           </div>
                       </div>
                   </div>
-
                 </div>
-
             </div>
         </div>
-        <!-- / Content -->
 
         <!-- Footer -->
         @include('layouts.partial.footer')
@@ -245,10 +233,11 @@
 
 @section('scripts')
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.js"></script>
-    <script src="
-https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js
-"></script>
+    <script src="{{asset('assets/js/chartjs.js')}}"></script>
+    <script src="{{asset('assets/js/echarts.js')}}"></script>
+    <script src="{{asset('assets/js/highcharts.js')}}"></script>
+    <script src="{{asset('assets/js/wordcloud.js')}}"></script>
+
     <script>
         // Render the patients trend chart
         const patientsTrendData = @json($patientsTrendData);
@@ -317,11 +306,8 @@ https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js
     </script>
 
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/wordcloud.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+{{-- <script src="https://code.highcharts.com/highcharts.js"></script> --}}
+{{-- <script src="https://code.highcharts.com/modules/wordcloud.js"></script> --}}
 
 <script>
 

@@ -13,7 +13,8 @@ class OperationController extends Controller
      */
     public function new()
     {
-        $operations = Anesthesia::where('status', '1')->latest()->paginate(15);
+        $userId = auth()->user()->id;
+        $operations = Anesthesia::where('status', '1')->whereRaw("JSON_CONTAINS(operation_doctor_id, '\"$userId\"')")->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
     }
@@ -44,9 +45,9 @@ class OperationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Operation $operation)
+    public function show(Anesthesia $operation)
     {
-        //
+        return view('pages.operations.show',compact('operation'));
     }
 
     /**
@@ -60,9 +61,17 @@ class OperationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Operation $operation)
+    public function update(Request $request, Anesthesia $operation)
     {
-        //
+        $data = $request->validate([
+            'is_operation_done' => 'required',
+            'operation_remark' => 'required',
+            'operation_result' => 'required',
+        ]);
+
+        $operation->update($data);
+
+        return redirect()->back()->with('success', 'Operation updated successfully.');
     }
 
     /**

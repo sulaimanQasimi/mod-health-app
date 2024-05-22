@@ -38,7 +38,7 @@ class AnesthesiaController extends Controller
     public function store(Request $request)
     {
         // Validate the input
-        $validatedData = $request->validate([
+        $data = $request->validate([
             'patient_id' => 'required',
             'doctor_id' => 'required',
             'branch_id' => 'required',
@@ -52,12 +52,16 @@ class AnesthesiaController extends Controller
             'estimated_blood_waste' => 'required',
             'other_problems' => 'required',
             'status' => 'nullable',
+            'operation_status' => 'nullable',
             'anesthesia_log_reply' => 'nullable',
             'is_operation_done' => 'nullable',
+            'operation_doctor_id' => 'nullable',
         ]);
 
+        $data['operation_doctor_id'] = json_encode($data['operation_doctor_id']);
+
         // Create a new appointment
-        Anesthesia::create($validatedData);
+        Anesthesia::create($data);
 
         // Redirect to the appointments index page with a success message
         return redirect()->back()->with('success', 'Anesthesia created successfully.');
@@ -93,7 +97,7 @@ class AnesthesiaController extends Controller
 
         $anesthesia->update($data);
 
-        return redirect()->back()->with('success', 'Anesthesia updated successfully.');
+        return redirect()->route('anesthesias.unapproved')->with('success', 'Anesthesia updated successfully.');
     }
 
     /**

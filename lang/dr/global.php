@@ -609,7 +609,12 @@ return [
     'patients_comparison_graph' => 'گراف مقایسوی ثبت مریضان',
     'appointments_comparison_graph' => 'گراف مقایسوی ثبت ملاقات ها',
     'occurred_count' => 'تعداد تکرار',
-    'doctors_activity_graph' => 'گراف فعالیت داکتران'
+    'doctors_activity_graph' => 'گراف فعالیت داکتران',
+    'add_consultation' => 'تعین مشوره برای مریض',
+    'operation_details' => 'جزئیات عملیات',
+    'new_prescriptions' => 'نسخه های جدید',
+    'created_at' => 'تاریخ ثبت',
+    'related_comments' => 'نظریه های داده شده'
 
  
 ];

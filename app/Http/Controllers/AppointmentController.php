@@ -81,6 +81,7 @@ class AppointmentController extends Controller
     {
         $labTypes = LabType::all();
         $doctors = User::all();
+        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
         $rooms = Room::all();
         $beds = Bed::all();
         $labTypeSections = LabTypeSection::all();
@@ -88,7 +89,7 @@ class AppointmentController extends Controller
         $branches = Branch::all();
         $patient = $appointment->patient;
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors'));
     }
 
     public function destroy(Appointment $appointment)

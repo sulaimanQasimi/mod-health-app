@@ -110,7 +110,7 @@
                                         <div class="col-md-2">
                                             <i class="bx bx-check-circle text-success"></i>
                                             <span
-                                            class="bg-label-primary p-1 m-1">{{ $comment->doctor->name_en }}</span>
+                                            class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
                                         </div>
                                         <div class="col-md-10" style="text-align: justify;">
                                             {{ $comment->comment }}

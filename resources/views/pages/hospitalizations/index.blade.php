@@ -121,10 +121,8 @@
                             searchable: false,
                             render: function(data, type, full, meta) {
                                 return (
-                                    `<a href="{{ url('patients/show/') }}` + `/` + full['id'] +
-                                    `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>` +
-                                    `<a href="{{ url('patients/edit/') }}` + `/` + full['id'] +
-                                    `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-edit"></i></a>`
+                                    `<a href="{{ url('hospitalizations/show/') }}` + `/` + full['id'] +
+                                    `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>`
                                 );
                             }
                         }

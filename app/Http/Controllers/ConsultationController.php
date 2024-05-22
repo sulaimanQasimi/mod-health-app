@@ -45,7 +45,6 @@ class ConsultationController extends Controller
 
         $data['doctor_id'] = json_encode($data['doctor_id']);
 
-
         Consultation::create($data);
 
         return redirect()->back()->with('success', 'Consultation created successfully.');

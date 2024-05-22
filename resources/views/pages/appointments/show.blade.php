@@ -592,7 +592,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createConsultationModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.add_lab_test') }}</h5>
+                                            {{ localize('global.add_consultation') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -618,7 +618,7 @@
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($branches as $value)
                                                         <option value="{{ $value->id }}"
-                                                            {{ old('name_en') == $value->id ? 'selected' : '' }}>
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->name }}
 
                                                         </option>
@@ -705,10 +705,39 @@
                                     @endforelse
                                 </tbody>
                             </table>
-
-
                         </div>
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
+                        </div>
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    @forelse ($consultation->comments as $comment )
+                                        <div class="col-md-2">
+                                            <i class="bx bx-check-circle text-success"></i>
+                                            <span
+                                            class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
+                                        </div>
+                                        <div class="col-md-10" style="text-align: justify;">
+                                            {{ $comment->comment }}
+                                        </div>
+                                        <div class="white-space">
+                                            <hr>
+                                        </div>
+                                    @empty
+                                    <div class="container">
+                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                            <div class="p-2 bg-label-danger mt-4">
+                                                {{ localize('global.no_comments_yet') }}
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
 
 
 
@@ -912,8 +941,8 @@
                                                 name="patient_id" value="{{ $appointment->patient_id }}">
                                             <input type="hidden" id="appointment_id{{ $appointment->id }}"
                                                 name="appointment_id" value="{{ $appointment->id }}">
-                                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                                value="{{ auth()->user()->id }}">
+                                            <input type="hidden" id="doctor_id{{ $appointment->id }}"
+                                                name="doctor_id" value="{{ auth()->user()->id }}">
                                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                                 value="{{ auth()->user()->branch_id }}">
 
@@ -924,6 +953,20 @@
                                                         for="plan{{ $appointment->id }}">{{ localize('global.plan') }}</label>
                                                     <textarea class="form-control" id="plan{{ $appointment->id }}" name="plan" rows="3"></textarea>
                                                 </div>
+
+                                                <label
+                                                for="operation_doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
+                                            <select class="form-control select2" name="operation_doctor_id[]" id="operation_doctor_id"
+                                                multiple>
+                                                <option value="">{{ localize('global.select') }}</option>
+                                                @foreach ($operation_doctors as $value)
+                                                    <option value="{{ $value->id }}"
+                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                        {{ $value->name }}
+
+                                                    </option>
+                                                @endforeach
+                                            </select>
 
                                                 <div class="form-group">
                                                     <label

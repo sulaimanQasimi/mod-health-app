@@ -40,6 +40,9 @@ return new class extends Migration
             ->references('id')
             ->on('branches');
 
+            $table->integer('created_by');
+            $table->integer('deleted_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

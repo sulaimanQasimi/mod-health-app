@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewAnesthesiaNotification;
 use App\Models\Anesthesia;
 use Illuminate\Http\Request;
 
@@ -61,7 +62,10 @@ class AnesthesiaController extends Controller
         $data['operation_doctor_id'] = json_encode($data['operation_doctor_id']);
 
         // Create a new appointment
-        Anesthesia::create($data);
+        $anesthesia = Anesthesia::create($data);
+
+        SendNewAnesthesiaNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+
 
         // Redirect to the appointments index page with a success message
         return redirect()->back()->with('success', 'Anesthesia created successfully.');

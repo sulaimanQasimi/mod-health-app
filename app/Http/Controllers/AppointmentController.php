@@ -22,7 +22,7 @@ class AppointmentController extends Controller
     public function index()
     {
         // Retrieve all appointments
-        $appointments = Appointment::where('branch_id', auth()->user()->branch_id)->latest()->paginate(10);
+        $appointments = Appointment::where('branch_id', auth()->user()->branch_id)->latest()->paginate(15);
 
         return view('pages.appointments.index', compact('appointments'));
     }

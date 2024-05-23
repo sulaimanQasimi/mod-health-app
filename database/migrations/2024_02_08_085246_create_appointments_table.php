@@ -19,20 +19,22 @@ return new class extends Migration
             $table->string('date');
             $table->string('time');
             $table->softDeletes();
+
+            $table->foreign('patient_id')
+                ->references('id')
+                ->on('patients');
+            $table->foreign('branch_id')
+                ->references('id')
+                ->on('branches');
+            $table->foreign('doctor_id')
+                ->references('id')
+                ->on('users');
+
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
 
-            $table->foreign('patient_id')
-                  ->references('id')
-                  ->on('patients');
-            $table->foreign('branch_id')
-                  ->references('id')
-                  ->on('branches');
-            $table->foreign('doctor_id')
-                ->references('id')
-                ->on('users');
         });
     }
 

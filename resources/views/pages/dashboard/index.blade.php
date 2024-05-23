@@ -15,7 +15,7 @@
                                             <div class="d-flex align-items-end mt-2">
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalPatients }}</h4>
                                                 @if ($patientPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
+                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded-circle bx bx-trending-up"></h4>
                                                     <small class="text-success">{{ $patientPercentageChange }}%</small>
                                                 @else
                                                     <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
@@ -357,10 +357,6 @@
         });
     </script>
 
-
-    {{-- <script src="https://code.highcharts.com/highcharts.js"></script> --}}
-    {{-- <script src="https://code.highcharts.com/modules/wordcloud.js"></script> --}}
-
     <script>
         const data = <?php echo json_encode($wordCloudData); ?>;
         Highcharts.chart('container', {
@@ -385,6 +381,7 @@
                 headerFormat: '<span style="font-size: 16px"><b>{point.key}</b>' +
                     '</span><br>'
             }
+
         });
     </script>
 @endsection

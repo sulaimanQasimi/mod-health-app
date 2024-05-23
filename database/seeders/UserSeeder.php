@@ -30,16 +30,16 @@ class UserSeeder extends Seeder
         ]);
         $faker = Faker::create();
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 1; $i < 50; $i++) {
             DB::table('users')->insert([
                 'name' => $faker->firstName,
                 'last_name' => $faker->lastName,
                 'email' => $faker->unique()->safeEmail,
                 'password' => Hash::make('123456789'),
                 'status' => '1',
-                'branch_id' => '1',
-                'department_id' => '1',
-                'section_id' => '1',
+                'branch_id' => $faker->numberBetween(1, 3),
+                'department_id' => $faker->numberBetween(1, 5),
+                'section_id' => $faker->numberBetween(1, 5),
                 'lang' => 'dr',
             ]);
         }

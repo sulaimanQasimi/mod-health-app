@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewConsultationNotification;
 use App\Models\Consultation;
 use Illuminate\Http\Request;
 
@@ -45,7 +46,9 @@ class ConsultationController extends Controller
 
         $data['doctor_id'] = json_encode($data['doctor_id']);
 
-        Consultation::create($data);
+        $consultation = Consultation::create($data);
+
+        SendNewConsultationNotification::dispatch($consultation->created_by, $consultation->id);
 
         return redirect()->back()->with('success', 'Consultation created successfully.');
     }

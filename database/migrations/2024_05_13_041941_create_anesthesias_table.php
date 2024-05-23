@@ -49,7 +49,9 @@ return new class extends Migration
             ->references('id')
             ->on('operation_types');
 
-
+            $table->integer('created_by');
+            $table->integer('deleted_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

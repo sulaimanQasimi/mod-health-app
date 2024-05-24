@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewAppointmentNotification;
 use App\Models\Appointment;
 use App\Models\Bed;
 use App\Models\Branch;
@@ -45,7 +46,9 @@ class AppointmentController extends Controller
         ]);
 
         // Create a new appointment
-        Appointment::create($validatedData);
+        $appointment = Appointment::create($validatedData);
+
+        SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
 
         // Redirect to the appointments index page with a success message
         return redirect()->route('appointments.index')->with('success', 'Appointment created successfully.');

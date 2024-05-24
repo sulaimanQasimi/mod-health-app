@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
             RelationSeeder::class,
             PatientSeeder::class,
             OperationTypeSeeder::class,
+            RoleSeeder::class,
+            ModalHasRoleSeeder::class,
+            PermissionSeeder::class,
+            RoleHasPermissionSeeder::class,
 
 
 

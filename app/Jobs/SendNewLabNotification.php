@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
+use App\Notifications\NewLabNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,13 +13,15 @@ use Illuminate\Queue\SerializesModels;
 class SendNewLabNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
+    protected $labId;
+    protected $userId;
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct($userId, $labId)
     {
-        //
+        $this->userId = $userId;
+        $this->labId = $labId;
     }
 
     /**
@@ -25,6 +29,9 @@ class SendNewLabNotification implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        $users = User::role('lab_checkups')->get();
+            foreach ($users as $user) {
+                $user->notify(new NewLabNotification($this->userId, $this->labId));
+            }
     }
 }

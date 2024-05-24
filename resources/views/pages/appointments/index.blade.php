@@ -36,6 +36,7 @@
                                     <td>{{ $appointment->time }}</td>
                                     <td>
                                         <a href="{{route('appointments.show', $appointment->id)}}"><span><i class="bx bx-expand"></i></span></a>
+                                        <a href="{{route('patients.history', $appointment->patient->id)}}"><span><i class="bx bx-history"></i></span></a>
                                     </td>
                                 </tr>
                             @endforeach

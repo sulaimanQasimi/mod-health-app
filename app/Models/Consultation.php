@@ -43,4 +43,5 @@ class Consultation extends Model
     {
         return $this->hasMany(ConsultationComment::class);
     }
+
 }

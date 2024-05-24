@@ -10,13 +10,15 @@ use Illuminate\Notifications\Notification;
 class NewAppointmentNotification extends Notification
 {
     use Queueable;
-
+    protected $appointmentId;
+    protected $appointmentUser;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($appointmentUser, $appointmentId)
     {
-        //
+        $this->appointmentUser = $appointmentUser;
+        $this->appointmentId = $appointmentId;
     }
 
     /**
@@ -26,18 +28,7 @@ class NewAppointmentNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        return ['database'];
     }
 
     /**
@@ -48,7 +39,8 @@ class NewAppointmentNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'message' => $this->appointmentUser . ' ' . localize('global.created_new_appointment'),
+            'appointment_id' => $this->appointmentId
         ];
     }
 }

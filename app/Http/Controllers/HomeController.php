@@ -144,20 +144,20 @@ class HomeController extends Controller
     {
         // Assuming you want to retrieve the patient count data for the last 12 months
         $now = Carbon::now();
-        $startDate = $now->subYear()->startOfMonth();
+        $startDate = $now->startOfMonth();
         $now = Carbon::now();
         $endDate = $now->endOfMonth();
 
 
-        $appointmentsTrendData = Appointment::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+        $appointmentsTrendData = Appointment::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy(DB::raw('DATE_FORMAT(created_at, "%Y-%m")'))
-            ->orderBy('month')
+            ->groupBy(DB::raw('DATE_FORMAT(created_at, "%d")'))
+            ->orderBy('day')
             ->get()
             ->toArray();
 
         // Prepare the data for the chart
-        $labels = array_column($appointmentsTrendData, 'month');
+        $labels = array_column($appointmentsTrendData, 'day');
         $data = array_column($appointmentsTrendData, 'count');
 
         return [

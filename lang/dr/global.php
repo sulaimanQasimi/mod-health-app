@@ -606,8 +606,8 @@ return [
     'all_registered_icu' => 'مریضان ثبت شده در ICU',
     'all_registered_prescriptions' => 'نسخه های ثبت شده',
     'all_registered_operations' => 'جراحی های ثبت شده',
-    'patients_comparison_graph' => 'گراف مقایسوی ثبت مریضان',
-    'appointments_comparison_graph' => 'گراف مقایسوی ثبت ملاقات ها',
+    'patients_comparison_graph' => 'گراف مقایسوی ماهانه ثبت مریضان',
+    'appointments_comparison_graph' => 'گراف مقایسوی روزانه ثبت ملاقات ها',
     'occurred_count' => 'تعداد تکرار',
     'doctors_activity_graph' => 'گراف فعالیت داکتران',
     'add_consultation' => 'تعین مشوره برای مریض',
@@ -622,5 +622,5 @@ return [
     'operation_remark' => 'ملاحظات عملیات',
     'icu_details' => 'جزئیات مریض ICU'
 
- 
+
 ];

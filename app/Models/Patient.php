@@ -75,4 +75,9 @@ class Patient extends Model
         return $this->belongsTo(Recipient::class, 'referred_by');
     }
 
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class);
+    }
+
 }

@@ -10,13 +10,15 @@ use Illuminate\Notifications\Notification;
 class NewICUNotification extends Notification
 {
     use Queueable;
-
+    protected $icuId;
+    protected $icuUser;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($icuUser, $icuId)
     {
-        //
+        $this->icuUser = $icuUser;
+        $this->icuId = $icuId;
     }
 
     /**
@@ -26,18 +28,7 @@ class NewICUNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        return ['database'];
     }
 
     /**
@@ -48,7 +39,8 @@ class NewICUNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'message' => $this->icuUser . ' ' . localize('global.created_new_icu'),
+            'icu_id' => $this->icuId
         ];
     }
 }

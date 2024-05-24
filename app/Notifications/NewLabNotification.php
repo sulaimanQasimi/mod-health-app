@@ -10,13 +10,15 @@ use Illuminate\Notifications\Notification;
 class NewLabNotification extends Notification
 {
     use Queueable;
-
+    protected $labId;
+    protected $labUser;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($labUser, $labId)
     {
-        //
+        $this->labUser = $labUser;
+        $this->labId = $labId;
     }
 
     /**
@@ -26,18 +28,7 @@ class NewLabNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        return ['database'];
     }
 
     /**
@@ -48,7 +39,8 @@ class NewLabNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'message' => $this->labUser . ' ' . localize('global.created_new_lab'),
+            'lab_id' => $this->labId
         ];
     }
 }

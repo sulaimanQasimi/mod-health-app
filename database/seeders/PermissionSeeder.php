@@ -46,7 +46,7 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'id' => 4,
             'name' => 'show-prescriptions-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name_dr' => 'نمایش مینو نسخه ها',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -56,7 +56,7 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'id' => 5,
             'name' => 'show-hospitalizations-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name_dr' => 'نمایش مینو مریضان بستر',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -66,7 +66,7 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'id' => 6,
             'name' => 'show-labs-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name_dr' => 'نمایش مینو معاینات',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -76,7 +76,7 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'id' => 7,
             'name' => 'show-icu-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name_dr' => 'نمایش مینو ICU',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -85,8 +85,8 @@ class PermissionSeeder extends Seeder
 
         Permission::create([
             'id' => 8,
-            'name' => 'show-icu-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name' => 'show-anesthesias-menu',
+            'name_dr' => 'نمایش مینو انستیزی ها',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -95,8 +95,8 @@ class PermissionSeeder extends Seeder
 
         Permission::create([
             'id' => 9,
-            'name' => 'show-anesthesias-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name' => 'show-operations-menu',
+            'name_dr' => 'نمایش مینو عملیات',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -105,8 +105,8 @@ class PermissionSeeder extends Seeder
 
         Permission::create([
             'id' => 10,
-            'name' => 'show-operations-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
+            'name' => 'show-settings-menu',
+            'name_dr' => 'نمایش مینو تنظیمات',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -115,16 +115,6 @@ class PermissionSeeder extends Seeder
 
         Permission::create([
             'id' => 11,
-            'name' => 'show-settings-menu',
-            'name_dr' => 'نمایش مینو مشوره های من',
-            'name_pa' => NULL,
-            'guard_name' => 'web',
-            'created_at' => '2023-08-22 14:05:43',
-            'updated_at' => '2023-08-22 09:35:32'
-        ]);
-
-        Permission::create([
-            'id' => 12,
             'name' => 'show-users-menu',
             'name_dr' => 'نمایش مینو کاربران',
             'name_pa' => NULL,
@@ -134,7 +124,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 13,
+            'id' => 12,
             'name' => 'show-roles-menu',
             'name_dr' => 'نمایش مینو نقش ها',
             'name_pa' => NULL,
@@ -144,7 +134,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 14,
+            'id' => 13,
             'name' => 'show-permissions-menu',
             'name_dr' => 'نمایش مینو صلاحیت ها',
             'name_pa' => NULL,
@@ -154,7 +144,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 15,
+            'id' => 14,
             'name' => 'show-relations-menu',
             'name_dr' => 'مینو ارتباط خانواده',
             'name_pa' => NULL,
@@ -164,7 +154,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 16,
+            'id' => 15,
             'name' => 'create-users',
             'name_dr' => 'ایجاد کاربران',
             'name_pa' => NULL,
@@ -174,7 +164,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 17,
+            'id' => 16,
             'name' => 'edit-users',
             'name_dr' => 'تصحیح کاربران',
             'name_pa' => NULL,
@@ -184,7 +174,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 18,
+            'id' => 17,
             'name' => 'create-roles',
             'name_dr' => 'ایجاد نقش ها',
             'name_pa' => NULL,
@@ -194,7 +184,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 19,
+            'id' => 18,
             'name' => 'edit-roles',
             'name_dr' => 'تصحیح نقش ها',
             'name_pa' => NULL,
@@ -204,7 +194,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 20,
+            'id' => 19,
             'name' => 'create-permissions',
             'name_dr' => 'ایجاد صلاحیت ها',
             'name_pa' => NULL,
@@ -214,7 +204,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 21,
+            'id' => 20,
             'name' => 'edit-permissions',
             'name_dr' => 'تصحیح صلاحیت ها',
             'name_pa' => NULL,
@@ -223,7 +213,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:10:40'
         ]);
         Permission::create([
-            'id' => 22,
+            'id' => 21,
             'name' => 'create-recipients',
             'name_dr' => 'ایجاد ادارات',
             'name_pa' => NULL,
@@ -233,7 +223,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 23,
+            'id' => 22,
             'name' => 'edit-recipients',
             'name_dr' => 'تصحیح ادارات',
             'name_pa' => NULL,
@@ -243,7 +233,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 24,
+            'id' => 23,
             'name' => 'deactivate-users',
             'name_dr' => 'غیرفعال نمودن یوزر ها',
             'name_pa' => NULL,
@@ -255,7 +245,7 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'id' => 24,
             'name' => 'show-departments-menu',
-            'name_dr' => 'غیرفعال نمودن یوزر ها',
+            'name_dr' => 'نمایش مینو دیپارتمنت ها',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
@@ -263,13 +253,85 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::create([
-            'id' => 24,
+            'id' => 25,
             'name' => 'show-sections-menu',
-            'name_dr' => 'غیرفعال نمودن یوزر ها',
+            'name_dr' => 'نمایش مینو بخش ها',
             'name_pa' => NULL,
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:36'
         ]);
+
+        Permission::create([
+            'id' => 26,
+            'name' => 'show-floors-menu',
+            'name_dr' => 'نمایش مینو منزل ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 27,
+            'name' => 'show-rooms-menu',
+            'name_dr' => 'نمایش مینو اطاق ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 28,
+            'name' => 'show-beds-menu',
+            'name_dr' => 'نمایش مینو بستر ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 29,
+            'name' => 'show-labs-types-menu',
+            'name_dr' => 'نمایش مینو نوعیت معاینات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 30,
+            'name' => 'show-test-types-menu',
+            'name_dr' => 'نمایش مینو نوعیت تست ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 31,
+            'name' => 'show-operation-types-menu',
+            'name_dr' => 'نمایش مینو نوعیت عملیات ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 32,
+            'name' => 'show-branches-menu',
+            'name_dr' => 'نمایش مینو شفاخانه ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+
     }
 }

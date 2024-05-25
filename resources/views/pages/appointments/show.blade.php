@@ -99,6 +99,64 @@
                         </div>
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                class="bx bx-check-shield p-1"></i>{{ localize('global.appointment_status') }}
+
+                        </h5>
+
+                        @if ($appointment->is_completed == 0)
+                            <div class="d-flex justify-content-center text-center">
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createStatusChangeModal{{ $appointment->id }}"><span><i
+                                            class="bx bx-check-shield"></i></span></button>
+                            </div>
+                        @else
+                        <div class="d-flex justify-content-center text-center">
+                            <span><i
+                                        class="bx bx-check-shield text-success"></i>{{localize('global.appointment_completed')}}</span>
+                        </div>
+                        @endif
+
+                        <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="createStatusChangeModalLabel{{ $appointment->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createStatusChangeModalLabel{{ $appointment->id }}">
+                                            {{ localize('global.make_appointment_completed') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('appointments.changeStatus', $appointment) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="is_completed" value="1">
+
+                                            <div class="form-group">
+
+                                                <div class="form-group">
+                                                    <label
+                                                        for="status_remark{{ $appointment->id }}">{{ localize('global.status_remark') }}</label>
+                                                    <textarea class="form-control" id="status_remark{{ $appointment->id }}" name="status_remark" rows="3"></textarea>
+                                                </div>
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-popsicle p-1"></i>{{ localize('global.diagnose') }}</h5>
 
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
@@ -401,8 +459,8 @@
                                                 value="{{ $appointment->doctor->id }}">
                                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                                 value="{{ auth()->user()->branch_id }}">
-                                            <input type="hidden" id="hospitalization_id{{ $appointment->id }}" name="hospitalization_id"
-                                                value="">
+                                            <input type="hidden" id="hospitalization_id{{ $appointment->id }}"
+                                                name="hospitalization_id" value="">
                                             <input type="hidden" id="status{{ $appointment->id }}" name="status"
                                                 value="0">
 
@@ -517,7 +575,8 @@
 
                             <div class="col-md-12 d-flex justify-content-center">
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-hard-hat p-1"></i>{{ localize('global.hospitalization_checkups') }}</h5>
+                                        class="bx bx-hard-hat p-1"></i>{{ localize('global.hospitalization_checkups') }}
+                                </h5>
                             </div>
                             <table class="table">
                                 <thead>
@@ -531,47 +590,49 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($appointment->hospitalization as $single_hospitalization)
-                                    @forelse ($single_hospitalization->labs as $lab)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $lab->labType->name }}</td>
-                                            <td>
-                                                @if ($lab->status == '0')
-                                                    <span
-                                                        class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                @else
-                                                    <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $lab->result }}</td>
-                                            <td>
-                                                @isset($lab->result_file)
-                                                    <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                        <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                    </a>
-                                                @endisset
+                                    @foreach ($appointment->hospitalization as $single_hospitalization)
+                                        @forelse ($single_hospitalization->labs as $lab)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $lab->labType->name }}</td>
+                                                <td>
+                                                    @if ($lab->status == '0')
+                                                        <span
+                                                            class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                    @else
+                                                        <span
+                                                            class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $lab->result }}</td>
+                                                <td>
+                                                    @isset($lab->result_file)
+                                                        <a href="{{ asset('storage/' . $lab->result_file) }}"
+                                                            target="_blank">
+                                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
+                                                        </a>
+                                                    @endisset
 
-                                            </td>
-                                            <td>
-                                                {{-- <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
+                                                </td>
+                                                <td>
+                                                    {{-- <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
                                                 <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
                                                             class="bx bx-trash text-danger"></i></span></a> --}}
 
-                                            </td>
+                                                </td>
 
-                                        </tr>
+                                            </tr>
 
-                                    @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_labs') }}
+                                        @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_labs') }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endforelse
+                                        @endforelse
                                     @endforeach
 
                                 </tbody>
@@ -718,28 +779,28 @@
                                 <div class="row">
 
                                     @foreach ($appointment->consultations as $consultation)
-                                    @forelse($consultation->comments as $comment)
-                                    <div class="col-md-2">
-                                        <i class="bx bx-check-circle text-success"></i>
-                                        <span
-                                        class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                    </div>
-                                    <div class="col-md-10" style="text-align: justify;">
-                                        {{ $comment->comment }}
-                                    </div>
-                                    <div class="white-space">
-                                        <hr>
-                                    </div>
-                                    @empty
-                                    <div class="container">
-                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                            <div class="p-2 bg-label-danger mt-4">
-                                                {{ localize('global.no_comments_yet') }}
+                                        @forelse($consultation->comments as $comment)
+                                            <div class="col-md-2">
+                                                <i class="bx bx-check-circle text-success"></i>
+                                                <span
+                                                    class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
                                             </div>
-                                        </div>
-                                    </div>
-                                    @endforelse
-                                @endforeach
+                                            <div class="col-md-10" style="text-align: justify;">
+                                                {{ $comment->comment }}
+                                            </div>
+                                            <div class="white-space">
+                                                <hr>
+                                            </div>
+                                        @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class="p-2 bg-label-danger mt-4">
+                                                        {{ localize('global.no_comments_yet') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -946,8 +1007,8 @@
                                                 name="patient_id" value="{{ $appointment->patient_id }}">
                                             <input type="hidden" id="appointment_id{{ $appointment->id }}"
                                                 name="appointment_id" value="{{ $appointment->id }}">
-                                            <input type="hidden" id="doctor_id{{ $appointment->id }}"
-                                                name="doctor_id" value="{{ auth()->user()->id }}">
+                                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
+                                                value="{{ auth()->user()->id }}">
                                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                                 value="{{ auth()->user()->branch_id }}">
 
@@ -960,18 +1021,18 @@
                                                 </div>
 
                                                 <label
-                                                for="operation_doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
-                                            <select class="form-control select2" name="operation_doctor_id[]" id="operation_doctor_id"
-                                                multiple>
-                                                <option value="">{{ localize('global.select') }}</option>
-                                                @foreach ($operation_doctors as $value)
-                                                    <option value="{{ $value->id }}"
-                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->name }}
+                                                    for="operation_doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
+                                                <select class="form-control select2" name="operation_doctor_id[]"
+                                                    id="operation_doctor_id" multiple>
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($operation_doctors as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
 
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                                        </option>
+                                                    @endforeach
+                                                </select>
 
                                                 <div class="form-group">
                                                     <label
@@ -1054,8 +1115,7 @@
                                             </td>
                                             <td>
                                                 @if ($anesthesia->status == '0')
-                                                    <span
-                                                        class="bx bx-x-circle text-danger"></span>
+                                                    <span class="bx bx-x-circle text-danger"></span>
                                                 @else
                                                     <span class="bx bx-check-circle text-success"></span>
                                                 @endif
@@ -1085,64 +1145,63 @@
                         </div>
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                            class="bx bx-cut p-1"></i>{{ localize('global.operations') }}</h5>
+                                class="bx bx-cut p-1"></i>{{ localize('global.operations') }}</h5>
 
-                            <div class="col-md-12 mt-4">
-                                <table class="table">
-                                    <thead>
+                        <div class="col-md-12 mt-4">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.operation_type') }}</th>
+                                        <th>{{ localize('global.patient_name') }}</th>
+                                        <th>{{ localize('global.status') }}</th>
+                                        <th>{{ localize('global.date') }}</th>
+                                        <th>{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($appointment->approved_anesthesias as $anesthesia)
                                         <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.operation_type') }}</th>
-                                            <th>{{ localize('global.patient_name') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.date') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $anesthesia->operationType->name }}</td>
+                                            <td>
+                                                {{ $anesthesia->patient->name }}
+                                            </td>
+                                            <td>
+                                                @if ($anesthesia->status == '0')
+                                                    <span class="bx bx-x-circle text-danger"></span>
+                                                @else
+                                                    <span class="bx bx-check-circle text-success"></span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ $anesthesia->date }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
+                                                            class="bx bx-edit"></i></span></a>
+                                                <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
+                                                            class="bx bx-trash text-danger"></i></span></a>
+
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($appointment->approved_anesthesias as $anesthesia)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $anesthesia->operationType->name }}</td>
-                                                <td>
-                                                    {{ $anesthesia->patient->name }}
-                                                </td>
-                                                <td>
-                                                    @if ($anesthesia->status == '0')
-                                                        <span
-                                                            class="bx bx-x-circle text-danger"></span>
-                                                    @else
-                                                        <span class="bx bx-check-circle text-success"></span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    {{ $anesthesia->date }}
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
-                                                                class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
-                                                                class="bx bx-trash text-danger"></i></span></a>
-    
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.not_referred_to_operation') }}
-                                                    </div>
+                                    @empty
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.not_referred_to_operation') }}
                                                 </div>
                                             </div>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </div>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
 
 
 
-                            {{-- icu starts here  --}}
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                        {{-- icu starts here  --}}
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
 
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"

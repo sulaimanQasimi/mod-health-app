@@ -41,8 +41,10 @@ class AppointmentController extends Controller
             'patient_id' => 'required',
             'doctor_id' => 'required',
             'branch_id' => 'required',
+            'is_completed' => 'nullable',
             'date' => 'required',
             'time' => 'required',
+            'status_remark' => 'nullable',
         ]);
 
         // Create a new appointment
@@ -77,6 +79,22 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
     }
 
+    public function changeStatus(Request $request, Appointment $appointment)
+    {
+        // Validate the input
+        $validatedData = $request->validate([
+            'is_completed' => 'required',
+            'status_remark' => 'nullable',
+            // Add any other validation rules as needed
+        ]);
+
+        // Update the appointment
+        $appointment->update($validatedData);
+
+        // Redirect to the appointments index page with a success message
+        return redirect()->route('appointments.completedAppointments')->with('success', 'Appointment updated successfully.');
+    }
+
     /**
      * Display the specified resource.
      */
@@ -106,7 +124,14 @@ class AppointmentController extends Controller
 
     public function doctorAppointments()
     {
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)->latest()->paginate(10);
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)->where('is_completed','0')->latest()->paginate(10);
+
+        return view('pages.appointments.index', compact('appointments'));
+    }
+
+    public function completedAppointments()
+    {
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)->where('is_completed','1')->latest()->paginate(10);
 
         return view('pages.appointments.index', compact('appointments'));
     }

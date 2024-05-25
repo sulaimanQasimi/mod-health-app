@@ -60,19 +60,27 @@
             </ul>
         </li>
 
-        <li class="menu-item {{ Route::is('appointments.doctorAppointments') ? 'active' : '' }}">
-            <a href="{{ route('appointments.doctorAppointments') }}" class="menu-link">
+        <li
+            class="menu-item {{ Route::is('appointments.doctorAppointments') || Route::is('appointments.completedAppointments') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-time-five text-primary"></i>
                 <div>{{ localize('global.my_appointments') }}</div>
             </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('appointments.doctorAppointments') ? 'active' : '' }}">
+                    <a href="{{ route('appointments.doctorAppointments') }}" class="menu-link">
+                        <div>{{ localize('global.ongoing_appointments') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('appointments.completedAppointments') ? 'active' : '' }}">
+                    <a href="{{ route('appointments.completedAppointments') }}" class="menu-link">
+                        <div>{{ localize('global.completed_appointments') }}</div>
+                    </a>
+                </li>
+            </ul>
         </li>
-{{--
-        <li class="menu-item {{ Route::is('diagnoses.index') ? 'active' : '' }}">
-            <a href="{{ route('diagnoses.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-popsicle"></i>
-                <div>{{ localize('global.diagnoses') }}</div>
-            </a>
-        </li> --}}
+
         <li class="menu-item {{ Route::is('consultations.index') ? 'active' : '' }}">
             <a href="{{ route('consultations.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-chat text-primary"></i>

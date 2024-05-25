@@ -620,7 +620,13 @@ return [
     'success' => 'موفق',
     'fail' => 'ناکام',
     'operation_remark' => 'ملاحظات عملیات',
-    'icu_details' => 'جزئیات مریض ICU'
+    'icu_details' => 'جزئیات مریض ICU',
+    'ongoing_appointments' => 'ملاقات های در حال اجراٰ',
+    'completed_appointments' => 'ملاقات های تکمیل شده',
+    'status_remark' => 'ملاحظات تکمیل نمودن ملاقات',
+    'appointment_status' => 'حالت ملاقات',
+    'make_appointment_completed' => 'تکمیل نمودن ملاقات',
+    'appointment_completed' => 'ملاقات تکمیل شده است'
 
 
 ];

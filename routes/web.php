@@ -224,11 +224,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('index', [AppointmentController::class, 'index'])->name('index');
         Route::get('doctorAppointments', [AppointmentController::class, 'doctorAppointments'])->name('doctorAppointments');
+        Route::get('completedAppointments', [AppointmentController::class, 'completedAppointments'])->name('completedAppointments');
         Route::get('create', [AppointmentController::class, 'create'])->name('create');
         Route::get('show/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::post('store', [AppointmentController::class, 'store'])->name('store');
         Route::get('edit/{appointment}', [AppointmentController::class, 'edit'])->name('edit');
         Route::put('update/{appointment}', [AppointmentController::class, 'update'])->name('update');
+        Route::put('changeStatus/{appointment}', [AppointmentController::class, 'changeStatus'])->name('changeStatus');
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
     });
 

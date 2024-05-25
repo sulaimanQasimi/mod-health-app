@@ -221,6 +221,7 @@
                                     @endforeach
                                 </select>
                             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                            <input type="hidden" name="is_completed" value="0">
                             <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
                             <!-- Add other appointment form fields as needed -->
                             <label for="doctor_name">{{localize('global.doctor_name')}}</label>

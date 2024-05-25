@@ -13,14 +13,14 @@ class AnesthesiaController extends Controller
      */
     public function unapproved()
     {
-        $anesthesias = Anesthesia::where('status', '0')->latest()->paginate(1);
+        $anesthesias = Anesthesia::where('status', '0')->latest()->paginate(10);
 
         return view('pages.anesthesias.unapproved', compact('anesthesias'));
     }
 
     public function approved()
     {
-        $anesthesias = Anesthesia::where('status', '1')->latest()->paginate(1);
+        $anesthesias = Anesthesia::where('status', '1')->latest()->paginate(10);
 
         return view('pages.anesthesias.approved', compact('anesthesias'));
     }

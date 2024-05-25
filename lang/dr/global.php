@@ -630,7 +630,9 @@ return [
     'medicine_types' => 'نوعیت ادویه',
     'medicines' => 'ادویه جات',
     'create_medicine_type' => 'اضافه نمودن نوعیت ادویه',
-    'edit_medicine_type' => 'ویرایش نوعیت ادویه'
+    'edit_medicine_type' => 'ویرایش نوعیت ادویه',
+    'medicine_type' => 'نوعیت ادویه',
+    'edit_medicine' => 'ویرایش ادویه'
 
 
 ];

@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('medicines', function (Blueprint $table) {
             $table->id();
+            $table->string('name',192);
+            $table->unsignedBigInteger('medicine_type_id');
+
+            $table->foreign('medicine_type_id')
+                ->references('id')
+                ->on('medicine_types');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

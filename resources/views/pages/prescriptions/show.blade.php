@@ -71,7 +71,19 @@
                                 @endforeach
                             </tbody>
                         </table>
-
+                        <div class="d-flex justify-content-center text-center mt-2">
+                            <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="is_completed" value="1">
+                                <button type="submit" class="btn btn-success">
+                                    <span><i class="bx bx-check-shield"></i></span>
+                                </button>
+                            </form>
+                        </div>
+                        </form>
+                        </button>
+                    </div>
                     </div>
 
 

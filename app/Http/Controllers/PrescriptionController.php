@@ -13,7 +13,7 @@ class PrescriptionController extends Controller
      */
     public function index()
     {
-        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_delivered',false)->latest()->paginate(10);
+        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_completed',false)->latest()->paginate(10);
         return view('pages.prescriptions.index',compact('prescriptions'));
     }
 
@@ -22,7 +22,7 @@ class PrescriptionController extends Controller
      */
     public function delivered()
     {
-        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_delivered',true)->latest()->paginate(10);
+        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_completed',true)->latest()->paginate(10);
         return view('pages.prescriptions.delivered',compact('prescriptions'));
     }
 
@@ -145,5 +145,19 @@ class PrescriptionController extends Controller
     public function scanCode()
     {
         return view('pages.prescriptions.scan');
+    }
+
+    public function changeStatus(Request $request, Prescription $prescription)
+    {
+        // Validate the input
+        $validatedData = $request->validate([
+            'is_completed' => 'required',
+        ]);
+
+        // Update the prescription
+        $prescription->update($validatedData);
+
+        // Redirect to the prescriptions index page with a success message
+        return redirect()->route('prescriptions.delivered')->with('success', 'prescription updated successfully.');
     }
 }

@@ -35,6 +35,7 @@ use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\VisitController;
+use App\Models\Prescription;
 
 /*
 |--------------------------------------------------------------------------
@@ -262,6 +263,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/issue/{prescription}', [PrescriptionController::class, 'issue'])->name('issue');
         Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);
+        Route::put('changeStatus/{prescription}', [PrescriptionController::class, 'changeStatus'])->name('changeStatus');
 
     });
 

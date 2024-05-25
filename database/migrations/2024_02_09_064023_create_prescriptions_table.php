@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('amount', 191);
             $table->string('type', 191);
             $table->string('is_delivered');
+            $table->tinyInteger('is_completed')->default('0');
 
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');

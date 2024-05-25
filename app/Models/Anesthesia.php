@@ -10,7 +10,8 @@ class Anesthesia extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id','is_operation_done','operation_remark','operation_doctor_id','operation_result'];
+    protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id','is_operation_done','operation_remark','operation_assistants_id','operation_result','operation_surgion_id','operation_anesthesia_log_id','operation_anesthesist_id',
+'operation_scrub_nurse_id','operation_circulation_nurse_id'];
 
     public static function boot()
     {
@@ -40,6 +41,36 @@ class Anesthesia extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function surgion()
+    {
+        return $this->belongsTo(User::class, 'operation_surgion_id', 'id');
+    }
+
+    public function anesthesia_log()
+    {
+        return $this->belongsTo(User::class, 'operation_anesthesia_log_id', 'id');
+    }
+
+    public function anesthesist()
+    {
+        return $this->belongsTo(User::class, 'operation_anesthesist_id', 'id');
+    }
+
+    public function scrub_nurse()
+    {
+        return $this->belongsTo(User::class, 'operation_scrub_nurse_id', 'id');
+    }
+
+    public function circulation_nurse()
+    {
+        return $this->belongsTo(User::class, 'operation_circulation_nurse_id', 'id');
+    }
+
+    public function assistants()
+    {
+        return $this->hasMany(User::class, 'operation_assistants_id', 'id');
     }
 
 }

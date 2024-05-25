@@ -574,7 +574,7 @@ return [
     'plan' => 'پلان عملیات',
     'other_problems' => 'مشکلات مشخص دیگر',
     'planned_duration' => 'وقت تخمینی عملیات',
-    'position_on_bed' => 'موقعیت مریض بالای میز',
+    'position_on_bed' => 'وضعیت مریض بالای میز',
     'estimated_blood_waste' => 'مقدار تخمینی ضایعات خون',
     'anesthesia_details' => 'جزئیات انستیزی',
     'approved_anesthesias' => 'انستیزی های تائید شده',

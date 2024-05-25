@@ -8,16 +8,32 @@ use Illuminate\Http\Request;
 
 class OperationController extends Controller
 {
+
+
+
     /**
      * Display a listing of the resource.
      */
     public function new()
     {
         $userId = auth()->user()->id;
-        $operations = Anesthesia::where('status', '1')->whereRaw("JSON_CONTAINS(operation_doctor_id, '\"$userId\"')")->latest()->paginate(15);
+        $operations = Anesthesia::where('status', '1')
+        ->where(function($query) use
+        ($userId)
+        {
+            $query->whereRaw("JSON_CONTAINS(operation_assistants_id, '\"$userId\"')")
+            ->orWhere('operation_surgion_id', $userId)
+        ->orWhere('operation_anesthesia_log_id', $userId)
+        ->orWhere('operation_anesthesist_id', $userId)
+        ->orWhere('operation_scrub_nurse_id', $userId)
+        ->orWhere('operation_circulation_nurse_id', $userId);
+        })
+
+        ->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
     }
+
 
     public function completed()
     {

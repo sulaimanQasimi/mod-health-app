@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
             $table->tinyInteger('is_completed')->default('0');
             $table->string('status_remark',192)->nullable();
+            $table->string('refferal_remarks',192)->nullable();
             $table->string('date');
             $table->string('time');
             $table->softDeletes();

@@ -6,6 +6,7 @@ use App\Jobs\SendNewAppointmentNotification;
 use App\Models\Appointment;
 use App\Models\Bed;
 use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Diagnose;
 use App\Models\Doctor;
 use App\Models\LabType;
@@ -45,15 +46,35 @@ class AppointmentController extends Controller
             'date' => 'required',
             'time' => 'required',
             'status_remark' => 'nullable',
+            'refferal_remarks' => 'nullable',
         ]);
+
+        if($request->has('current_appointment_id'))
+        {
+
+            $current_appointmentId = $request->input('current_appointment_id');
+
+            $current_appointment = Appointment::findOrFail($current_appointmentId);
+
+            $current_appointment->update(['is_completed' => '1', 'refferal_remarks' => $request->refferal_remarks]);
+            $current_appointment->save();
+            $appointment = Appointment::create($validatedData);
+
+            SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+            return redirect()->route('appointments.completedAppointments')->with('success', 'Appointment created successfully.');
+        }
+
+        else
+        {
 
         // Create a new appointment
         $appointment = Appointment::create($validatedData);
 
         SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+        }
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.index')->with('success', 'Appointment created successfully.');
+        return redirect()->route('appointments.doctorAppointments')->with('success', 'Appointment created successfully.');
     }
 
     public function edit(Appointment $appointment)
@@ -76,7 +97,7 @@ class AppointmentController extends Controller
         $appointment->update($validatedData);
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully.');
+        return redirect()->route('appointments.doctorAppointments')->with('success', 'Appointment updated successfully.');
     }
 
     public function changeStatus(Request $request, Appointment $appointment)
@@ -108,9 +129,10 @@ class AppointmentController extends Controller
         $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $branches = Branch::all();
+        $departments = Department::all();
         $patient = $appointment->patient;
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors','departments'));
     }
 
     public function destroy(Appointment $appointment)

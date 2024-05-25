@@ -29,9 +29,14 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('doctor_id');
-            $table->text('operation_doctor_id')->nullable();
+            $table->text('operation_assistants_id')->nullable();
             $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('operation_type_id');
+            $table->unsignedBigInteger('operation_surgion_id')->nullable();
+            $table->unsignedBigInteger('operation_anesthesia_log_id')->nullable();
+            $table->unsignedBigInteger('operation_anesthesist_id')->nullable();
+            $table->unsignedBigInteger('operation_scrub_nurse_id')->nullable();
+            $table->unsignedBigInteger('operation_circulation_nurse_id')->nullable();
+            $table->unsignedBigInteger('operation_type_id')->nullable();
 
             $table->foreign('branch_id')
             ->references('id')
@@ -40,6 +45,21 @@ return new class extends Migration
             ->references('id')
             ->on('appointments');
             $table->foreign('doctor_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_surgion_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_anesthesia_log_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_anesthesist_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_scrub_nurse_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_circulation_nurse_id')
             ->references('id')
             ->on('users');
             $table->foreign('patient_id')

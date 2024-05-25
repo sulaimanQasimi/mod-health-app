@@ -56,10 +56,15 @@ class AnesthesiaController extends Controller
             'operation_status' => 'nullable',
             'anesthesia_log_reply' => 'nullable',
             'is_operation_done' => 'nullable',
-            'operation_doctor_id' => 'nullable',
+            'operation_assistants_id' => 'nullable',
+            'operation_surgion_id' => 'nullable',
+            'operation_anesthesia_log_id' => 'nullable',
+            'operation_anesthesist_id' => 'nullable',
+            'operation_scrub_nurse_id' => 'nullable',
+            'operation_circulation_nurse_id' => 'nullable',
         ]);
 
-        $data['operation_doctor_id'] = json_encode($data['operation_doctor_id']);
+        $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
 
         // Create a new appointment
         $anesthesia = Anesthesia::create($data);

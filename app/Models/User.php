@@ -81,7 +81,7 @@ class User extends Authenticatable
 
     public function anesthesias()
     {
-        return $this->hasMany(Anesthesia::class, 'operation_doctor_id', 'id');
+        return $this->hasMany(Anesthesia::class, 'doctor_id', 'id');
     }
 
     public function consultation_comments()

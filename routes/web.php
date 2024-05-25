@@ -30,6 +30,8 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\ICUController;
 use App\Http\Controllers\LabTypeSectionController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\VisitController;
@@ -386,6 +388,28 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
         Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
+    });
+
+    // Medicine types routes
+    Route::prefix('medicine_types')->name('medicine_types.')->group(function () {
+        Route::get('index', [MedicineTypeController::class, 'index'])->name('index');
+        Route::get('create', [MedicineTypeController::class, 'create'])->name('create');
+        Route::get('show/{medicineType}', [MedicineTypeController::class, 'show'])->name('show');
+        Route::post('store', [MedicineTypeController::class, 'store'])->name('store');
+        Route::get('edit/{medicineType}', [MedicineTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Medicines routes
+    Route::prefix('medicines')->name('medicines.')->group(function () {
+        Route::get('index', [MedicineController::class, 'index'])->name('index');
+        Route::get('create', [MedicineController::class, 'create'])->name('create');
+        Route::get('show/{medicine}', [MedicineController::class, 'show'])->name('show');
+        Route::post('store', [MedicineController::class, 'store'])->name('store');
+        Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
+        Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
+        Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

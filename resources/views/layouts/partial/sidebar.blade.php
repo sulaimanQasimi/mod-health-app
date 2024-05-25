@@ -261,34 +261,44 @@
                         <div>{{ localize('global.sections') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('floors.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Route::is('floors.*') ? 'active' : '' }}">
                     <a href="{{ route('floors.index') }}" class="menu-link">
                         <div>{{ localize('global.floors') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('rooms.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Route::is('rooms.*') ? 'active' : '' }}">
                     <a href="{{ route('rooms.index') }}" class="menu-link">
                         <div>{{ localize('global.rooms') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('beds.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Route::is('beds.*') ? 'active' : '' }}">
                     <a href="{{ route('beds.index') }}" class="menu-link">
                         <div>{{ localize('global.beds') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('lab_type_sections.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Route::is('lab_type_sections.*') ? 'active' : '' }}">
                     <a href="{{ route('lab_type_sections.index') }}" class="menu-link">
                         <div>{{ localize('global.lab_type_sections') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('lab_types.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
                     <a href="{{ route('lab_types.index') }}" class="menu-link">
                         <div>{{ localize('global.lab_types') }}</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Route::is('operation_types.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Route::is('operation_types.*') ? 'active' : '' }}">
                     <a href="{{ route('operation_types.index') }}" class="menu-link">
                         <div>{{ localize('global.operation_types') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('medicine_types.*') ? 'active' : '' }}">
+                    <a href="{{ route('medicine_types.index') }}" class="menu-link">
+                        <div>{{ localize('global.medicine_types') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('medicines.*') ? 'active' : '' }}">
+                    <a href="{{ route('medicines.index') }}" class="menu-link">
+                        <div>{{ localize('global.medicines') }}</div>
                     </a>
                 </li>
                 <li class="menu-item {{ Route::is('branches.index') ? 'active' : '' }}">

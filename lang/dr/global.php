@@ -626,7 +626,11 @@ return [
     'status_remark' => 'ملاحظات تکمیل نمودن ملاقات',
     'appointment_status' => 'حالت ملاقات',
     'make_appointment_completed' => 'تکمیل نمودن ملاقات',
-    'appointment_completed' => 'ملاقات تکمیل شده است'
+    'appointment_completed' => 'ملاقات تکمیل شده است',
+    'medicine_types' => 'نوعیت ادویه',
+    'medicines' => 'ادویه جات',
+    'create_medicine_type' => 'اضافه نمودن نوعیت ادویه',
+    'edit_medicine_type' => 'ویرایش نوعیت ادویه'
 
 
 ];

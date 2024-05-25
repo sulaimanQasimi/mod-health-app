@@ -110,10 +110,10 @@
                                             class="bx bx-check-shield"></i></span></button>
                             </div>
                         @else
-                        <div class="d-flex justify-content-center text-center">
-                            <span><i
-                                        class="bx bx-check-shield text-success"></i>{{localize('global.appointment_completed')}}</span>
-                        </div>
+                            <div class="d-flex justify-content-center text-center">
+                                <span><i
+                                        class="bx bx-check-shield text-success"></i>{{ localize('global.appointment_completed') }}</span>
+                            </div>
                         @endif
 
                         <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
@@ -158,10 +158,11 @@
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-popsicle p-1"></i>{{ localize('global.diagnose') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createDiagnoseModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createDiagnoseModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createDiagnoseModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -252,10 +253,11 @@
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createPrescriptionModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createPrescriptionModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}"
                             tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}"
@@ -313,6 +315,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <button type="button" class="btn btn-primary mt-2"
                                                 id="addPrescriptionInput"><i
                                                     class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}</button>
@@ -419,24 +422,27 @@
                                     @endif
                                 </tbody>
                             </table>
-                            <div class="d-flex justify-content-center mt-4">
-                                <form
-                                    action="{{ route('prescriptions.print-card', ['appointment' => $appointment->id]) }}"
-                                    method="GET" target="_blank">
-                                    <button class="btn btn-primary" type="submit"><span
-                                            class="bx bx-printer me-1"></span>{{ localize('global.print_prescription') }}</button>
-                                </form>
-                            </div>
+                            @if ($appointment->is_completed == 0)
+                                <div class="d-flex justify-content-center mt-4">
+                                    <form
+                                        action="{{ route('prescriptions.print-card', ['appointment' => $appointment->id]) }}"
+                                        method="GET" target="_blank">
+                                        <button class="btn btn-primary" type="submit"><span
+                                                class="bx bx-printer me-1"></span>{{ localize('global.print_prescription') }}</button>
+                                    </form>
+                                </div>
+                            @endif
                         </div>
 
 
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createLabModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createLabModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createLabModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createLabModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -564,14 +570,16 @@
 
                                 </tbody>
                             </table>
-
-                            <div class="d-flex justify-content-center mt-4">
-                                <form action="{{ route('lab_tests.print-card', ['appointment' => $appointment->id]) }}"
-                                    method="GET" target="_blank">
-                                    <button class="btn btn-primary" type="submit"><span
-                                            class="bx bx-printer me-1"></span>{{ localize('global.print_test_ticket') }}</button>
-                                </form>
-                            </div>
+                            @if ($appointment->is_completed == 0)
+                                <div class="d-flex justify-content-center mt-4">
+                                    <form
+                                        action="{{ route('lab_tests.print-card', ['appointment' => $appointment->id]) }}"
+                                        method="GET" target="_blank">
+                                        <button class="btn btn-primary" type="submit"><span
+                                                class="bx bx-printer me-1"></span>{{ localize('global.print_test_ticket') }}</button>
+                                    </form>
+                                </div>
+                            @endif
 
                             <div class="col-md-12 d-flex justify-content-center">
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -645,10 +653,11 @@
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-chat p-1"></i>{{ localize('global.consultations') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createConsultationModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createConsultationModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createConsultationModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createConsultationModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -809,10 +818,11 @@
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createHospitalizationModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createHospitalizationModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createHospitalizationModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createHospitalizationModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -985,10 +995,11 @@
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-first-aid p-1"></i>{{ localize('global.refere_to_anasthesia') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createAnasthesiaModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createAnasthesiaModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createAnasthesiaModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createAnasthesiaModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1203,10 +1214,11 @@
                         {{-- icu starts here  --}}
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
-
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createICUModal{{ $appointment->id }}"><span><i
-                                    class="bx bx-plus"></i></span></button>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createICUModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createICUModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createICUModalLabel{{ $appointment->id }}" aria-hidden="true">

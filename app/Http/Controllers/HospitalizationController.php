@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Hospitalization;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
@@ -44,7 +45,10 @@ class HospitalizationController extends Controller
             'branch_id' => 'required',
         ]);
 
-        Hospitalization::create($data);
+        $hospitalization = Hospitalization::create($data);
+
+        SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+
 
         return redirect()->back()->with('success', 'Hospitalization created successfully.');
     }

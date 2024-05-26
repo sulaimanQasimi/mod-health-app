@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewICUNotification;
 use App\Models\ICU;
 use Illuminate\Http\Request;
 
@@ -56,8 +57,9 @@ class ICUController extends Controller
         ]);
 
         // Create a new appointment
-        ICU::create($validatedData);
+        $icu = ICU::create($validatedData);
 
+        SendNewICUNotification::dispatch($icu->created_by, $icu->id);
         // Redirect to the appointments index page with a success message
         return redirect()->back()->with('success', 'ICU created successfully.');
     }

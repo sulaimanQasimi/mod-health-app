@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewAnesthesiaNotification;
+use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
 use Illuminate\Http\Request;
 
@@ -88,7 +89,7 @@ class AnesthesiaController extends Controller
      */
     public function show(Anesthesia $anesthesia)
     {
-        return view('pages.anesthesias.show',compact('anesthesia'));
+        return view('pages.anesthesias.show', compact('anesthesia'));
     }
 
     /**
@@ -112,6 +113,11 @@ class AnesthesiaController extends Controller
         ]);
 
         $anesthesia->update($data);
+
+        if ($data['status'] == 'approved') {
+            SendNewOperationNotification::dispatch($anesthesia->created_by, $anesthesia->id);
+        }
+
 
         return redirect()->route('anesthesias.new')->with('success', 'Anesthesia updated successfully.');
     }

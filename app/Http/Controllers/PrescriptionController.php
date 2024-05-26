@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewPrescriptionNotification;
 use App\Models\Appointment;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
@@ -60,7 +61,8 @@ class PrescriptionController extends Controller
         $data['is_delivered'] = json_encode($data['is_delivered']);
 
 
-        Prescription::create($data);
+        $prescription = Prescription::create($data);
+        SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
 
 
         return redirect()->back()->with('success', 'Prescription created successfully.');

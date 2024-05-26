@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewLabNotification;
 use App\Models\Appointment;
 use App\Models\Lab;
 use Illuminate\Http\Request;
@@ -46,8 +47,10 @@ class LabController extends Controller
 
     foreach ($labTypeIds as $labTypeId) {
         $labData = array_merge($data, ['lab_type_id' => $labTypeId]);
-        Lab::create($labData);
+        $lab = Lab::create($labData);
     }
+
+    SendNewLabNotification::dispatch($lab->created_by, $lab->id);
 
     return redirect()->back()->with('success', 'Lab Tests created successfully.');
 }

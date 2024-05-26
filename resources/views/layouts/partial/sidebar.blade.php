@@ -113,6 +113,12 @@
                 </li>
             </ul>
         </li>
+        <li class="menu-item {{ Route::is('under_reviews.index') ? 'active' : '' }}">
+            <a href="{{ route('under_reviews.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-revision text-primary"></i>
+                <div>{{ localize('global.under_review_patients') }}</div>
+            </a>
+        </li>
 
         <li class="menu-item {{ Route::is('visits.index') ? 'active' : '' }}">
             <a href="{{ route('visits.index') }}" class="menu-link">
@@ -141,14 +147,19 @@
             </a>
 
             <ul class="menu-sub">
-                <li class="menu-item {{ Route::is('anesthesias.unapproved') ? 'active' : '' }}">
-                    <a href="{{ route('anesthesias.unapproved') }}" class="menu-link">
+                <li class="menu-item {{ Route::is('anesthesias.new') ? 'active' : '' }}">
+                    <a href="{{ route('anesthesias.new') }}" class="menu-link">
                         <div>{{ localize('global.new_anesthesias') }}</div>
                     </a>
                 </li>
                 <li class="menu-item {{ Route::is('anesthesias.approved') ? 'active' : '' }}">
                     <a href="{{ route('anesthesias.approved') }}" class="menu-link">
                         <div>{{ localize('global.approved_anesthesias') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('anesthesias.rejected') ? 'active' : '' }}">
+                    <a href="{{ route('anesthesias.rejected') }}" class="menu-link">
+                        <div>{{ localize('global.rejected_anesthesias') }}</div>
                     </a>
                 </li>
             </ul>

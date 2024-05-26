@@ -69,19 +69,34 @@ class Appointment extends Model
         return $this->hasMany(Hospitalization::class);
     }
 
+    public function under_reviews()
+    {
+        return $this->hasMany(UnderReview::class);
+    }
+
     public function anesthesia()
     {
         return $this->hasMany(Anesthesia::class);
     }
 
-    public function unapproved_anesthesias()
+    public function anesthesias()
     {
-        return $this->hasMany(Anesthesia::class)->where('status', '0');
+        return $this->hasMany(Anesthesia::class);
+    }
+
+    public function new_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', 'new');
     }
 
     public function approved_anesthesias()
     {
-        return $this->hasMany(Anesthesia::class)->where('status', '1');
+        return $this->hasMany(Anesthesia::class)->where('status', 'approved');
+    }
+
+    public function rejected_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', 'rejected');
     }
 
     public function icu()

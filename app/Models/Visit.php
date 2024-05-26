@@ -11,7 +11,7 @@ class Visit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id'
+        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id','under_review_id'
     ];
 
     public static function boot()
@@ -47,5 +47,10 @@ class Visit extends Model
     public function icu()
     {
         return $this->belongsTo(ICU::class);
+    }
+
+    public function under_review()
+    {
+        return $this->belongsTo(UnderReview::class);
     }
 }

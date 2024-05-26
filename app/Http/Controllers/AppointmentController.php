@@ -74,7 +74,7 @@ class AppointmentController extends Controller
         }
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.doctorAppointments')->with('success', 'Appointment created successfully.');
+        return redirect()->route('appointments.index')->with('success', 'Appointment created successfully.');
     }
 
     public function edit(Appointment $appointment)

@@ -632,7 +632,25 @@ return [
     'create_medicine_type' => 'اضافه نمودن نوعیت ادویه',
     'edit_medicine_type' => 'ویرایش نوعیت ادویه',
     'medicine_type' => 'نوعیت ادویه',
-    'edit_medicine' => 'ویرایش ادویه'
+    'edit_medicine' => 'ویرایش ادویه',
+    'refer_to_another_doctor' => 'معرفی مریض به داکتر دیگر',
+    'refere_patient_to_another_doctor' => 'معرفی نمودن مریض به داکتر دیگر',
+    'refferal_remarks' => 'ملاحظات معرفی نمودن به داکتر دیگر',
+    'operation_team' => 'تیم عملیات',
+    'operation_surgion' => 'جراح عملیات',
+    'operation_assistants' => 'اسیستانت/ها عملیات',
+    'anesthesist' => 'انستیزیست',
+    'scrub_nurse' => 'سکرب نرس',
+    'circulation_nurse' => 'سرکولیشن نرس',
+    'anesthesia_log' => 'انستیزی لوگ',
+    'operation_plan' => 'پلان عملیات',
+    'operation_duration' => 'وقت تخمینی عملیات',
+    'rejected_anesthesias' => 'انستیزی های مسترد شده',
+    'under_review_patients' => 'مریضان تحت مشاهده',
+    'under_review' => 'تحت مشاهده',
+    'refere_to_under_review' => 'معرفی به تحت مشاهده',
+    'under_review_details' => 'جزئیات تحت مشاهده',
+    'under_review_checkups' => 'معاینات تحت مشاهده'
 
 
 ];

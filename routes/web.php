@@ -34,6 +34,7 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\RelationController;
+use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
 use App\Models\Prescription;
 
@@ -199,6 +200,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{hospitalization}', [HospitalizationController::class, 'edit'])->name('edit');
         Route::put('update/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
         Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Under Review routes
+    Route::prefix('under_reviews')->name('under_reviews.')->group(function () {
+        Route::get('index', [UnderReviewController::class, 'index'])->name('index');
+        Route::get('create', [UnderReviewController::class, 'create'])->name('create');
+        Route::get('show/{underReview}', [UnderReviewController::class, 'show'])->name('show');
+        Route::post('store', [UnderReviewController::class, 'store'])->name('store');
+        Route::get('edit/{underReview}', [UnderReviewController::class, 'edit'])->name('edit');
+        Route::put('update/{underReview}', [UnderReviewController::class, 'update'])->name('update');
+        Route::get('destroy/{underReview}', [UnderReviewController::class, 'destroy'])->name('destroy');
     });
 
     // Visits routes
@@ -382,8 +394,9 @@ Route::group(['middleware' => ['auth']], function () {
     // Anesthesia routes
     Route::prefix('anesthesias')->name('anesthesias.')->group(function () {
         Route::get('index', [AnesthesiaController::class, 'index'])->name('index');
+        Route::get('new', [AnesthesiaController::class, 'new'])->name('new');
         Route::get('approved', [AnesthesiaController::class, 'approved'])->name('approved');
-        Route::get('unapproved', [AnesthesiaController::class, 'unapproved'])->name('unapproved');
+        Route::get('rejected', [AnesthesiaController::class, 'rejected'])->name('rejected');
         Route::get('create', [AnesthesiaController::class, 'create'])->name('create');
         Route::get('show/{anesthesia}', [AnesthesiaController::class, 'show'])->name('show');
         Route::post('store', [AnesthesiaController::class, 'store'])->name('store');

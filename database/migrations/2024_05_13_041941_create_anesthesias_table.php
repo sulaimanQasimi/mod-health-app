@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('position_on_bed',192)->nullable();
             $table->string('estimated_blood_waste',192)->nullable();
             $table->string('other_problems',192)->nullable();
-            $table->tinyInteger('status')->default('0');
+            $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
             $table->tinyInteger('operation_result')->default('0');
             $table->tinyInteger('is_operation_done')->default('0');
             $table->text('anesthesia_log_reply',2000)->nullable();

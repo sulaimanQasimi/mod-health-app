@@ -20,6 +20,7 @@
                                     <th>{{ localize('global.number') }}</th>
                                     <th>{{ localize('global.patient_name') }}</th>
                                     <th>{{ localize('global.operation_type') }}</th>
+                                    <th>{{ localize('global.operation_surgion') }}</th>
                                     <th>{{ localize('global.status') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
                                 </tr>
@@ -30,6 +31,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $anesthesia->patient->name }}</td>
                                         <td>{{ $anesthesia->operationType->name }}</td>
+                                        <td>{{ $anesthesia->surgion->name }}</td>
                                         <td>
                                             @if ($anesthesia->status == '0')
                                                 <span class="bx bx-x-circle text-danger"></span>

@@ -17,7 +17,7 @@ class OperationController extends Controller
     public function new()
     {
         $userId = auth()->user()->id;
-        $operations = Anesthesia::where('status', '1')
+        $operations = Anesthesia::where('status', 'approved')
         ->where(function($query) use
         ($userId)
         {

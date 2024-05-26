@@ -11,18 +11,25 @@ class AnesthesiaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function unapproved()
+    public function new()
     {
-        $anesthesias = Anesthesia::where('status', '0')->latest()->paginate(10);
+        $anesthesias = Anesthesia::where('status', 'new')->latest()->paginate(10);
 
-        return view('pages.anesthesias.unapproved', compact('anesthesias'));
+        return view('pages.anesthesias.new', compact('anesthesias'));
     }
 
     public function approved()
     {
-        $anesthesias = Anesthesia::where('status', '1')->latest()->paginate(10);
+        $anesthesias = Anesthesia::where('status', 'approved')->latest()->paginate(10);
 
         return view('pages.anesthesias.approved', compact('anesthesias'));
+    }
+
+    public function rejected()
+    {
+        $anesthesias = Anesthesia::where('status', 'rejected')->latest()->paginate(10);
+
+        return view('pages.anesthesias.rejected', compact('anesthesias'));
     }
 
     /**
@@ -106,7 +113,7 @@ class AnesthesiaController extends Controller
 
         $anesthesia->update($data);
 
-        return redirect()->route('anesthesias.unapproved')->with('success', 'Anesthesia updated successfully.');
+        return redirect()->route('anesthesias.new')->with('success', 'Anesthesia updated successfully.');
     }
 
     /**

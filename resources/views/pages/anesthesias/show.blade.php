@@ -41,19 +41,90 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-12 d-flex justify-content-center mb-2">
-                                    @if($anesthesia->status == 0)
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createAnasthesiaModal{{ $anesthesia->id }}"><span><i
-                                            class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
-                                    @else
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#createAnasthesiaRejectModal{{ $anesthesia->id }}"><span><i
-                                            class="bx bx-x"></i>{{localize('global.reject')}}</span></button>
-                                    @endif
+                                <div class="row p-2 text-center">
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.operation_plan') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->plan }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.operation_duration') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->planned_duration }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.position_on_bed') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->position_on_bed }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.estimated_blood_waste') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->estimated_blood_waste }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row p-2 text-center">
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.other_problems') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->other_problems }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.operation_surgion') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->surgion->name }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.anesthesia_log') }}</h5>
+                                        <div>
+                                            {{$anesthesia->anesthesia_log->name}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.anesthesist') }}</h5>
+                                        <div>
+                                            {{$anesthesia->anesthesist->name}}
+                                        </div>
+                                    </div>
                                 </div>
 
-
+                                <div class="row p-2 text-center">
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.scrub_nurse') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->scrub_nurse->name }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.circulation_nurse') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->circulation_nurse->name }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @if($anesthesia->status == 'new')
+                                <hr class="border border-label-primary">
+                                <div class="d-flex justify-content-center mb-2 p-2">
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#createAnasthesiaModal{{ $anesthesia->id }}"><span><i
+                                                    class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
+                                        </div>
+                                        
+                                        <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#createAnasthesiaRejectModal{{ $anesthesia->id }}"><span><i
+                                                class="bx bx-x"></i>{{localize('global.reject')}}</span></button>
+                                        </div>
+                                </div>
+                                @endif
                                 <div class="modal fade" id="createAnasthesiaModal{{ $anesthesia->id }}" tabindex="-1"
                                     aria-labelledby="createAnasthesiaModalLabel{{ $anesthesia->id }}" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -69,7 +140,7 @@
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden"
-                                                        name="status" value="1">
+                                                        name="status" value="approved">
         
                                                     <div class="form-group">
         
@@ -107,7 +178,7 @@
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden"
-                                                        name="status" value="0">
+                                                        name="status" value="rejected">
         
                                                     <div class="form-group">
         

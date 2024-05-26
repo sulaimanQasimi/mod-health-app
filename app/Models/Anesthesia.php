@@ -68,9 +68,4 @@ class Anesthesia extends Model
         return $this->belongsTo(User::class, 'operation_circulation_nurse_id', 'id');
     }
 
-    public function assistants()
-    {
-        return $this->hasMany(User::class, 'operation_assistants_id', 'id');
-    }
-
 }

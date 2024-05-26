@@ -820,88 +820,233 @@
                         </div>
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                            class="bx bx-chat p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>
+                                class="bx bx-transfer p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>
+                        @if ($appointment->is_completed == 0)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createReferDoctorModal{{ $appointment->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                        @endif
+                        <!-- Create  Lab Modal -->
+                        <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="createReferDoctorModalLabel{{ $appointment->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createReferDoctorModalLabel{{ $appointment->id }}">
+                                            {{ localize('global.refere_patient_to_another_doctor') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('appointments.store') }}" method="POST">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <label for="department">{{ localize('global.department') }}</label>
+                                                <select class="form-control select2" name="department_id"
+                                                    id="department_id">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($departments as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="hidden" name="patient_id"
+                                                    value="{{ $appointment->patient->id }}">
+                                                <input type="hidden" name="is_completed" value="0">
+                                                <input type="hidden" name="branch_id"
+                                                    value="{{ auth()->user()->branch_id }}">
+                                                <!-- Add other appointment form fields as needed -->
+                                                <label for="doctor_name">{{ localize('global.doctor_name') }}</label>
+                                                <select class="form-control select2" name="doctor_id"
+                                                    id="appointment_doctor_id">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($doctors as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name_dr }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="date">{{ localize('global.date') }}</label>
+                                                <input type="date" class="form-control" name="date" />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="time">{{ localize('global.time') }}</label>
+                                                <input type="time" class="form-control" name="time" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label
+                                                    for="refferal_remarks{{ $appointment->id }}">{{ localize('global.refferal_remarks') }}</label>
+                                                <textarea class="form-control" id="refferal_remarks{{ $appointment->id }}" name="refferal_remarks" rows="3"></textarea>
+                                            </div>
+
+                                            <input type="hidden" name="current_appointment_id"
+                                                value="{{ $appointment->id }}">
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                <button type="submit"
+                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        @if ($appointment->is_completed == 1)
+                                            <i class="bx bx-check-circle text-success"></i>
+                                            <span
+                                                class="bg-label-primary p-1 m-1">{{ $appointment->refferal_remarks }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                            class="bx bx-revision p-1"></i>{{ localize('global.under_review') }}</h5>
                     @if ($appointment->is_completed == 0)
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#createReferDoctorModal{{ $appointment->id }}"><span><i
+                            data-bs-target="#createUnderReviewModal{{ $appointment->id }}"><span><i
                                     class="bx bx-plus"></i></span></button>
                     @endif
                     <!-- Create  Lab Modal -->
-                    <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
-                        aria-labelledby="createReferDoctorModalLabel{{ $appointment->id }}" aria-hidden="true">
+                    <div class="modal fade" id="createUnderReviewModal{{ $appointment->id }}" tabindex="-1"
+                        aria-labelledby="createUnderReviewModalLabel{{ $appointment->id }}" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="createReferDoctorModalLabel{{ $appointment->id }}">
-                                        {{ localize('global.refere_patient_to_another_doctor') }}</h5>
+                                    <h5 class="modal-title" id="createUnderReviewModalLabel{{ $appointment->id }}">
+                                        {{ localize('global.refere_to_under_review') }}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('appointments.store') }}" method="POST">
+                                    <form action="{{ route('under_reviews.store') }}" method="POST">
                                         @csrf
-                                        <div class="mb-3">
-                                            <label for="department">{{localize('global.department')}}</label>
-                                            <select class="form-control select2" name="department_id" id="department_id">
-                                                <option value="">{{ localize('global.select') }}</option>
-                                                @foreach($departments as $value)
-                                                    <option value="{{ $value->id }}"
-                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        <input type="hidden" name="patient_id" value="{{ $appointment->patient->id }}">
-                                        <input type="hidden" name="is_completed" value="0">
-                                        <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
-                                        <!-- Add other appointment form fields as needed -->
-                                        <label for="doctor_name">{{localize('global.doctor_name')}}</label>
-                                        <select class="form-control select2" name="doctor_id" id="appointment_doctor_id">
-                                            <option value="">{{ localize('global.select') }}</option>
-                                            @foreach($doctors as $value)
-                                                <option value="{{ $value->id }}"
-                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name_dr }}</option>
-                                            @endforeach
-                                        </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="date">{{localize('global.date')}}</label>
-                                            <input type="date" class="form-control" name="date"/>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="time">{{localize('global.time')}}</label>
-                                            <input type="time" class="form-control" name="time"/>
-                                        </div>
+                                        <input type="hidden" id="patient_id{{ $appointment->patient_id }}"
+                                                name="patient_id" value="{{ $appointment->patient_id }}">
+                                            <input type="hidden" id="appointment_id{{ $appointment->id }}"
+                                                name="appointment_id" value="{{ $appointment->id }}">
+                                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
+                                                value="{{ auth()->user()->id }}">
+                                            <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
+                                                value="{{ auth()->user()->branch_id }}">
+                                            <input type="hidden" id="is_discharged{{ $appointment->id }}"
+                                                name="is_discharged" value="0">
 
-                                        <div class="form-group">
-                                            <label
-                                                for="refferal_remarks{{ $appointment->id }}">{{ localize('global.refferal_remarks') }}</label>
-                                            <textarea class="form-control" id="refferal_remarks{{ $appointment->id }}" name="refferal_remarks" rows="3"></textarea>
-                                        </div>
+                                            <div class="form-group">
 
-                                        <input type="hidden" name="current_appointment_id" value="{{$appointment->id}}">
+                                                <div class="form-group">
+                                                    <label
+                                                        for="reason{{ $appointment->id }}">{{ localize('global.reason') }}</label>
+                                                    <textarea class="form-control" id="reason{{ $appointment->id }}" name="reason" rows="3"></textarea>
+                                                </div>
 
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
+                                                <div class="form-group">
+                                                    <label
+                                                        for="remarks{{ $appointment->id }}">{{ localize('global.remarks') }}</label>
+                                                    <textarea class="form-control" id="remarks{{ $appointment->id }}" name="remarks" rows="3"></textarea>
+                                                </div>
+
+
+                                                <label
+                                                    for="room_id{{ $appointment->id }}">{{ localize('global.rooms') }}</label>
+                                                <select class="form-control select2" name="room_id">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($rooms as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <label
+                                                    for="bed_id{{ $appointment->id }}">{{ localize('global.beds') }}</label>
+                                                <select class="form-control select2" name="bed_id">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($beds as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('number') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->number }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                <button type="submit"
+                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
+                                            </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="container">
-                        <div class="col-md-12">
-                            <div class="row">
-                                        <div class="col-md-12">
-                                            <i class="bx bx-check-circle text-success"></i>
-                                            <span
-                                                class="bg-label-primary p-1 m-1">{{ $appointment->refferal_remarks }}</span>
+
+                    <div class="col-md-12 mt-4">
+
+
+
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.reason') }}</th>
+                                    <th>{{ localize('global.remarks') }}</th>
+                                    <th>{{ localize('global.room') }}</th>
+                                    <th>{{ localize('global.bed') }}</th>
+                                    <th>{{ localize('global.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($appointment->under_reviews as $underReview)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $underReview->reason }}</td>
+                                        <td>
+                                            {{ $underReview->remarks }}
+                                        </td>
+                                        <td>
+                                            {{ $underReview->room->name }}
+                                        </td>
+                                        <td>
+                                            {{ $underReview->bed->number }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('under_reviews.edit', $underReview->id) }}"><span><i
+                                                        class="bx bx-edit"></i></span></a>
+                                            <a href="{{ route('under_reviews.destroy', $underReview->id) }}"><span><i
+                                                        class="bx bx-trash text-danger"></i></span></a>
+
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <div class="container">
+                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                            <div class=" badge bg-label-danger mt-4">
+                                                {{ localize('global.no_previous_hospitalizations') }}
+                                            </div>
                                         </div>
-                            </div>
-                        </div>
+                                    </div>
+                                @endforelse
+                            </tbody>
+                        </table>
+
                     </div>
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -1089,8 +1234,9 @@
                                         class="bx bx-plus"></i></span></button>
                         @endif
                         <!-- Create  Lab Modal -->
-                        <div class="modal fade modal-xl" id="createAnasthesiaModal{{ $appointment->id }}" tabindex="-1"
-                            aria-labelledby="createAnasthesiaModalLabel{{ $appointment->id }}" aria-hidden="true">
+                        <div class="modal fade modal-xl" id="createAnasthesiaModal{{ $appointment->id }}"
+                            tabindex="-1" aria-labelledby="createAnasthesiaModalLabel{{ $appointment->id }}"
+                            aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -1119,8 +1265,7 @@
                                                     <textarea class="form-control" id="plan{{ $appointment->id }}" name="plan" rows="3"></textarea>
                                                 </div>
 
-                                                <h5
-                                                    class="mt-2">{{ localize('global.operation_team') }}</h5>
+                                                <h5 class="mt-2">{{ localize('global.operation_team') }}</h5>
                                                 {{-- <select class="form-control select2" name="operation_doctor_id[]"
                                                     id="operation_doctor_id" multiple>
                                                     <option value="">{{ localize('global.select') }}</option>
@@ -1133,124 +1278,135 @@
                                                     @endforeach
                                                 </select> --}}
 
-                                                    <div class="form-group">
-                                                        <div class="row">
+                                                <div class="form-group">
+                                                    <div class="row">
                                                         <div class="col-md-6">
                                                             <label
-                                                            for="operation_surgion_id{{ $appointment->id }}">{{ localize('global.operation_sergion') }}</label>
-                                                            <select class="form-control select2" name="operation_surgion_id"
-                                                    id="operation_surgion_id">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
+                                                                for="operation_surgion_id{{ $appointment->id }}">{{ localize('global.operation_surgion') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_surgion_id" id="operation_surgion_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
 
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
 
                                                         <div class="col-md-6">
                                                             <label
-                                                            for="operation_assistants_id{{ $appointment->id }}">{{ localize('global.operation_assistants') }}</label>
-                                                            <select class="form-control select2" name="operation_assistants_id[]"
-                                                    id="operation_assistants_id" multiple>
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
+                                                                for="operation_assistants_id{{ $appointment->id }}">{{ localize('global.operation_assistants') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_assistants_id[]"
+                                                                id="operation_assistants_id" multiple>
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
 
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                     </div>
-                                                    </div>
+                                                </div>
 
-                                                    <div class="form-group">
-                                                        <div class="row">
+                                                <div class="form-group">
+                                                    <div class="row">
                                                         <div class="col-md-6">
                                                             <label
-                                                            for="operation_anesthesia_log_id{{ $appointment->id }}">{{ localize('global.anesthesia_log') }}</label>
-                                                            <select class="form-control select2" name="operation_anesthesia_log_id"
-                                                    id="operation_anesthesia_log_id">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
+                                                                for="operation_anesthesia_log_id{{ $appointment->id }}">{{ localize('global.anesthesia_log') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_anesthesia_log_id"
+                                                                id="operation_anesthesia_log_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
 
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                        </div>
-
-                                                        <div class="col-md-6">
-                                                            <label
-                                                            for="anesthesist{{ $appointment->id }}">{{ localize('global.anesthesist') }}</label>
-                                                            <select class="form-control select2" name="operation_anesthesist_id"
-                                                    id="operation_anesthesist_id">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                        </div>
-                                                    </div>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <div class="row">
-                                                        <div class="col-md-6">
-                                                            <label
-                                                            for="operation_scrub_nurse_id{{ $appointment->id }}">{{ localize('global.scrub_nurse') }}</label>
-                                                            <select class="form-control select2" name="operation_scrub_nurse_id"
-                                                    id="operation_scrub_nurse_id">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
 
                                                         <div class="col-md-6">
                                                             <label
-                                                            for="operation_circulation_nurse_id{{ $appointment->id }}">{{ localize('global.circulation_nurse') }}</label>
-                                                            <select class="form-control select2" name="operation_circulation_nurse_id"
-                                                    id="operation_circulation_nurse_id">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
+                                                                for="anesthesist{{ $appointment->id }}">{{ localize('global.anesthesist') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_anesthesist_id"
+                                                                id="operation_anesthesist_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
 
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="operation_scrub_nurse_id{{ $appointment->id }}">{{ localize('global.scrub_nurse') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_scrub_nurse_id"
+                                                                id="operation_scrub_nurse_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="operation_circulation_nurse_id{{ $appointment->id }}">{{ localize('global.circulation_nurse') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_circulation_nurse_id"
+                                                                id="operation_circulation_nurse_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
                                                     </div>
+                                                </div>
 
 
                                                 <div class="form-group">
-                                                    <label
-                                                        for="other_problems{{ $appointment->id }}" class="mt-2 mb-2">{{ localize('global.other_problems') }}</label>
+                                                    <label for="other_problems{{ $appointment->id }}"
+                                                        class="mt-2 mb-2">{{ localize('global.other_problems') }}</label>
                                                     <textarea class="form-control" id="other_problems{{ $appointment->id }}" name="other_problems" rows="3"></textarea>
                                                 </div>
 
 
-                                                <label
-                                                    for="operation_type_id{{ $appointment->id }}" class="mt-2 mb-2">{{ localize('global.operation_type') }}</label>
+                                                <label for="operation_type_id{{ $appointment->id }}"
+                                                    class="mt-2 mb-2">{{ localize('global.operation_type') }}</label>
                                                 <select class="form-control select2" name="operation_type_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($operationTypes as $value)
@@ -1263,26 +1419,28 @@
                                                 </select>
 
                                                 <div>
-                                                    <label for="date" class="mt-2 mb-2">{{ localize('global.date') }}</label>
+                                                    <label for="date"
+                                                        class="mt-2 mb-2">{{ localize('global.date') }}</label>
                                                     <input type="date" class="form-control" name="date" />
                                                 </div>
                                                 <div>
-                                                    <label for="time" class="mt-2 mb-2">{{ localize('global.time') }}</label>
+                                                    <label for="time"
+                                                        class="mt-2 mb-2">{{ localize('global.time') }}</label>
                                                     <input type="time" class="form-control" name="time" />
                                                 </div>
                                                 <div>
-                                                    <label
-                                                        for="planned_duration" class="mt-2 mb-2">{{ localize('global.planned_duration') }}</label>
+                                                    <label for="planned_duration"
+                                                        class="mt-2 mb-2">{{ localize('global.planned_duration') }}</label>
                                                     <input type="text" class="form-control" name="planned_duration" />
                                                 </div>
                                                 <div>
-                                                    <label
-                                                        for="position_on_bed" class="mt-2 mb-2">{{ localize('global.position_on_bed') }}</label>
+                                                    <label for="position_on_bed"
+                                                        class="mt-2 mb-2">{{ localize('global.position_on_bed') }}</label>
                                                     <input type="text" class="form-control" name="position_on_bed" />
                                                 </div>
                                                 <div>
-                                                    <label
-                                                        for="estimated_blood_waste" class="mt-2 mb-2">{{ localize('global.estimated_blood_waste') }}</label>
+                                                    <label for="estimated_blood_waste"
+                                                        class="mt-2 mb-2">{{ localize('global.estimated_blood_waste') }}</label>
                                                     <input type="text" class="form-control"
                                                         name="estimated_blood_waste" />
                                                 </div>
@@ -1314,7 +1472,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($appointment->unapproved_anesthesias as $anesthesia)
+                                    @forelse ($appointment->anesthesias as $anesthesia)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $anesthesia->operationType->name }}</td>
@@ -1322,7 +1480,9 @@
                                                 {{ $anesthesia->patient->name }}
                                             </td>
                                             <td>
-                                                @if ($anesthesia->status == '0')
+                                                @if ($anesthesia->status == 'new')
+                                                    <span class="bx bx-plus-circle text-primary"></span>
+                                                @elseif ($anesthesia->status == 'rejected')
                                                     <span class="bx bx-x-circle text-danger"></span>
                                                 @else
                                                     <span class="bx bx-check-circle text-success"></span>
@@ -1376,8 +1536,8 @@
                                                 {{ $anesthesia->patient->name }}
                                             </td>
                                             <td>
-                                                @if ($anesthesia->status == '0')
-                                                    <span class="bx bx-x-circle text-danger"></span>
+                                                @if ($anesthesia->status == 'new')
+                                                    <span class="bx bx-plus-circle text-primary"></span>
                                                 @else
                                                     <span class="bx bx-check-circle text-success"></span>
                                                 @endif
@@ -1687,22 +1847,19 @@
                 }
             })
 
-            $('#department_id').on('change', function()
-{
-    var departmentID = $(this).val();
-    if(departmentID !== '')
-    {
-        $.ajax({
-            url: '/get_doctors/' + departmentID,
-            type: 'GET',
-            success: function(response)
-            {
+            $('#department_id').on('change', function() {
+                var departmentID = $(this).val();
+                if (departmentID !== '') {
+                    $.ajax({
+                        url: '/get_doctors/' + departmentID,
+                        type: 'GET',
+                        success: function(response) {
 
-                $('#appointment_doctor_id').html(response);
-            }
-        })
-    }
-})
+                            $('#appointment_doctor_id').html(response);
+                        }
+                    })
+                }
+            })
         })
     </script>
 

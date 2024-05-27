@@ -43,7 +43,7 @@ class HomeController extends Controller
     public function index()
     {
         $totalPatients = Patient::count();
-        $totalDoctors = User::count();
+        $totalCheckups = Lab::count();
         $totalAppointments = Appointment::count();
         $totalPrescriptions = Prescription::count();
         $totalConsultations = Consultation::count();
@@ -58,7 +58,7 @@ class HomeController extends Controller
 
         // Retrieve models percentage changes
         $patientPercentageChange = $this->getPercentageChange(Patient::class);
-        $doctorPercentageChange = $this->getPercentageChange(User::class);
+        $checkupPercentageChange = $this->getPercentageChange(Lab::class);
         $appointmentPercentageChange = $this->getPercentageChange(Appointment::class);
         $prescriptionPercentageChange = $this->getPercentageChange(Prescription::class);
         $consultationPercentageChange = $this->getPercentageChange(Consultation::class);
@@ -104,7 +104,7 @@ class HomeController extends Controller
 
         return view('pages.dashboard.index', [
             'totalPatients' => $totalPatients,
-            'totalDoctors' => $totalDoctors,
+            'totalCheckups' => $totalCheckups,
             'totalAppointments' => $totalAppointments,
             'totalPrescriptions' => $totalPrescriptions,
             'totalConsultations' => $totalConsultations,
@@ -115,7 +115,7 @@ class HomeController extends Controller
             'appointmentsTrendData' => $appointmentsTrendData,
             'wordCloudData' => $wordCloudData,
             'patientPercentageChange' => $patientPercentageChange,
-            'doctorPercentageChange' => $doctorPercentageChange,
+            'checkupPercentageChange' => $checkupPercentageChange,
             'appointmentPercentageChange' => $appointmentPercentageChange,
             'prescriptionPercentageChange' => $prescriptionPercentageChange,
             'consultationPercentageChange' => $consultationPercentageChange,

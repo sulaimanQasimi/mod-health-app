@@ -652,7 +652,8 @@ return [
     'under_review_details' => 'جزئیات تحت مشاهده',
     'under_review_checkups' => 'معاینات تحت مشاهده',
     'create_operation_type' => 'اضافه نمودن نوعیت عملیات',
-    'show_prescription_details' => 'نمایش جزئیات نسخه'
+    'show_prescription_details' => 'نمایش جزئیات نسخه',
+    'all_registered_checkups' => 'همه معاینات'
 
 
 ];

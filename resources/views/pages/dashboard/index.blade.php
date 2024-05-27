@@ -126,22 +126,22 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
-                                            <h4>{{ localize('global.all_doctors') }}</h4>
+                                            <h4>{{ localize('global.checkups') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalDoctors }}</h4>
-                                                @if ($doctorPercentageChange > 0)
+                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalCheckups }}</h4>
+                                                @if ($checkupPercentageChange > 0)
                                                     <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up"></h4>
-                                                    <small class="text-success">{{ $doctorPercentageChange }}%</small>
+                                                    <small class="text-success">{{ $checkupPercentageChange }}%</small>
                                                 @else
                                                     <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down"></h4>
-                                                    <small class="text-danger">{{ $doctorPercentageChange }}%</small>
+                                                    <small class="text-danger">{{ $checkupPercentageChange }}%</small>
                                                 @endif
                                             </div>
-                                            <p class="mb-0">{{ localize('global.all_registered_doctors') }}</p>
+                                            <p class="mb-0">{{ localize('global.all_registered_checkups') }}</p>
                                         </div>
                                         <div class="avatar p-4">
                                             <span class="avatar-initial rounded bg-label-primary">
-                                                <i class="bx bx-user bx-md"></i>
+                                                <i class="bx bx-hard-hat bx-md"></i>
                                             </span>
                                         </div>
                                     </div>

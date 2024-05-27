@@ -94,5 +94,17 @@ class RoleSeeder extends Seeder
             'updated_at'=>'2023-08-22 10:14:48'
             ] );
 
+            Role::create( [
+            'id'=>8,
+            'name'=>'opd-doctor',
+            'name_dr'=>'داکتر OPD',
+            'name_pa'=>NULL,
+            'guard_name'=>'web',
+            'recipients'=>NULL,
+            'sector_id'=>NULL,
+            'created_at'=>'2023-08-22 10:14:48',
+            'updated_at'=>'2023-08-22 10:14:48'
+            ] );
+
     }
 }

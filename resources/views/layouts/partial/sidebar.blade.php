@@ -121,7 +121,7 @@
                 </ul>
             </li>
         @endcan
-        @can('show-under_review-menu')
+        @can('show-under-review-menu')
             <li class="menu-item {{ Route::is('under_reviews.index') ? 'active' : '' }}">
                 <a href="{{ route('under_reviews.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-revision text-primary"></i>
@@ -248,97 +248,119 @@
                 </a>
 
                 <ul class="menu-sub">
+                    @can('show-users-menu')
                     <li class="menu-item {{ Route::is('users.index') ? 'active' : '' }}">
                         <a href="{{ route('users.index') }}" class="menu-link">
                             <div>{{ localize('global.users') }}</div>
                         </a>
                     </li>
-
+                    @endcan
+                    @can('show-roles-menu')
                     <li class="menu-item {{ Route::is('roles.index') ? 'active' : '' }}">
                         <a href="{{ route('roles.index') }}" class="menu-link">
                             <div>{{ localize('global.roles') }}</div>
                         </a>
                     </li>
-
-
+                    @endcan
+                    @can('show-permissions-menu')
                     <li class="menu-item {{ Route::is('permissions.index') ? 'active' : '' }}">
                         <a href="{{ route('permissions.index') }}" class="menu-link">
                             <div>{{ localize('global.permissions') }}</div>
                         </a>
                     </li>
-
+                    @endcan
+                    @can('show-recipients-menu')
 
                     <li class="menu-item {{ Route::is('recipients.index') ? 'active' : '' }}">
                         <a href="{{ route('recipients.index') }}" class="menu-link">
                             <div>{{ localize('global.recipients') }}</div>
                         </a>
                     </li>
-                    {{-- <li class="menu-item {{ Route::is('doctors.index') ? 'active' : '' }}">
-                    <a href="{{ route('doctors.index') }}" class="menu-link">
-                        <div>{{ localize('global.doctors') }}</div>
-                    </a>
-                </li> --}}
+                    @endcan
+                    @can('show-relations-menu')
                     <li class="menu-item {{ Route::is('relations.index') ? 'active' : '' }}">
                         <a href="{{ route('relations.index') }}" class="menu-link">
                             <div>{{ localize('global.relations') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-departments-menu')
                     <li class="menu-item {{ Route::is('departments.index') ? 'active' : '' }}">
                         <a href="{{ route('departments.index') }}" class="menu-link">
                             <div>{{ localize('global.departments') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-sections-menu')
                     <li class="menu-item {{ Route::is('sections.index') ? 'active' : '' }}">
                         <a href="{{ route('sections.index') }}" class="menu-link">
                             <div>{{ localize('global.sections') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-floors-menu')
                     <li class="menu-item {{ Route::is('floors.*') ? 'active' : '' }}">
                         <a href="{{ route('floors.index') }}" class="menu-link">
                             <div>{{ localize('global.floors') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-rooms-menu')
                     <li class="menu-item {{ Route::is('rooms.*') ? 'active' : '' }}">
                         <a href="{{ route('rooms.index') }}" class="menu-link">
                             <div>{{ localize('global.rooms') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-beds-menu')
                     <li class="menu-item {{ Route::is('beds.*') ? 'active' : '' }}">
                         <a href="{{ route('beds.index') }}" class="menu-link">
                             <div>{{ localize('global.beds') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-labs-types-menu')
                     <li class="menu-item {{ Route::is('lab_type_sections.*') ? 'active' : '' }}">
                         <a href="{{ route('lab_type_sections.index') }}" class="menu-link">
                             <div>{{ localize('global.lab_type_sections') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-test-types-menu')
                     <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
                         <a href="{{ route('lab_types.index') }}" class="menu-link">
                             <div>{{ localize('global.lab_types') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-operation-types-menu')
                     <li class="menu-item {{ Route::is('operation_types.*') ? 'active' : '' }}">
                         <a href="{{ route('operation_types.index') }}" class="menu-link">
                             <div>{{ localize('global.operation_types') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-medicine-types-menu')
                     <li class="menu-item {{ Route::is('medicine_types.*') ? 'active' : '' }}">
                         <a href="{{ route('medicine_types.index') }}" class="menu-link">
                             <div>{{ localize('global.medicine_types') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-medicine-menu')
                     <li class="menu-item {{ Route::is('medicines.*') ? 'active' : '' }}">
                         <a href="{{ route('medicines.index') }}" class="menu-link">
                             <div>{{ localize('global.medicines') }}</div>
                         </a>
                     </li>
+                    @endcan
+                    @can('show-branches-menu')
                     <li class="menu-item {{ Route::is('branches.index') ? 'active' : '' }}">
                         <a href="{{ route('branches.index') }}" class="menu-link">
                             <div>{{ localize('global.branches') }}</div>
                         </a>
                     </li>
-
+                    @endcan
                 </ul>
             </li>
         @endcan

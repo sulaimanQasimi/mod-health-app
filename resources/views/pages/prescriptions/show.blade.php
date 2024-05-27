@@ -71,6 +71,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($prescription->is_completed == '0')
                         <div class="d-flex justify-content-center text-center mt-2">
                             <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
                                 @csrf
@@ -81,6 +82,7 @@
                                 </button>
                             </form>
                         </div>
+                        @endif
                         </form>
                         </button>
                     </div>

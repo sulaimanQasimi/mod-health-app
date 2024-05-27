@@ -15,7 +15,7 @@ class Room extends Model
 
     public function beds()
     {
-        return $this->hasMany(Bed::class);
+        return $this->hasMany(Bed::class)->where('is_occupied',false);
     }
 
 }

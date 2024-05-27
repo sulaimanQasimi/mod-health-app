@@ -34,6 +34,7 @@ class BedController extends Controller
         $data = $request->validate([
             'number' => 'required',
             'room_id' => 'required',
+            'is_occupied' => 'nullable'
         ]);
 
         Bed::create($data);

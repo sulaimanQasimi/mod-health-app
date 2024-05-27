@@ -17,6 +17,7 @@ use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Models\Province;
+use App\Models\Room;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -295,6 +296,19 @@ class HomeController extends Controller
 
         foreach ($doctors as $doctor) {
             $options .= '<option value = "' . $doctor->id . '">' . $doctor->name . '</option>';
+        }
+
+        return $options;
+    }
+
+    public function getRelatedBeds($roomId)
+    {
+        $room = Room::findOrFail($roomId);
+        $beds = $room->beds;
+        $options = '<option value = "">Select Bed</option>';
+
+        foreach ($beds as $bed) {
+            $options .= '<option value = "' . $bed->id . '">' . $bed->number . '</option>';
         }
 
         return $options;

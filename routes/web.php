@@ -440,6 +440,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
     Route::get('/get_districts/{provinceId}', [HomeController::class, 'getRelatedDistricts']);
     Route::get('/get_departments/{branchId}', [HomeController::class, 'getRelatedDepartments']);
+    Route::get('/get_related_beds/{roomId}', [HomeController::class, 'getRelatedBeds']);
     Route::get('/get_sections/{depId}', [HomeController::class, 'getRelatedSections']);
     Route::get('/scan-qr-code-prescription', [PrescriptionController::class, 'scanQrCode'])->name('prescriptions.scanQRCode');
     Route::get('/scan-qr-code-page-prescription', [PrescriptionController::class, 'scanCode'])->name('prescriptions.scanCode');

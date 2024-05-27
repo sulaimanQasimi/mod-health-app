@@ -669,8 +669,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($appointment->hospitalization as $single_hospitalization)
-                                        @forelse ($single_hospitalization->labs as $lab)
+                                    @forelse ($appointment->hospitalization as $single_hospitalization)
+                                        @foreach ($single_hospitalization->labs as $lab)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $lab->labType->name }}</td>
@@ -703,7 +703,9 @@
 
                                             </tr>
 
-                                        @empty
+
+                                    @endforeach
+                                    @empty
                                             <div class="container">
                                                 <div class="col-md-12 d-flex justify-content-center align-itmes-center">
                                                     <div class=" badge bg-label-danger mt-4">
@@ -712,7 +714,6 @@
                                                 </div>
                                             </div>
                                         @endforelse
-                                    @endforeach
 
                                 </tbody>
                             </table>
@@ -1035,7 +1036,7 @@
 
                                                 <label
                                                     for="room_id{{ $appointment->id }}">{{ localize('global.rooms') }}</label>
-                                                <select class="form-control select2" name="room_id">
+                                                <select class="form-control select2" name="room_id" id="under_review_room">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($rooms as $value)
                                                         <option value="{{ $value->id }}"
@@ -1048,7 +1049,7 @@
 
                                                 <label
                                                     for="bed_id{{ $appointment->id }}">{{ localize('global.beds') }}</label>
-                                                <select class="form-control select2" name="bed_id">
+                                                <select class="form-control select2" name="bed_id" id="under_review_bed_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($beds as $value)
                                                         <option value="{{ $value->id }}"
@@ -1174,7 +1175,7 @@
 
                                                 <label
                                                     for="room_id{{ $appointment->id }}">{{ localize('global.rooms') }}</label>
-                                                <select class="form-control select2" name="room_id">
+                                                <select class="form-control select2" name="room_id" id="room_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($rooms as $value)
                                                         <option value="{{ $value->id }}"
@@ -1187,13 +1188,12 @@
 
                                                 <label
                                                     for="bed_id{{ $appointment->id }}">{{ localize('global.beds') }}</label>
-                                                <select class="form-control select2" name="bed_id">
+                                                <select class="form-control select2" name="bed_id" id="bed_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($beds as $value)
                                                         <option value="{{ $value->id }}"
                                                             {{ old('number') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->number }}
-
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -1275,8 +1275,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($appointment->hospitalization as $single_hospitaliztion)
-                                    @forelse($single_hospitaliztion->visits as $visit)
+                                @forelse ($appointment->hospitalization as $single_hospitaliztion)
+                                    @foreach($single_hospitaliztion->visits as $visit)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
@@ -1285,7 +1285,9 @@
                                                 {{ $visit->created_at }}
                                             </td>
                                         </tr>
-                                    @empty
+
+                                @endforeach
+                                @empty
                                         <div class="container">
                                             <div class="col-md-12 d-flex justify-content-center align-itmes-center">
                                                 <div class=" badge bg-label-danger mt-4">
@@ -1294,7 +1296,6 @@
                                             </div>
                                         </div>
                                     @endforelse
-                                @endforeach
                             </tbody>
                         </table>
 
@@ -1931,6 +1932,34 @@
                         success: function(response) {
 
                             $('#appointment_doctor_id').html(response);
+                        }
+                    })
+                }
+            })
+
+            $('#room_id').on('change', function() {
+                var roomId = $(this).val();
+                if (roomId !== '') {
+                    $.ajax({
+                        url: '/get_related_beds/' + roomId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#bed_id').html(response);
+                        }
+                    })
+                }
+            })
+
+            $('#under_review_room').on('change', function() {
+                var roomId = $(this).val();
+                if (roomId !== '') {
+                    $.ajax({
+                        url: '/get_related_beds/' + roomId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#under_review_bed_id').html(response);
                         }
                     })
                 }

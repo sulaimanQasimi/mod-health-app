@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewHospitalizationNotification;
+use App\Models\Bed;
 use App\Models\Hospitalization;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
@@ -47,6 +48,11 @@ class HospitalizationController extends Controller
 
         $hospitalization = Hospitalization::create($data);
 
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => true]);
+        $occupied_bed->save();
+
         SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
 
 
@@ -85,6 +91,10 @@ class HospitalizationController extends Controller
         ]);
 
         $hospitalization->update($data);
+
+        $occupied_bed = Bed::findOrFail($hospitalization->bed_id);
+        $occupied_bed->update(['is_occupied' => false]);
+        $occupied_bed->save();
 
         return redirect()->route('visits.index')->with('success', 'Hospitalization updated successfully.');
     }

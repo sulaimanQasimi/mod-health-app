@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('operation_result')->default('0');
             $table->tinyInteger('is_operation_done')->default('0');
             $table->text('anesthesia_log_reply',2000)->nullable();
+            $table->text('anesthesia_plan',2000)->nullable();
             $table->text('operation_remark',2000)->nullable();
 
             $table->unsignedBigInteger('branch_id');

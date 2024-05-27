@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
 use App\Models\Operation;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OperationController extends Controller
@@ -16,20 +17,8 @@ class OperationController extends Controller
      */
     public function new()
     {
-        $userId = auth()->user()->id;
-        $operations = Anesthesia::where('status', 'approved')
-        ->where(function($query) use
-        ($userId)
-        {
-            $query->whereRaw("JSON_CONTAINS(operation_assistants_id, '\"$userId\"')")
-            ->orWhere('operation_surgion_id', $userId)
-        ->orWhere('operation_anesthesia_log_id', $userId)
-        ->orWhere('operation_anesthesist_id', $userId)
-        ->orWhere('operation_scrub_nurse_id', $userId)
-        ->orWhere('operation_circulation_nurse_id', $userId);
-        })
 
-        ->latest()->paginate(15);
+        $operations = Anesthesia::where('status', 'approved')->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
     }

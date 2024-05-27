@@ -108,7 +108,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 @if($anesthesia->status == 'new')
                                 <hr class="border border-label-primary">
                                 <div class="d-flex justify-content-center mb-2 p-2">
@@ -117,7 +117,7 @@
                                             data-bs-target="#createAnasthesiaModal{{ $anesthesia->id }}"><span><i
                                                     class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
                                         </div>
-                                        
+
                                         <div class="col-md-2">
                                         <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                         data-bs-target="#createAnasthesiaRejectModal{{ $anesthesia->id }}"><span><i
@@ -141,13 +141,19 @@
                                                     @method('PUT')
                                                     <input type="hidden"
                                                         name="status" value="approved">
-        
+
                                                     <div class="form-group">
-        
+
                                                         <div class="form-group">
                                                             <label
                                                                 for="anesthesia_log_reply{{ $anesthesia->id }}">{{ localize('global.anesthesia_log_reply') }}</label>
                                                             <textarea class="form-control" id="anesthesia_log_reply{{ $anesthesia->id }}" name="anesthesia_log_reply" rows="3"></textarea>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label
+                                                                for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
+                                                            <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
                                                         </div>
 
                                                     </div>
@@ -179,13 +185,19 @@
                                                     @method('PUT')
                                                     <input type="hidden"
                                                         name="status" value="rejected">
-        
+
                                                     <div class="form-group">
-        
+
                                                         <div class="form-group">
                                                             <label
                                                                 for="rejection_reason{{ $anesthesia->id }}">{{ localize('global.rejection_reason') }}</label>
                                                             <textarea class="form-control" id="rejection_reason{{ $anesthesia->id }}" name="anesthesia_log_reply" rows="3"></textarea>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label
+                                                                for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
+                                                            <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
                                                         </div>
 
                                                     </div>
@@ -200,7 +212,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>

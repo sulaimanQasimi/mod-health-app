@@ -660,7 +660,8 @@ return [
     'militant' => 'نظامی',
     'retired' => 'متقاعد',
     'gender' => 'جنسیت',
-    'job_type' => 'نوعیت وظیفه'
+    'job_type' => 'نوعیت وظیفه',
+    'anesthesia_plan' => 'پلان'
 
 
 ];

@@ -70,6 +70,7 @@ class AnesthesiaController extends Controller
             'operation_anesthesist_id' => 'nullable',
             'operation_scrub_nurse_id' => 'nullable',
             'operation_circulation_nurse_id' => 'nullable',
+            'anesthesia_plan' => 'nullable',
         ]);
 
         $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
@@ -110,6 +111,7 @@ class AnesthesiaController extends Controller
             'status' => 'nullable',
             'is_operation_done' => 'nullable',
             'operation_remark' => 'nullable',
+            'anesthesia_plan' => 'nullable'
         ]);
 
         $anesthesia->update($data);

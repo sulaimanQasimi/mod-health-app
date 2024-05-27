@@ -650,7 +650,9 @@ return [
     'under_review' => 'تحت مشاهده',
     'refere_to_under_review' => 'معرفی به تحت مشاهده',
     'under_review_details' => 'جزئیات تحت مشاهده',
-    'under_review_checkups' => 'معاینات تحت مشاهده'
+    'under_review_checkups' => 'معاینات تحت مشاهده',
+    'create_operation_type' => 'اضافه نمودن نوعیت عملیات',
+    'show_prescription_details' => 'نمایش جزئیات نسخه'
 
 
 ];

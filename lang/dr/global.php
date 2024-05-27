@@ -653,7 +653,14 @@ return [
     'under_review_checkups' => 'معاینات تحت مشاهده',
     'create_operation_type' => 'اضافه نمودن نوعیت عملیات',
     'show_prescription_details' => 'نمایش جزئیات نسخه',
-    'all_registered_checkups' => 'همه معاینات'
+    'all_registered_checkups' => 'همه معاینات',
+    'male' => 'مرد',
+    'female' => 'زن',
+    'civilian' => 'ملکی',
+    'militant' => 'نظامی',
+    'retired' => 'متقاعد',
+    'gender' => 'جنسیت',
+    'job_type' => 'نوعیت وظیفه'
 
 
 ];

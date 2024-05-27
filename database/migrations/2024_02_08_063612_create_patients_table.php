@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('age')->nullable();
+            $table->tinyInteger('gender')->default('0')->nullable();
             $table->string('nid')->nullable();
+            $table->enum('job_type', ['civilian', 'militant', 'retired'])->default('militant');
             $table->string('job')->nullable();
             $table->string('rank')->nullable();
             $table->string('image')->nullable();

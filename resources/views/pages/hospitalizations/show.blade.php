@@ -89,6 +89,38 @@
                                                         <label for="description{{ $hospitalization->id }}">{{localize('global.description')}}</label>
                                                         <textarea class="form-control" id="description{{ $hospitalization->id }}" name="description" rows="3"></textarea>
                                                     </div>
+                                                    <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <label for="bp{{ $hospitalization->id }}">{{localize('global.bp')}}</label>
+                                                                <input type="text" class="form-control" name="bp" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label for="pr{{ $hospitalization->id }}">{{localize('global.pr')}}</label>
+                                                                <input type="text" class="form-control" name="pr" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label for="rr{{ $hospitalization->id }}">{{localize('global.rr')}}</label>
+                                                                <input type="text" class="form-control" name="rr" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-1 mb-1">
+                                                            <div class="col-md-4">
+                                                                <label for="t{{ $hospitalization->id }}">{{localize('global.t')}}</label>
+                                                                <input type="text" class="form-control" name="t" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label for="spo2{{ $hospitalization->id }}">{{localize('global.spo2')}}</label>
+                                                                <input type="text" class="form-control" name="spo2" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label for="pain{{ $hospitalization->id }}">{{localize('global.pain')}}</label>
+                                                                <input type="text" class="form-control" name="pain" />
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
@@ -110,6 +142,8 @@
                                     <th>{{localize('global.number')}}</th>
                                     <th>{{localize('global.description')}}</th>
                                     <th>{{localize('global.by')}}</th>
+                                    <th>{{localize('global.created_at')}}</th>
+                                    <th>{{localize('global.vital_signs')}}</th>
                                     <th>{{localize('global.actions')}}</th>
                                 </tr>
                             </thead>
@@ -119,6 +153,21 @@
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$visit->description}}</td>
                                     <td>{{$visit->doctor->name}}</td>
+                                    <td>{{$visit->created_at}}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{localize('global.bp')}}</span>
+                                        {{$visit->bp}}
+                                        <span class="badge bg-primary">{{localize('global.pr')}}</span>
+                                        {{$visit->pr}}
+                                        <span class="badge bg-primary">{{localize('global.rr')}}</span>
+                                        {{$visit->rr}}
+                                        <span class="badge bg-primary">{{localize('global.t')}}</span>
+                                        {{$visit->t}}
+                                        <span class="badge bg-primary">{{localize('global.spo2')}}</span>
+                                        {{$visit->spo2}}
+                                        <span class="badge bg-primary">{{localize('global.pain')}}</span>
+                                        {{$visit->pain}}
+                                    </td>
                                     <td>
                                         <a href="{{route('visits.edit', $visit->id)}}"><span><i class="bx bx-edit"></i></span></a>
                                         <a href="{{route('visits.destroy', $visit->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>

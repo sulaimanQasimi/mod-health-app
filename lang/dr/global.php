@@ -667,6 +667,13 @@ return [
     'recovered' => 'صحت یابی',
     'moved' => 'انتقال',
     'died' => 'فوت',
+    'bp' => 'BP',
+    'pr' => 'PR',
+    'rr' => 'RR',
+    't' => 'T',
+    'spo2' => 'SPO2',
+    'pain' => 'PAIN',
+    'vital_signs' => 'علایم حیاتی'
 
 
 ];

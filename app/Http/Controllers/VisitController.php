@@ -28,7 +28,7 @@ class VisitController extends Controller
                     ]);
                 }
         }
-    
+
         $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
         return view('pages.hospitalizations.index', compact('hospitalizations'));
     }
@@ -54,6 +54,12 @@ class VisitController extends Controller
             'hospitalization_id' => 'nullable',
             'i_c_u_id' => 'nullable',
             'under_review_id' => 'nullable',
+            'bp' => 'nullable',
+            'pr' => 'nullable',
+            'rr' => 'nullable',
+            't' => 'nullable',
+            'spo2' => 'nullable',
+            'pain' => 'nullable',
 
         ]);
 

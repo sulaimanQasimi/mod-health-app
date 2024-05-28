@@ -18,7 +18,7 @@ class OperationController extends Controller
     public function new()
     {
 
-        $operations = Anesthesia::where('status', 'approved')->latest()->paginate(15);
+        $operations = Anesthesia::where('status', 'approved')->where('is_operation_done', '0')->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
     }

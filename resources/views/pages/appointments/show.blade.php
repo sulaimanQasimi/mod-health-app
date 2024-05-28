@@ -293,10 +293,29 @@
                                                 <label>{{ localize('global.description') }}</label>
                                                 <div id="prescription-input-container">
                                                     <div class="row">
+                                                        <div class="col-md-2">
+                                                            <select class="form-control select2" name="type[]">
+                                                                <option value="">{{ localize('global.select') }}</option>
+                                                                @foreach ($medicineTypes as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('type') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->type }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
                                                         <div class="col-md-3">
-                                                            <input type="text" class="form-control mt-2"
-                                                                name="description[]" dir="ltr"
-                                                                placeholder="Enter name">
+                                                            <select class="form-control select2" name="description[]">
+                                                                <option value="">{{ localize('global.select') }}</option>
+                                                                @foreach ($medicines as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <input type="text" class="form-control mt-2"
@@ -309,10 +328,6 @@
                                                         <div class="col-md-2">
                                                             <input type="text" class="form-control mt-2"
                                                                 name="amount[]" placeholder="Amount">
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <input type="text" class="form-control mt-2"
-                                                                name="type[]" placeholder="Type">
                                                         </div>
                                                         <div class="col-md-2">
                                                             <input type="hidden" class="form-control mt-2"
@@ -1122,7 +1137,43 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            <div class="col-md-12 d-flex justify-content-center">
+                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                        class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.by') }}</th>
+                                        <th>{{ localize('global.visit_date') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($appointment->under_reviews as $single_hospitaliztion)
+                                        @foreach($single_hospitaliztion->visits as $visit)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $visit->description }}</td>
+                                                <td>{{ $visit->doctor->name }}</td>
+                                                <td>
+                                                    {{ $visit->created_at }}
+                                                </td>
+                                            </tr>
 
+                                    @endforeach
+                                    @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_visits') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                </tbody>
+                            </table>
                         </div>
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i

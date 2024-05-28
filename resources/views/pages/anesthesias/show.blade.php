@@ -107,6 +107,18 @@
                                             {{ $anesthesia->circulation_nurse->name }}
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.anesthesia_log_reply') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->anesthesia_log_reply }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2">{{ localize('global.anesthesia_plan') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->anesthesia_plan }}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 @if($anesthesia->status == 'new')

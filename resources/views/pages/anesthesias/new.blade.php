@@ -33,11 +33,13 @@
                                         <td>{{ $anesthesia->operationType->name }}</td>
                                         <td>{{ $anesthesia->surgion->name }}</td>
                                         <td>
-                                            @if ($anesthesia->status == '0')
-                                                <span class="bx bx-x-circle text-danger"></span>
-                                            @else
-                                                <span class="bx bx-check-circle text-success"></span>
-                                            @endif
+                                            @if ($anesthesia->status == 'new')
+                                                    <span class="bx bx-plus-circle text-primary"></span>
+                                                @elseif ($anesthesia->status == 'rejected')
+                                                    <span class="bx bx-x-circle text-danger"></span>
+                                                @else
+                                                    <span class="bx bx-check-circle text-success"></span>
+                                                @endif
                                         </td>
                                         <td>
                                             <a href="{{ route('anesthesias.show', $anesthesia) }}"><i

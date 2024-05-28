@@ -661,7 +661,12 @@ return [
     'retired' => 'متقاعد',
     'gender' => 'جنسیت',
     'job_type' => 'نوعیت وظیفه',
-    'anesthesia_plan' => 'پلان'
+    'anesthesia_plan' => 'پلان',
+    'discharged' => 'رخصت شده',
+    'in_bed' => 'داخل بستر',
+    'recovered' => 'صحت یابی',
+    'moved' => 'انتقال',
+    'died' => 'فوت',
 
 
 ];

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('remarks',2000);
             $table->text('discharge_remark',2000)->nullable();
             $table->tinyInteger('is_discharged')->default(false);
+            $table->enum('discharge_status', ['recovered', 'died', 'moved'])->nullable();
             $table->unsignedBigInteger('room_id');
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->unsignedBigInteger('branch_id');

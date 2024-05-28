@@ -1219,10 +1219,11 @@
                                 <thead>
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.reason') }}</th>
+                                        <th class="text-wrap">{{ localize('global.reason') }}</th>
                                         <th>{{ localize('global.remarks') }}</th>
                                         <th>{{ localize('global.room') }}</th>
                                         <th>{{ localize('global.bed') }}</th>
+                                        <th>{{ localize('global.status') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -1239,6 +1240,17 @@
                                             </td>
                                             <td>
                                                 {{ $hospitalization->bed->number }}
+                                            </td>
+                                            <td>
+                                                @if($hospitalization->is_discharged == 0)
+
+                                                <span class="badge bg-danger">{{localize('global.in_bed')}}</span>
+
+                                                @else
+                                                <span class="badge bg-success">{{localize('global.discharged')}}</span>
+
+                                                @endif
+
                                             </td>
                                             <td>
                                                 <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"><span><i

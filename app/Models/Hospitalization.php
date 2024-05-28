@@ -12,7 +12,7 @@ class Hospitalization extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark'];
+    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark','discharge_status'];
 
     public static function boot()
     {
@@ -67,6 +67,16 @@ class Hospitalization extends Model
     public function labs()
     {
         return $this->hasMany(Lab::class);
+    }
+
+    public function icu()
+    {
+        return $this->hasMany(ICU::class);
+    }
+
+    public function anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class);
     }
 
 

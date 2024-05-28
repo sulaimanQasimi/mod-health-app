@@ -53,6 +53,7 @@ class AnesthesiaController extends Controller
             'branch_id' => 'required',
             'appointment_id' => 'required',
             'operation_type_id' => 'required',
+            'hospitalization_id' => 'nullable',
             'date' => 'required',
             'time' => 'required',
             'plan' => 'required',

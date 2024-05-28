@@ -932,9 +932,19 @@
                                         <form action="{{ route('appointments.store') }}" method="POST">
                                             @csrf
                                             <div class="mb-3">
+                                                <label for="branch">{{ localize('global.branch') }}</label>
+                                                <select class="form-control select2" name="branch_id"
+                                                    id="referral_branch">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($branches as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}</option>
+                                                    @endforeach
+                                                </select>
                                                 <label for="department">{{ localize('global.department') }}</label>
                                                 <select class="form-control select2" name="department_id"
-                                                    id="department_id">
+                                                    id="referral_department_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($departments as $value)
                                                         <option value="{{ $value->id }}"
@@ -1972,6 +1982,20 @@
                 }
             })
 
+            $('#referral_branch').on('change', function() {
+                var branchId = $(this).val();
+                if (branchId !== '') {
+                    $.ajax({
+                        url: '/get_departments/' + branchId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#referral_department_id').html(response);
+                        }
+                    })
+                }
+            })
+
             $('#department').on('change', function() {
                 var departmentId = $(this).val();
                 if (departmentId !== '') {
@@ -1986,7 +2010,7 @@
                 }
             })
 
-            $('#department_id').on('change', function() {
+            $('#referral_department_id').on('change', function() {
                 var departmentID = $(this).val();
                 if (departmentID !== '') {
                     $.ajax({

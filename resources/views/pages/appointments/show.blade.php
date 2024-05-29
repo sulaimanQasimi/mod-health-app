@@ -295,7 +295,8 @@
                                                     <div class="row">
                                                         <div class="col-md-2">
                                                             <select class="form-control select2" name="type[]">
-                                                                <option value="">{{ localize('global.select') }}</option>
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
                                                                 @foreach ($medicineTypes as $value)
                                                                     <option value="{{ $value->id }}"
                                                                         {{ old('type') == $value->id ? 'selected' : '' }}>
@@ -307,7 +308,8 @@
                                                         </div>
                                                         <div class="col-md-3">
                                                             <select class="form-control select2" name="description[]">
-                                                                <option value="">{{ localize('global.select') }}</option>
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
                                                                 @foreach ($medicines as $value)
                                                                     <option value="{{ $value->id }}"
                                                                         {{ old('name') == $value->id ? 'selected' : '' }}>
@@ -337,9 +339,9 @@
                                                 </div>
                                             </div>
 
-                                            <button type="button" class="btn btn-primary mt-2"
-                                                id="addPrescriptionInput"><i
-                                                    class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}</button>
+                                            <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput" onclick="addRow()">
+                                                <i class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
+                                              </button>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
@@ -404,8 +406,9 @@
                         </div>
 
 
-                        <div class="modal fade modal-xl" id="showPrescriptionModal{{ $appointment->id }}" tabindex="-1"
-                            aria-labelledby="showPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
+                        <div class="modal fade modal-xl" id="showPrescriptionModal{{ $appointment->id }}"
+                            tabindex="-1" aria-labelledby="showPrescriptionModalLabel{{ $appointment->id }}"
+                            aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -717,18 +720,16 @@
                                                 </td>
 
                                             </tr>
-
-
-                                    @endforeach
+                                        @endforeach
                                     @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_labs') }}
-                                                    </div>
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.no_previous_labs') }}
                                                 </div>
                                             </div>
-                                        @endforelse
+                                        </div>
+                                    @endforelse
 
                                 </tbody>
                             </table>
@@ -1061,7 +1062,8 @@
 
                                                 <label
                                                     for="room_id{{ $appointment->id }}">{{ localize('global.rooms') }}</label>
-                                                <select class="form-control select2" name="room_id" id="under_review_room">
+                                                <select class="form-control select2" name="room_id"
+                                                    id="under_review_room">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($rooms as $value)
                                                         <option value="{{ $value->id }}"
@@ -1074,7 +1076,8 @@
 
                                                 <label
                                                     for="bed_id{{ $appointment->id }}">{{ localize('global.beds') }}</label>
-                                                <select class="form-control select2" name="bed_id" id="under_review_bed_id">
+                                                <select class="form-control select2" name="bed_id"
+                                                    id="under_review_bed_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($beds as $value)
                                                         <option value="{{ $value->id }}"
@@ -1162,7 +1165,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse ($appointment->under_reviews as $single_hospitaliztion)
-                                        @foreach($single_hospitaliztion->visits as $visit)
+                                        @foreach ($single_hospitaliztion->visits as $visit)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $visit->description }}</td>
@@ -1171,17 +1174,16 @@
                                                     {{ $visit->created_at }}
                                                 </td>
                                             </tr>
-
-                                    @endforeach
+                                        @endforeach
                                     @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_visits') }}
-                                                    </div>
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.no_previous_visits') }}
                                                 </div>
                                             </div>
-                                        @endforelse
+                                        </div>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -1303,13 +1305,11 @@
                                                 {{ $hospitalization->bed->number }}
                                             </td>
                                             <td>
-                                                @if($hospitalization->is_discharged == 0)
-
-                                                <span class="badge bg-danger">{{localize('global.in_bed')}}</span>
-
+                                                @if ($hospitalization->is_discharged == 0)
+                                                    <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
                                                 @else
-                                                <span class="badge bg-success">{{localize('global.discharged')}}</span>
-
+                                                    <span
+                                                        class="badge bg-success">{{ localize('global.discharged') }}</span>
                                                 @endif
 
                                             </td>
@@ -1349,7 +1349,7 @@
                             </thead>
                             <tbody>
                                 @forelse ($appointment->hospitalization as $single_hospitaliztion)
-                                    @foreach($single_hospitaliztion->visits as $visit)
+                                    @foreach ($single_hospitaliztion->visits as $visit)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
@@ -1358,17 +1358,16 @@
                                                 {{ $visit->created_at }}
                                             </td>
                                         </tr>
-
-                                @endforeach
+                                    @endforeach
                                 @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_visits') }}
-                                                </div>
+                                    <div class="container">
+                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                            <div class=" badge bg-label-danger mt-4">
+                                                {{ localize('global.no_previous_visits') }}
                                             </div>
                                         </div>
-                                    @endforelse
+                                    </div>
+                                @endforelse
                             </tbody>
                         </table>
 
@@ -1848,10 +1847,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-
-
-
-
                     </div>
                 </div>
             </div>
@@ -1861,24 +1856,44 @@
 @endsection
 
 @section('scripts')
+
     <script>
         // Get the add button and prescription input container
         const addButton = document.getElementById('addPrescriptionInput');
         const prescriptionContainer = document.getElementById('prescription-input-container');
 
         // Add click event listener to the add button
-        addButton.addEventListener('click', function() {
+        function addRow(){
             // Create a new row div
             const newRow = document.createElement('div');
             newRow.className = 'row';
 
-            // Create the description input field
-            const descriptionInput = document.createElement('input');
-            descriptionInput.type = 'text';
-            descriptionInput.className = 'form-control mt-2';
-            descriptionInput.name = 'description[]';
-            descriptionInput.dir = 'ltr';
-            descriptionInput.placeholder = 'Enter name';
+            // Create the type dropdown
+            const typeDropdown = document.createElement('select');
+            typeDropdown.className = 'form-control select2';
+            typeDropdown.name = 'type[]';
+
+            // Append the options to the type dropdown
+            @foreach ($medicineTypes as $value)
+                const typeOption = document.createElement('option');
+                typeOption.value = '{{ $value->id }}';
+                typeOption.textContent = '{{ $value->type }}';
+                typeDropdown.appendChild(typeOption);
+            @endforeach
+
+            // Create the medicine dropdown
+            const medicineDropdown = document.createElement('select');
+            medicineDropdown.className = 'form-control select2';
+            medicineDropdown.name = 'description[]';
+
+            // Append the options to the medicine dropdown
+            var medicineOption='';
+            @foreach ($medicines as $value)
+                 medicineOption = document.createElement('option');
+                medicineOption.value = '{{ $value->id }}';
+                medicineOption.textContent = '{{ $value->name }}';
+                medicineDropdown.appendChild(medicineOption);
+            @endforeach
 
             // Create the dosage input field
             const dosageInput = document.createElement('input');
@@ -1901,13 +1916,6 @@
             amountInput.name = 'amount[]';
             amountInput.placeholder = 'Amount';
 
-            // Create the amount input field
-            const typeInput = document.createElement('input');
-            typeInput.type = 'text';
-            typeInput.className = 'form-control mt-2';
-            typeInput.name = 'type[]';
-            typeInput.placeholder = 'Type';
-
             // Create the delivery input field
             const deliveryInput = document.createElement('input');
             deliveryInput.type = 'hidden';
@@ -1916,40 +1924,44 @@
             deliveryInput.value = 0;
 
             // Create the column divs
-            const descriptionCol = document.createElement('div');
-            descriptionCol.className = 'col-md-3';
+            const typeCol = document.createElement('div');
+            typeCol.className = 'col-md-2';
+            const medicineCol = document.createElement('div');
+            medicineCol.className = 'col-md-3';
             const dosageCol = document.createElement('div');
             dosageCol.className = 'col-md-3';
             const frequencyCol = document.createElement('div');
             frequencyCol.className = 'col-md-2';
             const amountCol = document.createElement('div');
             amountCol.className = 'col-md-2';
-            const typeCol = document.createElement('div');
-            typeCol.className = 'col-md-2';
-
             const deliveryCol = document.createElement('div');
             deliveryCol.className = 'col-md-2';
 
-
             // Append the input fields to their respective column divs
-            descriptionCol.appendChild(descriptionInput);
+            typeCol.appendChild(typeDropdown);
+            medicineCol.appendChild(medicineDropdown);
             dosageCol.appendChild(dosageInput);
             frequencyCol.appendChild(frequencyInput);
             amountCol.appendChild(amountInput);
-            typeCol.appendChild(typeInput);
             deliveryCol.appendChild(deliveryInput);
 
             // Append the column divs to the new row div
-            newRow.appendChild(descriptionCol);
+            newRow.appendChild(typeCol);
+            newRow.appendChild(medicineCol);
             newRow.appendChild(dosageCol);
             newRow.appendChild(frequencyCol);
             newRow.appendChild(amountCol);
-            newRow.appendChild(typeCol);
             newRow.appendChild(deliveryCol);
 
             // Append the new row div to the prescription input container
             prescriptionContainer.appendChild(newRow);
-        });
+
+          
+            // $('select').select2();
+            $('select').select2({
+                dropdownParent: $('#createPrescriptionModal1')
+            });
+        }
     </script>
 
     <script>
@@ -2072,7 +2084,7 @@
                         checkbox.value = test.id;
 
                         // Update the lab_type_id value when a checkbox is checked/unchecked
-                        checkbox.addEventListener('change', function() {
+                        $('input').on('change', function() {
                             if (this.checked) {
                                 // Append the test id to the lab_type_id value
                                 document.getElementById('lab_type_id').value += ',' + this.value;

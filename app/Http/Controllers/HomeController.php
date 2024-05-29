@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
 use App\Models\Appointment;
+use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Consultation;
 use App\Models\Department;
@@ -101,6 +102,20 @@ class HomeController extends Controller
             ->values()
             ->toArray();
 
+        $occupied_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+                   ->where('rooms.branch_id', auth()->user()->branch_id)
+                   ->where('beds.is_occupied', true)
+                   ->count();
+
+        $free_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+        ->where('rooms.branch_id', auth()->user()->branch_id)
+        ->where('beds.is_occupied', false)
+        ->count();
+
+        $all_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+        ->where('rooms.branch_id', auth()->user()->branch_id)
+        ->count();
+        
 
         return view('pages.dashboard.index', [
             'totalPatients' => $totalPatients,
@@ -121,7 +136,10 @@ class HomeController extends Controller
             'consultationPercentageChange' => $consultationPercentageChange,
             'operationPercentageChange' => $operationPercentageChange,
             'icuPercentageChange' => $icuPercentageChange,
-            'hospitalizationPercentageChange' => $hospitalizationPercentageChange
+            'hospitalizationPercentageChange' => $hospitalizationPercentageChange,
+            'occupied_beds' => $occupied_beds,
+            'free_beds' => $free_beds,
+            'all_beds' => $all_beds
         ]);
     }
 

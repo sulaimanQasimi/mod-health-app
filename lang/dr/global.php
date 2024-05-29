@@ -674,7 +674,10 @@ return [
     'spo2' => 'SPO2',
     'pain' => 'PAIN',
     'vital_signs' => 'علایم حیاتی',
-    'operation_result' => 'نتیجه عملیات'
+    'operation_result' => 'نتیجه عملیات',
+    'all_beds' => 'همه بستر ها',
+    'free_beds' => 'بستر های خالی',
+    'occupied_beds' => 'بستر های اشغال شده',
 
 
 ];

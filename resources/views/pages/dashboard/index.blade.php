@@ -7,7 +7,7 @@
                 <div class="col-md-12 order-3 order-md-2">
                     <div class="row g-4 mb-4">
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -16,19 +16,19 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalPatients }}</h4>
                                                 @if ($patientPercentageChange > 0)
                                                     <h4
-                                                        class="mb-0 me-2 bg-label-success p-1 rounded-circle bx bx-trending-up">
+                                                        class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
                                                     </h4>
-                                                    <small class="text-success">{{ $patientPercentageChange }}%</small>
+                                                    <span class="text-success">{{ $patientPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
+                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down text-white">
                                                     </h4>
-                                                    <small class="text-danger">{{ $patientPercentageChange }}%</small>
+                                                    <span class="text-danger">{{ $patientPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_patients') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-user bx-md"></i>
                                             </span>
                                         </div>
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -47,19 +47,20 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalAppointments }}
                                                 </h4>
                                                 @if ($appointmentPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small class="text-success">{{ $appointmentPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span class="text-success">{{ $appointmentPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small class="text-danger">{{ $appointmentPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span class="text-danger">{{ $appointmentPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_appointments') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-history bx-md"></i>
                                             </span>
                                         </div>
@@ -69,7 +70,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -79,20 +80,21 @@
                                                     {{ $totalConsultations }}
                                                 </h4>
                                                 @if ($consultationPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small
-                                                        class="text-success">{{ $consultationPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span
+                                                        class="text-success">{{ $consultationPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small class="text-danger">{{ $consultationPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span class="text-danger">{{ $consultationPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_consultations') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-chat bx-md"></i>
                                             </span>
                                         </div>
@@ -102,7 +104,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -111,21 +113,22 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
                                                     {{ $totalInPatientAdmissions }}</h4>
                                                 @if ($hospitalizationPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small
-                                                        class="text-success">{{ $hospitalizationPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span
+                                                        class="text-success">{{ $hospitalizationPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small
-                                                        class="text-danger">{{ $hospitalizationPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span
+                                                        class="text-danger">{{ $hospitalizationPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_hospitalizations') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-bed bx-md"></i>
                                             </span>
                                         </div>
@@ -135,7 +138,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -144,19 +147,20 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalCheckups }}
                                                 </h4>
                                                 @if ($checkupPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small class="text-success">{{ $checkupPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span class="text-success">{{ $checkupPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small class="text-danger">{{ $checkupPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span class="text-danger">{{ $checkupPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_checkups') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-hard-hat bx-md"></i>
                                             </span>
                                         </div>
@@ -166,7 +170,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -175,19 +179,20 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
                                                     {{ $totalIcuAdmissions }}</h4>
                                                 @if ($icuPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small class="text-success">{{ $icuPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span class="text-success">{{ $icuPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small class="text-danger">{{ $icuPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span class="text-danger">{{ $icuPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_icu') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-tv bx-md"></i>
                                             </span>
                                         </div>
@@ -197,7 +202,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -206,21 +211,22 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
                                                     {{ $totalPrescriptions }}</h4>
                                                 @if ($prescriptionPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small
-                                                        class="text-success">{{ $prescriptionPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span
+                                                        class="text-success">{{ $prescriptionPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small
-                                                        class="text-danger">{{ $prescriptionPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span
+                                                        class="text-danger">{{ $prescriptionPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_prescriptions') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-receipt bx-md"></i>
                                             </span>
                                         </div>
@@ -230,7 +236,7 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card">
+                            <div class="card bg-label-primary border border-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -239,19 +245,20 @@
                                                 <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalOperations }}
                                                 </h4>
                                                 @if ($operationPercentageChange > 0)
-                                                    <h4 class="mb-0 me-2 bg-label-success p-1 rounded bx bx-trending-up">
-                                                    </h4>
-                                                    <small class="text-success">{{ $operationPercentageChange }}%</small>
+                                                <h4
+                                                class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                            </h4>
+                                                    <span class="text-success">{{ $operationPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down">
-                                                    </h4>
-                                                    <small class="text-danger">{{ $operationPercentageChange }}%</small>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
+                                                    <span class="text-danger">{{ $operationPercentageChange }}%</span>
                                                 @endif
                                             </div>
                                             <p class="mb-0">{{ localize('global.all_registered_operations') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded bg-label-primary">
+                                            <span class="avatar-initial rounded-circle bg-secondary">
                                                 <i class="bx bx-cut bx-md"></i>
                                             </span>
                                         </div>

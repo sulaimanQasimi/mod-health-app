@@ -20,8 +20,8 @@
                                                     </h4>
                                                     <span class="text-success">{{ $patientPercentageChange }}%</span>
                                                 @else
-                                                    <h4 class="mb-0 me-2 bg-label-danger p-1 rounded bx bx-trending-down text-white">
-                                                    </h4>
+                                                <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                </h4>
                                                     <span class="text-danger">{{ $patientPercentageChange }}%</span>
                                                 @endif
                                             </div>

@@ -87,19 +87,6 @@
                             @endisset
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-md-4">
-                                <a href="{{ route('patients.print-card', $patient->id) }}" target="_blank" class="btn btn-primary">{{localize('global.print_card')}}</a>
-                            </div>
-
-                            <div class="col-md-4">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">{{localize('global.assign_appointment')}}</button>
-                            </div>
-
-                            <div class="col-md-4">
-                                <a  class="btn btn-success" href="{{route('patients.webcam',$patient)}}">{{localize('global.take_image')}}</a>
-                            </div>
-                        </div>
                     </div>
 
                 </div>
@@ -126,7 +113,7 @@
                         @endforeach
                     </tbody>
                 </table>
-                <hr>
+
                 <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_diagnoses') }}</h5>
                 <div class="row p-4">
                     <div class="mb-4">
@@ -177,26 +164,57 @@
                         </div>
                     </div>
                 </div>
-                {{-- <table class="table">
+
+                <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.previous_labs') }}</h5>
+                <table class="table">
                     <thead>
                         <tr>
-                            <th>{{localize('global.number')}}</th>
-                            <th>{{localize('global.doctor_name')}}</th>
-                            <th>{{localize('global.description')}}</th>
-                            <th>{{localize('global.date')}}</th>
+                            <th>{{ localize('global.number') }}</th>
+                            <th>{{ localize('global.test_name') }}</th>
+                            <th>{{ localize('global.test_status') }}</th>
+                            <th>{{ localize('global.result') }}</th>
+                            <th>{{ localize('global.result_file') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($patient->diagnoses as $diagnose)
-                        <tr>
-                            <td>{{$loop->iteration}}</td>
-                            <td>{{$diagnose->doctor->name}}</td>
-                            <td>{{$diagnose->description}}</td>
-                            <td>{{$diagnose->created_at}}</td>
-                        </tr>
-                        @endforeach
+                        @forelse ($patient->appointments as $appointment)
+                        @foreach($appointment->labs as $lab)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $lab->labType->name }}</td>
+                                <td>
+                                    @if ($lab->status == '0')
+                                        <span
+                                            class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                    @else
+                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                    @endif
+                                </td>
+                                <td>{{ $lab->result }}</td>
+                                <td>
+                                    @isset($lab->result_file)
+                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
+                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
+                                        </a>
+                                    @endisset
+
+                                </td>
+
+                            </tr>
+                            @endforeach
+
+                        @empty
+                            <div class="container">
+                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                    <div class=" badge bg-label-danger mt-4">
+                                        {{ localize('global.no_previous_labs') }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+
                     </tbody>
-                </table> --}}
+                </table>
             </div>
             </div>
         </div>

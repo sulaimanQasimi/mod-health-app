@@ -40,6 +40,7 @@ class LabController extends Controller
         'status' => 'nullable',
         'hospitalization_id' => 'nullable',
         'under_review_id' => 'nullable',
+        'i_c_u_id' => 'nullable',
     ]);
 
     $labTypeIds = $data['lab_type_id'];

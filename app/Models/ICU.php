@@ -52,6 +52,11 @@ class ICU extends Model
         return $this->hasMany(Visit::class);
     }
 
+    public function labs()
+    {
+        return $this->hasMany(Lab::class);
+    }
+
     public function doctor()
     {
         return $this->belongsTo(User::class);

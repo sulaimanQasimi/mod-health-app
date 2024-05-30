@@ -79,5 +79,10 @@ class Hospitalization extends Model
         return $this->hasMany(Anesthesia::class);
     }
 
+    public function complaints()
+    {
+        return $this->hasMany(PatientComplaint::class);
+    }
+
 
 }

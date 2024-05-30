@@ -194,6 +194,38 @@
                                                 <label
                                                     for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
                                                 <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
+                                                <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="bp{{ $appointment->id }}">{{localize('global.bp')}}</label>
+                                                            <input type="text" class="form-control" name="bp" />
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="pr{{ $appointment->id }}">{{localize('global.pr')}}</label>
+                                                            <input type="text" class="form-control" name="pr" />
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="weight{{ $appointment->id }}">{{localize('global.weight')}}</label>
+                                                            <input type="text" class="form-control" name="weight" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mt-1 mb-1">
+                                                        <div class="col-md-4">
+                                                            <label for="t{{ $appointment->id }}">{{localize('global.t')}}</label>
+                                                            <input type="text" class="form-control" name="t" />
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="spo2{{ $appointment->id }}">{{localize('global.spo2')}}</label>
+                                                            <input type="text" class="form-control" name="spo2" />
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="pain{{ $appointment->id }}">{{localize('global.pain')}}</label>
+                                                            <input type="text" class="form-control" name="pain" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
                                             </div>
                                     </div>
                                     <div class="modal-footer">

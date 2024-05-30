@@ -4,15 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Lab extends Model
+class LabItem extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
-    protected $fillable = ['lab_type_id','patient_id','lab_type_section_id','branch_id','appointment_id','status'];
+    protected $fillable = ['result','result_file','status','appointment_id','lab_type_id','patient_id','doctor_id','branch_id','hospitalization_id','under_review_id'];
+
+
+
+    public function labType()
+    {
+        return $this->belongsTo(LabType::class);
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function labs()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
 
     public static function boot()
     {
@@ -33,20 +49,4 @@ class Lab extends Model
             $model->save();
         });
     }
-
-    public function labType()
-    {
-        return $this->belongsTo(LabType::class);
-    }
-
-    public function patient()
-    {
-        return $this->belongsTo(Patient::class);
-    }
-
-    public function labs()
-    {
-        return $this->belongsTo(Appointment::class);
-    }
-
 }

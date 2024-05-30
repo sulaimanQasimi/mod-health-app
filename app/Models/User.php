@@ -101,7 +101,7 @@ class User extends Authenticatable
 
     public function labs()
     {
-        return $this->hasMany(Lab::class, 'doctor_id', 'id');
+        return $this->hasMany(LabItem::class, 'doctor_id', 'id');
     }
 
     public function prescriptions()

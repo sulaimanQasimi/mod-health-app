@@ -62,6 +62,6 @@ class UnderReview extends Model
 
     public function labs()
     {
-        return $this->hasMany(Lab::class);
+        return $this->hasMany(LabItem::class);
     }
 }

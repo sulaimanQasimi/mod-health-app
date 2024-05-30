@@ -49,6 +49,11 @@ class Appointment extends Model
         return $this->hasMany(Diagnose::class);
     }
 
+    public function labItems()
+    {
+        return $this->hasMany(LabItem::class)->whereNull('hospitalization_id');
+    }
+
     public function labs()
     {
         return $this->hasMany(Lab::class)->whereNull('hospitalization_id');

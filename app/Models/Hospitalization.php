@@ -66,7 +66,7 @@ class Hospitalization extends Model
 
     public function labs()
     {
-        return $this->hasMany(Lab::class);
+        return $this->hasMany(LabItem::class);
     }
 
     public function icu()

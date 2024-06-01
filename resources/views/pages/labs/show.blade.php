@@ -12,8 +12,6 @@
                         <h5 class="mb-0">{{ localize('global.edit') }}</h5>
                     </div>
                     <div class="card-body">
-
-                        <h2>{{localize('global.lab_items')}}</h2>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -22,11 +20,11 @@
                                     <th>{{ localize('global.test_status') }}</th>
                                     <th>{{ localize('global.result') }}</th>
                                     <th>{{ localize('global.result_file') }}</th>
-                                    {{-- <th>{{ localize('global.actions') }}</th> --}}
+                                    <th>{{ localize('global.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($lab->labItems as $item)
+                                @forelse ($lab_items as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->labType->name }}</td>
@@ -47,11 +45,11 @@
                                             @endisset
                         
                                         </td>
-                                        {{-- <td>
+                                        <td>
                                             <a href="{{ route('lab_tests.edit', $item) }}"><i class="bx bx-message-square-edit"></i></a>
 
                         
-                                        </td> --}}
+                                        </td>
                         
                                     </tr>
                         
@@ -67,29 +65,6 @@
                         
                             </tbody>
                         </table>
-
-                        <form role="form" class="form-horizontal" action="{{ route('lab_tests.update', $lab->id) }}"
-                            enctype="multipart/form-data" method="POST">
-                          @method('PUT')
-                          @csrf
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">{{ localize('global.result') }}</label>
-                                    <textarea name="result" class="form-control">{{ $lab->result }}</textarea>
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">{{ localize('global.result_file') }}</label>
-                                    <input type="file" name="result_file" class="form-control">{{ $lab->result_file }}</textarea>
-                                </div>
-                                <input type="hidden" name="status" value="1">
-                                <div class="col-md-6">
-                                    <a href="{{ route('lab_tests.index') }}"><button type="button"
-                                                class="btn btn-danger">{{ localize('global.back') }}</button>
-                                        <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                </div>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>

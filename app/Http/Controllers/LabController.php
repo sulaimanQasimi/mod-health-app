@@ -15,7 +15,7 @@ class LabController extends Controller
      */
     public function index()
     {
-        $labs = LabItem::where('branch_id', auth()->user()->branch_id)->where('result',null)->latest()->paginate(10);
+        $labs = Lab::where('branch_id', auth()->user()->branch_id)->where('result',null)->latest()->paginate(10);
         return view('pages.labs.index',compact('labs'));
     }
 
@@ -32,7 +32,7 @@ class LabController extends Controller
      */
     public function store(Request $request)
 {
-    // return $request->all();
+    // return $request->doctor_id;
     $data = $request->validate([
         'lab_type_id' => 'required|array',
         'appointment_id' => 'required',
@@ -48,12 +48,13 @@ class LabController extends Controller
     unset($data['lab_type_id']);
 
     $lab_item_data = [
-        'lab_type_id' => $labTypeIds[0],
-        'patient_id' => $request->patient_id,
-        'lab_type_section_id' => $request->lab_type_section,
         'branch_id' => $request->branch_id,
         'appointment_id' => $request->appointment_id,
-        'hospitalization_id' => $request->hospitalization_id
+        'hospitalization_id' => $request->hospitalization_id,
+        'lab_type_id' => $labTypeIds[0],
+        'patient_id' => $request->patient_id,
+        'doctor_id' => $request->doctor_id,
+        'lab_type_section_id' => $request->lab_type_section,
     ];
     $lab = Lab::create($lab_item_data);
 
@@ -73,7 +74,9 @@ class LabController extends Controller
      */
     public function show(Lab $lab)
     {
-        //
+        $lab_items = $lab->labItems;
+        return view('pages.labs.show',compact('lab_items'));
+
     }
 
     /**

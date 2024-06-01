@@ -12,7 +12,7 @@ class Lab extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['lab_type_id','patient_id','lab_type_section_id','branch_id','appointment_id','status'];
+    protected $fillable = [ 'branch_id','result','result_file','appointment_id','hospitalization_id','lab_type_id','patient_id','doctor_id','lab_type_section_id','status'];
 
     public static function boot()
     {
@@ -47,6 +47,10 @@ class Lab extends Model
     public function labs()
     {
         return $this->belongsTo(Appointment::class);
+    }
+    public function labItems()
+    {
+        return $this->hasMany(LabItem::class);
     }
 
 }

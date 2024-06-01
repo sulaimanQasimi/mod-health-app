@@ -29,6 +29,7 @@ use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\ICUController;
+use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
@@ -322,6 +323,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('lab_items')->name('lab_items.')->group(function () {
+        Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
+
     });
 
     // Branches routes

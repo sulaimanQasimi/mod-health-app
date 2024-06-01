@@ -10,7 +10,7 @@ class LabItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['result','result_file','status','appointment_id','lab_type_id','patient_id','doctor_id','branch_id','hospitalization_id','under_review_id'];
+    protected $fillable = ['result','lab_id','result_file','status','appointment_id','lab_type_id','patient_id','doctor_id','branch_id','hospitalization_id','under_review_id'];
 
 
 

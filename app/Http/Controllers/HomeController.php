@@ -2,11 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anesthesia;
+use App\Models\Appointment;
+use App\Models\Bed;
 use App\Models\Branch;
+use App\Models\Consultation;
 use App\Models\Department;
+use App\Models\Diagnose;
+use App\Models\Hospitalization;
+use App\Models\ICU;
+use App\Models\Lab;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Operation;
+use App\Models\Patient;
+use App\Models\Prescription;
 use App\Models\Province;
+use App\Models\Room;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -25,9 +40,189 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
     public function index()
     {
-        return view('pages.dashboard.index');
+        $totalPatients = Patient::count();
+        $totalCheckups = Lab::count();
+        $totalAppointments = Appointment::count();
+        $totalPrescriptions = Prescription::count();
+        $totalConsultations = Consultation::count();
+        $totalOperations = Operation::count();
+        $totalIcuAdmissions = ICU::count();
+        $totalInPatientAdmissions = Hospitalization::count();
+
+        // Retrieve data for charts
+        $patientsTrendData = $this->getPatientsTrendData();
+        $appointmentsTrendData = $this->getAppointmentsTrendData();
+        // ... (similar for other entities)
+
+        // Retrieve models percentage changes
+        $patientPercentageChange = $this->getPercentageChange(Patient::class);
+        $checkupPercentageChange = $this->getPercentageChange(Lab::class);
+        $appointmentPercentageChange = $this->getPercentageChange(Appointment::class);
+        $prescriptionPercentageChange = $this->getPercentageChange(Prescription::class);
+        $consultationPercentageChange = $this->getPercentageChange(Consultation::class);
+        $operationPercentageChange = $this->getPercentageChange(Anesthesia::class);
+        $icuPercentageChange = $this->getPercentageChange(ICU::class);
+        $hospitalizationPercentageChange = $this->getPercentageChange(Hospitalization::class);
+
+        $wordCloudData = User::withCount([
+            'appointments',
+            'consultations',
+            'anesthesias',
+            'consultation_comments',
+            'hospitalizations',
+            'i_c_u_s',
+            'labs',
+            'prescriptions',
+            'visits'
+        ])
+            ->get()
+            ->map(function ($user) {
+                $consultationsCount = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$user->id\"')")->count();
+                // $anesthesiasCount = Anesthesia::whereRaw("JSON_CONTAINS(operation_doctor_id, '\"$user->id\"')")->count();
+                $anesthesiasCount = Anesthesia::
+                where(function($query) use
+                ($user)
+                {
+                    $query->whereRaw("JSON_CONTAINS(operation_assistants_id, '\"$user->id\"')")
+                    ->orWhere('operation_surgion_id', $user->id)
+                ->orWhere('operation_anesthesia_log_id', $user->id)
+                ->orWhere('operation_anesthesist_id', $user->id)
+                ->orWhere('operation_scrub_nurse_id', $user->id)
+                ->orWhere('operation_circulation_nurse_id', $user->id);
+                })->count();
+
+                return [
+                    'name' => $user->name,
+                    'weight' => $user->appointments_count + $consultationsCount + $anesthesiasCount + $user->consultation_comments_count + $user->hospitalizations_count + $user->i_c_u_s_count + $user->labs_count + $user->prescriptions_count + $user->visits_count,
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        $occupied_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+                   ->where('rooms.branch_id', auth()->user()->branch_id)
+                   ->where('beds.is_occupied', true)
+                   ->count();
+
+        $free_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+        ->where('rooms.branch_id', auth()->user()->branch_id)
+        ->where('beds.is_occupied', false)
+        ->count();
+
+        $all_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+        ->where('rooms.branch_id', auth()->user()->branch_id)
+        ->count();
+        
+
+        return view('pages.dashboard.index', [
+            'totalPatients' => $totalPatients,
+            'totalCheckups' => $totalCheckups,
+            'totalAppointments' => $totalAppointments,
+            'totalPrescriptions' => $totalPrescriptions,
+            'totalConsultations' => $totalConsultations,
+            'totalOperations' => $totalOperations,
+            'totalIcuAdmissions' => $totalIcuAdmissions,
+            'totalInPatientAdmissions' => $totalInPatientAdmissions,
+            'patientsTrendData' => $patientsTrendData,
+            'appointmentsTrendData' => $appointmentsTrendData,
+            'wordCloudData' => $wordCloudData,
+            'patientPercentageChange' => $patientPercentageChange,
+            'checkupPercentageChange' => $checkupPercentageChange,
+            'appointmentPercentageChange' => $appointmentPercentageChange,
+            'prescriptionPercentageChange' => $prescriptionPercentageChange,
+            'consultationPercentageChange' => $consultationPercentageChange,
+            'operationPercentageChange' => $operationPercentageChange,
+            'icuPercentageChange' => $icuPercentageChange,
+            'hospitalizationPercentageChange' => $hospitalizationPercentageChange,
+            'occupied_beds' => $occupied_beds,
+            'free_beds' => $free_beds,
+            'all_beds' => $all_beds
+        ]);
+    }
+
+    // Helper methods to retrieve trend data
+    private function getPatientsTrendData()
+    {
+        // Assuming you want to retrieve the patient count data for the last 12 months
+        $now = Carbon::now();
+        $startDate = $now->subYear()->startOfMonth();
+        $now = Carbon::now();
+        $endDate = $now->endOfMonth();
+
+
+        $patientsTrendData = Patient::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy(DB::raw('DATE_FORMAT(created_at, "%Y-%m")'))
+            ->orderBy('month')
+            ->get()
+            ->toArray();
+
+        // Prepare the data for the chart
+        $labels = array_column($patientsTrendData, 'month');
+        $data = array_column($patientsTrendData, 'count');
+
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
+    }
+
+
+    private function getAppointmentsTrendData()
+    {
+        // Assuming you want to retrieve the patient count data for the last 12 months
+        $now = Carbon::now();
+        $startDate = $now->startOfMonth();
+        $now = Carbon::now();
+        $endDate = $now->endOfMonth();
+
+
+        $appointmentsTrendData = Appointment::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(*) as count')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy(DB::raw('DATE_FORMAT(created_at, "%d")'))
+            ->orderBy('day')
+            ->get()
+            ->toArray();
+
+        // Prepare the data for the chart
+        $labels = array_column($appointmentsTrendData, 'day');
+        $data = array_column($appointmentsTrendData, 'count');
+
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
+    }
+
+    private function getPercentageChange($model)
+    {
+        // Get the current month and year
+        $currentMonth = Carbon::now()->format('m');
+        $currentYear = Carbon::now()->format('Y');
+
+        // Get the model count for the current month
+        $currentMonthCount = $model::whereMonth('created_at', $currentMonth)
+                             ->whereYear('created_at', $currentYear)
+                             ->count();
+
+        // Get the model count for the previous month
+        $previousMonth = Carbon::now()->subMonth(1)->format('m');
+        $previousYear = Carbon::now()->subMonth(1)->format('Y');
+        $previousMonthCount = $model::whereMonth('created_at', $previousMonth)
+                             ->whereYear('created_at', $previousYear)
+                             ->count();
+
+        // Calculate the percentage change
+        if ($previousMonthCount > 0) {
+            $percentageChange = round(($currentMonthCount - $previousMonthCount) / $previousMonthCount * 100, 2);
+        } else {
+            $percentageChange = 0;
+        }
+
+        return $percentageChange;
     }
 
     public function changeLanguage($lang)
@@ -43,9 +238,8 @@ class HomeController extends Controller
         $districts = $province->districts;
         $options = '<option value = "">Select District</option>';
 
-        foreach($districts as $district)
-        {
-            $options .='<option value = "' .$district->id . '">' . $district->name_dr. '</option>';
+        foreach ($districts as $district) {
+            $options .= '<option value = "' . $district->id . '">' . $district->name_dr . '</option>';
         }
 
         return $options;
@@ -57,9 +251,8 @@ class HomeController extends Controller
         $departments = $branch->departments;
         $options = '<option value = "">Select Department</option>';
 
-        foreach($departments as $department)
-        {
-            $options .='<option value = "' .$department->id . '">' . $department->name. '</option>';
+        foreach ($departments as $department) {
+            $options .= '<option value = "' . $department->id . '">' . $department->name . '</option>';
         }
 
         return $options;
@@ -71,9 +264,8 @@ class HomeController extends Controller
         $sections = $department->sections;
         $options = '<option value = "">Select Department</option>';
 
-        foreach($sections as $section)
-        {
-            $options .='<option value = "' .$section->id . '">' . $section->name. '</option>';
+        foreach ($sections as $section) {
+            $options .= '<option value = "' . $section->id . '">' . $section->name . '</option>';
         }
 
         return $options;
@@ -85,9 +277,8 @@ class HomeController extends Controller
         $doctors = $department->doctors;
         $options = '<option value = "">Select Department</option>';
 
-        foreach($doctors as $doctor)
-        {
-            $options .='<option value = "' .$doctor->id . '">' . $doctor->name. '</option>';
+        foreach ($doctors as $doctor) {
+            $options .= '<option value = "' . $doctor->id . '">' . $doctor->name . '</option>';
         }
 
         return $options;
@@ -99,9 +290,8 @@ class HomeController extends Controller
         $labTypes = $labTypeSection->labTypes;
         $options = '<option value = "">Select Department</option>';
 
-        foreach($labTypes as $labType)
-        {
-            $options .='<option value = "' .$labType->id . '">' . $labType->name. '</option>';
+        foreach ($labTypes as $labType) {
+            $options .= '<option value = "' . $labType->id . '">' . $labType->name . '</option>';
         }
 
         return $options;
@@ -109,11 +299,11 @@ class HomeController extends Controller
 
     public function getLabTypeTests($labTypeId)
     {
-         // Retrieve the lab type tests based on the $labTypeId
-         $labTypeTests = LabType::where('parent_id', $labTypeId)->get();
+        // Retrieve the lab type tests based on the $labTypeId
+        $labTypeTests = LabType::where('parent_id', $labTypeId)->get();
 
-         // Return the lab type tests as JSON response
-         return response()->json($labTypeTests);
+        // Return the lab type tests as JSON response
+        return response()->json($labTypeTests);
     }
 
     public function getBranchDoctors($branchId)
@@ -122,9 +312,21 @@ class HomeController extends Controller
         $doctors = $branch->doctors;
         $options = '<option value = "">Select Doctor</option>';
 
-        foreach($doctors as $doctor)
-        {
-            $options .='<option value = "' .$doctor->id . '">' . $doctor->name. '</option>';
+        foreach ($doctors as $doctor) {
+            $options .= '<option value = "' . $doctor->id . '">' . $doctor->name . '</option>';
+        }
+
+        return $options;
+    }
+
+    public function getRelatedBeds($roomId)
+    {
+        $room = Room::findOrFail($roomId);
+        $beds = $room->beds;
+        $options = '<option value = "">Select Bed</option>';
+
+        foreach ($beds as $bed) {
+            $options .= '<option value = "' . $bed->id . '">' . $bed->number . '</option>';
         }
 
         return $options;

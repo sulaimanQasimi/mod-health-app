@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('remarks',2000);
             $table->text('discharge_remark',2000)->nullable();
             $table->tinyInteger('is_discharged')->default(false);
+            $table->enum('discharge_status', ['recovered', 'died', 'moved'])->nullable();
             $table->unsignedBigInteger('room_id');
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->unsignedBigInteger('branch_id');
@@ -30,6 +31,9 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->foreign('patient_id')->references('id')->on('patients');
 
+            $table->integer('created_by');
+            $table->integer('deleted_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

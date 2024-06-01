@@ -12,7 +12,7 @@ class Appointment extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['patient_id','doctor_id','branch_id','date','time'];
+    protected $fillable = ['patient_id','doctor_id','branch_id','date','time','is_completed','status_remark','refferal_remarks'];
 
     public static function boot()
     {
@@ -49,6 +49,11 @@ class Appointment extends Model
         return $this->hasMany(Diagnose::class);
     }
 
+    public function labItems()
+    {
+        return $this->hasMany(LabItem::class)->whereNull('hospitalization_id');
+    }
+
     public function labs()
     {
         return $this->hasMany(Lab::class)->whereNull('hospitalization_id');
@@ -69,8 +74,38 @@ class Appointment extends Model
         return $this->hasMany(Hospitalization::class);
     }
 
+    public function under_reviews()
+    {
+        return $this->hasMany(UnderReview::class);
+    }
+
     public function anesthesia()
     {
         return $this->hasMany(Anesthesia::class);
+    }
+
+    public function anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class);
+    }
+
+    public function new_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', 'new');
+    }
+
+    public function approved_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', 'approved');
+    }
+
+    public function rejected_anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class)->where('status', 'rejected');
+    }
+
+    public function icu()
+    {
+        return $this->hasMany(ICU::class);
     }
 }

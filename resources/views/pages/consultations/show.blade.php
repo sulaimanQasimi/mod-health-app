@@ -3,6 +3,9 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
+            @if (Session::has('success') || Session::has('error'))
+                @include('components.toast')
+            @endif
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -110,7 +113,7 @@
                                         <div class="col-md-2">
                                             <i class="bx bx-check-circle text-success"></i>
                                             <span
-                                            class="bg-label-primary p-1 m-1">{{ $comment->doctor->name_en }}</span>
+                                            class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
                                         </div>
                                         <div class="col-md-10" style="text-align: justify;">
                                             {{ $comment->comment }}

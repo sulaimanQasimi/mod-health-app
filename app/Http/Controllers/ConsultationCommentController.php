@@ -39,7 +39,7 @@ class ConsultationCommentController extends Controller
 
         ConsultationComment::create($validatedData);
 
-        return redirect()->route('consultations.index')->with('success', 'Comment created successfully.');
+        return redirect()->back()->with('success', 'Comment created successfully.');
     }
 
     /**

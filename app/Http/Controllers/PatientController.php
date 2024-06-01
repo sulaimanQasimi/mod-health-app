@@ -19,12 +19,10 @@ class PatientController extends Controller
 {
     public function index(Request $request)
     {
-        // $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->paginate(10);
-        // return view('pages.patients.index', compact('patients'));
 
         if ($request->ajax()) {
-            $patients = Patient::where('branch_id',auth()->user()->branch_id)->with('province')->get();
-    
+            $patients = Patient::where('branch_id',auth()->user()->branch_id)->with('province')->latest()->get();
+
                 if ($patients) {
                     return response()->json([
                         'data' => $patients,
@@ -37,8 +35,8 @@ class PatientController extends Controller
                     ]);
                 }
         }
-    
-        $patients = Patient::where('branch_id',auth()->user()->branch_id)->get();
+
+        $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->get();
         return view('pages.patients.index', compact('patients'));
     }
 
@@ -56,6 +54,7 @@ class PatientController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'last_name' => 'nullable',
+            'father_name' => 'nullable',
             'phone' => 'nullable',
             'age' => 'required',
             'nid' => 'required',
@@ -66,6 +65,8 @@ class PatientController extends Controller
             'branch_id' => 'required',
             'job' => 'nullable',
             'rank' => 'nullable',
+            'age' => 'nullable',
+            'job_type' => 'nullable',
         ]);
 
         $patient = Patient::create($data);
@@ -95,8 +96,20 @@ class PatientController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
+            'last_name' => 'nullable',
+            'father_name' => 'nullable',
+            'phone' => 'nullable',
+            'age' => 'nullable',
+            'nid' => 'nullable',
+            'province_id' => 'nullable',
+            'district_id' => 'nullable',
+            'relation_id' => 'nullable',
+            'referred_by' => 'nullable',
+            'branch_id' => 'nullable',
+            'job' => 'nullable',
+            'rank' => 'nullable',
+            'age' => 'nullable',
+            'job_type' => 'nullable',
 
         ]);
 
@@ -173,5 +186,19 @@ public function addImage(Request $request, $id)
     public function scanCode()
     {
         return view('pages.patients.scan');
+    }
+
+    public function history(Patient $patient)
+    {
+        $appointments = $patient->appointments;
+        $previousDiagnoses = $patient->diagnoses;
+        $previousConsultations = $patient->consultations;
+        $previousAnesthesias = $patient->anesthesias;
+        $previousHospitalizations = $patient->hospitalizations;
+        $previousLabs = $patient->labs;
+        $previousPrescriptioins = $patient->prescriptions;
+        $previousIcus = $patient->icus;
+        return view('pages.patients.history',compact('patient','previousDiagnoses','previousConsultations','previousAnesthesias',
+    'previousHospitalizations','previousLabs','previousPrescriptioins','previousIcus','appointments'));
     }
 }

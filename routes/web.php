@@ -28,9 +28,17 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\ICUController;
+use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\MedicineTypeController;
+use App\Http\Controllers\OperationController;
+use App\Http\Controllers\PatientComplaintController;
 use App\Http\Controllers\RelationController;
+use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
+use App\Models\Prescription;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +125,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Patients routes
     Route::prefix('patients')->name('patients.')->group(function () {
         Route::get('index', [PatientController::class, 'index'])->name('index');
+        Route::get('history/{patient}', [PatientController::class, 'history'])->name('history');
         Route::get('create', [PatientController::class, 'create'])->name('create');
         Route::get('show/{patient}', [PatientController::class, 'show'])->name('show');
         Route::post('store', [PatientController::class, 'store'])->name('store');
@@ -195,6 +204,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
     });
 
+    // Under Review routes
+    Route::prefix('under_reviews')->name('under_reviews.')->group(function () {
+        Route::get('index', [UnderReviewController::class, 'index'])->name('index');
+        Route::get('create', [UnderReviewController::class, 'create'])->name('create');
+        Route::get('show/{underReview}', [UnderReviewController::class, 'show'])->name('show');
+        Route::post('store', [UnderReviewController::class, 'store'])->name('store');
+        Route::get('edit/{underReview}', [UnderReviewController::class, 'edit'])->name('edit');
+        Route::put('update/{underReview}', [UnderReviewController::class, 'update'])->name('update');
+        Route::get('destroy/{underReview}', [UnderReviewController::class, 'destroy'])->name('destroy');
+    });
+
     // Visits routes
     Route::prefix('visits')->name('visits.')->group(function () {
         Route::get('index', [VisitController::class, 'index'])->name('index');
@@ -221,11 +241,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('index', [AppointmentController::class, 'index'])->name('index');
         Route::get('doctorAppointments', [AppointmentController::class, 'doctorAppointments'])->name('doctorAppointments');
+        Route::get('completedAppointments', [AppointmentController::class, 'completedAppointments'])->name('completedAppointments');
         Route::get('create', [AppointmentController::class, 'create'])->name('create');
         Route::get('show/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::post('store', [AppointmentController::class, 'store'])->name('store');
         Route::get('edit/{appointment}', [AppointmentController::class, 'edit'])->name('edit');
         Route::put('update/{appointment}', [AppointmentController::class, 'update'])->name('update');
+        Route::put('changeStatus/{appointment}', [AppointmentController::class, 'changeStatus'])->name('changeStatus');
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
     });
 
@@ -255,6 +277,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/issue/{prescription}', [PrescriptionController::class, 'issue'])->name('issue');
         Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);
+        Route::put('changeStatus/{prescription}', [PrescriptionController::class, 'changeStatus'])->name('changeStatus');
 
     });
 
@@ -281,6 +304,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
     });
 
+    // Complaints routes
+    Route::prefix('complaints')->name('complaints.')->group(function () {
+        Route::get('index', [PatientComplaintController::class, 'index'])->name('index');
+        Route::get('create', [PatientComplaintController::class, 'create'])->name('create');
+        Route::get('show/{complaint}', [PatientComplaintController::class, 'show'])->name('show');
+        Route::post('store', [PatientComplaintController::class, 'store'])->name('store');
+        Route::get('edit/{complaint}', [PatientComplaintController::class, 'edit'])->name('edit');
+        Route::put('update/{complaint}', [PatientComplaintController::class, 'update'])->name('update');
+        Route::get('destroy/{complaint}', [PatientComplaintController::class, 'destroy'])->name('destroy');
+    });
+
     // Laboratory test type sections routes
     Route::prefix('lab_type_sections')->name('lab_type_sections.')->group(function () {
         Route::get('index', [LabTypeSectionController::class, 'index'])->name('index');
@@ -301,6 +335,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('lab_items')->name('lab_items.')->group(function () {
+        Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
+
     });
 
     // Branches routes
@@ -336,26 +374,74 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{comment}', [ConsultationCommentController::class, 'destroy'])->name('destroy');
     });
 
-    // Operations routes
+    // Operation types routes
     Route::prefix('operation_types')->name('operation_types.')->group(function () {
         Route::get('index', [OperationTypeController::class, 'index'])->name('index');
         Route::get('create', [OperationTypeController::class, 'create'])->name('create');
-        Route::get('show/{consultation}', [OperationTypeController::class, 'show'])->name('show');
+        Route::get('show/{operationType}', [OperationTypeController::class, 'show'])->name('show');
         Route::post('store', [OperationTypeController::class, 'store'])->name('store');
-        Route::get('edit/{consultation}', [OperationTypeController::class, 'edit'])->name('edit');
-        Route::put('update/{consultation}', [OperationTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{consultation}', [OperationTypeController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{operationType}', [OperationTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{operationType}', [OperationTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Operations routes
+    Route::prefix('operations')->name('operations.')->group(function () {
+        Route::get('new', [OperationController::class, 'new'])->name('new');
+        Route::get('completed', [OperationController::class, 'completed'])->name('completed');
+        Route::get('create', [OperationController::class, 'create'])->name('create');
+        Route::get('show/{operation}', [OperationController::class, 'show'])->name('show');
+        Route::post('store', [OperationController::class, 'store'])->name('store');
+        Route::get('edit/{operation}', [OperationController::class, 'edit'])->name('edit');
+        Route::put('update/{operation}', [OperationController::class, 'update'])->name('update');
+        Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
+    });
+
+    // ICUs routes
+    Route::prefix('icus')->name('icus.')->group(function () {
+        Route::get('index', [ICUController::class, 'index'])->name('index');
+        Route::get('create', [ICUController::class, 'create'])->name('create');
+        Route::get('show/{icu}', [ICUController::class, 'show'])->name('show');
+        Route::post('store', [ICUController::class, 'store'])->name('store');
+        Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
+        Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
+        Route::get('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
     });
 
     // Anesthesia routes
     Route::prefix('anesthesias')->name('anesthesias.')->group(function () {
         Route::get('index', [AnesthesiaController::class, 'index'])->name('index');
+        Route::get('new', [AnesthesiaController::class, 'new'])->name('new');
+        Route::get('approved', [AnesthesiaController::class, 'approved'])->name('approved');
+        Route::get('rejected', [AnesthesiaController::class, 'rejected'])->name('rejected');
         Route::get('create', [AnesthesiaController::class, 'create'])->name('create');
         Route::get('show/{anesthesia}', [AnesthesiaController::class, 'show'])->name('show');
         Route::post('store', [AnesthesiaController::class, 'store'])->name('store');
         Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
         Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
+    });
+
+    // Medicine types routes
+    Route::prefix('medicine_types')->name('medicine_types.')->group(function () {
+        Route::get('index', [MedicineTypeController::class, 'index'])->name('index');
+        Route::get('create', [MedicineTypeController::class, 'create'])->name('create');
+        Route::get('show/{medicineType}', [MedicineTypeController::class, 'show'])->name('show');
+        Route::post('store', [MedicineTypeController::class, 'store'])->name('store');
+        Route::get('edit/{medicineType}', [MedicineTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Medicines routes
+    Route::prefix('medicines')->name('medicines.')->group(function () {
+        Route::get('index', [MedicineController::class, 'index'])->name('index');
+        Route::get('create', [MedicineController::class, 'create'])->name('create');
+        Route::get('show/{medicine}', [MedicineController::class, 'show'])->name('show');
+        Route::post('store', [MedicineController::class, 'store'])->name('store');
+        Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
+        Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
+        Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes
@@ -371,6 +457,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/scan-qr-code-page', [PatientController::class, 'scanCode'])->name('scanCode');
     Route::get('/get_districts/{provinceId}', [HomeController::class, 'getRelatedDistricts']);
     Route::get('/get_departments/{branchId}', [HomeController::class, 'getRelatedDepartments']);
+    Route::get('/get_related_beds/{roomId}', [HomeController::class, 'getRelatedBeds']);
     Route::get('/get_sections/{depId}', [HomeController::class, 'getRelatedSections']);
     Route::get('/scan-qr-code-prescription', [PrescriptionController::class, 'scanQrCode'])->name('prescriptions.scanQRCode');
     Route::get('/scan-qr-code-page-prescription', [PrescriptionController::class, 'scanCode'])->name('prescriptions.scanCode');

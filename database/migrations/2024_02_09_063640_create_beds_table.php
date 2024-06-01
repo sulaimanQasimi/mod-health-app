@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('number');
             $table->unsignedBigInteger('room_id');
+            $table->tinyInteger('is_occupied')->default(false);
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->softDeletes();
             $table->timestamps();

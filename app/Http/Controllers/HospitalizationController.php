@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewHospitalizationNotification;
+use App\Models\Bed;
 use App\Models\Hospitalization;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\OperationType;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HospitalizationController extends Controller
@@ -42,9 +45,18 @@ class HospitalizationController extends Controller
             'is_discharged' => 'nullable',
             'discharge_remark' => 'nullable',
             'branch_id' => 'required',
+            'discharge_status'=> 'nullable'
         ]);
 
-        Hospitalization::create($data);
+        $hospitalization = Hospitalization::create($data);
+
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => true]);
+        $occupied_bed->save();
+
+        SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+
 
         return redirect()->back()->with('success', 'Hospitalization created successfully.');
     }
@@ -58,8 +70,8 @@ class HospitalizationController extends Controller
         $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
-
-        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes'));
+        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes','operation_doctors'));
     }
 
     /**
@@ -78,9 +90,14 @@ class HospitalizationController extends Controller
         $data = $request->validate([
             'is_discharged' => 'required',
             'discharge_remark' => 'required',
+            'discharge_status' => 'required'
         ]);
 
         $hospitalization->update($data);
+
+        $occupied_bed = Bed::findOrFail($hospitalization->bed_id);
+        $occupied_bed->update(['is_occupied' => false]);
+        $occupied_bed->save();
 
         return redirect()->route('visits.index')->with('success', 'Hospitalization updated successfully.');
     }

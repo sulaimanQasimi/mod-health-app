@@ -16,23 +16,28 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('branch_id');
+            $table->tinyInteger('is_completed')->default('0');
+            $table->string('status_remark',192)->nullable();
+            $table->string('refferal_remarks',192)->nullable();
             $table->string('date');
             $table->string('time');
             $table->softDeletes();
+
+            $table->foreign('patient_id')
+                ->references('id')
+                ->on('patients');
+            $table->foreign('branch_id')
+                ->references('id')
+                ->on('branches');
+            $table->foreign('doctor_id')
+                ->references('id')
+                ->on('users');
+
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
 
-            $table->foreign('patient_id')
-                  ->references('id')
-                  ->on('patients');
-            $table->foreign('branch_id')
-                  ->references('id')
-                  ->on('branches');
-            $table->foreign('doctor_id')
-                ->references('id')
-                ->on('users');
         });
     }
 

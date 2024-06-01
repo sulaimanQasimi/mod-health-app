@@ -5,13 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Hospitalization extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark'];
+    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark','discharge_status'];
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $user = Auth::user();
+            $model->created_by = $user->id ?? 0;
+        });
+
+        self::updating(function ($model) {
+            $user = Auth::user();
+            $model->updated_by = $user->id ?? 0;
+        });
+
+        self::deleting(function ($model) {
+            $user = Auth::user();
+            $model->deleted_by = $user->id ?? 0;
+            $model->save();
+        });
+    }
 
     public function room()
     {
@@ -45,7 +66,22 @@ class Hospitalization extends Model
 
     public function labs()
     {
-        return $this->hasMany(Lab::class);
+        return $this->hasMany(LabItem::class);
+    }
+
+    public function icu()
+    {
+        return $this->hasMany(ICU::class);
+    }
+
+    public function anesthesias()
+    {
+        return $this->hasMany(Anesthesia::class);
+    }
+
+    public function complaints()
+    {
+        return $this->hasMany(PatientComplaint::class);
     }
 
 

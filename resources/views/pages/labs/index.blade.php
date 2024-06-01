@@ -3,6 +3,9 @@
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="content-wrapper">
+        @if (Session::has('success') || Session::has('error'))
+                @include('components.toast')
+            @endif
         <div class="col-xl">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -37,6 +40,7 @@
                 <td>
                     {{-- <a href="{{ route('labs.show', $lab) }}"><i class="bx bx-show-alt"></i></a> --}}
                     <a href="{{ route('lab_tests.edit', $lab) }}"><i class="bx bx-message-square-edit"></i></a>
+                    {{-- <a href="{{ route('lab_tests.show', $lab) }}"><i class="bx bx-message-square-edit"></i></a> --}}
                     {{-- <form action="{{ route('doctors.destroy', $doctor) }}" method="POST">
                         @csrf
                         @method('DELETE')

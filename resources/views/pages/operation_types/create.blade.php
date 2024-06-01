@@ -3,10 +3,13 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
+            @if (Session::has('success') || Session::has('error'))
+                @include('components.toast')
+            @endif
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.create_lab_type') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.create_operation_type') }}</h5>
                     </div>
 
                     <div class="card-body">

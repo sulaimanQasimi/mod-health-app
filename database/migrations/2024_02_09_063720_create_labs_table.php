@@ -19,8 +19,11 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('hospitalization_id')->nullable();
+            $table->unsignedBigInteger('under_review_id')->nullable();
+            $table->unsignedBigInteger('i_c_u_id')->nullable();
             $table->unsignedBigInteger('lab_type_id');
             $table->unsignedBigInteger('patient_id');
+            $table->unsignedBigInteger('lab_type_section_id');
             $table->unsignedBigInteger('doctor_id');
 
             $table->foreign('branch_id')
@@ -30,6 +33,14 @@ return new class extends Migration
             $table->foreign('hospitalization_id')
                   ->references('id')
                   ->on('hospitalizations');
+
+            $table->foreign('under_review_id')
+                  ->references('id')
+                  ->on('under_reviews');
+
+            $table->foreign('i_c_u_id')
+                  ->references('id')
+                  ->on('i_c_u_s');
 
             $table->foreign('lab_type_id')
                   ->references('id')
@@ -47,6 +58,13 @@ return new class extends Migration
                   ->references('id')
                   ->on('appointments');
 
+            $table->foreign('lab_type_section_id')
+                  ->references('id')
+                  ->on('lab_type_sections');
+
+            $table->integer('created_by');
+            $table->integer('deleted_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

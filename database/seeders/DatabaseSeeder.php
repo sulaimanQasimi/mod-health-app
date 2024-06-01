@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
             ProvinceSeeder::class,
             DistrictSeeder::class,
             BranchSeeder::class,
-            UserSeeder::class,
             DepartmentSeeder::class,
             SectionSeeder::class,
+            UserSeeder::class,
             DoctorSeeder::class,
             RecipientSeeder::class,
             LabTypeSectionSeeder::class,
@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
             RelationSeeder::class,
             PatientSeeder::class,
             OperationTypeSeeder::class,
+            RoleSeeder::class,
+            ModalHasRoleSeeder::class,
+            PermissionSeeder::class,
+            RoleHasPermissionSeeder::class,
 
 
 

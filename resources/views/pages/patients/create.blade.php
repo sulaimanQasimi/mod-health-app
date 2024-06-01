@@ -3,6 +3,9 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
+            @if (Session::has('success') || Session::has('error'))
+                @include('components.toast')
+            @endif
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -126,6 +129,29 @@
                                     </div>
                                 </div>
                                 <input type="hidden" name="branch_id" value="{{ Auth::user()->branch_id }}">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="gender">{{ localize('global.gender') }}</label>
+                                        <select class="form-control select2" name="gender" id="gender">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                                <option value="0">{{localize('global.male')}}</option>
+                                                <option value="1">{{localize('global.female')}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="job_type">{{ localize('global.job_type') }}</label>
+                                        <select class="form-control select2" name="job_type" id="job_type">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="civilian">{{localize('global.civilian')}}</option>
+                                                <option value="militant">{{localize('global.militant')}}</option>
+                                                <option value="retired">{{localize('global.retired')}}</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">{{ localize('global.create') }}</button>
                             <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">

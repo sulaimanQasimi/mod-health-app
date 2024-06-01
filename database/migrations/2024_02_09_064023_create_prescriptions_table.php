@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('amount', 191);
             $table->string('type', 191);
             $table->string('is_delivered');
+            $table->tinyInteger('is_completed')->default('0');
 
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
@@ -41,8 +42,10 @@ return new class extends Migration
                   ->references('id')
                   ->on('appointments');
 
+            $table->integer('created_by');
+            $table->integer('deleted_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->softDeletes();
-
             $table->timestamps();
         });
     }

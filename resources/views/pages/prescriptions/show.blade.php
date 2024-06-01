@@ -3,6 +3,9 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
+            @if (Session::has('success') || Session::has('error'))
+                @include('components.toast')
+            @endif
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -68,7 +71,21 @@
                                 @endforeach
                             </tbody>
                         </table>
-
+                        @if($prescription->is_completed == '0')
+                        <div class="d-flex justify-content-center text-center mt-2">
+                            <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="is_completed" value="1">
+                                <button type="submit" class="btn btn-success">
+                                    <span><i class="bx bx-check-shield"></i></span>
+                                </button>
+                            </form>
+                        </div>
+                        @endif
+                        </form>
+                        </button>
+                    </div>
                     </div>
 
 

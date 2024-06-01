@@ -20,14 +20,25 @@ return new class extends Migration
             $table->string('position_on_bed',192)->nullable();
             $table->string('estimated_blood_waste',192)->nullable();
             $table->string('other_problems',192)->nullable();
-            $table->tinyInteger('status')->default('0');
+            $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
+            $table->tinyInteger('operation_result')->default('0');
+            $table->tinyInteger('is_operation_done')->default('0');
             $table->text('anesthesia_log_reply',2000)->nullable();
+            $table->text('anesthesia_plan',2000)->nullable();
+            $table->text('operation_remark',2000)->nullable();
 
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('doctor_id');
+            $table->text('operation_assistants_id')->nullable();
             $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('operation_type_id');
+            $table->unsignedBigInteger('operation_surgion_id')->nullable();
+            $table->unsignedBigInteger('operation_anesthesia_log_id')->nullable();
+            $table->unsignedBigInteger('operation_anesthesist_id')->nullable();
+            $table->unsignedBigInteger('operation_scrub_nurse_id')->nullable();
+            $table->unsignedBigInteger('operation_circulation_nurse_id')->nullable();
+            $table->unsignedBigInteger('operation_type_id')->nullable();
+            $table->unsignedBigInteger('hospitalization_id')->nullable();
 
             $table->foreign('branch_id')
             ->references('id')
@@ -38,14 +49,34 @@ return new class extends Migration
             $table->foreign('doctor_id')
             ->references('id')
             ->on('users');
+            $table->foreign('operation_surgion_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_anesthesia_log_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_anesthesist_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_scrub_nurse_id')
+            ->references('id')
+            ->on('users');
+            $table->foreign('operation_circulation_nurse_id')
+            ->references('id')
+            ->on('users');
             $table->foreign('patient_id')
             ->references('id')
             ->on('patients');
             $table->foreign('operation_type_id')
             ->references('id')
             ->on('operation_types');
+            $table->foreign('hospitalization_id')
+            ->references('id')
+            ->on('hospitalizations');
 
-
+            $table->integer('created_by');
+            $table->integer('deleted_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

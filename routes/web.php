@@ -290,7 +290,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{lab}', [LabController::class, 'edit'])->name('edit');
         Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
         Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
-        Route::get('/print-card/{appointment}', [LabController::class, 'printCard'])->name('print-card');
+        Route::get('/print-card/{lab}', [LabController::class, 'printCard'])->name('print-card');
     });
 
     // Relations routes
@@ -336,6 +336,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
+    
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
 

@@ -696,29 +696,8 @@
                                 tabindex="-1" aria-labelledby="showLabsItemModalLabel"
                                 aria-hidden="true">
                                 <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="showLabsItemModalLabel">
-                                                {{ localize('global.show_prescription_details') }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body" id="lab_items_table">
-                                            
-                                            
-                                        </div>
-                                        <div class="modal-footer">
-                                            @if ($appointment->is_completed == 0)
-                                                <div class="d-flex justify-content-center mt-4">
-                                                    <form
-                                                        action="{{ route('prescriptions.print-card', ['appointment' => $appointment->id]) }}"
-                                                        method="GET" target="_blank">
-                                                        <button class="btn btn-primary" type="submit"><span
-                                                                class="bx bx-printer me-1"></span>{{ localize('global.print_prescription') }}</button>
-                                                    </form>
-                                                </div>
-                                            @endif
-                                        </div>
+                                    <div class="modal-content" id="lab_items_table">
+                                       
     
     
                                     </div>
@@ -728,7 +707,7 @@
 
 
 
-                            @if ($appointment->is_completed == 0)
+                            {{-- @if ($appointment->is_completed == 0)
                                 <div class="d-flex justify-content-center mt-4">
                                     <form
                                         action="{{ route('lab_tests.print-card', ['appointment' => $appointment->id]) }}"
@@ -737,7 +716,7 @@
                                                 class="bx bx-printer me-1"></span>{{ localize('global.print_test_ticket') }}</button>
                                     </form>
                                 </div>
-                            @endif
+                            @endif --}}
 
                             <div class="col-md-12 d-flex justify-content-center">
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -2192,7 +2171,7 @@
             dataType: "html",
             success: function(data) {
                 $('#lab_items_table').html(data);
-                console.log(data);
+
             },
             error: function(xhr, status, error) {
             // Handle the error response

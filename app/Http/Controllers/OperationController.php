@@ -18,7 +18,7 @@ class OperationController extends Controller
     public function new()
     {
 
-        $operations = Anesthesia::where('status', 'approved')->where('is_operation_done', '0')->latest()->paginate(15);
+        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_done', '0')->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
     }
@@ -52,7 +52,8 @@ class OperationController extends Controller
      */
     public function show(Anesthesia $operation)
     {
-        return view('pages.operations.show',compact('operation'));
+        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        return view('pages.operations.show',compact('operation','operation_doctors'));
     }
 
     /**
@@ -69,9 +70,16 @@ class OperationController extends Controller
     public function update(Request $request, Anesthesia $operation)
     {
         $data = $request->validate([
-            'is_operation_done' => 'required',
-            'operation_remark' => 'required',
-            'operation_result' => 'required',
+            'is_operation_done' => 'nullable',
+            'is_operation_approved' => 'nullable',
+            'operation_remark' => 'nullable',
+            'operation_result' => 'nullable',
+            'operation_scrub_nurse_id' => 'nullable',
+            'operation_circulation_nurse_id' => 'nullable',
+            'date' => 'nullable',
+            'time' => 'nullable',
+            'operation_expense_remarks' => 'nullable'
+
         ]);
 
         $operation->update($data);

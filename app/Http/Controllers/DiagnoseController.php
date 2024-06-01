@@ -36,6 +36,12 @@ class DiagnoseController extends Controller
             'patient_id' => 'required',
             'appointment_id' => 'required',
             'type' => 'required',
+            'bp' => 'nullable',
+            'pr' => 'nullable',
+            'weight' => 'nullable',
+            't' => 'nullable',
+            'spo2' => 'nullable',
+            'pain' => 'nullable',
         ]);
 
         Diagnose::create($data);

@@ -12,7 +12,8 @@ class Lab extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = [ 'branch_id','result','result_file','appointment_id','hospitalization_id','lab_type_id','patient_id','doctor_id','lab_type_section_id','status'];
+    protected $fillable = [ 'branch_id','result','result_file','appointment_id','hospitalization_id','lab_type_id','patient_id','doctor_id','lab_type_section_id','status','i_c_u_id','under_review_id'];
+
 
     public static function boot()
     {

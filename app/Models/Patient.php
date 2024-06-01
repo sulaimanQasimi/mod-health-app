@@ -80,4 +80,9 @@ class Patient extends Model
         return $this->hasMany(Consultation::class);
     }
 
+    public function hospitalizations()
+    {
+        return $this->hasMany(Hospitalization::class);
+    }
+
 }

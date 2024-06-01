@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('description');
             $table->tinyInteger('type');
+            $table->string('bp')->nullable();
+            $table->string('pr')->nullable();
+            $table->string('weight')->nullable();
+            $table->string('t')->nullable();
+            $table->string('spo2')->nullable();
+            $table->string('pain')->nullable();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('appointment_id');
             $table->softDeletes();

@@ -34,6 +34,7 @@ use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\PatientComplaintController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
@@ -301,6 +302,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{relation}', [RelationController::class, 'edit'])->name('edit');
         Route::put('update/{relation}', [RelationController::class, 'update'])->name('update');
         Route::get('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Complaints routes
+    Route::prefix('complaints')->name('complaints.')->group(function () {
+        Route::get('index', [PatientComplaintController::class, 'index'])->name('index');
+        Route::get('create', [PatientComplaintController::class, 'create'])->name('create');
+        Route::get('show/{complaint}', [PatientComplaintController::class, 'show'])->name('show');
+        Route::post('store', [PatientComplaintController::class, 'store'])->name('store');
+        Route::get('edit/{complaint}', [PatientComplaintController::class, 'edit'])->name('edit');
+        Route::put('update/{complaint}', [PatientComplaintController::class, 'update'])->name('update');
+        Route::get('destroy/{complaint}', [PatientComplaintController::class, 'destroy'])->name('destroy');
     });
 
     // Laboratory test type sections routes

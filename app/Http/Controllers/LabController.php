@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewLabNotification;
 use App\Models\Appointment;
 use App\Models\Lab;
+use App\Models\LabItem;
 use Illuminate\Http\Request;
 
 class LabController extends Controller
@@ -31,6 +32,7 @@ class LabController extends Controller
      */
     public function store(Request $request)
 {
+    // return $request->doctor_id;
     $data = $request->validate([
         'lab_type_id' => 'required|array',
         'appointment_id' => 'required',
@@ -46,9 +48,21 @@ class LabController extends Controller
     $labTypeIds = $data['lab_type_id'];
     unset($data['lab_type_id']);
 
+    $lab_item_data = [
+        'branch_id' => $request->branch_id,
+        'appointment_id' => $request->appointment_id,
+        'hospitalization_id' => $request->hospitalization_id,
+        'lab_type_id' => $labTypeIds[0],
+        'patient_id' => $request->patient_id,
+        'doctor_id' => $request->doctor_id,
+        'lab_type_section_id' => $request->lab_type_section,
+    ];
+    $lab = Lab::create($lab_item_data);
+
+    $data['lab_id'] = $lab->id;
     foreach ($labTypeIds as $labTypeId) {
         $labData = array_merge($data, ['lab_type_id' => $labTypeId]);
-        $lab = Lab::create($labData);
+        $lab_item = LabItem::create($labData);
     }
 
     SendNewLabNotification::dispatch($lab->created_by, $lab->id);
@@ -110,11 +124,11 @@ class LabController extends Controller
 
     public function printCard($lab)
     {
-        
+
         $lab = Lab::findOrFail($lab);
 
         $patient = $lab->patient;
-        
+
         return view('pages.labs.print_card', compact('patient','lab'));
     }
 }

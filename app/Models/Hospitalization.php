@@ -12,7 +12,7 @@ class Hospitalization extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark','discharge_status'];
+    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','food_type_id','is_discharged','branch_id','discharge_remark','discharge_status'];
 
     public static function boot()
     {

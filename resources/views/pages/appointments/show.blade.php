@@ -1318,6 +1318,19 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
+
+                                                <label
+                                                    for="food_type_id{{ $appointment->id }}">{{ localize('global.food_type') }}</label>
+                                                <select class="form-control select2" name="food_type_id[]" id="food_type_id" multiple>
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($foodTypes as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                     </div>
                                     <div class="modal-footer">

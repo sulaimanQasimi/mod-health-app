@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Diagnose;
 use App\Models\Doctor;
+use App\Models\FoodType;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Medicine;
@@ -136,8 +137,9 @@ class AppointmentController extends Controller
         $previousDiagnoses = $patient->diagnoses;
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
+        $foodTypes = FoodType::all();
 
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors','departments','medicineTypes','medicines'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors','departments','medicineTypes','medicines','foodTypes'));
     }
 
     public function destroy(Appointment $appointment)

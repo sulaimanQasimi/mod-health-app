@@ -24,6 +24,7 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches');
             $table->unsignedBigInteger('bed_id');
             $table->foreign('bed_id')->references('id')->on('beds');
+            $table->text('food_type_id')->nullable();
             $table->unsignedBigInteger('appointment_id');
             $table->foreign('appointment_id')->references('id')->on('appointments');
             $table->unsignedBigInteger('doctor_id');

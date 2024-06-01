@@ -697,9 +697,9 @@
                                 aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content" id="lab_items_table">
-                                       
-    
-    
+
+
+
                                     </div>
                                 </div>
                             </div>
@@ -1162,6 +1162,7 @@
                                         <th>{{ localize('global.remarks') }}</th>
                                         <th>{{ localize('global.room') }}</th>
                                         <th>{{ localize('global.bed') }}</th>
+                                        <th>{{ localize('global.status') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -1176,8 +1177,17 @@
                                             <td>
                                                 {{ $underReview->room->name }}
                                             </td>
+
+
                                             <td>
                                                 {{ $underReview->bed->number }}
+                                            </td>
+                                            <td>
+                                                @if ($underReview->is_discharged == '0')
+                                                    <span class="bx bx-x-circle text-danger">{{localize('global.under_review')}}</span>
+                                                @else
+                                                    <span class="bx bx-check-circle text-success">{{localize('global.discharged')}}</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 <a href="{{ route('under_reviews.edit', $underReview->id) }}"><span><i
@@ -1514,7 +1524,7 @@
                                                 </div>
 
 
-                                                
+
 
 
                                                 <div class="form-group">
@@ -1927,7 +1937,7 @@
             // Append the new row div to the prescription input container
             prescriptionContainer.appendChild(newRow);
 
-          
+
             // $('select').select2();
             $('select').select2({
                 dropdownParent: $('#createPrescriptionModal1')

@@ -237,7 +237,7 @@
                                             <div class="modal-header">
                                                 <h5 class="modal-title"
                                                     id="createOperationModalLabel{{ $operation->id }}">
-                                                    {{ localize('global.refere_to_operation') }}</h5>
+                                                    {{ localize('global.complete_operation') }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>

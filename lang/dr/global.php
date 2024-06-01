@@ -679,7 +679,13 @@ return [
     'free_beds' => 'بستر های خالی',
     'occupied_beds' => 'بستر های اشغال شده',
     'lab_items' => 'تست های انتخاب شده',
-    'tests_list' => 'لست تست ها'
+    'tests_list' => 'لست تست ها',
+    'create_complaint' => 'ثبت شکایت',
+    'add_complaint' => 'ثبت شکایت جدید',
+    'not_referred_to_complaint' => 'شکایت وجود ندارد',
+    'previous_labs' => 'معاینات قبلی',
+    'operation_approval' => 'تاییدی عملیات',
+    ''
 
 
 ];

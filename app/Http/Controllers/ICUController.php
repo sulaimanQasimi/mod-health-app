@@ -17,7 +17,7 @@ class ICUController extends Controller
     {
         if ($request->ajax()) {
             $icus = ICU::where('branch_id',auth()->user()->branch_id)->with('patient')->get();
-    
+
                 if ($icus) {
                     return response()->json([
                         'data' => $icus,
@@ -30,7 +30,7 @@ class ICUController extends Controller
                     ]);
                 }
         }
-    
+
         $icus = ICU::where('branch_id',auth()->user()->branch_id)->with(['patient'])->get();
         return view('pages.icus.index', compact('icus'));
     }
@@ -58,6 +58,8 @@ class ICUController extends Controller
             'description' => 'required',
             'operation_id' => 'nullable',
         ]);
+
+        return $validatedData;
 
         // Create a new appointment
         $icu = ICU::create($validatedData);

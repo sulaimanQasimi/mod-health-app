@@ -81,7 +81,7 @@
                                                 <span
                                                       class="text-muted">{{ \App\Models\User::find($notification->data['message'])->name }}</span>
                                                 <p class="mb-0">
-                                                    {{ $notification->data['message'] }}
+                                                    {{ preg_replace('/^\d+/','', $notification->data['message']) }}
                                                 </p>
                                                 @php
                                                     $date = \Carbon\Carbon::parse($notification->created_at);

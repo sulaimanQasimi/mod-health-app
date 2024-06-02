@@ -279,11 +279,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
-                        
+
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createLabModal{{ $icu->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
-                        
+
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createLabModal{{ $icu->id }}" tabindex="-1"
                             aria-labelledby="createLabModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -301,7 +301,7 @@
                                             <input type="hidden" id="patient_id{{ $icu->patient_id }}"
                                                 name="patient_id" value="{{ $icu->patient_id }}">
                                             <input type="hidden" id="appointment_id{{ $icu->id }}"
-                                                name="appointment_id" value="{{ $icu->id }}">
+                                                name="appointment_id" value="{{ $icu->appointment->id }}">
                                             <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
                                                 value="{{ $icu->doctor->id }}">
                                             <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"

@@ -52,6 +52,8 @@ class LabController extends Controller
         'branch_id' => $request->branch_id,
         'appointment_id' => $request->appointment_id,
         'hospitalization_id' => $request->hospitalization_id,
+        'under_review_id' => $request->under_review_id,
+        'i_c_u_id' => $request->i_c_u_id,
         'lab_type_id' => $labTypeIds[0],
         'patient_id' => $request->patient_id,
         'doctor_id' => $request->doctor_id,

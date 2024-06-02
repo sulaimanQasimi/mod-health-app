@@ -78,4 +78,10 @@ class Anesthesia extends Model
         return $this->hasMany(UnderReview::class, 'operation_id', 'id');
     }
 
+    public function icu()
+    {
+        return $this->hasMany(ICU::class, 'operation_id', 'id');
+    }
+
+
 }

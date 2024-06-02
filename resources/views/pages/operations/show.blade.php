@@ -391,7 +391,7 @@
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createUnderReviewModal{{ $operation->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
-                            @endif
+                            
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createUnderReviewModal{{ $operation->id }}" tabindex="-1"
                                 aria-labelledby="createUnderReviewModalLabel{{ $operation->id }}" aria-hidden="true">
@@ -536,6 +536,106 @@
                                     </tbody>
                                 </table>
                             </div>
+                            @endif
+                            {{-- icu starts here  --}}
+                            @if ($operation->is_operation_done == 1)
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                            class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
+                    
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#createICUModal{{ $operation->id }}"><span><i
+                                    class="bx bx-plus"></i></span></button>
+                    
+                    <!-- Create  Lab Modal -->
+                    <div class="modal fade" id="createICUModal{{ $operation->id }}" tabindex="-1"
+                        aria-labelledby="createICUModalLabel{{ $operation->id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="createICUModalLabel{{ $operation->id }}">
+                                        {{ localize('global.refere_to_icu') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('icus.store') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" id="patient_id{{ $operation->patient_id }}"
+                                            name="patient_id" value="{{ $operation->patient_id }}">
+                                        <input type="hidden" id="appointment_id{{ $operation->id }}"
+                                            name="appointment_id" value="{{ $operation->appointment->id }}">
+                                            <input type="hidden" id="operation_id{{ $operation->appointment->id }}"
+                                                    name="operation_id" value="{{ $operation->id }}">
+                                        <input type="hidden" id="doctor_id{{ $operation->id }}" name="doctor_id"
+                                            value="{{ auth()->user()->id }}">
+                                        <input type="hidden" id="branch_id{{ $operation->id }}" name="branch_id"
+                                            value="{{ auth()->user()->branch_id }}">
+
+                                        <div class="form-group">
+
+                                            <div class="form-group">
+                                                <label
+                                                    for="description{{ $operation->id }}">{{ localize('global.description') }}</label>
+                                                <textarea class="form-control" id="description{{ $operation->id }}" name="description" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                    <button type="submit"
+                                        class="btn btn-primary">{{ localize('global.save') }}</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Create Lab Modal -->
+                    <div class="col-md-12 mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.patient_name') }}</th>
+                                    <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.date') }}</th>
+                                    <th>{{ localize('global.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($operation->icu as $icu)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>
+                                            {{ $icu->patient->name }}
+                                        </td>
+                                        <td>
+                                            {{ $icu->description }}
+                                        </td>
+                                        <td>
+                                            {{ $icu->created_at }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('icus.edit', $icu->id) }}"><span><i
+                                                        class="bx bx-edit"></i></span></a>
+                                            <a href="{{ route('icus.destroy', $icu->id) }}"><span><i
+                                                        class="bx bx-trash text-danger"></i></span></a>
+
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <div class="container">
+                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                            <div class=" badge bg-label-danger mt-4">
+                                                {{ localize('global.not_referred_to_icu') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
                         </div>
 
 

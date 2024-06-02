@@ -30,7 +30,8 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->foreign('patient_id')->references('id')->on('patients');
             $table->unsignedBigInteger('operation_id')->nullable();
-            $table->foreign('operation_id')->references('id')->on('operations');
+            $table->foreign('operation_id')->references('id')->on('anesthesias');
+
 
 
             

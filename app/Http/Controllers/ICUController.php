@@ -56,6 +56,7 @@ class ICUController extends Controller
             'appointment_id' => 'nullable',
             'hospitalization_id' => 'nullable',
             'description' => 'required',
+            'operation_id' => 'nullable',
         ]);
 
         // Create a new appointment

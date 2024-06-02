@@ -31,8 +31,8 @@
                                         <td>{{ $operation->patient->name }}</td>
                                         <td>{{ $operation->operationType->name }}</td>
                                         <td>
-                                            @if ($operation->status == '0')
-                                                <span class="bx bx-x-circle text-danger"></span>
+                                            @if ($operation->is_operation_approved == 0)
+                                                <span class="bx bx-plus-circle text-danger"></span>
                                             @else
                                                 <span class="bx bx-check-circle text-success"></span>
                                             @endif

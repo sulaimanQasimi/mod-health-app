@@ -694,7 +694,15 @@ return [
     'companion_card_type' => 'نوعیت کارت',
     'food_type' => 'نوعیت غدای بستر',
     'add_remarks' => 'اضافه نمودن ملاحظات مصارف عملیات',
-    'operation_expense_remarks' => 'ملاحظات مصارف عملیات'
+    'operation_expense_remarks' => 'ملاحظات مصارف عملیات',
+    'created_new_anesthesia' => 'انستیزی جدید را ثبت نمود',
+    'created_new_appointment' => 'ملاقات جدید را ثبت نمود',
+    'created_new_consultation' => 'مریض را جهت مشوره به شما معرفی نمود',
+    'created_new_hospitalization' => 'مریض جدید را بستر نمود',
+    'created_new_icu' => 'مریض را به ICU معرفی کرد',
+    'created_new_lab' => 'معاینات جدید را ثبت نمود',
+    'approved_new_operation' => 'عملیات جدید را تائید نمود',
+    'created_new_prescription' => 'نسخه جدید را ثبت نمود',
 
 
 ];

@@ -79,7 +79,7 @@
                                               </div>
                                             <div class="flex-grow-1">
                                                 <span
-                                                      class="text-muted">{{ \App\Models\User::find($notification->data['message'])->name_en }}</span>
+                                                      class="text-muted">{{ \App\Models\User::find($notification->data['message'])->name }}</span>
                                                 <p class="mb-0">
                                                     {{ $notification->data['message'] }}
                                                 </p>
@@ -87,7 +87,7 @@
                                                     $date = \Carbon\Carbon::parse($notification->created_at);
                                                     $time = $date->diffForHumans(\Carbon\Carbon::now());
                                                 @endphp
-                                                <small class="text-muted">{{ $time }}</small>
+                                                <small class="text-muted" dir="ltr">{{ $time }}</small>
                                             </div>
                                         </div>
                                     </a>

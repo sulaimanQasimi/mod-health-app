@@ -68,4 +68,14 @@ class Anesthesia extends Model
         return $this->belongsTo(User::class, 'operation_circulation_nurse_id', 'id');
     }
 
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
+    public function under_reviews()
+    {
+        return $this->hasMany(UnderReview::class, 'operation_id', 'id');
+    }
+
 }

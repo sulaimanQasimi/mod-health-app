@@ -29,7 +29,11 @@ return new class extends Migration
             $table->foreign('doctor_id')->references('id')->on('users');
             $table->unsignedBigInteger('patient_id');
             $table->foreign('patient_id')->references('id')->on('patients');
+            $table->unsignedBigInteger('operation_id')->nullable();
+            $table->foreign('operation_id')->references('id')->on('operations');
 
+
+            
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();

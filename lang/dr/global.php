@@ -692,7 +692,9 @@ return [
     'companion_father_name' => 'نام پدر',
     'relation_to_patient' => 'ارتباط با مریض',
     'companion_card_type' => 'نوعیت کارت',
-    'food_type' => 'نوعیت غدای بستر'
+    'food_type' => 'نوعیت غدای بستر',
+    'add_remarks' => 'اضافه نمودن ملاحظات مصارف عملیات',
+    'operation_expense_remarks' => 'ملاحظات مصارف عملیات'
 
 
 ];

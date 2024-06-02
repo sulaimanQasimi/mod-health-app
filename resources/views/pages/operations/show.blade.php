@@ -302,7 +302,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createOperationRemarksLabel{{ $operation->id }}">
-                                                {{ localize('global.refere_patient_to_another_doctor') }}</h5>
+                                                {{ localize('global.add_remarks') }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -333,6 +333,8 @@
                                     </div>
                                 </div>
                             </div>
+
+
                             <div class="modal fade" id="editOperationRemarks{{ $operation->id }}" tabindex="-1"
                                 aria-labelledby="editOperationRemarksLabel{{ $operation->id }}" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -370,20 +372,173 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="container">
-                            <div class="col-md-12">
-                                <div class="row mt-2">
-                                    <div class="col-md-12">
-                                        @if (isset($operation->operation_expense_remarks))
-                                            <i class="bx bx-check-circle text-success"></i>
-                                            <span class=" p-1 m-1">{{ $operation->operation_expense_remarks }}</span>
-                                        @endif
+                            <div class="container">
+                                <div class="col-md-12">
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            @if (isset($operation->operation_expense_remarks))
+                                                <i class="bx bx-check-circle text-success"></i>
+                                                <span class=" p-1 m-1">{{ $operation->operation_expense_remarks }}</span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            @if ($operation->is_operation_done == 1)
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-revision p-1"></i>{{ localize('global.under_review') }}</h5>
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createUnderReviewModal{{ $operation->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+                            @endif
+                            <!-- Create  Lab Modal -->
+                            <div class="modal fade" id="createUnderReviewModal{{ $operation->id }}" tabindex="-1"
+                                aria-labelledby="createUnderReviewModalLabel{{ $operation->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="createUnderReviewModalLabel{{ $operation->id }}">
+                                                {{ localize('global.refere_to_under_review') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('under_reviews.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" id="patient_id{{ $operation->patient_id }}"
+                                                    name="patient_id" value="{{ $operation->patient_id }}">
+                                                <input type="hidden"
+                                                    id="appointment_id{{ $operation->appointment->id }}"
+                                                    name="appointment_id" value="{{ $operation->id }}">
+                                                <input type="hidden" id="operation_id{{ $operation->appointment->id }}"
+                                                    name="operation_id" value="{{ $operation->id }}">
+                                                <input type="hidden" id="doctor_id{{ $operation->id }}"
+                                                    name="doctor_id" value="{{ auth()->user()->id }}">
+                                                <input type="hidden" id="branch_id{{ $operation->id }}"
+                                                    name="branch_id" value="{{ auth()->user()->branch_id }}">
+                                                <input type="hidden" id="is_discharged{{ $operation->id }}"
+                                                    name="is_discharged" value="0">
+
+                                                <div class="form-group">
+
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="reason{{ $operation->id }}">{{ localize('global.reason') }}</label>
+                                                        <textarea class="form-control" id="reason{{ $operation->id }}" name="reason" rows="3"></textarea>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="remarks{{ $operation->id }}">{{ localize('global.remarks') }}</label>
+                                                        <textarea class="form-control" id="remarks{{ $operation->id }}" name="remarks" rows="3"></textarea>
+                                                    </div>
+
+
+                                                    <label
+                                                        for="room_id{{ $operation->id }}">{{ localize('global.rooms') }}</label>
+                                                    <select class="form-control select2" name="room_id"
+                                                        id="under_review_room">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($rooms as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <label
+                                                        for="bed_id{{ $operation->id }}">{{ localize('global.beds') }}</label>
+                                                    <select class="form-control select2" name="bed_id"
+                                                        id="under_review_bed_id">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($beds as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('number') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->number }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-4">
+
+
+
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.reason') }}</th>
+                                            <th>{{ localize('global.remarks') }}</th>
+                                            <th>{{ localize('global.room') }}</th>
+                                            <th>{{ localize('global.bed') }}</th>
+                                            <th>{{ localize('global.status') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($operation->under_reviews as $underReview)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $underReview->reason }}</td>
+                                                <td>
+                                                    {{ $underReview->remarks }}
+                                                </td>
+                                                <td>
+                                                    {{ $underReview->room->name }}
+                                                </td>
+    
+    
+                                                <td>
+                                                    {{ $underReview->bed->number }}
+                                                </td>
+                                                <td>
+                                                    @if ($underReview->is_discharged == '0')
+                                                        <span class="bx bx-x-circle text-danger">{{localize('global.under_review')}}</span>
+                                                    @else
+                                                        <span class="bx bx-check-circle text-success">{{localize('global.discharged')}}</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('under_reviews.edit', $underReview->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('under_reviews.destroy', $underReview->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+    
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_hospitalizations') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -391,4 +546,25 @@
     </div>
     </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+
+            $('#under_review_room').on('change', function() {
+                var roomId = $(this).val();
+                if (roomId !== '') {
+                    $.ajax({
+                        url: '/get_related_beds/' + roomId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#under_review_bed_id').html(response);
+                        }
+                    })
+                }
+            });
+        });
+    </script>
 @endsection

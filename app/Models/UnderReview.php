@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UnderReview extends Model
 {
-    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark'];
+    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark','operation_id'];
 
     public static function boot()
     {

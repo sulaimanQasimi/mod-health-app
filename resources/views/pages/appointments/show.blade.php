@@ -2021,7 +2021,7 @@
                         }
                     })
                 }
-            })
+            });
 
             $('#branch').on('change', function() {
                 var branchId = $(this).val();
@@ -2035,7 +2035,7 @@
                         }
                     })
                 }
-            })
+            });
 
             $('#referral_branch').on('change', function() {
                 var branchId = $(this).val();
@@ -2049,7 +2049,7 @@
                         }
                     })
                 }
-            })
+            });
 
             $('#department').on('change', function() {
                 var departmentId = $(this).val();
@@ -2063,7 +2063,7 @@
                         }
                     })
                 }
-            })
+            });
 
             $('#referral_department_id').on('change', function() {
                 var departmentID = $(this).val();
@@ -2077,7 +2077,7 @@
                         }
                     })
                 }
-            })
+            });
 
             $('#room_id').on('change', function() {
                 var roomId = $(this).val();
@@ -2091,7 +2091,7 @@
                         }
                     })
                 }
-            })
+            });
 
             $('#under_review_room').on('change', function() {
                 var roomId = $(this).val();
@@ -2105,8 +2105,8 @@
                         }
                     })
                 }
-            })
-        })
+            });
+        });
     </script>
 
     <script>

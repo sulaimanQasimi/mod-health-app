@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
+use App\Models\Bed;
 use App\Models\Operation;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -53,7 +55,9 @@ class OperationController extends Controller
     public function show(Anesthesia $operation)
     {
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
-        return view('pages.operations.show',compact('operation','operation_doctors'));
+        $rooms = Room::all();
+        $beds = Bed::all();
+        return view('pages.operations.show',compact('operation','operation_doctors','rooms','beds'));
     }
 
     /**

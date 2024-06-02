@@ -685,7 +685,8 @@ return [
     'not_referred_to_complaint' => 'شکایت وجود ندارد',
     'previous_labs' => 'معاینات قبلی',
     'operation_approval' => 'تاییدی عملیات',
-    ''
+    'food_types' => 'نوعیت غدا های بستر',
+    'create_food_type' => 'اضافه نمودن نوعیت غدای بستر'
 
 
 ];

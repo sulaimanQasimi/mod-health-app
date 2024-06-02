@@ -12,7 +12,8 @@ class FoodTypeController extends Controller
      */
     public function index()
     {
-        //
+        $foodTypes = FoodType::paginate(15);
+        return view('pages.food_types.index',compact('foodTypes'));
     }
 
     /**
@@ -20,7 +21,7 @@ class FoodTypeController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.food_types.create');
     }
 
     /**
@@ -28,7 +29,13 @@ class FoodTypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+        ]);
+
+        FoodType::create($data);
+
+        return redirect()->route('food_types.index')->with('success', 'Food Type created successfully.');
     }
 
     /**
@@ -44,7 +51,7 @@ class FoodTypeController extends Controller
      */
     public function edit(FoodType $foodType)
     {
-        //
+        return view('pages.food_types.edit',compact('foodType'));
     }
 
     /**
@@ -52,7 +59,16 @@ class FoodTypeController extends Controller
      */
     public function update(Request $request, FoodType $foodType)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+    
+        $foodType->update([
+            'name' => $request->input('name'),
+        ]);
+    
+        return redirect()->route('food_types.index')
+            ->with('success', localize('global.food_type_updated'));
     }
 
     /**

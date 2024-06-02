@@ -10,7 +10,7 @@ class ICU extends Model
 {
     use HasFactory;
 
-    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id'];
+    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason'];
 
     public static function boot()
     {

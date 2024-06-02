@@ -337,7 +337,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
-    
+
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
 
@@ -402,6 +402,9 @@ Route::group(['middleware' => ['auth']], function () {
     // ICUs routes
     Route::prefix('icus')->name('icus.')->group(function () {
         Route::get('index', [ICUController::class, 'index'])->name('index');
+        Route::get('new', [ICUController::class, 'new'])->name('new');
+        Route::get('approved', [ICUController::class, 'approved'])->name('approved');
+        Route::get('rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('create', [ICUController::class, 'create'])->name('create');
         Route::get('show/{icu}', [ICUController::class, 'show'])->name('show');
         Route::post('store', [ICUController::class, 'store'])->name('store');

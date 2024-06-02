@@ -149,12 +149,30 @@
         @endcan
 
         @can('show-icu-menu')
-            <li class="menu-item {{ Route::is('icus.index') ? 'active' : '' }}">
-                <a href="{{ route('icus.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
-                    <div>{{ localize('global.icu') }}</div>
-                </a>
-            </li>
+        <li class="menu-item {{ Route::is('icus.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
+                <div>{{ localize('global.icus') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('icus.new') ? 'active' : '' }}">
+                    <a href="{{ route('icus.new') }}" class="menu-link">
+                        <div>{{ localize('global.new_icus') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('icus.approved') ? 'active' : '' }}">
+                    <a href="{{ route('icus.approved') }}" class="menu-link">
+                        <div>{{ localize('global.approved_icus') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('icus.rejected') ? 'active' : '' }}">
+                    <a href="{{ route('icus.rejected') }}" class="menu-link">
+                        <div>{{ localize('global.rejected_icus') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
         @endcan
         @can('show-anesthesias-menu')
             <li class="menu-item {{ Route::is('anesthesias.*') ? 'active open' : '' }}">

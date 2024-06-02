@@ -195,7 +195,115 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if($icu->status == 'new')
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                class="bx bx-glasses p-1"></i>{{ localize('global.approve_reject_icu') }}</h5>
 
+                            <div class="row d-flex justify-content-center">
+
+
+                                <div class="d-flex justify-content-center p-2">
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#createICUApproveModal{{ $icu->id }}"><span><i
+                                                    class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#createICURejectModal{{ $icu->id }}"><span><i
+                                                class="bx bx-x"></i>{{localize('global.reject')}}</span></button>
+                                        </div>
+                                </div>
+                                @endif
+                            </div>
+
+                            <div class="modal fade" id="createICUApproveModal{{ $icu->id }}" tabindex="-1"
+                                aria-labelledby="createICUApproveModalLabel{{ $icu->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createICUApproveModalLabel{{ $icu->id }}">
+                                                {{ localize('global.approve_icu') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('icus.update', $icu) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden"
+                                                    name="status" value="approved">
+
+                                                <div class="form-group">
+
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="icu_enterance_note{{ $icu->id }}">{{ localize('global.icu_enterance_note') }}</label>
+                                                        <textarea class="form-control" id="icu_enterance_note{{ $icu->id }}" name="icu_enterance_note" rows="3"></textarea>
+                                                    </div>
+
+
+
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="createICURejectModal{{ $icu->id }}" tabindex="-1"
+                                aria-labelledby="createICURejectModalLabel{{ $icu->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createICURejectModalLabel{{ $icu->id }}">
+                                                {{ localize('global.reject_icu') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('icus.update', $icu) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden"
+                                                    name="status" value="rejected">
+
+                                                <div class="form-group">
+
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="icu_reject_reason{{ $icu->id }}">{{ localize('global.icu_reject_reason') }}</label>
+                                                        <textarea class="form-control" id="icu_reject_reason{{ $icu->id }}" name="icu_reject_reason" rows="3"></textarea>
+                                                    </div>
+
+
+
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+                            @if($icu->status == 'approved')
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
 
@@ -416,7 +524,7 @@
                             </table>
                         </div>
 
-
+@endif
 
                         </div>
 

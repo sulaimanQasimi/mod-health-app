@@ -35,6 +35,27 @@ class ICUController extends Controller
         return view('pages.icus.index', compact('icus'));
     }
 
+    public function new()
+    {
+        $icus = ICU::where('status', 'new')->latest()->paginate(10);
+
+        return view('pages.icus.new', compact('icus'));
+    }
+
+    public function approved()
+    {
+        $icus = ICU::where('status', 'approved')->latest()->paginate(10);
+
+        return view('pages.icus.approved', compact('icus'));
+    }
+
+    public function rejected()
+    {
+        $icus = ICU::where('status', 'rejected')->latest()->paginate(10);
+
+        return view('pages.icus.rejected', compact('icus'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -57,9 +78,9 @@ class ICUController extends Controller
             'hospitalization_id' => 'nullable',
             'description' => 'required',
             'operation_id' => 'nullable',
+            'icu_enterance_note' => 'nullable',
+            'icu_reject_reason' => 'nullable',
         ]);
-
-        return $validatedData;
 
         // Create a new appointment
         $icu = ICU::create($validatedData);
@@ -94,7 +115,17 @@ class ICUController extends Controller
      */
     public function update(Request $request, ICU $icu)
     {
-        //
+        $data = $request->validate([
+            'icu_enterance_note' => 'nullable',
+            'status' => 'nullable',
+            'icu_reject_reason' => 'nullable',
+
+        ]);
+
+        $icu->update($data);
+
+
+        return redirect()->route('icus.new')->with('success', 'ICU updated successfully.');
     }
 
     /**

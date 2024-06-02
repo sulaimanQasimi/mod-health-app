@@ -184,13 +184,10 @@
                                     </div>
                                     <div class="bottom">
                                         <p>{{$patient->name}}</p>
-                                        <p class="desi">{{localize('global.tests_list')}}</p>
+
                                         <br>
-                                        @foreach ($labs as $test)
-                                        <p>
-                                            {{$test->labType->name}}
-                                        </p>
-                                        @endforeach
+                                        <p style="text-align: center; padding: 10%; color:white;"> {{ QrCode::size(75)->generate($lab->id) }} </p>
+\
                                     </div>
                                 </div>
                             </div>

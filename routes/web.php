@@ -28,6 +28,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\FoodTypeController;
 use App\Http\Controllers\ICUController;
 use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
@@ -290,7 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{lab}', [LabController::class, 'edit'])->name('edit');
         Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
         Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
-        Route::get('/print-card/{appointment}', [LabController::class, 'printCard'])->name('print-card');
+        Route::get('/print-card/{lab}', [LabController::class, 'printCard'])->name('print-card');
     });
 
     // Relations routes
@@ -336,6 +337,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
+    
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
 
@@ -442,6 +444,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
         Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
         Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+    });
+
+    // Food types routes
+    Route::prefix('food_types')->name('food_types.')->group(function () {
+        Route::get('index', [FoodTypeController::class, 'index'])->name('index');
+        Route::get('create', [FoodTypeController::class, 'create'])->name('create');
+        Route::get('show/{foodType}', [FoodTypeController::class, 'show'])->name('show');
+        Route::post('store', [FoodTypeController::class, 'store'])->name('store');
+        Route::get('edit/{foodType}', [FoodTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{foodType}', [FoodTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

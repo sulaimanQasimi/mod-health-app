@@ -80,33 +80,41 @@
                                             {{ $anesthesia->surgion->name }}
                                         </div>
                                     </div>
+                                    @if(isset($anesthesia->anesthesia_log->name))
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.anesthesia_log') }}</h5>
                                         <div>
                                             {{$anesthesia->anesthesia_log->name}}
                                         </div>
                                     </div>
+                                    @endif
+                                    @if(isset($anesthesia->anesthesist->name))
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.anesthesist') }}</h5>
                                         <div>
                                             {{$anesthesia->anesthesist->name}}
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
 
                                 <div class="row p-2 text-center">
+                                    @if(isset($anesthesia->scrub_nurse->name))
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.scrub_nurse') }}</h5>
                                         <div>
                                             {{ $anesthesia->scrub_nurse->name }}
                                         </div>
                                     </div>
+                                    @endif
+                                    @if(isset($anesthesia->circulation_nurse->name))
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.circulation_nurse') }}</h5>
                                         <div>
                                             {{ $anesthesia->circulation_nurse->name }}
                                         </div>
                                     </div>
+                                    @endif
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.anesthesia_log_reply') }}</h5>
                                         <div>
@@ -167,6 +175,44 @@
                                                                 for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
                                                             <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
                                                         </div>
+
+                                                        <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="operation_anesthesia_log_id{{ $anesthesia->id }}">{{ localize('global.anesthesia_log') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_anesthesia_log_id"
+                                                                id="operation_anesthesia_log_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="anesthesist{{ $anesthesia->id }}">{{ localize('global.anesthesist') }}</label>
+                                                            <select class="form-control select2"
+                                                                name="operation_anesthesist_id"
+                                                                id="operation_anesthesist_id">
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($operation_doctors as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
                                                     </div>
                                             </div>

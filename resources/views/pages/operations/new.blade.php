@@ -31,8 +31,8 @@
                                         <td>{{ $operation->patient->name }}</td>
                                         <td>{{ $operation->operationType->name }}</td>
                                         <td>
-                                            @if ($operation->status == '0')
-                                                <span class="bx bx-x-circle text-danger"></span>
+                                            @if ($operation->is_operation_approved == 0)
+                                                <span class="bx bx-plus-circle text-danger"></span>
                                             @else
                                                 <span class="bx bx-check-circle text-success"></span>
                                             @endif
@@ -40,17 +40,10 @@
                                         <td>
                                             <a href="{{ route('operations.show', $operation) }}"><i
                                                     class="bx bx-expand"></i></a>
-                                            {{-- <a href="{{ route('operations.edit', $operation) }}"><i class="bx bx-message-square-edit"></i></a> --}}
-                                            <!-- Using an <a> tag -->
-                                            {{-- <a href="{{ route('beds.destroy', $bed) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
-                    </a>
 
-                    <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('beds.destroy', $bed) }}" method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form> --}}
+                                            <a href="{{ route('patients.history', $operation->patient->id) }}"><i
+                                                class="bx bx-history"></i></a>
+                                            
                                         </td>
                                     </tr>
                                 @endforeach

@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->text('reason', 2000);
             $table->text('remarks',2000);
+            $table->string('patinet_companion')->nullable();
+            $table->string('companion_father_name')->nullable();
+            $table->string('relation_to_patient')->nullable();
+            $table->string('companion_card_type')->nullable();
             $table->text('discharge_remark',2000)->nullable();
             $table->tinyInteger('is_discharged')->default(false);
             $table->enum('discharge_status', ['recovered', 'died', 'moved'])->nullable();
@@ -24,6 +28,7 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches');
             $table->unsignedBigInteger('bed_id');
             $table->foreign('bed_id')->references('id')->on('beds');
+            $table->text('food_type_id')->nullable();
             $table->unsignedBigInteger('appointment_id');
             $table->foreign('appointment_id')->references('id')->on('appointments');
             $table->unsignedBigInteger('doctor_id');

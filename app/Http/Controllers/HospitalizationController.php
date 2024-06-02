@@ -45,8 +45,15 @@ class HospitalizationController extends Controller
             'is_discharged' => 'nullable',
             'discharge_remark' => 'nullable',
             'branch_id' => 'required',
-            'discharge_status'=> 'nullable'
+            'discharge_status'=> 'nullable',
+            'food_type_id'=> 'nullable',
+            'patinet_companion'=> 'nullable',
+            'companion_father_name'=> 'nullable',
+            'relation_to_patient'=> 'nullable',
+            'companion_card_type'=> 'nullable',
         ]);
+
+        $data['food_type_id'] = json_encode($data['food_type_id']);
 
         $hospitalization = Hospitalization::create($data);
 

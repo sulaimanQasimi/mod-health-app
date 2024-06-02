@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewAnesthesiaNotification;
 use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AnesthesiaController extends Controller
@@ -72,6 +73,7 @@ class AnesthesiaController extends Controller
             'operation_scrub_nurse_id' => 'nullable',
             'operation_circulation_nurse_id' => 'nullable',
             'anesthesia_plan' => 'nullable',
+            'operation_expense_remarks' => 'nullable',
         ]);
 
         $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
@@ -91,7 +93,8 @@ class AnesthesiaController extends Controller
      */
     public function show(Anesthesia $anesthesia)
     {
-        return view('pages.anesthesias.show', compact('anesthesia'));
+        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        return view('pages.anesthesias.show', compact('anesthesia','operation_doctors'));
     }
 
     /**
@@ -112,7 +115,10 @@ class AnesthesiaController extends Controller
             'status' => 'nullable',
             'is_operation_done' => 'nullable',
             'operation_remark' => 'nullable',
-            'anesthesia_plan' => 'nullable'
+            'anesthesia_plan' => 'nullable',
+            'operation_anesthesia_log_id' => 'nullable',
+            'operation_anesthesist_id' => 'nullable',
+
         ]);
 
         $anesthesia->update($data);

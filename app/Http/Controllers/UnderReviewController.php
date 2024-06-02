@@ -59,6 +59,7 @@ class UnderReviewController extends Controller
             'is_discharged' => 'nullable',
             'discharge_remark' => 'nullable',
             'branch_id' => 'required',
+            'operation_id' => 'nullable',
         ]);
 
         UnderReview::create($data);

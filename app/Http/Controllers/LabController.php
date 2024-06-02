@@ -65,7 +65,7 @@ class LabController extends Controller
         $lab_item = LabItem::create($labData);
     }
 
-    SendNewLabNotification::dispatch($lab_item->created_by, $lab_item->id);
+    SendNewLabNotification::dispatch($lab->created_by, $lab->id);
 
     return redirect()->back()->with('success', 'Lab Tests created successfully.');
 }
@@ -75,9 +75,7 @@ class LabController extends Controller
      */
     public function show(Lab $lab)
     {
-        $lab_items = $lab->labItems;
-        return view('pages.labs.show',compact('lab_items'));
-
+        //
     }
 
     /**
@@ -124,17 +122,13 @@ class LabController extends Controller
         //
     }
 
-    public function printCard($appointmentId)
+    public function printCard($lab)
     {
-        $appointment = Appointment::with(['labs' =>
-            function ($query)
-            {
-                $query->where('status',0);
-            }, 'patient'
-           ])->findOrFail($appointmentId);
 
-        $labs = $appointment->labs;
-        $patient = $appointment->patient;
-        return view('pages.labs.print_card', compact('labs','patient'));
+        $lab = Lab::findOrFail($lab);
+
+        $patient = $lab->patient;
+
+        return view('pages.labs.print_card', compact('patient','lab'));
     }
 }

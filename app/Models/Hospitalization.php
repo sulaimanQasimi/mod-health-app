@@ -12,7 +12,9 @@ class Hospitalization extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','food_type_id','is_discharged','branch_id','discharge_remark','discharge_status'];
+    protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id',
+    'food_type_id','is_discharged','branch_id','discharge_remark','discharge_status',
+    'patinet_companion','companion_father_name','relation_to_patient','companion_card_type'];
 
     public static function boot()
     {

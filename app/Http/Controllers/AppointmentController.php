@@ -15,6 +15,7 @@ use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\OperationType;
+use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -138,8 +139,9 @@ class AppointmentController extends Controller
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
         $foodTypes = FoodType::all();
+        $relations = Relation::all();
 
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors','departments','medicineTypes','medicines','foodTypes'));
+        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors','departments','medicineTypes','medicines','foodTypes','relations'));
     }
 
     public function destroy(Appointment $appointment)

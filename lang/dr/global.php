@@ -686,7 +686,13 @@ return [
     'previous_labs' => 'معاینات قبلی',
     'operation_approval' => 'تاییدی عملیات',
     'food_types' => 'نوعیت غدا های بستر',
-    'create_food_type' => 'اضافه نمودن نوعیت غدای بستر'
+    'create_food_type' => 'اضافه نمودن نوعیت غدای بستر',
+    'patient_companion_info' => 'معلومات پایواز مریض',
+    'companion_name' => 'نام پایواز',
+    'companion_father_name' => 'نام پدر',
+    'relation_to_patient' => 'ارتباط با مریض',
+    'companion_card_type' => 'نوعیت کارت',
+    'food_type' => 'نوعیت غدای بستر'
 
 
 ];

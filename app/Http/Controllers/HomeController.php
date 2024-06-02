@@ -48,7 +48,7 @@ class HomeController extends Controller
         $totalAppointments = Appointment::count();
         $totalPrescriptions = Prescription::count();
         $totalConsultations = Consultation::count();
-        $totalOperations = Operation::count();
+        $totalOperations = Anesthesia::where('is_operation_done','1')->count();
         $totalIcuAdmissions = ICU::count();
         $totalInPatientAdmissions = Hospitalization::count();
 

@@ -6,6 +6,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Section;
 use Illuminate\Http\Request;
@@ -108,8 +109,9 @@ class UserController extends Controller
         $branches = Branch::all();
         $departments = Department::all();
         $sections = Section::all();
+        $permissions = Permission::all();
 
-        return view('pages.users.edit',compact('user','roles','branches','departments','sections'));
+        return view('pages.users.edit',compact('user','roles','branches','departments','sections','permissions'));
     }
 
     /**
@@ -133,6 +135,8 @@ class UserController extends Controller
     } else {
         $user->roles()->detach();
     }
+
+    $user->syncPermissions($request->input('permissions', []));
 
 
     return redirect()->route('users.index')

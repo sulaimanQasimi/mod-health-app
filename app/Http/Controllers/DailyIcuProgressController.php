@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DailyIcuProgress;
+use App\Models\LabType;
 use Illuminate\Http\Request;
 
 class DailyIcuProgressController extends Controller
@@ -64,7 +65,8 @@ class DailyIcuProgressController extends Controller
      */
     public function show(DailyIcuProgress $dailyIcuProgress)
     {
-        //
+        $labTypes = LabType::all();
+        return view('pages.daily_icu_progress.show',compact('dailyIcuProgress','labTypes'));
     }
 
     /**

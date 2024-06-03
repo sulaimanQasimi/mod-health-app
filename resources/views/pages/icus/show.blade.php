@@ -816,7 +816,7 @@
                                                             <input type="text" class="form-control" name="assesment">
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <label>{{ localize('global.plan') }}</label>
+                                                            <label>{{ localize('global.icu_daily_plan') }}</label>
                                                             <input type="text" class="form-control" name="plan">
                                                         </div>
                                                         <div class="col-md-3">
@@ -872,10 +872,9 @@
                                                 <td>{{ $progress->created_at }}</td>
 
                                                 <td>
-                                                    <a href="{{ route('lab_tests.edit', $progress->id) }}"><span><i
-                                                                class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('lab_tests.destroy', $progress->id) }}"><span><i
-                                                                class="bx bx-trash text-danger"></i></span></a>
+                                                    <a
+                                                        href="{{ route('daily_icu_progress.show', $progress->id) }}"><span><i
+                                                                class="bx bx-expand text-primary"></i></span></a>
 
                                                 </td>
 
@@ -894,6 +893,14 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            
+
+
+
+
+
+
                         @endif
 
                     </div>

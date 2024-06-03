@@ -195,194 +195,54 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            @if($icu->status == 'new')
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-glasses p-1"></i>{{ localize('global.approve_reject_icu') }}</h5>
+                            @if ($icu->status == 'new')
+                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                        class="bx bx-glasses p-1"></i>{{ localize('global.approve_reject_icu') }}</h5>
 
-                            <div class="row d-flex justify-content-center">
+                                <div class="row d-flex justify-content-center">
 
 
-                                <div class="d-flex justify-content-center p-2">
+                                    <div class="d-flex justify-content-center p-2">
                                         <div class="col-md-2">
                                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createICUApproveModal{{ $icu->id }}"><span><i
-                                                    class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
+                                                data-bs-target="#createICUApproveModal{{ $icu->id }}"><span><i
+                                                        class="bx bx-check"></i>{{ localize('global.approve') }}</span></button>
                                         </div>
 
                                         <div class="col-md-2">
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                        data-bs-target="#createICURejectModal{{ $icu->id }}"><span><i
-                                                class="bx bx-x"></i>{{localize('global.reject')}}</span></button>
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#createICURejectModal{{ $icu->id }}"><span><i
+                                                        class="bx bx-x"></i>{{ localize('global.reject') }}</span></button>
                                         </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <div class="modal fade" id="createICUApproveModal{{ $icu->id }}" tabindex="-1"
-                                aria-labelledby="createICUApproveModalLabel{{ $icu->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createICUApproveModalLabel{{ $icu->id }}">
-                                                {{ localize('global.approve_icu') }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('icus.update', $icu) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden"
-                                                    name="status" value="approved">
-
-                                                <div class="form-group">
-
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="icu_enterance_note{{ $icu->id }}">{{ localize('global.icu_enterance_note') }}</label>
-                                                        <textarea class="form-control" id="icu_enterance_note{{ $icu->id }}" name="icu_enterance_note" rows="3"></textarea>
-                                                    </div>
-
-
-
-                                                </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
                                     </div>
-                                </div>
-                            </div>
+                            @endif
+                        </div>
 
-                            <div class="modal fade" id="createICURejectModal{{ $icu->id }}" tabindex="-1"
-                                aria-labelledby="createICURejectModalLabel{{ $icu->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createICURejectModalLabel{{ $icu->id }}">
-                                                {{ localize('global.reject_icu') }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('icus.update', $icu) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden"
-                                                    name="status" value="rejected">
-
-                                                <div class="form-group">
-
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="icu_reject_reason{{ $icu->id }}">{{ localize('global.icu_reject_reason') }}</label>
-                                                        <textarea class="form-control" id="icu_reject_reason{{ $icu->id }}" name="icu_reject_reason" rows="3"></textarea>
-                                                    </div>
-
-
-
-                                                </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if($icu->status == 'approved')
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-chat p-1"></i>{{ localize('global.consultations') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createConsultationModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-
-                        <!-- Create  Lab Modal -->
-                        <div class="modal fade" id="createConsultationModal{{ $icu->id }}" tabindex="-1"
-                            aria-labelledby="createConsultationModalLabel{{ $icu->id }}" aria-hidden="true">
+                        <div class="modal fade" id="createICUApproveModal{{ $icu->id }}" tabindex="-1"
+                            aria-labelledby="createICUApproveModalLabel{{ $icu->id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="createConsultationModalLabel{{ $icu->id }}">
-                                            {{ localize('global.add_consultation') }}</h5>
+                                        <h5 class="modal-title" id="createICUApproveModalLabel{{ $icu->id }}">
+                                            {{ localize('global.approve_icu') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('consultations.store') }}" method="POST">
+                                        <form action="{{ route('icus.update', $icu) }}" method="POST">
                                             @csrf
-                                            <input type="hidden" id="patient_id{{ $icu->patient_id }}"
-                                                name="patient_id" value="{{ $icu->patient_id }}">
-                                            <input type="hidden" id="appointment_id{{ $icu->id }}"
-                                                name="appointment_id" value="{{ $icu->appointment->id }}">
-                                            <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
-                                                value="{{ auth()->user()->branch_id }}">
-                                                <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
-                                                value="{{ $icu->id }}">
+                                            @method('PUT')
+                                            <input type="hidden" name="status" value="approved">
+
                                             <div class="form-group">
 
-                                                <label
-                                                    for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
-                                                <input type="text" class="form-control" name="title">
-
-                                                <label
-                                                    for="branch{{ $icu->id }}">{{ localize('global.branch') }}</label>
-                                                <select class="form-control select2" name="branch" id="branch">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($branches as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <label
-                                                    for="department{{ $icu->id }}">{{ localize('global.department') }}</label>
-                                                <select class="form-control select2" name="department" id="department">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($departments as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <label
-                                                    for="doctor_id{{ $icu->id }}">{{ localize('global.doctors') }}</label>
-                                                <select class="form-control select2" name="doctor_id[]" id="doctor_id"
-                                                    multiple>
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name_en }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <div class="mb-3">
-                                                    <label for="date">{{ localize('global.date') }}</label>
-                                                    <input type="date" class="form-control" name="date" />
+                                                <div class="form-group">
+                                                    <label
+                                                        for="icu_enterance_note{{ $icu->id }}">{{ localize('global.icu_enterance_note') }}</label>
+                                                    <textarea class="form-control" id="icu_enterance_note{{ $icu->id }}" name="icu_enterance_note" rows="3"></textarea>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="time">{{ localize('global.time') }}</label>
-                                                    <input type="time" class="form-control" name="time" />
-                                                </div>
+
+
 
                                             </div>
                                     </div>
@@ -396,82 +256,223 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End Create Lab Modal -->
-                        <div class="col-md-12 mt-4">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.title') }}</th>
-                                        <th>{{ localize('global.doctors') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($icu->consultations as $consultation)
-                                        <tr>
-                                            <td>
-                                                <div>
-                                                    
-                                                    <span style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
-                                                </div>
-                                            </td>
-                                            <td>{{ $consultation->title }}</td>
-                                            <td>
-                                                @foreach($consultation->associated_doctors as $doctor)
-                                                <span class="badge bg-primary">
-                                                    {{$doctor->name}}
-                                                </span>
-                                                @endforeach
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
-                                                            class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('consultations.destroy', $consultation->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
-                                            </td>
-                                        </tr>
-                                        @if($consultation->comments->isNotEmpty())
-                                            <tr>
-                                                <td colspan="4">
-                                                    <div class="row">
-                                                        <div class="col-md-12 d-flex justify-content-center">
-                                                            <h5 class="mb-2 p-2 bg-label-primary mt-2"><i
-                                                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
-                                                        </div>
-                                                    </div>
-                                                    
 
-                                                </td>
-                                            </tr>
+                        <div class="modal fade" id="createICURejectModal{{ $icu->id }}" tabindex="-1"
+                            aria-labelledby="createICURejectModalLabel{{ $icu->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createICURejectModalLabel{{ $icu->id }}">
+                                            {{ localize('global.reject_icu') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('icus.update', $icu) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="status" value="rejected">
+
+                                            <div class="form-group">
+
+                                                <div class="form-group">
+                                                    <label
+                                                        for="icu_reject_reason{{ $icu->id }}">{{ localize('global.icu_reject_reason') }}</label>
+                                                    <textarea class="form-control" id="icu_reject_reason{{ $icu->id }}" name="icu_reject_reason" rows="3"></textarea>
+                                                </div>
+
+
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if ($icu->status == 'approved')
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-chat p-1"></i>{{ localize('global.consultations') }}</h5>
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createConsultationModal{{ $icu->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+
+                            <!-- Create  Lab Modal -->
+                            <div class="modal fade" id="createConsultationModal{{ $icu->id }}" tabindex="-1"
+                                aria-labelledby="createConsultationModalLabel{{ $icu->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createConsultationModalLabel{{ $icu->id }}">
+                                                {{ localize('global.add_consultation') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('consultations.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" id="patient_id{{ $icu->patient_id }}"
+                                                    name="patient_id" value="{{ $icu->patient_id }}">
+                                                <input type="hidden" id="appointment_id{{ $icu->id }}"
+                                                    name="appointment_id" value="{{ $icu->appointment->id }}">
+                                                <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
+                                                    value="{{ auth()->user()->branch_id }}">
+                                                <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
+                                                    value="{{ $icu->id }}">
+                                                <div class="form-group">
+
+                                                    <label
+                                                        for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
+                                                    <input type="text" class="form-control" name="title">
+
+                                                    <label
+                                                        for="branch{{ $icu->id }}">{{ localize('global.branch') }}</label>
+                                                    <select class="form-control select2" name="branch" id="branch">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($branches as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <label
+                                                        for="department{{ $icu->id }}">{{ localize('global.department') }}</label>
+                                                    <select class="form-control select2" name="department"
+                                                        id="department">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($departments as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <label
+                                                        for="doctor_id{{ $icu->id }}">{{ localize('global.doctors') }}</label>
+                                                    <select class="form-control select2" name="doctor_id[]"
+                                                        id="doctor_id" multiple>
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($doctors as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name_en }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <div class="mb-3">
+                                                        <label for="date">{{ localize('global.date') }}</label>
+                                                        <input type="date" class="form-control" name="date" />
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="time">{{ localize('global.time') }}</label>
+                                                        <input type="time" class="form-control" name="time" />
+                                                    </div>
+
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Create Lab Modal -->
+                            <div class="col-md-12 mt-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.title') }}</th>
+                                            <th>{{ localize('global.doctors') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($icu->consultations as $consultation)
                                             <tr>
-                                                <td colspan="4">
-                                                    @foreach($consultation->comments as $comment)
-                                                        <div class="row mb-2">
-                                                            <div class="col-md-2">
-                                                                <i class="bx bx-check-circle text-success"></i>
-                                                                <span class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                                            </div>
-                                                            <div class="col-md-10" style="text-align: justify;">
-                                                                {{ $comment->comment }}
-                                                            </div>
-                                                        </div>
+                                                <td>
+                                                    <div>
+
+                                                        <span
+                                                            style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>{{ $consultation->title }}</td>
+                                                <td>
+                                                    @foreach ($consultation->associated_doctors as $doctor)
+                                                        <span class="badge bg-primary">
+                                                            {{ $doctor->name }}
+                                                        </span>
                                                     @endforeach
                                                 </td>
+                                                <td>
+                                                    <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('consultations.destroy', $consultation->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+                                                </td>
                                             </tr>
-                                        @endif
-                                    @empty
-                                        <tr>
-                                            <td colspan="4" class="text-center">
-                                                <div class="badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_consultations') }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                                            @if ($consultation->comments->isNotEmpty())
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <div class="row">
+                                                            <div class="col-md-12 d-flex justify-content-center">
+                                                                <h5 class="mb-2 p-2 bg-label-primary mt-2"><i
+                                                                        class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}
+                                                                </h5>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        @foreach ($consultation->comments as $comment)
+                                                            <div class="row mb-2">
+                                                                <div class="col-md-2">
+                                                                    <i class="bx bx-check-circle text-success"></i>
+                                                                    <span
+                                                                        class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
+                                                                </div>
+                                                                <div class="col-md-10" style="text-align: justify;">
+                                                                    {{ $comment->comment }}
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center">
+                                                    <div class="badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_consultations') }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
 
 
 
@@ -501,8 +502,8 @@
                                                     name="patient_id" value="{{ $icu->patient_id }}">
                                                 <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
                                                     value="{{ $icu->id }}">
-                                                <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                                    value="{{ $icu->doctor->id }}">
+                                                <input type="hidden" id="doctor_id{{ $icu->id }}"
+                                                    name="doctor_id" value="{{ $icu->doctor->id }}">
                                                 <!-- Add other diagnosis form fields as needed -->
                                                 <div class="form-group">
                                                     <label
@@ -559,154 +560,350 @@
                             </div>
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
+                                    class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
 
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createLabModal{{ $icu->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
 
-                        <!-- Create  Lab Modal -->
-                        <div class="modal fade" id="createLabModal{{ $icu->id }}" tabindex="-1"
-                            aria-labelledby="createLabModalLabel{{ $icu->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="createLabModalLabel{{ $icu->id }}">
-                                            {{ localize('global.add_lab_test') }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
+                            <!-- Create  Lab Modal -->
+                            <div class="modal fade" id="createLabModal{{ $icu->id }}" tabindex="-1"
+                                aria-labelledby="createLabModalLabel{{ $icu->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createLabModalLabel{{ $icu->id }}">
+                                                {{ localize('global.add_lab_test') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('lab_tests.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" id="patient_id{{ $icu->patient_id }}"
+                                                    name="patient_id" value="{{ $icu->patient_id }}">
+                                                <input type="hidden" id="appointment_id{{ $icu->id }}"
+                                                    name="appointment_id" value="{{ $icu->appointment->id }}">
+                                                <input type="hidden" id="doctor_id{{ $icu->id }}"
+                                                    name="doctor_id" value="{{ $icu->doctor->id }}">
+                                                <input type="hidden" id="branch_id{{ $icu->id }}"
+                                                    name="branch_id" value="{{ auth()->user()->branch_id }}">
+                                                <input type="hidden" id="hospitalization_id{{ $icu->id }}"
+                                                    name="hospitalization_id" value="">
+                                                <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
+                                                    value="{{ $icu->id }}">
+
+                                                <input type="hidden" id="status{{ $icu->id }}" name="status"
+                                                    value="0">
+
+                                                <div class="form-group">
+
+                                                    <label
+                                                        for="lab_type_section{{ $icu->id }}">{{ localize('global.lab_type_section') }}</label>
+                                                    <select class="form-control select2" name="lab_type_section"
+                                                        id="lab_type_section">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($labTypeSections as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->section }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <label
+                                                        for="lab_type_id{{ $icu->id }}">{{ localize('global.lab_type') }}</label>
+                                                    <select class="form-control select2" name="lab_type_id[]"
+                                                        id="lab_type_id" onchange="loadLabTypeTests()">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($labTypes as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <div id="labTypeTestsContainer"></div>
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
                                     </div>
-                                    <div class="modal-body">
-                                        <form action="{{ route('lab_tests.store') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" id="patient_id{{ $icu->patient_id }}"
-                                                name="patient_id" value="{{ $icu->patient_id }}">
-                                            <input type="hidden" id="appointment_id{{ $icu->id }}"
-                                                name="appointment_id" value="{{ $icu->appointment->id }}">
-                                            <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                                value="{{ $icu->doctor->id }}">
-                                            <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
-                                                value="{{ auth()->user()->branch_id }}">
-                                            <input type="hidden" id="hospitalization_id{{ $icu->id }}"
-                                                name="hospitalization_id" value="">
-                                                <input type="hidden" id="i_c_u_id{{ $icu->id }}"
-                                                name="i_c_u_id" value="{{$icu->id}}">
-
-                                            <input type="hidden" id="status{{ $icu->id }}" name="status"
-                                                value="0">
-
-                                            <div class="form-group">
-
-                                                <label
-                                                    for="lab_type_section{{ $icu->id }}">{{ localize('global.lab_type_section') }}</label>
-                                                <select class="form-control select2" name="lab_type_section"
-                                                    id="lab_type_section">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($labTypeSections as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->section }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <label
-                                                    for="lab_type_id{{ $icu->id }}">{{ localize('global.lab_type') }}</label>
-                                                <select class="form-control select2" name="lab_type_id[]"
-                                                    id="lab_type_id" onchange="loadLabTypeTests()">
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($labTypes as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <div id="labTypeTestsContainer"></div>
-                                            </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
-                                    </div>
-                                    </form>
                                 </div>
                             </div>
-                        </div>
-                        <!-- End Create Lab Modal -->
-                        <div class="col-md-12 mt-4">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.test_name') }}</th>
-                                        <th>{{ localize('global.test_status') }}</th>
-                                        <th>{{ localize('global.result') }}</th>
-                                        <th>{{ localize('global.result_file') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($icu->labs as $lab)
+                            <!-- End Create Lab Modal -->
+                            <div class="col-md-12 mt-4">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $lab->labType->name }}</td>
-                                            <td>
-                                                @if ($lab->status == '0')
-                                                    <span
-                                                        class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                @else
-                                                    <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $lab->result }}</td>
-                                            <td>
-                                                @isset($lab->result_file)
-                                                    <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                        <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                    </a>
-                                                @endisset
-
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
-                                                            class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
-
-                                            </td>
-
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.test_name') }}</th>
+                                            <th>{{ localize('global.test_status') }}</th>
+                                            <th>{{ localize('global.result') }}</th>
+                                            <th>{{ localize('global.result_file') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($icu->labs as $lab)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $lab->labType->name }}</td>
+                                                <td>
+                                                    @if ($lab->status == '0')
+                                                        <span
+                                                            class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                    @else
+                                                        <span
+                                                            class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $lab->result }}</td>
+                                                <td>
+                                                    @isset($lab->result_file)
+                                                        <a href="{{ asset('storage/' . $lab->result_file) }}"
+                                                            target="_blank">
+                                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
+                                                        </a>
+                                                    @endisset
 
-                                    @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_labs') }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+
+                                                </td>
+
+                                            </tr>
+
+                                        @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_labs') }}
+                                                    </div>
                                                 </div>
                                             </div>
+                                        @endforelse
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-hourglass p-1"></i>{{ localize('global.daily_icu_progress') }}</h5>
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createDailyICUProgressModal{{ $icu->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+
+                            <!-- Create  Lab Modal -->
+                            <div class="modal fade modal-xl" id="createDailyICUProgressModal{{ $icu->id }}"
+                                tabindex="-1" aria-labelledby="createDailyICUProgressModalLabel{{ $icu->id }}"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="createDailyICUProgressModalLabel{{ $icu->id }}">
+                                                {{ localize('global.add_daily_progress') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
-                                    @endforelse
+                                        <div class="modal-body">
+                                            <form action="{{ route('daily_icu_progress.store') }}" method="POST">
+                                                @csrf
 
-                                </tbody>
-                            </table>
-                        </div>
+                                                <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
+                                                    value="{{ $icu->id }}">
 
-@endif
+                                                <div class="form-group">
 
-                        </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.icu_day') }}</label>
+                                                            <input type="text" class="form-control" name="icu_day">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.icu_diagnose') }}</label>
+                                                            <input type="text" class="form-control"
+                                                                name="icu_diagnose">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.daily_events') }}</label>
+                                                            <input type="text" class="form-control"
+                                                                name="daily_events">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.hr') }}</label>
+                                                            <input type="text" class="form-control" name="hr">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.bp') }}</label>
+                                                            <input type="text" class="form-control" name="bp">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.spo2') }}</label>
+                                                            <input type="text" class="form-control" name="spo2">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.t') }}</label>
+                                                            <input type="text" class="form-control" name="t">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.rr') }}</label>
+                                                            <input type="text" class="form-control" name="rr">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.gcs') }}</label>
+                                                            <input type="text" class="form-control" name="gcs">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.cvs') }}</label>
+                                                            <input type="text" class="form-control" name="cvs">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.pupils') }}</label>
+                                                            <input type="text" class="form-control" name="pupils">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.s1s2') }}</label>
+                                                            <input type="text" class="form-control" name="s1s2">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.rs') }}</label>
+                                                            <input type="text" class="form-control" name="rs">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.gi') }}</label>
+                                                            <input type="text" class="form-control" name="gi">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.renal') }}</label>
+                                                            <input type="text" class="form-control" name="renal">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.musculoskeletal_system') }}</label>
+                                                            <input type="text" class="form-control"
+                                                                name="musculoskeletal_system">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.extremities') }}</label>
+                                                            <input type="text" class="form-control"
+                                                                name="extremities">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.assesment') }}</label>
+                                                            <input type="text" class="form-control" name="assesment">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{ localize('global.plan') }}</label>
+                                                            <input type="text" class="form-control" name="plan">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label
+                                                                for="lab_ids{{ $icu->id }}">{{ localize('global.lab_ids') }}</label>
+                                                            <select class="form-control select2" name="lab_ids[]"
+                                                                id="lab_ids" multiple>
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($labTypes as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Create Lab Modal -->
+                            <div class="col-md-12 mt-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.icu_day') }}</th>
+                                            <th>{{ localize('global.created_by') }}</th>
+                                            <th>{{ localize('global.created_at') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($icu->dailyProgress as $progress)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $progress->icu_day }}</td>
+                                                <td>
+                                                    {{ $progress->createdBy->name }}
+                                                </td>
+                                                <td>{{ $progress->created_at }}</td>
+
+                                                <td>
+                                                    <a href="{{ route('lab_tests.edit', $progress->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('lab_tests.destroy', $progress->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+
+                                                </td>
+
+                                            </tr>
+
+                                        @empty
+                                            <div class="container">
+                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_labs') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
 
                     </div>
 
-
                 </div>
+
+
             </div>
         </div>
+    </div>
     </div>
 @endsection
 
@@ -758,8 +955,8 @@
         }
     </script>
     <script>
-            $(document).ready(function(){
-                $('#branch').on('change', function() {
+        $(document).ready(function() {
+            $('#branch').on('change', function() {
                 var branchId = $(this).val();
                 if (branchId !== '') {
                     $.ajax({
@@ -786,6 +983,6 @@
                     })
                 }
             });
-            })
-        </script>
+        })
+    </script>
 @endsection

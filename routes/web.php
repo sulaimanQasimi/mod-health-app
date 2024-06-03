@@ -24,6 +24,7 @@ use App\Http\Controllers\BedController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ConsultationCommentController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\DailyIcuProgressController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
@@ -447,6 +448,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
         Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
         Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+    });
+
+    // Daily ICU Progress routes
+    Route::prefix('daily_icu_progress')->name('daily_icu_progress.')->group(function () {
+        Route::get('index', [DailyIcuProgressController::class, 'index'])->name('index');
+        Route::get('create', [DailyIcuProgressController::class, 'create'])->name('create');
+        Route::get('show/{dailyIcuProgress}', [DailyIcuProgressController::class, 'show'])->name('show');
+        Route::post('store', [DailyIcuProgressController::class, 'store'])->name('store');
+        Route::get('edit/{dailyIcuProgress}', [DailyIcuProgressController::class, 'edit'])->name('edit');
+        Route::put('update/{dailyIcuProgress}', [DailyIcuProgressController::class, 'update'])->name('update');
+        Route::get('destroy/{dailyIcuProgress}', [DailyIcuProgressController::class, 'destroy'])->name('destroy');
     });
 
     // Food types routes

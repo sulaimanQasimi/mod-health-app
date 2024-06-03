@@ -890,20 +890,25 @@
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.title') }}</th>
                                         <th>{{ localize('global.doctors') }}</th>
-                                        <th>{{ localize('global.result') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($appointment->consultations as $consultation)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                <div>
+                                                    
+                                                    <span style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                                </div>
+                                            </td>
                                             <td>{{ $consultation->title }}</td>
                                             <td>
-                                                {{ $consultation->doctors }}
-                                            </td>
-                                            <td>
-                                                {{ $consultation->result }}
+                                                @foreach($consultation->associated_doctors as $doctor)
+                                                <span class="badge bg-primary">
+                                                    {{$doctor->name}}
+                                                </span>
+                                                @endforeach
                                             </td>
                                             <td>
                                                 <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
@@ -912,52 +917,49 @@
                                                             class="bx bx-trash text-danger"></i></span></a>
                                             </td>
                                         </tr>
+                                        @if($consultation->comments->isNotEmpty())
+                                            <tr>
+                                                <td colspan="4">
+                                                    <div class="row">
+                                                        <div class="col-md-12 d-flex justify-content-center">
+                                                            <h5 class="mb-2 p-2 bg-label-primary mt-2"><i
+                                                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                    @foreach($consultation->comments as $comment)
+                                                        <div class="row mb-2">
+                                                            <div class="col-md-2">
+                                                                <i class="bx bx-check-circle text-success"></i>
+                                                                <span class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
+                                                            </div>
+                                                            <div class="col-md-10" style="text-align: justify;">
+                                                                {{ $comment->comment }}
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
+                                        <tr>
+                                            <td colspan="4" class="text-center">
+                                                <div class="badge bg-label-danger mt-4">
                                                     {{ localize('global.no_previous_consultations') }}
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-md-12 d-flex justify-content-center">
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
-                        </div>
-                        <div class="container">
-                            <div class="col-md-12">
-                                <div class="row">
-
-                                    @foreach ($appointment->consultations as $consultation)
-                                        @forelse($consultation->comments as $comment)
-                                            <div class="col-md-2">
-                                                <i class="bx bx-check-circle text-success"></i>
-                                                <span
-                                                    class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                            </div>
-                                            <div class="col-md-10" style="text-align: justify;">
-                                                {{ $comment->comment }}
-                                            </div>
-                                            <div class="white-space">
-                                                <hr>
-                                            </div>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class="p-2 bg-label-danger mt-4">
-                                                        {{ localize('global.no_comments_yet') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforelse
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
+                        
+                        
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-transfer p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>

@@ -298,12 +298,185 @@
                                 </div>
                             </div>
 
-
-
-
-
-
                             @if($icu->status == 'approved')
+
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                class="bx bx-chat p-1"></i>{{ localize('global.consultations') }}</h5>
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#createConsultationModal{{ $icu->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+
+                        <!-- Create  Lab Modal -->
+                        <div class="modal fade" id="createConsultationModal{{ $icu->id }}" tabindex="-1"
+                            aria-labelledby="createConsultationModalLabel{{ $icu->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createConsultationModalLabel{{ $icu->id }}">
+                                            {{ localize('global.add_consultation') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('consultations.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" id="patient_id{{ $icu->patient_id }}"
+                                                name="patient_id" value="{{ $icu->patient_id }}">
+                                            <input type="hidden" id="appointment_id{{ $icu->id }}"
+                                                name="appointment_id" value="{{ $icu->appointment->id }}">
+                                            <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
+                                                value="{{ auth()->user()->branch_id }}">
+                                                <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
+                                                value="{{ $icu->id }}">
+                                            <div class="form-group">
+
+                                                <label
+                                                    for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
+                                                <input type="text" class="form-control" name="title">
+
+                                                <label
+                                                    for="branch{{ $icu->id }}">{{ localize('global.branch') }}</label>
+                                                <select class="form-control select2" name="branch" id="branch">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($branches as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <label
+                                                    for="department{{ $icu->id }}">{{ localize('global.department') }}</label>
+                                                <select class="form-control select2" name="department" id="department">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($departments as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <label
+                                                    for="doctor_id{{ $icu->id }}">{{ localize('global.doctors') }}</label>
+                                                <select class="form-control select2" name="doctor_id[]" id="doctor_id"
+                                                    multiple>
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($doctors as $value)
+                                                        <option value="{{ $value->id }}"
+                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name_en }}
+
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <div class="mb-3">
+                                                    <label for="date">{{ localize('global.date') }}</label>
+                                                    <input type="date" class="form-control" name="date" />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="time">{{ localize('global.time') }}</label>
+                                                    <input type="time" class="form-control" name="time" />
+                                                </div>
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Create Lab Modal -->
+                        <div class="col-md-12 mt-4">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.title') }}</th>
+                                        <th>{{ localize('global.doctors') }}</th>
+                                        <th>{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($icu->consultations as $consultation)
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    
+                                                    <span style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ $consultation->title }}</td>
+                                            <td>
+                                                @foreach($consultation->associated_doctors as $doctor)
+                                                <span class="badge bg-primary">
+                                                    {{$doctor->name}}
+                                                </span>
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
+                                                            class="bx bx-edit"></i></span></a>
+                                                <a href="{{ route('consultations.destroy', $consultation->id) }}"><span><i
+                                                            class="bx bx-trash text-danger"></i></span></a>
+                                            </td>
+                                        </tr>
+                                        @if($consultation->comments->isNotEmpty())
+                                            <tr>
+                                                <td colspan="4">
+                                                    <div class="row">
+                                                        <div class="col-md-12 d-flex justify-content-center">
+                                                            <h5 class="mb-2 p-2 bg-label-primary mt-2"><i
+                                                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                    @foreach($consultation->comments as $comment)
+                                                        <div class="row mb-2">
+                                                            <div class="col-md-2">
+                                                                <i class="bx bx-check-circle text-success"></i>
+                                                                <span class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
+                                                            </div>
+                                                            <div class="col-md-10" style="text-align: justify;">
+                                                                {{ $comment->comment }}
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center">
+                                                <div class="badge bg-label-danger mt-4">
+                                                    {{ localize('global.no_previous_consultations') }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+
+
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
 
@@ -584,4 +757,35 @@
                 });
         }
     </script>
+    <script>
+            $(document).ready(function(){
+                $('#branch').on('change', function() {
+                var branchId = $(this).val();
+                if (branchId !== '') {
+                    $.ajax({
+                        url: '/get_departments/' + branchId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#department').html(response);
+                        }
+                    })
+                }
+            });
+
+            $('#department').on('change', function() {
+                var departmentId = $(this).val();
+                if (departmentId !== '') {
+                    $.ajax({
+                        url: '/get_doctors/' + departmentId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#doctor_id').html(response);
+                        }
+                    })
+                }
+            });
+            })
+        </script>
 @endsection

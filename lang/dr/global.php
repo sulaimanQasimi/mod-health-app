@@ -703,6 +703,14 @@ return [
     'created_new_lab' => 'معاینات جدید را ثبت نمود',
     'approved_new_operation' => 'عملیات جدید را تائید نمود',
     'created_new_prescription' => 'نسخه جدید را ثبت نمود',
-
+    'icus' => 'مریضان ICU',
+    'new_icus' => 'ICU های جدید',
+    'approved_icus' => 'ICU های تائید شده',
+    'rejected_icus' => 'ICU های مسترد شده',
+    'approve_reject_icu' => 'تائیدی/مستردی ICU',
+    'reject_icu' => 'مسترد نمودن ICU',
+    'icu_reject_reason' => 'دلیل مستردی',
+    'approve_icu' => 'تائید نمودن ICU',
+    'icu_enterance_note' => 'یادداشت داخله ICU',
 
 ];

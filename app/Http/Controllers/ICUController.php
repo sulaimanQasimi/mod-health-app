@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewICUNotification;
+use App\Models\Branch;
+use App\Models\Department;
 use App\Models\ICU;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ICUController extends Controller
@@ -99,7 +102,10 @@ class ICUController extends Controller
         $labTypeSections = LabTypeSection::all();
         $previousDiagnoses = $icu->patient->diagnoses;
         $previousLabs = $icu->patient->labs;
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections'));
+        $branches = Branch::all();
+        $departments = Department::all();
+        $doctors = User::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors'));
     }
 
     /**

@@ -42,34 +42,6 @@ class PrescriptionController extends Controller
     public function store(Request $request)
     {
 
-        // $data = $request->validate([
-        //     'description' => 'required',
-        //     'appointment_id' => 'required',
-        //     'patient_id' => 'required',
-        //     'branch_id' => 'required',
-        //     'doctor_id' => 'required',
-        //     'dosage' => 'required',
-        //     'frequency' => 'required',
-        //     'amount' => 'required',
-        //     'type' => 'required',
-        //     'is_delivered' => 'required',
-        // ]);
-        // $data['description'] = json_encode($data['description']);
-        // $data['dosage'] = json_encode($data['dosage']);
-        // $data['frequency'] = json_encode($data['frequency']);
-        // $data['amount'] = json_encode($data['amount']);
-        // $data['type'] = json_encode($data['type']);
-        // $data['is_delivered'] = json_encode($data['is_delivered']);
-
-
-        // $prescription = Prescription::create($data);
-        // SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
-
-
-        // return redirect()->back()->with('success', 'Prescription created successfully.');
-
-
-
         $data = $request->validate([
             'appointment_id' => 'required',
             'patient_id' => 'required',
@@ -92,12 +64,8 @@ class PrescriptionController extends Controller
         $amounts = $data['amount'];
         unset($data['medicine_id']);
     
-
-        
-
         $prescription = Prescription::create($data);
     
-        
         foreach ($medicineIds as $index => $medicineId) {
             $prescription_item_data = [
                 'prescription_id' => $prescription->id,
@@ -108,15 +76,13 @@ class PrescriptionController extends Controller
                 'amount' => $amounts[$index],
                 'is_delivered' => '0',
             ];
-            // $prescriptionData = array_merge($data, ['medicine_id' => $medicineId]);
+
             PrescriptionItem::create($prescription_item_data);
         }
     
         SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
     
         return redirect()->back()->with('success', 'Prescription created successfully.');
-
-
 
     }
 

@@ -24,6 +24,7 @@ use App\Http\Controllers\BedController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ConsultationCommentController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\DailyIcuProgressController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DoctorController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PatientComplaintController;
+use App\Http\Controllers\PrescriptionItemController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
@@ -337,9 +339,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
-    
+
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
+
+    });
+
+    Route::prefix('prescription_items')->name('prescription_items.')->group(function () {
+        Route::get('getItems/{id}', [PrescriptionItemController::class, 'getItems'])->name('getItems');
 
     });
 
@@ -402,6 +409,9 @@ Route::group(['middleware' => ['auth']], function () {
     // ICUs routes
     Route::prefix('icus')->name('icus.')->group(function () {
         Route::get('index', [ICUController::class, 'index'])->name('index');
+        Route::get('new', [ICUController::class, 'new'])->name('new');
+        Route::get('approved', [ICUController::class, 'approved'])->name('approved');
+        Route::get('rejected', [ICUController::class, 'rejected'])->name('rejected');
         Route::get('create', [ICUController::class, 'create'])->name('create');
         Route::get('show/{icu}', [ICUController::class, 'show'])->name('show');
         Route::post('store', [ICUController::class, 'store'])->name('store');
@@ -444,6 +454,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
         Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
         Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+    });
+
+    // Daily ICU Progress routes
+    Route::prefix('daily_icu_progress')->name('daily_icu_progress.')->group(function () {
+        Route::get('index', [DailyIcuProgressController::class, 'index'])->name('index');
+        Route::get('create', [DailyIcuProgressController::class, 'create'])->name('create');
+        Route::get('show/{dailyIcuProgress}', [DailyIcuProgressController::class, 'show'])->name('show');
+        Route::post('store', [DailyIcuProgressController::class, 'store'])->name('store');
+        Route::get('edit/{dailyIcuProgress}', [DailyIcuProgressController::class, 'edit'])->name('edit');
+        Route::put('update/{dailyIcuProgress}', [DailyIcuProgressController::class, 'update'])->name('update');
+        Route::get('destroy/{dailyIcuProgress}', [DailyIcuProgressController::class, 'destroy'])->name('destroy');
     });
 
     // Food types routes

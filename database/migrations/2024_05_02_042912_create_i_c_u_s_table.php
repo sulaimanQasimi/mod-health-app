@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('i_c_u_s', function (Blueprint $table) {
             $table->id();
             $table->text('description',2000);
+            $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
+            $table->text('icu_enterance_note',2000)->nullable();
+            $table->text('icu_reject_reason',2000)->nullable();
             $table->unsignedBigInteger('appointment_id')->nullable();
             $table->unsignedBigInteger('hospitalization_id')->nullable();
             $table->unsignedBigInteger('patient_id');

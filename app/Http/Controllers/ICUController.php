@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewICUNotification;
+use App\Models\Branch;
+use App\Models\Department;
 use App\Models\ICU;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ICUController extends Controller
@@ -17,7 +20,7 @@ class ICUController extends Controller
     {
         if ($request->ajax()) {
             $icus = ICU::where('branch_id',auth()->user()->branch_id)->with('patient')->get();
-    
+
                 if ($icus) {
                     return response()->json([
                         'data' => $icus,
@@ -30,9 +33,30 @@ class ICUController extends Controller
                     ]);
                 }
         }
-    
+
         $icus = ICU::where('branch_id',auth()->user()->branch_id)->with(['patient'])->get();
         return view('pages.icus.index', compact('icus'));
+    }
+
+    public function new()
+    {
+        $icus = ICU::where('status', 'new')->latest()->paginate(10);
+
+        return view('pages.icus.new', compact('icus'));
+    }
+
+    public function approved()
+    {
+        $icus = ICU::where('status', 'approved')->latest()->paginate(10);
+
+        return view('pages.icus.approved', compact('icus'));
+    }
+
+    public function rejected()
+    {
+        $icus = ICU::where('status', 'rejected')->latest()->paginate(10);
+
+        return view('pages.icus.rejected', compact('icus'));
     }
 
     /**
@@ -57,6 +81,8 @@ class ICUController extends Controller
             'hospitalization_id' => 'nullable',
             'description' => 'required',
             'operation_id' => 'nullable',
+            'icu_enterance_note' => 'nullable',
+            'icu_reject_reason' => 'nullable',
         ]);
 
         // Create a new appointment
@@ -76,7 +102,10 @@ class ICUController extends Controller
         $labTypeSections = LabTypeSection::all();
         $previousDiagnoses = $icu->patient->diagnoses;
         $previousLabs = $icu->patient->labs;
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections'));
+        $branches = Branch::all();
+        $departments = Department::all();
+        $doctors = User::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors'));
     }
 
     /**
@@ -92,7 +121,17 @@ class ICUController extends Controller
      */
     public function update(Request $request, ICU $icu)
     {
-        //
+        $data = $request->validate([
+            'icu_enterance_note' => 'nullable',
+            'status' => 'nullable',
+            'icu_reject_reason' => 'nullable',
+
+        ]);
+
+        $icu->update($data);
+
+
+        return redirect()->route('icus.new')->with('success', 'ICU updated successfully.');
     }
 
     /**

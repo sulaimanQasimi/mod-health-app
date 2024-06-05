@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewPrescriptionNotification;
 use App\Models\Appointment;
 use App\Models\Prescription;
+use App\Models\PrescriptionItem;
 use Illuminate\Http\Request;
 
 class PrescriptionController extends Controller
@@ -41,31 +42,82 @@ class PrescriptionController extends Controller
     public function store(Request $request)
     {
 
+        // $data = $request->validate([
+        //     'description' => 'required',
+        //     'appointment_id' => 'required',
+        //     'patient_id' => 'required',
+        //     'branch_id' => 'required',
+        //     'doctor_id' => 'required',
+        //     'dosage' => 'required',
+        //     'frequency' => 'required',
+        //     'amount' => 'required',
+        //     'type' => 'required',
+        //     'is_delivered' => 'required',
+        // ]);
+        // $data['description'] = json_encode($data['description']);
+        // $data['dosage'] = json_encode($data['dosage']);
+        // $data['frequency'] = json_encode($data['frequency']);
+        // $data['amount'] = json_encode($data['amount']);
+        // $data['type'] = json_encode($data['type']);
+        // $data['is_delivered'] = json_encode($data['is_delivered']);
+
+
+        // $prescription = Prescription::create($data);
+        // SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
+
+
+        // return redirect()->back()->with('success', 'Prescription created successfully.');
+
+
+
         $data = $request->validate([
-            'description' => 'required',
             'appointment_id' => 'required',
             'patient_id' => 'required',
             'branch_id' => 'required',
             'doctor_id' => 'required',
-            'dosage' => 'required',
-            'frequency' => 'required',
-            'amount' => 'required',
-            'type' => 'required',
-            'is_delivered' => 'required',
+            'is_completed' => 'nullable',
+            'medicine_type_id' => 'required',
+            'medicine_id' => 'required',
+            'dosage' => 'nullable',
+            'frequency' => 'nullable',
+            'amount' => 'nullable',
         ]);
-        $data['description'] = json_encode($data['description']);
-        $data['dosage'] = json_encode($data['dosage']);
-        $data['frequency'] = json_encode($data['frequency']);
-        $data['amount'] = json_encode($data['amount']);
-        $data['type'] = json_encode($data['type']);
-        $data['is_delivered'] = json_encode($data['is_delivered']);
 
+        
+    
+        $medicineIds = $data['medicine_id'];
+        $medicineTypeIds = $data['medicine_type_id'];
+        $dosages = $data['dosage'];
+        $frequencies = $data['frequency'];
+        $amounts = $data['amount'];
+        unset($data['medicine_id']);
+    
+
+        
 
         $prescription = Prescription::create($data);
+    
+        
+        foreach ($medicineIds as $index => $medicineId) {
+            $prescription_item_data = [
+                'prescription_id' => $prescription->id,
+                'medicine_id' => $medicineIds[$index],
+                'medicine_type_id' => $medicineTypeIds[$index],
+                'dosage' => $dosages[$index],
+                'frequency' => $frequencies[$index],
+                'amount' => $amounts[$index],
+                'is_delivered' => '0',
+            ];
+            // $prescriptionData = array_merge($data, ['medicine_id' => $medicineId]);
+            PrescriptionItem::create($prescription_item_data);
+        }
+    
         SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
-
-
+    
         return redirect()->back()->with('success', 'Prescription created successfully.');
+
+
+
     }
 
     /**

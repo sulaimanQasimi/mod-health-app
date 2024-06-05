@@ -4,16 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Consultation extends Model
+class DailyIcuProgress extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
-    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time','doctor_id','i_c_u_id'];
-
+    protected $fillable = [
+    'i_c_u_id','icu_day','icu_diagnose','daily_events','hr','bp','spo2','t','rr','gcs','cvs','pupils','s1s2','rs','gi','renal','musculoskeletal_system','extremities','lab_ids','assesment','plan'];
+    
     public static function boot()
     {
         parent::boot();
@@ -24,6 +23,7 @@ class Consultation extends Model
 
         self::updating(function ($model) {
             $user = Auth::user();
+
             $model->updated_by = $user->id ?? 0;
         });
 
@@ -34,20 +34,8 @@ class Consultation extends Model
         });
     }
 
-    public function appointment()
+    public function createdBy()
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
-
-    public function comments()
-    {
-        return $this->hasMany(ConsultationComment::class);
-    }
-
-    public function getAssociatedDoctorsAttribute()
-    {
-        $userIds = array_map('intval', json_decode($this->doctor_id, true));
-        return User::whereIn('id', $userIds)->get();
-    }
-
 }

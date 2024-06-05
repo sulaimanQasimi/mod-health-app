@@ -326,7 +326,7 @@
                                                 <div id="prescription-input-container">
                                                     <div class="row">
                                                         <div class="col-md-2">
-                                                            <select class="form-control select2" name="type[]">
+                                                            <select class="form-control select2" name="medicine_type_id[]">
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicineTypes as $value)
@@ -339,7 +339,7 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-3">
-                                                            <select class="form-control select2" name="description[]">
+                                                            <select class="form-control select2" name="medicine_id[]">
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicines as $value)
@@ -399,7 +399,7 @@
                                 <tbody>
                                     @forelse($appointment->prescription as $prescription)
                                         <tr>
-                                            <td>{{ $prescription->id }}</td>
+                                            <td>{{ $loop->iteration }}</td>
                                             <td>{{ $prescription->patient->name }}</td>
                                             <td>
                                                 @if ($prescription->is_completed == '0')
@@ -413,8 +413,8 @@
                                             <td>
 
 
-                                                <a href="" data-bs-toggle="modal"
-                                                    data-bs-target="#showPrescriptionModal{{ $appointment->id }}"><span><i
+                                                <a href="#" data-bs-toggle="modal" onclick="getPrescriptionItems({{$prescription->id}})"
+                                                    data-bs-target="#showPrescriptionItemModal"><span><i
                                                             class="bx bx-expand"></i></span></a>
                                             </td>
                                         </tr>
@@ -434,7 +434,17 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            <div class="modal fade modal-xl" id="showPrescriptionItemModal"
+                            tabindex="-1" aria-labelledby="showPrescriptionItemModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="prescription_items_table">
 
+
+
+                                </div>
+                            </div>
+                        </div>
                         </div>
 
 
@@ -454,74 +464,30 @@
                                             <thead>
                                                 <tr>
                                                     <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.type') }}</th>
-                                                    <th>{{ localize('global.description') }}</th>
+                                                    <th>{{ localize('global.date') }}</th>
+                                                    {{-- <th>{{ localize('global.description') }}</th>
                                                     <th>{{ localize('global.dosage') }}</th>
                                                     <th>{{ localize('global.frequency') }}</th>
-                                                    <th>{{ localize('global.amount') }}</th>
+                                                    <th>{{ localize('global.amount') }}</th> --}}
                                                     <th>{{ localize('global.status') }}</th>
                                                     <th>{{ localize('global.actions') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @if (is_array($appointment->prescription) || is_object($appointment->prescription))
-                                                    @forelse ($appointment->prescription as $prescription)
-                                                        @php
-                                                            $descriptions = is_array($prescription->description)
-                                                                ? $prescription->description
-                                                                : json_decode($prescription->description, true);
-                                                            $dosages = is_array($prescription->dosage)
-                                                                ? $prescription->dosage
-                                                                : json_decode($prescription->dosage, true);
-                                                            $frequencies = is_array($prescription->frequency)
-                                                                ? $prescription->frequency
-                                                                : json_decode($prescription->frequency, true);
-                                                            $amounts = is_array($prescription->amount)
-                                                                ? $prescription->amount
-                                                                : json_decode($prescription->amount, true);
-                                                            $types = is_array($prescription->type)
-                                                                ? $prescription->type
-                                                                : json_decode($prescription->type, true);
-                                                            $statuses = is_array($prescription->is_delivered)
-                                                                ? $prescription->is_delivered
-                                                                : json_decode($prescription->is_delivered, true);
-                                                        @endphp
-                                                        @foreach ($descriptions as $key => $description)
-                                                            <tr>
-                                                                <td>{{ $loop->parent->iteration }}</td>
-                                                                <td>{{ $types[$key] }}</td>
-                                                                <td>{{ $description }}</td>
-                                                                <td>{{ $dosages[$key] }}</td>
-                                                                <td>{{ $frequencies[$key] }}</td>
-                                                                <td>{{ $amounts[$key] }}</td>
-                                                                <td>
-                                                                    <span><i
-                                                                            class="{{ $statuses[$key] == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
-                                                                </td>
-                                                                <td>
-                                                                    <a
-                                                                        href="{{ route('prescriptions.edit', $prescription->id) }}"><span><i
-                                                                                class="bx bx-edit"></i></span></a>
-                                                                    <a
-                                                                        href="{{ route('prescriptions.destroy', $prescription->id) }}"><span><i
-                                                                                class="bx bx-trash text-danger"></i></span></a>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="5">
-                                                                <div class="container">
-                                                                    <div
-                                                                        class="col-md-12 d-flex justify-content-center align-items-center">
-                                                                        <div class="badge bg-label-danger mt-4">
-                                                                            {{ localize('global.no_previous_prescriptions') }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforelse
+                                                @if ($appointment->prescription)
+                                                   @foreach($appointment->prescription as $pres_list)
+                                                    <tr>
+                                                        <td>{{$loop->iteration}}</td>
+                                                        <td>{{$pres_list->created_at}}</td>
+                                                        <td>{{$pres_list->is_completed}}</td>
+                                                        <td>
+                                                            <a href="#" data-bs-toggle="modal" onclick="getPrescriptionItems({{$pres_list->id}})"
+                                                                data-bs-target="#showPrescriptionItemModal"><span><i
+                                                                        class="bx bx-expand"></i></span></a>
+                                                        </td>
+                                                    </tr>
+
+                                                   @endforeach
                                                 @else
                                                     <tr>
                                                         <td colspan="5">
@@ -703,20 +669,7 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-                            {{-- @if ($appointment->is_completed == 0)
-                                <div class="d-flex justify-content-center mt-4">
-                                    <form
-                                        action="{{ route('lab_tests.print-card', ['appointment' => $appointment->id]) }}"
-                                        method="GET" target="_blank">
-                                        <button class="btn btn-primary" type="submit"><span
-                                                class="bx bx-printer me-1"></span>{{ localize('global.print_test_ticket') }}</button>
-                                    </form>
-                                </div>
-                            @endif --}}
+                            
 
                             <div class="col-md-12 d-flex justify-content-center">
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -890,20 +843,25 @@
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.title') }}</th>
                                         <th>{{ localize('global.doctors') }}</th>
-                                        <th>{{ localize('global.result') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($appointment->consultations as $consultation)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                <div>
+                                                    
+                                                    <span style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                                </div>
+                                            </td>
                                             <td>{{ $consultation->title }}</td>
                                             <td>
-                                                {{ $consultation->doctors }}
-                                            </td>
-                                            <td>
-                                                {{ $consultation->result }}
+                                                @foreach($consultation->associated_doctors as $doctor)
+                                                <span class="badge bg-primary">
+                                                    {{$doctor->name}}
+                                                </span>
+                                                @endforeach
                                             </td>
                                             <td>
                                                 <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
@@ -912,52 +870,49 @@
                                                             class="bx bx-trash text-danger"></i></span></a>
                                             </td>
                                         </tr>
+                                        @if($consultation->comments->isNotEmpty())
+                                            <tr>
+                                                <td colspan="4">
+                                                    <div class="row">
+                                                        <div class="col-md-12 d-flex justify-content-center">
+                                                            <h5 class="mb-2 p-2 bg-label-primary mt-2"><i
+                                                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                    @foreach($consultation->comments as $comment)
+                                                        <div class="row mb-2">
+                                                            <div class="col-md-2">
+                                                                <i class="bx bx-check-circle text-success"></i>
+                                                                <span class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
+                                                            </div>
+                                                            <div class="col-md-10" style="text-align: justify;">
+                                                                {{ $comment->comment }}
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
+                                        <tr>
+                                            <td colspan="4" class="text-center">
+                                                <div class="badge bg-label-danger mt-4">
                                                     {{ localize('global.no_previous_consultations') }}
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-md-12 d-flex justify-content-center">
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}</h5>
-                        </div>
-                        <div class="container">
-                            <div class="col-md-12">
-                                <div class="row">
-
-                                    @foreach ($appointment->consultations as $consultation)
-                                        @forelse($consultation->comments as $comment)
-                                            <div class="col-md-2">
-                                                <i class="bx bx-check-circle text-success"></i>
-                                                <span
-                                                    class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                            </div>
-                                            <div class="col-md-10" style="text-align: justify;">
-                                                {{ $comment->comment }}
-                                            </div>
-                                            <div class="white-space">
-                                                <hr>
-                                            </div>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class="p-2 bg-label-danger mt-4">
-                                                        {{ localize('global.no_comments_yet') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforelse
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
+                        
+                        
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-transfer p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>
@@ -1914,7 +1869,7 @@
             // Create the type dropdown
             const typeDropdown = document.createElement('select');
             typeDropdown.className = 'form-control select2';
-            typeDropdown.name = 'type[]';
+            typeDropdown.name = 'medicine_type_id[]';
 
             // Append the options to the type dropdown
             @foreach ($medicineTypes as $value)
@@ -1927,7 +1882,7 @@
             // Create the medicine dropdown
             const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2';
-            medicineDropdown.name = 'description[]';
+            medicineDropdown.name = 'medicine_id[]';
 
             // Append the options to the medicine dropdown
             var medicineOption='';
@@ -2173,9 +2128,26 @@
             console.error(error);
             }
         });
+    }
+
+        function getPrescriptionItems(id){
+
+            $.ajax({
+            type: "GET",
+            url: "{{url('prescription_items/getItems/')}}/"+id,
+            dataType: "html",
+            success: function(data) {
+                $('#prescription_items_table').html(data);
+
+            },
+            error: function(xhr, status, error) {
+            // Handle the error response
+            console.error(error);
+            }
+        });
 
         }
-
+    
 
     </script>
 @endsection

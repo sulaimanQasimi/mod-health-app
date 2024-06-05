@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('doctor_id')->nullable();
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('patient_id');
+            $table->unsignedBigInteger('i_c_u_id')->nullable();
+            
             $table->text('result',2000)->nullable();
             $table->date('date');
             $table->string('time');
@@ -34,6 +36,10 @@ return new class extends Migration
             $table->foreign('patient_id')
             ->references('id')
             ->on('patients');
+
+            $table->foreign('i_c_u_id')
+            ->references('id')
+            ->on('i_c_u_s');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

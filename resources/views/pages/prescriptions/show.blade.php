@@ -20,55 +20,38 @@
                     <div class="card-body">
 
 
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.type') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.dosage') }}</th>
-                                    <th>{{ localize('global.frequency') }}</th>
-                                    <th>{{ localize('global.amount') }}</th>
+                                    <th>{{ localize('global.patient_name') }}</th>
+                                    <th>{{ localize('global.status') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @php
-                                    $descriptions = is_array($prescription->description)
-                                        ? $prescription->description
-                                        : json_decode($prescription->description, true);
-                                    $dosages = is_array($prescription->dosage)
-                                        ? $prescription->dosage
-                                        : json_decode($prescription->dosage, true);
-                                    $frequencies = is_array($prescription->frequency)
-                                        ? $prescription->frequency
-                                        : json_decode($prescription->frequency, true);
-                                    $amounts = is_array($prescription->amount)
-                                        ? $prescription->amount
-                                        : json_decode($prescription->amount, true);
-                                    $types = is_array($prescription->type)
-                                        ? $prescription->type
-                                        : json_decode($prescription->type, true);
-                                    $statuses = is_array($prescription->is_delivered)
-                                        ? $prescription->is_delivered
-                                        : json_decode($prescription->is_delivered, true);
-                                    // dd($statuses);
-                                @endphp
-                                @foreach ($descriptions as $key => $description)
+                                
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $types[$key] }}</td>
-                                        <td>{{ $description }}</td>
-                                        <td>{{ $dosages[$key] }}</td>
-                                        <td>{{ $frequencies[$key] }}</td>
-                                        <td>{{ $amounts[$key] }}</td>
+                                        <td>{{ $prescription->id }}</td>
+                                        <td>{{ $prescription->patient->name }}</td>
                                         <td>
-                                            <a href="" class="type-button" data-type="{{ $statuses[$key] }}"><i
-                                                    class="{{ $statuses[$key] == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></a>
-                                            <input type="hidden" name="is_delivered[]" value="{{ $statuses[$key] }}">
+                                            @if ($prescription->is_completed == '0')
+                                                <span
+                                                    class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                            @else
+                                                <span
+                                                    class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+
+
+                                            <a href="#" data-bs-toggle="modal" onclick="getPrescriptionItems({{$prescription->id}})"
+                                                data-bs-target="#showPrescriptionItemModal"><span><i
+                                                        class="bx bx-expand"></i></span></a>
                                         </td>
                                     </tr>
-                                @endforeach
+                                
                             </tbody>
                         </table>
                         @if($prescription->is_completed == '0')

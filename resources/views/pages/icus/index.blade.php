@@ -18,6 +18,7 @@
                             <tr>
                                 <th></th>
                                 <th>{{ localize('global.id') }}</th>
+                                <th>{{ localize('global.patient_name') }}</th>
                                 <th>{{ localize('global.description') }}</th>
                                 <th>{{ localize('global.register_date') }}</th>
                                 <th></th>
@@ -72,10 +73,20 @@
                             data: 'id'
                         },
                         {
+                            data: 'patient',
+                            render: function(data) {
+                                return data ? data.name : '';
+                            }
+                        },
+                        {
                             data: 'description',
                         },
                         {
-                            data: 'created_at'
+                            data: 'created_at',
+                            render: function(data) {
+                            var formattedDate = moment(data.created_at).format('YYYY-MM-DD HH:MM:SS');
+                            return formattedDate;
+                            }
                         },
 
                         {

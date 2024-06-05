@@ -55,7 +55,6 @@ class PrescriptionController extends Controller
             'amount' => 'nullable',
         ]);
 
-        
     
         $medicineIds = $data['medicine_id'];
         $medicineTypeIds = $data['medicine_type_id'];

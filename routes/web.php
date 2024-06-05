@@ -37,6 +37,7 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PatientComplaintController;
+use App\Http\Controllers\PrescriptionItemController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
@@ -341,6 +342,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
+
+    });
+
+    Route::prefix('prescription_items')->name('prescription_items.')->group(function () {
+        Route::get('getItems/{id}', [PrescriptionItemController::class, 'getItems'])->name('getItems');
 
     });
 

@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Prescription extends Model
+class PrescriptionItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed'];
+    protected $fillable = ['prescription_id','dosage','frequency','amount','medicine_id','medicine_type_id', 'is_delivered'];
 
     public static function boot()
     {
@@ -49,9 +49,8 @@ class Prescription extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function prescriptionItems()
+    public function prescription()
     {
-        return $this->hasMany(PrescriptionItem::class);
+        return $this->belongsTo(Prescription::class);
     }
-
 }

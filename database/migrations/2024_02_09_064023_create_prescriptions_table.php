@@ -13,12 +13,6 @@ return new class extends Migration
     {
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->id();
-            $table->text('description', 5000);
-            $table->string('dosage', 191);
-            $table->string('frequency', 191);
-            $table->string('amount', 191);
-            $table->string('type', 191);
-            $table->string('is_delivered');
             $table->tinyInteger('is_completed')->default('0');
 
             $table->unsignedBigInteger('branch_id');

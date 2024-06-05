@@ -1,0 +1,63 @@
+
+<div class="modal-header">
+    <h5 class="modal-title" id="showLabsItemModalLabel">
+        {{ localize('global.show_lab_details') }}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"
+        aria-label="Close"></button>
+</div>
+<div class="modal-body" >
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{ localize('global.number') }}</th>
+                <th>{{ localize('global.type') }}</th>
+                <th>{{ localize('global.description') }}</th>
+                <th>{{ localize('global.dosage') }}</th>
+                <th>{{ localize('global.frequency') }}</th>
+                <th>{{ localize('global.amount') }}</th>
+                <th>{{ localize('global.status') }}</th>
+                <th>{{ localize('global.actions') }}</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($prescription_items as $item)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $item->medicine_id }}</td>
+                <td>{{ $item->medicine_type_id }}</td>
+                <td>{{ $item->dosage }}</td>
+                <td>{{ $item->frequency }}</td>
+                <td>{{ $item->amount }}</td>
+                <td>
+                    <span><i
+                            class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
+                </td>
+                <td>
+                    <a
+                        href="{{ route('prescriptions.edit', $item->id) }}"><span><i
+                                class="bx bx-edit"></i></span></a>
+                    <a
+                        href="{{ route('prescriptions.destroy', $item->id) }}"><span><i
+                                class="bx bx-trash text-danger"></i></span></a>
+                </td>
+            </tr>
+            @endforeach
+    
+        </tbody>
+    </table>
+    
+</div>
+<div class="modal-footer">
+    
+        <div class="d-flex justify-content-center mt-4">
+            <form
+                {{-- action="{{ route('lab_tests.print-card', ['lab' => $prescription_items[0]->lab_id]) }}" --}}
+                method="GET" target="_blank">
+                <button class="btn btn-primary" type="submit"><span
+                        class="bx bx-printer me-1"></span>{{ localize('global.print_labs_card') }}</button>
+            </form>
+        </div>
+   
+</div>
+

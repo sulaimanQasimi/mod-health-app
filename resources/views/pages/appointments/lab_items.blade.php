@@ -1,7 +1,7 @@
 
 <div class="modal-header">
     <h5 class="modal-title" id="showLabsItemModalLabel">
-        {{ localize('global.show_prescription_details') }}</h5>
+        {{ localize('global.show_lab_details') }}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal"
         aria-label="Close"></button>
 </div>

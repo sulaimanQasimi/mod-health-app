@@ -731,5 +731,7 @@ return [
     'assesment' => 'ارزیابی',
     'lab_ids' => 'معاینات',
     'icu_daily_plan' => 'پلان',
+    'show_lab_details' => 'نمایش جزئیات معاینات',
+    'print_labs_card' => 'چاپ کارت معاینات'
 
 ];

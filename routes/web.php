@@ -398,6 +398,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Operations routes
     Route::prefix('operations')->name('operations.')->group(function () {
         Route::get('new', [OperationController::class, 'new'])->name('new');
+        Route::get('approved', [OperationController::class, 'approved'])->name('approved');
         Route::get('completed', [OperationController::class, 'completed'])->name('completed');
         Route::get('create', [OperationController::class, 'create'])->name('create');
         Route::get('show/{operation}', [OperationController::class, 'show'])->name('show');

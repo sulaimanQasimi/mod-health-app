@@ -17,25 +17,25 @@
 
                                 <div class="row p-2 text-center">
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.patient_name') }}</h5>
                                         <div>
                                             {{ $operation->patient->name }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_type') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_type') }}</h5>
                                         <div>
                                             {{ $operation->operationType->name }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.date') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
                                         <div>
                                             {{ $operation->date }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.time') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.time') }}</h5>
                                         <div>
                                             {{ $operation->time }}
                                         </div>
@@ -43,61 +43,74 @@
                                 </div>
                                 <div class="row p-2 text-center">
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_plan') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_plan') }}</h5>
                                         <div>
                                             {{ $operation->plan }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_duration') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_duration') }}</h5>
                                         <div>
                                             {{ $operation->planned_duration }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.position_on_bed') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.position_on_bed') }}</h5>
                                         <div>
                                             {{ $operation->position_on_bed }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.estimated_blood_waste') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.estimated_blood_waste') }}</h5>
                                         <div>
                                             {{ $operation->estimated_blood_waste }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row p-2 text-center">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.other_problems') }}</h5>
+                                    <div class="col-md-6">
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.other_problems') }}</h5>
                                         <div>
                                             {{ $operation->other_problems }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_surgion') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_surgion') }}</h5>
                                         <div>
+                                            <span class="badge bg-primary">
                                             {{ $operation->surgion->name }}
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.anesthesia_log') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_assistants') }}</h5>
+                                        <div>
+                                            @foreach ($operation->associated_assistants as $doctor)
+                                                    <span class="badge bg-primary">
+                                                        {{ $doctor->name }}
+                                                    </span>
+                                                @endforeach
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="row p-2 text-center">
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log') }}</h5>
                                         <div>
                                             {{ $operation->anesthesia_log->name }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.anesthesist') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesist') }}</h5>
                                         <div>
                                             {{ $operation->anesthesist->name }}
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="row p-2 text-center">
                                     @if (isset($operation->scrub_nurse->name))
                                         <div class="col-md-3">
-                                            <h5 class="mb-2">{{ localize('global.scrub_nurse') }}</h5>
+                                            <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.scrub_nurse') }}</h5>
                                             <div>
                                                 {{ $operation->scrub_nurse->name }}
                                             </div>
@@ -105,7 +118,7 @@
                                     @endif
                                     @if (isset($operation->circulation_nurse->name))
                                         <div class="col-md-3">
-                                            <h5 class="mb-2">{{ localize('global.circulation_nurse') }}</h5>
+                                            <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.circulation_nurse') }}</h5>
                                             <div>
                                                 {{ $operation->circulation_nurse->name }}
                                             </div>
@@ -116,28 +129,20 @@
 
                                 <div class="row p-2 text-center">
                                     <div class="col-md-6">
-                                        <h5 class="mb-2">{{ localize('global.anesthesia_log_reply') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log_reply') }}</h5>
                                         <div>
                                             {{ $operation->anesthesia_log_reply }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <h5 class="mb-2">{{ localize('global.anesthesia_plan') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_plan') }}</h5>
                                         <div>
                                             {{ $operation->anesthesia_plan }}
                                         </div>
                                     </div>
                                 </div>
-                                @if ($operation->is_operation_approved == 0)
-                                    <div class="col-md-12 d-flex justify-content-center mb-2">
-                                        @if ($operation->is_operation_done == 0)
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
-                                                        class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
-                                        @endif
-                                    </div>
-                                @endif
 
+                                
 
                                 <div class="modal fade" id="createOperationNursesModal{{ $operation->id }}" tabindex="-1"
                                     aria-labelledby="createOperationNursesModalLabel{{ $operation->id }}"
@@ -222,13 +227,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12 d-flex justify-content-center mb-2">
-                                    @if ($operation->is_operation_done == 0)
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createOperationModal{{ $operation->id }}"><span><i
-                                                    class="bx bx-check"></i>{{ localize('global.complete_operation') }}</span></button>
-                                    @endif
-                                </div>
+                                
 
                                 <div class="modal fade" id="createOperationModal{{ $operation->id }}" tabindex="-1"
                                     aria-labelledby="createOperationModalLabel{{ $operation->id }}" aria-hidden="true">
@@ -637,7 +636,27 @@
                     </div>
                     @endif
                         </div>
-
+                        <div class="col-md-12 mb-2">
+                            <div class="row">
+                                <div class="col-md-6 text-center">
+                                    @if ($operation->is_operation_approved == 0)
+                            
+                                    @if ($operation->is_operation_done == 0)
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
+                                                    class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
+                                    @endif
+                            @endif
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    @if ($operation->is_operation_done == 0)
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#createOperationModal{{ $operation->id }}"><span><i
+                                                class="bx bx-check"></i>{{ localize('global.complete_operation') }}</span></button>
+                                @endif
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

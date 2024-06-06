@@ -214,6 +214,11 @@
                             <div>{{ localize('global.new_operations') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('operations.approved') ? 'active' : '' }}">
+                        <a href="{{ route('operations.approved') }}" class="menu-link">
+                            <div>{{ localize('global.approved_operations') }}</div>
+                        </a>
+                    </li>
                     <li class="menu-item {{ Route::is('operations.completed') ? 'active' : '' }}">
                         <a href="{{ route('operations.completed') }}" class="menu-link">
                             <div>{{ localize('global.completed_operations') }}</div>

@@ -15,7 +15,7 @@ class LabController extends Controller
      */
     public function index()
     {
-        $labs = Lab::where('branch_id', auth()->user()->branch_id)->where('result',null)->latest()->paginate(10);
+        $labs = Lab::where('branch_id', auth()->user()->branch_id)->where('status',false)->latest()->paginate(10);
         return view('pages.labs.index',compact('labs'));
     }
 

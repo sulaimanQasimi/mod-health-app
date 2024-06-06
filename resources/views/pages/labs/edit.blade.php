@@ -20,9 +20,7 @@
                                     <th>{{ localize('global.number') }}</th>
                                     <th>{{ localize('global.test_name') }}</th>
                                     <th>{{ localize('global.test_status') }}</th>
-                                    <th>{{ localize('global.result') }}</th>
-                                    <th>{{ localize('global.result_file') }}</th>
-                                    {{-- <th>{{ localize('global.actions') }}</th> --}}
+                                    <th>{{ localize('global.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -38,20 +36,16 @@
                                                 <span class="badge bg-success">{{ localize('global.tested') }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $item->result }}</td>
+                                        
                                         <td>
-                                            @isset($item->result_file)
-                                                <a href="{{ asset('storage/' . $item->result_file) }}" target="_blank">
-                                                    <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                </a>
-                                            @endisset
-                        
+                                            <a href="{{ route('lab_items.updateStatus', $item->id) }}" class="btn btn-sm btn-{{ $item->status == '0' ? 'danger' : 'success' }}">
+                                                @if ($item->status == '1')
+                                                    <span class="bx bx-check"></span>
+                                                @else
+                                                <span class="bx bx-x"></span>
+                                                @endif
+                                            </a>
                                         </td>
-                                        {{-- <td>
-                                            <a href="{{ route('lab_tests.edit', $item) }}"><i class="bx bx-message-square-edit"></i></a>
-
-                        
-                                        </td> --}}
                         
                                     </tr>
                         

@@ -738,6 +738,9 @@ return [
     'previous_operations' => 'عملیات های قبلی',
     'previous_hospitalizations' => 'بستر های قبلی',
     'previous_prescriptions' => 'نسخه های قبلی',
-    'related_items' => 'اقلام داخل نسخه'
+    'related_items' => 'اقلام داخل نسخه',
+    '12_hours' => '12 ساعته',
+    '24_hours' => '24 ساعته',
+
 
 ];

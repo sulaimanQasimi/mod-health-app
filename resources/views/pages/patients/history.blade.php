@@ -241,7 +241,13 @@
                                 </td>
                                 <td>{{ $prescription->doctor->name }}</td>
                                 <td>
-                                    {{$prescription->status}}
+                                    @if ($prescription->is_completed == '0')
+                                                    <span
+                                                        class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                                @else
+                                                    <span
+                                                        class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                                @endif
                                 </td>
                                 <td>{{ $prescription->created_at }}</td>
 
@@ -260,7 +266,8 @@
 
                                     </td>
                                 </tr>
-                            <tr>
+                            <tr >
+                                <td colspan="4">
                                 <table class="table mb-4">
                                     <thead>
                                         <tr>
@@ -294,7 +301,7 @@
 
                                     </tbody>
                                 </table>
-
+                            </td>
                             </tr>
 
                         @endforeach

@@ -1,7 +1,7 @@
 
 <div class="modal-header">
     <h5 class="modal-title" id="showLabsItemModalLabel">
-        {{ localize('global.show_lab_details') }}</h5>
+        {{ localize('global.show_prescription_details') }}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal"
         aria-label="Close"></button>
 </div>
@@ -46,16 +46,16 @@
     
         </tbody>
     </table>
-    
+
 </div>
 <div class="modal-footer">
     
         <div class="d-flex justify-content-center mt-4">
             <form
-                {{-- action="{{ route('lab_tests.print-card', ['lab' => $prescription_items[0]->lab_id]) }}" --}}
+                action="{{ route('prescriptions.print-card', ['appointment' => $appointment->id, 'prescriptionId' => $prescription->id]) }}"
                 method="GET" target="_blank">
                 <button class="btn btn-primary" type="submit"><span
-                        class="bx bx-printer me-1"></span>{{ localize('global.print_labs_card') }}</button>
+                        class="bx bx-printer me-1"></span>{{ localize('global.print_prescription') }}</button>
             </form>
         </div>
    

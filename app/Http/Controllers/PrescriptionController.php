@@ -117,15 +117,16 @@ class PrescriptionController extends Controller
         //
     }
 
-    public function printCard($appointmentId)
+    public function printCard($appointmentId, $prescriptionId)
     {
         $appointment = Appointment::findOrFail($appointmentId);
+        $prescription = Prescription::findOrFail($prescriptionId);
 
-        $prescriptions = Prescription::where('appointment_id', $appointmentId)->get();
+        $prescriptionItems = PrescriptionItem::where('prescription_id', $prescriptionId)->get();
 
         $patient = $appointment->patient;
 
-        return view('pages.prescriptions.print_card', compact('appointment','prescriptions','patient'));
+        return view('pages.prescriptions.print_card', compact('appointment','prescription','patient','prescriptionItems'));
     }
 
     public function updateStatus($prescriptionId, $key)

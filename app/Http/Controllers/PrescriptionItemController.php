@@ -10,7 +10,9 @@ class PrescriptionItemController extends Controller
 {
     public function getItems($id){
         $prescription_items = PrescriptionItem::where('prescription_id',$id)->get();
-        return view('pages.appointments.prescription_items',compact('prescription_items'));
+        $prescription = Prescription::findOrFail($id);
+        $appointment = $prescription->appointment;
+        return view('pages.appointments.prescription_items',compact('prescription_items','appointment','prescription'));
      }
 
      public function changeStatus(Request $request, PrescriptionItem $prescriptionItem)

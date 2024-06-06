@@ -513,7 +513,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="modal-footer">
+                                    {{-- <div class="modal-footer">
                                         @if ($appointment->is_completed == 0)
                                             <div class="d-flex justify-content-center mt-4">
                                                 <form
@@ -524,7 +524,7 @@
                                                 </form>
                                             </div>
                                         @endif
-                                    </div>
+                                    </div> --}}
 
 
                                 </div>

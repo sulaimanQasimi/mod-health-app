@@ -196,9 +196,9 @@ public function addImage(Request $request, $id)
         $previousAnesthesias = $patient->anesthesias;
         $previousHospitalizations = $patient->hospitalizations;
         $previousLabs = $patient->labs;
-        $previousPrescriptioins = $patient->prescriptions;
+        $previousPrescriptions = $patient->prescriptions;
         $previousIcus = $patient->icus;
         return view('pages.patients.history',compact('patient','previousDiagnoses','previousConsultations','previousAnesthesias',
-    'previousHospitalizations','previousLabs','previousPrescriptioins','previousIcus','appointments'));
+    'previousHospitalizations','previousLabs','previousPrescriptions','previousIcus','appointments'));
     }
 }

@@ -215,37 +215,223 @@
 
                     </tbody>
                 </table>
+
+                <h5 class="mb-1 p-3 bg-label-primary mt-4">{{ localize('global.previous_prescriptions') }}</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ localize('global.number') }}</th>
+                            <th>{{ localize('global.created_by') }}</th>
+                            <th>{{ localize('global.status') }}</th>
+                            <th>{{ localize('global.created_at') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @isset($previousPrescriptions)
+
+
+                        @foreach ($previousPrescriptions as $prescription)
+                            <tr>
+                                <td>
+                                    <div>
+
+                                        <span
+                                            style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $prescription->doctor->name }}</td>
+                                <td>
+                                    {{$prescription->status}}
+                                </td>
+                                <td>{{ $prescription->created_at }}</td>
+
+                            </tr>
+
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="row">
+                                            <div class="col-md-12 d-flex justify-content-center">
+                                                <h5 class="mb-2 p-2 bg-label-primary mt-2"><i
+                                                        class="bx bx-chat p-1"></i>{{ localize('global.related_items') }}
+                                                </h5>
+                                            </div>
+                                        </div>
+
+
+                                    </td>
+                                </tr>
+                            <tr>
+                                <table class="table mb-4">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.type') }}</th>
+                                            <th>{{ localize('global.description') }}</th>
+                                            <th>{{ localize('global.dosage') }}</th>
+                                            <th>{{ localize('global.frequency') }}</th>
+                                            <th>{{ localize('global.amount') }}</th>
+                                            <th>{{ localize('global.status') }}</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($prescription->prescriptionItems as $item)
+
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->medicineType->type }}</td>
+                                            <td>{{ $item->medicine->name }}</td>
+                                            <td>{{ $item->dosage }}</td>
+                                            <td>{{ $item->frequency }}</td>
+                                            <td>{{ $item->amount }}</td>
+                                            <td>
+                                                <span><i
+                                                        class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
+                                            </td>
+
+                                        </tr>
+                                        @endforeach
+
+                                    </tbody>
+                                </table>
+
+                            </tr>
+
+                        @endforeach
+                        @endisset
+                    </tbody>
+                </table>
+
+                <h5 class="mb-1 p-3 bg-label-primary mt-4">{{ localize('global.previous_consultations') }}</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ localize('global.number') }}</th>
+                            <th>{{ localize('global.title') }}</th>
+                            <th>{{ localize('global.date') }}</th>
+                            <th>{{ localize('global.time') }}</th>
+                            <th>{{ localize('global.doctors') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @isset($previousConsultations)
+
+
+                        @forelse ($previousConsultations as $consultation)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $consultation->title }}</td>
+                                <td>
+                                    {{$consultation->date}}
+                                </td>
+                                <td>{{ $consultation->time }}</td>
+                                <td>
+                                    @foreach($consultation->associated_doctors as $doctor)
+                                    <span class="badge bg-label-primary">
+                                        {{$doctor->name}}
+                                    </span>
+                                    @endforeach
+                                </td>
+
+                            </tr>
+
+                        @empty
+                            <div class="container">
+                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                    <div class=" badge bg-label-danger mt-4">
+                                        {{ localize('global.no_previous_consultations') }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                            @endisset
+                    </tbody>
+                </table>
+                <h5 class="mb-1 p-3 bg-label-primary mt-4">{{ localize('global.previous_hospitalizations') }}</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ localize('global.number') }}</th>
+                            <th>{{ localize('global.reason') }}</th>
+                            <th>{{ localize('global.room') }}</th>
+                            <th>{{ localize('global.bed') }}</th>
+                            <th>{{ localize('global.discharge_remark') }}</th>
+                            <th>{{ localize('global.date') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @isset($previousHospitalizations)
+
+
+                        @foreach ($previousHospitalizations as $hospitalization)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $hospitalization->reason }}</td>
+                                <td>
+                                    {{$hospitalization->room->name}}
+                                </td>
+                                <td>{{ $hospitalization->bed->number }}</td>
+                                <td>
+
+                                   {{$hospitalization->discharge_remark}}
+
+                                </td>
+                                <td>
+
+                                   {{$hospitalization->created_at}}
+
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+                        @endisset
+                    </tbody>
+                </table>
+
+
+                <h5 class="mb-1 p-3 bg-label-primary mt-4">{{ localize('global.previous_operations') }}</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ localize('global.number') }}</th>
+                            <th>{{ localize('global.operation_type') }}</th>
+                            <th>{{ localize('global.date') }}</th>
+                            <th>{{ localize('global.time') }}</th>
+                            <th>{{ localize('global.doctors') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @isset($previousAnesthesias)
+
+
+                        @foreach ($previousAnesthesias as $anesthesia)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $anesthesia->operationType->name }}</td>
+                                <td>
+                                    {{$anesthesia->date}}
+                                </td>
+                                <td>{{ $anesthesia->time }}</td>
+                                <td>
+
+                                    <span class="badge bg-label-primary">
+                                        {{$anesthesia->surgion->name}}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+                        @endisset
+                    </tbody>
+                </table>
             </div>
             </div>
         </div>
     </div>
 </div>
-
-@endsection
-
-@section('scripts')
-
-<script>
-    $(document).ready(function()
-{
-    $('#department_id').on('change', function()
-{
-    var departmentID = $(this).val();
-    if(departmentID !== '')
-    {
-        $.ajax({
-            url: '/get_doctors/' + departmentID,
-            type: 'GET',
-            success: function(response)
-            {
-
-                $('#doctor_id').html(response);
-            }
-        })
-    }
-})
-})
-</script>
 
 @endsection
 

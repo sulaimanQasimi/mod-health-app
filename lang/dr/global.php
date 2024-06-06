@@ -733,6 +733,11 @@ return [
     'icu_daily_plan' => 'پلان',
     'show_lab_details' => 'نمایش جزئیات معاینات',
     'print_labs_card' => 'چاپ کارت معاینات',
-    'approved_operations' => 'عملیات های تائید شده'
+    'approved_operations' => 'عملیات های تائید شده',
+    'previous_consultations' => 'مشوره های قبلی',
+    'previous_operations' => 'عملیات های قبلی',
+    'previous_hospitalizations' => 'بستر های قبلی',
+    'previous_prescriptions' => 'نسخه های قبلی',
+    'related_items' => 'اقلام داخل نسخه'
 
 ];

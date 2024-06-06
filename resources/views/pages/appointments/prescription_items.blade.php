@@ -16,7 +16,6 @@
                 <th>{{ localize('global.frequency') }}</th>
                 <th>{{ localize('global.amount') }}</th>
                 <th>{{ localize('global.status') }}</th>
-                <th>{{ localize('global.actions') }}</th>
                 
             </tr>
         </thead>
@@ -24,8 +23,8 @@
             @foreach ($prescription_items as $item)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $item->medicine_id }}</td>
-                <td>{{ $item->medicine_type_id }}</td>
+                <td>{{ $item->medicineType->type }}</td>
+                <td>{{ $item->medicine->name }}</td>
                 <td>{{ $item->dosage }}</td>
                 <td>{{ $item->frequency }}</td>
                 <td>{{ $item->amount }}</td>
@@ -33,14 +32,7 @@
                     <span><i
                             class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
                 </td>
-                <td>
-                    <a
-                        href="{{ route('prescriptions.edit', $item->id) }}"><span><i
-                                class="bx bx-edit"></i></span></a>
-                    <a
-                        href="{{ route('prescriptions.destroy', $item->id) }}"><span><i
-                                class="bx bx-trash text-danger"></i></span></a>
-                </td>
+                
             </tr>
             @endforeach
     

@@ -513,20 +513,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    {{-- <div class="modal-footer">
-                                        @if ($appointment->is_completed == 0)
-                                            <div class="d-flex justify-content-center mt-4">
-                                                <form
-                                                    action="{{ route('prescriptions.print-card', ['appointment' => $appointment->id]) }}"
-                                                    method="GET" target="_blank">
-                                                    <button class="btn btn-primary" type="submit"><span
-                                                            class="bx bx-printer me-1"></span>{{ localize('global.print_prescription') }}</button>
-                                                </form>
-                                            </div>
-                                        @endif
-                                    </div> --}}
-
-
                                 </div>
                             </div>
                         </div>

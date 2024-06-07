@@ -69,10 +69,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
-
+                                    @if ($hospitalization->is_discharged == 0)
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createVisitModal{{ $hospitalization->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                                        @endif
                             <!-- Create visit Modal -->
                             <div class="modal fade" id="createVisitModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createVisitModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -221,10 +222,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-hard-hat p-1"></i>{{ localize('global.hospitalization_checkups') }}</h5>
-
+                                    @if ($hospitalization->is_discharged == 0)
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createLabModal{{ $hospitalization->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                                        @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createLabModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createLabModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -364,7 +366,7 @@
                             {{-- icu starts here  --}}
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
-                            @if ($hospitalization->is_completed == 0)
+                                    @if ($hospitalization->is_discharged == 0)
                                 <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                     data-bs-target="#createICUModal{{ $hospitalization->id }}"><span><i
                                             class="bx bx-plus"></i></span></button>
@@ -708,10 +710,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-walk p-1"></i>{{ localize('global.create_complaint') }}</h5>
-
+                                    @if ($hospitalization->is_discharged == 0)
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createComplaintModal{{ $hospitalization->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                                        @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createComplaintModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createComplaintModalLabel{{ $hospitalization->id }}"
@@ -786,10 +789,11 @@
                             {{-- discharge --}}
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-walk p-1"></i>{{ localize('global.discharge_patient') }}</h5>
-
+                                    @if ($hospitalization->is_discharged == 0)
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createDischargeModal{{ $hospitalization->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                                        @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createDischargeModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createDischargeModalLabel{{ $hospitalization->id }}"
@@ -825,6 +829,7 @@
                                                         for="discharge_remark{{ $hospitalization->id }}">{{ localize('global.discharge_remark') }}</label>
                                                     <textarea class="form-control" id="discharge_remark{{ $hospitalization->id }}" name="discharge_remark"
                                                         rows="3"></textarea>
+                                                    <input type="hidden" name="discharged_at" value="{{\Carbon\Carbon::now()}}">
                                                 </div>
                                         </div>
                                         <div class="modal-footer">

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('relation_to_patient')->nullable();
             $table->string('companion_card_type')->nullable();
             $table->text('discharge_remark',2000)->nullable();
+            $table->timestamp('discharged_at')->nullable();
             $table->tinyInteger('is_discharged')->default(false);
             $table->enum('discharge_status', ['recovered', 'died', 'moved'])->nullable();
             $table->unsignedBigInteger('room_id');

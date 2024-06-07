@@ -743,6 +743,11 @@ return [
     '24_hours' => '24 ساعته',
     'edit_food_type' => 'ویرایش نوعیت غذا',
     'antibiotic' => 'نوعیت انتی بیوتیک',
+    'hospitalizations' => 'مریضان بستر',
+    'under_hospitalizations' => 'مریضان داخل بستر',
+    'discharged_hospitalizations' => 'مریضان رخصت شده',
+    'discharge_status' => 'نوع رخصت',
+    'discharge_date' => 'تاریخ رخصت'
 
 
 

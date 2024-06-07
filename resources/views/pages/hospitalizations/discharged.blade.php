@@ -23,6 +23,7 @@
                                 <th>{{localize('global.room')}}</th>
                                 <th>{{localize('global.bed')}}</th>
                                 <th>{{localize('global.hospitalization_date')}}</th>
+                                <th>{{localize('global.discharge_date')}}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -66,7 +67,7 @@
 
             if (dt_basic_table.length) {
                 dt_basic = dt_basic_table.DataTable({
-                    ajax: "{{ route('under_reviews.index') }}",
+                    ajax: "{{ route('hospitalizations.discharged') }}",
                     columns: [{
                             data: 'id'
                         },
@@ -99,6 +100,13 @@
                             return formattedDate;
                             }
                         },
+                        {
+                            data: 'discharged_at',
+                            render: function(data) {
+                            var formattedDate = moment(data.discharged_at).format('YYYY-MM-DD HH:MM:SS');
+                            return formattedDate;
+                            }
+                        },
 
                         {
                             data: ''
@@ -125,7 +133,7 @@
                             searchable: false,
                             render: function(data, type, full, meta) {
                                 return (
-                                    `<a href="{{ url('under_reviews/show/') }}` + `/` + full['id'] +
+                                    `<a href="{{ url('hospitalizations/show/') }}` + `/` + full['id'] +
                                     `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>`
                                 );
                             }

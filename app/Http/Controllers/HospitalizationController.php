@@ -16,9 +16,26 @@ class HospitalizationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('pages.hospitalizations.index');
+        if ($request->ajax()) {
+            $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
+
+                if ($hospitalizations) {
+                    return response()->json([
+                        'data' => $hospitalizations,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+
+        $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
+        return view('pages.hospitalizations.index', compact('hospitalizations'));
     }
 
     /**
@@ -27,6 +44,28 @@ class HospitalizationController extends Controller
     public function create()
     {
         //
+    }
+
+    public function discharged(Request $request)
+    {
+        if ($request->ajax()) {
+            $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','1')->with(['patient','room','bed'])->get();
+
+                if ($hospitalizations) {
+                    return response()->json([
+                        'data' => $hospitalizations,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+
+        $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','1')->with(['patient','room','bed'])->get();
+        return view('pages.hospitalizations.discharged',compact('hospitalizations'));
     }
 
     /**
@@ -51,6 +90,7 @@ class HospitalizationController extends Controller
             'companion_father_name'=> 'nullable',
             'relation_to_patient'=> 'nullable',
             'companion_card_type'=> 'nullable',
+            'discharged_at'=> 'nullable',
         ]);
 
         $data['food_type_id'] = json_encode($data['food_type_id']);
@@ -97,8 +137,10 @@ class HospitalizationController extends Controller
         $data = $request->validate([
             'is_discharged' => 'required',
             'discharge_remark' => 'required',
-            'discharge_status' => 'required'
+            'discharge_status' => 'required',
+            'discharged_at' => 'required',
         ]);
+
 
         $hospitalization->update($data);
 
@@ -106,7 +148,7 @@ class HospitalizationController extends Controller
         $occupied_bed->update(['is_occupied' => false]);
         $occupied_bed->save();
 
-        return redirect()->route('visits.index')->with('success', 'Hospitalization updated successfully.');
+        return redirect()->route('hospitalizations.index')->with('success', 'Hospitalization updated successfully.');
     }
 
     /**

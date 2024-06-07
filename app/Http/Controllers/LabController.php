@@ -19,6 +19,12 @@ class LabController extends Controller
         return view('pages.labs.index',compact('labs'));
     }
 
+    public function completed()
+    {
+        $labs = Lab::where('branch_id', auth()->user()->branch_id)->where('status',true)->latest()->paginate(10);
+        return view('pages.labs.completed',compact('labs'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */

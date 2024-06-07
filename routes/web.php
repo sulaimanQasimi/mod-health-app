@@ -288,6 +288,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Labratory routes
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
         Route::get('index', [LabController::class, 'index'])->name('index');
+        Route::get('completed', [LabController::class, 'completed'])->name('completed');
         Route::get('create', [LabController::class, 'create'])->name('create');
         Route::get('show/{lab}', [LabController::class, 'show'])->name('show');
         Route::post('store', [LabController::class, 'store'])->name('store');

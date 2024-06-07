@@ -153,12 +153,25 @@
         @endcan
 
         @can('show-labs-menu')
-            <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
-                <a href="{{ route('lab_tests.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-test-tube text-primary"></i>
-                    <div>{{ localize('global.checkups') }}</div>
-                </a>
-            </li>
+        <li class="menu-item {{ Route::is('lab_tests.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-bed text-primary"></i>
+                <div>{{ localize('global.checkups') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
+                    <a href="{{ route('lab_tests.index') }}" class="menu-link">
+                        <div>{{ localize('global.under_lab_tests') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('lab_tests.completed') ? 'active' : '' }}">
+                    <a href="{{ route('lab_tests.completed') }}" class="menu-link">
+                        <div>{{ localize('global.completed_lab_tests') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
         @endcan
 
         @can('show-icu-menu')

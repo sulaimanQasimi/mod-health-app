@@ -747,7 +747,9 @@ return [
     'under_hospitalizations' => 'مریضان داخل بستر',
     'discharged_hospitalizations' => 'مریضان رخصت شده',
     'discharge_status' => 'نوع رخصت',
-    'discharge_date' => 'تاریخ رخصت'
+    'discharge_date' => 'تاریخ رخصت',
+    'under_lab_tests' => 'معاینات تحت کار',
+    'completed_lab_tests' => 'معاینات تکمیل شده',
 
 
 

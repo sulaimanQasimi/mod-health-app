@@ -7,7 +7,6 @@ use App\Models\Appointment;
 use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
-use App\Models\Diagnose;
 use App\Models\Doctor;
 use App\Models\FoodType;
 use App\Models\LabType;
@@ -25,11 +24,27 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // Retrieve all appointments
-        $appointments = Appointment::where('branch_id', auth()->user()->branch_id)->latest()->paginate(15);
 
+    public function index(Request $request)
+    {
+
+        if ($request->ajax()) {
+            $appointments = Appointment::where('branch_id',auth()->user()->branch_id)->with(['patient','doctor'])->latest()->get();
+
+                if ($appointments) {
+                    return response()->json([
+                        'data' => $appointments,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+
+        $appointments = Appointment::where('branch_id',auth()->user()->branch_id)->with('patient','doctor')->latest()->get();
         return view('pages.appointments.index', compact('appointments'));
     }
 
@@ -153,18 +168,49 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('success', 'Appointment deleted successfully.');
     }
 
-    public function doctorAppointments()
+    public function doctorAppointments(Request $request)
     {
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)->where('is_completed','0')->latest()->paginate(10);
 
-        return view('pages.appointments.index', compact('appointments'));
+        if ($request->ajax()) {
+            $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','0')->with(['patient','doctor'])->latest()->get();
+
+                if ($appointments) {
+                    return response()->json([
+                        'data' => $appointments,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+
+        $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','0')->with(['patient','doctor'])->latest()->get();
+        return view('pages.appointments.doctor_appointments', compact('appointments'));
     }
 
-    public function completedAppointments()
+    public function completedAppointments(Request $request)
     {
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)->where('is_completed','1')->latest()->paginate(10);
+        if ($request->ajax()) {
+            $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','1')->with(['patient','doctor'])->latest()->get();
 
-        return view('pages.appointments.index', compact('appointments'));
+                if ($appointments) {
+                    return response()->json([
+                        'data' => $appointments,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Internal Server Error',
+                        'code' => 500,
+                        'data' => [],
+                    ]);
+                }
+        }
+
+        $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','1')->with(['patient','doctor'])->latest()->get();
+        return view('pages.appointments.completed', compact('appointments'));
     }
 
 }

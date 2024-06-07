@@ -60,6 +60,7 @@ class VisitController extends Controller
             't' => 'nullable',
             'spo2' => 'nullable',
             'pain' => 'nullable',
+            'antibiotic' => 'nullable',
 
         ]);
 

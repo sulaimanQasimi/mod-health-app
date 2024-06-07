@@ -135,6 +135,14 @@
                                                             <input type="text" class="form-control" name="pain" />
                                                         </div>
                                                     </div>
+                                                    <div class="row mt-1 mb-1">
+                                                        <div class="col-md-12">
+                                                            <label
+                                                            for="antibiotic{{ $hospitalization->id }}">{{ localize('global.antibiotic') }}</label>
+                                                        <input type="text" class="form-control" name="antibiotic" />
+                                                        </div>
+
+                                                    </div>
 
                                                 </div>
                                         </div>

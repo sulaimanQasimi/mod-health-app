@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleHasPermissionSeeder::class,
             FoodTypeSeeder::class,
+            MedicineTypeSeeder::class,
+            MedicineSeeder::class,
 
 
 

@@ -13,7 +13,7 @@ class FoodTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $labTypes = [
+        $foodTypes = [
             ['id' => '1','name' => 'Coma'],
             ['id' => '2','name' => 'CRF'],
             ['id' => '3','name' => 'Septec and Burn'],
@@ -26,9 +26,9 @@ class FoodTypeSeeder extends Seeder
             ['id' => '10','name' => 'Normal'],
         ];
 
-        foreach($labTypes as $labType){
+        foreach($foodTypes as $foodType){
 
-            FoodType::create($labType);
+            FoodType::create($foodType);
         }
     }
 }

@@ -349,7 +349,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('prescription_items')->name('prescription_items.')->group(function () {
         Route::get('getItems/{id}', [PrescriptionItemController::class, 'getItems'])->name('getItems');
-        Route::put('changeStatus/{prescriptionItem}', [PrescriptionItemController::class, 'changeStatus'])->name('changeStatus');
+        Route::get('changeStatus/{id}/update-status', [PrescriptionItemController::class, 'changeStatus'])->name('changeStatus');
 
     });
 

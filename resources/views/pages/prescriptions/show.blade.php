@@ -30,7 +30,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                                     <tr>
                                         <td>{{ $prescription->id }}</td>
                                         <td>{{ $prescription->patient->name }}</td>
@@ -58,7 +58,7 @@
                                             @endif
                                         </td>
                                     </tr>
-                                
+
                             </tbody>
                         </table>
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -73,7 +73,7 @@
                                     <th>{{ localize('global.frequency') }}</th>
                                     <th>{{ localize('global.amount') }}</th>
                                     <th>{{ localize('global.status') }}</th>
-                                    
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -86,7 +86,7 @@
                                     <td>{{ $item->frequency }}</td>
                                     <td>{{ $item->amount }}</td>
                                     <td>
-                                        <span><i
+                                        {{-- <span><i
                                                 class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i>
                                                 @if($item->is_delivered == '0')
 
@@ -99,15 +99,23 @@
                                                     </button>
                                                 </form>
                                             @endif
-                                            </span>
-                                                
+                                            </span> --}}
+
+                                            <a href="{{ route('prescription_items.changeStatus', $item) }}" class="btn btn-sm btn-{{ $item->is_delivered == '0' ? 'danger' : 'success' }}">
+                                                @if ($item->is_delivered == '1')
+                                                    <span class="bx bx-check"></span>
+                                                @else
+                                                <span class="bx bx-x"></span>
+                                                @endif
+                                            </a>
+
                                     </td>
                                 </tr>
                                 @endforeach
-                        
+
                             </tbody>
                         </table>
-                        
+
                         </form>
                         </button>
                     </div>

@@ -15,17 +15,14 @@ class PrescriptionItemController extends Controller
         return view('pages.appointments.prescription_items',compact('prescription_items','appointment','prescription'));
      }
 
-     public function changeStatus(Request $request, PrescriptionItem $prescriptionItem)
+     public function changeStatus($id)
     {
-        // Validate the input
-        $validatedData = $request->validate([
-            'is_delivered' => 'required',
-        ]);
 
-        // Update the prescription
-        $prescriptionItem->update($validatedData);
+        $item = PrescriptionItem::findOrFail($id);
+        $item->is_delivered = $item->is_delivered == '1' ? '0' : '1';
+        $item->save();
 
-        // Redirect to the prescriptions index page with a success message
-        return redirect()->back()->with('success', 'prescription updated successfully.');
+        return redirect()->back()->with('success', 'Item status updated successfully.');
+
     }
 }

@@ -39,7 +39,7 @@
                 <td>{{ $lab->patient->name }}</td>
                 <td>
                     {{-- <a href="{{ route('labs.show', $lab) }}"><i class="bx bx-show-alt"></i></a> --}}
-                    <a href="{{ route('lab_tests.edit', $lab) }}"><i class="bx bx-message-square-edit"></i></a>
+                    <a href="{{ route('lab_tests.edit', $lab) }}"><i class="bx bx-expand"></i></a>
                     {{-- <a href="{{ route('lab_tests.show', $lab) }}"><i class="bx bx-message-square-edit"></i></a> --}}
                     {{-- <form action="{{ route('doctors.destroy', $doctor) }}" method="POST">
                         @csrf

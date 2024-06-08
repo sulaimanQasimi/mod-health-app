@@ -307,8 +307,7 @@
                                                             <textarea class="form-control" id="operation_remark{{ $operation->id }}" name="operation_remark" rows="3"></textarea>
                                                         </div>
 
-                                                        <input type="hidden" name="room_id" value="{{$operation->room->id}}">
-                                                        <input type="hidden" name="bed_id" value="{{$operation->bed->id}}">
+                                                        
 
                                                     </div>
                                             </div>
@@ -867,16 +866,16 @@
                         <div class="col-md-12 mb-2">
                             <div class="row">
                                 <div class="col-md-6 text-center">
-                                    @if ($operation->is_operation_approved == 0)
-                                        @if ($operation->is_operation_done == 0)
+                                
+                                        @if ($operation->is_operation_approved == 0 && $operation->is_operation_done == 0)
                                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
                                                         class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
                                         @endif
-                                    @endif
+                                
                                 </div>
                                 <div class="col-md-6 text-center">
-                                    @if ($operation->is_operation_done == 0)
+                                    @if ($operation->is_operation_approved == 1 && $operation->is_operation_done == 0)
                                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                             data-bs-target="#createOperationModal{{ $operation->id }}"><span><i
                                                     class="bx bx-check"></i>{{ localize('global.complete_operation') }}</span></button>

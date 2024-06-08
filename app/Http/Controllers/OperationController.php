@@ -121,6 +121,9 @@ class OperationController extends Controller
 
         ]);
 
+        $data['room_id'] = $operation->room->id ?? '';
+        $data['bed_id'] = $operation->bed->id ?? '';
+        
         $occupied_bed = Bed::findOrFail($data['bed_id']);
 
         $occupied_bed->update(['is_occupied' => false]);

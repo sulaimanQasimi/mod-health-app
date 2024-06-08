@@ -74,6 +74,8 @@ class AnesthesiaController extends Controller
             'operation_circulation_nurse_id' => 'nullable',
             'anesthesia_plan' => 'nullable',
             'operation_expense_remarks' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
         ]);
 
         $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);

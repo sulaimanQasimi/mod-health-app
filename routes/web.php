@@ -408,6 +408,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [OperationController::class, 'store'])->name('store');
         Route::get('edit/{operation}', [OperationController::class, 'edit'])->name('edit');
         Route::put('update/{operation}', [OperationController::class, 'update'])->name('update');
+        Route::put('complete/{operation}', [OperationController::class, 'complete'])->name('complete');
         Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
     });
 

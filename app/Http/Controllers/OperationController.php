@@ -90,9 +90,37 @@ class OperationController extends Controller
             'operation_circulation_nurse_id' => 'nullable',
             'date' => 'nullable',
             'time' => 'nullable',
-            'operation_expense_remarks' => 'nullable'
+            'operation_expense_remarks' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
 
         ]);
+
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => true]);
+        $occupied_bed->save();
+
+        $operation->update($data);
+
+        return redirect()->back()->with('success', 'Operation updated successfully.');
+    }
+
+    public function complete(Request $request, Anesthesia $operation)
+    {
+        $data = $request->validate([
+            'is_operation_done' => 'nullable',
+            'operation_remark' => 'nullable',
+            'operation_result' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
+
+        ]);
+
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => false]);
+        $occupied_bed->save();
 
         $operation->update($data);
 

@@ -32,6 +32,8 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('room_id')->nullable();
+            $table->unsignedBigInteger('bed_id')->nullable();
             $table->text('operation_assistants_id')->nullable();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('operation_surgion_id')->nullable();
@@ -75,6 +77,12 @@ return new class extends Migration
             $table->foreign('hospitalization_id')
             ->references('id')
             ->on('hospitalizations');
+            $table->foreign('room_id')
+            ->references('id')
+            ->on('rooms');
+            $table->foreign('bed_id')
+            ->references('id')
+            ->on('beds');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

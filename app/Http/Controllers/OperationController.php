@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
 use App\Models\Bed;
+use App\Models\FoodType;
 use App\Models\Operation;
+use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -65,7 +67,9 @@ class OperationController extends Controller
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
         $rooms = Room::all();
         $beds = Bed::all();
-        return view('pages.operations.show',compact('operation','operation_doctors','rooms','beds'));
+        $foodTypes = FoodType::all();
+        $relations = Relation::all();
+        return view('pages.operations.show',compact('operation','operation_doctors','rooms','beds','foodTypes','relations'));
     }
 
     /**

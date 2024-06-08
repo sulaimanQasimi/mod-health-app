@@ -595,7 +595,42 @@
                         @endif
 
 
+                        <div class="modal fade" id="createReserveModal{{ $operation->id }}" tabindex="-1"
+                            aria-labelledby="createReserveModalLabel{{ $operation->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createReserveModalLabel{{ $operation->id }}">
+                                            {{ localize('global.reserve_operation') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('operations.reserve', $operation->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" id="is_reserved{{ $operation->is_reserved }}"
+                                                name="is_reserved" value="1">
 
+                                            <div class="form-group">
+
+                                                <div class="form-group">
+                                                    <label
+                                                        for="reserve_reason{{ $operation->id }}">{{ localize('global.reserve_reason') }}</label>
+                                                    <textarea class="form-control" id="reserve_reason{{ $operation->id }}" name="reserve_reason" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
 
 
@@ -865,20 +900,33 @@
                         </div>
                         <div class="col-md-12 mb-2">
                             <div class="row">
-                                <div class="col-md-6 text-center">
+                                <div class="col-md-4 text-center">
                                 
-                                        @if ($operation->is_operation_approved == 0 && $operation->is_operation_done == 0)
+                                        @if ($operation->is_operation_approved == 0 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
                                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
                                                         class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
                                         @endif
                                 
                                 </div>
-                                <div class="col-md-6 text-center">
+                                <div class="col-md-4 text-center">
                                     @if ($operation->is_operation_approved == 1 && $operation->is_operation_done == 0)
                                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                             data-bs-target="#createOperationModal{{ $operation->id }}"><span><i
                                                     class="bx bx-check"></i>{{ localize('global.complete_operation') }}</span></button>
+                                    @endif
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    @if ($operation->is_operation_done == 0 && $operation->is_reserved == 0)
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#createReserveModal{{ $operation->id }}"><span><i
+                                                    class="bx bx-calendar-check"></i>{{ localize('global.reserve_operation') }}</span></button>
+                                        @else
+                                        <button class="btn btn-success">
+                                            <a href="{{ route('operations.unreserve', $operation->id) }}" class="text-white">
+                                              <span><i class="bx bx-transfer"></i>{{localize('global.move_operation')}}</span>
+                                            </a>
+                                          </button>
                                     @endif
                                 </div>
                             </div>

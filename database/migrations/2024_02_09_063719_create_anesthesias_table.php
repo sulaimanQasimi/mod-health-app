@@ -23,8 +23,10 @@ return new class extends Migration
             $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
             $table->tinyInteger('operation_result')->default('0');
             $table->tinyInteger('is_operation_done')->default('0');
+            $table->tinyInteger('is_reserved')->default('0');
             $table->tinyInteger('is_operation_approved')->default('0');
             $table->text('anesthesia_log_reply',2000)->nullable();
+            $table->text('reserve_reason',2000)->nullable();
             $table->text('anesthesia_plan',2000)->nullable();
             $table->text('operation_remark',2000)->nullable();
             $table->text('operation_expense_remarks',2000)->nullable();

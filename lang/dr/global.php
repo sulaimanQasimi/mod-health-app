@@ -750,6 +750,11 @@ return [
     'discharge_date' => 'تاریخ رخصت',
     'under_lab_tests' => 'معاینات تحت کار',
     'completed_lab_tests' => 'معاینات تکمیل شده',
+    'reserve_operation' => 'ریزرف عملیات',
+    'reserve_reason' => 'دلیل ریزرف نمودن',
+    'reserved_operations' => 'عملیات های ریزرف شده',
+    'move_operation' => 'خارج نمودن از لیست ریزرف',
+    'reserved' => 'ریزرف شده'
 
 
 

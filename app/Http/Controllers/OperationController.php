@@ -22,15 +22,22 @@ class OperationController extends Controller
     public function new()
     {
 
-        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '0')->latest()->paginate(15);
+        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '0')->where('is_reserved', '0')->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
+    }
+
+    public function reserved()
+    {
+
+        $reservedOperations = Anesthesia::reserved()->paginate(10);
+        return view('pages.operations.reserved', compact('reservedOperations'));
     }
 
     public function approved()
     {
 
-        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '1')->where('is_operation_done', '0')->latest()->paginate(15);
+        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '1')->where('is_operation_done', '0')->where('is_reserved', '0')->latest()->paginate(15);
 
         return view('pages.operations.approved', compact('operations'));
     }
@@ -140,5 +147,27 @@ class OperationController extends Controller
     public function destroy(Operation $operation)
     {
         //
+    }
+
+    public function reserveOperation(Request $request, $operationId)
+    {
+
+        $operation = Anesthesia::findOrFail($operationId);
+        $operation->reserve();
+        $operation->update(['reserve_reason' => $request->reserve_reason]);
+        $operation->save();
+
+        // Add any additional logic, such as redirecting or returning a response
+        return redirect()->route('operations.reserved')->with('success', 'Operation reserved successfully.');
+    }
+
+    public function unreserveOperation($operationId)
+    {
+
+        $operation = Anesthesia::findOrFail($operationId);
+        $operation->unreserve();
+
+        // Add any additional logic, such as redirecting or returning a response
+        return redirect()->back()->with('success', 'Operation moved successfully.');
     }
 }

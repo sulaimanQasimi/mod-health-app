@@ -402,6 +402,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('operations')->name('operations.')->group(function () {
         Route::get('new', [OperationController::class, 'new'])->name('new');
         Route::get('approved', [OperationController::class, 'approved'])->name('approved');
+        Route::get('reserved', [OperationController::class, 'reserved'])->name('reserved');
         Route::get('completed', [OperationController::class, 'completed'])->name('completed');
         Route::get('create', [OperationController::class, 'create'])->name('create');
         Route::get('show/{operation}', [OperationController::class, 'show'])->name('show');
@@ -410,6 +411,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{operation}', [OperationController::class, 'update'])->name('update');
         Route::put('complete/{operation}', [OperationController::class, 'complete'])->name('complete');
         Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
+        Route::put('/operation/{operationId}/reserve', [OperationController::class, 'reserveOperation'])->name('reserve');
+        Route::get('/operation/{operationId}/unreserve', [OperationController::class, 'unreserveOperation'])->name('unreserve');
     });
 
     // ICUs routes

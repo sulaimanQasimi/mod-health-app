@@ -18,11 +18,11 @@ class LabItemController extends Controller
     }
 
     public function updateStatus($id)
-{
-    $item = LabItem::findOrFail($id);
-    $item->status = $item->status == '1' ? '0' : '1';
-    $item->save();
+    {
+        $item = LabItem::findOrFail($id);
+        $item->status = $item->status == '1' ? '0' : '1';
+        $item->save();
 
-    return redirect()->back()->with('success', 'Item status updated successfully.');
-}
+        return redirect()->back()->with('success', 'Item status updated successfully.');
+    }
 }

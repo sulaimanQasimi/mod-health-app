@@ -914,11 +914,13 @@
                                             data-bs-target="#createReserveModal{{ $operation->id }}"><span><i
                                                     class="bx bx-calendar-check"></i>{{ localize('global.reserve_operation') }}</span></button>
                                         @else
+                                        @if($operation->is_operation_done == 0)
                                         <button class="btn btn-success">
                                             <a href="{{ route('operations.unreserve', $operation->id) }}" class="text-white">
                                               <span><i class="bx bx-transfer"></i>{{localize('global.move_operation')}}</span>
                                             </a>
                                           </button>
+                                          @endif
                                     @endif
                                 </div>
                             </div>

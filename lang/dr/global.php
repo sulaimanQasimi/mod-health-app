@@ -755,7 +755,11 @@ return [
     'reserved_operations' => 'عملیات های ریزرف شده',
     'move_operation' => 'خارج نمودن از لیست ریزرف',
     'reserved' => 'ریزرف شده',
-    'weight' => 'وزن'
+    'weight' => 'وزن',
+    'anesthesia_type' => 'نوعیت انستیزی',
+    'local' => 'Local',
+    'spinal' => 'Spinal',
+    'general' => 'General',
 
 
 

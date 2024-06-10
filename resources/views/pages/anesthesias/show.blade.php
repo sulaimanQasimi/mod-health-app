@@ -17,25 +17,25 @@
 
                                 <div class="row p-2 text-center">
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.patient_name') }}</h5>
                                         <div>
                                             {{ $anesthesia->patient->name }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_type') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_type') }}</h5>
                                         <div>
                                             {{ $anesthesia->operationType->name }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.date') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
                                         <div>
                                             {{ $anesthesia->date }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.time') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.time') }}</h5>
                                         <div>
                                             {{ $anesthesia->time }}
                                         </div>
@@ -43,25 +43,25 @@
                                 </div>
                                 <div class="row p-2 text-center">
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_plan') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_plan') }}</h5>
                                         <div>
                                             {{ $anesthesia->plan }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_duration') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_duration') }}</h5>
                                         <div>
                                             {{ $anesthesia->planned_duration }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.position_on_bed') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.position_on_bed') }}</h5>
                                         <div>
                                             {{ $anesthesia->position_on_bed }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.estimated_blood_waste') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.estimated_blood_waste') }}</h5>
                                         <div>
                                             {{ $anesthesia->estimated_blood_waste }}
                                         </div>
@@ -69,20 +69,21 @@
                                 </div>
                                 <div class="row p-2 text-center">
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.other_problems') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.other_problems') }}</h5>
                                         <div>
                                             {{ $anesthesia->other_problems }}
                                         </div>
                                     </div>
+
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.operation_surgion') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_surgion') }}</h5>
                                         <div>
                                             {{ $anesthesia->surgion->name }}
                                         </div>
                                     </div>
                                     @if(isset($anesthesia->anesthesia_log->name))
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.anesthesia_log') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log') }}</h5>
                                         <div>
                                             {{$anesthesia->anesthesia_log->name}}
                                         </div>
@@ -90,7 +91,7 @@
                                     @endif
                                     @if(isset($anesthesia->anesthesist->name))
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.anesthesist') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesist') }}</h5>
                                         <div>
                                             {{$anesthesia->anesthesist->name}}
                                         </div>
@@ -101,7 +102,7 @@
                                 <div class="row p-2 text-center">
                                     @if(isset($anesthesia->scrub_nurse->name))
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.scrub_nurse') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.scrub_nurse') }}</h5>
                                         <div>
                                             {{ $anesthesia->scrub_nurse->name }}
                                         </div>
@@ -109,22 +110,30 @@
                                     @endif
                                     @if(isset($anesthesia->circulation_nurse->name))
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.circulation_nurse') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.circulation_nurse') }}</h5>
                                         <div>
                                             {{ $anesthesia->circulation_nurse->name }}
                                         </div>
                                     </div>
                                     @endif
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.anesthesia_log_reply') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log_reply') }}</h5>
                                         <div>
                                             {{ $anesthesia->anesthesia_log_reply }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.anesthesia_plan') }}</h5>
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_plan') }}</h5>
                                         <div>
                                             {{ $anesthesia->anesthesia_plan }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row p-2 text-center">
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_type') }}</h5>
+                                        <div>
+                                            {{ $anesthesia->anesthesia_type }}
                                         </div>
                                     </div>
                                 </div>
@@ -177,7 +186,7 @@
                                                         </div>
 
                                                         <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <label
                                                                 for="operation_anesthesia_log_id{{ $anesthesia->id }}">{{ localize('global.anesthesia_log') }}</label>
                                                             <select class="form-control select2"
@@ -195,7 +204,7 @@
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <label
                                                                 for="anesthesist{{ $anesthesia->id }}">{{ localize('global.anesthesist') }}</label>
                                                             <select class="form-control select2"
@@ -210,6 +219,16 @@
 
                                                                     </option>
                                                                 @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label for="anesthesia_type{{ $anesthesia->id }}">{{ localize('global.anesthesia_type') }}</label>
+                                                            <select class="form-control select2" name="anesthesia_type" id="anesthesia_type">
+                                                                <option value="">{{ localize('global.select') }}</option>
+                                                                <option value="local" {{ $anesthesia->anesthesia_type == 'local' ? 'selected' : '' }}>{{ localize('global.local') }}</option>
+                                                                <option value="spinal" {{ $anesthesia->anesthesia_type == 'spinal' ? 'selected' : '' }}>{{ localize('global.spinal') }}</option>
+                                                                <option value="general" {{ $anesthesia->anesthesia_type == 'general' ? 'selected' : '' }}>{{ localize('global.general') }}</option>
                                                             </select>
                                                         </div>
                                                     </div>

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('estimated_blood_waste',192)->nullable();
             $table->string('other_problems',192)->nullable();
             $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
+            $table->enum('anesthesia_type', ['local', 'spinal', 'general'])->nullable();
             $table->tinyInteger('operation_result')->default('0');
             $table->tinyInteger('is_operation_done')->default('0');
             $table->tinyInteger('is_reserved')->default('0');

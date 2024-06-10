@@ -107,6 +107,13 @@ class OperationController extends Controller
 
         ]);
 
+        if (isset($data['date']) && $data['date'] > $operation->date) {
+            $operation->reserve();
+        }
+
+        $data['room_id'] = $operation->room->id ?? '';
+        $data['bed_id'] = $operation->bed->id ?? '';
+
         $occupied_bed = Bed::findOrFail($data['bed_id']);
 
         $occupied_bed->update(['is_occupied' => true]);
@@ -166,7 +173,8 @@ class OperationController extends Controller
 
         $operation = Anesthesia::findOrFail($operationId);
         $operation->unreserve();
-
+        $operation->update(['is_operation_approved' => '0']);
+        $operation->save();
         // Add any additional logic, such as redirecting or returning a response
         return redirect()->back()->with('success', 'Operation moved successfully.');
     }

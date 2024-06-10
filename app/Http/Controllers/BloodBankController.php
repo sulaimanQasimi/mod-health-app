@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewBloodBankNotification;
 use App\Models\BloodBank;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,8 @@ class BloodBankController extends Controller
      */
     public function index()
     {
-        //
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->get();
+        return view('pages.blood_banks.index',compact('bloodRequests'));
     }
 
     /**
@@ -28,7 +30,24 @@ class BloodBankController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the input
+        $validatedData = $request->validate([
+            'group' => 'required',
+            'rh' => 'required',
+            'branch_id' => 'required',
+            'appointment_id' => 'nullable',
+            'hospitalization_id' => 'nullable',
+            'i_c_u_id' => 'required',
+            'operation_id' => 'nullable',
+            'under_review_id' => 'nullable',
+            'anesthesia_id' => 'nullable',
+        ]);
+
+        $bloodBank = BloodBank::create($validatedData);
+
+        SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
+
+        return redirect()->back()->with('success', 'Blood Request created successfully.');
     }
 
     /**

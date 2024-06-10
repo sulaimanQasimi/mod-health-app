@@ -106,5 +106,17 @@ class RoleSeeder extends Seeder
             'updated_at'=>'2023-08-22 10:14:48'
             ] );
 
+            Role::create( [
+            'id'=>9,
+            'name'=>'blood-bank',
+            'name_dr'=>'کارمند بانک خون',
+            'name_pa'=>NULL,
+            'guard_name'=>'web',
+            'recipients'=>NULL,
+            'sector_id'=>NULL,
+            'created_at'=>'2023-08-22 10:14:48',
+            'updated_at'=>'2023-08-22 10:14:48'
+            ] );
+
     }
 }

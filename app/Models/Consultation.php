@@ -12,7 +12,7 @@ class Consultation extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time','doctor_id','i_c_u_id'];
+    protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time','department_id','i_c_u_id','created_by'];
 
     public static function boot()
     {
@@ -48,6 +48,12 @@ class Consultation extends Model
     {
         $userIds = array_map('intval', json_decode($this->doctor_id, true));
         return User::whereIn('id', $userIds)->get();
+    }
+
+    public function getAssociatedDepartmentsAttribute()
+    {
+        $departmentIds = array_map('intval', json_decode($this->department_id, true));
+        return Department::whereIn('id', $departmentIds)->get();
     }
 
 }

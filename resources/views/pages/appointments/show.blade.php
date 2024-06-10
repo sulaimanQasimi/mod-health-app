@@ -783,26 +783,12 @@
 
                                                 <label
                                                     for="department{{ $appointment->id }}">{{ localize('global.department') }}</label>
-                                                <select class="form-control select2" name="department" id="department">
+                                                <select class="form-control select2" name="department_id[]" id="department" multiple>
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($departments as $value)
                                                         <option value="{{ $value->id }}"
                                                             {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->name }}
-
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                                <label
-                                                    for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
-                                                <select class="form-control select2" name="doctor_id[]" id="doctor_id"
-                                                    multiple>
-                                                    <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name_en }}
 
                                                         </option>
                                                     @endforeach
@@ -836,7 +822,7 @@
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.title') }}</th>
-                                        <th>{{ localize('global.doctors') }}</th>
+                                        <th>{{ localize('global.departments') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -852,9 +838,9 @@
                                             </td>
                                             <td>{{ $consultation->title }}</td>
                                             <td>
-                                                @foreach ($consultation->associated_doctors as $doctor)
+                                                @foreach ($consultation->associated_departments as $department)
                                                     <span class="badge bg-primary">
-                                                        {{ $doctor->name }}
+                                                        {{ $department->name }}
                                                     </span>
                                                 @endforeach
                                             </td>
@@ -883,14 +869,24 @@
                                                 <td colspan="4">
                                                     @foreach ($consultation->comments as $comment)
                                                         <div class="row mb-2">
-                                                            <div class="col-md-2">
-                                                                <i class="bx bx-check-circle text-success"></i>
+                                                            <div class="col-md-3">
+                                        
                                                                 <span
+                                                                class="bg-label-primary p-1 m-1">{{ $comment->department->name }}</span>
+                                                                
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <i class="bx bx-transfer text-success"></i>
+                                                            </div>
+                                                                <div class="col-md-2">
+                                                                    <span
                                                                     class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                                            </div>
-                                                            <div class="col-md-10" style="text-align: justify;">
-                                                                {{ $comment->comment }}
-                                                            </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-10 p-4 mt-2" style="text-align: justify;">
+                                                                        {{ $comment->comment }}
+                                                                    </div>
+                                                                </div>
                                                         </div>
                                                     @endforeach
                                                 </td>

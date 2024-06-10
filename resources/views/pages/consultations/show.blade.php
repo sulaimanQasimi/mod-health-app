@@ -110,13 +110,23 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     @forelse ($consultation->comments as $comment )
+                                    <div class="col-md-3">
+                                        
+                                        <span
+                                        class="bg-label-primary p-1 m-1">{{ $comment->department->name }}</span>
+                                        
+                                    </div>
+                                    <div class="col-md-1">
+                                        <i class="bx bx-transfer text-success"></i>
+                                    </div>
                                         <div class="col-md-2">
-                                            <i class="bx bx-check-circle text-success"></i>
                                             <span
                                             class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
                                         </div>
-                                        <div class="col-md-10" style="text-align: justify;">
-                                            {{ $comment->comment }}
+                                        <div class="row">
+                                            <div class="col-md-10 p-4 mt-2" style="text-align: justify;">
+                                                {{ $comment->comment }}
+                                            </div>
                                         </div>
                                         <div class="white-space">
                                             <hr>
@@ -160,6 +170,8 @@
                                             name="appointment_id" value="{{ $appointment->id }}">
                                         <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
                                             value="{{ $appointment->doctor->id }}">
+                                        <input type="hidden" id="department_id{{ $appointment->id }}" name="department_id"
+                                            value="{{ $appointment->doctor->department_id }}">
                                         <input type="hidden" id="consultation_id{{ $appointment->id }}" name="consultation_id"
                                             value="{{ $consultation->id }}">
 

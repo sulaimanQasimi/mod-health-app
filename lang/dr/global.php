@@ -754,7 +754,8 @@ return [
     'reserve_reason' => 'دلیل ریزرف نمودن',
     'reserved_operations' => 'عملیات های ریزرف شده',
     'move_operation' => 'خارج نمودن از لیست ریزرف',
-    'reserved' => 'ریزرف شده'
+    'reserved' => 'ریزرف شده',
+    'weight' => 'وزن'
 
 
 

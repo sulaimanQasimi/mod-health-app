@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->unsignedBigInteger('branch_id');
-            $table->text('doctor_id')->nullable();
+            $table->text('department_id')->nullable();
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('i_c_u_id')->nullable();

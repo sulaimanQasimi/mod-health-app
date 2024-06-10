@@ -80,7 +80,7 @@ class HomeController extends Controller
         ])
             ->get()
             ->map(function ($user) {
-                $consultationsCount = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$user->id\"')")->count();
+                // $consultationsCount = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$user->id\"')")->count();
                 // $anesthesiasCount = Anesthesia::whereRaw("JSON_CONTAINS(operation_doctor_id, '\"$user->id\"')")->count();
                 $anesthesiasCount = Anesthesia::
                 where(function($query) use
@@ -96,7 +96,7 @@ class HomeController extends Controller
 
                 return [
                     'name' => $user->name,
-                    'weight' => $user->appointments_count + $consultationsCount + $anesthesiasCount + $user->consultation_comments_count + $user->hospitalizations_count + $user->i_c_u_s_count + $user->labs_count + $user->prescriptions_count + $user->visits_count,
+                    'weight' => $user->appointments_count + $anesthesiasCount + $user->consultation_comments_count + $user->hospitalizations_count + $user->i_c_u_s_count + $user->labs_count + $user->prescriptions_count + $user->visits_count,
                 ];
             })
             ->values()

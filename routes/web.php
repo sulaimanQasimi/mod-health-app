@@ -21,6 +21,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedController;
+use App\Http\Controllers\BloodBankController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ConsultationCommentController;
 use App\Http\Controllers\ConsultationController;
@@ -485,6 +486,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{foodType}', [FoodTypeController::class, 'edit'])->name('edit');
         Route::put('update/{foodType}', [FoodTypeController::class, 'update'])->name('update');
         Route::get('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Blood bank routes
+    Route::prefix('blood_banks')->name('blood_banks.')->group(function () {
+        Route::get('index', [BloodBankController::class, 'index'])->name('index');
+        Route::get('create', [BloodBankController::class, 'create'])->name('create');
+        Route::get('show/{bloodBank}', [BloodBankController::class, 'show'])->name('show');
+        Route::post('store', [BloodBankController::class, 'store'])->name('store');
+        Route::get('edit/{bloodBank}', [BloodBankController::class, 'edit'])->name('edit');
+        Route::put('update/{bloodBank}', [BloodBankController::class, 'update'])->name('update');
+        Route::get('destroy/{bloodBank}', [BloodBankController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

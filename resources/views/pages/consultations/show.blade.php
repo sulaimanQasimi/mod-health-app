@@ -169,7 +169,7 @@
                                         <input type="hidden" id="appointment_id{{ $appointment->id }}"
                                             name="appointment_id" value="{{ $appointment->id }}">
                                         <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                            value="{{ $appointment->doctor->id }}">
+                                            value="{{ auth()->user()->id }}">
                                         <input type="hidden" id="department_id{{ $appointment->id }}" name="department_id"
                                             value="{{ $appointment->doctor->department_id }}">
                                         <input type="hidden" id="consultation_id{{ $appointment->id }}" name="consultation_id"

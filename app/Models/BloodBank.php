@@ -12,7 +12,7 @@ class BloodBank extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id'];
+    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','department_id'];
 
     public static function boot()
     {
@@ -32,5 +32,10 @@ class BloodBank extends Model
             $model->deleted_by = $user->id ?? 0;
             $model->save();
         });
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
     }
 }

@@ -490,7 +490,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Blood bank routes
     Route::prefix('blood_banks')->name('blood_banks.')->group(function () {
-        Route::get('index', [BloodBankController::class, 'index'])->name('index');
+        Route::get('new', [BloodBankController::class, 'new'])->name('new');
+        Route::get('approved', [BloodBankController::class, 'approved'])->name('approved');
+        Route::get('rejected', [BloodBankController::class, 'rejected'])->name('rejected');
+        Route::get('delivered', [BloodBankController::class, 'delivered'])->name('delivered');
         Route::get('create', [BloodBankController::class, 'create'])->name('create');
         Route::get('show/{bloodBank}', [BloodBankController::class, 'show'])->name('show');
         Route::post('store', [BloodBankController::class, 'store'])->name('store');

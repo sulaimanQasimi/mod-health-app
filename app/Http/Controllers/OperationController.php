@@ -109,6 +109,13 @@ class OperationController extends Controller
 
         if (isset($data['date']) && $data['date'] > $operation->date) {
             $operation->reserve();
+            $operation->update($data);
+            return redirect()->route('operations.reserved')->with('success', 'Operation updated successfully.');
+        }
+
+        elseif (isset($data['date']) && $data['date'] < $operation->date) {
+            $operation->update($data);
+            return redirect()->back()->with('success', 'Operation updated successfully.');
         }
 
         $data['room_id'] = $operation->room->id ?? '';
@@ -121,7 +128,7 @@ class OperationController extends Controller
 
         $operation->update($data);
 
-        return redirect()->back()->with('success', 'Operation updated successfully.');
+        return redirect()->route('operations.new')->with('success', 'Operation updated successfully.');
     }
 
     public function complete(Request $request, Anesthesia $operation)

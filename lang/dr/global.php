@@ -760,6 +760,11 @@ return [
     'local' => 'Local',
     'spinal' => 'Spinal',
     'general' => 'General',
+    'blood_bank' => 'بانک خون',
+    'new_blood_requests' => 'درخواستی های جدید',
+    'approved_blood_requests' => 'درخواستی های تائید شده',
+    'delivered_blood_requests' => 'درخواستی های تکمیل شده',
+    'rejected_blood_requests' => 'درخواستی های مسترد شده',
 
 
 

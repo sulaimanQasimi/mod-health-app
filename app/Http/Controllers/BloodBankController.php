@@ -11,10 +11,26 @@ class BloodBankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+    public function new()
     {
         $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->get();
         return view('pages.blood_banks.index',compact('bloodRequests'));
+    }
+
+    public function approved()
+    {
+       
+    }
+
+    public function rejected()
+    {
+        
+    }
+
+    public function delivered()
+    {
+        
     }
 
     /**
@@ -34,14 +50,17 @@ class BloodBankController extends Controller
         $validatedData = $request->validate([
             'group' => 'required',
             'rh' => 'required',
+            'quantity' => 'required',
             'branch_id' => 'required',
             'appointment_id' => 'nullable',
             'hospitalization_id' => 'nullable',
-            'i_c_u_id' => 'required',
+            'i_c_u_id' => 'nullable',
             'operation_id' => 'nullable',
             'under_review_id' => 'nullable',
             'anesthesia_id' => 'nullable',
+            'patient_id' => 'nullable',
         ]);
+
 
         $bloodBank = BloodBank::create($validatedData);
 

@@ -121,6 +121,37 @@
                 </ul>
             </li>
         @endcan
+        @can('show-blood-bank-menu')
+            <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-donate-blood text-primary"></i>
+                    <div>{{ localize('global.blood_bank') }}</div>
+                </a>
+
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('blood_banks.new') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.new') }}" class="menu-link">
+                            <div>{{ localize('global.new_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.approved') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.approved') }}" class="menu-link">
+                            <div>{{ localize('global.approved_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.delivered') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.delivered') }}" class="menu-link">
+                            <div>{{ localize('global.delivered_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.rejected') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.rejected') }}" class="menu-link">
+                            <div>{{ localize('global.rejected_blood_requests') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
         @can('show-under-review-menu')
             <li class="menu-item {{ Route::is('under_reviews.index') ? 'active' : '' }}">
                 <a href="{{ route('under_reviews.index') }}" class="menu-link">
@@ -155,7 +186,7 @@
         @can('show-labs-menu')
         <li class="menu-item {{ Route::is('lab_tests.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-bed text-primary"></i>
+                <i class="menu-icon tf-icons bx bx-hard-hat text-primary"></i>
                 <div>{{ localize('global.checkups') }}</div>
             </a>
 

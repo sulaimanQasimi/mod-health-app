@@ -154,6 +154,40 @@
                                     </div>
                                 </div>
 
+                                <div class="row mb-2 p-2">
+                                    <div class="col-md-4 text-center">
+                                    
+                                            @if ($operation->is_operation_approved == 0 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
+                                                            class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
+                                            @endif
+                                    
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        @if ($operation->is_operation_approved == 1 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                data-bs-target="#createOperationModal{{ $operation->id }}"><span><i
+                                                        class="bx bx-check"></i>{{ localize('global.complete_operation') }}</span></button>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        @if ($operation->is_operation_done == 0 && $operation->is_reserved == 0)
+                                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                                data-bs-target="#createReserveModal{{ $operation->id }}"><span><i
+                                                        class="bx bx-calendar-check"></i>{{ localize('global.reserve_operation') }}</span></button>
+                                            @else
+                                            @if($operation->is_operation_done == 0)
+                                            <button class="btn btn-success">
+                                                <a href="{{ route('operations.unreserve', $operation->id) }}" class="text-white">
+                                                  <span><i class="bx bx-transfer"></i>{{localize('global.move_operation')}}</span>
+                                                </a>
+                                              </button>
+                                              @endif
+                                        @endif
+                                    </div>
+                                </div>
+
 
 
                                 <div class="modal fade" id="createOperationNursesModal{{ $operation->id }}" tabindex="-1"
@@ -313,10 +347,133 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-
                             </div>
+
+                           @if($operation->is_operation_done == 0)
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-tv p-1"></i>{{ localize('global.request_blood') }}</h5>
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#requestBloodModal{{ $operation->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+
+                            <!-- Create  Lab Modal -->
+                            <div class="modal fade" id="requestBloodModal{{ $operation->id }}" tabindex="-1"
+                                aria-labelledby="requestBloodModalLabel{{ $operation->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="requestBloodModalLabel{{ $operation->id }}">
+                                                {{ localize('global.request_blood') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('blood_banks.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" id="patient_id{{ $operation->patient_id }}"
+                                                    name="patient_id" value="{{ $operation->patient_id }}">
+                                                <input type="hidden" id="appointment_id{{ $operation->id }}"
+                                                    name="appointment_id" value="{{ $operation->appointment->id }}">
+                                                <input type="hidden"
+                                                    id="operation_id{{ $operation->appointment->id }}"
+                                                    name="operation_id" value="{{ $operation->id }}">
+                                                <input type="hidden" id="department_id{{ $operation->id }}"
+                                                    name="department_id" value="{{ auth()->user()->department_id }}">
+                                                <input type="hidden" id="branch_id{{ $operation->id }}"
+                                                    name="branch_id" value="{{ auth()->user()->branch_id }}">
+
+                                                <div class="form-group">
+
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="blood_group{{ $operation->id }}">{{ localize('global.blood_group') }}</label>
+                                                            <select class="form-control form-select" name="group"
+                                                            id="group">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="A">A</option>
+                                                            <option value="B">B</option>
+                                                            <option value="AB">AB</option>
+                                                            <option value="O">O</option>
+                                                        </select>
+                                                        <label
+                                                            for="blood_rh{{ $operation->id }}">{{ localize('global.blood_rh') }}</label>
+                                                            <select class="form-control form-select" name="rh"
+                                                            id="rh">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="+">+</option>
+                                                            <option value="-">-</option>
+                                                        </select>
+                                                        <label
+                                                            for="quantity{{ $operation->id }}">{{ localize('global.quantity') }}</label>
+                                                            <input type="text" class="form-control" name="quantity">
+                                                    </div>
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Create Lab Modal -->
+                            <div class="col-md-12 mt-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.patient_name') }}</th>
+                                            <th>{{ localize('global.blood_group') }}</th>
+                                            <th>{{ localize('global.rh') }}</th>
+                                            <th>{{ localize('global.quantity') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($operation->bloodBanks as $bloodBank)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>
+                                                    {{ $bloodBank->patient->name }}
+                                                </td>
+                                                <td>
+                                                    {{ $bloodBank->group }}
+                                                </td>
+                                                <td>
+                                                    {{ $bloodBank->rh }}
+                                                </td>
+                                                <td>
+                                                    {{ $bloodBank->quantity }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('blood_banks.edit', $bloodBank->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('blood_banks.destroy', $bloodBank->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <div class="container">
+                                                <div
+                                                    class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.not_referred_to_bloodBank') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+
                             @if ($operation->is_operation_done == 1)
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                         class="bx bx-chat p-1"></i>{{ localize('global.add_remarks') }}</h5>
@@ -889,41 +1046,6 @@
                                     </table>
                                 </div>
                             @endif
-                        </div>
-                        <div class="col-md-12 mb-2">
-                            <div class="row">
-                                <div class="col-md-4 text-center">
-                                
-                                        @if ($operation->is_operation_approved == 0 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
-                                                        class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
-                                        @endif
-                                
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    @if ($operation->is_operation_approved == 1 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createOperationModal{{ $operation->id }}"><span><i
-                                                    class="bx bx-check"></i>{{ localize('global.complete_operation') }}</span></button>
-                                    @endif
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    @if ($operation->is_operation_done == 0 && $operation->is_reserved == 0)
-                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                            data-bs-target="#createReserveModal{{ $operation->id }}"><span><i
-                                                    class="bx bx-calendar-check"></i>{{ localize('global.reserve_operation') }}</span></button>
-                                        @else
-                                        @if($operation->is_operation_done == 0)
-                                        <button class="btn btn-success">
-                                            <a href="{{ route('operations.unreserve', $operation->id) }}" class="text-white">
-                                              <span><i class="bx bx-transfer"></i>{{localize('global.move_operation')}}</span>
-                                            </a>
-                                          </button>
-                                          @endif
-                                    @endif
-                                </div>
-                            </div>
                         </div>
 
                     </div>

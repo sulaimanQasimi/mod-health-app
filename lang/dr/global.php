@@ -765,6 +765,13 @@ return [
     'approved_blood_requests' => 'درخواستی های تائید شده',
     'delivered_blood_requests' => 'درخواستی های تکمیل شده',
     'rejected_blood_requests' => 'درخواستی های مسترد شده',
+    'requested_department' => 'دیپارتمنت درخواست کننده',
+    'blood_group' => 'گروپ خون',
+    'rh' => 'RH',
+    'quantity' => 'اندازه',
+    'request_blood' => 'درخواست خون',
+    'not_referred_to_bloodBank' => 'خون خواسته نشده است',
+    'blood_rh' => 'RH'
 
 
 

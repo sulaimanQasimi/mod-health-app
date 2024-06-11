@@ -38,4 +38,9 @@ class BloodBank extends Model
     {
         return $this->belongsTo(Patient::class);
     }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 }

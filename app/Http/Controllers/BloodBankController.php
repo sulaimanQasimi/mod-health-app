@@ -14,23 +14,26 @@ class BloodBankController extends Controller
 
     public function new()
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->get();
-        return view('pages.blood_banks.index',compact('bloodRequests'));
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','new')->paginate(15);
+        return view('pages.blood_banks.new',compact('bloodRequests'));
     }
 
     public function approved()
     {
-       
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','approved')->paginate(15);
+        return view('pages.blood_banks.approved',compact('bloodRequests'));
     }
 
     public function rejected()
     {
-        
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','rejected')->paginate(15);
+        return view('pages.blood_banks.rejected',compact('bloodRequests'));
     }
 
     public function delivered()
     {
-        
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','delivered')->paginate(15);
+        return view('pages.blood_banks.delivered',compact('bloodRequests'));
     }
 
     /**
@@ -59,6 +62,7 @@ class BloodBankController extends Controller
             'under_review_id' => 'nullable',
             'anesthesia_id' => 'nullable',
             'patient_id' => 'nullable',
+            'department_id' => 'nullable',
         ]);
 
 

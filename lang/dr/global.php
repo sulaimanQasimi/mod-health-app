@@ -772,7 +772,9 @@ return [
     'request_blood' => 'درخواست خون',
     'not_referred_to_bloodBank' => 'خون خواسته نشده است',
     'blood_rh' => 'RH',
-    'blood_request_details' => 'جزئیات درخواستی خون'
+    'blood_request_details' => 'جزئیات درخواستی خون',
+    'reject_request' => 'مسترد نمودن درخواستی',
+    'reject_reason' => 'دلیل مستردی',
 
 
 

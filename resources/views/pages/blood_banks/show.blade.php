@@ -92,6 +92,7 @@
                         <div class="col-md-12">
                             <div class="row d-flex justify-content-center">
                                 @if($bloodBank->status != 'delivered')
+                                @if($bloodBank->status != 'approved')
                                 <div class="col-md-4 text-center">
                                     <button class="btn btn-primary">
                                         <a href="{{route('blood_banks.approve', $bloodBank->id)}}" class="text-white">
@@ -99,12 +100,14 @@
                                         </a>
                                       </button>
                                 </div>
-                                
+                                @endif
+                                @if($bloodBank->status != 'rejected')
                                 <div class="col-md-4 text-center">
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#createRejectModal{{ $bloodBank->id }}"><span><i
                                                         class="bx bx-calendar-x"></i>{{ localize('global.reject') }}</span></button>
                                 </div>
+                                @endif
                                 @endif
                                 @if($bloodBank->status == 'approved' || $bloodBank->status == 'rejected')
                                 <div class="col-md-4 text-center">

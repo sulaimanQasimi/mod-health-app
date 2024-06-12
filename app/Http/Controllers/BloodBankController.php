@@ -36,6 +36,30 @@ class BloodBankController extends Controller
         return view('pages.blood_banks.delivered',compact('bloodRequests'));
     }
 
+    public function approve($bloodBank)
+    {
+        $bloodBank = BloodBank::findOrFail($bloodBank);
+        $bloodBank->approve();
+
+        return redirect()->back();
+    }
+
+    public function reject(Request $request, $bloodBank)
+    {
+        $bloodBank = BloodBank::findOrFail($bloodBank);
+        $bloodBank->reject();
+        $bloodBank->update(['reject_reason' => $request->reject_reason]);
+        $bloodBank->save();
+        return redirect()->back();
+    }
+
+    public function deliver($bloodBank)
+    {
+        $bloodBank = BloodBank::findOrFail($bloodBank);
+        $bloodBank->deliver();
+        return redirect()->back();
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -63,6 +87,7 @@ class BloodBankController extends Controller
             'anesthesia_id' => 'nullable',
             'patient_id' => 'nullable',
             'department_id' => 'nullable',
+            'reject_reason' => 'nullable',
         ]);
 
 
@@ -78,7 +103,7 @@ class BloodBankController extends Controller
      */
     public function show(BloodBank $bloodBank)
     {
-        //
+        return view('pages.blood_banks.show',compact('bloodBank'));
     }
 
     /**

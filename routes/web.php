@@ -500,6 +500,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{bloodBank}', [BloodBankController::class, 'edit'])->name('edit');
         Route::put('update/{bloodBank}', [BloodBankController::class, 'update'])->name('update');
         Route::get('destroy/{bloodBank}', [BloodBankController::class, 'destroy'])->name('destroy');
+        Route::get('approve/{bloodBank}', [BloodBankController::class, 'approve'])->name('approve');
+        Route::get('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
+        Route::put('reject/{bloodBank}', [BloodBankController::class, 'reject'])->name('reject');
     });
 
     // Reports routes

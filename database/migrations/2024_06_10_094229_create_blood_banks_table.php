@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('group');
             $table->string('rh');
             $table->string('quantity');
+            $table->text('reject_reason',512)->nullable();
             $table->enum('status', ['new', 'approved','rejected','delivered'])->default('new');
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('appointment_id')->nullable();

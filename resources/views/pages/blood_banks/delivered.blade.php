@@ -9,7 +9,7 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.new_blood_requests') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.delivered_blood_requests') }}</h5>
                     </div>
                     <div class="card-body">
 

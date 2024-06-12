@@ -328,7 +328,7 @@ return [
     'last_name_dr' => 'تخلص(دری)',
     'cancel' => 'بسته',
     'select_recipient' => 'لطفاََ مرجع را انتخاب نمائید',
-    'complete' => 'اجراآت در این مرجع تکمیل گردیده است',
+    'complete' => 'تکمیل',
     'completed_document'=>'اسناد اجراء شده',
     'created_new_order' => 'سند جدید را ثبت نمود',
     'created_new_notice' => 'اطلاعیه جدید را ثبت نمود',
@@ -580,7 +580,7 @@ return [
     'approved_anesthesias' => 'انستیزی های تائید شده',
     'unapproved_anesthesias' => 'انستیزی های تائید نا شده',
     'anesthesias' => 'انستیزی ها',
-    'reject' => 'مسترد نمودن',
+    'reject' => 'مسترد',
     'rejection_reason' => 'علت مستردی',
     'refere_to_operation' => 'معرفی به عملیات',
     'new_anesthesias' => 'انستیزی های جدید',
@@ -771,7 +771,8 @@ return [
     'quantity' => 'اندازه',
     'request_blood' => 'درخواست خون',
     'not_referred_to_bloodBank' => 'خون خواسته نشده است',
-    'blood_rh' => 'RH'
+    'blood_rh' => 'RH',
+    'blood_request_details' => 'جزئیات درخواستی خون'
 
 
 

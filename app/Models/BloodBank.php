@@ -12,7 +12,7 @@ class BloodBank extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','department_id'];
+    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','department_id','reject_reason'];
 
     public static function boot()
     {
@@ -42,5 +42,28 @@ class BloodBank extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approve()
+    {
+        $this->status = 'approved';
+        $this->save();
+    }
+
+    public function reject()
+    {
+        $this->status = 'rejected';
+        $this->save();
+    }
+
+    public function deliver()
+    {
+        $this->status = 'delivered';
+        $this->save();
     }
 }

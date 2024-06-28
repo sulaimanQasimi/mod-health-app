@@ -3,25 +3,25 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\NewICUNotification;
+use App\Notifications\NewPACUNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SendNewICUNotification implements ShouldQueue
+class SendNewPACUNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    protected $icuId;
+    protected $pacuId;
     protected $userId;
     /**
      * Create a new job instance.
      */
-    public function __construct($userId, $icuId)
+    public function __construct($userId, $pacuId)
     {
         $this->userId = $userId;
-        $this->icuId = $icuId;
+        $this->pacuId = $pacuId;
     }
 
     /**
@@ -31,7 +31,7 @@ class SendNewICUNotification implements ShouldQueue
     {
         $users = User::role('nurse')->get();
             foreach ($users as $user) {
-                $user->notify(new NewICUNotification($this->userId, $this->icuId));
+                $user->notify(new NewPACUNotification($this->userId, $this->pacuId));
             }
     }
 }

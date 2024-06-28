@@ -775,6 +775,9 @@ return [
     'blood_request_details' => 'جزئیات درخواستی خون',
     'reject_request' => 'مسترد نمودن درخواستی',
     'reject_reason' => 'دلیل مستردی',
+    'pacus' => 'مریضان PACU ',
+    'new_pacus' => 'PACU های جدید',
+    'completed_pacus' => 'PACU های تکمیل شده',
 
 
 

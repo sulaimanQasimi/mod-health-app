@@ -231,6 +231,27 @@
             </ul>
         </li>
         @endcan
+        @can('show-pacu-menu')
+        <li class="menu-item {{ Route::is('pacus.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
+                <div>{{ localize('global.pacus') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('pacus.index') ? 'active' : '' }}">
+                    <a href="{{ route('pacus.index') }}" class="menu-link">
+                        <div>{{ localize('global.new_pacus') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('pacus.completed') ? 'active' : '' }}">
+                    <a href="{{ route('pacus.completed') }}" class="menu-link">
+                        <div>{{ localize('global.completed_pacus') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        @endcan
         @can('show-anesthesias-menu')
             <li class="menu-item {{ Route::is('anesthesias.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">

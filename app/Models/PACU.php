@@ -6,13 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class Visit extends Model
+class PACU extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id','under_review_id','bp', 'pr', 'rr', 't', 'spo2', 'pain','antibiotic','p_a_c_u_id'
-    ];
+    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status'];
 
     public static function boot()
     {
@@ -34,9 +32,24 @@ class Visit extends Model
         });
     }
 
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
     public function hospitalization()
     {
         return $this->belongsTo(Hospitalization::class);
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
     }
 
     public function doctor()
@@ -44,13 +57,4 @@ class Visit extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function icu()
-    {
-        return $this->belongsTo(ICU::class);
-    }
-
-    public function under_review()
-    {
-        return $this->belongsTo(UnderReview::class);
-    }
 }

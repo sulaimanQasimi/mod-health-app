@@ -392,6 +392,16 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
+        Permission::create([
+            'id' => 39,
+            'name' => 'show-pacu-menu',
+            'name_dr' => 'نمایش مینو PACU ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
 
     }
 }

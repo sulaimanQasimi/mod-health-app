@@ -26,6 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('under_review_id')->nullable();
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('i_c_u_id')->nullable();
+            $table->unsignedBigInteger('p_a_c_u_id')->nullable();
 
             $table->foreign('patient_id')
                   ->references('id')
@@ -39,6 +40,9 @@ return new class extends Migration
             $table->foreign('i_c_u_id')
                   ->references('id')
                   ->on('i_c_u_s');
+            $table->foreign('p_a_c_u_id')
+                  ->references('id')
+                  ->on('p_a_c_u_s');
 
             $table->foreign('under_review_id')
             ->references('id')

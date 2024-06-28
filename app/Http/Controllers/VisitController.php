@@ -53,6 +53,7 @@ class VisitController extends Controller
             'doctor_id' => 'required',
             'hospitalization_id' => 'nullable',
             'i_c_u_id' => 'nullable',
+            'p_a_c_u_id' => 'nullable',
             'under_review_id' => 'nullable',
             'bp' => 'nullable',
             'pr' => 'nullable',

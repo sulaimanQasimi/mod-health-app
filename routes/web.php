@@ -37,6 +37,7 @@ use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\PACUController;
 use App\Http\Controllers\PatientComplaintController;
 use App\Http\Controllers\PrescriptionItemController;
 use App\Http\Controllers\RelationController;
@@ -428,6 +429,18 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
         Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
         Route::get('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
+    });
+
+    // PACUs routes
+    Route::prefix('pacus')->name('pacus.')->group(function () {
+        Route::get('index', [PACUController::class, 'index'])->name('index');
+        Route::get('completed', [PACUController::class, 'completed'])->name('completed');
+        Route::get('create', [PACUController::class, 'create'])->name('create');
+        Route::get('show/{pacu}', [PACUController::class, 'show'])->name('show');
+        Route::post('store', [PACUController::class, 'store'])->name('store');
+        Route::get('edit/{pacu}', [PACUController::class, 'edit'])->name('edit');
+        Route::put('update/{pacu}', [PACUController::class, 'update'])->name('update');
+        Route::get('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
     });
 
     // Anesthesia routes

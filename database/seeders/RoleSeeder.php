@@ -118,5 +118,17 @@ class RoleSeeder extends Seeder
             'updated_at'=>'2023-08-22 10:14:48'
             ] );
 
+            Role::create( [
+                'id'=>10,
+                'name'=>'nurse',
+                'name_dr'=>'نرس',
+                'name_pa'=>NULL,
+                'guard_name'=>'web',
+                'recipients'=>NULL,
+                'sector_id'=>NULL,
+                'created_at'=>'2023-08-22 10:14:09',
+                'updated_at'=>'2023-08-22 10:14:09'
+                ] );
+
     }
 }

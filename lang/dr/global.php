@@ -778,6 +778,8 @@ return [
     'pacus' => 'مریضان PACU ',
     'new_pacus' => 'PACU های جدید',
     'completed_pacus' => 'PACU های تکمیل شده',
+    'pacu_details' => 'جزئیات مریض داخل PACU ',
+    'doctor' => 'داکتر',
 
 
 

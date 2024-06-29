@@ -156,13 +156,13 @@
 
                                 <div class="row mb-2 p-2">
                                     <div class="col-md-4 text-center">
-                                    
+
                                             @if ($operation->is_operation_approved == 0 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
                                                 <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                                     data-bs-target="#createOperationNursesModal{{ $operation->id }}"><span><i
                                                             class="bx bx-check"></i>{{ localize('global.operation_approval') }}</span></button>
                                             @endif
-                                    
+
                                     </div>
                                     <div class="col-md-4 text-center">
                                         @if ($operation->is_operation_approved == 1 && $operation->is_operation_done == 0 && $operation->is_reserved == 0)
@@ -203,7 +203,7 @@
                                                 <form action="{{ route('operations.update', $operation) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
-                                
+
                                                     <div class="form-group">
                                                         <div class="row">
                                                             <div class="col-md-6">
@@ -219,7 +219,7 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-                                
+
                                                             <div class="col-md-6">
                                                                 <label for="operation_circulation_nurse_id{{ $operation->id }}">{{ localize('global.circulation_nurse') }}</label>
                                                                 <select class="form-control select2" name="operation_circulation_nurse_id"
@@ -248,7 +248,7 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-                                
+
                                                             <div class="col-md-6">
                                                                 <label class="mt-2 mb-2" for="bed_id{{ $operation->id }}">{{ localize('global.bed') }}</label>
                                                                 <select class="form-control select2" name="bed_id" id="operation_bed_id"
@@ -333,7 +333,7 @@
                                                             <textarea class="form-control" id="operation_remark{{ $operation->id }}" name="operation_remark" rows="3"></textarea>
                                                         </div>
 
-                                                        
+
 
                                                     </div>
                                             </div>
@@ -349,7 +349,7 @@
                                 </div>
                             </div>
 
-                           @if($operation->is_operation_done == 0)
+                           @if($operation->is_operation_approved == 1 || $operation->is_operation_done == 1)
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-tv p-1"></i>{{ localize('global.request_blood') }}</h5>
 
@@ -455,6 +455,103 @@
                                                     <a href="{{ route('blood_banks.edit', $bloodBank->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>
                                                     <a href="{{ route('blood_banks.destroy', $bloodBank->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a>
+
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <div class="container">
+                                                <div
+                                                    class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                    <div class=" badge bg-label-danger mt-4">
+                                                        {{ localize('global.not_referred_to_bloodBank') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+
+                        @if($operation->is_operation_done == 1)
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-tv p-1"></i>{{ localize('global.refere_to_pacu') }}</h5>
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#referToPACUModal{{ $operation->id }}"><span><i
+                                        class="bx bx-plus"></i></span></button>
+
+                            <!-- Create  Lab Modal -->
+                            <div class="modal fade" id="referToPACUModal{{ $operation->id }}" tabindex="-1"
+                                aria-labelledby="referToPACUModalLabel{{ $operation->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="referToPACUModalLabel{{ $operation->id }}">
+                                                {{ localize('global.refere_to_pacu') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('pacus.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" id="patient_id{{ $operation->patient_id }}"
+                                                    name="patient_id" value="{{ $operation->patient_id }}">
+                                                <input type="hidden" id="appointment_id{{ $operation->id }}"
+                                                    name="appointment_id" value="{{ $operation->appointment->id }}">
+                                                <input type="hidden"
+                                                    id="operation_id{{ $operation->appointment->id }}"
+                                                    name="operation_id" value="{{ $operation->id }}">
+                                                <input type="hidden" id="department_id{{ $operation->id }}"
+                                                    name="department_id" value="{{ auth()->user()->department_id }}">
+                                                <input type="hidden" id="branch_id{{ $operation->id }}"
+                                                    name="branch_id" value="{{ auth()->user()->branch_id }}">
+
+                                                <div class="form-group">
+
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="description{{ $operation->id }}">{{ localize('global.description') }}</label>
+                                                            <textarea class="form-control" id="description{{ $operation->id }}" name="description"
+                                                                rows="3"></textarea>
+                                                        <input type="hidden" name="status" value="new">
+
+                                                    </div>
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Create Lab Modal -->
+                            <div class="col-md-12 mt-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.patient_name') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($operation->pacus as $pacu)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>
+                                                    {{ $pacu->patient->name }}
+                                                </td>
+
+                                                <td>
+                                                    <a href="{{ route('blood_banks.edit', $pacu->id) }}"><span><i
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('blood_banks.destroy', $pacu->id) }}"><span><i
                                                                 class="bx bx-trash text-danger"></i></span></a>
 
                                                 </td>
@@ -612,21 +709,21 @@
                                                                 value="{{ auth()->user()->branch_id }}">
                                                             <input type="hidden" id="is_discharged{{ $operation->id }}"
                                                                 name="is_discharged" value="0">
-                
+
                                                             <div class="form-group">
-                
+
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="reason{{ $operation->id }}">{{ localize('global.reason') }}</label>
                                                                     <textarea class="form-control" id="reason{{ $operation->id }}" name="reason" rows="3"></textarea>
                                                                 </div>
-                
+
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="remarks{{ $operation->id }}">{{ localize('global.remarks') }}</label>
                                                                     <textarea class="form-control" id="remarks{{ $operation->id }}" name="remarks" rows="3"></textarea>
                                                                 </div>
-                
+
                                                                 <div class="form-group">
                                                                     <div class="row p-2">
                                                                         <div class="col-md-4">
@@ -640,12 +737,12 @@
                                                                                     <option value="{{ $value->id }}"
                                                                                         {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                                         {{ $value->name }}
-                
+
                                                                                     </option>
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
-                
+
                                                                         <div class="col-md-4">
                                                                             <label
                                                                                 for="bed_id{{ $operation->id }}">{{ localize('global.beds') }}</label>
@@ -661,7 +758,7 @@
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
-                
+
                                                                         <div class="col-md-4">
                                                                             <label
                                                                                 for="food_type_id{{ $operation->id }}">{{ localize('global.food_type') }}</label>
@@ -673,7 +770,7 @@
                                                                                     <option value="{{ $value->id }}"
                                                                                         {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                                         {{ $value->name }}
-                
+
                                                                                     </option>
                                                                                 @endforeach
                                                                             </select>
@@ -704,7 +801,7 @@
                                                                                         <option value="{{ $value->id }}"
                                                                                             {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                                             {{ $value->name }}
-                
+
                                                                                         </option>
                                                                                     @endforeach
                                                                                 </select>
@@ -724,11 +821,11 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                
-                
-                
-                
-                
+
+
+
+
+
                                                             </div>
                                                     </div>
                                                     <div class="modal-footer">

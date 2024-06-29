@@ -441,6 +441,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{pacu}', [PACUController::class, 'edit'])->name('edit');
         Route::put('update/{pacu}', [PACUController::class, 'update'])->name('update');
         Route::get('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
+        Route::get('complete/{pacuId}', [PACUController::class, 'complete'])->name('complete');
+
     });
 
     // Anesthesia routes

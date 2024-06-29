@@ -53,7 +53,7 @@ class PACUController extends Controller
         // Validate the input
         $validatedData = $request->validate([
             'patient_id' => 'required',
-            'doctor_id' => 'required',
+            'department_id' => 'required',
             'branch_id' => 'required',
             'appointment_id' => 'nullable',
             'hospitalization_id' => 'nullable',
@@ -107,5 +107,13 @@ class PACUController extends Controller
     public function destroy(PACU $pacu)
     {
         //
+    }
+
+    public function complete($pacuId)
+    {
+        $pacu = PACU::findOrFail($pacuId);
+        $pacu->complete();
+        return redirect()->route('pacus.index')->with('success', 'PACU Completed successfully.');
+
     }
 }

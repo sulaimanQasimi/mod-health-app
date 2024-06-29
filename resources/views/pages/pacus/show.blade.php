@@ -9,7 +9,7 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.icu_details') }}</h5>
+                        <h5 class="mb-0">{{ localize('global.pacu_details') }}</h5>
                         <div class="pt-3 pt-md-0 text-end">
                             <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
                                 <span class="text-white"> <span
@@ -115,9 +115,9 @@
 
                                     <div class="d-flex justify-content-center p-2">
                                         <div class="col-md-2">
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#createPACUCompletionModal{{ $pacu->id }}"><span><i
-                                                        class="bx bx-check"></i>{{ localize('global.complete') }}</span></button>
+                                            <a href="{{ route('pacus.complete', $pacu) }}" class="btn btn-sm btn-{{ $pacu->status == 'new' ? 'danger' : 'success' }}">
+                                                    <span class="bx bx-check">{{localize('global.complete')}}</span>
+                                            </a>
                                         </div>
                                     </div>
                             @endif
@@ -134,7 +134,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('pacus.update', $pacu) }}" method="POST">
+                                        <form action="{{ route('pacus.complete', $pacu) }}" method="POST">
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="status" value="completed">
@@ -159,10 +159,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
-
+                            @if($pacu->status == 'new')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createVisitModal{{ $pacu->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create visit Modal -->
                             <div class="modal fade" id="createVisitModal{{ $pacu->id }}" tabindex="-1"
                                 aria-labelledby="createVisitModalLabel{{ $pacu->id }}" aria-hidden="true">
@@ -182,7 +183,7 @@
                                                 <input type="hidden" id="p_a_c_u_id{{ $pacu->id }}" name="p_a_c_u_id"
                                                     value="{{ $pacu->id }}">
                                                 <input type="hidden" id="doctor_id{{ $pacu->id }}"
-                                                    name="doctor_id" value="{{ $pacu->doctor->id }}">
+                                                    name="doctor_id" value="{{ auth()->user()->id }}">
                                                 <!-- Add other diagnosis form fields as needed -->
                                                 <div class="form-group">
                                                     <label
@@ -208,6 +209,7 @@
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.description') }}</th>
                                             <th>{{ localize('global.by') }}</th>
+                                            <th>{{ localize('global.doctor') }}</th>
                                             <th>{{ localize('global.actions') }}</th>
                                         </tr>
                                     </thead>
@@ -216,6 +218,7 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $visit->description }}</td>
+                                                <td>{{ $visit->doctor->department->name }}</td>
                                                 <td>{{ $visit->doctor->name }}</td>
                                                 <td>
                                                     <a href="{{ route('visits.edit', $visit->id) }}"><span><i
@@ -238,7 +241,7 @@
                                 </table>
                             </div>
 
-                        @endif
+
 
                     </div>
 

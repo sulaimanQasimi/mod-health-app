@@ -88,6 +88,11 @@ class Anesthesia extends Model
         return $this->hasMany(BloodBank::class, 'operation_id', 'id');
     }
 
+    public function pacus()
+    {
+        return $this->hasMany(PACU::class, 'operation_id', 'id');
+    }
+
     public function getAssociatedAssistantsAttribute()
     {
         $userIds = array_map('intval', json_decode($this->operation_assistants_id, true));

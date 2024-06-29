@@ -10,7 +10,7 @@ class PACU extends Model
 {
     use HasFactory;
 
-    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status'];
+    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','department_id','branch_id','operation_id','status'];
 
     public static function boot()
     {
@@ -55,6 +55,17 @@ class PACU extends Model
     public function doctor()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function complete()
+    {
+        $this->status = 'completed';
+        $this->save();
     }
 
 }

@@ -780,6 +780,8 @@ return [
     'completed_pacus' => 'PACU های تکمیل شده',
     'pacu_details' => 'جزئیات مریض داخل PACU ',
     'doctor' => 'داکتر',
+    'advice' => 'توصیه',
+    'add_advice' => 'اضافه نمودن توصیه',
 
 
 

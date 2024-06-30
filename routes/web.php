@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -518,6 +519,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('approve/{bloodBank}', [BloodBankController::class, 'approve'])->name('approve');
         Route::get('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
         Route::put('reject/{bloodBank}', [BloodBankController::class, 'reject'])->name('reject');
+    });
+
+    // Advices routes
+    Route::prefix('advices')->name('advices.')->group(function () {
+        Route::get('index', [AdviceController::class, 'index'])->name('index');
+        Route::get('create', [AdviceController::class, 'create'])->name('create');
+        Route::get('show/{advice}', [AdviceController::class, 'show'])->name('show');
+        Route::post('store', [AdviceController::class, 'store'])->name('store');
+        Route::get('edit/{advice}', [AdviceController::class, 'edit'])->name('edit');
+        Route::put('update/{advice}', [AdviceController::class, 'update'])->name('update');
+        Route::get('destroy/{advice}', [AdviceController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

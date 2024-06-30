@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class ICU extends Model
+class Advice extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason'];
+    protected $fillable = ['description','appointment_id','patient_id','doctor_id','i_c_u_id','hospitalization_id'];
 
     public static function boot()
     {
@@ -31,15 +33,9 @@ class ICU extends Model
             $model->save();
         });
     }
-
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
-    }
-
-    public function hospitalization()
-    {
-        return $this->belongsTo(Hospitalization::class);
     }
 
     public function patient()
@@ -47,33 +43,18 @@ class ICU extends Model
         return $this->belongsTo(Patient::class);
     }
 
-    public function visits()
+    public function hospitalization()
     {
-        return $this->hasMany(Visit::class);
+        return $this->belongsTo(Hospitalization::class);
     }
 
-    public function labs()
+    public function icu()
     {
-        return $this->hasMany(Lab::class);
+        return $this->hasMany(ICU::class);
     }
 
     public function doctor()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function consultations()
-    {
-        return $this->hasMany(Consultation::class);
-    }
-
-    public function dailyProgress()
-    {
-        return $this->hasMany(DailyIcuProgress::class);
-    }
-
-    public function advices()
-    {
-        return $this->hasMany(Advice::class);
     }
 }

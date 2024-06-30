@@ -108,4 +108,9 @@ class Appointment extends Model
     {
         return $this->hasMany(ICU::class);
     }
+
+    public function advices()
+    {
+        return $this->hasMany(Advice::class);
+    }
 }

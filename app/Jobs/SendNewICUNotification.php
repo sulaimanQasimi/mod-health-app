@@ -29,7 +29,7 @@ class SendNewICUNotification implements ShouldQueue
      */
     public function handle(): void
     {
-        $users = User::role('icu_visits')->get();
+        $users = User::role('nurse')->get();
             foreach ($users as $user) {
                 $user->notify(new NewICUNotification($this->userId, $this->icuId));
             }

@@ -12,9 +12,6 @@
                 <th>{{ localize('global.number') }}</th>
                 <th>{{ localize('global.test_name') }}</th>
                 <th>{{ localize('global.test_status') }}</th>
-                <th>{{ localize('global.result') }}</th>
-                <th>{{ localize('global.result_file') }}</th>
-                <th>{{ localize('global.actions') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -30,21 +27,7 @@
                             <span class="badge bg-success">{{ localize('global.tested') }}</span>
                         @endif
                     </td>
-                    <td>{{ $item->result }}</td>
-                    <td>
-                        @isset($item->result_file)
-                            <a href="{{ asset('storage/' . $item->result_file) }}" target="_blank">
-                                <i class="fa fa-file"></i> {{ localize('global.file') }}
-                            </a>
-                        @endisset
-    
-                    </td>
-                    <td>
-                        <a href="" data-bs-toggle="modal"
-                        data-bs-target="#showLabsItemModal"><span><i
-                                class="bx bx-expand"></i></span></a>
-    
-                    </td>
+                    
     
                 </tr>
     
@@ -63,7 +46,7 @@
     
 </div>
 <div class="modal-footer">
-    
+    @if($lab->status == 0)
         <div class="d-flex justify-content-center mt-4">
             <form
                 action="{{ route('lab_tests.print-card', ['lab' => $lab_items[0]->lab_id]) }}"
@@ -72,6 +55,7 @@
                         class="bx bx-printer me-1"></span>{{ localize('global.print_labs_card') }}</button>
             </form>
         </div>
+    @endif
    
 </div>
 

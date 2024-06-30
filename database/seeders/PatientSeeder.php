@@ -34,8 +34,8 @@ class PatientSeeder extends Seeder
                 'district_id' => 110,
                 'relation_id' => $faker->numberBetween(1, 3),
                 'referred_by' => $faker->numberBetween(1, 3),
-                'created_at' => $faker->dateTimeBetween('2023-05-01', '2024-05-31')->format('Y-m-d H:i:s'),
-                'updated_at' => $faker->dateTimeBetween('2023-05-01', '2024-05-31')->format('Y-m-d H:i:s'),
+                'created_at' => $faker->dateTimeBetween('2023-06-01', '2024-06-30')->format('Y-m-d H:i:s'),
+                'updated_at' => $faker->dateTimeBetween('2023-06-01', '2024-06-30')->format('Y-m-d H:i:s'),
             ];
         }
 

@@ -20,11 +20,13 @@ return new class extends Migration
             $table->string('t')->nullable();
             $table->string('spo2')->nullable();
             $table->string('pain')->nullable();
+            $table->string('antibiotic')->nullable();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('hospitalization_id')->nullable();
             $table->unsignedBigInteger('under_review_id')->nullable();
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('i_c_u_id')->nullable();
+            $table->unsignedBigInteger('p_a_c_u_id')->nullable();
 
             $table->foreign('patient_id')
                   ->references('id')
@@ -38,6 +40,9 @@ return new class extends Migration
             $table->foreign('i_c_u_id')
                   ->references('id')
                   ->on('i_c_u_s');
+            $table->foreign('p_a_c_u_id')
+                  ->references('id')
+                  ->on('p_a_c_u_s');
 
             $table->foreign('under_review_id')
             ->references('id')

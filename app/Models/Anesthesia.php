@@ -11,7 +11,7 @@ class Anesthesia extends Model
     use HasFactory;
 
     protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id','is_operation_done','operation_remark','operation_assistants_id','operation_result','operation_surgion_id','operation_anesthesia_log_id','operation_anesthesist_id',
-'operation_scrub_nurse_id','operation_circulation_nurse_id','anesthesia_plan','hospitalization_id','is_operation_approved','operation_expense_remarks'];
+'operation_scrub_nurse_id','operation_circulation_nurse_id','anesthesia_plan','hospitalization_id','is_operation_approved','operation_expense_remarks','room_id','bed_id','is_reserved','reserve_reason','anesthesia_type'];
 
     public static function boot()
     {
@@ -81,6 +81,49 @@ class Anesthesia extends Model
     public function icu()
     {
         return $this->hasMany(ICU::class, 'operation_id', 'id');
+    }
+
+    public function bloodBanks()
+    {
+        return $this->hasMany(BloodBank::class, 'operation_id', 'id');
+    }
+
+    public function pacus()
+    {
+        return $this->hasMany(PACU::class, 'operation_id', 'id');
+    }
+
+    public function getAssociatedAssistantsAttribute()
+    {
+        $userIds = array_map('intval', json_decode($this->operation_assistants_id, true));
+        return User::whereIn('id', $userIds)->get();
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function bed()
+    {
+        return $this->belongsTo(Bed::class);
+    }
+
+    public function reserve()
+    {
+        $this->is_reserved = 1;
+        $this->save();
+    }
+
+    public function unreserve()
+    {
+        $this->is_reserved = 0;
+        $this->save();
+    }
+
+    public function scopeReserved($query)
+    {
+        return $query->where('is_reserved', 1);
     }
 
 

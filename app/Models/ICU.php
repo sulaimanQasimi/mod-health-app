@@ -71,4 +71,9 @@ class ICU extends Model
     {
         return $this->hasMany(DailyIcuProgress::class);
     }
+
+    public function advices()
+    {
+        return $this->hasMany(Advice::class);
+    }
 }

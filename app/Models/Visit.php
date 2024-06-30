@@ -11,7 +11,7 @@ class Visit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id','under_review_id','bp', 'pr', 'rr', 't', 'spo2', 'pain'
+        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id','under_review_id','bp', 'pr', 'rr', 't', 'spo2', 'pain','antibiotic','p_a_c_u_id'
     ];
 
     public static function boot()

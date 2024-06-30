@@ -21,10 +21,13 @@ return new class extends Migration
             $table->string('estimated_blood_waste',192)->nullable();
             $table->string('other_problems',192)->nullable();
             $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
+            $table->enum('anesthesia_type', ['local', 'spinal', 'general'])->nullable();
             $table->tinyInteger('operation_result')->default('0');
             $table->tinyInteger('is_operation_done')->default('0');
+            $table->tinyInteger('is_reserved')->default('0');
             $table->tinyInteger('is_operation_approved')->default('0');
             $table->text('anesthesia_log_reply',2000)->nullable();
+            $table->text('reserve_reason',2000)->nullable();
             $table->text('anesthesia_plan',2000)->nullable();
             $table->text('operation_remark',2000)->nullable();
             $table->text('operation_expense_remarks',2000)->nullable();
@@ -32,6 +35,8 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('room_id')->nullable();
+            $table->unsignedBigInteger('bed_id')->nullable();
             $table->text('operation_assistants_id')->nullable();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('operation_surgion_id')->nullable();
@@ -75,6 +80,12 @@ return new class extends Migration
             $table->foreign('hospitalization_id')
             ->references('id')
             ->on('hospitalizations');
+            $table->foreign('room_id')
+            ->references('id')
+            ->on('rooms');
+            $table->foreign('bed_id')
+            ->references('id')
+            ->on('beds');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

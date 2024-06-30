@@ -63,6 +63,7 @@ class AnesthesiaController extends Controller
             'estimated_blood_waste' => 'required',
             'other_problems' => 'required',
             'status' => 'nullable',
+            'anesthesia_type' => 'nullable',
             'operation_status' => 'nullable',
             'anesthesia_log_reply' => 'nullable',
             'is_operation_done' => 'nullable',
@@ -74,6 +75,10 @@ class AnesthesiaController extends Controller
             'operation_circulation_nurse_id' => 'nullable',
             'anesthesia_plan' => 'nullable',
             'operation_expense_remarks' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
+            'is_reserved' => 'nullable',
+            'reserve_reason' => 'nullable',
         ]);
 
         $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
@@ -113,6 +118,7 @@ class AnesthesiaController extends Controller
         $data = $request->validate([
             'anesthesia_log_reply' => 'required',
             'status' => 'nullable',
+            'anesthesia_type' => 'nullable',
             'is_operation_done' => 'nullable',
             'operation_remark' => 'nullable',
             'anesthesia_plan' => 'nullable',

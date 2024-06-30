@@ -30,7 +30,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                                     <tr>
                                         <td>{{ $prescription->id }}</td>
                                         <td>{{ $prescription->patient->name }}</td>
@@ -44,28 +44,78 @@
                                             @endif
                                         </td>
                                         <td>
-
-
-                                            <a href="#" data-bs-toggle="modal" onclick="getPrescriptionItems({{$prescription->id}})"
-                                                data-bs-target="#showPrescriptionItemModal"><span><i
-                                                        class="bx bx-expand"></i></span></a>
+                                            @if($prescription->is_completed == '0')
+                                            <div class="d-flex justify-content-center text-center mt-2">
+                                                <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="is_completed" value="1">
+                                                    <button type="submit" class="btn btn-success">
+                                                        <span><i class="bx bx-check-shield"></i></span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            @endif
                                         </td>
                                     </tr>
-                                
+
                             </tbody>
                         </table>
-                        @if($prescription->is_completed == '0')
-                        <div class="d-flex justify-content-center text-center mt-2">
-                            <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="is_completed" value="1">
-                                <button type="submit" class="btn btn-success">
-                                    <span><i class="bx bx-check-shield"></i></span>
-                                </button>
-                            </form>
-                        </div>
-                        @endif
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                            class="bx bx-notepad p-1"></i>{{ localize('global.prescription_details') }}</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.type') }}</th>
+                                    <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.dosage') }}</th>
+                                    <th>{{ localize('global.frequency') }}</th>
+                                    <th>{{ localize('global.amount') }}</th>
+                                    <th>{{ localize('global.status') }}</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($prescription->prescriptionItems as $item)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $item->medicine_id }}</td>
+                                    <td>{{ $item->medicine_type_id }}</td>
+                                    <td>{{ $item->dosage }}</td>
+                                    <td>{{ $item->frequency }}</td>
+                                    <td>{{ $item->amount }}</td>
+                                    <td>
+                                        {{-- <span><i
+                                                class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i>
+                                                @if($item->is_delivered == '0')
+
+                                                <form action="{{ route('prescription_items.changeStatus', $item) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="is_delivered" value="1">
+                                                    <button type="submit" class="btn btn-success">
+                                                        <span><i class="bx bx-check-shield"></i></span>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            </span> --}}
+
+                                            <a href="{{ route('prescription_items.changeStatus', $item) }}" class="btn btn-sm btn-{{ $item->is_delivered == '0' ? 'danger' : 'success' }}">
+                                                @if ($item->is_delivered == '1')
+                                                    <span class="bx bx-check"></span>
+                                                @else
+                                                <span class="bx bx-x"></span>
+                                                @endif
+                                            </a>
+
+                                    </td>
+                                </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+
                         </form>
                         </button>
                     </div>
@@ -78,44 +128,3 @@
     </div>
 @endsection
 
-@section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('.type-button').click(function() {
-                var button = $(this);
-                var currentType = button.attr('data-type');
-                var updatedType = currentType == "0" ? "1" : "0";
-
-                button.attr('data-type', updatedType);
-                button.text(updatedType);
-                button.next("input[type='hidden']").val(updatedType);
-
-                // Get the prescription ID and key from the button's data attributes
-                var prescriptionId = '{{ $prescription->id }}'; // Replace with the actual prescription ID
-                var key = button.closest('tr').index();
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
-
-                // Send an AJAX request to update the status
-                $.ajax({
-                    url: "{{ url('prescriptions/update-status/') }}/" + prescriptionId + '/' + key,
-                    type: 'POST',
-                    data: {
-                        updatedType: updatedType,
-                    },
-
-
-                    success: function(response) {
-                        console.log('Status updated successfully');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('An error occurred while updating the status');
-                    }
-                });
-            });
-        });
-    </script>
-@endsection

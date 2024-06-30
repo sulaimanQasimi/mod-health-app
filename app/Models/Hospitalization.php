@@ -14,7 +14,7 @@ class Hospitalization extends Model
 
     protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id',
     'food_type_id','is_discharged','branch_id','discharge_remark','discharge_status',
-    'patinet_companion','companion_father_name','relation_to_patient','companion_card_type'];
+    'patinet_companion','companion_father_name','relation_to_patient','companion_card_type','discharged_at'];
 
     public static function boot()
     {
@@ -84,6 +84,11 @@ class Hospitalization extends Model
     public function complaints()
     {
         return $this->hasMany(PatientComplaint::class);
+    }
+
+    public function advices()
+    {
+        return $this->hasMany(Advice::class);
     }
 
 

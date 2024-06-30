@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
 use App\Models\Bed;
+use App\Models\FoodType;
 use App\Models\Operation;
+use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,9 +22,24 @@ class OperationController extends Controller
     public function new()
     {
 
-        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_done', '0')->latest()->paginate(15);
+        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '0')->where('is_reserved', '0')->latest()->paginate(15);
 
         return view('pages.operations.new', compact('operations'));
+    }
+
+    public function reserved()
+    {
+
+        $reservedOperations = Anesthesia::reserved()->paginate(10);
+        return view('pages.operations.reserved', compact('reservedOperations'));
+    }
+
+    public function approved()
+    {
+
+        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '1')->where('is_operation_done', '0')->where('is_reserved', '0')->latest()->paginate(15);
+
+        return view('pages.operations.approved', compact('operations'));
     }
 
 
@@ -57,7 +74,9 @@ class OperationController extends Controller
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
         $rooms = Room::all();
         $beds = Bed::all();
-        return view('pages.operations.show',compact('operation','operation_doctors','rooms','beds'));
+        $foodTypes = FoodType::all();
+        $relations = Relation::all();
+        return view('pages.operations.show',compact('operation','operation_doctors','rooms','beds','foodTypes','relations'));
     }
 
     /**
@@ -82,9 +101,59 @@ class OperationController extends Controller
             'operation_circulation_nurse_id' => 'nullable',
             'date' => 'nullable',
             'time' => 'nullable',
-            'operation_expense_remarks' => 'nullable'
+            'operation_expense_remarks' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
 
         ]);
+
+        if (isset($data['date']) && $data['date'] > $operation->date) {
+            $operation->reserve();
+            $operation->update($data);
+            return redirect()->route('operations.reserved')->with('success', 'Operation updated successfully.');
+        }
+
+        elseif (isset($data['date']) && $data['date'] < $operation->date) {
+            $operation->update($data);
+            return redirect()->back()->with('success', 'Operation updated successfully.');
+        }
+
+        else {
+            $operation->update($data);
+            return redirect()->back()->with('success', 'Operation updated successfully.');
+        }
+
+        $data['room_id'] = $operation->room->id ?? '';
+        $data['bed_id'] = $operation->bed->id ?? '';
+
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => true]);
+        $occupied_bed->save();
+
+        $operation->update($data);
+
+        return redirect()->route('operations.new')->with('success', 'Operation updated successfully.');
+    }
+
+    public function complete(Request $request, Anesthesia $operation)
+    {
+        $data = $request->validate([
+            'is_operation_done' => 'nullable',
+            'operation_remark' => 'nullable',
+            'operation_result' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
+
+        ]);
+
+        $data['room_id'] = $operation->room->id ?? '';
+        $data['bed_id'] = $operation->bed->id ?? '';
+
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => false]);
+        $occupied_bed->save();
 
         $operation->update($data);
 
@@ -97,5 +166,28 @@ class OperationController extends Controller
     public function destroy(Operation $operation)
     {
         //
+    }
+
+    public function reserveOperation(Request $request, $operationId)
+    {
+
+        $operation = Anesthesia::findOrFail($operationId);
+        $operation->reserve();
+        $operation->update(['reserve_reason' => $request->reserve_reason]);
+        $operation->save();
+
+        // Add any additional logic, such as redirecting or returning a response
+        return redirect()->route('operations.reserved')->with('success', 'Operation reserved successfully.');
+    }
+
+    public function unreserveOperation($operationId)
+    {
+
+        $operation = Anesthesia::findOrFail($operationId);
+        $operation->unreserve();
+        $operation->update(['is_operation_approved' => '0']);
+        $operation->save();
+        // Add any additional logic, such as redirecting or returning a response
+        return redirect()->back()->with('success', 'Operation moved successfully.');
     }
 }

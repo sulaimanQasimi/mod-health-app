@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bed;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\OperationType;
@@ -62,6 +63,10 @@ class UnderReviewController extends Controller
             'operation_id' => 'nullable',
         ]);
 
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+
+        $occupied_bed->update(['is_occupied' => true]);
+        $occupied_bed->save();
         UnderReview::create($data);
 
         return redirect()->back()->with('success', 'Under Review created successfully.');
@@ -99,6 +104,10 @@ class UnderReviewController extends Controller
         ]);
 
         $underReview->update($data);
+
+        $occupied_bed = Bed::findOrFail($underReview->bed_id);
+        $occupied_bed->update(['is_occupied' => false]);
+        $occupied_bed->save();
 
         return redirect()->route('visits.index')->with('success', 'Under Review updated successfully.');
     }

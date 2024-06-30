@@ -31,10 +31,10 @@ return new class extends Migration
             $table->foreign('patient_id')->references('id')->on('patients');
             $table->unsignedBigInteger('operation_id')->nullable();
             $table->foreign('operation_id')->references('id')->on('anesthesias');
-
-
-
-            
+            $table->unsignedBigInteger('prescription_id')->nullable();
+            $table->foreign('prescription_id')->references('id')->on('prescriptions');
+            $table->unsignedBigInteger('hospitalization_id')->nullable();
+            $table->foreign('hospitalization_id')->references('id')->on('hospitalizations');
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();

@@ -121,6 +121,37 @@
                 </ul>
             </li>
         @endcan
+        @can('show-blood-bank-menu')
+            <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-donate-blood text-primary"></i>
+                    <div>{{ localize('global.blood_bank') }}</div>
+                </a>
+
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('blood_banks.new') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.new') }}" class="menu-link">
+                            <div>{{ localize('global.new_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.approved') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.approved') }}" class="menu-link">
+                            <div>{{ localize('global.approved_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.delivered') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.delivered') }}" class="menu-link">
+                            <div>{{ localize('global.delivered_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.rejected') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.rejected') }}" class="menu-link">
+                            <div>{{ localize('global.rejected_blood_requests') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
         @can('show-under-review-menu')
             <li class="menu-item {{ Route::is('under_reviews.index') ? 'active' : '' }}">
                 <a href="{{ route('under_reviews.index') }}" class="menu-link">
@@ -131,21 +162,47 @@
         @endcan
 
         @can('show-hospitalizations-menu')
-            <li class="menu-item {{ Route::is('visits.index') ? 'active' : '' }}">
-                <a href="{{ route('visits.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-bed text-primary"></i>
-                    <div>{{ localize('global.hospitalized_patients') }}</div>
-                </a>
-            </li>
+        <li class="menu-item {{ Route::is('hospitalizations.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-bed text-primary"></i>
+                <div>{{ localize('global.hospitalizations') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('hospitalizations.index') ? 'active' : '' }}">
+                    <a href="{{ route('hospitalizations.index') }}" class="menu-link">
+                        <div>{{ localize('global.under_hospitalizations') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('hospitalizations.discharged') ? 'active' : '' }}">
+                    <a href="{{ route('hospitalizations.discharged') }}" class="menu-link">
+                        <div>{{ localize('global.discharged_hospitalizations') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
         @endcan
 
         @can('show-labs-menu')
-            <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
-                <a href="{{ route('lab_tests.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-test-tube text-primary"></i>
-                    <div>{{ localize('global.checkups') }}</div>
-                </a>
-            </li>
+        <li class="menu-item {{ Route::is('lab_tests.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-hard-hat text-primary"></i>
+                <div>{{ localize('global.checkups') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
+                    <a href="{{ route('lab_tests.index') }}" class="menu-link">
+                        <div>{{ localize('global.under_lab_tests') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('lab_tests.completed') ? 'active' : '' }}">
+                    <a href="{{ route('lab_tests.completed') }}" class="menu-link">
+                        <div>{{ localize('global.completed_lab_tests') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
         @endcan
 
         @can('show-icu-menu')
@@ -169,6 +226,27 @@
                 <li class="menu-item {{ Route::is('icus.rejected') ? 'active' : '' }}">
                     <a href="{{ route('icus.rejected') }}" class="menu-link">
                         <div>{{ localize('global.rejected_icus') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        @endcan
+        @can('show-pacu-menu')
+        <li class="menu-item {{ Route::is('pacus.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-tv text-primary"></i>
+                <div>{{ localize('global.pacus') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('pacus.index') ? 'active' : '' }}">
+                    <a href="{{ route('pacus.index') }}" class="menu-link">
+                        <div>{{ localize('global.new_pacus') }}</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Route::is('pacus.completed') ? 'active' : '' }}">
+                    <a href="{{ route('pacus.completed') }}" class="menu-link">
+                        <div>{{ localize('global.completed_pacus') }}</div>
                     </a>
                 </li>
             </ul>
@@ -212,6 +290,16 @@
                     <li class="menu-item {{ Route::is('operations.new') ? 'active' : '' }}">
                         <a href="{{ route('operations.new') }}" class="menu-link">
                             <div>{{ localize('global.new_operations') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('operations.approved') ? 'active' : '' }}">
+                        <a href="{{ route('operations.approved') }}" class="menu-link">
+                            <div>{{ localize('global.approved_operations') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('operations.reserved') ? 'active' : '' }}">
+                        <a href="{{ route('operations.reserved') }}" class="menu-link">
+                            <div>{{ localize('global.reserved_operations') }}</div>
                         </a>
                     </li>
                     <li class="menu-item {{ Route::is('operations.completed') ? 'active' : '' }}">

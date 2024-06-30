@@ -9,7 +9,7 @@ class ConsultationComment extends Model
 {
     use HasFactory;
 
-    protected  $fillable = ['comment','consultation_id','patient_id','doctor_id','appointment_id'];
+    protected  $fillable = ['comment','consultation_id','patient_id','doctor_id','appointment_id','department_id'];
 
 
     public function consultation()
@@ -20,5 +20,10 @@ class ConsultationComment extends Model
     public function doctor()
     {
         return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 }

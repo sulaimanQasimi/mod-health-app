@@ -7,13 +7,13 @@
                 <div class="col-md-12 order-3 order-md-2">
                     <div class="row g-4 mb-4">
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalPatients }}</h4>
+                                                <h4 class="mb-0 me-2  p-1 rounded">{{ $totalPatients }}</h4>
                                                 @if ($patientPercentageChange > 0)
                                                     <h4
                                                         class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
@@ -38,13 +38,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_appointments') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalAppointments }}
+                                                <h4 class="mb-0 me-2  p-1 rounded">{{ $totalAppointments }}
                                                 </h4>
                                                 @if ($appointmentPercentageChange > 0)
                                                 <h4
@@ -70,13 +70,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.consultations') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                <h4 class="mb-0 me-2  p-1 rounded">
                                                     {{ $totalConsultations }}
                                                 </h4>
                                                 @if ($consultationPercentageChange > 0)
@@ -104,13 +104,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_hospitalized_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                <h4 class="mb-0 me-2  p-1 rounded">
                                                     {{ $totalInPatientAdmissions }}</h4>
                                                 @if ($hospitalizationPercentageChange > 0)
                                                 <h4
@@ -138,13 +138,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.checkups') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalCheckups }}
+                                                <h4 class="mb-0 me-2  p-1 rounded">{{ $totalCheckups }}
                                                 </h4>
                                                 @if ($checkupPercentageChange > 0)
                                                 <h4
@@ -170,13 +170,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_icu_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                <h4 class="mb-0 me-2  p-1 rounded">
                                                     {{ $totalIcuAdmissions }}</h4>
                                                 @if ($icuPercentageChange > 0)
                                                 <h4
@@ -202,13 +202,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_prescriptions') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">
+                                                <h4 class="mb-0 me-2  p-1 rounded">
                                                     {{ $totalPrescriptions }}</h4>
                                                 @if ($prescriptionPercentageChange > 0)
                                                 <h4
@@ -236,13 +236,13 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
-                            <div class="card bg-label-primary border border-label-primary">
+                            <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
                                             <h4>{{ localize('global.all_operations') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
-                                                <h4 class="mb-0 me-2 bg-label-primary p-1 rounded">{{ $totalOperations }}
+                                                <h4 class="mb-0 me-2  p-1 rounded">{{ $totalOperations }}
                                                 </h4>
                                                 @if ($operationPercentageChange > 0)
                                                 <h4
@@ -269,7 +269,7 @@
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-sm-6 col-xl-4">
-                            <div class="card bg-label-warning border border-label-primary">
+                            <div class="card bg-label-warning border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -286,7 +286,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4">
-                            <div class="card bg-label-primary border-label-primary">
+                            <div class="card bg-label-primary">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
@@ -303,7 +303,7 @@
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4">
-                            <div class="card bg-label-success border-label-primary">
+                            <div class="card bg-label-success ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">

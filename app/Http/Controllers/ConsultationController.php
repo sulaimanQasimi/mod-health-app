@@ -13,9 +13,9 @@ class ConsultationController extends Controller
      */
     public function index()
     {
-        $userId = auth()->user()->id;
+        $departmentId = auth()->user()->department_id;
 
-        $consultations = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$userId\"')")->paginate(10);
+        $consultations = Consultation::whereRaw("JSON_CONTAINS(department_id, '\"$departmentId\"')")->paginate(10);
 
         // return $consultations;
         return view('pages.consultations.index',compact('consultations'));
@@ -38,7 +38,7 @@ class ConsultationController extends Controller
             'title' => 'required',
             'appointment_id' => 'required',
             'patient_id' => 'required',
-            'doctor_id' => 'required',
+            'department_id' => 'required',
             'branch_id' => 'required',
             'date' => 'required',
             'time' => 'required',
@@ -46,7 +46,7 @@ class ConsultationController extends Controller
         ]);
 
 
-        $data['doctor_id'] = json_encode($data['doctor_id']);
+        $data['department_id'] = json_encode($data['department_id']);
 
         $consultation = Consultation::create($data);
 

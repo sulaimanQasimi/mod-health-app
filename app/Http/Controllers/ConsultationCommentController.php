@@ -34,6 +34,7 @@ class ConsultationCommentController extends Controller
             'consultation_id' => 'required',
             'patient_id' => 'required',
             'doctor_id' => 'required',
+            'department_id' => 'required',
             'appointment_id' => 'required',
         ]);
 

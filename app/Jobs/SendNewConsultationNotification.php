@@ -33,7 +33,7 @@ class SendNewConsultationNotification implements ShouldQueue
         $consultation = Consultation::where('id', $this->consultationId)->first();
 
 
-        $users = User::whereIn('id',json_decode($consultation->doctor_id))->get();
+        $users = User::whereIn('department_id',json_decode($consultation->department_id))->get();
 
         foreach ($users as $user) {
             $user->notify(new NewConsultationNotification($this->userId, $this->consultationId));

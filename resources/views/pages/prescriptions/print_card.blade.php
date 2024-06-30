@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -119,7 +116,7 @@
             <tbody>
                 <tr>
                     <td align="center" style="padding:0px; border: none !important;">
-                        <img src="{{asset('assets/img/test_header.jpg')}}" alt="" height="300">
+                        <img src="{{ asset('assets/img/test_header.jpg') }}" alt="" height="300">
                     </td>
                 </tr>
             </tbody>
@@ -132,13 +129,13 @@
                     <td width="50%">
                         <span class="title">Patient's Name:</span>
                         <span class="data">
-                            {{$patient->name}}
+                            {{ $patient->name }}
                         </span>
                     </td>
                     <td width="50%">
                         <span class="title">Doctor's Name:</span>
                         <span class="data">
-                            {{$appointment->doctor->name}}
+                            {{ $appointment->doctor->name }}
                         </span>
                     </td>
                 </tr>
@@ -312,8 +309,8 @@
 
                         <br>
                         <span class="data">
-                            @foreach($appointment->diagnose as $diagnose)
-                                {{$diagnose->description}}
+                            @foreach ($appointment->diagnose as $diagnose)
+                                {{ $diagnose->description }}
                             @endforeach
                         </span>
                         <br>
@@ -338,25 +335,16 @@
                                     <th style="text-align: center;width: 250px;"><b>Frequency</b></th>
                                     <th style="text-align: center; width: 150px;"><b>Amount</b></th>
                                 </tr>
-                                @foreach ($prescriptions as $prescription)
-                                                @php
-                                                    $descriptions = is_array($prescription->description) ? $prescription->description : json_decode($prescription->description, true);
-                                                    $dosages = is_array($prescription->dosage) ? $prescription->dosage : json_decode($prescription->dosage, true);
-                                                    $frequencies = is_array($prescription->frequency) ? $prescription->frequency : json_decode($prescription->frequency, true);
-                                                    $amounts = is_array($prescription->amount) ? $prescription->amount : json_decode($prescription->amount, true);
-                                                    $types = is_array($prescription->type) ? $prescription->type : json_decode($prescription->type, true);
-                                                @endphp
-                                                @foreach ($descriptions as $key => $description)
-                                                <tr>
-                                                    <td style="text-align: center;">{{ $loop->iteration }}</td>
-                                                    <td style="text-align: center;">{{ $types[$key] }}</td>
-                                                    <td style="text-align: center;">{{ $description }}</td>
-                                                    <td style="text-align: center;">{{ $dosages[$key] }}</td>
-                                                    <td style="text-align: center;">{{ $frequencies[$key] }}</td>
-                                                    <td style="text-align: center;">{{ $amounts[$key] }}</td>
-                                                </tr>
-                                                @endforeach
-                                            @endforeach
+                                @foreach ($prescriptionItems as $prescription)
+                                    <tr>
+                                        <td style="text-align: center;">{{ $loop->iteration }}</td>
+                                        <td style="text-align: center;">{{ $prescription->medicineType->type }}</td>
+                                        <td style="text-align: center;">{{ $prescription->medicine->name }}</td>
+                                        <td style="text-align: center;">{{ $prescription->dosage }}</td>
+                                        <td style="text-align: center;">{{ $prescription->frequency }}</td>
+                                        <td style="text-align: center;">{{ $prescription->amount }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                         <p><br></p>
@@ -375,7 +363,7 @@
         <tbody>
             <tr>
                 <td align="center" style="padding:0px; border: none !important;">
-                    <img src="{{asset('assets/img/test_header.jpg')}}" alt="" height="150">
+                    <img src="{{ asset('assets/img/test_header.jpg') }}" alt="" height="150">
                 </td>
                 <td>
                     {{ QrCode::size(75)->generate($prescription->id) }}

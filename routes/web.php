@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedController;
+use App\Http\Controllers\BloodBankController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ConsultationCommentController;
 use App\Http\Controllers\ConsultationController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\PACUController;
 use App\Http\Controllers\PatientComplaintController;
 use App\Http\Controllers\PrescriptionItemController;
 use App\Http\Controllers\RelationController;
@@ -199,6 +202,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Hospitalizations routes
     Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
         Route::get('index', [HospitalizationController::class, 'index'])->name('index');
+        Route::get('discharged', [HospitalizationController::class, 'discharged'])->name('discharged');
         Route::get('create', [HospitalizationController::class, 'create'])->name('create');
         Route::get('show/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
         Route::post('store', [HospitalizationController::class, 'store'])->name('store');
@@ -276,7 +280,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{prescription}', [PrescriptionController::class, 'edit'])->name('edit');
         Route::put('update/{prescription}', [PrescriptionController::class, 'update'])->name('update');
         Route::get('destroy/{prescription}', [PrescriptionController::class, 'destroy'])->name('destroy');
-        Route::get('/print-card/{appointment}', [PrescriptionController::class, 'printCard'])->name('print-card');
+        Route::get('/print-card/{appointment}{prescriptionId}', [PrescriptionController::class, 'printCard'])->name('print-card');
         Route::get('/issue/{prescription}', [PrescriptionController::class, 'issue'])->name('issue');
         Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);
@@ -287,6 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Labratory routes
     Route::prefix('lab_tests')->name('lab_tests.')->group(function () {
         Route::get('index', [LabController::class, 'index'])->name('index');
+        Route::get('completed', [LabController::class, 'completed'])->name('completed');
         Route::get('create', [LabController::class, 'create'])->name('create');
         Route::get('show/{lab}', [LabController::class, 'show'])->name('show');
         Route::post('store', [LabController::class, 'store'])->name('store');
@@ -342,11 +347,13 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
+        Route::get('updateStatus/{id}/update-status', [LabItemController::class, 'updateStatus'])->name('updateStatus');
 
     });
 
     Route::prefix('prescription_items')->name('prescription_items.')->group(function () {
         Route::get('getItems/{id}', [PrescriptionItemController::class, 'getItems'])->name('getItems');
+        Route::get('changeStatus/{id}/update-status', [PrescriptionItemController::class, 'changeStatus'])->name('changeStatus');
 
     });
 
@@ -397,13 +404,18 @@ Route::group(['middleware' => ['auth']], function () {
     // Operations routes
     Route::prefix('operations')->name('operations.')->group(function () {
         Route::get('new', [OperationController::class, 'new'])->name('new');
+        Route::get('approved', [OperationController::class, 'approved'])->name('approved');
+        Route::get('reserved', [OperationController::class, 'reserved'])->name('reserved');
         Route::get('completed', [OperationController::class, 'completed'])->name('completed');
         Route::get('create', [OperationController::class, 'create'])->name('create');
         Route::get('show/{operation}', [OperationController::class, 'show'])->name('show');
         Route::post('store', [OperationController::class, 'store'])->name('store');
         Route::get('edit/{operation}', [OperationController::class, 'edit'])->name('edit');
         Route::put('update/{operation}', [OperationController::class, 'update'])->name('update');
+        Route::put('complete/{operation}', [OperationController::class, 'complete'])->name('complete');
         Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
+        Route::put('/operation/{operationId}/reserve', [OperationController::class, 'reserveOperation'])->name('reserve');
+        Route::get('/operation/{operationId}/unreserve', [OperationController::class, 'unreserveOperation'])->name('unreserve');
     });
 
     // ICUs routes
@@ -418,6 +430,20 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
         Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
         Route::get('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
+    });
+
+    // PACUs routes
+    Route::prefix('pacus')->name('pacus.')->group(function () {
+        Route::get('index', [PACUController::class, 'index'])->name('index');
+        Route::get('completed', [PACUController::class, 'completed'])->name('completed');
+        Route::get('create', [PACUController::class, 'create'])->name('create');
+        Route::get('show/{pacu}', [PACUController::class, 'show'])->name('show');
+        Route::post('store', [PACUController::class, 'store'])->name('store');
+        Route::get('edit/{pacu}', [PACUController::class, 'edit'])->name('edit');
+        Route::put('update/{pacu}', [PACUController::class, 'update'])->name('update');
+        Route::get('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
+        Route::get('complete/{pacuId}', [PACUController::class, 'complete'])->name('complete');
+
     });
 
     // Anesthesia routes
@@ -476,6 +502,34 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{foodType}', [FoodTypeController::class, 'edit'])->name('edit');
         Route::put('update/{foodType}', [FoodTypeController::class, 'update'])->name('update');
         Route::get('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Blood bank routes
+    Route::prefix('blood_banks')->name('blood_banks.')->group(function () {
+        Route::get('new', [BloodBankController::class, 'new'])->name('new');
+        Route::get('approved', [BloodBankController::class, 'approved'])->name('approved');
+        Route::get('rejected', [BloodBankController::class, 'rejected'])->name('rejected');
+        Route::get('delivered', [BloodBankController::class, 'delivered'])->name('delivered');
+        Route::get('create', [BloodBankController::class, 'create'])->name('create');
+        Route::get('show/{bloodBank}', [BloodBankController::class, 'show'])->name('show');
+        Route::post('store', [BloodBankController::class, 'store'])->name('store');
+        Route::get('edit/{bloodBank}', [BloodBankController::class, 'edit'])->name('edit');
+        Route::put('update/{bloodBank}', [BloodBankController::class, 'update'])->name('update');
+        Route::get('destroy/{bloodBank}', [BloodBankController::class, 'destroy'])->name('destroy');
+        Route::get('approve/{bloodBank}', [BloodBankController::class, 'approve'])->name('approve');
+        Route::get('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
+        Route::put('reject/{bloodBank}', [BloodBankController::class, 'reject'])->name('reject');
+    });
+
+    // Advices routes
+    Route::prefix('advices')->name('advices.')->group(function () {
+        Route::get('index', [AdviceController::class, 'index'])->name('index');
+        Route::get('create', [AdviceController::class, 'create'])->name('create');
+        Route::get('show/{advice}', [AdviceController::class, 'show'])->name('show');
+        Route::post('store', [AdviceController::class, 'store'])->name('store');
+        Route::get('edit/{advice}', [AdviceController::class, 'edit'])->name('edit');
+        Route::put('update/{advice}', [AdviceController::class, 'update'])->name('update');
+        Route::get('destroy/{advice}', [AdviceController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

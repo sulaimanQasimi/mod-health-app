@@ -32,7 +32,7 @@
                 <td>{{ $prescription->patient->name }}</td>
                 <td>{{ $prescription->doctor->name }}</td>
                 <td>{{ $prescription->created_at }}</td>
-                <td>{{ $prescription->is_delivered == 0 ? localize('global.not_delivered') : localize('global.delivered') }}</td>
+                <td>{{ $prescription->is_completed == 0 ? localize('global.not_delivered') : localize('global.delivered') }}</td>
                 <td>
                     <a href="{{ route('prescriptions.show', $prescription) }}"><i class="bx bx-show-alt"></i></a>
                 </td>

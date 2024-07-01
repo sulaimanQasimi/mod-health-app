@@ -7,6 +7,8 @@ use App\Models\Bed;
 use App\Models\Hospitalization;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Medicine;
+use App\Models\MedicineType;
 use App\Models\OperationType;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -119,7 +121,10 @@ class HospitalizationController extends Controller
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
-        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes','operation_doctors'));
+        $medicineTypes = MedicineType::all();
+        $medicines = Medicine::all();
+        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes','operation_doctors',
+    'medicineTypes','medicines'));
     }
 
     /**

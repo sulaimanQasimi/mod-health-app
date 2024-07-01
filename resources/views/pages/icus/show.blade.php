@@ -360,6 +360,15 @@
                                                     </select>
 
                                                     <label
+                                                    for="type{{ $appointment->id }}">{{ localize('global.type') }}</label>
+                                                <select class="form-control select2" name="consultation_type" id="type">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    <option value="0">{{ localize('global.normal') }}</option>
+                                                    <option value="1">{{ localize('global.emergency') }}</option>
+                                                        
+                                                </select>
+
+                                                    <label
                                                         for="doctor_id{{ $icu->id }}">{{ localize('global.doctors') }}</label>
                                                     <select class="form-control select2" name="doctor_id[]"
                                                         id="doctor_id" multiple>

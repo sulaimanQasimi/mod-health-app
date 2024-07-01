@@ -889,6 +889,15 @@
                                                     @endforeach
                                                 </select>
 
+                                                <label
+                                                    for="type{{ $appointment->id }}">{{ localize('global.type') }}</label>
+                                                <select class="form-control select2" name="consultation_type" id="type">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    <option value="0">{{ localize('global.normal') }}</option>
+                                                    <option value="1">{{ localize('global.emergency') }}</option>
+                                                        
+                                                </select>
+
                                                 <div class="mb-3">
                                                     <label for="date">{{ localize('global.date') }}</label>
                                                     <input type="date" class="form-control" name="date" />

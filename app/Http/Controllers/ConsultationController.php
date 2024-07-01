@@ -43,6 +43,7 @@ class ConsultationController extends Controller
             'date' => 'required',
             'time' => 'required',
             'i_c_u_id' => 'nullable',
+            'consultation_type' => 'nullable',
         ]);
 
 

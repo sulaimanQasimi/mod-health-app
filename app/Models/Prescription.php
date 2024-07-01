@@ -12,7 +12,7 @@ class Prescription extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed'];
+    protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed','under_review_id','hospitalization_id'];
 
     public static function boot()
     {

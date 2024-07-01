@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bed;
+use App\Models\FoodType;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Medicine;
+use App\Models\MedicineType;
 use App\Models\OperationType;
+use App\Models\Relation;
+use App\Models\Room;
 use App\Models\UnderReview;
 use Illuminate\Http\Request;
 
@@ -81,8 +86,15 @@ class UnderReviewController extends Controller
         $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
+        $medicineTypes = MedicineType::all();
+        $medicines = Medicine::all();
+        $rooms = Room::all();
+        $beds = Bed::all();
+        $foodTypes = FoodType::all();
+        $relations = Relation::all();
+        
 
-        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes'));
+        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations'));
     }
 
     /**

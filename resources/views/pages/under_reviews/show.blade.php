@@ -140,6 +140,503 @@
                         </div>
 
 
+
+
+                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                            class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#createPrescriptionModal{{$underReview->id }}"><span><i
+                                    class="bx bx-plus"></i></span></button>
+
+                    <!-- Create Diagnose Modal -->
+                    <div class="modal fade modal-xl" id="createPrescriptionModal{{$underReview->id }}"
+                        tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{$underReview->id }}"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="createPrescriptionModalLabel{{$underReview->id }}">
+                                        {{ localize('global.add_prescription') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('prescriptions.store') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" id="patient_id{{$underReview->patient_id }}"
+                                            name="patient_id" value="{{$underReview->patient_id }}">
+                                        <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
+                                            name="appointment_id" value="{{ $underReview->appointment->id }}">
+                                        <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
+                                            value="{{ auth()->user()->branch_id }}">
+                                        <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
+                                            value="{{ auth()->user()->id }}">
+                                        <input type="hidden" id="under_review_id{{ $underReview->id }}" name="under_review_id"
+                                            value="{{ $underReview->id }}">
+
+                                        <!-- Add other diagnosis form fields as needed -->
+                                        <div class="form-group" id="prescription-items">
+                                            <label>{{ localize('global.description') }}</label>
+                                            <div id="prescription-input-container">
+                                                <div class="row">
+                                                    <div class="col-md-2">
+                                                        <select class="form-control select2"
+                                                            name="medicine_type_id[]">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            @foreach ($medicineTypes as $value)
+                                                                <option value="{{ $value->id }}"
+                                                                    {{ old('type') == $value->id ? 'selected' : '' }}>
+                                                                    {{ $value->type }}
+
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <select class="form-control select2" name="medicine_id[]">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            @foreach ($medicines as $value)
+                                                                <option value="{{ $value->id }}"
+                                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    {{ $value->name }}
+
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <input type="text" class="form-control mt-2"
+                                                            name="dosage[]" placeholder="Dosage">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control mt-2"
+                                                            name="frequency[]" placeholder="Frequency">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control mt-2"
+                                                            name="amount[]" placeholder="Amount">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <input type="hidden" class="form-control mt-2"
+                                                            name="is_delivered[]" value="0">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput"
+                                            onclick="addRow()">
+                                            <i class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
+                                        </button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                    <button type="submit"
+                                        class="btn btn-primary">{{ localize('global.save') }}</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.patient_name') }}</th>
+                                    <th>{{ localize('global.status') }}</th>
+                                    <th>{{ localize('global.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($underReview->prescription as $prescription)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $prescription->patient->name }}</td>
+                                        <td>
+                                            @if ($prescription->is_completed == '0')
+                                                <span
+                                                    class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                            @else
+                                                <span
+                                                    class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+
+
+                                            <a href="#" data-bs-toggle="modal"
+                                                onclick="getPrescriptionItems({{ $prescription->id }})"
+                                                data-bs-target="#showPrescriptionItemModal"><span><i
+                                                        class="bx bx-expand"></i></span></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="container">
+                                                <div
+                                                    class="col-md-12 d-flex justify-content-center align-items-center">
+                                                    <div class="badge bg-label-danger mt-4">
+                                                        {{ localize('global.no_previous_prescriptions') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                        <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
+                            aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="prescription_items_table">
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="modal fade modal-xl" id="showPrescriptionModal{{ $underReview->id }}"
+                        tabindex="-1" aria-labelledby="showPrescriptionModalLabel{{ $underReview->id }}"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="showPrescriptionModalLabel{{ $underReview->id }}">
+                                        {{ localize('global.show_prescription_details') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ localize('global.number') }}</th>
+                                                <th>{{ localize('global.date') }}</th>
+                                                {{-- <th>{{ localize('global.description') }}</th>
+                                                <th>{{ localize('global.dosage') }}</th>
+                                                <th>{{ localize('global.frequency') }}</th>
+                                                <th>{{ localize('global.amount') }}</th> --}}
+                                                <th>{{ localize('global.status') }}</th>
+                                                <th>{{ localize('global.actions') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if ($underReview->prescription)
+                                                @foreach ($underReview->prescription as $pres_list)
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $pres_list->created_at }}</td>
+                                                        <td>{{ $pres_list->is_completed }}</td>
+                                                        <td>
+                                                            <a href="#" data-bs-toggle="modal"
+                                                                onclick="getPrescriptionItems({{ $pres_list->id }})"
+                                                                data-bs-target="#showPrescriptionItemModal"><span><i
+                                                                        class="bx bx-expand"></i></span></a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <div class="container">
+                                                            <div
+                                                                class="col-md-12 d-flex justify-content-center align-items-center">
+                                                                <div class="badge bg-label-danger mt-4">
+                                                                    {{ localize('global.no_previous_prescriptions') }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                        class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
+
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#createHospitalizationModal{{ $underReview->id }}"><span><i
+                                class="bx bx-plus"></i></span></button>
+
+                <!-- Create  Lab Modal -->
+                <div class="modal fade modal-xl" id="createHospitalizationModal{{ $underReview->id }}"
+                    tabindex="-1" aria-labelledby="createHospitalizationModalLabel{{ $underReview->id }}"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"
+                                    id="createHospitalizationModalLabel{{ $underReview->id }}">
+                                    {{ localize('global.hospitalize_patient') }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('hospitalizations.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
+                                        name="patient_id" value="{{ $underReview->patient_id }}">
+                                    <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
+                                        name="appointment_id" value="{{ $underReview->appointment->id }}">
+                                    <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
+                                        value="{{ auth()->user()->id }}">
+                                    <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
+                                        value="{{ auth()->user()->branch_id }}">
+                                    <input type="hidden" id="under_review_id{{ $underReview->id }}" name="under_review_id"
+                                        value="{{ $underReview->id }}">
+                                    <input type="hidden" id="is_discharged{{ $underReview->id }}"
+                                        name="is_discharged" value="0">
+
+                                    <div class="form-group">
+
+                                        <div class="form-group">
+                                            <label
+                                                for="reason{{ $underReview->id }}">{{ localize('global.reason') }}</label>
+                                            <textarea class="form-control" id="reason{{ $underReview->id }}" name="reason" rows="3"></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label
+                                                for="remarks{{ $underReview->id }}">{{ localize('global.remarks') }}</label>
+                                            <textarea class="form-control" id="remarks{{ $underReview->id }}" name="remarks" rows="3"></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="row p-2">
+                                                <div class="col-md-4">
+                                                    <label
+                                                        for="room_id{{ $underReview->id }}">{{ localize('global.rooms') }}</label>
+                                                    <select class="form-control select2" name="room_id"
+                                                        id="room_id">
+                                                        <option value="">{{ localize('global.select') }}
+                                                        </option>
+                                                        @foreach ($rooms as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label
+                                                        for="bed_id{{ $underReview->id }}">{{ localize('global.beds') }}</label>
+                                                    <select class="form-control select2" name="bed_id"
+                                                        id="bed_id">
+                                                        <option value="">{{ localize('global.select') }}
+                                                        </option>
+                                                        @foreach ($beds as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('number') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->number }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label
+                                                        for="food_type_id{{ $underReview->id }}">{{ localize('global.food_type') }}</label>
+                                                    <select class="form-control select2" name="food_type_id[]"
+                                                        id="food_type_id" multiple>
+                                                        <option value="">{{ localize('global.select') }}
+                                                        </option>
+                                                        @foreach ($foodTypes as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                                    class="bx bx-info-circle p-1"></i>{{ localize('global.patient_companion_info') }}
+                                            </h5>
+                                            <div class="form-group">
+                                                <div class="row p-2">
+                                                    <div class="col-md-3">
+                                                        <label>{{ localize('global.companion_name') }}</label>
+                                                        <input type="text" class="form-control"
+                                                            name="patinet_companion">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label>{{ localize('global.companion_father_name') }}</label>
+                                                        <input type="text" class="form-control"
+                                                            name="companion_father_name">
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label>{{ localize('global.relation_to_patient') }}</label>
+                                                        <select class="form-control select2"
+                                                            name="relation_to_patient">
+                                                            <option value="">
+                                                                {{ localize('global.select') }}</option>
+                                                            @foreach ($relations as $value)
+                                                                <option value="{{ $value->id }}"
+                                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    {{ $value->name }}
+
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label>{{ localize('global.companion_card_type') }}</label>
+                                                        <select class="form-control select2"
+                                                            name="companion_card_type">
+                                                            <option value="">
+                                                                {{ localize('global.select') }}</option>
+                                                            <option value="12">
+                                                                {{ localize('global.12_hours') }}</option>
+                                                            <option value="24">
+                                                                {{ localize('global.24_hours') }}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                <button type="submit"
+                                    class="btn btn-primary">{{ localize('global.save') }}</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Create Lab Modal -->
+                <div class="col-md-12 mt-4">
+
+
+
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>{{ localize('global.number') }}</th>
+                                <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                <th>{{ localize('global.remarks') }}</th>
+                                <th>{{ localize('global.room') }}</th>
+                                <th>{{ localize('global.bed') }}</th>
+                                <th>{{ localize('global.status') }}</th>
+                                <th>{{ localize('global.actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($underReview->hospitalization as $hospitalization)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $hospitalization->reason }}</td>
+                                    <td>
+                                        {{ $hospitalization->remarks }}
+                                    </td>
+                                    <td>
+                                        {{ $hospitalization->room->name }}
+                                    </td>
+                                    <td>
+                                        {{ $hospitalization->bed->number }}
+                                    </td>
+                                    <td>
+                                        @if ($hospitalization->is_discharged == 0)
+                                            <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                        @else
+                                            <span
+                                                class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                        @endif
+
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"><span><i
+                                                    class="bx bx-edit"></i></span></a>
+                                        <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"><span><i
+                                                    class="bx bx-trash text-danger"></i></span></a>
+
+                                    </td>
+                                </tr>
+                            @empty
+                                <div class="container">
+                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                        <div class=" badge bg-label-danger mt-4">
+                                            {{ localize('global.no_previous_hospitalizations') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="col-md-12 d-flex justify-content-center">
+                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                            class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ localize('global.number') }}</th>
+                            <th>{{ localize('global.description') }}</th>
+                            <th>{{ localize('global.by') }}</th>
+                            <th>{{ localize('global.visit_date') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($underReview->hospitalization as $single_hospitaliztion)
+                            @foreach ($single_hospitaliztion->visits as $visit)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $visit->description }}</td>
+                                    <td>{{ $visit->doctor->name }}</td>
+                                    <td>
+                                        {{ $visit->created_at }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @empty
+                            <div class="container">
+                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                    <div class=" badge bg-label-danger mt-4">
+                                        {{ localize('global.no_previous_visits') }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                    </tbody>
+                </table>
+
+
+
+
+
+
                         {{-- lab tests from underReview --}}
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -391,6 +888,137 @@
                 console.log(error);
             });
     }
+</script>
+
+<script>
+    // Get the add button and prescription input container
+    const addButton = document.getElementById('addPrescriptionInput');
+    const prescriptionContainer = document.getElementById('prescription-input-container');
+
+    // Add click event listener to the add button
+    function addRow() {
+            // Create a new row div
+            const newRow = document.createElement('div');
+newRow.className = 'row';
+
+// Create the type dropdown
+const typeDropdown = document.createElement('select');
+typeDropdown.className = 'form-control select2';
+typeDropdown.name = 'medicine_type_id[]';
+
+// Append the options to the type dropdown
+@foreach ($medicineTypes as $value)
+    typeOption = document.createElement('option');
+    typeOption.value = '{{ $value->id }}';
+    typeOption.textContent = '{{ $value->type }}';
+    typeDropdown.appendChild(typeOption);
+@endforeach
+
+// Create the medicine dropdown
+const medicineDropdown = document.createElement('select');
+medicineDropdown.className = 'form-control select2';
+medicineDropdown.name = 'medicine_id[]';
+
+// Append the options to the medicine dropdown
+var medicineOption = '';
+@foreach ($medicines as $value)
+        medicineOption = document.createElement('option');
+        medicineOption.value = '{{ $value->id }}';
+        medicineOption.textContent = '{{ $value->name }}';
+        medicineDropdown.appendChild(medicineOption);
+@endforeach
+
+// Create the dosage input field
+const dosageInput = document.createElement('input');
+dosageInput.type = 'text';
+dosageInput.className = 'form-control mt-2';
+dosageInput.name = 'dosage[]';
+dosageInput.placeholder = 'Dosage';
+
+// Create the frequency input field
+const frequencyInput = document.createElement('input');
+frequencyInput.type = 'text';
+frequencyInput.className = 'form-control mt-2';
+frequencyInput.name = 'frequency[]';
+frequencyInput.placeholder = 'Frequency';
+
+// Create the amount input field
+const amountInput = document.createElement('input');
+amountInput.type = 'text';
+amountInput.className = 'form-control mt-2';
+amountInput.name = 'amount[]';
+amountInput.placeholder = 'Amount';
+
+// Create the delivery input field
+const deliveryInput = document.createElement('input');
+deliveryInput.type = 'hidden';
+deliveryInput.className = 'form-control mt-2';
+deliveryInput.name = 'is_delivered[]';
+deliveryInput.value = 0;
+
+// Create the column divs
+const typeCol = document.createElement('div');
+typeCol.className = 'col-md-2';
+const medicineCol = document.createElement('div');
+medicineCol.className = 'col-md-3';
+const dosageCol = document.createElement('div');
+dosageCol.className = 'col-md-3';
+const frequencyCol = document.createElement('div');
+frequencyCol.className = 'col-md-2';
+const amountCol = document.createElement('div');
+amountCol.className = 'col-md-2';
+const deliveryCol = document.createElement('div');
+deliveryCol.className = 'col-md-2';
+
+// Append the input fields to their respective column divs
+typeCol.appendChild(typeDropdown);
+medicineCol.appendChild(medicineDropdown);
+dosageCol.appendChild(dosageInput);
+frequencyCol.appendChild(frequencyInput);
+amountCol.appendChild(amountInput);
+deliveryCol.appendChild(deliveryInput);
+
+// Append the column divs to the new row div
+newRow.appendChild(typeCol);
+newRow.appendChild(medicineCol);
+newRow.appendChild(dosageCol);
+newRow.appendChild(frequencyCol);
+newRow.appendChild(amountCol);
+newRow.appendChild(deliveryCol);
+
+// Append the new row div to the prescription input container
+prescriptionContainer.appendChild(newRow);
+
+// Initialize the select2 plugin
+        $('select').select2({
+            dropdownParent: $('#createPrescriptionModal1')
+        });
+        
+    }
+</script>
+
+<script>
+
+    function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data) 
+    {
+         $('#prescription_items_table').html(data); }, error: function(xhr, status, error) {
+         // Handle the error response 
+         console.error(error); } }); }
+
+         $('#room_id').on('change', function() {
+                var roomId = $(this).val();
+                if (roomId !== '') {
+                    $.ajax({
+                        url: '/get_related_beds/' + roomId,
+                        type: 'GET',
+                        success: function(response) {
+
+                            $('#bed_id').html(response);
+                        }
+                    })
+                }
+            })
+
 </script>
 
 @endsection

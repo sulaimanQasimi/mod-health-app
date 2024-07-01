@@ -36,6 +36,8 @@ return new class extends Migration
             $table->foreign('doctor_id')->references('id')->on('users');
             $table->unsignedBigInteger('patient_id');
             $table->foreign('patient_id')->references('id')->on('patients');
+            $table->unsignedBigInteger('under_review_id')->nullable();
+            $table->foreign('under_review_id')->references('id')->on('under_reviews');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

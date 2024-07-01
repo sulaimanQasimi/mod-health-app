@@ -64,4 +64,14 @@ class UnderReview extends Model
     {
         return $this->hasMany(LabItem::class);
     }
+
+    public function prescription()
+    {
+        return $this->hasMany(Prescription::class);
+    }
+    
+    public function hospitalization()
+    {
+        return $this->hasMany(Hospitalization::class);
+    }
 }

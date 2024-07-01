@@ -91,6 +91,7 @@ class HospitalizationController extends Controller
             'relation_to_patient'=> 'nullable',
             'companion_card_type'=> 'nullable',
             'discharged_at'=> 'nullable',
+            'under_review_id'=> 'nullable',
         ]);
 
         $data['food_type_id'] = json_encode($data['food_type_id']);

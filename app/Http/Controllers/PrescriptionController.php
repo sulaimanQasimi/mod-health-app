@@ -46,6 +46,7 @@ class PrescriptionController extends Controller
             'appointment_id' => 'required',
             'patient_id' => 'required',
             'branch_id' => 'required',
+            'under_review_id' => 'nullable',
             'doctor_id' => 'required',
             'is_completed' => 'nullable',
             'medicine_type_id' => 'required',

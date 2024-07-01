@@ -347,8 +347,8 @@
 
                                                     <label
                                                         for="department{{ $icu->id }}">{{ localize('global.department') }}</label>
-                                                    <select class="form-control select2" name="department"
-                                                        id="department">
+                                                    <select class="form-control select2" name="department_id[]"
+                                                        id="department_id">
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($departments as $value)
                                                             <option value="{{ $value->id }}"
@@ -360,7 +360,7 @@
                                                     </select>
 
                                                     <label
-                                                    for="type{{ $appointment->id }}">{{ localize('global.type') }}</label>
+                                                    for="type{{ $icu->id }}">{{ localize('global.type') }}</label>
                                                 <select class="form-control select2" name="consultation_type" id="type">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     <option value="0">{{ localize('global.normal') }}</option>
@@ -376,7 +376,7 @@
                                                         @foreach ($doctors as $value)
                                                             <option value="{{ $value->id }}"
                                                                 {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->name_en }}
+                                                                {{ $value->name }}
 
                                                             </option>
                                                         @endforeach

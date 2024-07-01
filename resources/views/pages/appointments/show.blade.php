@@ -878,7 +878,7 @@
 
                                                 <label
                                                     for="department{{ $appointment->id }}">{{ localize('global.department') }}</label>
-                                                <select class="form-control select2" name="department_id[]" id="department" multiple>
+                                                <select class="form-control select2" name="department_id[]" id="department">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($departments as $value)
                                                         <option value="{{ $value->id }}"
@@ -897,6 +897,20 @@
                                                     <option value="1">{{ localize('global.emergency') }}</option>
                                                         
                                                 </select>
+
+                                                <label
+                                                        for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
+                                                    <select class="form-control select2" name="doctor_id[]"
+                                                        id="doctor_id" multiple>
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($doctors as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name_en }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
 
                                                 <div class="mb-3">
                                                     <label for="date">{{ localize('global.date') }}</label>
@@ -926,7 +940,8 @@
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.title') }}</th>
-                                        <th>{{ localize('global.departments') }}</th>
+                                        <th>{{ localize('global.department') }}</th>
+                                        <th>{{ localize('global.doctors') }}</th>
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -945,6 +960,13 @@
                                                 @foreach ($consultation->associated_departments as $department)
                                                     <span class="badge bg-primary">
                                                         {{ $department->name }}
+                                                    </span>
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                @foreach ($consultation->associated_doctors as $doctor)
+                                                    <span class="badge bg-primary">
+                                                        {{ $doctor->name }}
                                                     </span>
                                                 @endforeach
                                             </td>

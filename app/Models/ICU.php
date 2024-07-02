@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class ICU extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason'];
 

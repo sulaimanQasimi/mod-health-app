@@ -439,6 +439,13 @@
                         </a>
                     </li>
                     @endcan
+                    @can('show-add-icu-procedures-menu')
+                    <li class="menu-item {{ Route::is('procedure_types.*') ? 'active' : '' }}">
+                        <a href="{{ route('procedure_types.index') }}" class="menu-link">
+                            <div>{{ localize('global.procedure_types') }}</div>
+                        </a>
+                    </li>
+                    @endcan
                     @can('show-operation-types-menu')
                     <li class="menu-item {{ Route::is('operation_types.*') ? 'active' : '' }}">
                         <a href="{{ route('operation_types.index') }}" class="menu-link">

@@ -33,6 +33,8 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FoodTypeController;
 use App\Http\Controllers\ICUController;
+use App\Http\Controllers\ICUProcedureController;
+use App\Http\Controllers\ICUProcedureTypeController;
 use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
@@ -444,6 +446,30 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{pacu}', [PACUController::class, 'update'])->name('update');
         Route::get('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
         Route::get('complete/{pacuId}', [PACUController::class, 'complete'])->name('complete');
+
+    });
+
+    // ICU Procedure types routes
+    Route::prefix('procedure_types')->name('procedure_types.')->group(function () {
+        Route::get('index', [ICUProcedureTypeController::class, 'index'])->name('index');
+        Route::get('create', [ICUProcedureTypeController::class, 'create'])->name('create');
+        Route::get('show/{iCUProcedureType}', [ICUProcedureTypeController::class, 'show'])->name('show');
+        Route::post('store', [ICUProcedureTypeController::class, 'store'])->name('store');
+        Route::get('edit/{iCUProcedureType}', [ICUProcedureTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{iCUProcedureType}', [ICUProcedureTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{iCUProcedureType}', [ICUProcedureTypeController::class, 'destroy'])->name('destroy');
+
+    });
+
+    // ICU Procedures routes
+    Route::prefix('procedures')->name('procedures.')->group(function () {
+        Route::get('index', [ICUProcedureController::class, 'index'])->name('index');
+        Route::get('create', [ICUProcedureController::class, 'create'])->name('create');
+        Route::get('show/{iCUProcedure}', [ICUProcedureController::class, 'show'])->name('show');
+        Route::post('store', [ICUProcedureController::class, 'store'])->name('store');
+        Route::get('edit/{iCUProcedure}', [ICUProcedureController::class, 'edit'])->name('edit');
+        Route::put('update/{iCUProcedure}', [ICUProcedureController::class, 'update'])->name('update');
+        Route::get('destroy/{iCUProcedure}', [ICUProcedureController::class, 'destroy'])->name('destroy');
 
     });
 

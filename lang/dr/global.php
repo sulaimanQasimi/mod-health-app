@@ -782,6 +782,8 @@ return [
     'doctor' => 'داکتر',
     'advice' => 'توصیه',
     'add_advice' => 'اضافه نمودن توصیه',
+    'intake' => 'INTAKE',
+    'output' => 'OUTPUT',
 
 
 

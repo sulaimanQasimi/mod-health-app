@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Bed;
+use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
@@ -123,8 +124,9 @@ class HospitalizationController extends Controller
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
+        $foodTypes = FoodType::all();
         return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes','operation_doctors',
-    'medicineTypes','medicines'));
+    'medicineTypes','medicines','foodTypes'));
     }
 
     /**

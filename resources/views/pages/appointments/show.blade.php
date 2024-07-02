@@ -1277,7 +1277,7 @@
                                         <div class="container">
                                             <div class="col-md-12 d-flex justify-content-center align-itmes-center">
                                                 <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_hospitalizations') }}
+                                                    {{ localize('global.no_previous_under_reviews') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -1554,9 +1554,14 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.by') }}</th>
-                                    <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.by') }}</th>
+                                        <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.vital_signs') }}</th>
+                                        <th>{{ localize('global.antibiotic') }}</th>
+                                        <th>{{ localize('global.food_type') }}</th>
+                                        <th>{{ localize('global.intake') }}</th>
+                                        <th>{{ localize('global.output') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1566,9 +1571,35 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
                                             <td>{{ $visit->doctor->name }}</td>
-                                            <td>
-                                                {{ $visit->created_at }}
+                                            <td>{{ $visit->created_at }}</td>
+                                            <td dir="ltr">
+                                                <span class="badge bg-primary">{{ localize('global.bp') }}</span>
+                                                {{ $visit->bp }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pr') }}</span>
+                                                {{ $visit->pr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.rr') }}</span>
+                                                {{ $visit->rr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.t') }}</span>
+                                                {{ $visit->t }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
+                                                {{ $visit->spo2 }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pain') }}</span>
+                                                {{ $visit->pain }}
+
                                             </td>
+                                            <td>{{$visit->antibiotic}}</td>
+                                            <td>
+                                                @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                    <span class="badge bg-primary">{{ $foodType->name }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{$visit->intake}}</td>
+                                            <td>{{$visit->output}}</td>
                                         </tr>
                                     @endforeach
                                 @empty
@@ -1951,9 +1982,14 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.by') }}</th>
-                                    <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.by') }}</th>
+                                        <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.vital_signs') }}</th>
+                                        <th>{{ localize('global.antibiotic') }}</th>
+                                        <th>{{ localize('global.food_type') }}</th>
+                                        <th>{{ localize('global.intake') }}</th>
+                                        <th>{{ localize('global.output') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1963,9 +1999,35 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
                                             <td>{{ $visit->doctor->name }}</td>
-                                            <td>
-                                                {{ $visit->created_at }}
+                                            <td>{{ $visit->created_at }}</td>
+                                            <td dir="ltr">
+                                                <span class="badge bg-primary">{{ localize('global.bp') }}</span>
+                                                {{ $visit->bp }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pr') }}</span>
+                                                {{ $visit->pr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.rr') }}</span>
+                                                {{ $visit->rr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.t') }}</span>
+                                                {{ $visit->t }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
+                                                {{ $visit->spo2 }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pain') }}</span>
+                                                {{ $visit->pain }}
+
                                             </td>
+                                            <td>{{$visit->antibiotic}}</td>
+                                            <td>
+                                                @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                    <span class="badge bg-primary">{{ $foodType->name }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{$visit->intake}}</td>
+                                            <td>{{$visit->output}}</td>
                                         </tr>
                                     @empty
                                         <div class="container">

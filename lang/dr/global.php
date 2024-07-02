@@ -784,6 +784,8 @@ return [
     'add_advice' => 'اضافه نمودن توصیه',
     'intake' => 'INTAKE',
     'output' => 'OUTPUT',
+    'no_previous_advices' => 'توصیه های قبلی وجود ندارد',
+    'no_previous_under_reviews' => 'تحت مشاهده وجود ندارد'
 
 
 

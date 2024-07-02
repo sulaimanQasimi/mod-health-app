@@ -11,7 +11,8 @@ class Visit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id','under_review_id','bp', 'pr', 'rr', 't', 'spo2', 'pain','antibiotic','p_a_c_u_id'
+        'name_en','description','hospitalization_id','patient_id','doctor_id','i_c_u_id','under_review_id','bp', 'pr', 'rr', 't', 'spo2', 'pain','antibiotic','p_a_c_u_id',
+        'food_type_id','intake','output'
     ];
 
     public static function boot()
@@ -52,5 +53,11 @@ class Visit extends Model
     public function under_review()
     {
         return $this->belongsTo(UnderReview::class);
+    }
+
+    public function getAssociatedFoodTypesAttribute()
+    {
+        $foodTypeIds = array_map('intval', json_decode($this->food_type_id, true));
+        return FoodType::whereIn('id', $foodTypeIds)->get();
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewICUNotification;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\FoodType;
 use App\Models\ICU;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
@@ -105,7 +106,8 @@ class ICUController extends Controller
         $branches = Branch::all();
         $departments = Department::all();
         $doctors = User::all();
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors'));
+        $foodTypes = FoodType::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes'));
     }
 
     /**

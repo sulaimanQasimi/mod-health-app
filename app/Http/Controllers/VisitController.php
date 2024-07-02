@@ -55,17 +55,20 @@ class VisitController extends Controller
             'i_c_u_id' => 'nullable',
             'p_a_c_u_id' => 'nullable',
             'under_review_id' => 'nullable',
+            'food_type_id' => 'nullable',
             'bp' => 'nullable',
             'pr' => 'nullable',
             'rr' => 'nullable',
             't' => 'nullable',
             'spo2' => 'nullable',
             'pain' => 'nullable',
+            'intake' => 'nullable',
+            'output' => 'nullable',
             'antibiotic' => 'nullable',
 
         ]);
 
-
+        $data['food_type_id'] = json_encode($data['food_type_id']);
 
         Visit::create($data);
 

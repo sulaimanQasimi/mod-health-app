@@ -794,6 +794,11 @@ return [
     'job2' => 'شغل',
     'referred_person' => 'معرفی کننده',
     'advice' => 'توصیه',
+    'intake' => 'INTAKE',
+    'output' => 'OUTPUT',
+    'no_previous_advices' => 'توصیه های قبلی وجود ندارد',
+    'no_previous_under_reviews' => 'تحت مشاهده وجود ندارد',
+    'created_new_pacu' => 'مریض را به PACU معرفی نمود',
 
 
 

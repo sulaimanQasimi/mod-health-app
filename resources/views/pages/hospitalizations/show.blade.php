@@ -137,11 +137,43 @@
                                                         </div>
                                                     </div>
                                                     <div class="row mt-1 mb-1">
-                                                        <div class="col-md-12">
+                                                        <div class="col-md-6">
                                                             <label
                                                                 for="antibiotic{{ $hospitalization->id }}">{{ localize('global.antibiotic') }}</label>
                                                             <input type="text" class="form-control"
                                                                 name="antibiotic" />
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="food_type_id{{ $hospitalization->id }}">{{ localize('global.food_type') }}</label>
+                                                            <select class="form-control select2" name="food_type_id[]"
+                                                                id="food_type_id" multiple>
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($foodTypes as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row mt-1 mb-1">
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="intake{{ $hospitalization->id }}">{{ localize('global.intake') }}</label>
+                                                            <input type="text" class="form-control"
+                                                                name="intake" />
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label
+                                                                for="output{{ $hospitalization->id }}">{{ localize('global.output') }}</label>
+                                                            <input type="text" class="form-control"
+                                                                name="output" />
+                                                            
                                                         </div>
 
                                                     </div>
@@ -172,6 +204,10 @@
                                             <th>{{ localize('global.by') }}</th>
                                             <th>{{ localize('global.created_at') }}</th>
                                             <th>{{ localize('global.vital_signs') }}</th>
+                                            <th>{{ localize('global.antibiotic') }}</th>
+                                            <th>{{ localize('global.food_type') }}</th>
+                                            <th>{{ localize('global.intake') }}</th>
+                                            <th>{{ localize('global.output') }}</th>
                                             <th>{{ localize('global.actions') }}</th>
                                         </tr>
                                     </thead>
@@ -182,20 +218,34 @@
                                                 <td>{{ $visit->description }}</td>
                                                 <td>{{ $visit->doctor->name }}</td>
                                                 <td>{{ $visit->created_at }}</td>
-                                                <td>
+                                                <td dir="ltr">
                                                     <span class="badge bg-primary">{{ localize('global.bp') }}</span>
                                                     {{ $visit->bp }}
+                                                    <br>
                                                     <span class="badge bg-primary">{{ localize('global.pr') }}</span>
                                                     {{ $visit->pr }}
+                                                    <br>
                                                     <span class="badge bg-primary">{{ localize('global.rr') }}</span>
                                                     {{ $visit->rr }}
+                                                    <br>
                                                     <span class="badge bg-primary">{{ localize('global.t') }}</span>
                                                     {{ $visit->t }}
+                                                    <br>
                                                     <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
                                                     {{ $visit->spo2 }}
+                                                    <br>
                                                     <span class="badge bg-primary">{{ localize('global.pain') }}</span>
                                                     {{ $visit->pain }}
+
                                                 </td>
+                                                <td>{{$visit->antibiotic}}</td>
+                                                <td>
+                                                    @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                        <span class="badge bg-primary">{{ $foodType->name }}</span>
+                                                    @endforeach
+                                                </td>
+                                                <td>{{$visit->intake}}</td>
+                                                <td>{{$visit->output}}</td>
                                                 <td>
                                                     <a href="{{ route('visits.edit', $visit->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>

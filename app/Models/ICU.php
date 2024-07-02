@@ -78,4 +78,9 @@ class ICU extends Model
     {
         return $this->hasMany(Advice::class);
     }
+
+    public function prescription()
+    {
+        return $this->hasMany(Prescription::class);
+    }
 }

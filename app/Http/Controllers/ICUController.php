@@ -9,6 +9,8 @@ use App\Models\FoodType;
 use App\Models\ICU;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Medicine;
+use App\Models\MedicineType;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -107,7 +109,9 @@ class ICUController extends Controller
         $departments = Department::all();
         $doctors = User::all();
         $foodTypes = FoodType::all();
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes'));
+        $medicineTypes = MedicineType::all();
+        $medicines = Medicine::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines'));
     }
 
     /**

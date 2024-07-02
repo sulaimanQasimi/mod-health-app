@@ -552,7 +552,7 @@
                                             <label
                                                 for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
                                             <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
-                                            
+
                                         </div>
                                 </div>
                                 <div class="modal-footer">
@@ -878,7 +878,7 @@
 
                                                 <label
                                                     for="department{{ $appointment->id }}">{{ localize('global.department') }}</label>
-                                                <select class="form-control select2" name="department_id[]" id="department">
+                                                <select class="form-control select2" name="department_id[]" id="department" multiple>
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($departments as $value)
                                                         <option value="{{ $value->id }}"
@@ -895,10 +895,10 @@
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     <option value="0">{{ localize('global.normal') }}</option>
                                                     <option value="1">{{ localize('global.emergency') }}</option>
-                                                        
+
                                                 </select>
 
-                                                <label
+                                                {{-- <label
                                                         for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
                                                     <select class="form-control select2" name="doctor_id[]"
                                                         id="doctor_id" multiple>
@@ -910,7 +910,7 @@
 
                                                             </option>
                                                         @endforeach
-                                                    </select>
+                                                    </select> --}}
 
                                                 <div class="mb-3">
                                                     <label for="date">{{ localize('global.date') }}</label>
@@ -941,7 +941,7 @@
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.title') }}</th>
                                         <th>{{ localize('global.department') }}</th>
-                                        <th>{{ localize('global.doctors') }}</th>
+                                        {{-- <th>{{ localize('global.doctors') }}</th> --}}
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -963,13 +963,13 @@
                                                     </span>
                                                 @endforeach
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 @foreach ($consultation->associated_doctors as $doctor)
                                                     <span class="badge bg-primary">
                                                         {{ $doctor->name }}
                                                     </span>
                                                 @endforeach
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
@@ -996,10 +996,10 @@
                                                     @foreach ($consultation->comments as $comment)
                                                         <div class="row mb-2">
                                                             <div class="col-md-3">
-                                        
+
                                                                 <span
                                                                 class="bg-label-primary p-1 m-1">{{ $comment->department->name }}</span>
-                                                                
+
                                                             </div>
                                                             <div class="col-md-1">
                                                                 <i class="bx bx-transfer text-success"></i>
@@ -1722,7 +1722,7 @@
                                                                 <option value="{{ $value->id }}"
                                                                     {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                     {{ $value->name }}
-        
+
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -2153,7 +2153,7 @@
             $('select').select2({
                 dropdownParent: $('#createPrescriptionModal1')
             });
-            
+
         }
     </script>
 
@@ -2326,10 +2326,10 @@
 
         }
 
-        function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data) 
+        function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data)
         {
              $('#prescription_items_table').html(data); }, error: function(xhr, status, error) {
-             // Handle the error response 
+             // Handle the error response
              console.error(error); } }); }
     </script>
 @endsection

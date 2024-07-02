@@ -365,7 +365,7 @@
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     <option value="0">{{ localize('global.normal') }}</option>
                                                     <option value="1">{{ localize('global.emergency') }}</option>
-                                                        
+
                                                 </select>
 
                                                     <label
@@ -410,7 +410,7 @@
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.title') }}</th>
-                                            <th>{{ localize('global.doctors') }}</th>
+                                            <th>{{ localize('global.departments') }}</th>
                                             <th>{{ localize('global.actions') }}</th>
                                         </tr>
                                     </thead>
@@ -426,9 +426,9 @@
                                                 </td>
                                                 <td>{{ $consultation->title }}</td>
                                                 <td>
-                                                    @foreach ($consultation->associated_doctors as $doctor)
+                                                    @foreach ($consultation->associated_departments as $department)
                                                         <span class="badge bg-primary">
-                                                            {{ $doctor->name }}
+                                                            {{ $department->name }}
                                                         </span>
                                                     @endforeach
                                                 </td>
@@ -593,7 +593,7 @@
                                                             for="output{{ $icu->id }}">{{ localize('global.output') }}</label>
                                                         <input type="text" class="form-control"
                                                             name="output" />
-                                                        
+
                                                     </div>
 
                                                 </div>
@@ -719,11 +719,11 @@
                                                 name="i_c_u_id" value="{{ $icu->id }}">
                                             <!-- Add other diagnosis form fields as needed -->
                                             <div class="form-group">
-    
+
                                                 <label
                                                     for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
                                                 <textarea class="form-control" id="description{{ $icu->id }}" name="description" rows="3"></textarea>
-                                                
+
                                             </div>
                                     </div>
                                     <div class="modal-footer">
@@ -738,10 +738,10 @@
                         </div>
                         <!-- End Create Diagnose Modal -->
                         <div class="col-md-12 mt-4">
-    
-    
-    
-    
+
+
+
+
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -766,7 +766,7 @@
                                                             class="bx bx-edit"></i></span></a>
                                                 <a href="{{ route('advices.destroy', $advice->id) }}"><span><i
                                                             class="bx bx-trash text-danger"></i></span></a>
-    
+
                                             </td>
                                         </tr>
                                     @empty
@@ -780,7 +780,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
-    
+
                         </div>
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -1118,7 +1118,7 @@
                                 </table>
                             </div>
 
-                            
+
 
 
 

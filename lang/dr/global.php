@@ -464,7 +464,7 @@ return [
     'branches' => 'شفاخانه ها',
     'branch' => 'شفاخانه',
     'consultations' => 'مشوره ها',
-    'my_consultations' => 'مشوره های من',
+    'my_consultations' => 'مشوره ها',
     'scan_qrcode' => 'سکن نمودن کارت',
     'lab_types' => 'نوعیت تست ها',
     'appointment_details' => 'جزئیات ملاقات',

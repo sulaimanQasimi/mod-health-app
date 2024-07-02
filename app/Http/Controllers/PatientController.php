@@ -42,11 +42,8 @@ class PatientController extends Controller
 
     public function create()
     {
-        $recipients = Recipient::all();
-        $provinces = Province::all();
-        $districts = District::all();
-        $relations = Relation::all();
-        return view('pages.patients.create',compact('recipients','provinces','districts','relations'));
+
+        return view('pages.patients.create');
     }
 
     public function store(Request $request)
@@ -61,13 +58,24 @@ class PatientController extends Controller
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',
-            'referred_by' => 'required',
             'branch_id' => 'required',
             'job' => 'nullable',
             'rank' => 'nullable',
-            'age' => 'nullable',
+            'age' => 'nullable', 
             'job_type' => 'nullable',
+            'gender' => 'required', 
+            'referral_name' => 'nullable',
+            'referral_last_name' => 'nullable',
+            'referral_father_name' => 'nullable',
+            'referral_nid' => 'nullable',
+            'referral_id_card' => 'nullable',
+            'referral_phone' => 'nullable',
+            'referral_recipient' => 'nullable',
+            'type' => 'nullable',            
+            'id_card' => 'nullable',
+            'job_category' => 'nullable',
         ]);
+
 
         $patient = Patient::create($data);
 
@@ -200,5 +208,22 @@ public function addImage(Request $request, $id)
         $previousIcus = $patient->icus;
         return view('pages.patients.history',compact('patient','previousDiagnoses','previousConsultations','previousAnesthesias',
     'previousHospitalizations','previousLabs','previousPrescriptions','previousIcus','appointments'));
+    }
+
+    public function getTab(Request $request){
+        $recipients = Recipient::all();
+        $provinces = Province::all();
+        $districts = District::all();
+        $relations = Relation::all();
+
+        $tab_type = $request->tab_type;
+
+        if($tab_type == 'first'){
+            return view('pages.patients.tab1',compact('recipients','provinces','districts','relations'));
+        }elseif($tab_type == 'second'){
+            return view('pages.patients.tab2',compact('recipients','provinces','districts','relations'));
+        }elseif($tab_type == 'third'){
+            return view('pages.patients.tab3',compact('recipients','provinces','districts','relations'));
+        }
     }
 }

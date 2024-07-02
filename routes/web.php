@@ -142,6 +142,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
         Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
+        Route::get('get-tab', [PatientController::class, 'getTab'])->name('get-tab');
     });
 
     // Departments routes

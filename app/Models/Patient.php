@@ -12,9 +12,10 @@ class Patient extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','last_name','phone','age','father_name','nid','province_id','district_id','referred_by','image','branch_id','job','rank','relation_id','job_type','gender'];
-
-    public static function boot()
+    protected $fillable = ['name','last_name','phone','age','father_name','nid','province_id','district_id','referral_by','image','branch_id','job','rank','relation_id','job_type','gender','referral_name','referral_last_name','referral_father_name','referral_nid','referral_id_card','referral_phone','referral_recipient','type','id_card','job_category'];
+    
+    
+public static function boot()
     {
         parent::boot();
         self::creating(function ($model) {

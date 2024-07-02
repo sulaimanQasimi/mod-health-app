@@ -14,9 +14,11 @@ class RecipientSeeder extends Seeder
     public function run(): void
     {
         $recipients = [
-            ['id' => '1','name' => 'Ministry of Defence','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
-            ['id' => '2','name' => 'Ministry of Interior','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
-            ['id' => '3','name' => 'Ministry of Finance','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '1','name' => 'وزارت دفاع ملی','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '2','name' => 'وزارت امور داخله','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '3','name' => 'وزارت مالیه','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '4','name' => 'وزارت سرحدات','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
+            ['id' => '5','name' => 'وزارت معارف','created_at' => '2020-06-20 06:44:57','updated_at' => '2020-06-20 06:44:57'],
         ];
 
         foreach($recipients as $recipient){

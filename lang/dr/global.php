@@ -455,7 +455,7 @@ return [
     'prescriptions' => 'نسخه ها',
     'lab_tests' => 'لابراتوار',
     'diagnoses' => 'تشخیصات',
-    'referred_by' => 'مرجع معرفی کننده',
+    'referred_by' => 'اداره مربوطه',
     'father_name' => 'نام پدر',
     'nid' => 'نمبر تذکره',
     'create_appointment' => 'تعین ملاقات',
@@ -781,7 +781,19 @@ return [
     'pacu_details' => 'جزئیات مریض داخل PACU ',
     'doctor' => 'داکتر',
     'advice' => 'توصیه',
+    'mod' => 'وزارت دفاع ملی',
+    'recipient' => 'سایر ادارات',
+    'family' => 'اعضای فامیل و سایرین',
     'add_advice' => 'اضافه نمودن توصیه',
+    'advice' => 'توصیه',
+    'id_card' => 'نمبر کارت',
+    'military' => 'نظامی',
+    'civilian' => 'ملکی',
+    'bast' => 'بست',
+    'job_category' => 'کتگوری وظیفوی',
+    'job2' => 'شغل',
+    'referred_person' => 'معرفی کننده',
+    'advice' => 'توصیه',
 
 
 

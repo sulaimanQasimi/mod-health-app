@@ -61,9 +61,9 @@ class PatientController extends Controller
             'branch_id' => 'required',
             'job' => 'nullable',
             'rank' => 'nullable',
-            'age' => 'nullable', 
+            'age' => 'nullable',
             'job_type' => 'nullable',
-            'gender' => 'required', 
+            'gender' => 'required',
             'referral_name' => 'nullable',
             'referral_last_name' => 'nullable',
             'referral_father_name' => 'nullable',
@@ -71,9 +71,10 @@ class PatientController extends Controller
             'referral_id_card' => 'nullable',
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
-            'type' => 'nullable',            
+            'type' => 'nullable',
             'id_card' => 'nullable',
             'job_category' => 'nullable',
+            'referred_by' => 'nullable'
         ]);
 
 

@@ -91,20 +91,13 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="mb-3">
-                <label for="phone">{{ localize('global.phone')
-                    }}</label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                    class="form-control">
-            </div>
-        </div>
     </div>
     <input type="hidden" name="branch_id" value="{{ Auth::user()->branch_id }}">
     <input type="hidden" name="type" value="2">
 
-    <hr>
-    <h5 class="mb-0">{{localize('global.referred_person')}}</h5>
+
+    <h5 class="mb-2 bg-label-primary p-2">{{ localize('global.referred_person') }}</h5>
+
     <div class="row">
         <div class="col-md-3">
             <div class="mb-3">

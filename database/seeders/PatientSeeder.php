@@ -15,10 +15,10 @@ class PatientSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create();
-
+        $faker->addProvider(new \Faker\Provider\ar_EG\Person($faker));
         $patients = [];
 
-        for ($i = 1; $i <= 200; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $patients[] = [
                 'id' => $i,
                 'name' => $faker->firstName,
@@ -34,8 +34,8 @@ class PatientSeeder extends Seeder
                 'district_id' => 110,
                 'relation_id' => $faker->numberBetween(1, 3),
                 'referred_by' => $faker->numberBetween(1, 3),
-                'created_at' => $faker->dateTimeBetween('2023-06-01', '2024-06-30')->format('Y-m-d H:i:s'),
-                'updated_at' => $faker->dateTimeBetween('2023-06-01', '2024-06-30')->format('Y-m-d H:i:s'),
+                'created_at' => $faker->dateTimeBetween('2023-07-01', '2024-07-30')->format('Y-m-d H:i:s'),
+                'updated_at' => $faker->dateTimeBetween('2023-07-01', '2024-07-30')->format('Y-m-d H:i:s'),
             ];
         }
 

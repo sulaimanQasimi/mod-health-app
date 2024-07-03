@@ -83,6 +83,11 @@
                             <div>{{ localize('global.completed_appointments') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('appointments.report') ? 'active' : '' }}">
+                        <a href="{{ route('appointments.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan
@@ -118,6 +123,11 @@
                             <div>{{ localize('global.delivered_prescriptions') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('prescriptions.report') ? 'active' : '' }}">
+                        <a href="{{ route('prescriptions.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan
@@ -147,6 +157,11 @@
                     <li class="menu-item {{ Route::is('blood_banks.rejected') ? 'active' : '' }}">
                         <a href="{{ route('blood_banks.rejected') }}" class="menu-link">
                             <div>{{ localize('global.rejected_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.report') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
                 </ul>
@@ -179,6 +194,11 @@
                         <div>{{ localize('global.discharged_hospitalizations') }}</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Route::is('hospitalizations.report') ? 'active' : '' }}">
+                        <a href="{{ route('hospitalizations.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                </li>
             </ul>
         </li>
         @endcan
@@ -200,6 +220,11 @@
                     <a href="{{ route('lab_tests.completed') }}" class="menu-link">
                         <div>{{ localize('global.completed_lab_tests') }}</div>
                     </a>
+                </li>
+                <li class="menu-item {{ Route::is('lab_tests.report') ? 'active' : '' }}">
+                        <a href="{{ route('lab_tests.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
                 </li>
             </ul>
         </li>
@@ -228,6 +253,11 @@
                         <div>{{ localize('global.rejected_icus') }}</div>
                     </a>
                 </li>
+                <li class="menu-item {{ Route::is('icus.report') ? 'active' : '' }}">
+                        <a href="{{ route('icus.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                </li>
             </ul>
         </li>
         @endcan
@@ -248,6 +278,11 @@
                     <a href="{{ route('pacus.completed') }}" class="menu-link">
                         <div>{{ localize('global.completed_pacus') }}</div>
                     </a>
+                </li>
+                <li class="menu-item {{ Route::is('pacus.report') ? 'active' : '' }}">
+                        <a href="{{ route('pacus.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
                 </li>
             </ul>
         </li>
@@ -273,6 +308,11 @@
                     <li class="menu-item {{ Route::is('anesthesias.rejected') ? 'active' : '' }}">
                         <a href="{{ route('anesthesias.rejected') }}" class="menu-link">
                             <div>{{ localize('global.rejected_anesthesias') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('anesthesias.report') ? 'active' : '' }}">
+                        <a href="{{ route('anesthesias.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
                 </ul>
@@ -305,6 +345,11 @@
                     <li class="menu-item {{ Route::is('operations.completed') ? 'active' : '' }}">
                         <a href="{{ route('operations.completed') }}" class="menu-link">
                             <div>{{ localize('global.completed_operations') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('operations.report') ? 'active' : '' }}">
+                        <a href="{{ route('operations.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
                 </ul>

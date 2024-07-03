@@ -209,6 +209,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{hospitalization}', [HospitalizationController::class, 'edit'])->name('edit');
         Route::put('update/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
         Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
+        Route::get('report', [HospitalizationController::class, 'report'])->name('report');
+        Route::post('report-search', [HospitalizationController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [HospitalizationController::class, 'exportReport'])->name('export-report');
     });
 
     // Under Review routes
@@ -256,6 +259,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{appointment}', [AppointmentController::class, 'update'])->name('update');
         Route::put('changeStatus/{appointment}', [AppointmentController::class, 'changeStatus'])->name('changeStatus');
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
+        Route::get('report', [AppointmentController::class, 'report'])->name('report');
+        Route::post('report-search', [AppointmentController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [AppointmentController::class, 'exportReport'])->name('export-report');
     });
 
     // Diagnoses routes
@@ -285,6 +291,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);
         Route::put('changeStatus/{prescription}', [PrescriptionController::class, 'changeStatus'])->name('changeStatus');
+        Route::get('report', [PrescriptionController::class, 'report'])->name('report');
+        Route::post('report-search', [PrescriptionController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [PrescriptionController::class, 'exportReport'])->name('export-report');
 
     });
 
@@ -299,6 +308,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
         Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
         Route::get('/print-card/{lab}', [LabController::class, 'printCard'])->name('print-card');
+        Route::get('report', [LabController::class, 'report'])->name('report');
+        Route::post('report-search', [LabController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [LabController::class, 'exportReport'])->name('export-report');
     });
 
     // Relations routes
@@ -416,6 +428,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
         Route::put('/operation/{operationId}/reserve', [OperationController::class, 'reserveOperation'])->name('reserve');
         Route::get('/operation/{operationId}/unreserve', [OperationController::class, 'unreserveOperation'])->name('unreserve');
+        Route::get('report', [OperationController::class, 'report'])->name('report');
+        Route::post('report-search', [OperationController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [OperationController::class, 'exportReport'])->name('export-report');
     });
 
     // ICUs routes
@@ -430,6 +445,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
         Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
         Route::get('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
+        Route::get('report', [ICUController::class, 'report'])->name('report');
+        Route::post('report-search', [ICUController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [ICUController::class, 'exportReport'])->name('export-report');
     });
 
     // PACUs routes
@@ -443,6 +461,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{pacu}', [PACUController::class, 'update'])->name('update');
         Route::get('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
         Route::get('complete/{pacuId}', [PACUController::class, 'complete'])->name('complete');
+        Route::get('report', [PACUController::class, 'report'])->name('report');
+        Route::post('report-search', [PACUController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [PACUController::class, 'exportReport'])->name('export-report');
 
     });
 
@@ -458,6 +479,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
         Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
+        Route::get('report', [AnesthesiaController::class, 'report'])->name('report');
+        Route::post('report-search', [AnesthesiaController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [AnesthesiaController::class, 'exportReport'])->name('export-report');
     });
 
     // Medicine types routes
@@ -519,6 +543,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('approve/{bloodBank}', [BloodBankController::class, 'approve'])->name('approve');
         Route::get('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
         Route::put('reject/{bloodBank}', [BloodBankController::class, 'reject'])->name('reject');
+        Route::get('report', [BloodBankController::class, 'report'])->name('report');
+        Route::post('report-search', [BloodBankController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [BloodBankController::class, 'exportReport'])->name('export-report');
     });
 
     // Advices routes

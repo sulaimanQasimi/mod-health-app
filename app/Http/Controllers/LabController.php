@@ -6,8 +6,14 @@ use App\Jobs\SendNewLabNotification;
 use App\Models\Appointment;
 use App\Models\Lab;
 use App\Models\LabItem;
+use App\Models\LabTypeSection;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 class LabController extends Controller
 {
     /**
@@ -138,5 +144,122 @@ class LabController extends Controller
         $patient = $lab->patient;
 
         return view('pages.labs.print_card', compact('patient','lab'));
+    }
+
+
+
+    public function report()
+    {
+        $labTypeSections = LabTypeSection::all();
+        return view('pages.labs.reports.index', compact('labTypeSections'));
+    }
+    public function reportSearch(Request $request)
+    {
+        $query = DB::table('labs as l')
+        ->leftJoin('patients as p', 'l.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'l.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'l.branch_id' , '=', 'b.id')
+        ->leftJoin('lab_type_sections as lts', 'l.lab_type_section_id' , '=', 'lts.id')
+        ->select('l.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','lts.section as lab_type_section_name', 'l.status');
+
+        if ($request->filled('patient_name')) {
+            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('lab_type_section_id')) {
+            $query->where('l.lab_type_section_id', $request->lab_type_section_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('l.status', $request->status);
+        }
+
+        if ($request->filled('from') && $request->filled('to')) {
+            $query->whereBetween('l.created_at', [$request->from, $request->to]);
+        }
+
+        $items = $query->get();
+    return view('pages.labs.reports.report', ['items' => $items]);
+
+    }
+
+    
+    public function exportReport(Request $request)
+    {
+
+        $data = json_decode($request->data, true);
+      
+        $items = DB::table('labs as l')
+        ->leftJoin('patients as p', 'l.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'l.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'l.branch_id' , '=', 'b.id')
+        ->leftJoin('lab_type_sections as lts', 'l.lab_type_section_id' , '=', 'lts.id')
+        ->select('l.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','lts.section as lab_type_section_name', 'l.status')
+        ->whereIn('l.id', $data)->get();
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load("report_templates/lab_report.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        $html = view('pages.labs.reports.pdf_report',  ['items' => $items])->render();
+        if ($request->type == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('pdf_report.pdf', 'D');
+        }else {
+            $spreadsheet = $reader->load("report_templates/lab_report.xlsx");
+            $sheet = $spreadsheet->getActiveSheet();
+            $row = 3;
+
+            foreach ($items as $index => $item) {
+
+
+                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet->getColumnDimension('A')->setWidth(5);
+                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('F')->setWidth(20);
+                $styleArray = array(
+                    'font' => array(
+                        'name' => 'B Nazanin',
+                        'color' => 15,
+                        'bold' => true
+
+                    ),
+                );
+
+                $status = '';
+                if ($item->status == '0') {
+                    $status = 'معاینات تحت کار';
+                } else {
+                    $status = 'معاینات تکمیل شده';
+                }
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $status);
+                    $sheet->setCellValue('D' . $row . '', $item->doctor_name);
+                    $sheet->setCellValue('E' . $row . '', $item->lab_type_section_name);
+                    $sheet->setCellValue('F' . $row . '', $item->branch_name);
+                    
+                $row++;
+            }
+
+return $this->exportResponse($spreadsheet);
+}
+    }
+
+
+    public function exportResponse($spreadsheet){
+        $writer = new WriterXlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+
     }
 }

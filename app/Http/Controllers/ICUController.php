@@ -143,6 +143,7 @@ class ICUController extends Controller
             'death_date' => 'nullable',
             'death_time' => 'nullable',
             'move_department_id' => 'nullable',
+            'is_discharged' => 'nullable',
 
         ]);
 

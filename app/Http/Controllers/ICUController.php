@@ -76,6 +76,8 @@ class ICUController extends Controller
      */
     public function store(Request $request)
     {
+
+
         // Validate the input
         $validatedData = $request->validate([
             'patient_id' => 'required',
@@ -87,6 +89,7 @@ class ICUController extends Controller
             'operation_id' => 'nullable',
             'icu_enterance_note' => 'nullable',
             'icu_reject_reason' => 'nullable',
+
         ]);
 
         // Create a new appointment
@@ -133,13 +136,19 @@ class ICUController extends Controller
             'icu_enterance_note' => 'nullable',
             'status' => 'nullable',
             'icu_reject_reason' => 'nullable',
+            'discharge_status' => 'nullable',
+            'discharge_remark' => 'nullable',
+            'discharged_at' => 'nullable',
+            'cause_of_death' => 'nullable',
+            'death_date' => 'nullable',
+            'death_time' => 'nullable',
+            'move_department_id' => 'nullable',
 
         ]);
 
         $icu->update($data);
 
-
-        return redirect()->route('icus.new')->with('success', 'ICU updated successfully.');
+        return redirect()->back()->with('success', 'ICU updated successfully.');
     }
 
     /**

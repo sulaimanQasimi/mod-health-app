@@ -804,7 +804,12 @@ return [
     'procedure_type' => 'نوعیت پروسیجر',
     'procedures' => 'پروسیجر ها',
     'add_procedure' => 'اضافه نمودن پروسیجر',
-    'no_previous_procedures' => 'پروسیجر قبلی وجود ندارد'
+    'no_previous_procedures' => 'پروسیجر قبلی وجود ندارد',
+    'cause_of_death' => 'علت مرگ',
+    'death_date_time' => 'زمان و تاریخ مرگ',
+    'moved_to' => 'انتقال به',
+    'discharge_move_patient' => 'رخصت/انتقال مریض',
+
 
 
 

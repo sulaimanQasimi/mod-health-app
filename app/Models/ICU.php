@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class ICU extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason'];
+    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason','discharge_status','discharge_remark','discharged_at','cause_of_death','death_date','death_time','move_department_id'];
 
     public static function boot()
     {
@@ -75,5 +77,15 @@ class ICU extends Model
     public function advices()
     {
         return $this->hasMany(Advice::class);
+    }
+
+    public function prescription()
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
+    public function procedures()
+    {
+        return $this->hasMany(ICUProcedure::class);
     }
 }

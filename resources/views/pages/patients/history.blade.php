@@ -317,7 +317,7 @@
                             <th>{{ localize('global.title') }}</th>
                             <th>{{ localize('global.date') }}</th>
                             <th>{{ localize('global.time') }}</th>
-                            <th>{{ localize('global.doctors') }}</th>
+                            <th>{{ localize('global.departments') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -333,10 +333,10 @@
                                 </td>
                                 <td>{{ $consultation->time }}</td>
                                 <td>
-                                    @foreach($consultation->associated_doctors as $doctor)
-                                    <span class="badge bg-label-primary">
-                                        {{$doctor->name}}
-                                    </span>
+                                    @foreach ($consultation->associated_departments as $department)
+                                        <span class="badge bg-primary">
+                                            {{ $department->name }}
+                                        </span>
                                     @endforeach
                                 </td>
 

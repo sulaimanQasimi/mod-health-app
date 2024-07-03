@@ -464,7 +464,7 @@ return [
     'branches' => 'شفاخانه ها',
     'branch' => 'شفاخانه',
     'consultations' => 'مشوره ها',
-    'my_consultations' => 'مشوره های من',
+    'my_consultations' => 'مشوره ها',
     'scan_qrcode' => 'سکن نمودن کارت',
     'lab_types' => 'نوعیت تست ها',
     'appointment_details' => 'جزئیات ملاقات',
@@ -799,6 +799,17 @@ return [
     'no_previous_advices' => 'توصیه های قبلی وجود ندارد',
     'no_previous_under_reviews' => 'تحت مشاهده وجود ندارد',
     'created_new_pacu' => 'مریض را به PACU معرفی نمود',
+    'procedure_types' => 'نوعیت پروسیجرهای ICU',
+    'create_procedure_type' => 'اضافه نمودن نوعیت پروسیجر',
+    'procedure_type' => 'نوعیت پروسیجر',
+    'procedures' => 'پروسیجر ها',
+    'add_procedure' => 'اضافه نمودن پروسیجر',
+    'no_previous_procedures' => 'پروسیجر قبلی وجود ندارد',
+    'cause_of_death' => 'علت مرگ',
+    'death_date_time' => 'زمان و تاریخ مرگ',
+    'moved_to' => 'انتقال به',
+    'discharge_move_patient' => 'رخصت/انتقال مریض',
+
 
 
 

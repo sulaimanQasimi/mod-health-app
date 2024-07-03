@@ -48,6 +48,7 @@ class PrescriptionController extends Controller
             'branch_id' => 'required',
             'under_review_id' => 'nullable',
             'hospitalization_id' => 'nullable',
+            'i_c_u_id' => 'nullable',
             'doctor_id' => 'required',
             'is_completed' => 'nullable',
             'medicine_type_id' => 'required',
@@ -57,16 +58,16 @@ class PrescriptionController extends Controller
             'amount' => 'nullable',
         ]);
 
-    
+
         $medicineIds = $data['medicine_id'];
         $medicineTypeIds = $data['medicine_type_id'];
         $dosages = $data['dosage'];
         $frequencies = $data['frequency'];
         $amounts = $data['amount'];
         unset($data['medicine_id']);
-    
+
         $prescription = Prescription::create($data);
-    
+
         foreach ($medicineIds as $index => $medicineId) {
             $prescription_item_data = [
                 'prescription_id' => $prescription->id,
@@ -80,9 +81,9 @@ class PrescriptionController extends Controller
 
             PrescriptionItem::create($prescription_item_data);
         }
-    
+
         SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
-    
+
         return redirect()->back()->with('success', 'Prescription created successfully.');
 
     }

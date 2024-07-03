@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Psy\CodeCleaner\FunctionReturnInWriteContextPass;
 
-class Prescription extends Model
+class ICUProcedure extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed','under_review_id','hospitalization_id','i_c_u_id'];
+    protected $fillable=['icu_procedure_type_id','description','i_c_u_id'];
 
     public static function boot()
     {
@@ -34,24 +35,13 @@ class Prescription extends Model
         });
     }
 
-    public function appointment()
+    public function procedure_type()
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(ICUProcedureType::class, 'icu_procedure_type_id');
     }
 
-    public function patient()
+    public function createdBy()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
-
-    public function doctor()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function prescriptionItems()
-    {
-        return $this->hasMany(PrescriptionItem::class);
-    }
-
 }

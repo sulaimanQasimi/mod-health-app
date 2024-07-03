@@ -33,13 +33,12 @@ class ConsultationController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {        
+    {
         $data = $request->validate([
             'title' => 'required',
             'appointment_id' => 'required',
             'patient_id' => 'required',
             'department_id' => 'required',
-            'doctor_id' => 'required',
             'branch_id' => 'required',
             'date' => 'required',
             'time' => 'required',
@@ -48,10 +47,9 @@ class ConsultationController extends Controller
         ]);
 
         $data['department_id'] = json_encode($data['department_id']);
-        $data['doctor_id'] = json_encode($data['doctor_id']);
-        
+
         $consultation = Consultation::create($data);
-        
+
         SendNewConsultationNotification::dispatch($consultation->created_by, $consultation->id);
 
         return redirect()->back()->with('success', 'Consultation created successfully.');

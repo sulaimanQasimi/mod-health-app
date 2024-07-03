@@ -799,6 +799,7 @@ return [
     'no_previous_advices' => 'توصیه های قبلی وجود ندارد',
     'no_previous_under_reviews' => 'تحت مشاهده وجود ندارد',
     'created_new_pacu' => 'مریض را به PACU معرفی نمود',
+    'procedure_types' => 'نوعیت پروسیجرهای ICU'
 
 
 

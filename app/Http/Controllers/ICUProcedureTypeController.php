@@ -29,7 +29,16 @@ class ICUProcedureTypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:i_c_u_procedure_types,name',
+        ]);
+
+        $icuProcedureType = new ICUProcedureType;
+        $icuProcedureType->name = $request->name;
+        $icuProcedureType->save();
+
+        return redirect()->route('procedure_types.index')
+                        ->with('success','ICU Procedure Type created successfully.');
     }
 
     /**
@@ -53,7 +62,15 @@ class ICUProcedureTypeController extends Controller
      */
     public function update(Request $request, ICUProcedureType $iCUProcedureType)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:i_c_u_procedure_types,name,' . $iCUProcedureType->id,
+        ]);
+
+        $iCUProcedureType->name = $request->name;
+        $iCUProcedureType->save();
+
+        return redirect()->route('procedure_types.index')
+                        ->with('success','ICU Procedure Type updated successfully.');
     }
 
     /**
@@ -61,6 +78,9 @@ class ICUProcedureTypeController extends Controller
      */
     public function destroy(ICUProcedureType $iCUProcedureType)
     {
-        //
+        $iCUProcedureType->delete();
+
+        return redirect()->route('icu-procedure-types.index')
+                        ->with('success','ICU Procedure Type deleted successfully.');
     }
 }

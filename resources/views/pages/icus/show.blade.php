@@ -1160,6 +1160,125 @@
 
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                class="bx bx-dna p-1"></i>{{ localize('global.procedures') }}</h5>
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#createProcedureModal{{ $icu->id }}"><span><i
+                                    class="bx bx-plus"></i></span></button>
+
+                        <!-- Create  Lab Modal -->
+                        <div class="modal fade" id="createProcedureModal{{ $icu->id }}"
+                            tabindex="-1" aria-labelledby="createProcedureModalLabel{{ $icu->id }}"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"
+                                            id="createProcedureModalLabel{{ $icu->id }}">
+                                            {{ localize('global.add_procedure') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('procedures.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" id="i_c_u_id{{ $icu->id }}"
+                                            name="i_c_u_id" value="{{ $icu->id }}">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <label
+                                                        for="icu_procedure_type_id{{ $icu->id }}">{{ localize('global.procedure_type') }}</label>
+                                                    <select class="form-control select2" name="icu_procedure_type_id"
+                                                        id="icu_procedure_type_id">
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($procedure_types as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <label
+                                                    for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
+                                                <textarea class="form-control" id="description{{ $icu->id }}" name="description" rows="3"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Create Lab Modal -->
+                        <div class="col-md-12 mt-4">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.type') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.created_by') }}</th>
+                                        <th>{{ localize('global.created_at') }}</th>
+                                        <th>{{ localize('global.actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($icu->procedures as $procedure)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $procedure->procedure_type->name }}</td>
+                                            <td>{{ $procedure->description }}</td>
+                                            <td>
+                                                {{ $procedure->createdBy->name }}
+                                            </td>
+                                            <td>{{ $procedure->created_at }}</td>
+
+                                            <td>
+                                                <a href="{{ route('procedures.edit', $procedure->id) }}"><span><i
+                                                    class="bx bx-edit"></i></span></a>
+                                        <a href="{{ route('procedures.destroy', $procedure->id) }}"><span><i
+                                                    class="bx bx-trash text-danger"></i></span></a>
+
+                                            </td>
+
+                                        </tr>
+
+                                    @empty
+                                        <div class="container">
+                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                <div class=" badge bg-label-danger mt-4">
+                                                    {{ localize('global.no_previous_procedures') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforelse
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+
+
+
+
+
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-hourglass p-1"></i>{{ localize('global.daily_icu_progress') }}</h5>
 
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"

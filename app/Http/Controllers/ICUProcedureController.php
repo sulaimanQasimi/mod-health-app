@@ -28,7 +28,20 @@ class ICUProcedureController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'icu_procedure_type_id' => 'required|exists:i_c_u_procedure_types,id',
+            'description' => 'required',
+            'i_c_u_id' => 'required',
+        ]);
+
+        $icuProcedure = new ICUProcedure();
+        $icuProcedure->icu_procedure_type_id = $request->icu_procedure_type_id;
+        $icuProcedure->description = $request->description;
+        $icuProcedure->i_c_u_id = $request->i_c_u_id;
+        $icuProcedure->save();
+
+        return redirect()->back()
+                        ->with('success', 'ICU Procedure created successfully.');
     }
 
     /**

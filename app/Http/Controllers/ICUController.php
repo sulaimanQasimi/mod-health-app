@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Department;
 use App\Models\FoodType;
 use App\Models\ICU;
+use App\Models\ICUProcedureType;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Medicine;
@@ -111,7 +112,8 @@ class ICUController extends Controller
         $foodTypes = FoodType::all();
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines'));
+        $procedure_types = ICUProcedureType::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types'));
     }
 
     /**

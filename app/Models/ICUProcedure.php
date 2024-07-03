@@ -13,7 +13,7 @@ class ICUProcedure extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable=['icu_procedure_type_id','description'];
+    protected $fillable=['icu_procedure_type_id','description','i_c_u_id'];
 
     public static function boot()
     {
@@ -37,6 +37,11 @@ class ICUProcedure extends Model
 
     public function procedure_type()
     {
-        return $this->belongsTo(ICUProcedureType::class);
+        return $this->belongsTo(ICUProcedureType::class, 'icu_procedure_type_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

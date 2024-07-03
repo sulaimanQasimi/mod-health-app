@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('description');
             $table->unsignedBigInteger('icu_procedure_type_id');
+            $table->unsignedBigInteger('i_c_u_id');
             $table->softDeletes();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
@@ -22,6 +23,9 @@ return new class extends Migration
             $table->foreign('icu_procedure_type_id')
                 ->references('id')
                 ->on('i_c_u_procedure_types');
+            $table->foreign('i_c_u_id')
+                ->references('id')
+                ->on('i_c_u_s');
             $table->timestamps();
         });
     }

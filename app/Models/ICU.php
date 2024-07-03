@@ -83,4 +83,9 @@ class ICU extends Model
     {
         return $this->hasMany(Prescription::class);
     }
+
+    public function procedures()
+    {
+        return $this->hasMany(ICUProcedure::class);
+    }
 }

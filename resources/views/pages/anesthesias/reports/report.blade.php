@@ -35,7 +35,21 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->patient_name }}</td>
-                        <td>{{ $item->status }}</td>
+                        <td>
+                        @if ($item->status == 'new')
+                            <span class="badge rounded-pill bg-primary">
+                                {{ localize('global.new_anesthesias') }}
+                            </span>              
+                        @elseif($item->status == 'approved')
+                        <span class="badge rounded-pill bg-success">
+                                {{ localize('global.approved_anesthesias') }}
+                            </span> 
+                        @else
+                        <span class="badge rounded-pill bg-danger">
+                            {{ localize('global.rejected_anesthesias') }}
+                        </span> 
+                        @endif
+                        </td>
                         <td>{{ $item->doctor_name }}</td>
                         <td>{{ $item->anesthesia_type }}</td>
                         <td>{{ $item->branch_name }}</td>

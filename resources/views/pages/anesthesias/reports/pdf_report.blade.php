@@ -47,7 +47,7 @@
 </head>
 
 <body>
-    <h2 class="excel_table_title">{{ localize('global.blood_banks_report_title') }}</h2>
+    <h2 class="excel_table_title">{{ localize('global.anesthesias_report_title') }}</h2>
     <div class="col-md-12 mt-2">
         <table class="table" id="print_excel_table">
             <thead>
@@ -68,7 +68,21 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->patient_name }}</td>
-                        <td>{{ $item->status }}</td>
+                        <td>
+                        @if ($item->status == 'new')
+                            <span class="badge rounded-pill bg-primary">
+                                {{ localize('global.new_anesthesias') }}
+                            </span>              
+                        @elseif($item->status == 'approved')
+                        <span class="badge rounded-pill bg-success">
+                                {{ localize('global.approved_anesthesias') }}
+                            </span> 
+                        @else
+                        <span class="badge rounded-pill bg-danger">
+                            {{ localize('global.rejected_anesthesias') }}
+                        </span> 
+                        @endif
+                        </td>
                         <td>{{ $item->doctor_name }}</td>
                         <td>{{ $item->anesthesia_type }}</td>
                         <td>{{ $item->branch_name }}</td>

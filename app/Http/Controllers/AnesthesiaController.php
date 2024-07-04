@@ -225,6 +225,9 @@ class AnesthesiaController extends Controller
                 $sheet->getColumnDimension('C')->setWidth(20);
                 $sheet->getColumnDimension('D')->setWidth(20);
                 $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('F')->setWidth(20);
+                $sheet->getColumnDimension('G')->setWidth(20);
+                $sheet->getColumnDimension('H')->setWidth(20);
                 $styleArray = array(
                     'font' => array(
                         'name' => 'B Nazanin',
@@ -233,11 +236,23 @@ class AnesthesiaController extends Controller
 
                     ),
                 );
+
+                $status = '';
+                if ($item->status == 'new') {
+                    $status = 'انستیزی های جدید';
+                } elseif($item->status == 'approved') {
+                    $status = 'انستیزی های تائید شده';
+                } else{
+                    $status = 'انستیزی های مسترد شده';
+                }
                     $sheet->setCellValue('A' . $row . '', ++$index);
                     $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->doctor_name);
-                    $sheet->setCellValue('D' . $row . '', $item->branch_name);
-                    $sheet->setCellValue('E' . $row . '', $item->is_completed);
+                    $sheet->setCellValue('C' . $row . '', $status);
+                    $sheet->setCellValue('D' . $row . '', $item->doctor_name);
+                    $sheet->setCellValue('E' . $row . '', $item->anesthesia_type);
+                    $sheet->setCellValue('F' . $row . '', $item->branch_name);
+                    $sheet->setCellValue('G' . $row . '', $item->date);
+                    $sheet->setCellValue('H' . $row . '', $item->time);
                     
                 $row++;
             }

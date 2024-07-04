@@ -287,6 +287,10 @@ class OperationController extends Controller
                 $sheet->getColumnDimension('C')->setWidth(20);
                 $sheet->getColumnDimension('D')->setWidth(20);
                 $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('F')->setWidth(20);
+                $sheet->getColumnDimension('G')->setWidth(20);
+                $sheet->getColumnDimension('H')->setWidth(20);
+                $sheet->getColumnDimension('I')->setWidth(20);
                 $styleArray = array(
                     'font' => array(
                         'name' => 'B Nazanin',
@@ -295,11 +299,36 @@ class OperationController extends Controller
 
                     ),
                 );
+
+                $operation_done = '';
+                if ($item->is_operation_done == '0') {
+                    $operation_done = 'نااجراء';
+                }else {
+                    $operation_done = 'تکمیل';
+                }
+
+                $operation_approved = '';
+                if ($item->is_operation_approved == '0') {
+                    $operation_approved = 'تائید ناشده';
+                }else {
+                    $operation_approved = 'تائید شده';
+                }
+
+                $reserved = '';
+                if ($item->is_reserved == '0') {
+                    $reserved = 'ریزرف ناشده';
+                }else {
+                    $reserved = 'ریزرف شده';
+                }
                     $sheet->setCellValue('A' . $row . '', ++$index);
                     $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->doctor_name);
-                    $sheet->setCellValue('D' . $row . '', $item->branch_name);
-                    $sheet->setCellValue('E' . $row . '', $item->is_completed);
+                    $sheet->setCellValue('C' . $row . '', $item->operation_surgion_name);
+                    $sheet->setCellValue('D' . $row . '', $operation_done);
+                    $sheet->setCellValue('E' . $row . '', $operation_approved);
+                    $sheet->setCellValue('F' . $row . '', $reserved);
+                    $sheet->setCellValue('G' . $row . '', $item->operation_type_name);
+                    $sheet->setCellValue('H' . $row . '', $item->date);
+                    $sheet->setCellValue('I' . $row . '', $item->time);
                     
                 $row++;
             }

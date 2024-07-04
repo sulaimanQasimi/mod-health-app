@@ -47,7 +47,7 @@
 </head>
 
 <body>
-    <h2 class="excel_table_title">{{ localize('global.blood_banks_report_title') }}</h2>
+    <h2 class="excel_table_title">{{ localize('global.operations_report_title') }}</h2>
     <div class="col-md-12 mt-2">
         <table class="table" id="print_excel_table">
             <thead>

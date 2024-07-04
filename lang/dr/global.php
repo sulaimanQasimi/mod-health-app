@@ -804,6 +804,8 @@ return [
     'lab_tests_report_title' => 'راپور معاینات',
     'icus_report_title' => 'راپور مریضان ICU',
     'pacu_report_title' => 'راپور مریضان PACU',
+    'anesthesias_report_title' => 'راپور انستیزی ها',
+    'operations_report_title' => 'راپور عملیات',
 
 
 ];

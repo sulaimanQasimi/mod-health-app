@@ -4,7 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendNewBloodBankNotification;
 use App\Models\BloodBank;
+use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 
 class BloodBankController extends Controller
 {
@@ -128,5 +135,119 @@ class BloodBankController extends Controller
     public function destroy(BloodBank $bloodBank)
     {
         //
+    }
+
+    public function report()
+    {
+        $departments = Department::all();
+        return view('pages.blood_banks.reports.index', compact('departments'));
+    }
+    public function reportSearch(Request $request)
+    {
+        $query = DB::table('blood_banks as bb')
+        ->leftJoin('patients as p', 'bb.patient_id' , '=', 'p.id')
+        ->leftJoin('departments as d', 'bb.department_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'bb.branch_id' , '=', 'b.id')
+        ->select('bb.id','p.name as patient_name', 'd.name as department_name','b.name as branch_name','bb.status', 'bb.group', 'bb.rh');
+
+        if ($request->filled('patient_name')) {
+            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('bb.status', $request->status);
+        }
+
+        if ($request->filled('group')) {
+            $query->where('bb.group', $request->group);
+        }
+
+        if ($request->filled('rh')) {
+            $query->where('bb.rh', $request->rh);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('bb.department_id', $request->department_id);
+        }
+
+        if ($request->filled('from') && $request->filled('to')) {
+            $query->whereBetween('bb.created_at', [$request->from, $request->to]);
+        }
+
+        $items = $query->get();
+    return view('pages.blood_banks.reports.report', ['items' => $items]);
+
+    }
+
+    
+    public function exportReport(Request $request)
+    {
+
+        $data = json_decode($request->data, true);
+      
+        $items = DB::table('blood_banks as bb')
+        ->leftJoin('patients as p', 'bb.patient_id' , '=', 'p.id')
+        ->leftJoin('departments as d', 'bb.department_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'bb.branch_id' , '=', 'b.id')
+        ->select('bb.id','p.name as patient_name', 'd.name as department_name','b.name as branch_name','bb.status', 'bb.group', 'bb.rh')
+        ->whereIn('bb.id', $data)->get();
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load("report_templates/blood_bank_report.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        $html = view('pages.blood_banks.reports.pdf_report',  ['items' => $items])->render();
+        if ($request->type == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('pdf_report.pdf', 'D');
+        }else {
+            $spreadsheet = $reader->load("report_templates/blood_bank_report.xlsx");
+            $sheet = $spreadsheet->getActiveSheet();
+            $row = 3;
+
+            foreach ($items as $index => $item) {
+
+
+                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet->getColumnDimension('A')->setWidth(5);
+                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('F')->setWidth(20);
+                $styleArray = array(
+                    'font' => array(
+                        'name' => 'B Nazanin',
+                        'color' => 15,
+                        'bold' => true
+
+                    ),
+                );
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $item->status);
+                    $sheet->setCellValue('D' . $row . '', $item->group);
+                    $sheet->setCellValue('E' . $row . '', $item->rh);
+                    $sheet->setCellValue('F' . $row . '', $item->department_name);
+                    
+                $row++;
+            }
+
+return $this->exportResponse($spreadsheet);
+}
+    }
+
+
+    public function exportResponse($spreadsheet){
+        $writer = new WriterXlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+
     }
 }

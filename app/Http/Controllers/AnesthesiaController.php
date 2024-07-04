@@ -7,7 +7,12 @@ use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 class AnesthesiaController extends Controller
 {
     /**
@@ -143,5 +148,131 @@ class AnesthesiaController extends Controller
     public function destroy(Anesthesia $anesthesia)
     {
         //
+    }
+
+    public function report()
+    {
+
+        return view('pages.anesthesias.reports.index');
+    }
+    public function reportSearch(Request $request)
+    {
+        $query = DB::table('anesthesias as a')
+        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
+        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'a.status', 'a.anesthesia_type', 'a.date', 'a.time');
+
+        if ($request->filled('patient_name')) {
+            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('a.status', $request->status);
+        }
+        if ($request->filled('anesthesia_type')) {
+            $query->where('a.anesthesia_type', $request->anesthesia_type);
+        }
+
+        if ($request->filled('date')) {
+            $query->where('a.date', $request->date);
+        }
+
+        if ($request->filled('time')) {
+            $query->where('a.time', $request->time);
+        }
+
+        if ($request->filled('from') && $request->filled('to')) {
+            $query->whereBetween('a.created_at', [$request->from, $request->to]);
+        }
+
+        $items = $query->get();
+    return view('pages.anesthesias.reports.report', ['items' => $items]);
+
+    }
+
+    
+    public function exportReport(Request $request)
+    {
+
+        $data = json_decode($request->data, true);
+      
+        $items = DB::table('anesthesias as a')
+        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
+        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'a.status', 'a.anesthesia_type', 'a.date', 'a.time')
+        ->whereIn('a.id', $data)->get();
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load("report_templates/anesthesias_report.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        $html = view('pages.anesthesias.reports.pdf_report',  ['items' => $items])->render();
+        if ($request->type == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('pdf_report.pdf', 'D');
+        }else {
+            $spreadsheet = $reader->load("report_templates/anesthesias_report.xlsx");
+            $sheet = $spreadsheet->getActiveSheet();
+            $row = 3;
+
+            foreach ($items as $index => $item) {
+
+
+                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet->getColumnDimension('A')->setWidth(5);
+                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('F')->setWidth(20);
+                $sheet->getColumnDimension('G')->setWidth(20);
+                $sheet->getColumnDimension('H')->setWidth(20);
+                $styleArray = array(
+                    'font' => array(
+                        'name' => 'B Nazanin',
+                        'color' => 15,
+                        'bold' => true
+
+                    ),
+                );
+
+                $status = '';
+                if ($item->status == 'new') {
+                    $status = 'انستیزی های جدید';
+                } elseif($item->status == 'approved') {
+                    $status = 'انستیزی های تائید شده';
+                } else{
+                    $status = 'انستیزی های مسترد شده';
+                }
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $status);
+                    $sheet->setCellValue('D' . $row . '', $item->doctor_name);
+                    $sheet->setCellValue('E' . $row . '', $item->anesthesia_type);
+                    $sheet->setCellValue('F' . $row . '', $item->branch_name);
+                    $sheet->setCellValue('G' . $row . '', $item->date);
+                    $sheet->setCellValue('H' . $row . '', $item->time);
+                    
+                $row++;
+            }
+
+return $this->exportResponse($spreadsheet);
+}
+    }
+
+
+    public function exportResponse($spreadsheet){
+        $writer = new WriterXlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+
     }
 }

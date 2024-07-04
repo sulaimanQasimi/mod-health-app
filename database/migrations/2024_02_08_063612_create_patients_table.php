@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('referral_nid')->nullable();
             $table->string('referral_id_card')->nullable();
             $table->string('referral_phone')->nullable();
-            $table->integer('referral_recipient')->nullable();            
+            $table->integer('referral_recipient')->nullable();
             $table->tinyInteger('type')->default('0')->nullable();
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('relation_id')->nullable();
@@ -38,7 +38,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_card')->nullable();
             $table->tinyInteger('job_category')->default('0')->nullable();
             $table->unsignedBigInteger('district_id');
-            $table->unsignedBigInteger('referred_by');
+            $table->unsignedBigInteger('referred_by')->nullable();
             $table->foreign('province_id')->references('id')->on('provinces');
             $table->foreign('district_id')->references('id')->on('districts');
             $table->foreign('relation_id')->references('id')->on('relations');

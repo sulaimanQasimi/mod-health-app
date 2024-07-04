@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
             $table->text('icu_enterance_note',2000)->nullable();
             $table->text('icu_reject_reason',2000)->nullable();
+            $table->tinyInteger('is_discharged')->default(false);
             $table->enum('discharge_status', ['recovered', 'died', 'moved'])->nullable();
             $table->text('discharge_remark',2000)->nullable();
             $table->timestamp('discharged_at')->nullable();

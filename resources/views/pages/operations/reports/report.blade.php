@@ -1,0 +1,87 @@
+<div>
+    <form action="{{ route('operations.export-report') }}" method="POST">
+        {{ csrf_field() }}
+        <input type="hidden" name="data" value="{{ $items->pluck('id') }}">
+
+        <div class="demo-inline-spacing">
+            {{-- <button type="button" onclick="exportExcelFile()" value="excel" class="btn btn-label-primary">
+                <span class="me-1"><i class="fa fa-file-excel"></i></span>export Excel
+            </button> --}}
+            <button type="submit" name="type" value="excel" class="btn btn-label-primary">
+                <span class="me-1"> <i class="fa fa-file-excel"></i></span>Excel
+            </button>
+            <button type="submit" name="type" value="pdf" class="btn btn-label-danger">
+                <span class="me-1"><i class="fa fa-file-pdf"></i></span>PDF
+            </button>
+        </div>
+
+    </form>
+    <div class="col-md-12 mt-2">
+        <table class="table table-bordered table-striped table-responsive w-100" id="print_excel_table">
+            <thead>
+                <tr>
+                <th>{{ localize('global.number') }}</th>
+                    <th>{{ localize('global.patient_name') }}</th>
+                    <th>{{ localize('global.operation_surgion') }}</th>
+                    <th>{{ localize('global.operation_status') }}</th>
+                    <th>{{ localize('global.operation_approval') }}</th>
+                    <th>{{ localize('global.reserve_status') }}</th>
+                    <th>{{ localize('global.operation_type') }}</th>
+                    <th>{{ localize('global.date') }}</th>
+                    <th>{{ localize('global.time') }}</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @foreach ($items as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->patient_name }}</td>
+                        <td>{{ $item->operation_surgion_name}}</td>
+                        <td>
+                        @if ($item->is_operation_done == '0')
+                            <span class="badge rounded-pill bg-danger">
+                                {{ localize('global.operation_uncomplete') }}
+                            </span>              
+                        @else
+                        <span class="badge rounded-pill bg-success">
+                                {{ localize('global.operation_complete') }}
+                            </span> 
+                        @endif
+                        </td>
+                        <td>
+                        @if ($item->is_operation_approved == '0')
+                            <span class="badge rounded-pill bg-danger">
+                                {{ localize('global.operation_not_approved') }}
+                            </span>              
+                        @else
+                        <span class="badge rounded-pill bg-primary">
+                                {{ localize('global.operation_approved') }}
+                            </span> 
+                        @endif
+                        </td>
+                        <td>
+                        @if ($item->is_reserved == '0')
+                            <span class="badge rounded-pill bg-danger">
+                                {{ localize('global.not_reserved') }}
+                            </span>              
+                        @else
+                        <span class="badge rounded-pill bg-info">
+                                {{ localize('global.reserved') }}
+                            </span> 
+                        @endif
+                        </td>
+                        <td>{{ $item->operation_type_name }}</td>
+                        <td>{{ $item->date }}</td>
+                        <td>{{ $item->time }}</td>
+                        
+                    </tr>
+                @endforeach
+                @if ($items->count() == 0)
+                    <tr>
+                        <td colspan="9" class="text-center text-danger">
+                            {{ localize('global.no_item_is_found') }}!!</td>
+                    </tr>
+                @endif
+            </tbody>
+    </div>
+</div>

@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewICUNotification;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\FoodType;
 use App\Models\ICU;
+use App\Models\ICUProcedureType;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Medicine;
+use App\Models\MedicineType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,6 +81,8 @@ class ICUController extends Controller
      */
     public function store(Request $request)
     {
+
+
         // Validate the input
         $validatedData = $request->validate([
             'patient_id' => 'required',
@@ -88,6 +94,7 @@ class ICUController extends Controller
             'operation_id' => 'nullable',
             'icu_enterance_note' => 'nullable',
             'icu_reject_reason' => 'nullable',
+
         ]);
 
         // Create a new appointment
@@ -110,7 +117,11 @@ class ICUController extends Controller
         $branches = Branch::all();
         $departments = Department::all();
         $doctors = User::all();
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors'));
+        $foodTypes = FoodType::all();
+        $medicineTypes = MedicineType::all();
+        $medicines = Medicine::all();
+        $procedure_types = ICUProcedureType::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types'));
     }
 
     /**
@@ -130,13 +141,20 @@ class ICUController extends Controller
             'icu_enterance_note' => 'nullable',
             'status' => 'nullable',
             'icu_reject_reason' => 'nullable',
+            'discharge_status' => 'nullable',
+            'discharge_remark' => 'nullable',
+            'discharged_at' => 'nullable',
+            'cause_of_death' => 'nullable',
+            'death_date' => 'nullable',
+            'death_time' => 'nullable',
+            'move_department_id' => 'nullable',
+            'is_discharged' => 'nullable',
 
         ]);
 
         $icu->update($data);
 
-
-        return redirect()->route('icus.new')->with('success', 'ICU updated successfully.');
+        return redirect()->back()->with('success', 'ICU updated successfully.');
     }
 
     /**

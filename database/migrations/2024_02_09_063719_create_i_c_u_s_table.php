@@ -17,12 +17,20 @@ return new class extends Migration
             $table->enum('status', ['new', 'approved', 'rejected'])->default('new');
             $table->text('icu_enterance_note',2000)->nullable();
             $table->text('icu_reject_reason',2000)->nullable();
+            $table->tinyInteger('is_discharged')->default(false);
+            $table->enum('discharge_status', ['recovered', 'died', 'moved'])->nullable();
+            $table->text('discharge_remark',2000)->nullable();
+            $table->timestamp('discharged_at')->nullable();
+            $table->text('cause_of_death',2000)->nullable();
+            $table->string('death_date',2000)->nullable();
+            $table->string('death_time',2000)->nullable();
             $table->unsignedBigInteger('appointment_id')->nullable();
             $table->unsignedBigInteger('hospitalization_id')->nullable();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('operation_id')->nullable();
+            $table->unsignedBigInteger('move_department_id')->nullable();
             $table->foreign('operation_id')->references('id')->on('anesthesias');
 
             $table->foreign('appointment_id')
@@ -44,6 +52,10 @@ return new class extends Migration
             $table->foreign('branch_id')
             ->references('id')
             ->on('branches');
+
+            $table->foreign('move_department_id')
+            ->references('id')
+            ->on('departments');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

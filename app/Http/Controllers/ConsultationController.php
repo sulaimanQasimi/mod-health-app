@@ -43,8 +43,8 @@ class ConsultationController extends Controller
             'date' => 'required',
             'time' => 'required',
             'i_c_u_id' => 'nullable',
+            'consultation_type' => 'nullable',
         ]);
-
 
         $data['department_id'] = json_encode($data['department_id']);
 

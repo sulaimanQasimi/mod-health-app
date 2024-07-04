@@ -21,7 +21,8 @@
             {{-- <th>{{localize('global.patient_name')}}</th> --}}
             <th>{{localize('global.title')}}</th>
             <th>{{localize('global.time')}}</th>
-            <th>{{localize('global.result')}}</th>
+            <th>{{localize('global.type')}}</th>
+            <th>{{localize('global.department')}}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
     </thead>
@@ -32,7 +33,16 @@
                 {{-- <td>{{ $consultation->patient->name }}</td> --}}
                 <td>{{ $consultation->title }}</td>
                 <td>{{ $consultation->created_at }}</td>
-                <td>{{ $consultation->result }}</td>
+                <td>
+                    @if($consultation->consultation_type == 0)
+
+                    <span class="badge bg-primary">{{localize('global.normal')}}</span>
+                    @else
+
+                    <span class="badge bg-danger">{{localize('global.emergency')}}</span>
+                    @endif
+                </td>
+                <td>{{ $consultation->user->department->name }}</td>
                 <td>
                     <a href="{{ route('consultations.show', $consultation) }}"><i class="bx bx-show-alt"></i></a>
                 </td>

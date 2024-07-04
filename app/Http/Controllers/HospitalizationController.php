@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Bed;
+use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Medicine;
+use App\Models\MedicineType;
 use App\Models\OperationType;
 use App\Models\User;
 use App\Models\FoodType;
@@ -98,6 +101,7 @@ class HospitalizationController extends Controller
             'relation_to_patient'=> 'nullable',
             'companion_card_type'=> 'nullable',
             'discharged_at'=> 'nullable',
+            'under_review_id'=> 'nullable',
         ]);
 
         $data['food_type_id'] = json_encode($data['food_type_id']);
@@ -125,7 +129,11 @@ class HospitalizationController extends Controller
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
-        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes','operation_doctors'));
+        $medicineTypes = MedicineType::all();
+        $medicines = Medicine::all();
+        $foodTypes = FoodType::all();
+        return view('pages.hospitalizations.show',compact('hospitalization','labTypeSections','operationTypes','labTypes','operation_doctors',
+    'medicineTypes','medicines','foodTypes'));
     }
 
     /**

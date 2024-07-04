@@ -33,6 +33,8 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FoodTypeController;
 use App\Http\Controllers\ICUController;
+use App\Http\Controllers\ICUProcedureController;
+use App\Http\Controllers\ICUProcedureTypeController;
 use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
@@ -142,6 +144,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
         Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
+        Route::get('get-tab', [PatientController::class, 'getTab'])->name('get-tab');
     });
 
     // Departments routes
@@ -464,6 +467,30 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('report', [PACUController::class, 'report'])->name('report');
         Route::post('report-search', [PACUController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [PACUController::class, 'exportReport'])->name('export-report');
+
+    });
+
+    // ICU Procedure types routes
+    Route::prefix('procedure_types')->name('procedure_types.')->group(function () {
+        Route::get('index', [ICUProcedureTypeController::class, 'index'])->name('index');
+        Route::get('create', [ICUProcedureTypeController::class, 'create'])->name('create');
+        Route::get('show/{iCUProcedureType}', [ICUProcedureTypeController::class, 'show'])->name('show');
+        Route::post('store', [ICUProcedureTypeController::class, 'store'])->name('store');
+        Route::get('edit/{iCUProcedureType}', [ICUProcedureTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{iCUProcedureType}', [ICUProcedureTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{iCUProcedureType}', [ICUProcedureTypeController::class, 'destroy'])->name('destroy');
+
+    });
+
+    // ICU Procedures routes
+    Route::prefix('procedures')->name('procedures.')->group(function () {
+        Route::get('index', [ICUProcedureController::class, 'index'])->name('index');
+        Route::get('create', [ICUProcedureController::class, 'create'])->name('create');
+        Route::get('show/{iCUProcedure}', [ICUProcedureController::class, 'show'])->name('show');
+        Route::post('store', [ICUProcedureController::class, 'store'])->name('store');
+        Route::get('edit/{iCUProcedure}', [ICUProcedureController::class, 'edit'])->name('edit');
+        Route::put('update/{iCUProcedure}', [ICUProcedureController::class, 'update'])->name('update');
+        Route::get('destroy/{iCUProcedure}', [ICUProcedureController::class, 'destroy'])->name('destroy');
 
     });
 

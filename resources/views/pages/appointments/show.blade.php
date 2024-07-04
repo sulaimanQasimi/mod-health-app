@@ -552,7 +552,7 @@
                                             <label
                                                 for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
                                             <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
-                                            
+
                                         </div>
                                 </div>
                                 <div class="modal-footer">
@@ -889,6 +889,29 @@
                                                     @endforeach
                                                 </select>
 
+                                                <label
+                                                    for="type{{ $appointment->id }}">{{ localize('global.type') }}</label>
+                                                <select class="form-control select2" name="consultation_type" id="type">
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    <option value="0">{{ localize('global.normal') }}</option>
+                                                    <option value="1">{{ localize('global.emergency') }}</option>
+
+                                                </select>
+
+                                                {{-- <label
+                                                        for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
+                                                    <select class="form-control select2" name="doctor_id[]"
+                                                        id="doctor_id" multiple>
+                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        @foreach ($doctors as $value)
+                                                            <option value="{{ $value->id }}"
+                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                {{ $value->name_en }}
+
+                                                            </option>
+                                                        @endforeach
+                                                    </select> --}}
+
                                                 <div class="mb-3">
                                                     <label for="date">{{ localize('global.date') }}</label>
                                                     <input type="date" class="form-control" name="date" />
@@ -917,7 +940,8 @@
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.title') }}</th>
-                                        <th>{{ localize('global.departments') }}</th>
+                                        <th>{{ localize('global.department') }}</th>
+                                        {{-- <th>{{ localize('global.doctors') }}</th> --}}
                                         <th>{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -939,6 +963,13 @@
                                                     </span>
                                                 @endforeach
                                             </td>
+                                            {{-- <td>
+                                                @foreach ($consultation->associated_doctors as $doctor)
+                                                    <span class="badge bg-primary">
+                                                        {{ $doctor->name }}
+                                                    </span>
+                                                @endforeach
+                                            </td> --}}
                                             <td>
                                                 <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
@@ -965,10 +996,10 @@
                                                     @foreach ($consultation->comments as $comment)
                                                         <div class="row mb-2">
                                                             <div class="col-md-3">
-                                        
+
                                                                 <span
                                                                 class="bg-label-primary p-1 m-1">{{ $comment->department->name }}</span>
-                                                                
+
                                                             </div>
                                                             <div class="col-md-1">
                                                                 <i class="bx bx-transfer text-success"></i>
@@ -1246,7 +1277,7 @@
                                         <div class="container">
                                             <div class="col-md-12 d-flex justify-content-center align-itmes-center">
                                                 <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_hospitalizations') }}
+                                                    {{ localize('global.no_previous_under_reviews') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -1523,9 +1554,14 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.by') }}</th>
-                                    <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.by') }}</th>
+                                        <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.vital_signs') }}</th>
+                                        <th>{{ localize('global.antibiotic') }}</th>
+                                        <th>{{ localize('global.food_type') }}</th>
+                                        <th>{{ localize('global.intake') }}</th>
+                                        <th>{{ localize('global.output') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1535,9 +1571,35 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
                                             <td>{{ $visit->doctor->name }}</td>
-                                            <td>
-                                                {{ $visit->created_at }}
+                                            <td>{{ $visit->created_at }}</td>
+                                            <td dir="ltr">
+                                                <span class="badge bg-primary">{{ localize('global.bp') }}</span>
+                                                {{ $visit->bp }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pr') }}</span>
+                                                {{ $visit->pr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.rr') }}</span>
+                                                {{ $visit->rr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.t') }}</span>
+                                                {{ $visit->t }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
+                                                {{ $visit->spo2 }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pain') }}</span>
+                                                {{ $visit->pain }}
+
                                             </td>
+                                            <td>{{$visit->antibiotic}}</td>
+                                            <td>
+                                                @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                    <span class="badge bg-primary">{{ $foodType->name }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{$visit->intake}}</td>
+                                            <td>{{$visit->output}}</td>
                                         </tr>
                                     @endforeach
                                 @empty
@@ -1660,7 +1722,7 @@
                                                                 <option value="{{ $value->id }}"
                                                                     {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                     {{ $value->name }}
-        
+
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -1920,9 +1982,14 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.by') }}</th>
-                                    <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.description') }}</th>
+                                        <th>{{ localize('global.by') }}</th>
+                                        <th>{{ localize('global.visit_date') }}</th>
+                                        <th>{{ localize('global.vital_signs') }}</th>
+                                        <th>{{ localize('global.antibiotic') }}</th>
+                                        <th>{{ localize('global.food_type') }}</th>
+                                        <th>{{ localize('global.intake') }}</th>
+                                        <th>{{ localize('global.output') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1932,9 +1999,35 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $visit->description }}</td>
                                             <td>{{ $visit->doctor->name }}</td>
-                                            <td>
-                                                {{ $visit->created_at }}
+                                            <td>{{ $visit->created_at }}</td>
+                                            <td dir="ltr">
+                                                <span class="badge bg-primary">{{ localize('global.bp') }}</span>
+                                                {{ $visit->bp }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pr') }}</span>
+                                                {{ $visit->pr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.rr') }}</span>
+                                                {{ $visit->rr }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.t') }}</span>
+                                                {{ $visit->t }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
+                                                {{ $visit->spo2 }}
+                                                <br>
+                                                <span class="badge bg-primary">{{ localize('global.pain') }}</span>
+                                                {{ $visit->pain }}
+
                                             </td>
+                                            <td>{{$visit->antibiotic}}</td>
+                                            <td>
+                                                @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                    <span class="badge bg-primary">{{ $foodType->name }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{$visit->intake}}</td>
+                                            <td>{{$visit->output}}</td>
                                         </tr>
                                     @empty
                                         <div class="container">
@@ -2060,7 +2153,7 @@
             $('select').select2({
                 dropdownParent: $('#createPrescriptionModal1')
             });
-            
+
         }
     </script>
 
@@ -2233,10 +2326,10 @@
 
         }
 
-        function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data) 
+        function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data)
         {
              $('#prescription_items_table').html(data); }, error: function(xhr, status, error) {
-             // Handle the error response 
+             // Handle the error response
              console.error(error); } }); }
     </script>
 @endsection

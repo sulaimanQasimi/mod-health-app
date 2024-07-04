@@ -21,9 +21,13 @@ return new class extends Migration
             $table->string('spo2')->nullable();
             $table->string('pain')->nullable();
             $table->string('antibiotic')->nullable();
+            $table->string('intake')->nullable();
+            $table->string('output')->nullable();
+            $table->text('food_type_id')->nullable();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('hospitalization_id')->nullable();
             $table->unsignedBigInteger('under_review_id')->nullable();
+            
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('i_c_u_id')->nullable();
             $table->unsignedBigInteger('p_a_c_u_id')->nullable();

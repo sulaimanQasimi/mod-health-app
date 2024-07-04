@@ -402,6 +402,16 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
+        Permission::create([
+            'id' => 40,
+            'name' => 'show-add-icu-procedures-menu',
+            'name_dr' => 'نمایش مینو پروسیجر های ICU ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
 
     }
 }

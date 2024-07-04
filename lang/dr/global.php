@@ -833,6 +833,12 @@ return [
     'death_date_time' => 'زمان و تاریخ مرگ',
     'moved_to' => 'انتقال به',
     'discharge_move_patient' => 'رخصت/انتقال مریض',
+    'the_patient_has_been_died' => 'مریض فوت نموده',
+    'the_patient_has_been_recovered' => 'مریض صحت یاب و مرخص شده',
+    'the_patient_has_been_moved' => 'مریض انتقال شده',
+    'casue_of_death' => 'علت فوت',
+    'death_date' => 'تاریخ فوت',
+    'death_time' => 'زمان فوت',
 
 
 ];

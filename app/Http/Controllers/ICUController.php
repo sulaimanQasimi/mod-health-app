@@ -149,6 +149,8 @@ class ICUController extends Controller
             'death_time' => 'nullable',
             'move_department_id' => 'nullable',
             'is_discharged' => 'nullable',
+            'transfer_date' => 'nullable',
+            'brief_history' => 'nullable',
 
         ]);
 
@@ -272,5 +274,15 @@ return $this->exportResponse($spreadsheet);
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
 
+    }
+
+    public function printDeathCard(ICU $icu)
+    {
+        return view('pages.icus.print_death_card', compact('icu'));
+    }
+
+    public function printMoveCard(ICU $icu)
+    {
+        return view('pages.icus.print_move_card', compact('icu'));
     }
 }

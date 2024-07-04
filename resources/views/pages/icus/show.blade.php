@@ -203,7 +203,7 @@
 
 
                                     <div class="d-flex justify-content-center p-2">
-                                        <div class="col-md-2"> 
+                                        <div class="col-md-2">
                                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#createICUApproveModal{{ $icu->id }}"><span><i
                                                         class="bx bx-check"></i>{{ localize('global.approve') }}</span></button>
@@ -299,11 +299,11 @@
                         @if ($icu->status == 'approved')
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-chat p-1"></i>{{ localize('global.consultations') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createConsultationModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createConsultationModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createConsultationModal{{ $icu->id }}" tabindex="-1"
                                 aria-labelledby="createConsultationModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -491,11 +491,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createVisitModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createVisitModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create visit Modal -->
                             <div class="modal fade" id="createVisitModal{{ $icu->id }}" tabindex="-1"
                                 aria-labelledby="createVisitModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -692,11 +692,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createPrescriptionModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createPrescriptionModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create Diagnose Modal -->
                             <div class="modal fade modal-xl" id="createPrescriptionModal{{ $icu->id }}"
                                 tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{ $icu->id }}"
@@ -923,11 +923,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-command p-1"></i>{{ localize('global.advice') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createAdviceModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createAdviceModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create Diagnose Modal -->
                             <div class="modal fade" id="createAdviceModal{{ $icu->id }}" tabindex="-1"
                                 aria-labelledby="createAdviceModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1018,11 +1018,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createLabModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createLabModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createLabModal{{ $icu->id }}" tabindex="-1"
                                 aria-labelledby="createLabModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1160,11 +1160,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-dna p-1"></i>{{ localize('global.procedures') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createProcedureModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createProcedureModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createProcedureModal{{ $icu->id }}" tabindex="-1"
                                 aria-labelledby="createProcedureModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1278,11 +1278,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-hourglass p-1"></i>{{ localize('global.daily_icu_progress') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createDailyICUProgressModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createDailyICUProgressModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade modal-xl" id="createDailyICUProgressModal{{ $icu->id }}"
                                 tabindex="-1" aria-labelledby="createDailyICUProgressModalLabel{{ $icu->id }}"
@@ -1474,11 +1474,11 @@
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-walk p-1"></i>{{ localize('global.discharge_move_patient') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createDischargeModal{{ $icu->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                                    @endif
+                            @if ($icu->is_discharged == '0')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createDischargeModal{{ $icu->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createDischargeModal{{ $icu->id }}" tabindex="-1"
                                 aria-labelledby="createDischargeModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1513,7 +1513,7 @@
                                                         <textarea class="form-control" id="discharge_remark{{ $icu->id }}" name="discharge_remark" rows="3"></textarea>
                                                         <input type="hidden" name="discharged_at"
                                                             value="{{ \Carbon\Carbon::now() }}">
-                                                            <input type="hidden" id="is_discharged{{ $icu->id }}"
+                                                        <input type="hidden" id="is_discharged{{ $icu->id }}"
                                                             name="is_discharged" value="1">
                                                     </div>
                                                     <div id="died_options{{ $icu->id }}" style="display: none;">
@@ -1533,7 +1533,7 @@
                                                             </div>
                                                         </div>
                                                         <input type="hidden" id="is_discharged{{ $icu->id }}"
-                                                    name="is_discharged" value="1">
+                                                            name="is_discharged" value="1">
                                                     </div>
                                                     <div id="moved_options{{ $icu->id }}" style="display: none;">
                                                         <label
@@ -1550,8 +1550,13 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        <label for="brief_history{{ $icu->id }}"
+                                                            class="mt-2">{{ localize('global.brief_history') }}</label>
+                                                        <textarea class="form-control mt-2" id="brief_history{{ $icu->id }}" name="brief_history" rows="3"></textarea>
                                                         <input type="hidden" id="is_discharged{{ $icu->id }}"
-                                                    name="is_discharged" value="1">
+                                                            name="is_discharged" value="1">
+                                                            <input type="hidden" name="transfer_date"
+                                                            value="{{ \Carbon\Carbon::now() }}">
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
@@ -1567,40 +1572,63 @@
                             </div>
 
                             <div class="col-md-12 mt-2">
-                                @if($icu->discharge_status == 'recovered')
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        {{localize('global.the_patient_has_been_recovered')}}
+                                @if ($icu->discharge_status == 'recovered')
+                                    <div class="row text-center">
+                                        <div class="col-md-6">
+                                            {{ localize('global.the_patient_has_been_recovered') }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{ $icu->discharge_remark }}
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        {{$icu->discharge_remark}}
-                                    </div>
-                                </div>
-                                    
                                 @elseif($icu->discharge_status == 'died')
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        {{localize('global.the_patient_has_been_died')}}
+                                    <div class="row text-center">
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                {{ localize('global.the_patient_has_been_died') }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <h5 class="mb-2">{{ localize('global.casue_of_death') }}</h5>
+                                            <div>
+                                                {{ $icu->cause_of_death }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h5 class="mb-2">{{ localize('global.death_date') }}</h5>
+                                            <div>
+                                                {{ $icu->death_date }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h5 class="mb-2">{{ localize('global.death_time') }}</h5>
+                                            <div>
+                                                {{ $icu->death_time }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-2 text-center">
+                                                <a href="{{route('icus.print-death-card', $icu)}}" target="_blank" class="btn btn-primary">Death Summary</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        {{$icu->cause_of_death}}
+                                @elseif ($icu->discharge_status == 'moved')
+                                    <div class="row text-center">
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                {{ localize('global.the_patient_has_been_moved') }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            {{ $icu->discharge_remark }}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-2 text-center">
+                                                <a href="{{route('icus.print-move-card', $icu)}}" target="_blank" class="btn btn-primary">Transfer Sheet</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        {{$icu->death_date}}
-                                    </div>
-                                    <div class="col-md-2">
-                                        {{$icu->death_time}}
-                                    </div>
-                                </div>
-                                @else
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        {{localize('global.the_patient_has_been_recovered')}}
-                                    </div>
-                                    <div class="col-md-3">
-                                        {{$icu->discharge_remark}}
-                                    </div>
-                                </div>
                                 @endif
                             </div>
 

@@ -12,7 +12,7 @@ class ICU extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason','discharge_status','discharge_remark','discharged_at','cause_of_death','death_date','death_time','move_department_id','is_discharged'];
+    protected $fillable=['description','appointment_id','hospitalization_id','patient_id','doctor_id','branch_id','operation_id','status','icu_enterance_note','icu_reject_reason','discharge_status','discharge_remark','discharged_at','cause_of_death','death_date','death_time','move_department_id','is_discharged','transfer_date','brief_history'];
 
     public static function boot()
     {
@@ -88,4 +88,5 @@ class ICU extends Model
     {
         return $this->hasMany(ICUProcedure::class);
     }
+
 }

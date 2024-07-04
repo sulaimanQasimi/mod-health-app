@@ -14,7 +14,12 @@ use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 class ICUController extends Controller
 {
     /**
@@ -158,5 +163,114 @@ class ICUController extends Controller
     public function destroy(ICU $icu)
     {
         //
+    }
+
+    public function report()
+    {
+
+        return view('pages.icus.reports.index');
+    }
+    public function reportSearch(Request $request)
+    {
+        $query = DB::table('i_c_u_s as i')
+        ->leftJoin('patients as p', 'i.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'i.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'i.branch_id' , '=', 'b.id')
+        ->select('i.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'i.status');
+
+        if ($request->filled('patient_name')) {
+            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('i.status', $request->status);
+        }
+
+        if ($request->filled('from') && $request->filled('to')) {
+            $query->whereBetween('i.created_at', [$request->from, $request->to]);
+        }
+
+        $items = $query->get();
+    return view('pages.icus.reports.report', ['items' => $items]);
+
+    }
+
+    
+    public function exportReport(Request $request)
+    {
+
+        $data = json_decode($request->data, true);
+      
+        $items = DB::table('i_c_u_s as i')
+        ->leftJoin('patients as p', 'i.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'i.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'i.branch_id' , '=', 'b.id')
+        ->select('i.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'i.status')
+        ->whereIn('i.id', $data)->get();
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load("report_templates/icus_report.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        $html = view('pages.icus.reports.pdf_report',  ['items' => $items])->render();
+        if ($request->type == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('pdf_report.pdf', 'D');
+        }else {
+            $spreadsheet = $reader->load("report_templates/icus_report.xlsx");
+            $sheet = $spreadsheet->getActiveSheet();
+            $row = 3;
+
+            foreach ($items as $index => $item) {
+
+
+                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet->getColumnDimension('A')->setWidth(5);
+                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(20);
+                $styleArray = array(
+                    'font' => array(
+                        'name' => 'B Nazanin',
+                        'color' => 15,
+                        'bold' => true
+
+                    ),
+                );
+
+                $status = '';
+                if ($item->status == 'new') {
+                    $status = 'ICU های جدید';
+                } elseif ($item->status == 'approved') {
+                    $status = 'ICU های تائید شده';
+                }else{
+                    $status = 'ICU های مسترد شده';
+                }
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $status);
+                    $sheet->setCellValue('D' . $row . '', $item->doctor_name);
+                    $sheet->setCellValue('E' . $row . '', $item->branch_name);
+                    
+                $row++;
+            }
+
+return $this->exportResponse($spreadsheet);
+}
+    }
+
+
+    public function exportResponse($spreadsheet){
+        $writer = new WriterXlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+
     }
 }

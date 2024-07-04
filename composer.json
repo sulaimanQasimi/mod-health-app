@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "carlos-meneses/laravel-mpdf": "^2.1",
         "guzzlehttp/guzzle": "^7.2",
         "hanifhefaz/dcter": "^1.1",
         "laravel/framework": "^10.10",
@@ -13,6 +14,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.4",
         "laravelcollective/html": "^6.4",
+        "maatwebsite/excel": "*",
         "mbezhanov/faker-provider-collection": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-html": "^3.2",

@@ -7,7 +7,12 @@ use App\Models\Appointment;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 class PrescriptionController extends Controller
 {
     /**
@@ -182,5 +187,111 @@ class PrescriptionController extends Controller
 
         // Redirect to the prescriptions index page with a success message
         return redirect()->route('prescriptions.delivered')->with('success', 'prescription updated successfully.');
+    }
+
+    public function report()
+    {
+        return view('pages.prescriptions.reports.index');
+    }
+    public function reportSearch(Request $request)
+    {
+        $query = DB::table('prescriptions as a')
+        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
+        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed');
+
+        if ($request->filled('patient_name')) {
+            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('is_completed')) {
+            $query->where('a.is_completed', $request->is_completed);
+        }
+
+        if ($request->filled('from') && $request->filled('to')) {
+            $query->whereBetween('a.created_at', [$request->from, $request->to]);
+        }
+
+        $items = $query->get();
+    return view('pages.prescriptions.reports.report', ['items' => $items]);
+
+    }
+
+    
+    public function exportReport(Request $request)
+    {
+
+        $data = json_decode($request->data, true);
+      
+        $items = DB::table('prescriptions as a')
+        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
+        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
+        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
+        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed')
+        ->whereIn('a.id', $data)->get();
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        $html = view('pages.prescriptions.reports.pdf_report',  ['items' => $items])->render();
+        if ($request->type == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('pdf_report.pdf', 'D');
+        }else {
+            $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
+            $sheet = $spreadsheet->getActiveSheet();
+            $row = 3;
+
+            foreach ($items as $index => $item) {
+
+
+                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet->getColumnDimension('A')->setWidth(5);
+                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(20);
+                $styleArray = array(
+                    'font' => array(
+                        'name' => 'B Nazanin',
+                        'color' => 15,
+                        'bold' => true
+
+                    ),
+                );
+
+                $status = '';
+                if ($item->is_completed == '0') {
+                    $status = 'نسخه های نا اجرأ';
+                } else {
+                    $status = 'نسخه های اجرأ شده';
+                }
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $item->doctor_name);
+                    $sheet->setCellValue('D' . $row . '', $item->branch_name);
+                    $sheet->setCellValue('E' . $row . '', $status);
+                    
+                $row++;
+            }
+
+return $this->exportResponse($spreadsheet);
+}
+    }
+
+
+    public function exportResponse($spreadsheet){
+        $writer = new WriterXlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+
     }
 }

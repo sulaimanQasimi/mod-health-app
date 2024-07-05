@@ -12,7 +12,6 @@ use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\OperationType;
 use App\Models\User;
-use App\Models\FoodType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -102,6 +101,7 @@ class HospitalizationController extends Controller
             'companion_card_type'=> 'nullable',
             'discharged_at'=> 'nullable',
             'under_review_id'=> 'nullable',
+            'i_c_u_id'=> 'nullable',
         ]);
 
         $data['food_type_id'] = json_encode($data['food_type_id']);
@@ -177,7 +177,7 @@ class HospitalizationController extends Controller
     public function report()
     {
         $foodTypes = FoodType::all();
-      
+
         return view('pages.hospitalizations.reports.index', compact('foodTypes'));
     }
     public function reportSearch(Request $request)
@@ -221,7 +221,7 @@ class HospitalizationController extends Controller
     return view('pages.hospitalizations.reports.report', ['items' => $items]);
 }
 
-    
+
     public function exportReport(Request $request)
     {
 
@@ -276,7 +276,7 @@ class HospitalizationController extends Controller
                     $sheet->setCellValue('E' . $row . '', $item->discharge_status);
                     $sheet->setCellValue('F' . $row . '', $item->doctor_name);
                     $sheet->setCellValue('G' . $row . '', $item->branch_name);
-                    
+
                 $row++;
             }
 

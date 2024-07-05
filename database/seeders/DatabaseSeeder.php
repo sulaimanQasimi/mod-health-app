@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             FoodTypeSeeder::class,
             MedicineTypeSeeder::class,
             MedicineSeeder::class,
+            ProcedureTypeSeeder::class,
 
 
 

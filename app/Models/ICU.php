@@ -89,4 +89,14 @@ class ICU extends Model
         return $this->hasMany(ICUProcedure::class);
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function hospitalizations()
+    {
+        return $this->hasMany(Hospitalization::class);
+    }
+
 }

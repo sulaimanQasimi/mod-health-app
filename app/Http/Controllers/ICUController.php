@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewICUNotification;
+use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\FoodType;
@@ -12,6 +13,8 @@ use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
+use App\Models\Relation;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -121,7 +124,10 @@ class ICUController extends Controller
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
         $procedure_types = ICUProcedureType::all();
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types'));
+        $rooms = Room::all();
+        $beds = Bed::all();
+        $relations = Relation::all();
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations'));
     }
 
     /**
@@ -197,12 +203,12 @@ class ICUController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('i_c_u_s as i')
         ->leftJoin('patients as p', 'i.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'i.doctor_id' , '=', 'd.id')
@@ -253,7 +259,7 @@ class ICUController extends Controller
                     $sheet->setCellValue('C' . $row . '', $status);
                     $sheet->setCellValue('D' . $row . '', $item->doctor_name);
                     $sheet->setCellValue('E' . $row . '', $item->branch_name);
-                    
+
                 $row++;
             }
 

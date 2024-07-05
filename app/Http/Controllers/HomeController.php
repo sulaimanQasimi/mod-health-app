@@ -43,14 +43,14 @@ class HomeController extends Controller
 
     public function index()
     {
-        $totalPatients = Patient::count();
-        $totalCheckups = Lab::count();
-        $totalAppointments = Appointment::count();
-        $totalPrescriptions = Prescription::count();
-        $totalConsultations = Consultation::count();
-        $totalOperations = Anesthesia::where('is_operation_done','1')->count();
-        $totalIcuAdmissions = ICU::count();
-        $totalInPatientAdmissions = Hospitalization::count();
+        $totalPatients = Patient::where('branch_id',auth()->user()->branch_id)->count();
+        $totalCheckups = Lab::where('branch_id',auth()->user()->branch_id)->count();
+        $totalAppointments = Appointment::where('branch_id',auth()->user()->branch_id)->count();
+        $totalPrescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->count();
+        $totalConsultations = Consultation::where('branch_id',auth()->user()->branch_id)->count();
+        $totalOperations = Anesthesia::where('branch_id',auth()->user()->branch_id)->where('is_operation_done','1')->count();
+        $totalIcuAdmissions = ICU::where('branch_id',auth()->user()->branch_id)->count();
+        $totalInPatientAdmissions = Hospitalization::where('branch_id',auth()->user()->branch_id)->count();
 
         // Retrieve data for charts
         $patientsTrendData = $this->getPatientsTrendData();
@@ -115,7 +115,7 @@ class HomeController extends Controller
         $all_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
         ->where('rooms.branch_id', auth()->user()->branch_id)
         ->count();
-        
+
 
         return view('pages.dashboard.index', [
             'totalPatients' => $totalPatients,

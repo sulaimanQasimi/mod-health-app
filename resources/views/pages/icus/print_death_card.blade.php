@@ -28,7 +28,22 @@
 
 <body>
 
-    <h2>Death Summary</h2>
+    <div class="row m-2">
+        <div class="col-md-3">
+
+        </div>
+        <div class="col-md-6">
+            <h2>{{$icu->branch->name}}</h2>
+            <h6 class="text-center">{{$icu->branch->address}}</h6>
+            <h5 class="text-center"> Death Summary </h5>
+        </div>
+
+
+        <div class="col-md-3 d-flex justify-content-end align-items-center">
+            {!! QrCode::size(100)->generate($icu->patient->id) !!}
+        </div>
+
+    </div>
 
     <table>
         <tr>

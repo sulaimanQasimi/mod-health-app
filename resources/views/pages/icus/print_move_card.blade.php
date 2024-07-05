@@ -27,9 +27,22 @@
 </head>
 
 <body>
+    <div class="row m-2">
+        <div class="col-md-3">
 
-    <h2>Transfer Sheet</h2>
+        </div>
+        <div class="col-md-6">
+            <h2>{{$icu->branch->name}}</h2>
+            <h6 class="text-center">{{$icu->branch->address}}</h6>
+            <h5 class="text-center"> Transfer Sheet </h5>
+        </div>
 
+
+        <div class="col-md-3 d-flex justify-content-end align-items-center">
+            {!! QrCode::size(100)->generate($icu->patient->id) !!}
+        </div>
+
+    </div>
     <table>
         <tr>
             <td>Name:</td>

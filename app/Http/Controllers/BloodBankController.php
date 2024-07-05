@@ -102,7 +102,7 @@ class BloodBankController extends Controller
 
         SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
 
-        return redirect()->back()->with('success', 'Blood Request created successfully.');
+        return redirect()->back()->with('success', localize('global.blood_request_created_successfully.'));
     }
 
     /**
@@ -179,12 +179,12 @@ class BloodBankController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('blood_banks as bb')
         ->leftJoin('patients as p', 'bb.patient_id' , '=', 'p.id')
         ->leftJoin('departments as d', 'bb.department_id' , '=', 'd.id')
@@ -228,7 +228,7 @@ class BloodBankController extends Controller
                     $sheet->setCellValue('D' . $row . '', $item->group);
                     $sheet->setCellValue('E' . $row . '', $item->rh);
                     $sheet->setCellValue('F' . $row . '', $item->department_name);
-                    
+
                 $row++;
             }
 

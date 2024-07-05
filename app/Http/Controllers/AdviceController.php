@@ -39,7 +39,7 @@ class AdviceController extends Controller
 
         $advice = Advice::create($validatedData);
 
-        return redirect()->back()->with('success', 'Advice created successfully.');
+        return redirect()->back()->with('success', localize('global.advice_created_successfully.'));
     }
 
     /**
@@ -74,7 +74,7 @@ class AdviceController extends Controller
 
         $advice->update($validatedData);
 
-        return redirect()->route('advices.show', $advice)->with('success', 'Advice updated successfully.');
+        return redirect()->route('advices.show', $advice)->with('success', localize('global.advice_updated_successfully.'));
     }
 
     /**
@@ -84,6 +84,6 @@ class AdviceController extends Controller
     {
         $advice->delete();
 
-        return redirect()->back()->with('success', 'Advice deleted successfully.');
+        return redirect()->back()->with('success', localize('global.advice_deleted_successfully.'));
     }
 }

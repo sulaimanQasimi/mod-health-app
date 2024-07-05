@@ -57,7 +57,7 @@ class DailyIcuProgressController extends Controller
 
         DailyIcuProgress::create($data);
 
-        return redirect()->back()->with('success', 'Progress created successfully.');
+        return redirect()->back()->with('success', localize('global.daily_progress_created_successfully.'));
     }
 
     /**

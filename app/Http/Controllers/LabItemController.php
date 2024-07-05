@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class LabItemController extends Controller
 {
     //
-    
+
 
     public function getItems($id){
        $lab_items = Lab::find($id)->labItems;
@@ -23,6 +23,6 @@ class LabItemController extends Controller
         $item->status = $item->status == '1' ? '0' : '1';
         $item->save();
 
-        return redirect()->back()->with('success', 'Item status updated successfully.');
+        return redirect()->back()->with('success', localize('global.lab_item_status_updated_successfully.'));
     }
 }

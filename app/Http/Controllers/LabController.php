@@ -81,7 +81,7 @@ class LabController extends Controller
 
     SendNewLabNotification::dispatch($lab->created_by, $lab->id);
 
-    return redirect()->back()->with('success', 'Lab Tests created successfully.');
+    return redirect()->back()->with('success', localize('global.lab_test_created_successfully.'));
 }
 
     /**
@@ -125,7 +125,7 @@ class LabController extends Controller
 
         $lab->update($data);
 
-        return redirect()->route('lab_tests.index')->with('success', 'Lab Test updated successfully.');
+        return redirect()->route('lab_tests.index')->with('success', localize('global.lab_test_updated_successfully.'));
     }
 
     /**
@@ -183,12 +183,12 @@ class LabController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('labs as l')
         ->leftJoin('patients as p', 'l.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'l.doctor_id' , '=', 'd.id')
@@ -240,7 +240,7 @@ class LabController extends Controller
                     $sheet->setCellValue('D' . $row . '', $item->doctor_name);
                     $sheet->setCellValue('E' . $row . '', $item->lab_type_section_name);
                     $sheet->setCellValue('F' . $row . '', $item->branch_name);
-                    
+
                 $row++;
             }
 

@@ -105,7 +105,7 @@ class ICUController extends Controller
 
         SendNewICUNotification::dispatch($icu->created_by, $icu->id);
         // Redirect to the appointments index page with a success message
-        return redirect()->back()->with('success', 'ICU created successfully.');
+        return redirect()->back()->with('success', localize('global.icu_created_successfully.'));
     }
 
     /**
@@ -162,7 +162,7 @@ class ICUController extends Controller
 
         $icu->update($data);
 
-        return redirect()->back()->with('success', 'ICU updated successfully.');
+        return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
     }
 
     /**

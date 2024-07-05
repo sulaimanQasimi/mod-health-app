@@ -41,7 +41,7 @@ class OperationTypeController extends Controller
 
         OperationType::create($data);
 
-        return redirect()->route('operation_types.index')->with('success', 'Operation Type created successfully.');
+        return redirect()->route('operation_types.index')->with('success', localize('global.operation_type_created_successfully.'));
     }
 
     /**

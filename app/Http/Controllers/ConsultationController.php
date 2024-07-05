@@ -52,7 +52,7 @@ class ConsultationController extends Controller
 
         SendNewConsultationNotification::dispatch($consultation->created_by, $consultation->id);
 
-        return redirect()->back()->with('success', 'Consultation created successfully.');
+        return redirect()->back()->with('success', localize('global.consultation_created_successfully.'));
     }
 
     /**

@@ -116,7 +116,7 @@ class HospitalizationController extends Controller
         SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
 
 
-        return redirect()->back()->with('success', 'Hospitalization created successfully.');
+        return redirect()->back()->with('success', localize('global.hospitalization_created_successfully.'));
     }
 
     /**
@@ -163,7 +163,7 @@ class HospitalizationController extends Controller
         $occupied_bed->update(['is_occupied' => false]);
         $occupied_bed->save();
 
-        return redirect()->route('hospitalizations.index')->with('success', 'Hospitalization updated successfully.');
+        return redirect()->route('hospitalizations.index')->with('success', localize('global.hospitalization_updated_successfully.'));
     }
 
     /**

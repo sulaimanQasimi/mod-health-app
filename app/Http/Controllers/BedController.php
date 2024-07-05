@@ -39,7 +39,7 @@ class BedController extends Controller
 
         Bed::create($data);
 
-        return redirect()->route('beds.index')->with('success', 'Bed created successfully.');
+        return redirect()->route('beds.index')->with('success', localize('global.bed_created_successfully.'));
     }
 
     /**

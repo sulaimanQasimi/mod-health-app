@@ -833,6 +833,9 @@ return [
     'death_date_time' => 'زمان و تاریخ مرگ',
     'moved_to' => 'انتقال به',
     'discharge_move_patient' => 'رخصت/انتقال مریض',
+    'disease_type' => 'نوعیت مریضی',
+    'referral_name' => 'معرفی کننده',
+    'reception_report_title' => 'راپور بخش پذیرش',
 
 
 ];

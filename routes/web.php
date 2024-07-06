@@ -145,6 +145,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
         Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
         Route::get('get-tab', [PatientController::class, 'getTab'])->name('get-tab');
+        Route::get('report', [PatientController::class, 'report'])->name('report');
+        Route::post('report-search', [PatientController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [PatientController::class, 'exportReport'])->name('export-report');
     });
 
     // Departments routes
@@ -574,6 +577,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('report-search', [BloodBankController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [BloodBankController::class, 'exportReport'])->name('export-report');
     });
+
 
     // Advices routes
     Route::prefix('advices')->name('advices.')->group(function () {

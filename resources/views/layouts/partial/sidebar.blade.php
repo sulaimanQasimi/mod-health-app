@@ -60,6 +60,11 @@
                             <div>{{ localize('global.all_appointments') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('patients.report') ? 'active' : '' }}">
+                        <a href="{{ route('patients.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan

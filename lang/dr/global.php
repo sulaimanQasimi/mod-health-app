@@ -839,7 +839,8 @@ return [
     'casue_of_death' => 'علت فوت',
     'death_date' => 'تاریخ فوت',
     'death_time' => 'زمان فوت',
-    'brief_history' => 'تاریخچه خلص'
+    'brief_history' => 'تاریخچه خلص',
+    'previous_icus' => 'ICU های قبلی'
 
 
 ];

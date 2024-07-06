@@ -38,7 +38,7 @@ class FloorController extends Controller
 
         Floor::create($data);
 
-        return redirect()->route('floors.index')->with('success', 'Floor created successfully.');
+        return redirect()->route('floors.index')->with('success', localize('global.floor_created_successfully.'));
     }
 
     /**

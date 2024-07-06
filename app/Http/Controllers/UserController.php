@@ -154,7 +154,7 @@ class UserController extends Controller
 
     public function account(User $user)
     {
-        $user = Auth::user();
+        $user = auth()->user();
         return view('pages.users.account', compact('user'));
     }
 
@@ -181,7 +181,7 @@ class UserController extends Controller
                     'password' => Hash::make($request->new_password),
                 ]);
 
-                return redirect()->back()->with('success', 'Password updated successfully.');
+                return redirect()->back()->with('success', localize('global.password_updated_successfully.'));
             }
 
             return redirect()->back()->withErrors(['current_password' => 'The current password is incorrect.']);
@@ -232,6 +232,6 @@ class UserController extends Controller
         // Update the user's avatar column in the database
         $user->update(['avatar' => $avatarPath]);
 
-        return redirect()->back()->with('success', 'Avatar updated successfully.');
+        return redirect()->back()->with('success', localize('global.avatar_updated_successfully.'));
     }
 }

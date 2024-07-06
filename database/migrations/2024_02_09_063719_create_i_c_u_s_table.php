@@ -23,6 +23,8 @@ return new class extends Migration
             $table->timestamp('discharged_at')->nullable();
             $table->text('cause_of_death',2000)->nullable();
             $table->string('death_date',2000)->nullable();
+            $table->string('transfer_date',2000)->nullable();
+            $table->string('brief_history',2000)->nullable();
             $table->string('death_time',2000)->nullable();
             $table->unsignedBigInteger('appointment_id')->nullable();
             $table->unsignedBigInteger('hospitalization_id')->nullable();

@@ -86,7 +86,7 @@ class AppointmentController extends Controller
             $appointment = Appointment::create($validatedData);
 
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
-            return redirect()->route('appointments.completedAppointments')->with('success', 'Appointment created successfully.');
+            return redirect()->route('appointments.completedAppointments')->with('success', localize('global.appointment_created_successfully.'));
         }
 
         else
@@ -99,7 +99,7 @@ class AppointmentController extends Controller
         }
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.index')->with('success', 'Appointment created successfully.');
+        return redirect()->route('appointments.index')->with('success', localize('global.appointment_created_successfully.'));
     }
 
     public function edit(Appointment $appointment)
@@ -122,7 +122,7 @@ class AppointmentController extends Controller
         $appointment->update($validatedData);
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.doctorAppointments')->with('success', 'Appointment updated successfully.');
+        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.appointment_updated_successfully.'));
     }
 
     public function changeStatus(Request $request, Appointment $appointment)
@@ -138,7 +138,7 @@ class AppointmentController extends Controller
         $appointment->update($validatedData);
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.completedAppointments')->with('success', 'Appointment updated successfully.');
+        return redirect()->route('appointments.completedAppointments')->with('success', localize('global.appointment_updated_successfully.'));
     }
 
     /**
@@ -171,7 +171,7 @@ class AppointmentController extends Controller
         $appointment->delete();
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.index')->with('success', 'Appointment deleted successfully.');
+        return redirect()->route('appointments.index')->with('success', localize('global.appointment_deleted_successfully.'));
     }
 
     public function doctorAppointments(Request $request)
@@ -229,7 +229,7 @@ class AppointmentController extends Controller
         ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
         ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed','a.status_remark', 
+        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed','a.status_remark',
         'a.refferal_remarks', 'a.date', 'a.time');
 
         if ($request->filled('patient_name')) {
@@ -257,7 +257,7 @@ class AppointmentController extends Controller
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('appointments as a')
         ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')

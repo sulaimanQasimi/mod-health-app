@@ -89,7 +89,7 @@ class PrescriptionController extends Controller
 
         SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
 
-        return redirect()->back()->with('success', 'Prescription created successfully.');
+        return redirect()->back()->with('success', localize('global.prescription_created_successfully.'));
 
     }
 
@@ -186,7 +186,7 @@ class PrescriptionController extends Controller
         $prescription->update($validatedData);
 
         // Redirect to the prescriptions index page with a success message
-        return redirect()->route('prescriptions.delivered')->with('success', 'prescription updated successfully.');
+        return redirect()->route('prescriptions.delivered')->with('success', localize('global.prescription_updated_successfully.'));
     }
 
     public function report()
@@ -218,12 +218,12 @@ class PrescriptionController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('prescriptions as a')
         ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
@@ -272,7 +272,7 @@ class PrescriptionController extends Controller
                     $sheet->setCellValue('C' . $row . '', $item->doctor_name);
                     $sheet->setCellValue('D' . $row . '', $item->branch_name);
                     $sheet->setCellValue('E' . $row . '', $status);
-                    
+
                 $row++;
             }
 

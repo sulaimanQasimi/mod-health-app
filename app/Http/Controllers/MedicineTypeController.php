@@ -35,7 +35,7 @@ class MedicineTypeController extends Controller
 
         MedicineType::create($data);
 
-        return redirect()->route('medicine_types.index')->with('success', 'Medicine Type created successfully.');
+        return redirect()->route('medicine_types.index')->with('success', localize('global.medicine_type_created_successfully.'));
     }
 
     /**
@@ -65,7 +65,7 @@ class MedicineTypeController extends Controller
 
     $medicineType->update($data);
 
-    return redirect()->route('medicine_types.index')->with('success', 'Medicine Type updated successfully.');
+    return redirect()->route('medicine_types.index')->with('success', localize('global.medicine_type_updated_successfully.'));
 }
 
     /**

@@ -44,7 +44,7 @@ class RoomController extends Controller
 
         Room::create($data);
 
-        return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
+        return redirect()->route('rooms.index')->with('success', localize('global.room_created_successfully.'));
     }
 
     /**

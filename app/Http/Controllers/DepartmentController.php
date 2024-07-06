@@ -38,7 +38,7 @@ class DepartmentController extends Controller
 
         Department::create($data);
 
-        return redirect()->route('departments.index')->with('success', 'Department created successfully.');
+        return redirect()->route('departments.index')->with('success', localize('global.department_created_successfully.'));
     }
 
     /**

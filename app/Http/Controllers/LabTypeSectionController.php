@@ -35,7 +35,7 @@ class LabTypeSectionController extends Controller
 
         LabTypeSection::create($data);
 
-        return redirect()->route('lab_type_sections.index')->with('success', 'Lab Type Section created successfully.');
+        return redirect()->route('lab_type_sections.index')->with('success', localize('global.lab_type_section_created_successfully.'));
     }
 
     /**

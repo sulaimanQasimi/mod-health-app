@@ -73,7 +73,7 @@ class VisitController extends Controller
         Visit::create($data);
 
 
-        return redirect()->back()->with('success', 'Visit created successfully.');
+        return redirect()->back()->with('success', localize('global.visit_created_successfully.'));
     }
 
     /**

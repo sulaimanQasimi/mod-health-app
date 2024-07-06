@@ -454,6 +454,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('report', [ICUController::class, 'report'])->name('report');
         Route::post('report-search', [ICUController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [ICUController::class, 'exportReport'])->name('export-report');
+        Route::get('/print-death-card/{icu}', [ICUController::class, 'printDeathCard'])->name('print-death-card');
+        Route::get('/print-move-card/{icu}', [ICUController::class, 'printMoveCard'])->name('print-move-card');
     });
 
     // PACUs routes

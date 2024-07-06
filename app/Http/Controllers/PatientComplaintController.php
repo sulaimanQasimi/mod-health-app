@@ -38,7 +38,7 @@ class PatientComplaintController extends Controller
         PatientComplaint::create($data);
 
 
-        return redirect()->back()->with('success', 'Complaint created successfully.');
+        return redirect()->back()->with('success', localize('global.complaint_created_successfully.'));
     }
 
     /**

@@ -46,7 +46,7 @@ class DiagnoseController extends Controller
 
         Diagnose::create($data);
 
-        return redirect()->back()->with('success', 'Diagnose created successfully.');
+        return redirect()->back()->with('success', localize('global.diagnose_created_successfully.'));
     }
 
     /**

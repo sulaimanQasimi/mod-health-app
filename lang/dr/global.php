@@ -836,6 +836,14 @@ return [
     'disease_type' => 'نوعیت مریضی',
     'referral_name' => 'معرفی کننده',
     'reception_report_title' => 'راپور بخش پذیرش',
+    'the_patient_has_been_died' => 'مریض فوت نموده',
+    'the_patient_has_been_recovered' => 'مریض صحت یاب و مرخص شده',
+    'the_patient_has_been_moved' => 'مریض انتقال شده',
+    'casue_of_death' => 'علت فوت',
+    'death_date' => 'تاریخ فوت',
+    'death_time' => 'زمان فوت',
+    'brief_history' => 'تاریخچه خلص',
+    'previous_icus' => 'ICU های قبلی'
 
 
 ];

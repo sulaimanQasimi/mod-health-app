@@ -145,7 +145,7 @@ class RoleController extends Controller
     {
         $role = Role::where('id', $id);
         $role->delete();
-        return redirect()->route('roles.index')->with('success','Role deleted successfully');
+        return redirect()->route('roles.index')->with('success',localize('global.role_delete_success'));
     }
 
     public function getPermissionTree($parentId = null)

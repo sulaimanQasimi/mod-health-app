@@ -68,6 +68,7 @@ class PatientController extends Controller
             'referral_last_name' => 'nullable',
             'referral_father_name' => 'nullable',
             'referral_nid' => 'nullable',
+            'referral_by' => 'nullable',
             'referral_id_card' => 'nullable',
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
@@ -98,7 +99,7 @@ class PatientController extends Controller
         $provinces = Province::all();
         $districts = District::all();
         $relations = Relation::all();
-        return view('pages.patients.edit',compact('recipients','provinces','districts','relations','patient'));
+        return view('pages.patients.create',compact('recipients','provinces','districts','relations','patient'));
     }
 
     public function update(Request $request, Patient $patient)
@@ -108,17 +109,29 @@ class PatientController extends Controller
             'last_name' => 'nullable',
             'father_name' => 'nullable',
             'phone' => 'nullable',
-            'age' => 'nullable',
-            'nid' => 'nullable',
-            'province_id' => 'nullable',
-            'district_id' => 'nullable',
+            'age' => 'required',
+            'nid' => 'required',
+            'province_id' => 'required',
+            'district_id' => 'required',
             'relation_id' => 'nullable',
-            'referred_by' => 'nullable',
-            'branch_id' => 'nullable',
+            'branch_id' => 'required',
             'job' => 'nullable',
             'rank' => 'nullable',
             'age' => 'nullable',
             'job_type' => 'nullable',
+            'gender' => 'required',
+            'referral_name' => 'nullable',
+            'referral_last_name' => 'nullable',
+            'referral_father_name' => 'nullable',
+            'referral_nid' => 'nullable',
+            'referral_by' => 'nullable',
+            'referral_id_card' => 'nullable',
+            'referral_phone' => 'nullable',
+            'referral_recipient' => 'nullable',
+            'type' => 'nullable',
+            'id_card' => 'nullable',
+            'job_category' => 'nullable',
+            'referred_by' => 'nullable'
 
         ]);
 
@@ -218,6 +231,19 @@ public function addImage(Request $request, $id)
         $relations = Relation::all();
 
         $tab_type = $request->tab_type;
+        $patient_id = $request->patient_id;
+
+        if($patient_id !=''){
+            $patient = Patient::find($patient_id);
+            
+            if($tab_type == 'first'){
+                return view('pages.patients.tab1',compact('recipients','provinces','districts','relations','patient'));
+            }elseif($tab_type == 'second'){
+                return view('pages.patients.tab2',compact('recipients','provinces','districts','relations','patient'));
+            }elseif($tab_type == 'third'){
+                return view('pages.patients.tab3',compact('recipients','provinces','districts','relations','patient'));
+            }
+        }
 
         if($tab_type == 'first'){
             return view('pages.patients.tab1',compact('recipients','provinces','districts','relations'));

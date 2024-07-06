@@ -45,7 +45,7 @@ class MedicineController extends Controller
 
         Medicine::create($data);
 
-        return redirect()->route('medicines.index')->with('success', 'Medicine created successfully.');
+        return redirect()->route('medicines.index')->with('success', localize('global.medicine_created_successfully.'));
     }
 
     /**
@@ -87,7 +87,7 @@ class MedicineController extends Controller
 
         $medicine->update($data);
 
-        return redirect()->route('medicines.index')->with('success', 'Medicine updated successfully.');
+        return redirect()->route('medicines.index')->with('success', localize('global.medicine_updated_successfully.'));
     }
 
     /**
@@ -99,6 +99,6 @@ class MedicineController extends Controller
     public function destroy(Medicine $medicine)
     {
         $medicine->delete();
-        return redirect()->route('medicines.index')->with('success', 'Medicine deleted successfully.');
+        return redirect()->route('medicines.index')->with('success', localize('global.medicine_deleted_successfully.'));
     }
 }

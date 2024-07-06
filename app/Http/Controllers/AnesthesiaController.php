@@ -95,7 +95,7 @@ class AnesthesiaController extends Controller
 
 
         // Redirect to the appointments index page with a success message
-        return redirect()->back()->with('success', 'Anesthesia created successfully.');
+        return redirect()->back()->with('success', localize('global.anesthesia_created_successfully.'));
     }
 
     /**
@@ -139,7 +139,7 @@ class AnesthesiaController extends Controller
         }
 
 
-        return redirect()->route('anesthesias.new')->with('success', 'Anesthesia updated successfully.');
+        return redirect()->route('anesthesias.new')->with('success', localize('global.anesthesia_updated_successfully.'));
     }
 
     /**
@@ -191,12 +191,12 @@ class AnesthesiaController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('anesthesias as a')
         ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
@@ -253,7 +253,7 @@ class AnesthesiaController extends Controller
                     $sheet->setCellValue('F' . $row . '', $item->branch_name);
                     $sheet->setCellValue('G' . $row . '', $item->date);
                     $sheet->setCellValue('H' . $row . '', $item->time);
-                    
+
                 $row++;
             }
 

@@ -43,7 +43,7 @@ class LabTypeController extends Controller
 
         LabType::create($data);
 
-        return redirect()->route('lab_types.index')->with('success', 'Lab Type created successfully.');
+        return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_created_successfully.'));
     }
 
     /**

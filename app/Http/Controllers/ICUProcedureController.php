@@ -41,7 +41,7 @@ class ICUProcedureController extends Controller
         $icuProcedure->save();
 
         return redirect()->back()
-                        ->with('success', 'ICU Procedure created successfully.');
+                        ->with('success', localize('global.icu_procedure_created_successfully.'));
     }
 
     /**

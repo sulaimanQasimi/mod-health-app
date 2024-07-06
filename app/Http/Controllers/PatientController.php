@@ -81,7 +81,7 @@ class PatientController extends Controller
         $patient = Patient::create($data);
 
 
-        return redirect()->route('patients.index')->with('success', 'Patient created successfully.');
+        return redirect()->route('patients.index')->with('success', localize('global.patient_created_successfully.'));
     }
 
     public function show(Patient $patient)
@@ -124,14 +124,14 @@ class PatientController extends Controller
 
         $patient->update($data);
 
-        return redirect()->route('patients.index')->with('success', 'Patient updated successfully.');
+        return redirect()->route('patients.index')->with('success', localize('global.patient_updated_successfully.'));
     }
 
     public function destroy(Patient $patient)
     {
         $patient->delete();
 
-        return redirect()->route('patients.index')->with('success', 'Patient deleted successfully.');
+        return redirect()->route('patients.index')->with('success', localize('global.patient_deleted_successfully.'));
     }
 
     public function printCard(Patient $patient)
@@ -171,7 +171,7 @@ public function addImage(Request $request, $id)
     $patient->image = $file;
     $patient->save();
 
-    return redirect()->route('patients.show',$patient)->with('success', 'Image added successfully.');
+    return redirect()->route('patients.show',$patient)->with('success', localize('global.patient_image_created_successfully.'));
 }
 
 

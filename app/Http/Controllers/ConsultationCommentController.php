@@ -40,7 +40,7 @@ class ConsultationCommentController extends Controller
 
         ConsultationComment::create($validatedData);
 
-        return redirect()->back()->with('success', 'Comment created successfully.');
+        return redirect()->back()->with('success', localize('global.comment_created_successfully.'));
     }
 
     /**

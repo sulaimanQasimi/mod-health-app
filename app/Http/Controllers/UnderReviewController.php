@@ -36,7 +36,7 @@ class UnderReviewController extends Controller
                     ]);
                 }
         }
-    
+
         $under_reviews = UnderReview::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
         return view('pages.under_reviews.index', compact('under_reviews'));
     }
@@ -74,7 +74,7 @@ class UnderReviewController extends Controller
         $occupied_bed->save();
         UnderReview::create($data);
 
-        return redirect()->back()->with('success', 'Under Review created successfully.');
+        return redirect()->back()->with('success', localize('global.under_review_created_successfully.'));
     }
 
     /**
@@ -92,7 +92,7 @@ class UnderReviewController extends Controller
         $beds = Bed::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
-        
+
 
         return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations'));
     }
@@ -121,7 +121,7 @@ class UnderReviewController extends Controller
         $occupied_bed->update(['is_occupied' => false]);
         $occupied_bed->save();
 
-        return redirect()->route('visits.index')->with('success', 'Under Review updated successfully.');
+        return redirect()->route('visits.index')->with('success', localize('global.under_review_updated_successfully.'));
     }
 
     /**

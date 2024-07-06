@@ -38,7 +38,7 @@ class ICUProcedureTypeController extends Controller
         $icuProcedureType->save();
 
         return redirect()->route('procedure_types.index')
-                        ->with('success','ICU Procedure Type created successfully.');
+                        ->with('success',localize('global.icu_procedure_type_created_successfully.'));
     }
 
     /**
@@ -70,7 +70,7 @@ class ICUProcedureTypeController extends Controller
         $iCUProcedureType->save();
 
         return redirect()->route('procedure_types.index')
-                        ->with('success','ICU Procedure Type updated successfully.');
+                        ->with('success',localize('global.icu_procedure_type_updated_successfully.'));
     }
 
     /**
@@ -81,6 +81,6 @@ class ICUProcedureTypeController extends Controller
         $iCUProcedureType->delete();
 
         return redirect()->route('icu-procedure-types.index')
-                        ->with('success','ICU Procedure Type deleted successfully.');
+                        ->with('success',localize('global.icu_procedure_type_deleted_successfully.'));
     }
 }

@@ -71,7 +71,7 @@ class PACUController extends Controller
 
         SendNewPACUNotification::dispatch($pacu->created_by, $pacu->id);
         // Redirect to the appointments index page with a success message
-        return redirect()->back()->with('success', 'PACU created successfully.');
+        return redirect()->back()->with('success', localize('global.pacu_created_successfully.'));
     }
 
     /**
@@ -103,7 +103,7 @@ class PACUController extends Controller
         $pacu->update($data);
 
 
-        return redirect()->route('pacus.new')->with('success', 'PACU updated successfully.');
+        return redirect()->route('pacus.new')->with('success', localize('global.pacu_updated_successfully.'));
     }
 
     /**
@@ -118,13 +118,13 @@ class PACUController extends Controller
     {
         $pacu = PACU::findOrFail($pacuId);
         $pacu->complete();
-        return redirect()->route('pacus.index')->with('success', 'PACU Completed successfully.');
+        return redirect()->route('pacus.index')->with('success', localize('global.pacu_completed_successfully.'));
 
     }
 
     public function report()
     {
-      
+
         return view('pages.pacus.reports.index');
     }
     public function reportSearch(Request $request)
@@ -151,12 +151,12 @@ class PACUController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('p_a_c_u_s as pa')
         ->leftJoin('patients as p', 'pa.patient_id' , '=', 'p.id')
         ->leftJoin('branches as b', 'pa.branch_id' , '=', 'b.id')
@@ -204,7 +204,7 @@ class PACUController extends Controller
                     $sheet->setCellValue('C' . $row . '', $status);
                     $sheet->setCellValue('D' . $row . '', $item->doctor_name);
                     $sheet->setCellValue('E' . $row . '', $item->branch_name);
-                    
+
                 $row++;
             }
 

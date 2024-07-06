@@ -30,7 +30,7 @@ class BranchController extends Controller
 
         $branch = Branch::create($data);
 
-        return redirect()->route('branches.index')->with('success', 'Patient created successfully.');
+        return redirect()->route('branches.index')->with('success', localize('global.branch_created_successfully.'));
     }
 
     public function show(Branch $branch)
@@ -52,7 +52,7 @@ class BranchController extends Controller
 
         $branch->update($data);
 
-        return redirect()->route('branches.index')->with('success', 'Branch updated successfully.');
+        return redirect()->route('branches.index')->with('success', localize('global.branch_updated_successfully.'));
     }
 
     public function destroy(Branch $branch)

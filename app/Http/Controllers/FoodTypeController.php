@@ -35,7 +35,7 @@ class FoodTypeController extends Controller
 
         FoodType::create($data);
 
-        return redirect()->route('food_types.index')->with('success', 'Food Type created successfully.');
+        return redirect()->route('food_types.index')->with('success', localize('global.food_type_created_successfully.'));
     }
 
     /**
@@ -62,13 +62,13 @@ class FoodTypeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-    
+
         $foodType->update([
             'name' => $request->input('name'),
         ]);
-    
+
         return redirect()->route('food_types.index')
-            ->with('success', localize('global.food_type_updated'));
+            ->with('success', localize('global.food_type_updated_successfully'));
     }
 
     /**

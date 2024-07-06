@@ -41,7 +41,7 @@ class SectionController extends Controller
 
         Section::create($data);
 
-        return redirect()->route('sections.index')->with('success', 'Section created successfully.');
+        return redirect()->route('sections.index')->with('success', localize('global.section_created_successfully.'));
     }
 
     /**

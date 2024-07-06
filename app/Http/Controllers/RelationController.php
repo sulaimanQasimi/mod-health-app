@@ -35,7 +35,7 @@ class RelationController extends Controller
 
         Relation::create($data);
 
-        return redirect()->route('relations.index')->with('success', 'Relation created successfully.');
+        return redirect()->route('relations.index')->with('success', localize('global.relation_created_successfully.'));
     }
 
     /**

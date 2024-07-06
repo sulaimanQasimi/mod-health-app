@@ -38,6 +38,8 @@ return new class extends Migration
             $table->foreign('patient_id')->references('id')->on('patients');
             $table->unsignedBigInteger('under_review_id')->nullable();
             $table->foreign('under_review_id')->references('id')->on('under_reviews');
+            $table->unsignedBigInteger('i_c_u_id')->nullable();
+            $table->foreign('i_c_u_id')->references('id')->on('under_reviews');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

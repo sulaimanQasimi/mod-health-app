@@ -116,17 +116,17 @@ class OperationController extends Controller
         if (isset($data['date']) && $data['date'] > $operation->date) {
             $operation->reserve();
             $operation->update($data);
-            return redirect()->route('operations.reserved')->with('success', 'Operation updated successfully.');
+            return redirect()->route('operations.reserved')->with('success', localize('global.operation_reserved_successfully.'));
         }
 
         elseif (isset($data['date']) && $data['date'] < $operation->date) {
             $operation->update($data);
-            return redirect()->back()->with('success', 'Operation updated successfully.');
+            return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
         }
 
         else {
             $operation->update($data);
-            return redirect()->back()->with('success', 'Operation updated successfully.');
+            return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
         }
 
         $data['room_id'] = $operation->room->id ?? '';
@@ -139,7 +139,7 @@ class OperationController extends Controller
 
         $operation->update($data);
 
-        return redirect()->route('operations.new')->with('success', 'Operation updated successfully.');
+        return redirect()->route('operations.new')->with('success', localize('global.operation_updated_successfully.'));
     }
 
     public function complete(Request $request, Anesthesia $operation)
@@ -163,7 +163,7 @@ class OperationController extends Controller
 
         $operation->update($data);
 
-        return redirect()->back()->with('success', 'Operation updated successfully.');
+        return redirect()->back()->with('success', localize('global.operation_completed_successfully.'));
     }
 
     /**
@@ -183,7 +183,7 @@ class OperationController extends Controller
         $operation->save();
 
         // Add any additional logic, such as redirecting or returning a response
-        return redirect()->route('operations.reserved')->with('success', 'Operation reserved successfully.');
+        return redirect()->route('operations.reserved')->with('success', localize('global.operation_reserved_successfully.'));
     }
 
     public function unreserveOperation($operationId)
@@ -194,7 +194,7 @@ class OperationController extends Controller
         $operation->update(['is_operation_approved' => '0']);
         $operation->save();
         // Add any additional logic, such as redirecting or returning a response
-        return redirect()->back()->with('success', 'Operation moved successfully.');
+        return redirect()->back()->with('success', localize('global.operation_unreserved_successfully.'));
     }
 
     public function report()
@@ -249,12 +249,12 @@ class OperationController extends Controller
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items = DB::table('anesthesias as a')
         ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
         ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
@@ -329,7 +329,7 @@ class OperationController extends Controller
                     $sheet->setCellValue('G' . $row . '', $item->operation_type_name);
                     $sheet->setCellValue('H' . $row . '', $item->date);
                     $sheet->setCellValue('I' . $row . '', $item->time);
-                    
+
                 $row++;
             }
 

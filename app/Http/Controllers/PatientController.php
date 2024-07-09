@@ -47,8 +47,8 @@ class PatientController extends Controller
 
     public function create()
     {
-
-        return view('pages.patients.create');
+        $relations = Relation::all();
+        return view('pages.patients.create',compact('relations'));
     }
 
     public function store(Request $request)
@@ -80,7 +80,8 @@ class PatientController extends Controller
             'type' => 'nullable',
             'id_card' => 'nullable',
             'job_category' => 'nullable',
-            'referred_by' => 'nullable'
+            'referred_by' => 'nullable',
+            'relation_id' => 'nullable'
         ]);
 
 
@@ -136,7 +137,8 @@ class PatientController extends Controller
             'type' => 'nullable',
             'id_card' => 'nullable',
             'job_category' => 'nullable',
-            'referred_by' => 'nullable'
+            'referred_by' => 'nullable',
+            'relation_id' => 'nullable'
 
         ]);
 

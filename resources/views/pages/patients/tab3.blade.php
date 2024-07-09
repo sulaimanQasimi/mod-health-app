@@ -153,6 +153,18 @@
                 </select>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label for="relation_id">{{ localize('global.relation') }}</label>
+                <select class="form-control select2" name="relation_id" required >
+                    <option value="">{{ localize('global.select') }}</option>
+                    @foreach ($relations as $value)
+                    <option  {{ old('relation_id',  (isset($patient) && $patient->relation_id == $value->id) ? 'selected' : '')}} value="{{ $value->id }}" >
+                        {{ $value->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
     </div>
     <button type="submit" class="btn btn-primary">{{ isset($patient) ? localize('global.update') : localize('global.create') }}</button>
     <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">

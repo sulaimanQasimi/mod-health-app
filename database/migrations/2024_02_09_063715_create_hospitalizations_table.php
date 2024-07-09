@@ -37,7 +37,7 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->foreign('patient_id')->references('id')->on('patients');
             $table->unsignedBigInteger('under_review_id')->nullable();
-            $table->foreign('under_review_id')->references('id')->on('under_reviews');
+            $table->foreign('under_review_id')->references('id')->on('under_reviews')->after('under_review_id');
             $table->unsignedBigInteger('i_c_u_id')->nullable();
             $table->foreign('i_c_u_id')->references('id')->on('i_c_u_s');
 

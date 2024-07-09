@@ -68,7 +68,7 @@ class VisitController extends Controller
 
         ]);
 
-        $data['food_type_id'] = json_encode($data['food_type_id']);
+        $data['food_type_id']  = json_encode($data['food_type_id']) ?? '';
 
         Visit::create($data);
 

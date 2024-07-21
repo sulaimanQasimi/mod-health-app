@@ -29,6 +29,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DailyIcuProgressController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
+use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FoodTypeController;
@@ -602,6 +603,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{medicineUsageType}', [MedicineUsageTypeController::class, 'edit'])->name('edit');
         Route::put('update/{medicineUsageType}', [MedicineUsageTypeController::class, 'update'])->name('update');
         Route::get('destroy/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Diseases routes
+    Route::prefix('diseases')->name('diseases.')->group(function () {
+        Route::get('index', [DiseaseController::class, 'index'])->name('index');
+        Route::get('create', [DiseaseController::class, 'create'])->name('create');
+        Route::get('show/{disease}', [DiseaseController::class, 'show'])->name('show');
+        Route::post('store', [DiseaseController::class, 'store'])->name('store');
+        Route::get('edit/{disease}', [DiseaseController::class, 'edit'])->name('edit');
+        Route::put('update/{disease}', [DiseaseController::class, 'update'])->name('update');
+        Route::get('destroy/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

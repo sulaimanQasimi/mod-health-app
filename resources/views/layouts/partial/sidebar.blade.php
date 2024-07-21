@@ -529,6 +529,13 @@
                         </a>
                     </li>
                     @endcan
+                    @can('show-disease-menu')
+                    <li class="menu-item {{ Route::is('diseases.*') ? 'active' : '' }}">
+                        <a href="{{ route('diseases.index') }}" class="menu-link">
+                            <div>{{ localize('global.diseases') }}</div>
+                        </a>
+                    </li>
+                    @endcan
                     @can('show-branches-menu')
                     <li class="menu-item {{ Route::is('branches.index') ? 'active' : '' }}">
                         <a href="{{ route('branches.index') }}" class="menu-link">

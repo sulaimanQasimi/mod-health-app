@@ -850,7 +850,10 @@ return [
     'create_medicine_usage_type' => 'اضافه نمودن طریقه تطبیق',
     'edit_medicine_usage_type' => 'تصحیح طریقه تطبیق',
     'usage_type' => 'طریقه تطبیق',
-    'description_with_diaseases' => 'توضیحات/امراض ضمیموی'
+    'description_with_diaseases' => 'توضیحات/امراض ضمیموی',
+    'for_disease' => 'برای امراض',
+    'diseases' => 'امراض',
+    'create_disease' => 'ثبت مرض'
 
 
 ];

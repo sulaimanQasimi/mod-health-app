@@ -28,6 +28,7 @@
                                     <th>{{localize('global.number')}}</th>
                                     <th>{{localize('global.name')}}</th>
                                     <th>{{localize('global.medicine_type')}}</th>
+                                    <th>{{localize('global.for_disease')}}</th>
                                     <th>{{localize('global.actions')}}</th>
                                 </tr>
                             </thead>
@@ -37,6 +38,11 @@
                                         <td>{{ $medicine->id }}</td>
                                         <td>{{ $medicine->name }}</td>
                                         <td>{{ $medicine->medicineType->type }}</td>
+                                        <td>
+                                            @foreach ($medicine->getAssociatedDiseaseAttribute() as $disease)
+                                                <span class="badge bg-primary">{{ $disease->name }}</span>
+                                            @endforeach
+                                        </td>
                                         <td>
                                             <a href="{{route('medicines.edit', $medicine->id)}}"><span><i class="bx bx-edit"></i></span></a>
                                             {{-- <form action="{{ route('medicines.destroy', $medicine) }}" method="POST" style="display: inline-block;">
@@ -49,7 +55,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="d-flex justify-content-end">
+                        <div class="d-flex justify-content-end mt-2">
                             {{ $medicines->links('pagination::bootstrap-5') }}
                         </div>
                     </div>

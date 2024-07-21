@@ -15,7 +15,7 @@
                         <form method="POST" action="{{ route('medicines.store') }}">
                             @csrf
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="name">{{ localize('global.name') }}</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -27,7 +27,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="medicine_type_id">{{ localize('global.medicine_type') }}</label>
                                         <select class="form-control select2 @error('medicine_type_id') is-invalid @enderror"
@@ -40,6 +40,25 @@
                                             @endforeach
                                         </select>
                                         @error('medicine_type_id')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="disease_id">{{ localize('global.for_disease') }}</label>
+                                        <select class="form-control select2 @error('disease_id') is-invalid @enderror"
+                                            id="disease_id" name="disease_id[]" required multiple>
+                                            <option value="">{{ localize('global.for_disease') }}</option>
+                                            @foreach ($diseases as $disease)
+                                                <option value="{{ $disease->id }}"
+                                                    {{ old('disease_id') == $disease->id ? 'selected' : '' }}>
+                                                    {{ $disease->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('disease_id')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>

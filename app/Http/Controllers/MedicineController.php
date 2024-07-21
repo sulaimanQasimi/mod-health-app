@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Disease;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use Illuminate\Http\Request;
@@ -27,7 +28,8 @@ class MedicineController extends Controller
     public function create()
     {
         $medicineTypes = MedicineType::all();
-        return view('pages.medicines.create', compact('medicineTypes'));
+        $diseases = Disease::all();
+        return view('pages.medicines.create', compact('medicineTypes','diseases'));
     }
 
     /**
@@ -41,7 +43,13 @@ class MedicineController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:192',
             'medicine_type_id' => 'required|exists:medicine_types,id',
+            'disease_id' => 'required'
         ]);
+
+        if(isset($data['disease_id']) && $data['disease_id'] != ''){
+
+            $data['disease_id']  = json_encode($data['disease_id']);
+        }
 
         Medicine::create($data);
 
@@ -68,7 +76,8 @@ class MedicineController extends Controller
     public function edit(Medicine $medicine)
     {
         $medicineTypes = MedicineType::all();
-        return view('pages.medicines.edit', compact('medicine', 'medicineTypes'));
+        $diseases = Disease::all();
+        return view('pages.medicines.edit', compact('medicine', 'medicineTypes','diseases'));
     }
 
     /**
@@ -83,6 +92,8 @@ class MedicineController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:192',
             'medicine_type_id' => 'required|exists:medicine_types,id',
+            'disease_id' => 'required'
+
         ]);
 
         $medicine->update($data);

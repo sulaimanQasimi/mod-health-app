@@ -66,9 +66,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3 mt-2 mb-2">
-                                        <h5 class="mb-4 bg-label-primary p-1">{{ localize('global.status') }}</h5>
+                                        <h5 class="mb-4 bg-label-primary p-1">{{ localize('global.blood_type') }}</h5>
                                         <div>
-                                            {{ $bloodBank->status }}
+                                            {{ $bloodBank->type }}
                                         </div>
                                     </div>
                                     <div class="col-md-3 mt-2 mb-2">

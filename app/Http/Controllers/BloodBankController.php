@@ -84,6 +84,7 @@ class BloodBankController extends Controller
         $validatedData = $request->validate([
             'group' => 'required',
             'rh' => 'required',
+            'type' => 'required',
             'quantity' => 'required',
             'branch_id' => 'required',
             'appointment_id' => 'nullable',

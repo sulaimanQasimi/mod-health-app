@@ -843,7 +843,8 @@ return [
     'death_date' => 'تاریخ فوت',
     'death_time' => 'زمان فوت',
     'brief_history' => 'تاریخچه خلص',
-    'previous_icus' => 'ICU های قبلی'
+    'previous_icus' => 'ICU های قبلی',
+    'blood_type' => 'نوعیت خون'
 
 
 ];

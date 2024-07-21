@@ -407,6 +407,19 @@
                                                             <option value="-">-</option>
                                                         </select>
                                                         <label
+                                                            for="blood_type{{ $operation->id }}">{{ localize('global.blood_type') }}</label>
+                                                            <select class="form-control form-select" name="type"
+                                                            id="type">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="RBC">RBC</option>
+                                                            <option value="PRBC">PRBC</option>
+                                                            <option value="Fresh">Fresh</option>
+                                                            <option value="Platelets">Platelets</option>
+                                                            <option value="Plasma">Plasma</option>
+                                                            <option value="Whole Blood">Whole Blood</option>
+                                                        </select>
+                                                        <label
                                                             for="quantity{{ $operation->id }}">{{ localize('global.quantity') }}</label>
                                                             <input type="text" class="form-control" name="quantity">
                                                     </div>

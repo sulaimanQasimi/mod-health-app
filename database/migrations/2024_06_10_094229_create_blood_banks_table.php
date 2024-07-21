@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('group');
             $table->string('rh');
+            $table->enum('type', ['Fresh', 'RBC', 'PRBC','Platelets','Plasma','Whole Blood'])->default('Fresh');
             $table->string('quantity');
             $table->text('reject_reason',512)->nullable();
             $table->enum('status', ['new', 'approved','rejected','delivered'])->default('new');

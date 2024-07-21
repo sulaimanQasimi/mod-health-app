@@ -8,6 +8,7 @@ use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
+use App\Models\MedicineUsageType;
 use App\Models\OperationType;
 use App\Models\Relation;
 use App\Models\Room;
@@ -92,9 +93,9 @@ class UnderReviewController extends Controller
         $beds = Bed::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
+        $medicineUsageTypes = MedicineUsageType::all();
 
-
-        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations'));
+        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes'));
     }
 
     /**

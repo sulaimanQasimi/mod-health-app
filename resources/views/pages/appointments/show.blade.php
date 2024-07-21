@@ -192,7 +192,7 @@
 
                                                 </select>
                                                 <label
-                                                    for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
+                                                    for="description{{ $appointment->id }}">{{ localize('global.description_with_diaseases') }}</label>
                                                 <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
                                                 <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
                                                 <div class="form-group">

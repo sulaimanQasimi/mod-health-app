@@ -849,7 +849,8 @@ return [
     'medicine_usage_types' => 'طروق تطبیق ادویه',
     'create_medicine_usage_type' => 'اضافه نمودن طریقه تطبیق',
     'edit_medicine_usage_type' => 'تصحیح طریقه تطبیق',
-    'usage_type' => 'طریقه تطبیق'
+    'usage_type' => 'طریقه تطبیق',
+    'description_with_diaseases' => 'توضیحات/امراض ضمیموی'
 
 
 ];

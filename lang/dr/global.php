@@ -847,7 +847,9 @@ return [
     'blood_type' => 'نوعیت خون',
     'delete' => 'حذف',
     'medicine_usage_types' => 'طروق تطبیق ادویه',
-    'create_medicine_usage_type' => 'اضافه نمودن طریقه تطبیق'
+    'create_medicine_usage_type' => 'اضافه نمودن طریقه تطبیق',
+    'edit_medicine_usage_type' => 'تصحیح طریقه تطبیق',
+    'usage_type' => 'طریقه تطبیق'
 
 
 ];

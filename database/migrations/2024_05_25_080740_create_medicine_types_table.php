@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('medicine_types', function (Blueprint $table) {
             $table->id();
             $table->string('type',192);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

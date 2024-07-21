@@ -13,6 +13,7 @@ use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
+use App\Models\MedicineUsageType;
 use App\Models\OperationType;
 use App\Models\Relation;
 use App\Models\Room;
@@ -33,31 +34,36 @@ class AppointmentController extends Controller
 
     public function index(Request $request)
     {
-
         if ($request->ajax()) {
-            $appointments = Appointment::where('branch_id',auth()->user()->branch_id)->with(['patient','doctor'])->latest()->get();
+            $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
+                ->with(['patient', 'doctor'])
+                ->latest()
+                ->get();
 
-                if ($appointments) {
-                    return response()->json([
-                        'data' => $appointments,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+            if ($appointments) {
+                return response()->json([
+                    'data' => $appointments,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Internal Server Error',
+                    'code' => 500,
+                    'data' => [],
+                ]);
+            }
         }
 
-        $appointments = Appointment::where('branch_id',auth()->user()->branch_id)->with('patient','doctor')->latest()->get();
+        $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
+            ->with('patient', 'doctor')
+            ->latest()
+            ->get();
         return view('pages.appointments.index', compact('appointments'));
     }
 
     public function create()
     {
         $doctors = Doctor::all();
-        return view('pages.appointments.create',compact('doctors'));
+        return view('pages.appointments.create', compact('doctors'));
     }
 
     public function store(Request $request)
@@ -74,9 +80,7 @@ class AppointmentController extends Controller
             'refferal_remarks' => 'nullable',
         ]);
 
-        if($request->has('current_appointment_id'))
-        {
-
+        if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');
 
             $current_appointment = Appointment::findOrFail($current_appointmentId);
@@ -87,15 +91,11 @@ class AppointmentController extends Controller
 
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
             return redirect()->route('appointments.completedAppointments')->with('success', localize('global.appointment_created_successfully.'));
-        }
+        } else {
+            // Create a new appointment
+            $appointment = Appointment::create($validatedData);
 
-        else
-        {
-
-        // Create a new appointment
-        $appointment = Appointment::create($validatedData);
-
-        SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+            SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
         }
 
         // Redirect to the appointments index page with a success message
@@ -161,8 +161,9 @@ class AppointmentController extends Controller
         $medicines = Medicine::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
+        $medicineUsageTypes = MedicineUsageType::all();
 
-        return view('pages.appointments.show',compact('appointment','labTypes','doctors','rooms','beds','previousDiagnoses','labTypeSections','branches','operationTypes','operation_doctors','departments','medicineTypes','medicines','foodTypes','relations'));
+        return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'labTypeSections', 'branches', 'operationTypes', 'operation_doctors', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes'));
     }
 
     public function destroy(Appointment $appointment)
@@ -176,46 +177,61 @@ class AppointmentController extends Controller
 
     public function doctorAppointments(Request $request)
     {
-
         if ($request->ajax()) {
-            $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','0')->with(['patient','doctor'])->latest()->get();
+            $appointments = Appointment::where('doctor_id', auth()->user()->id)
+                ->where('is_completed', '0')
+                ->with(['patient', 'doctor'])
+                ->latest()
+                ->get();
 
-                if ($appointments) {
-                    return response()->json([
-                        'data' => $appointments,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+            if ($appointments) {
+                return response()->json([
+                    'data' => $appointments,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Internal Server Error',
+                    'code' => 500,
+                    'data' => [],
+                ]);
+            }
         }
 
-        $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','0')->with(['patient','doctor'])->latest()->get();
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)
+            ->where('is_completed', '0')
+            ->with(['patient', 'doctor'])
+            ->latest()
+            ->get();
         return view('pages.appointments.doctor_appointments', compact('appointments'));
     }
 
     public function completedAppointments(Request $request)
     {
         if ($request->ajax()) {
-            $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','1')->with(['patient','doctor'])->latest()->get();
+            $appointments = Appointment::where('doctor_id', auth()->user()->id)
+                ->where('is_completed', '1')
+                ->with(['patient', 'doctor'])
+                ->latest()
+                ->get();
 
-                if ($appointments) {
-                    return response()->json([
-                        'data' => $appointments,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+            if ($appointments) {
+                return response()->json([
+                    'data' => $appointments,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Internal Server Error',
+                    'code' => 500,
+                    'data' => [],
+                ]);
+            }
         }
 
-        $appointments = Appointment::where('doctor_id',auth()->user()->id)->where('is_completed','1')->with(['patient','doctor'])->latest()->get();
+        $appointments = Appointment::where('doctor_id', auth()->user()->id)
+            ->where('is_completed', '1')
+            ->with(['patient', 'doctor'])
+            ->latest()
+            ->get();
         return view('pages.appointments.completed', compact('appointments'));
     }
 
@@ -225,12 +241,7 @@ class AppointmentController extends Controller
     }
     public function reportSearch(Request $request)
     {
-        $query = DB::table('appointments as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed','a.status_remark',
-        'a.refferal_remarks', 'a.date', 'a.time');
+        $query = DB::table('appointments as a')->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time');
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -249,39 +260,32 @@ class AppointmentController extends Controller
         }
 
         $items = $query->get();
-    return view('pages.appointments.reports.report', ['items' => $items]);
-
+        return view('pages.appointments.reports.report', ['items' => $items]);
     }
 
     public function exportReport(Request $request)
     {
-
         $data = json_decode($request->data, true);
 
-        $items = DB::table('appointments as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name',
-        'a.is_completed','a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time')
-        ->whereIn('a.id', $data)->get();
+        $items = DB::table('appointments as a')->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time')->whereIn('a.id', $data)->get();
         $reader = new Xlsx();
-        $spreadsheet = $reader->load("report_templates/appointment_report.xlsx");
+        $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.appointments.reports.pdf_report',  ['items' => $items])->render();
+        $html = view('pages.appointments.reports.pdf_report', ['items' => $items])->render();
         if ($request->type == 'pdf') {
             $mpdf = new Mpdf(['format' => 'A4-L']);
             $mpdf->WriteHTML($html);
             $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
-            $spreadsheet = $reader->load("report_templates/appointment_report.xlsx");
+        } else {
+            $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
             $sheet = $spreadsheet->getActiveSheet();
             $row = 3;
 
             foreach ($items as $index => $item) {
-
-
-                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet
+                    ->getStyle('A2:G' . $sheet->getHighestRow())
+                    ->getAlignment()
+                    ->setWrapText(true);
                 $sheet->getColumnDimension('A')->setWidth(5);
                 $sheet->getColumnDimension('B')->setWidth(40);
                 $sheet->getColumnDimension('C')->setWidth(20);
@@ -289,14 +293,13 @@ class AppointmentController extends Controller
                 $sheet->getColumnDimension('E')->setWidth(20);
                 $sheet->getColumnDimension('F')->setWidth(20);
                 $sheet->getColumnDimension('G')->setWidth(40);
-                $styleArray = array(
-                    'font' => array(
+                $styleArray = [
+                    'font' => [
                         'name' => 'B Nazanin',
                         'color' => 15,
-                        'bold' => true
-
-                    ),
-                );
+                        'bold' => true,
+                    ],
+                ];
 
                 $status = '';
                 if ($item->is_completed == '1') {
@@ -304,34 +307,29 @@ class AppointmentController extends Controller
                 } else {
                     $status = 'ملاقات های در حال اجراٰ';
                 }
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->doctor_name);
-                    $sheet->setCellValue('D' . $row . '', $item->branch_name);
-                    $sheet->setCellValue('E' . $row . '', $status);
-                    $sheet->setCellValue('F' . $row . '', $item->date);
-                    $sheet->setCellValue('G' . $row . '', $item->time);
+                $sheet->setCellValue('A' . $row . '', ++$index);
+                $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                $sheet->setCellValue('C' . $row . '', $item->doctor_name);
+                $sheet->setCellValue('D' . $row . '', $item->branch_name);
+                $sheet->setCellValue('E' . $row . '', $status);
+                $sheet->setCellValue('F' . $row . '', $item->date);
+                $sheet->setCellValue('G' . $row . '', $item->time);
                 $row++;
             }
 
-return $this->exportResponse($spreadsheet);
-}
+            return $this->exportResponse($spreadsheet);
+        }
     }
 
-
-    public function exportResponse($spreadsheet){
+    public function exportResponse($spreadsheet)
+    {
         $writer = new WriterXlsx($spreadsheet);
-        $response =  new StreamedResponse(
-            function () use ($writer) {
-                $writer->save('php://output');
-            }
-        );
+        $response = new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
         $response->headers->set('Content-Type', 'application/vnd.ms-excel');
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
-
     }
-
-
 }

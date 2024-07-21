@@ -12,7 +12,7 @@ class PrescriptionItem extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['prescription_id','dosage','frequency','amount','medicine_id','medicine_type_id', 'is_delivered'];
+    protected $fillable = ['prescription_id','dosage','frequency','amount','medicine_id','medicine_type_id', 'is_delivered','usage_type_id'];
 
     public static function boot()
     {
@@ -62,5 +62,9 @@ class PrescriptionItem extends Model
     public function medicineType()
     {
         return $this->belongsTo(MedicineType::class);
+    }
+    public function usageType()
+    {
+        return $this->belongsTo(MedicineUsageType::class);
     }
 }

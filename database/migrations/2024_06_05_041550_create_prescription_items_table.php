@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('prescription_id');
             $table->unsignedBigInteger('medicine_id');
             $table->unsignedBigInteger('medicine_type_id');
+            $table->unsignedBigInteger('usage_type_id');
             
             $table->string('dosage', 191);
             $table->string('frequency', 191);
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->foreign('medicine_id')->references('id')->on('medicines');
             $table->foreign('medicine_type_id')->references('id')->on('medicine_types');
             $table->foreign('prescription_id')->references('id')->on('prescriptions');
+            $table->foreign('usage_type_id')->references('id')->on('medicine_usage_types');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

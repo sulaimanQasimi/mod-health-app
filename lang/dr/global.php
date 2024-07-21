@@ -844,7 +844,10 @@ return [
     'death_time' => 'زمان فوت',
     'brief_history' => 'تاریخچه خلص',
     'previous_icus' => 'ICU های قبلی',
-    'blood_type' => 'نوعیت خون'
+    'blood_type' => 'نوعیت خون',
+    'delete' => 'حذف',
+    'medicine_usage_types' => 'طروق تطبیق ادویه',
+    'create_medicine_usage_type' => 'اضافه نمودن طریقه تطبیق'
 
 
 ];

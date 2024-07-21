@@ -515,6 +515,13 @@
                         </a>
                     </li>
                     @endcan
+                    @can('show-medicine-usage-menu')
+                    <li class="menu-item {{ Route::is('medicine_usage_types.*') ? 'active' : '' }}">
+                        <a href="{{ route('medicine_usage_types.index') }}" class="menu-link">
+                            <div>{{ localize('global.medicine_usage_types') }}</div>
+                        </a>
+                    </li>
+                    @endcan
                     @can('show-food-types-menu')
                     <li class="menu-item {{ Route::is('food_types.*') ? 'active' : '' }}">
                         <a href="{{ route('food_types.index') }}" class="menu-link">

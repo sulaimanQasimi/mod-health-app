@@ -39,6 +39,7 @@ use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
+use App\Http\Controllers\MedicineUsageTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PACUController;
 use App\Http\Controllers\PatientComplaintController;
@@ -590,6 +591,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{advice}', [AdviceController::class, 'edit'])->name('edit');
         Route::put('update/{advice}', [AdviceController::class, 'update'])->name('update');
         Route::get('destroy/{advice}', [AdviceController::class, 'destroy'])->name('destroy');
+    });
+
+    // Medicine Usage Types routes
+    Route::prefix('medicine_usage_types')->name('medicine_usage_types.')->group(function () {
+        Route::get('index', [MedicineUsageTypeController::class, 'index'])->name('index');
+        Route::get('create', [MedicineUsageTypeController::class, 'create'])->name('create');
+        Route::get('show/{medicineUsageType}', [MedicineUsageTypeController::class, 'show'])->name('show');
+        Route::post('store', [MedicineUsageTypeController::class, 'store'])->name('store');
+        Route::get('edit/{medicineUsageType}', [MedicineUsageTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{medicineUsageType}', [MedicineUsageTypeController::class, 'update'])->name('update');
+        Route::get('destroy/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

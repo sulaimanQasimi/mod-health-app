@@ -34,27 +34,16 @@
                                         <td>{{ $anesthesia->surgion->name }}</td>
                                         <td>
                                             @if ($anesthesia->status == 'new')
-                                                    <span class="bx bx-plus-circle text-primary"></span>
-                                                @elseif ($anesthesia->status == 'rejected')
-                                                    <span class="bx bx-x-circle text-danger"></span>
-                                                @else
-                                                    <span class="bx bx-check-circle text-success"></span>
-                                                @endif
+                                                <span class="bx bx-plus-circle text-primary"></span>
+                                            @elseif ($anesthesia->status == 'rejected')
+                                                <span class="bx bx-x-circle text-danger"></span>
+                                            @else
+                                                <span class="bx bx-check-circle text-success"></span>
+                                            @endif
                                         </td>
                                         <td>
                                             <a href="{{ route('anesthesias.show', $anesthesia) }}"><i
                                                     class="bx bx-expand"></i></a>
-                                            {{-- <a href="{{ route('anesthesias.edit', $anesthesia) }}"><i class="bx bx-message-square-edit"></i></a> --}}
-                                            <!-- Using an <a> tag -->
-                                            {{-- <a href="{{ route('beds.destroy', $bed) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
-                    </a>
-
-                    <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('beds.destroy', $bed) }}" method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form> --}}
                                         </td>
                                     </tr>
                                 @endforeach

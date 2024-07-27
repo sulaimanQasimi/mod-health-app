@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewAnesthesiaNotification;
 use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
+use App\Models\OperationType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -112,7 +113,10 @@ class AnesthesiaController extends Controller
      */
     public function edit(Anesthesia $anesthesia)
     {
-        //
+        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
+
+        return view('pages.anesthesias.edit', compact('anesthesia','operation_doctors','operationTypes'));
     }
 
     /**
@@ -140,6 +144,50 @@ class AnesthesiaController extends Controller
 
 
         return redirect()->route('anesthesias.new')->with('success', localize('global.anesthesia_updated_successfully.'));
+    }
+
+    public function updateAnesthesia(Request $request, Anesthesia $anesthesia)
+    {
+        // Validate the input
+        $data = $request->validate([
+
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'branch_id' => 'required',
+            'appointment_id' => 'required',
+            'operation_type_id' => 'required',
+            'hospitalization_id' => 'nullable',
+            'date' => 'required',
+            'time' => 'required',
+            'plan' => 'required',
+            'position_on_bed' => 'required',
+            'planned_duration' => 'required',
+            'estimated_blood_waste' => 'required',
+            'other_problems' => 'required',
+            'status' => 'nullable',
+            'anesthesia_type' => 'nullable',
+            'operation_status' => 'nullable',
+            'anesthesia_log_reply' => 'nullable',
+            'is_operation_done' => 'nullable',
+            'operation_assistants_id' => 'nullable',
+            'operation_surgion_id' => 'nullable',
+            'operation_anesthesia_log_id' => 'nullable',
+            'operation_anesthesist_id' => 'nullable',
+            'operation_scrub_nurse_id' => 'nullable',
+            'operation_circulation_nurse_id' => 'nullable',
+            'anesthesia_plan' => 'nullable',
+            'operation_expense_remarks' => 'nullable',
+            'room_id' => 'nullable',
+            'bed_id' => 'nullable',
+            'is_reserved' => 'nullable',
+            'reserve_reason' => 'nullable',
+        ]);
+
+        $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
+
+        $anesthesia->update($data);
+
+        return redirect()->back()->with('success', localize('global.anesthesia_updated_successfully.'));
     }
 
     /**

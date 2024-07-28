@@ -59,9 +59,9 @@ class PrescriptionController extends Controller
             'medicine_type_id' => 'required',
             'medicine_id' => 'required',
             'usage_type_id' => 'required',
-            'dosage' => 'nullable',
-            'frequency' => 'nullable',
-            'amount' => 'nullable',
+            'dosage' => 'required',
+            'frequency' => 'required',
+            'amount' => 'required',
         ]);
 
 

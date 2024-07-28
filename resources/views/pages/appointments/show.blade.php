@@ -328,12 +328,13 @@
 
                                             <!-- Add other diagnosis form fields as needed -->
                                             <div class="form-group" id="prescription-items">
-                                                <label>{{ localize('global.description') }}</label>
+                                                
                                                 <div id="prescription-input-container">
                                                     <div class="row">
                                                         <div class="col-md-2">
+                                                            <label class="form-group mb-2">{{ localize('global.medicine_type') }}</label>
                                                             <select class="form-control select2"
-                                                                name="medicine_type_id[]">
+                                                                name="medicine_type_id[]" required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicineTypes as $value)
@@ -346,7 +347,8 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <select class="form-control select2" name="medicine_id[]">
+                                                            <label class="form-group mb-2">{{ localize('global.medicine_name') }}</label>
+                                                            <select class="form-control select2" name="medicine_id[]" required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicines as $value)
@@ -359,7 +361,8 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <select class="form-control select2" name="usage_type_id[]">
+                                                            <label class="form-group mb-2">{{ localize('global.usage_type') }}</label>
+                                                            <select class="form-control select2 mt-2" name="usage_type_id[]" required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicineUsageTypes as $value)
@@ -372,19 +375,21 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
+                                                            <label class="form-group">{{ localize('global.dosage') }}</label>
                                                             <input type="text" class="form-control mt-2"
-                                                                name="dosage[]" placeholder="Dosage">
+                                                                name="dosage[]" placeholder="Dosage" required>
                                                         </div>
                                                         <div class="col-md-2">
+                                                            <label class="form-group">{{ localize('global.frequency') }}</label>
                                                             <input type="text" class="form-control mt-2"
-                                                                name="frequency[]" placeholder="Frequency">
+                                                                name="frequency[]" placeholder="Frequency" required>
                                                         </div>
                                                         <div class="col-md-2">
+                                                            <label class="form-group">{{ localize('global.amount') }}</label>
                                                             <input type="text" class="form-control mt-2"
-                                                                name="amount[]" placeholder="Amount">
+                                                                name="amount[]" placeholder="Amount" required>
                                                         </div>
-                                                        <div class="col-md-2">
-                                                            <input type="hidden" class="form-control mt-2"
+                                                        <div class="col-md-2">                                                            <input type="hidden" class="form-control mt-2"
                                                                 name="is_delivered[]" value="0">
                                                         </div>
                                                     </div>

@@ -94,7 +94,10 @@ class DiagnoseController extends Controller
      */
     public function destroy(Diagnose $diagnose)
     {
-        //
+        $item = Diagnose::findOrFail($diagnose->id);
+        $item->delete();
+        return redirect()->back()->with('success', localize('global.diagnose_deleted_successfully.'));
+
     }
 
     public function createDiagnose(Appointment $appointment)

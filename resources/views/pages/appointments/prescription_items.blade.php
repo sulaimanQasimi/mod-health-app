@@ -16,6 +16,7 @@
                 <th>{{ localize('global.frequency') }}</th>
                 <th>{{ localize('global.amount') }}</th>
                 <th>{{ localize('global.status') }}</th>
+                <th>{{ localize('global.actions') }}</th>
                 
             </tr>
         </thead>
@@ -31,6 +32,13 @@
                 <td>
                     <span><i
                             class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
+                </td>
+                <td>
+                    @if($item->is_delivered == 0)
+                    <a href="{{ route('prescription_items.deleteItem', $item) }}" class="btn btn-sm btn-danger">
+                        <span class="bx bx-trash"></span>
+                    </a>
+                    @endif
                 </td>
                 
             </tr>

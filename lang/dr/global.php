@@ -853,7 +853,9 @@ return [
     'description_with_diaseases' => 'توضیحات/امراض ضمیموی',
     'for_disease' => 'برای امراض',
     'diseases' => 'امراض',
-    'create_disease' => 'ثبت مرض'
+    'create_disease' => 'ثبت مرض',
+    'edit_diagnose' => 'تصحیح تشخیص',
+    'edit_advice' => 'تصحیح توصیه'
 
 
 ];

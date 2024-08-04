@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewConsultationNotification;
+use App\Models\Branch;
 use App\Models\Consultation;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class ConsultationController extends Controller
@@ -72,7 +74,9 @@ class ConsultationController extends Controller
      */
     public function edit(Consultation $consultation)
     {
-        return view('pages.consultations.edit',compact('consultation'));
+        $branches = Branch::all();
+        $departments = Department::all();
+        return view('pages.consultations.edit',compact('consultation','branches','departments'));
     }
 
     /**
@@ -80,7 +84,21 @@ class ConsultationController extends Controller
      */
     public function update(Request $request, Consultation $consultation)
     {
+        $data = $request->validate([
+            'title' => 'required',
+            'appointment_id' => 'required',
+            'patient_id' => 'required',
+            'department_id' => 'required',
+            'branch_id' => 'required',
+            'date' => 'required',
+            'time' => 'required',
+            'i_c_u_id' => 'nullable',
+            'consultation_type' => 'nullable',
+        ]);
 
+        $consultation->update($data);
+
+        return redirect()->route('appointments.index')->with('success', localize('global.consultation_updated_successfully.'));
     }
 
     /**
@@ -88,6 +106,9 @@ class ConsultationController extends Controller
      */
     public function destroy(Consultation $consultation)
     {
-        //
+        $consultation->delete();
+
+        return redirect()->back()->with('success', localize('global.consultation_deleted_successfully.'));
     }
+
 }

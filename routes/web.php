@@ -368,6 +368,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
         Route::get('updateStatus/{id}/update-status', [LabItemController::class, 'updateStatus'])->name('updateStatus');
+        Route::get('deleteItem/{id}/delete-item', [LabItemController::class, 'deleteItem'])->name('deleteItem');
 
     });
 

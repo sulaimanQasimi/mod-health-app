@@ -12,6 +12,7 @@
                 <th>{{ localize('global.number') }}</th>
                 <th>{{ localize('global.test_name') }}</th>
                 <th>{{ localize('global.test_status') }}</th>
+                <th>{{ localize('global.actions') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +26,13 @@
                                 class="badge bg-danger">{{ localize('global.not_tested') }}</span>
                         @else
                             <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($item->is_delivered == 0)
+                        <a href="{{ route('lab_items.deleteItem', $item) }}" class="btn btn-sm btn-danger">
+                            <span class="bx bx-trash"></span>
+                        </a>
                         @endif
                     </td>
                     

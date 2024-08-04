@@ -230,6 +230,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [UnderReviewController::class, 'store'])->name('store');
         Route::get('edit/{underReview}', [UnderReviewController::class, 'edit'])->name('edit');
         Route::put('update/{underReview}', [UnderReviewController::class, 'update'])->name('update');
+        Route::put('updateUnderReview/{underReview}', [UnderReviewController::class, 'updateUnderReview'])->name('updateUnderReview');
         Route::get('destroy/{underReview}', [UnderReviewController::class, 'destroy'])->name('destroy');
     });
 

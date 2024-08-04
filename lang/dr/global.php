@@ -856,7 +856,8 @@ return [
     'create_disease' => 'ثبت مرض',
     'edit_diagnose' => 'تصحیح تشخیص',
     'edit_advice' => 'تصحیح توصیه',
-    'medicine_name' => 'نام ادویه'
+    'medicine_name' => 'نام ادویه',
+    'edit_under_review' => 'تصحیح تحت مشاهده'
 
 
 ];

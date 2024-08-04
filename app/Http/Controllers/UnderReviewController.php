@@ -103,7 +103,9 @@ class UnderReviewController extends Controller
      */
     public function edit(UnderReview $underReview)
     {
-        //
+        $rooms = Room::all();
+        $beds = Bed::all();
+        return view('pages.under_reviews.edit',compact('underReview','rooms','beds'));
     }
 
     /**
@@ -130,6 +132,29 @@ class UnderReviewController extends Controller
      */
     public function destroy(UnderReview $underReview)
     {
-        //
+        $underReview->delete();
+
+        return redirect()->back()->with('success', localize('global.under_review_deleted_successfully.'));
+    }
+
+    public function updateUnderReview(Request $request, UnderReview $underReview)
+    {
+        $validatedData = $request->validate([
+            'reason' => 'required',
+            'remarks' => 'required',
+            'room_id' => 'required',
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'bed_id' => 'required',
+            'appointment_id' => 'required',
+            'is_discharged' => 'nullable',
+            'discharge_remark' => 'nullable',
+            'branch_id' => 'required',
+            'operation_id' => 'nullable',
+        ]);
+
+        $underReview->update($validatedData);
+
+        return redirect()->route('appointments.index')->with('success', localize('global.advice_updated_successfully.'));
     }
 }

@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class UnderReview extends Model
 {
+
+    use SoftDeletes;
+    
     protected $fillable = ['reason','remarks','appointment_id','doctor_id','patient_id','room_id','bed_id','is_discharged','branch_id','discharge_remark','operation_id','hospitalization_id','prescription_id'];
 
     public static function boot()

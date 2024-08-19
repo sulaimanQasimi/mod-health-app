@@ -857,7 +857,11 @@ return [
     'edit_diagnose' => 'تصحیح تشخیص',
     'edit_advice' => 'تصحیح توصیه',
     'medicine_name' => 'نام ادویه',
-    'edit_under_review' => 'تصحیح تحت مشاهده'
+    'edit_under_review' => 'تصحیح تحت مشاهده',
+    'operation_remark_protocol' => 'ملاحظات / پروتوکول',
+    'discharge' => 'رخصت',
+    'death' => 'فوت',
+    'patient_status' => 'حالت مریض'
 
 
 ];

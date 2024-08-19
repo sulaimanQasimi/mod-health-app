@@ -319,17 +319,30 @@
                                                     <div class="form-group">
 
                                                         <label
-                                                            for="operation_result{{ $operation->id }}">{{ localize('global.operation_result') }}</label>
+                                                            for="operation_result{{ $operation->id }}" class="mt-2">{{ localize('global.operation_result') }}</label>
                                                         <select class="form-control form-select" name="operation_result"
-                                                            id="operation_result">
+                                                            id="operation_result" required>
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
                                                             <option value="1">{{ localize('global.success') }}
                                                             </option>
                                                             <option value="0">{{ localize('global.fail') }}</option>
                                                         </select>
 
+                                                        <label
+                                                            for="operation_result{{ $operation->id }}" class="mt-2">{{ localize('global.patient_status') }}</label>
+                                                        <select class="form-control form-select" name="operation_result"
+                                                            id="operation_result" required>
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="1">{{ localize('global.discharge') }}
+                                                            </option>
+                                                            <option value="0">{{ localize('global.death') }}</option>
+                                                        </select>
+
                                                         <div class="form-group">
                                                             <label
-                                                                for="operation_remark{{ $operation->id }}">{{ localize('global.operation_remark') }}</label>
+                                                                for="operation_remark{{ $operation->id }}" class="mt-2">{{ localize('global.operation_remark_protocol') }}</label>
                                                             <textarea class="form-control" id="operation_remark{{ $operation->id }}" name="operation_remark" rows="3"></textarea>
                                                         </div>
 

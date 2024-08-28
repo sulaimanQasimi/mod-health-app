@@ -35,18 +35,18 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $floor->name }}</td>
                 <td>
-                    <a href="{{ route('floors.show', $floor) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('floors.edit', $floor) }}"><i class="bx bx-message-square-edit"></i></a>
+                    {{-- <a href="{{ route('floors.show', $floor) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('floors.edit', $floor) }}"><i class="bx bx-message-edit"></i></a>
                     <!-- Using an <a> tag -->
-                    {{-- <a href="{{ route('floors.destroy', $floor) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
+                    <a href="{{ route('floors.destroy', $floor) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$floor->id}}').submit(); }">
+                        <i class="bx bx-trash text-danger"></i>
                     </a>
 
                     <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('floors.destroy', $floor) }}" method="POST" style="display: none;">
+                    <form id="delete-form-{{$floor->id}}" action="{{ route('floors.destroy', $floor) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
-                    </form> --}}
+                    </form>
                 </td>
             </tr>
         @endforeach

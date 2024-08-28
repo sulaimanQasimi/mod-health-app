@@ -182,7 +182,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [FloorController::class, 'store'])->name('store');
         Route::get('edit/{floor}', [FloorController::class, 'edit'])->name('edit');
         Route::put('update/{floor}', [FloorController::class, 'update'])->name('update');
-        Route::get('destroy/{floor}', [FloorController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{floor}', [FloorController::class, 'destroy'])->name('destroy');
     });
 
     // Rooms routes

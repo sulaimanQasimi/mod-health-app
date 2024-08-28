@@ -46,7 +46,7 @@ class FloorController extends Controller
      */
     public function show(Floor $floor)
     {
-        //
+        return view('pages.floors.show', compact('floor'));
     }
 
     /**
@@ -54,7 +54,8 @@ class FloorController extends Controller
      */
     public function edit(Floor $floor)
     {
-        //
+        $branches = Branch::all();
+        return view('pages.floors.edit', compact('floor', 'branches'));
     }
 
     /**
@@ -62,7 +63,14 @@ class FloorController extends Controller
      */
     public function update(Request $request, Floor $floor)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'branch_id' => 'required',
+        ]);
+
+        $floor->update($data);
+
+        return redirect()->route('floors.index')->with('success', localize('global.floor_updated_successfully.'));
     }
 
     /**
@@ -70,6 +78,7 @@ class FloorController extends Controller
      */
     public function destroy(Floor $floor)
     {
-        //
+        $floor->delete();
+        return redirect()->route('floors.index')->with('success', localize('global.floor_deleted_successfully.'));
     }
 }

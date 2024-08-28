@@ -193,7 +193,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [RoomController::class, 'store'])->name('store');
         Route::get('edit/{room}', [RoomController::class, 'edit'])->name('edit');
         Route::put('update/{room}', [RoomController::class, 'update'])->name('update');
-        Route::get('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
     });
 
     // Beds routes
@@ -204,7 +204,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [BedController::class, 'store'])->name('store');
         Route::get('edit/{bed}', [BedController::class, 'edit'])->name('edit');
         Route::put('update/{bed}', [BedController::class, 'update'])->name('update');
-        Route::get('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
     });
 
     // Hospitalizations routes

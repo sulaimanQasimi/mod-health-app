@@ -18,4 +18,19 @@ class Room extends Model
         return $this->hasMany(Bed::class)->where('is_occupied',false);
     }
 
+    public function floor()
+    {
+        return $this->belongsTo(Floor::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
 }

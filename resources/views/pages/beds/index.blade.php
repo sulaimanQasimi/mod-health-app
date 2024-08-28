@@ -35,20 +35,20 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $bed->number }}</td>
-                <td>{{ $bed->room->name }}</td>
+                <td>{{ $bed->room->name ?? 'Null' }}</td>
                 <td>
-                    <a href="{{ route('beds.show', $bed) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('beds.edit', $bed) }}"><i class="bx bx-message-square-edit"></i></a>
+                    {{-- <a href="{{ route('beds.show', $bed) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('beds.edit', $bed) }}"><i class="bx bx-message-edit"></i></a>
                     <!-- Using an <a> tag -->
-                    {{-- <a href="{{ route('beds.destroy', $bed) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
+                    <a href="{{ route('beds.destroy', $bed) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$bed->id}}').submit(); }">
+                        <i class="bx bx-trash text-danger"></i>
                     </a>
 
                     <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('beds.destroy', $bed) }}" method="POST" style="display: none;">
+                    <form id="delete-form-{{$bed->id}}" action="{{ route('beds.destroy', $bed) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
-                    </form> --}}
+                    </form>
                 </td>
             </tr>
         @endforeach

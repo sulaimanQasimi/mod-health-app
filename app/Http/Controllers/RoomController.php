@@ -52,7 +52,9 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
-        //
+        // Assuming you have a relationship for beds or a method to get the bed count
+        $room->load('beds'); // Adjust this if you have a relationship for beds
+        return view('pages.rooms.show', compact('room'));
     }
 
     /**
@@ -60,7 +62,10 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        //
+        $branches = Branch::all();
+        $floors = Floor::all();
+        $departments = Department::all();
+        return view('pages.rooms.edit', compact('room', 'branches', 'floors', 'departments'));
     }
 
     /**
@@ -68,7 +73,16 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'branch_id' => 'required',
+            'floor_id' => 'required',
+            'department_id' => 'required',
+        ]);
+
+        $room->update($data);
+
+        return redirect()->route('rooms.index')->with('success', localize('global.room_updated_successfully.'));
     }
 
     /**
@@ -76,6 +90,7 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        //
+        $room->delete();
+        return redirect()->route('rooms.index')->with('success', localize('global.room_deleted_successfully.'));
     }
 }

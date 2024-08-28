@@ -861,7 +861,10 @@ return [
     'operation_remark_protocol' => 'ملاحظات / پروتوکول',
     'discharge' => 'رخصت',
     'death' => 'فوت',
-    'patient_status' => 'حالت مریض'
+    'patient_status' => 'حالت مریض',
+    'number_of_beds' => 'تعداد بستر ها',
+    'room_details' => 'معلومات اطاق',
+    'edit_room' => 'تصحیح اطاق'
 
 
 ];

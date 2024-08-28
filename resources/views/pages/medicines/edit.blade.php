@@ -47,15 +47,16 @@
                                         @enderror
                                     </div>
                                 </div>
-                                {{-- <div class="col-md-4">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="disease_id">{{ localize('global.for_disease') }}</label>
-                                        <select class="form-control select2 @error('disease_id') is-invalid @enderror" id="disease_id" name="disease_id[]" required multiple>
+                                        <select class="form-control select2 @error('disease_id') is-invalid @enderror"
+                                            id="disease_id" name="disease_id[]" required multiple>
                                             <option value="">{{ localize('global.for_disease') }}</option>
                                             @foreach ($diseases as $disease)
-                                            {{ old('disease_id', $disease->disease_id) == $medicineType->id ? 'selected' : '' }}>
-                                                    {{ $disease->name }}
-                                                </option>
+                                                <option value="{{ $disease->id }}"
+                                                    {{ old('disease_id') == $disease->id ? 'selected' : '' }}>
+                                                    {{ $disease->name }}</option>
                                             @endforeach
                                         </select>
                                         @error('disease_id')
@@ -64,7 +65,7 @@
                                             </span>
                                         @enderror
                                     </div>
-                                </div> --}}
+                                </div>
                                 <div class="form-group">
                                     <button type="submit"
                                         class="btn btn-primary mt-2">{{ localize('global.update') }}</button>

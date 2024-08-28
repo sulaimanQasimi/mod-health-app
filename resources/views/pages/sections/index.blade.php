@@ -35,20 +35,20 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $section->name }}</td>
-                <td>{{ $section->department->name }}</td>
+                <td>{{ $section->department->name ?? 'NULL' }}</td>
                 <td>
-                    <a href="{{ route('sections.show', $section) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('sections.edit', $section) }}"><i class="bx bx-message-square-edit"></i></a>
+                    {{-- <a href="{{ route('sections.show', $section) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('sections.edit', $section) }}"><i class="bx bx-message-edit"></i></a>
                     <!-- Using an <a> tag -->
-                    {{-- <a href="{{ route('sections.destroy', $section) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
-                    </a>
+                        <a href="{{ route('sections.destroy', $section->id) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{ $section->id }}').submit(); }">
+                            <i class="bx bx-trash text-danger"></i>
+                        </a>
 
-                    <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('sections.destroy', $section) }}" method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form> --}}
+                        <!-- Using a <form> element -->
+                        <form id="delete-form-{{ $section->id }}" action="{{ route('sections.destroy', $section->id) }}" method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
                 </td>
             </tr>
         @endforeach

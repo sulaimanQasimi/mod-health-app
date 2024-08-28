@@ -20,6 +20,6 @@ class Medicine extends Model
     public function getAssociatedDiseaseAttribute()
     {
         $diseases = array_map('intval', json_decode($this->disease_id, true));
-        return FoodType::whereIn('id', $diseases)->get();
+        return Disease::whereIn('id', $diseases)->get();
     }
 }

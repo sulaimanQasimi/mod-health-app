@@ -171,7 +171,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [SectionController::class, 'store'])->name('store');
         Route::get('edit/{section}', [SectionController::class, 'edit'])->name('edit');
         Route::put('update/{section}', [SectionController::class, 'update'])->name('update');
-        Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
     });
 
     // Rooms routes

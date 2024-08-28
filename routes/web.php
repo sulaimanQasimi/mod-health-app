@@ -160,7 +160,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [DepartmentController::class, 'store'])->name('store');
         Route::get('edit/{department}', [DepartmentController::class, 'edit'])->name('edit');
         Route::put('update/{department}', [DepartmentController::class, 'update'])->name('update');
-        Route::get('destroy/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
     });
 
     //Sections routes

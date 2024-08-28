@@ -41,18 +41,18 @@
                     @endforeach
                 </td>
                 <td>
-                    <a href="{{ route('departments.show', $department) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('departments.edit', $department) }}"><i class="bx bx-message-square-edit"></i></a>
+                    {{-- <a href="{{ route('departments.show', $department) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('departments.edit', $department) }}"><i class="bx bx-message-edit"></i></a>
                     <!-- Using an <a> tag -->
-                    {{-- <a href="{{ route('departments.destroy', $department) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
+                    <a href="{{ route('departments.destroy', $department) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
+                        <i class="bx bx-trash text-danger"></i>
                     </a>
 
                     <!-- Using a <form> element -->
                     <form id="delete-form" action="{{ route('departments.destroy', $department) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
-                    </form> --}}
+                    </form>
                 </td>
             </tr>
         @endforeach

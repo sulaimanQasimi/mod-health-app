@@ -55,7 +55,7 @@ class AdviceController extends Controller
      */
     public function edit(Advice $advice)
     {
-        return view('advices.edit', compact('advice'));
+        return view('pages.advices.edit', compact('advice'));
     }
 
     /**
@@ -74,7 +74,7 @@ class AdviceController extends Controller
 
         $advice->update($validatedData);
 
-        return redirect()->route('advices.show', $advice)->with('success', localize('global.advice_updated_successfully.'));
+        return redirect()->route('appointments.index')->with('success', localize('global.advice_updated_successfully.'));
     }
 
     /**

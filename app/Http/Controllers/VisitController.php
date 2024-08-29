@@ -67,8 +67,10 @@ class VisitController extends Controller
             'antibiotic' => 'nullable',
 
         ]);
+        if(isset($data['food_type_id']) && $data['food_type_id'] != ''){
 
-        $data['food_type_id'] = json_encode($data['food_type_id']);
+            $data['food_type_id']  = json_encode($data['food_type_id']);
+        }
 
         Visit::create($data);
 

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name',192);
             $table->unsignedBigInteger('medicine_type_id');
-
+            $table->text('disease_id')->nullable();
             $table->foreign('medicine_type_id')
                 ->references('id')
                 ->on('medicine_types');

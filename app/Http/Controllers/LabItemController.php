@@ -25,4 +25,20 @@ class LabItemController extends Controller
 
         return redirect()->back()->with('success', localize('global.lab_item_status_updated_successfully.'));
     }
+
+    public function deleteItem($id)
+    {
+        $item = LabItem::findOrFail($id);
+        $lab = $item->lab;
+
+        $item->delete();
+
+        // Check if the lab has any other items
+        if ($lab->labItems()->count() === 0) {
+            $lab->delete();
+            return redirect()->back()->with('success', localize('global.lab_deleted_successfully.'));
+        }
+
+        return redirect()->back()->with('success', localize('global.lab_item_deleted_successfully.'));
+    }
 }

@@ -319,17 +319,30 @@
                                                     <div class="form-group">
 
                                                         <label
-                                                            for="operation_result{{ $operation->id }}">{{ localize('global.operation_result') }}</label>
+                                                            for="operation_result{{ $operation->id }}" class="mt-2">{{ localize('global.operation_result') }}</label>
                                                         <select class="form-control form-select" name="operation_result"
-                                                            id="operation_result">
+                                                            id="operation_result" required>
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
                                                             <option value="1">{{ localize('global.success') }}
                                                             </option>
                                                             <option value="0">{{ localize('global.fail') }}</option>
                                                         </select>
 
+                                                        {{-- <label
+                                                            for="operation_result{{ $operation->id }}" class="mt-2">{{ localize('global.patient_status') }}</label>
+                                                        <select class="form-control form-select" name="operation_result"
+                                                            id="operation_result" required>
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="1">{{ localize('global.discharge') }}
+                                                            </option>
+                                                            <option value="0">{{ localize('global.death') }}</option>
+                                                        </select> --}}
+
                                                         <div class="form-group">
                                                             <label
-                                                                for="operation_remark{{ $operation->id }}">{{ localize('global.operation_remark') }}</label>
+                                                                for="operation_remark{{ $operation->id }}" class="mt-2">{{ localize('global.operation_remark_protocol') }}</label>
                                                             <textarea class="form-control" id="operation_remark{{ $operation->id }}" name="operation_remark" rows="3"></textarea>
                                                         </div>
 
@@ -348,7 +361,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                        @if($operation->patient_status == null)
                            @if($operation->is_operation_approved == 1 || $operation->is_operation_done == 1)
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-tv p-1"></i>{{ localize('global.request_blood') }}</h5>
@@ -405,6 +418,19 @@
                                                             </option>
                                                             <option value="+">+</option>
                                                             <option value="-">-</option>
+                                                        </select>
+                                                        <label
+                                                            for="blood_type{{ $operation->id }}">{{ localize('global.blood_type') }}</label>
+                                                            <select class="form-control form-select" name="type"
+                                                            id="type">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="RBC">RBC</option>
+                                                            <option value="PRBC">PRBC</option>
+                                                            <option value="Fresh">Fresh</option>
+                                                            <option value="Platelets">Platelets</option>
+                                                            <option value="Plasma">Plasma</option>
+                                                            <option value="Whole Blood">Whole Blood</option>
                                                         </select>
                                                         <label
                                                             for="quantity{{ $operation->id }}">{{ localize('global.quantity') }}</label>
@@ -474,7 +500,7 @@
                             </div>
                         @endif
 
-                        @if($operation->is_operation_done == 1)
+                        @if ($operation->is_operation_done == 1)
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-tv p-1"></i>{{ localize('global.refere_to_pacu') }}</h5>
 
@@ -1143,6 +1169,60 @@
                                     </table>
                                 </div>
                             @endif
+
+                            @if ($operation->is_operation_done == 1)
+                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                        class="bx bx-tv p-1"></i>{{ localize('global.discharge') }}</h5>
+
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createDischargeModal{{ $operation->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+
+                                <!-- Create  Lab Modal -->
+                                <div class="modal fade" id="createDischargeModal{{ $operation->id }}" tabindex="-1"
+                                    aria-labelledby="createDischargeModalLabel{{ $operation->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="createDischargeModalLabel{{ $operation->id }}">
+                                                    {{ localize('global.discharge') }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('operations.update', $operation) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="form-group">
+
+                                                        <div class="form-group">
+                                                            <label
+                                                            for="patient_status{{ $operation->id }}" class="mt-2">{{ localize('global.patient_status') }}</label>
+                                                        <select class="form-control form-select" name="patient_status"
+                                                            id="patient_status" required>
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="discharge">{{ localize('global.discharge') }}
+                                                            </option>
+                                                            <option value="death">{{ localize('global.death') }}</option>
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                <button type="submit"
+                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                                @else
+                                <h4 class="text-center">Patient Status: {{$operation->patient_status}}</h4>
+                                @endif
                         </div>
 
                     </div>

@@ -110,6 +110,7 @@ class OperationController extends Controller
             'operation_expense_remarks' => 'nullable',
             'room_id' => 'nullable',
             'bed_id' => 'nullable',
+            'patient_status' => 'nullable',
 
         ]);
 

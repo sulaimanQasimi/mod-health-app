@@ -11,7 +11,7 @@ class Anesthesia extends Model
     use HasFactory;
 
     protected $fillable = ['plan','date','time','planned_duration','position_on_bed','estimated_blood_waste','other_problems','status','anesthesia_log_reply','patient_id','appointment_id','branch_id','doctor_id','operation_type_id','is_operation_done','operation_remark','operation_assistants_id','operation_result','operation_surgion_id','operation_anesthesia_log_id','operation_anesthesist_id',
-'operation_scrub_nurse_id','operation_circulation_nurse_id','anesthesia_plan','hospitalization_id','is_operation_approved','operation_expense_remarks','room_id','bed_id','is_reserved','reserve_reason','anesthesia_type'];
+'operation_scrub_nurse_id','operation_circulation_nurse_id','anesthesia_plan','hospitalization_id','is_operation_approved','operation_expense_remarks','room_id','bed_id','is_reserved','reserve_reason','anesthesia_type', 'patient_status'];
 
     public static function boot()
     {

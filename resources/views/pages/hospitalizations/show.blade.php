@@ -322,12 +322,12 @@
                                                                         <option value="{{ $value->id }}"
                                                                             {{ old('type') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->type }}
-
+    
                                                                         </option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-2">
                                                                 <select class="form-control select2" name="medicine_id[]">
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
@@ -335,12 +335,25 @@
                                                                         <option value="{{ $value->id }}"
                                                                             {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->name }}
-
+    
                                                                         </option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-2">
+                                                                <select class="form-control select2" name="usage_type_id[]">
+                                                                    <option value="">{{ localize('global.select') }}
+                                                                    </option>
+                                                                    @foreach ($medicineUsageTypes as $value)
+                                                                        <option value="{{ $value->id }}"
+                                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                            {{ $value->name }}
+    
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2">
                                                                 <input type="text" class="form-control mt-2"
                                                                     name="dosage[]" placeholder="Dosage">
                                                             </div>
@@ -1336,6 +1349,20 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
+            // Create the medicine dropdown
+            const medicineUsageDropdown = document.createElement('select');
+            medicineUsageDropdown.className = 'form-control select2';
+            medicineUsageDropdown.name = 'usage_type_id[]';
+
+            // Append the options to the medicine dropdown
+            var medicineUsageOption = '';
+            @foreach ($medicineUsageTypes as $value)
+                    medicineUsageOption = document.createElement('option');
+                    medicineUsageOption.value = '{{ $value->id }}';
+                    medicineUsageOption.textContent = '{{ $value->name }}';
+                    medicineUsageDropdown.appendChild(medicineUsageOption);
+            @endforeach
+
             // Create the dosage input field
             const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
@@ -1368,9 +1395,11 @@
             const typeCol = document.createElement('div');
             typeCol.className = 'col-md-2';
             const medicineCol = document.createElement('div');
-            medicineCol.className = 'col-md-3';
+            medicineCol.className = 'col-md-2';
+            const medicineUsageCol = document.createElement('div');
+            medicineUsageCol.className = 'col-md-2';
             const dosageCol = document.createElement('div');
-            dosageCol.className = 'col-md-3';
+            dosageCol.className = 'col-md-2';
             const frequencyCol = document.createElement('div');
             frequencyCol.className = 'col-md-2';
             const amountCol = document.createElement('div');
@@ -1381,6 +1410,7 @@
             // Append the input fields to their respective column divs
             typeCol.appendChild(typeDropdown);
             medicineCol.appendChild(medicineDropdown);
+            medicineUsageCol.appendChild(medicineUsageDropdown);
             dosageCol.appendChild(dosageInput);
             frequencyCol.appendChild(frequencyInput);
             amountCol.appendChild(amountInput);
@@ -1389,6 +1419,7 @@
             // Append the column divs to the new row div
             newRow.appendChild(typeCol);
             newRow.appendChild(medicineCol);
+            newRow.appendChild(medicineUsageCol);
             newRow.appendChild(dosageCol);
             newRow.appendChild(frequencyCol);
             newRow.appendChild(amountCol);

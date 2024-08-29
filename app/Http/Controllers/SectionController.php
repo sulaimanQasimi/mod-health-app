@@ -49,7 +49,7 @@ class SectionController extends Controller
      */
     public function show(Section $section)
     {
-        //
+        return view('pages.sections.show', compact('section'));
     }
 
     /**
@@ -57,7 +57,8 @@ class SectionController extends Controller
      */
     public function edit(Section $section)
     {
-        //
+        $departments = Department::all();
+        return view('pages.sections.edit', compact('section', 'departments'));
     }
 
     /**
@@ -65,7 +66,14 @@ class SectionController extends Controller
      */
     public function update(Request $request, Section $section)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'department_id' => 'required',
+        ]);
+
+        $section->update($data);
+
+        return redirect()->route('sections.index')->with('success', localize('global.section_updated_successfully.'));
     }
 
     /**
@@ -73,6 +81,7 @@ class SectionController extends Controller
      */
     public function destroy(Section $section)
     {
-        //
+        $section->delete();
+        return redirect()->route('sections.index')->with('success', localize('global.section_deleted_successfully.'));
     }
 }

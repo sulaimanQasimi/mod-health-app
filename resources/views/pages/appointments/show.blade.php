@@ -192,7 +192,7 @@
 
                                                 </select>
                                                 <label
-                                                    for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
+                                                    for="description{{ $appointment->id }}">{{ localize('global.description_with_diaseases') }}</label>
                                                 <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
                                                 <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
                                                 <div class="form-group">
@@ -328,12 +328,13 @@
 
                                             <!-- Add other diagnosis form fields as needed -->
                                             <div class="form-group" id="prescription-items">
-                                                <label>{{ localize('global.description') }}</label>
+                                                
                                                 <div id="prescription-input-container">
                                                     <div class="row">
                                                         <div class="col-md-2">
+                                                            <label class="form-group mb-2">{{ localize('global.medicine_type') }}</label>
                                                             <select class="form-control select2"
-                                                                name="medicine_type_id[]">
+                                                                name="medicine_type_id[]" required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicineTypes as $value)
@@ -345,8 +346,9 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="col-md-3">
-                                                            <select class="form-control select2" name="medicine_id[]">
+                                                        <div class="col-md-2">
+                                                            <label class="form-group mb-2">{{ localize('global.medicine_name') }}</label>
+                                                            <select class="form-control select2" name="medicine_id[]" required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicines as $value)
@@ -358,20 +360,36 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="col-md-3">
-                                                            <input type="text" class="form-control mt-2"
-                                                                name="dosage[]" placeholder="Dosage">
+                                                        <div class="col-md-2">
+                                                            <label class="form-group mb-2">{{ localize('global.usage_type') }}</label>
+                                                            <select class="form-control select2 mt-2" name="usage_type_id[]" required>
+                                                                <option value="">{{ localize('global.select') }}
+                                                                </option>
+                                                                @foreach ($medicineUsageTypes as $value)
+                                                                    <option value="{{ $value->id }}"
+                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        {{ $value->name }}
+
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                         <div class="col-md-2">
+                                                            <label class="form-group">{{ localize('global.dosage') }}</label>
                                                             <input type="text" class="form-control mt-2"
-                                                                name="frequency[]" placeholder="Frequency">
+                                                                name="dosage[]" placeholder="Dosage" required>
                                                         </div>
                                                         <div class="col-md-2">
+                                                            <label class="form-group">{{ localize('global.frequency') }}</label>
                                                             <input type="text" class="form-control mt-2"
-                                                                name="amount[]" placeholder="Amount">
+                                                                name="frequency[]" placeholder="Frequency" required>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <input type="hidden" class="form-control mt-2"
+                                                            <label class="form-group">{{ localize('global.amount') }}</label>
+                                                            <input type="text" class="form-control mt-2"
+                                                                name="amount[]" placeholder="Amount" required>
+                                                        </div>
+                                                        <div class="col-md-2">                                                            <input type="hidden" class="form-control mt-2"
                                                                 name="is_delivered[]" value="0">
                                                         </div>
                                                     </div>
@@ -2088,6 +2106,20 @@
             medicineDropdown.appendChild(medicineOption);
     @endforeach
 
+    // Create the medicine dropdown
+    const medicineUsageDropdown = document.createElement('select');
+    medicineUsageDropdown.className = 'form-control select2';
+    medicineUsageDropdown.name = 'usage_type_id[]';
+
+    // Append the options to the medicine dropdown
+    var medicineUsageOption = '';
+    @foreach ($medicineUsageTypes as $value)
+            medicineUsageOption = document.createElement('option');
+            medicineUsageOption.value = '{{ $value->id }}';
+            medicineUsageOption.textContent = '{{ $value->name }}';
+            medicineUsageDropdown.appendChild(medicineUsageOption);
+    @endforeach
+
     // Create the dosage input field
     const dosageInput = document.createElement('input');
     dosageInput.type = 'text';
@@ -2120,9 +2152,11 @@
     const typeCol = document.createElement('div');
     typeCol.className = 'col-md-2';
     const medicineCol = document.createElement('div');
-    medicineCol.className = 'col-md-3';
+    medicineCol.className = 'col-md-2';
+    const medicineUsageCol = document.createElement('div');
+    medicineUsageCol.className = 'col-md-2';
     const dosageCol = document.createElement('div');
-    dosageCol.className = 'col-md-3';
+    dosageCol.className = 'col-md-2';
     const frequencyCol = document.createElement('div');
     frequencyCol.className = 'col-md-2';
     const amountCol = document.createElement('div');
@@ -2133,6 +2167,7 @@
     // Append the input fields to their respective column divs
     typeCol.appendChild(typeDropdown);
     medicineCol.appendChild(medicineDropdown);
+    medicineUsageCol.appendChild(medicineUsageDropdown);
     dosageCol.appendChild(dosageInput);
     frequencyCol.appendChild(frequencyInput);
     amountCol.appendChild(amountInput);
@@ -2141,6 +2176,7 @@
     // Append the column divs to the new row div
     newRow.appendChild(typeCol);
     newRow.appendChild(medicineCol);
+    newRow.appendChild(medicineUsageCol);
     newRow.appendChild(dosageCol);
     newRow.appendChild(frequencyCol);
     newRow.appendChild(amountCol);

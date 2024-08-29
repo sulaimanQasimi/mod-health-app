@@ -68,7 +68,8 @@
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
                                     <th>{{ localize('global.type') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.name') }}</th>
+                                    <th>{{ localize('global.usage_type') }}</th>
                                     <th>{{ localize('global.dosage') }}</th>
                                     <th>{{ localize('global.frequency') }}</th>
                                     <th>{{ localize('global.amount') }}</th>
@@ -80,8 +81,9 @@
                                 @foreach ($prescription->prescriptionItems as $item)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->medicine_id }}</td>
-                                    <td>{{ $item->medicine_type_id }}</td>
+                                    <td>{{ $item->medicineType->type }}</td>
+                                    <td>{{ $item->medicine->name }}</td>
+                                    <td>{{ $item->usageType->name }}</td>
                                     <td>{{ $item->dosage }}</td>
                                     <td>{{ $item->frequency }}</td>
                                     <td>{{ $item->amount }}</td>

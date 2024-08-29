@@ -47,7 +47,7 @@ class BedController extends Controller
      */
     public function show(Bed $bed)
     {
-        //
+        return view('pages.beds.show', compact('bed'));
     }
 
     /**
@@ -55,7 +55,8 @@ class BedController extends Controller
      */
     public function edit(Bed $bed)
     {
-        //
+        $rooms = Room::all();
+        return view('pages.beds.edit', compact('bed', 'rooms'));
     }
 
     /**
@@ -63,7 +64,15 @@ class BedController extends Controller
      */
     public function update(Request $request, Bed $bed)
     {
-        //
+        $data = $request->validate([
+            'number' => 'required',
+            'room_id' => 'required',
+            'is_occupied' => 'nullable'
+        ]);
+
+        $bed->update($data);
+
+        return redirect()->route('beds.index')->with('success', localize('global.bed_updated_successfully.'));
     }
 
     /**
@@ -71,6 +80,7 @@ class BedController extends Controller
      */
     public function destroy(Bed $bed)
     {
-        //
+        $bed->delete();
+        return redirect()->route('beds.index')->with('success', localize('global.bed_deleted_successfully.'));
     }
 }

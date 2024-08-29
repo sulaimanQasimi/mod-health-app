@@ -13,7 +13,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
+use Illuminate\Support\Facades\DB;
+use Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 
 class PatientController extends Controller
 {
@@ -42,8 +47,8 @@ class PatientController extends Controller
 
     public function create()
     {
-
-        return view('pages.patients.create');
+        $relations = Relation::all();
+        return view('pages.patients.create',compact('relations'));
     }
 
     public function store(Request $request)
@@ -75,7 +80,8 @@ class PatientController extends Controller
             'type' => 'nullable',
             'id_card' => 'nullable',
             'job_category' => 'nullable',
-            'referred_by' => 'nullable'
+            'referred_by' => 'nullable',
+            'relation_id' => 'nullable'
         ]);
 
 
@@ -131,7 +137,8 @@ class PatientController extends Controller
             'type' => 'nullable',
             'id_card' => 'nullable',
             'job_category' => 'nullable',
-            'referred_by' => 'nullable'
+            'referred_by' => 'nullable',
+            'relation_id' => 'nullable'
 
         ]);
 
@@ -252,5 +259,180 @@ public function addImage(Request $request, $id)
         }elseif($tab_type == 'third'){
             return view('pages.patients.tab3',compact('recipients','provinces','districts','relations'));
         }
+    }
+
+
+    public function report()
+    {
+        $provinces = Province::all();
+        $districts = District::all();
+        $recipients = Recipient::all();
+        return view('pages.patients.reports.index', compact('provinces', 'districts', 'recipients'));
+    }
+    public function reportSearch(Request $request)
+    {
+        $query = DB::table('patients as p')
+        ->leftJoin('provinces as pr', 'p.province_id' , '=', 'pr.id')
+        ->leftJoin('districts as d', 'p.district_id' , '=', 'd.id')
+        ->leftJoin('recipients as r', 'p.referred_by' , '=', 'r.id')
+        ->select('p.id','p.name as patient_name','p.nid', 'p.id_card', 'p.referral_name', 'p.age', 'p.gender',
+        'p.job_category', 'p.type', 'r.name as referred_by', 'pr.name_dr as province_name','d.name_dr as district_name');
+
+        if ($request->filled('patient_name')) {
+            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('nid')) {
+            $query->where('p.nid', 'like', '%' . $request->nid . '%');
+        }
+
+        if ($request->filled('id_card')) {
+            $query->where('p.id_card', $request->id_card);
+        }
+        
+        if ($request->filled('referral_name')) {
+            $query->where('p.referral_name', 'like', '%' . $request->referral_name . '%');
+        }
+
+        if ($request->filled('job_category')) {
+            $query->where('p.job_category', $request->job_category);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('p.type', $request->type);
+        }
+
+        if ($request->filled('referred_by')) {
+            $query->where('p.referred_by', $request->referred_by);
+        }
+        if ($request->filled('age')) {
+            $query->where('p.age', $request->age);
+        }
+
+        if ($request->filled('gender')) {
+            $query->where('p.gender', $request->gender);
+        }
+
+        if ($request->filled('province_id')) {
+            $query->where('p.province_id', $request->province_id);
+        }
+
+        if ($request->filled('district_id')) {
+            $query->where('p.district_id', $request->district_id);
+        }
+
+      
+
+        $items = $query->get();
+    return view('pages.patients.reports.report', ['items' => $items]);
+
+    }
+
+    
+    public function exportReport(Request $request)
+    {
+
+        $data = json_decode($request->data, true);
+      
+        $items =  DB::table('patients as p')
+        ->leftJoin('provinces as pr', 'p.province_id' , '=', 'pr.id')
+        ->leftJoin('districts as d', 'p.district_id' , '=', 'd.id')
+        ->leftJoin('recipients as r', 'p.referred_by' , '=', 'r.id')
+        ->select('p.id','p.name as patient_name','p.nid', 'p.id_card', 'p.referral_name', 'p.age', 'p.gender',
+        'p.job_category', 'p.type', 'r.name as referred_by', 'pr.name_dr as province_name','d.name_dr as district_name')
+        ->whereIn('p.id', $data)->get();
+        $reader = new Xlsx();
+        $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        $html = view('pages.patients.reports.pdf_report',  ['items' => $items])->render();
+        if ($request->type == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('pdf_report.pdf', 'D');
+        }else {
+            $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
+            $sheet = $spreadsheet->getActiveSheet();
+            $row = 3;
+
+            foreach ($items as $index => $item) {
+
+
+                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                $sheet->getColumnDimension('A')->setWidth(5);
+                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('C')->setWidth(20);
+                $sheet->getColumnDimension('D')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('F')->setWidth(20);
+                $sheet->getColumnDimension('G')->setWidth(20);
+                $sheet->getColumnDimension('H')->setWidth(20);
+                $sheet->getColumnDimension('I')->setWidth(20);
+                $sheet->getColumnDimension('J')->setWidth(20);
+                $sheet->getColumnDimension('K')->setWidth(20);
+                $sheet->getColumnDimension('L')->setWidth(20);
+                $styleArray = array(
+                    'font' => array(
+                        'name' => 'B Nazanin',
+                        'color' => 15,
+                        'bold' => true
+
+                    ),
+                );
+
+                $gender = '';
+                if ($item->gender == '0') {
+                    $gender = 'مرد';
+                } else {
+                    $gender = 'زن';
+                }
+
+                $job_category = '';
+                if ($item->job_category == '0') {
+                    $job_category = 'نظامی';
+                } else {
+                    $job_category = 'ملکی';
+                }
+
+                $type = '';
+                if ($item->type == '0') {
+                    $type = 'وزارت دفاع ملی';
+                } elseif($item->type == '1') {
+                    $type = 'سایر دارات';
+                } else{
+                    $type = 'اعضای فامیل و سایرین';
+                }
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $item->nid);
+                    $sheet->setCellValue('D' . $row . '', $item->id_card);
+                    $sheet->setCellValue('E' . $row . '', $item->referral_name);
+                    $sheet->setCellValue('F' . $row . '', $item->age);
+                    $sheet->setCellValue('G' . $row . '', $gender);
+                    $sheet->setCellValue('H' . $row . '', $job_category);
+                    $sheet->setCellValue('I' . $row . '', $type);
+                    $sheet->setCellValue('J' . $row . '', $item->referred_by);
+                    $sheet->setCellValue('K' . $row . '', $item->province_name);
+                    $sheet->setCellValue('L' . $row . '', $item->district_name);
+                    
+                $row++;
+            }
+
+return $this->exportResponse($spreadsheet);
+}
+    }
+
+
+    public function exportResponse($spreadsheet){
+        $writer = new WriterXlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+
     }
 }

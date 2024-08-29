@@ -22,6 +22,7 @@
                                     <th>{{ localize('global.requested_department') }}</th>
                                     <th>{{ localize('global.blood_group') }}</th>
                                     <th>{{ localize('global.rh') }}</th>
+                                    <th>{{ localize('global.blood_type') }}</th>
                                     <th>{{ localize('global.quantity') }}</th>
                                     <th>{{ localize('global.status') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
@@ -52,6 +53,7 @@
                                             <span class="bx bx-minus-circle text-danger"></span>
                                         @endif
                                         </td>
+                                        <td>{{ $bloodRequest->type }}</td>
                                         <td>{{ $bloodRequest->quantity }}</td>
                                         <td>
                                             {{$bloodRequest->status}}

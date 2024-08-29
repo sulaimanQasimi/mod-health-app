@@ -36,7 +36,19 @@
                                     <td>{{ $branch->name }}</td>
                                     <td>{{ $branch->address }}</td>
                                     <td>
-                                        {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDiagnoseModal{{ $branch->id }}">Create Diagnose</button> --}}
+                                        <div class="d-flex">
+                                            <a href="{{ route('branches.edit', $branch) }}">
+                                                <i class="bx bx-message-edit"></i></a>
+                                                <a href="{{ route('branches.destroy', $branch) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$branch->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
+
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$branch->id}}" action="{{ route('branches.destroy', $branch) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

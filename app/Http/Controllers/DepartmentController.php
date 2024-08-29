@@ -46,7 +46,7 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        //
+        return view('pages.departments.show', compact('department'));
     }
 
     /**
@@ -54,7 +54,8 @@ class DepartmentController extends Controller
      */
     public function edit(Department $department)
     {
-        //
+        $branches = Branch::all();
+        return view('pages.departments.edit', compact('department', 'branches'));
     }
 
     /**
@@ -62,7 +63,14 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, Department $department)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'branch_id' => 'required',
+        ]);
+
+        $department->update($data);
+
+        return redirect()->route('departments.index')->with('success', localize('global.department_updated_successfully.'));
     }
 
     /**
@@ -70,6 +78,7 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        //
+        $department->delete();
+        return redirect()->route('departments.index')->with('success', localize('global.department_deleted_successfully.'));
     }
 }

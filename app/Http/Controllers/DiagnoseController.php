@@ -62,7 +62,7 @@ class DiagnoseController extends Controller
      */
     public function edit(Diagnose $diagnose)
     {
-        //
+        return view('pages.diagnoses.edit',compact('diagnose'));
     }
 
     /**
@@ -70,7 +70,23 @@ class DiagnoseController extends Controller
      */
     public function update(Request $request, Diagnose $diagnose)
     {
-        //
+        $data = $request->validate([
+            'description' => 'required',
+            'patient_id' => 'required',
+            'appointment_id' => 'required',
+            'type' => 'required',
+            'bp' => 'nullable',
+            'pr' => 'nullable',
+            'weight' => 'nullable',
+            't' => 'nullable',
+            'spo2' => 'nullable',
+            'pain' => 'nullable',
+        ]);
+
+        $diagnose->update($data);
+
+        return redirect()->route('appointments.index')->with('success', localize('global.diagnose_updated_successfully.'));
+
     }
 
     /**
@@ -78,7 +94,10 @@ class DiagnoseController extends Controller
      */
     public function destroy(Diagnose $diagnose)
     {
-        //
+        $item = Diagnose::findOrFail($diagnose->id);
+        $item->delete();
+        return redirect()->back()->with('success', localize('global.diagnose_deleted_successfully.'));
+
     }
 
     public function createDiagnose(Appointment $appointment)

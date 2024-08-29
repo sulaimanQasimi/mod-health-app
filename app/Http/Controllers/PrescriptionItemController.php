@@ -25,4 +25,25 @@ class PrescriptionItemController extends Controller
         return redirect()->back()->with('success', localize('global.prescription_item_status_updated_successfully.'));
 
     }
+
+    public function deleteItem($id)
+{
+    $item = PrescriptionItem::findOrFail($id);
+    $prescription = $item->prescription;
+
+    $item->delete();
+
+    // Check if the prescription has any other items
+    if ($prescription->prescriptionItems()->count() === 0) {
+        $prescription->delete();
+        return redirect()->back()->with('success', localize('global.prescription_deleted_successfully.'));
+    }
+
+    return redirect()->back()->with('success', localize('global.prescription_item_deleted_successfully.'));
+}
+
+    public function updateItem($id)
+    {
+        $item = PrescriptionItem::findOrFail($id);
+    }
 }

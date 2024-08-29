@@ -37,9 +37,16 @@
                                         <td>{{ $foodType->name }}</td>
                                         <td>
                                             <a href="{{ route('food_types.edit', $foodType) }}"><i
-                                                    class="bx bx-edit"></i></a>
-                                            <a href="{{ route('food_types.destroy', $foodType) }}"><i
-                                                    class="bx bx-trash text-danger"></i></a>
+                                                    class="bx bx-message-edit"></i></a>
+                                                    <a href="{{ route('food_types.destroy', $foodType) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$foodType->id}}').submit(); }">
+                                                        <i class="bx bx-trash text-danger"></i>
+                                                    </a>
+
+                                                    <!-- Using a <form> element -->
+                                                    <form id="delete-form-{{$foodType->id}}" action="{{ route('food_types.destroy', $foodType) }}" method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
                                         </td>
                                     </tr>
                                 @endforeach

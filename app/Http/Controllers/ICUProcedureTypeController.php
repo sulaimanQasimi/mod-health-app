@@ -80,7 +80,7 @@ class ICUProcedureTypeController extends Controller
     {
         $iCUProcedureType->delete();
 
-        return redirect()->route('icu-procedure-types.index')
+        return redirect()->route('procedure_types.index')
                         ->with('success',localize('global.icu_procedure_type_deleted_successfully.'));
     }
 }

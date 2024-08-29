@@ -194,7 +194,7 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-2">
                                                         <select class="form-control select2" name="medicine_id[]">
                                                             <option value="">{{ localize('global.select') }}
                                                             </option>
@@ -207,7 +207,20 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-2">
+                                                        <select class="form-control select2" name="usage_type_id[]">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            @foreach ($medicineUsageTypes as $value)
+                                                                <option value="{{ $value->id }}"
+                                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    {{ $value->name }}
+
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-2">
                                                         <input type="text" class="form-control mt-2"
                                                             name="dosage[]" placeholder="Dosage">
                                                     </div>
@@ -928,6 +941,20 @@ var medicineOption = '';
         medicineDropdown.appendChild(medicineOption);
 @endforeach
 
+// Create the medicine dropdown
+const medicineUsageDropdown = document.createElement('select');
+    medicineUsageDropdown.className = 'form-control select2';
+    medicineUsageDropdown.name = 'usage_type_id[]';
+
+    // Append the options to the medicine dropdown
+    var medicineUsageOption = '';
+    @foreach ($medicineUsageTypes as $value)
+            medicineUsageOption = document.createElement('option');
+            medicineUsageOption.value = '{{ $value->id }}';
+            medicineUsageOption.textContent = '{{ $value->name }}';
+            medicineUsageDropdown.appendChild(medicineUsageOption);
+    @endforeach
+
 // Create the dosage input field
 const dosageInput = document.createElement('input');
 dosageInput.type = 'text';
@@ -956,35 +983,39 @@ deliveryInput.className = 'form-control mt-2';
 deliveryInput.name = 'is_delivered[]';
 deliveryInput.value = 0;
 
-// Create the column divs
-const typeCol = document.createElement('div');
-typeCol.className = 'col-md-2';
-const medicineCol = document.createElement('div');
-medicineCol.className = 'col-md-3';
-const dosageCol = document.createElement('div');
-dosageCol.className = 'col-md-3';
-const frequencyCol = document.createElement('div');
-frequencyCol.className = 'col-md-2';
-const amountCol = document.createElement('div');
-amountCol.className = 'col-md-2';
-const deliveryCol = document.createElement('div');
-deliveryCol.className = 'col-md-2';
+    // Create the column divs
+    const typeCol = document.createElement('div');
+    typeCol.className = 'col-md-2';
+    const medicineCol = document.createElement('div');
+    medicineCol.className = 'col-md-2';
+    const medicineUsageCol = document.createElement('div');
+    medicineUsageCol.className = 'col-md-2';
+    const dosageCol = document.createElement('div');
+    dosageCol.className = 'col-md-2';
+    const frequencyCol = document.createElement('div');
+    frequencyCol.className = 'col-md-2';
+    const amountCol = document.createElement('div');
+    amountCol.className = 'col-md-2';
+    const deliveryCol = document.createElement('div');
+    deliveryCol.className = 'col-md-2';
 
-// Append the input fields to their respective column divs
-typeCol.appendChild(typeDropdown);
-medicineCol.appendChild(medicineDropdown);
-dosageCol.appendChild(dosageInput);
-frequencyCol.appendChild(frequencyInput);
-amountCol.appendChild(amountInput);
-deliveryCol.appendChild(deliveryInput);
+    // Append the input fields to their respective column divs
+    typeCol.appendChild(typeDropdown);
+    medicineCol.appendChild(medicineDropdown);
+    medicineUsageCol.appendChild(medicineUsageDropdown);
+    dosageCol.appendChild(dosageInput);
+    frequencyCol.appendChild(frequencyInput);
+    amountCol.appendChild(amountInput);
+    deliveryCol.appendChild(deliveryInput);
 
-// Append the column divs to the new row div
-newRow.appendChild(typeCol);
-newRow.appendChild(medicineCol);
-newRow.appendChild(dosageCol);
-newRow.appendChild(frequencyCol);
-newRow.appendChild(amountCol);
-newRow.appendChild(deliveryCol);
+    // Append the column divs to the new row div
+    newRow.appendChild(typeCol);
+    newRow.appendChild(medicineCol);
+    newRow.appendChild(medicineUsageCol);
+    newRow.appendChild(dosageCol);
+    newRow.appendChild(frequencyCol);
+    newRow.appendChild(amountCol);
+    newRow.appendChild(deliveryCol);
 
 // Append the new row div to the prescription input container
 prescriptionContainer.appendChild(newRow);

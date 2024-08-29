@@ -412,6 +412,26 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
+        Permission::create([
+            'id' => 41,
+            'name' => 'show-medicine-usage-menu',
+            'name_dr' => 'نمایش مینو طروق تطبیق ادویه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::create([
+            'id' => 42,
+            'name' => 'show-disease-menu',
+            'name_dr' => 'نمایش مینو امراض',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
 
     }
 }

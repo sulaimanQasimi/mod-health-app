@@ -24,8 +24,9 @@ class MedicineSeeder extends Seeder
                 'id' => $i,
                 'name' => $faker->medicine,
                 'medicine_type_id' => $faker->numberBetween(1, 5),
-                'created_at' => $faker->dateTimeBetween('2023-06-01', '2024-06-30')->format('Y-m-d H:i:s'),
-                'updated_at' => $faker->dateTimeBetween('2023-06-01', '2024-06-30')->format('Y-m-d H:i:s'),
+                'disease_id' => '["1"]',
+                'created_at' => '2020-06-20 06:44:57',
+                'updated_at' => '2020-06-20 06:44:57',
             ];
         }
 

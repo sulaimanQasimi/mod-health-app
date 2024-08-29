@@ -39,7 +39,16 @@
                                             {{-- <a href="{{ route('medicine_types.show', $medicineType) }}"><i
                                                     class="bx bx-show-alt"></i></a> --}}
                                             <a href="{{ route('medicine_types.edit', $medicineType) }}"><i
-                                                    class="bx bx-message-square-edit"></i></a>
+                                                    class="bx bx-message-edit"></i></a>
+                                            <a href="{{ route('medicine_types.destroy', $medicineType) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$medicineType->id}}').submit(); }">
+                                                <i class="bx bx-trash text-danger"></i>
+                                            </a>
+
+                                            <!-- Using a <form> element -->
+                                            <form id="delete-form-{{$medicineType->id}}" action="{{ route('medicine_types.destroy', $medicineType) }}" method="POST" style="display: none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

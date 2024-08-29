@@ -58,6 +58,11 @@
                             <div>{{ localize('global.all_appointments') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('patients.report') ? 'active' : '' }}">
+                        <a href="{{ route('patients.report') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan
@@ -510,10 +515,24 @@
                         </a>
                     </li>
                     @endcan
+                    @can('show-medicine-usage-menu')
+                    <li class="menu-item {{ Route::is('medicine_usage_types.*') ? 'active' : '' }}">
+                        <a href="{{ route('medicine_usage_types.index') }}" class="menu-link">
+                            <div>{{ localize('global.medicine_usage_types') }}</div>
+                        </a>
+                    </li>
+                    @endcan
                     @can('show-food-types-menu')
                     <li class="menu-item {{ Route::is('food_types.*') ? 'active' : '' }}">
                         <a href="{{ route('food_types.index') }}" class="menu-link">
                             <div>{{ localize('global.food_types') }}</div>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('show-disease-menu')
+                    <li class="menu-item {{ Route::is('diseases.*') ? 'active' : '' }}">
+                        <a href="{{ route('diseases.index') }}" class="menu-link">
+                            <div>{{ localize('global.diseases') }}</div>
                         </a>
                     </li>
                     @endcan

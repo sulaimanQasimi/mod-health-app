@@ -29,6 +29,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DailyIcuProgressController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
+use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FoodTypeController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\LabItemController;
 use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
+use App\Http\Controllers\MedicineUsageTypeController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PACUController;
 use App\Http\Controllers\PatientComplaintController;
@@ -145,6 +147,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
         Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
         Route::get('get-tab', [PatientController::class, 'getTab'])->name('get-tab');
+        Route::get('report', [PatientController::class, 'report'])->name('report');
+        Route::post('report-search', [PatientController::class, 'ReportSearch'])->name('report-search');
+        Route::post('export-report', [PatientController::class, 'exportReport'])->name('export-report');
     });
 
     // Departments routes
@@ -155,7 +160,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [DepartmentController::class, 'store'])->name('store');
         Route::get('edit/{department}', [DepartmentController::class, 'edit'])->name('edit');
         Route::put('update/{department}', [DepartmentController::class, 'update'])->name('update');
-        Route::get('destroy/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
     });
 
     //Sections routes
@@ -166,7 +171,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [SectionController::class, 'store'])->name('store');
         Route::get('edit/{section}', [SectionController::class, 'edit'])->name('edit');
         Route::put('update/{section}', [SectionController::class, 'update'])->name('update');
-        Route::get('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{section}', [SectionController::class, 'destroy'])->name('destroy');
     });
 
     // Rooms routes
@@ -177,7 +182,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [FloorController::class, 'store'])->name('store');
         Route::get('edit/{floor}', [FloorController::class, 'edit'])->name('edit');
         Route::put('update/{floor}', [FloorController::class, 'update'])->name('update');
-        Route::get('destroy/{floor}', [FloorController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{floor}', [FloorController::class, 'destroy'])->name('destroy');
     });
 
     // Rooms routes
@@ -188,7 +193,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [RoomController::class, 'store'])->name('store');
         Route::get('edit/{room}', [RoomController::class, 'edit'])->name('edit');
         Route::put('update/{room}', [RoomController::class, 'update'])->name('update');
-        Route::get('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{room}', [RoomController::class, 'destroy'])->name('destroy');
     });
 
     // Beds routes
@@ -199,7 +204,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [BedController::class, 'store'])->name('store');
         Route::get('edit/{bed}', [BedController::class, 'edit'])->name('edit');
         Route::put('update/{bed}', [BedController::class, 'update'])->name('update');
-        Route::get('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{bed}', [BedController::class, 'destroy'])->name('destroy');
     });
 
     // Hospitalizations routes
@@ -225,6 +230,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [UnderReviewController::class, 'store'])->name('store');
         Route::get('edit/{underReview}', [UnderReviewController::class, 'edit'])->name('edit');
         Route::put('update/{underReview}', [UnderReviewController::class, 'update'])->name('update');
+        Route::put('updateUnderReview/{underReview}', [UnderReviewController::class, 'updateUnderReview'])->name('updateUnderReview');
         Route::get('destroy/{underReview}', [UnderReviewController::class, 'destroy'])->name('destroy');
     });
 
@@ -346,7 +352,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [LabTypeSectionController::class, 'store'])->name('store');
         Route::get('edit/{labTypeSection}', [LabTypeSectionController::class, 'edit'])->name('edit');
         Route::put('update/{labTypeSection}', [LabTypeSectionController::class, 'update'])->name('update');
-        Route::get('destroy/{labTypeSection}', [LabTypeSectionController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{labTypeSection}', [LabTypeSectionController::class, 'destroy'])->name('destroy');
     });
 
     // Laboratory test types routes
@@ -357,18 +363,20 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [LabTypeController::class, 'store'])->name('store');
         Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
         Route::get('updateStatus/{id}/update-status', [LabItemController::class, 'updateStatus'])->name('updateStatus');
+        Route::get('deleteItem/{id}/delete-item', [LabItemController::class, 'deleteItem'])->name('deleteItem');
 
     });
 
     Route::prefix('prescription_items')->name('prescription_items.')->group(function () {
         Route::get('getItems/{id}', [PrescriptionItemController::class, 'getItems'])->name('getItems');
         Route::get('changeStatus/{id}/update-status', [PrescriptionItemController::class, 'changeStatus'])->name('changeStatus');
+        Route::get('deleteItem/{id}/delete-item', [PrescriptionItemController::class, 'deleteItem'])->name('deleteItem');
 
     });
 
@@ -378,9 +386,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [BranchController::class, 'create'])->name('create');
         Route::get('show/{branch}', [BranchController::class, 'show'])->name('show');
         Route::post('store', [BranchController::class, 'store'])->name('store');
-        // Route::get('edit/{prescription}', [BranchController::class, 'edit'])->name('edit');
-        // Route::put('update/{prescription}', [BranchController::class, 'update'])->name('update');
-        // Route::get('destroy/{prescription}', [BranchController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{branch}', [BranchController::class, 'edit'])->name('edit');
+        Route::put('update/{branch}', [BranchController::class, 'update'])->name('update');
+        Route::delete('destroy/{branch}', [BranchController::class, 'destroy'])->name('destroy');
     });
 
     // Consultations routes
@@ -413,7 +421,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [OperationTypeController::class, 'store'])->name('store');
         Route::get('edit/{operationType}', [OperationTypeController::class, 'edit'])->name('edit');
         Route::put('update/{operationType}', [OperationTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Operations routes
@@ -480,7 +488,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [ICUProcedureTypeController::class, 'store'])->name('store');
         Route::get('edit/{iCUProcedureType}', [ICUProcedureTypeController::class, 'edit'])->name('edit');
         Route::put('update/{iCUProcedureType}', [ICUProcedureTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{iCUProcedureType}', [ICUProcedureTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{iCUProcedureType}', [ICUProcedureTypeController::class, 'destroy'])->name('destroy');
 
     });
 
@@ -507,6 +515,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [AnesthesiaController::class, 'store'])->name('store');
         Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
+        Route::put('updateAnesthesia/{anesthesia}', [AnesthesiaController::class, 'updateAnesthesia'])->name('updateAnesthesia');
         Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
         Route::get('report', [AnesthesiaController::class, 'report'])->name('report');
         Route::post('report-search', [AnesthesiaController::class, 'ReportSearch'])->name('report-search');
@@ -521,7 +530,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [MedicineTypeController::class, 'store'])->name('store');
         Route::get('edit/{medicineType}', [MedicineTypeController::class, 'edit'])->name('edit');
         Route::put('update/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Medicines routes
@@ -532,7 +541,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [MedicineController::class, 'store'])->name('store');
         Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
         Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
-        Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
     });
 
     // Daily ICU Progress routes
@@ -554,7 +563,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [FoodTypeController::class, 'store'])->name('store');
         Route::get('edit/{foodType}', [FoodTypeController::class, 'edit'])->name('edit');
         Route::put('update/{foodType}', [FoodTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Blood bank routes
@@ -577,6 +586,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('export-report', [BloodBankController::class, 'exportReport'])->name('export-report');
     });
 
+
     // Advices routes
     Route::prefix('advices')->name('advices.')->group(function () {
         Route::get('index', [AdviceController::class, 'index'])->name('index');
@@ -586,6 +596,28 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{advice}', [AdviceController::class, 'edit'])->name('edit');
         Route::put('update/{advice}', [AdviceController::class, 'update'])->name('update');
         Route::get('destroy/{advice}', [AdviceController::class, 'destroy'])->name('destroy');
+    });
+
+    // Medicine Usage Types routes
+    Route::prefix('medicine_usage_types')->name('medicine_usage_types.')->group(function () {
+        Route::get('index', [MedicineUsageTypeController::class, 'index'])->name('index');
+        Route::get('create', [MedicineUsageTypeController::class, 'create'])->name('create');
+        Route::get('show/{medicineUsageType}', [MedicineUsageTypeController::class, 'show'])->name('show');
+        Route::post('store', [MedicineUsageTypeController::class, 'store'])->name('store');
+        Route::get('edit/{medicineUsageType}', [MedicineUsageTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{medicineUsageType}', [MedicineUsageTypeController::class, 'update'])->name('update');
+        Route::delete('destroy/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Diseases routes
+    Route::prefix('diseases')->name('diseases.')->group(function () {
+        Route::get('index', [DiseaseController::class, 'index'])->name('index');
+        Route::get('create', [DiseaseController::class, 'create'])->name('create');
+        Route::get('show/{disease}', [DiseaseController::class, 'show'])->name('show');
+        Route::post('store', [DiseaseController::class, 'store'])->name('store');
+        Route::get('edit/{disease}', [DiseaseController::class, 'edit'])->name('edit');
+        Route::put('update/{disease}', [DiseaseController::class, 'update'])->name('update');
+        Route::delete('destroy/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

@@ -13,6 +13,7 @@ use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
+use App\Models\MedicineUsageType;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
@@ -127,7 +128,9 @@ class ICUController extends Controller
         $rooms = Room::all();
         $beds = Bed::all();
         $relations = Relation::all();
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations'));
+        $medicineUsageTypes = MedicineUsageType::all();
+
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));
     }
 
     /**

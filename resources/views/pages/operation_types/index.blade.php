@@ -36,13 +36,17 @@
                 <td>{{ $loop->iteration}}</td>
                 <td>{{ $operationType->name }}</td>
                 <td>
-                    <a href="{{ route('operation_types.show', $operationType) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('operation_types.edit', $operationType) }}"><i class="bx bx-message-square-edit"></i></a>
-                    {{-- <form action="{{ route('doctors.destroy', $doctor) }}" method="POST">
+                    {{-- <a href="{{ route('operation_types.show', $operationType) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('operation_types.edit', $operationType) }}"><i class="bx bx-message-edit"></i></a>
+                    <a href="{{ route('operation_types.destroy', $operationType) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$operationType->id}}').submit(); }">
+                        <i class="bx bx-trash text-danger"></i>
+                    </a>
+
+                    <!-- Using a <form> element -->
+                    <form id="delete-form-{{$operationType->id}}" action="{{ route('operation_types.destroy', $operationType) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit">Delete</button>
-                    </form> --}}
+                    </form>
                 </td>
             </tr>
         @endforeach

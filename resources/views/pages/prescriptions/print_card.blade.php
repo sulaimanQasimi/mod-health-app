@@ -13,9 +13,8 @@
     </title>
     <style>
         @font-face {
-            font-family: dir_font;
-
-            src: url('https://lms.imllab1989.com/public/assets/fonts/AdobeArabic-Regular.otf');
+        font-family: 'dir_font';
+        src: url('../public/assets/fonts/AdobeArabic-Regular.otf') format('opentype');
         }
 
         @page {
@@ -126,7 +125,7 @@
         <table width="100%" class="table table-bordered pdf-header">
             <tbody>
                 <tr>
-                    <td width="50%">
+                    <td width="20%">
                         <span class="title">Patient's Name:</span>
                         <span class="data">
                             {{ $patient->name }}
@@ -137,6 +136,24 @@
                         <span class="data">
                             {{ $appointment->doctor->name }}
                         </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" class="table table-bordered pdf-header">
+            <tbody>
+                <tr>
+                    <td width="20%">
+                        <span class="title">Advices</span>
+                    </td>
+                    <td width="50%">
+                        @foreach($appointment->advices as $advice)
+                        <li>
+                        <span class="data">
+                            {{ $advice->description }}
+                        </span>
+                        </li>
+                        @endforeach
                     </td>
                 </tr>
             </tbody>

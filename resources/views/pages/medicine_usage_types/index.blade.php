@@ -33,15 +33,15 @@
                                         <td>{{ $medicineUsageType->description }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('medicine_usage_types.edit', $medicineUsageType) }}" class="btn btn-primary btn-sm me-2">
-                                                    {{ localize('global.edit') }}
+                                                <a href="{{route('medicine_usage_types.edit', $medicineUsageType->id)}}"><span><i class="bx bx-message-edit"></i></span></a>
+                                                <a href="{{ route('medicine_usage_types.destroy', $medicineUsageType) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$medicineUsageType->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
                                                 </a>
-                                                <form action="{{ route('medicine_usage_types.destroy', $medicineUsageType) }}" method="POST">
+
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$medicineUsageType->id}}" action="{{ route('medicine_usage_types.destroy', $medicineUsageType) }}" method="POST" style="display: none;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">
-                                                        {{ localize('global.delete') }}
-                                                    </button>
                                                 </form>
                                             </div>
                                         </td>

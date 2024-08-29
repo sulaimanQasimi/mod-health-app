@@ -606,7 +606,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [MedicineUsageTypeController::class, 'store'])->name('store');
         Route::get('edit/{medicineUsageType}', [MedicineUsageTypeController::class, 'edit'])->name('edit');
         Route::put('update/{medicineUsageType}', [MedicineUsageTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Diseases routes

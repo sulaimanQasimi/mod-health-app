@@ -866,7 +866,8 @@ return [
     'room_details' => 'معلومات اطاق',
     'edit_room' => 'تصحیح اطاق',
     'edit_lab_type_section' => 'تصحیح نوعیت معاینات',
-    'edit_lab_type' => 'تصحیح نوعیت تست'
+    'edit_lab_type' => 'تصحیح نوعیت تست',
+    'edit_procedure_type' => 'تصحیح نوعیت پروسیجر'
 
 
 ];

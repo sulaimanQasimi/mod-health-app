@@ -35,18 +35,17 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $type->name }}</td>
                 <td>
-                    <a href="{{ route('procedure_types.show', $type) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('procedure_types.edit', $type) }}"><i class="bx bx-message-square-edit"></i></a>
-                    <!-- Using an <a> tag -->
-                    {{-- <a href="{{ route('rooms.destroy', $room) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
+                    {{-- <a href="{{ route('procedure_types.show', $type) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('procedure_types.edit', $type) }}"><i class="bx bx-message-edit"></i></a>
+                    <a href="{{ route('procedure_types.destroy', $type) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$type->id}}').submit(); }">
+                        <i class="bx bx-trash text-danger"></i>
                     </a>
 
                     <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('rooms.destroy', $room) }}" method="POST" style="display: none;">
+                    <form id="delete-form-{{$type->id}}" action="{{ route('procedure_types.destroy', $type) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
-                    </form> --}}
+                    </form>
                 </td>
             </tr>
         @endforeach

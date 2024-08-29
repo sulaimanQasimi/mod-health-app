@@ -869,7 +869,9 @@ return [
     'edit_lab_type' => 'تصحیح نوعیت تست',
     'edit_procedure_type' => 'تصحیح نوعیت پروسیجر',
     'edit_operation_type' => 'تصحیح نوعیت عملیات',
-    'edit_disease' => 'تصحیح مرض'
+    'edit_disease' => 'تصحیح مرض',
+    'address' => 'آدرس',
+    'edit_branch' => 'تصحیح شفاخانه'
 
 
 ];

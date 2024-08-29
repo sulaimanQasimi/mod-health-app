@@ -386,9 +386,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [BranchController::class, 'create'])->name('create');
         Route::get('show/{branch}', [BranchController::class, 'show'])->name('show');
         Route::post('store', [BranchController::class, 'store'])->name('store');
-        // Route::get('edit/{prescription}', [BranchController::class, 'edit'])->name('edit');
-        // Route::put('update/{prescription}', [BranchController::class, 'update'])->name('update');
-        // Route::get('destroy/{prescription}', [BranchController::class, 'destroy'])->name('destroy');
+        Route::get('edit/{branch}', [BranchController::class, 'edit'])->name('edit');
+        Route::put('update/{branch}', [BranchController::class, 'update'])->name('update');
+        Route::delete('destroy/{branch}', [BranchController::class, 'destroy'])->name('destroy');
     });
 
     // Consultations routes

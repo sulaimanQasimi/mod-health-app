@@ -47,6 +47,7 @@ class BranchController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'address' => 'required',
 
         ]);
 
@@ -57,6 +58,8 @@ class BranchController extends Controller
 
     public function destroy(Branch $branch)
     {
+        $branch->delete();
+        return redirect()->route('branches.index')->with('success', localize('global.branch_deleted_successfully.'));
 
     }
 }

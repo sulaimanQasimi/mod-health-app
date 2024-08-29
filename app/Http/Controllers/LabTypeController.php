@@ -46,12 +46,12 @@ class LabTypeController extends Controller
         return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_created_successfully.'));
     }
 
-    /**
+   /**
      * Display the specified resource.
      */
     public function show(LabType $labType)
     {
-        //
+        return view('pages.lab_types.show', compact('labType'));
     }
 
     /**
@@ -59,7 +59,10 @@ class LabTypeController extends Controller
      */
     public function edit(LabType $labType)
     {
-        //
+        $branches = Branch::all();
+        $labTypes = LabType::all();
+        $labTypeSections = LabTypeSection::all();
+        return view('pages.lab_types.edit', compact('labType', 'branches', 'labTypes', 'labTypeSections'));
     }
 
     /**
@@ -67,7 +70,16 @@ class LabTypeController extends Controller
      */
     public function update(Request $request, LabType $labType)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'branch_id' => 'required',
+            'section_id' => 'required',
+            'parent_id' => 'nullable',
+        ]);
+
+        $labType->update($data);
+
+        return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_updated_successfully.'));
     }
 
     /**
@@ -75,6 +87,9 @@ class LabTypeController extends Controller
      */
     public function destroy(LabType $labType)
     {
-        //
+        $labType->delete();
+
+        return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_deleted_successfully.'));
     }
+
 }

@@ -363,7 +363,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [LabTypeController::class, 'store'])->name('store');
         Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('lab_items')->name('lab_items.')->group(function () {

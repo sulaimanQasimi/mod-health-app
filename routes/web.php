@@ -541,7 +541,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [MedicineController::class, 'store'])->name('store');
         Route::get('edit/{medicine}', [MedicineController::class, 'edit'])->name('edit');
         Route::put('update/{medicine}', [MedicineController::class, 'update'])->name('update');
-        Route::get('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
     });
 
     // Daily ICU Progress routes

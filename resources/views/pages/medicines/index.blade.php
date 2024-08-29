@@ -37,19 +37,23 @@
                                     <tr>
                                         <td>{{ $medicine->id }}</td>
                                         <td>{{ $medicine->name }}</td>
-                                        <td>{{ $medicine->medicineType->type }}</td>
+                                        <td>{{ $medicine->medicineType->type ?? 'Null' }}</td>
                                         <td>
                                             @foreach ($medicine->getAssociatedDiseaseAttribute() as $disease)
                                                 <span class="badge bg-primary">{{ $disease->name }}</span>
                                             @endforeach
                                         </td>
                                         <td>
-                                            <a href="{{route('medicines.edit', $medicine->id)}}"><span><i class="bx bx-edit"></i></span></a>
-                                            {{-- <form action="{{ route('medicines.destroy', $medicine) }}" method="POST" style="display: inline-block;">
+                                            <a href="{{route('medicines.edit', $medicine->id)}}"><span><i class="bx bx-message-edit"></i></span></a>
+                                            <a href="{{ route('medicines.destroy', $medicine) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$medicine->id}}').submit(); }">
+                                                <i class="bx bx-trash text-danger"></i>
+                                            </a>
+
+                                            <!-- Using a <form> element -->
+                                            <form id="delete-form-{{$medicine->id}}" action="{{ route('medicines.destroy', $medicine) }}" method="POST" style="display: none;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this medicine?')">Delete</button>
-                                            </form> --}}
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -73,6 +73,8 @@ class MedicineTypeController extends Controller
      */
     public function destroy(MedicineType $medicineType)
     {
-        //
+        $medicineType->delete();
+
+        return redirect()->route('medicine_types.index')->with('success', localize('global.medicine_type_deleted_successfully.'));
     }
 }

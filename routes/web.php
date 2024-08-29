@@ -530,7 +530,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [MedicineTypeController::class, 'store'])->name('store');
         Route::get('edit/{medicineType}', [MedicineTypeController::class, 'edit'])->name('edit');
         Route::put('update/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Medicines routes

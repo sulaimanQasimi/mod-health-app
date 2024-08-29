@@ -352,7 +352,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [LabTypeSectionController::class, 'store'])->name('store');
         Route::get('edit/{labTypeSection}', [LabTypeSectionController::class, 'edit'])->name('edit');
         Route::put('update/{labTypeSection}', [LabTypeSectionController::class, 'update'])->name('update');
-        Route::get('destroy/{labTypeSection}', [LabTypeSectionController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{labTypeSection}', [LabTypeSectionController::class, 'destroy'])->name('destroy');
     });
 
     // Laboratory test types routes

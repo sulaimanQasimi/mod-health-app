@@ -864,7 +864,8 @@ return [
     'patient_status' => 'حالت مریض',
     'number_of_beds' => 'تعداد بستر ها',
     'room_details' => 'معلومات اطاق',
-    'edit_room' => 'تصحیح اطاق'
+    'edit_room' => 'تصحیح اطاق',
+    'edit_lab_type_section' => 'تصحیح نوعیت معاینات'
 
 
 ];

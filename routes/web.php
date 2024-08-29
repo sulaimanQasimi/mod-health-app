@@ -617,7 +617,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [DiseaseController::class, 'store'])->name('store');
         Route::get('edit/{disease}', [DiseaseController::class, 'edit'])->name('edit');
         Route::put('update/{disease}', [DiseaseController::class, 'update'])->name('update');
-        Route::get('destroy/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes

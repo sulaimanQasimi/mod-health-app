@@ -33,16 +33,17 @@
                                         <td>{{ $disease->description }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('diseases.edit', $disease) }}" class="btn btn-primary btn-sm me-2">
-                                                    {{ localize('global.edit') }}
-                                                </a>
-                                                <form action="{{ route('diseases.destroy', $disease) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">
-                                                        {{ localize('global.delete') }}
-                                                    </button>
-                                                </form>
+                                                <a href="{{ route('diseases.edit', $disease) }}">
+                                                    <i class="bx bx-message-edit"></i></a>
+                                                    <a href="{{ route('diseases.destroy', $disease) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$disease->id}}').submit(); }">
+                                                        <i class="bx bx-trash text-danger"></i>
+                                                    </a>
+
+                                                    <!-- Using a <form> element -->
+                                                    <form id="delete-form-{{$disease->id}}" action="{{ route('diseases.destroy', $disease) }}" method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
                                             </div>
                                         </td>
                                     </tr>

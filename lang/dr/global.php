@@ -868,7 +868,8 @@ return [
     'edit_lab_type_section' => 'تصحیح نوعیت معاینات',
     'edit_lab_type' => 'تصحیح نوعیت تست',
     'edit_procedure_type' => 'تصحیح نوعیت پروسیجر',
-    'edit_operation_type' => 'تصحیح نوعیت عملیات'
+    'edit_operation_type' => 'تصحیح نوعیت عملیات',
+    'edit_disease' => 'تصحیح مرض'
 
 
 ];

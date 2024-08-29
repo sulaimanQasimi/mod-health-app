@@ -563,7 +563,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [FoodTypeController::class, 'store'])->name('store');
         Route::get('edit/{foodType}', [FoodTypeController::class, 'edit'])->name('edit');
         Route::put('update/{foodType}', [FoodTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Blood bank routes

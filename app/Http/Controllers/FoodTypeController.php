@@ -76,6 +76,8 @@ class FoodTypeController extends Controller
      */
     public function destroy(FoodType $foodType)
     {
-        //
+        $foodType->delete();
+        return redirect()->route('food_types.index')
+                         ->with('success', 'Food type deleted successfully.');
     }
 }

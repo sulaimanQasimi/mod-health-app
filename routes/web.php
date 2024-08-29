@@ -421,7 +421,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [OperationTypeController::class, 'store'])->name('store');
         Route::get('edit/{operationType}', [OperationTypeController::class, 'edit'])->name('edit');
         Route::put('update/{operationType}', [OperationTypeController::class, 'update'])->name('update');
-        Route::get('destroy/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
     });
 
     // Operations routes

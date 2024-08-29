@@ -49,7 +49,7 @@ class OperationTypeController extends Controller
      */
     public function show(OperationType $operationType)
     {
-        //
+        return view('pages.operation_types.show', compact('operationType'));
     }
 
     /**
@@ -57,7 +57,9 @@ class OperationTypeController extends Controller
      */
     public function edit(OperationType $operationType)
     {
-        //
+        $branches = Branch::all();
+        $departments = Department::all();
+        return view('pages.operation_types.edit', compact('operationType', 'branches', 'departments'));
     }
 
     /**
@@ -65,7 +67,15 @@ class OperationTypeController extends Controller
      */
     public function update(Request $request, OperationType $operationType)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'branch_id' => 'required',
+            'department_id' => 'required',
+        ]);
+
+        $operationType->update($data);
+
+        return redirect()->route('operation_types.index')->with('success', localize('global.operation_type_updated_successfully.'));
     }
 
     /**
@@ -73,6 +83,8 @@ class OperationTypeController extends Controller
      */
     public function destroy(OperationType $operationType)
     {
-        //
+        $operationType->delete();
+
+        return redirect()->route('operation_types.index')->with('success', localize('global.operation_type_deleted_successfully.'));
     }
 }

@@ -10,9 +10,11 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.medicine_usage_types') }}</h5>
+                        @can('create-medicines-usage-types')
                         <a href="{{ route('medicine_usage_types.create') }}" class="btn btn-primary">
                             {{ localize('global.create_medicine_usage_type') }}
                         </a>
+                        @endcan
                     </div>
 
                     <div class="table-responsive text-nowrap">
@@ -33,11 +35,14 @@
                                         <td>{{ $medicineUsageType->description }}</td>
                                         <td>
                                             <div class="d-flex">
+                                                @can('edit-medicines-usage-types')
                                                 <a href="{{route('medicine_usage_types.edit', $medicineUsageType->id)}}"><span><i class="bx bx-message-edit"></i></span></a>
+                                                @endcan
+                                                @can('delete-medicines-usage-types')
                                                 <a href="{{ route('medicine_usage_types.destroy', $medicineUsageType) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$medicineUsageType->id}}').submit(); }">
                                                     <i class="bx bx-trash text-danger"></i>
                                                 </a>
-
+                                                @endcan
                                                 <!-- Using a <form> element -->
                                                 <form id="delete-form-{{$medicineUsageType->id}}" action="{{ route('medicine_usage_types.destroy', $medicineUsageType) }}" method="POST" style="display: none;">
                                                     @csrf

@@ -871,7 +871,8 @@ return [
     'edit_operation_type' => 'تصحیح نوعیت عملیات',
     'edit_disease' => 'تصحیح مرض',
     'address' => 'آدرس',
-    'edit_branch' => 'تصحیح شفاخانه'
+    'edit_branch' => 'تصحیح شفاخانه',
+    'edit_relation' => 'تصحیح ارتباط خانواده گی'
 
 
 ];

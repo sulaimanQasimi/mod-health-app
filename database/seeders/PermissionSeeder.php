@@ -922,6 +922,15 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
+        Permission::create([
+            'id' => 92,
+            'name' => 'show-recipients-menu',
+            'name_dr' => 'تصحیح ادارات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
 
     }
 }

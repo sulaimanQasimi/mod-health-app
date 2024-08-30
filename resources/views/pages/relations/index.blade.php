@@ -36,13 +36,18 @@
                 <td>{{ $loop->iteration}}</td>
                 <td>{{ $relation->name }}</td>
                 <td>
-                    <a href="{{ route('relations.show', $relation) }}"><i class="bx bx-show-alt"></i></a>
-                    <a href="{{ route('relations.edit', $relation) }}"><i class="bx bx-message-square-edit"></i></a>
-                    {{-- <form action="{{ route('doctors.destroy', $doctor) }}" method="POST">
+                    {{-- <a href="{{ route('relations.show', $relation) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    <a href="{{ route('relations.edit', $relation) }}"><i class="bx bx-message-edit"></i></a>
+                    <!-- Using an <a> tag -->
+                    <a href="{{ route('relations.destroy', $relation) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$relation->id}}').submit(); }">
+                        <i class="bx bx-trash text-danger"></i>
+                    </a>
+
+                    <!-- Using a <form> element -->
+                    <form id="delete-form-{{$relation->id}}" action="{{ route('relations.destroy', $relation) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit">Delete</button>
-                    </form> --}}
+                    </form>
                 </td>
             </tr>
         @endforeach

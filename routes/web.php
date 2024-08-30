@@ -330,7 +330,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [RelationController::class, 'store'])->name('store');
         Route::get('edit/{relation}', [RelationController::class, 'edit'])->name('edit');
         Route::put('update/{relation}', [RelationController::class, 'update'])->name('update');
-        Route::get('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
     });
 
     // Complaints routes

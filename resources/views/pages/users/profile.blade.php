@@ -27,9 +27,6 @@
                                         <h4>{{ $user->name_en }} ({{ $user->name_dr }})</h4>
                                         <ul
                                             class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
-                                            <li class="list-inline-item fw-semibold"><i
-                                                   class="bx bx-home"></i>{{ localize('global.sector') }}:
-                                                {{ isset($user->sector->name_dr) ? $user->sector->name_dr : '' }}</li>
                                             <li class="list-inline-item fw-semibold">
                                                 <i class="bx bx-calendar-alt"></i> {{ localize('global.joined_at') }}:
                                                 {{ \HanifHefaz\Dcter\Dcter::GregorianToHijri($user->created_at) }}

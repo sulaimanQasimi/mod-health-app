@@ -83,10 +83,10 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="referred_by">{{ localize('global.referred_by') }}</label>
-                <select class="form-control select2" name="referral_by" required>
+                <select class="form-control select2" name="referred_by" required>
                     <option value="">{{ localize('global.select') }}</option>
                     @foreach ($recipients as $value)
-                    <option  {{ old('referral_by',  (isset($patient) && $patient->referral_by  == $value->id) ? 'selected' : '')}} value="{{ $value->id }}" >
+                    <option  {{ old('referred_by',  (isset($patient) && $patient->referred_by  == $value->id) ? 'selected' : '')}} value="{{ $value->id }}" >
                         {{ $value->name }}</option>
                     @endforeach
                 </select>
@@ -111,7 +111,7 @@
                 <select class="form-control select2" name="district_id" required
                     id="district_id">
                     <option value="">{{ localize('global.select') }}</option>
-                    
+
                     @foreach ($districts as $value)
                     <option  {{ old('district_id',  (isset($patient) && $patient->district_id == $value->id) ? 'selected' : '')}} value="{{ $value->id }}" >
                         {{ $value->name_dr }}</option>

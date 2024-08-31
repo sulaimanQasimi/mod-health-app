@@ -59,7 +59,7 @@
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.referred_by') }}</h5>
                                     <div>
-                                        {{$patient->recipient->name}}
+                                        {{$patient->recipient->name ?? $patient->referral_name}}
                                     </div>
                             </div>
                             <div class="col-md-3">

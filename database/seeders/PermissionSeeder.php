@@ -941,6 +941,258 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
+        Permission::create([
+            'id' => 94,
+            'name' => 'print-patient-card',
+            'name_dr' => 'چاپ کارت مریضان',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 95,
+            'name' => 'create-appointment',
+            'name_dr' => 'ایجاد ملاقات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 96,
+            'name' => 'upload-patient-image',
+            'name_dr' => 'آپلود نمود عکس مریض',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 97,
+            'name' => 'update-appointment-status',
+            'name_dr' => 'تصحیح حالت ملاقات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 98,
+            'name' => 'add-diagnose',
+            'name_dr' => 'اضافه نمودن تشخیص',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 99,
+            'name' => 'add-prescription',
+            'name_dr' => 'اضافه نمودن نسخه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 100,
+            'name' => 'add-advice',
+            'name_dr' => 'اضافه نمودن توصیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 101,
+            'name' => 'add-patient-labs',
+            'name_dr' => 'اضافه نمودن معاینات به مریض',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 102,
+            'name' => 'add-consultations',
+            'name_dr' => 'اضافه نمودن مشوره ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 103,
+            'name' => 'refer-to-another-doctor',
+            'name_dr' => 'معرفی مریض به داکتر/دیپارتمنت دیگر',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 104,
+            'name' => 'patient-under-review',
+            'name_dr' => 'معرفی مریض به تحت مشاهده',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 105,
+            'name' => 'patient-hospitalization',
+            'name_dr' => 'بستر نمودن مریض',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 106,
+            'name' => 'refer-to-anesthesia',
+            'name_dr' => 'معرفی مریض به اناستیزی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 107,
+            'name' => 'refer-to-icu',
+            'name_dr' => 'معرفی مریض به ICU',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 108,
+            'name' => 'edit-diagnoses',
+            'name_dr' => 'تصحیح تشخیص ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 109,
+            'name' => 'delete-diagnoses',
+            'name_dr' => 'حذف تشخیص ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 110,
+            'name' => 'edit-advices',
+            'name_dr' => 'تصحیح توصیه ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 111,
+            'name' => 'delete-advices',
+            'name_dr' => 'حذف توصیه ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 112,
+            'name' => 'edit-consultations',
+            'name_dr' => 'تصحیح مشوره ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 113,
+            'name' => 'delete-consultations',
+            'name_dr' => 'حذف مشوره ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 114,
+            'name' => 'edit-under-reviews',
+            'name_dr' => 'تصحیح تحت مشاهده',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 115,
+            'name' => 'delete-under-reviews',
+            'name_dr' => 'حذف تحت مشاهده',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 116,
+            'name' => 'edit-hospitalizations',
+            'name_dr' => 'تصحیح بستر مریضان',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 117,
+            'name' => 'delete-hospitalizations',
+            'name_dr' => 'حذف بستر مریضان',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 118,
+            'name' => 'edit-anesthesias',
+            'name_dr' => 'تصحیح انستیزی ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 119,
+            'name' => 'delete-anesthesias',
+            'name_dr' => 'حذف انستیزی ها',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 120,
+            'name' => 'edit-icus',
+            'name_dr' => 'تصحیح ICU',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 121,
+            'name' => 'delete-icus',
+            'name_dr' => 'حذف ICU',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
 
     }
 }

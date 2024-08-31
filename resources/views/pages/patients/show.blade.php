@@ -89,15 +89,21 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-4">
+                                @can('print-patient-card')
                                 <a href="{{ route('patients.print-card', $patient->id) }}" target="_blank" class="btn btn-primary">{{localize('global.print_card')}}</a>
+                                @endcan
                             </div>
 
                             <div class="col-md-4">
+                                @can('create-appointment')
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">{{localize('global.assign_appointment')}}</button>
+                                @endcan
                             </div>
 
                             <div class="col-md-4">
+                                @can('upload-patient-image')
                                 <a  class="btn btn-success" href="{{route('patients.webcam',$patient)}}">{{localize('global.take_image')}}</a>
+                                @endcan
                             </div>
                         </div>
                     </div>

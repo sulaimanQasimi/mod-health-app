@@ -872,7 +872,8 @@ return [
     'edit_disease' => 'تصحیح مرض',
     'address' => 'آدرس',
     'edit_branch' => 'تصحیح شفاخانه',
-    'edit_relation' => 'تصحیح ارتباط خانواده گی'
+    'edit_relation' => 'تصحیح ارتباط خانواده گی',
+    'add' => 'اضافه نمودن'
 
 
 ];

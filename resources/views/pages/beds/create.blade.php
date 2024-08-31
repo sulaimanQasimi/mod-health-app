@@ -24,7 +24,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="room_id">{{ localize('global.related_department') }}</label>
+                                        <label for="room_id">{{ localize('global.related_room') }}</label>
                                         <select class="form-control select2" name="room_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($rooms as $value)

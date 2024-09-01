@@ -874,7 +874,8 @@ return [
     'edit_branch' => 'تصحیح شفاخانه',
     'edit_relation' => 'تصحیح ارتباط خانواده گی',
     'add' => 'اضافه نمودن',
-    'edit_prescription_details' => 'تصحیح جزیات نسخه'
+    'edit_prescription_details' => 'تصحیح جزیات نسخه',
+    'save_changes' => 'ثبت تغیرات'
 
 
 ];

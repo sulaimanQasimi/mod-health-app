@@ -1194,5 +1194,25 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:13'
         ]);
 
+        Permission::create([
+            'id' => 122,
+            'name' => 'edit-prescription',
+            'name_dr' => 'تصحیح نمودن نسخه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
+        Permission::create([
+            'id' => 123,
+            'name' => 'delete-prescription',
+            'name_dr' => 'حذف نمودن نسخه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
     }
 }

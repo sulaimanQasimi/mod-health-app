@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MedicineType;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use Illuminate\Http\Request;
@@ -42,8 +43,26 @@ class PrescriptionItemController extends Controller
     return redirect()->back()->with('success', localize('global.prescription_item_deleted_successfully.'));
 }
 
-    public function updateItem($id)
+public function edit(PrescriptionItem $item)
     {
-        $item = PrescriptionItem::findOrFail($id);
+        $medicineTypes = MedicineType::all(); // Fetch all medicine types
+        return view('pages.appointments.prescription_item_edit', compact('item', 'medicineTypes'));
+    }
+
+    public function update(Request $request, PrescriptionItem $item)
+    {
+        $request->validate([
+            'medicine_type_id' => 'required|exists:medicine_types,id',
+            'medicine_name' => 'required|string|max:255',
+            'dosage' => 'required|string|max:255',
+            'frequency' => 'required|string|max:255',
+            'amount' => 'required|numeric',
+            'is_delivered' => 'required|boolean',
+        ]);
+
+        // Update the item with new data
+        $item->update($request->all());
+
+        return redirect()->route('appointments.index')->with('success', 'Prescription item updated successfully.');
     }
 }

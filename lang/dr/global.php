@@ -873,7 +873,8 @@ return [
     'address' => 'آدرس',
     'edit_branch' => 'تصحیح شفاخانه',
     'edit_relation' => 'تصحیح ارتباط خانواده گی',
-    'add' => 'اضافه نمودن'
+    'add' => 'اضافه نمودن',
+    'edit_prescription_details' => 'تصحیح جزیات نسخه'
 
 
 ];

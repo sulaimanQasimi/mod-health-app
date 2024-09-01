@@ -35,9 +35,14 @@
                 </td>
                 <td>
                     @if($item->is_delivered == 0)
-                    <a href="{{ route('prescription_items.deleteItem', $item) }}" class="btn btn-sm btn-danger">
-                        <span class="bx bx-trash"></span>
-                    </a>
+                    @can('delete-prescription')
+                    <a href="{{ route('prescription_items.editItem', $item->id) }}"><span><i
+                        class="bx bx-message-edit"></i></span></a>
+                    @endcan
+                    @can('edit-prescription')
+                    <a href="{{ route('prescription_items.deleteItem', $item) }}"><span><i
+                        class="bx bx-trash text-danger"></i></span></a>
+                    @endcan
                     @endif
                 </td>
                 

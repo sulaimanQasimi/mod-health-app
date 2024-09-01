@@ -32,7 +32,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $disease->name }}</td>
-                                        <td>{{ $disease->description }}</td>
+                                        <td dir="ltr">{{ $disease->description }}</td>
                                         <td>
                                             <div class="d-flex">
                                                 @can('edit-diseases')
@@ -55,6 +55,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                        {{ $diseases->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

@@ -2033,9 +2033,15 @@
                                                             class="bx bx-edit"></i></span></a>
                                                 @endcan
                                                 @can('delete-icus')
-                                                <a href="{{ route('icus.destroy', $icu->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
+                                                <a href="{{ route('icus.destroy', $icu) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$icu->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
                                                 @endcan
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
 
                                             </td>
                                         </tr>

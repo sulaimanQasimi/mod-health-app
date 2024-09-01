@@ -1213,6 +1213,24 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
+        Permission::create([
+            'id' => 124,
+            'name' => 'edit-lab-items',
+            'name_dr' => 'تصحیح نمودن معاینات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 125,
+            'name' => 'delete-lab-items',
+            'name_dr' => 'حذف نمودن معاینات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
 
     }
 }

@@ -370,6 +370,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
         Route::get('updateStatus/{id}/update-status', [LabItemController::class, 'updateStatus'])->name('updateStatus');
         Route::get('deleteItem/{id}/delete-item', [LabItemController::class, 'deleteItem'])->name('deleteItem');
+        Route::get('editItem/{item}/edit-item', [LabItemController::class, 'edit'])->name('editItem');
+        Route::put('/lab-items/{item}', [LabItemController::class, 'update'])->name('updateItem');
 
     });
 

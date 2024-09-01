@@ -35,11 +35,11 @@
                 </td>
                 <td>
                     @if($item->is_delivered == 0)
-                    @can('delete-prescription')
+                    @can('edit-prescription')
                     <a href="{{ route('prescription_items.editItem', $item->id) }}"><span><i
                         class="bx bx-message-edit"></i></span></a>
                     @endcan
-                    @can('edit-prescription')
+                    @can('delete-prescription')
                     <a href="{{ route('prescription_items.deleteItem', $item) }}"><span><i
                         class="bx bx-trash text-danger"></i></span></a>
                     @endcan

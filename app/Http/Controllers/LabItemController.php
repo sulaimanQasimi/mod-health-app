@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lab;
 use App\Models\LabItem;
+use App\Models\LabType;
 use Illuminate\Http\Request;
 
 class LabItemController extends Controller
@@ -40,5 +41,22 @@ class LabItemController extends Controller
         }
 
         return redirect()->back()->with('success', localize('global.lab_item_deleted_successfully.'));
+    }
+
+    public function edit(LabItem $item)
+    {
+        $lab_types = LabType::all();
+        return view('pages.appointments.lab_item_edit', compact('item','lab_types'));
+    }
+
+    public function update(Request $request, LabItem $item)
+    {
+        $request->validate([
+            'lab_type_id' => 'required|string|max:255',
+        ]);
+
+        $item->update($request->all());
+
+        return redirect()->route('appointments.index')->with('success', 'Lab item updated successfully.');
     }
 }

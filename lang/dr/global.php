@@ -875,7 +875,8 @@ return [
     'edit_relation' => 'تصحیح ارتباط خانواده گی',
     'add' => 'اضافه نمودن',
     'edit_prescription_details' => 'تصحیح جزیات نسخه',
-    'save_changes' => 'ثبت تغیرات'
+    'save_changes' => 'ثبت تغیرات',
+    'edit_hospitalization' => 'تصحیح بستر برای مریض'
 
 
 ];

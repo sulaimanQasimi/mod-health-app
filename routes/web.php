@@ -216,10 +216,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [HospitalizationController::class, 'store'])->name('store');
         Route::get('edit/{hospitalization}', [HospitalizationController::class, 'edit'])->name('edit');
         Route::put('update/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
-        Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
         Route::get('report', [HospitalizationController::class, 'report'])->name('report');
         Route::post('report-search', [HospitalizationController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [HospitalizationController::class, 'exportReport'])->name('export-report');
+        Route::put('hospitalizations/{id}', [HospitalizationController::class, 'updateHospitalization'])->name('updateHospitalization');
     });
 
     // Under Review routes

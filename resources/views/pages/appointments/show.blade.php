@@ -1580,9 +1580,15 @@
                                                             class="bx bx-edit"></i></span></a>
                                                 @endcan
                                                 @can('delete-hospitalizations')
-                                                <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
+                                                <a href="{{ route('hospitalizations.destroy', $hospitalization) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
                                                 @endcan
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$hospitalization->id}}" action="{{ route('hospitalizations.destroy', $hospitalization) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
 
                                             </td>
                                         </tr>

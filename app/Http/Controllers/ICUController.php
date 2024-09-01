@@ -138,7 +138,7 @@ class ICUController extends Controller
      */
     public function edit(ICU $icu)
     {
-        //
+        return view('pages.icus.edit',compact('icu'));
     }
 
     /**
@@ -173,7 +173,20 @@ class ICUController extends Controller
      */
     public function destroy(ICU $icu)
     {
-        //
+        $icu->delete();
+        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.icu_deleted_successfully.'));
+
+    }
+
+    public function updateICU(Request $request, ICU $icu)
+    {
+        $data = $request->validate([
+            'description' => 'required',
+        ]);
+
+        $icu->update($data);
+
+        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.icu_updated_successfully.'));
     }
 
     public function report()

@@ -871,7 +871,12 @@ return [
     'edit_operation_type' => 'تصحیح نوعیت عملیات',
     'edit_disease' => 'تصحیح مرض',
     'address' => 'آدرس',
-    'edit_branch' => 'تصحیح شفاخانه'
+    'edit_branch' => 'تصحیح شفاخانه',
+    'edit_relation' => 'تصحیح ارتباط خانواده گی',
+    'add' => 'اضافه نمودن',
+    'edit_prescription_details' => 'تصحیح جزیات نسخه',
+    'save_changes' => 'ثبت تغیرات',
+    'edit_hospitalization' => 'تصحیح بستر برای مریض'
 
 
 ];

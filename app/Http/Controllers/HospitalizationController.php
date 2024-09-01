@@ -12,6 +12,8 @@ use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
 use App\Models\OperationType;
+use App\Models\Relation;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -153,7 +155,11 @@ class HospitalizationController extends Controller
      */
     public function edit(Hospitalization $hospitalization)
     {
-        //
+        $rooms = Room::all();
+        $beds = Bed::all();
+        $foodTypes = FoodType::all();
+        $relations = Relation::all();
+        return view('pages.hospitalizations.edit',compact('hospitalization','rooms','beds','foodTypes','relations'));
     }
 
     /**
@@ -182,7 +188,9 @@ class HospitalizationController extends Controller
      */
     public function destroy(Hospitalization $hospitalization)
     {
-        //
+        $hospitalization->delete();
+
+        return redirect()->back()->with('success', localize('global.hospitalization_deleted_successfully.') );
     }
 
     public function report()
@@ -304,4 +312,50 @@ class HospitalizationController extends Controller
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
     }
+
+    public function updateHospitalization(Request $request, $id)
+{
+    // Validate incoming request
+    $data = $request->validate([
+        'reason' => 'required',
+        'remarks' => 'required',
+        'room_id' => 'required',
+        'patient_id' => 'required',
+        'doctor_id' => 'required',
+        'bed_id' => 'required',
+        'appointment_id' => 'required',
+        'is_discharged' => 'nullable',
+        'discharge_remark' => 'nullable',
+        'branch_id' => 'required',
+        'discharge_status' => 'nullable',
+        'food_type_id' => 'nullable',
+        'patinet_companion' => 'nullable',
+        'companion_father_name' => 'nullable',
+        'relation_to_patient' => 'nullable',
+        'companion_card_type' => 'nullable',
+        'discharged_at' => 'nullable',
+        'under_review_id' => 'nullable',
+        'i_c_u_id' => 'nullable',
+    ]);
+
+    // Convert food_type_id to JSON if it exists
+    if (isset($data['food_type_id'])) {
+        $data['food_type_id'] = json_encode($data['food_type_id']);
+    }
+
+    // Find the existing hospitalization record
+    $hospitalization = Hospitalization::findOrFail($id);
+
+    // Update the record with validated data
+    $hospitalization->update($data);
+
+    // Check and update bed occupancy status
+    $occupied_bed = Bed::findOrFail($data['bed_id']);
+    $occupied_bed->update(['is_occupied' => true]);
+
+    // Optionally, you can dispatch a notification if needed
+    // SendUpdateHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+
+    return redirect()->route('appointments.index')->with('success', localize('global.hospitalization_updated_successfully.'));
+}
 }

@@ -359,7 +359,7 @@
             </li>
         @endcan
 
-        @can('show-reports-menu')
+        {{-- @can('show-reports-menu')
             <li class="menu-item {{ Route::is('reports.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-line-chart text-primary"></i>
@@ -391,7 +391,7 @@
                     </li>
                 </ul>
             </li>
-        @endcan
+        @endcan --}}
 
         @can('show-settings-menu')
             <li

@@ -11,11 +11,13 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ localize('global.list_section') }}</h5>
                     <div class="pt-3 pt-md-0 text-end">
+                        @can('create-sections')
                         <a class="btn btn-secondary create-new btn-primary" href="{{ route('sections.create') }}"
                            type="button">
                             <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
                                       class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
                         </a>
+                        @endcan
                     </div>
                 </div>
                 <div class="card-body">
@@ -38,12 +40,15 @@
                 <td>{{ $section->department->name ?? 'NULL' }}</td>
                 <td>
                     {{-- <a href="{{ route('sections.show', $section) }}"><i class="bx bx-show-alt"></i></a> --}}
+                    @can('delete-sections')
                     <a href="{{ route('sections.edit', $section) }}"><i class="bx bx-message-edit"></i></a>
+                    @endcan
+                    @can('delete-sections')
                     <!-- Using an <a> tag -->
                         <a href="{{ route('sections.destroy', $section->id) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{ $section->id }}').submit(); }">
                             <i class="bx bx-trash text-danger"></i>
                         </a>
-
+                        @endcan
                         <!-- Using a <form> element -->
                         <form id="delete-form-{{ $section->id }}" action="{{ route('sections.destroy', $section->id) }}" method="POST" style="display: none;">
                             @csrf

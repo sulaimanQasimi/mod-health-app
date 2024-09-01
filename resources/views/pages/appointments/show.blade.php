@@ -98,6 +98,7 @@
                             </div>
                         </div>
 
+                        @can('update-appointment-status')
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-check-shield p-1"></i>{{ localize('global.appointment_status') }}
 
@@ -153,15 +154,17 @@
                                 </div>
                             </div>
                         </div>
-
+                        @endcan
 
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-popsicle p-1"></i>{{ localize('global.diagnose') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('add-diagnose')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createDiagnoseModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1"
@@ -274,10 +277,14 @@
                                             </td>
                                             <td dir="ltr">{{ $diagnose->created_at }}</td>
                                             <td>
+                                                @can('edit-diagnoses')
                                                 <a href="{{ route('diagnoses.edit', $diagnose->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
+                                                @endcan
+                                                @can('delete-diagnoses')
                                                 <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"><span><i
                                                             class="bx bx-trash text-danger"></i></span></a>
+                                                @endcan
 
                                             </td>
                                         </tr>
@@ -298,9 +305,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('add-prescription')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createPrescriptionModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}"
@@ -328,7 +337,7 @@
 
                                             <!-- Add other diagnosis form fields as needed -->
                                             <div class="form-group" id="prescription-items">
-                                                
+
                                                 <div id="prescription-input-container">
                                                     <div class="row">
                                                         <div class="col-md-2">
@@ -539,9 +548,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                             class="bx bx-command p-1"></i>{{ localize('global.advice') }}</h5>
                     @if ($appointment->is_completed == 0)
+                    @can('add-advice')
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
                             data-bs-target="#createAdviceModal{{ $appointment->id }}"><span><i
                                     class="bx bx-plus"></i></span></button>
+                    @endcan
                     @endif
                     <!-- Create Diagnose Modal -->
                     <div class="modal fade" id="createAdviceModal{{ $appointment->id }}" tabindex="-1"
@@ -609,11 +620,14 @@
                                         </td>
                                         <td dir="ltr">{{ $advice->created_at }}</td>
                                         <td>
+                                            @can('edit-advices')
                                             <a href="{{ route('advices.edit', $advice->id) }}"><span><i
                                                         class="bx bx-edit"></i></span></a>
+                                            @endcan
+                                            @can('delete-advices')
                                             <a href="{{ route('advices.destroy', $advice->id) }}"><span><i
                                                         class="bx bx-trash text-danger"></i></span></a>
-
+                                            @endcan
                                         </td>
                                     </tr>
                                 @empty
@@ -633,9 +647,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('add-patient-labs')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createLabModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createLabModal{{ $appointment->id }}" tabindex="-1"
@@ -850,9 +866,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-chat p-1"></i>{{ localize('global.consultations') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('add-consultations')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createConsultationModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createConsultationModal{{ $appointment->id }}" tabindex="-1"
@@ -989,10 +1007,14 @@
                                                 @endforeach
                                             </td> --}}
                                             <td>
+                                                @can('edit-consultations')
                                                 <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
+                                                @endcan
+                                                @can('delete-consultations')
                                                 <a href="{{ route('consultations.destroy', $consultation->id) }}"><span><i
                                                             class="bx bx-trash text-danger"></i></span></a>
+                                                @endcan
                                             </td>
                                         </tr>
                                         @if ($consultation->comments->isNotEmpty())
@@ -1054,9 +1076,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-transfer p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('refer-to-another-doctor')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createReferDoctorModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
@@ -1156,9 +1180,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-revision p-1"></i>{{ localize('global.under_review') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('patient-under-review')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createUnderReviewModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createUnderReviewModal{{ $appointment->id }}" tabindex="-1"
@@ -1284,11 +1310,14 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                @can('edit-under-reviews')
                                                 <a href="{{ route('under_reviews.edit', $underReview->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
+                                                @endcan
+                                                @can('delete-under-reviews')
                                                 <a href="{{ route('under_reviews.destroy', $underReview->id) }}"><span><i
                                                             class="bx bx-trash text-danger"></i></span></a>
-
+                                                @endcan
                                             </td>
                                         </tr>
                                     @empty
@@ -1343,9 +1372,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('patient-hospitalization')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createHospitalizationModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade modal-xl" id="createHospitalizationModal{{ $appointment->id }}"
@@ -1544,10 +1575,20 @@
 
                                             </td>
                                             <td>
+                                                @can('edit-hospitalizations')
                                                 <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
+                                                @endcan
+                                                @can('delete-hospitalizations')
+                                                <a href="{{ route('hospitalizations.destroy', $hospitalization) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
+                                                @endcan
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$hospitalization->id}}" action="{{ route('hospitalizations.destroy', $hospitalization) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
 
                                             </td>
                                         </tr>
@@ -1638,9 +1679,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-first-aid p-1"></i>{{ localize('global.refere_to_anasthesia') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('refer-to-anesthesia')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createAnasthesiaModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade modal-xl" id="createAnasthesiaModal{{ $appointment->id }}" tabindex="-1"
@@ -1821,10 +1864,20 @@
                                                 {{ $anesthesia->date }}
                                             </td>
                                             <td>
+                                                @can('edit-anesthesias')
                                                 <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
+                                                @endcan
+                                                @can('delete-anesthesias')
+                                                <a href="{{ route('anesthesias.destroy', $anesthesia) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
+                                                @endcan
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$anesthesia->id}}" action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
 
                                             </td>
                                         </tr>
@@ -1853,7 +1906,7 @@
                                         <th>{{ localize('global.patient_name') }}</th>
                                         <th>{{ localize('global.status') }}</th>
                                         <th>{{ localize('global.date') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
+                                        {{-- <th>{{ localize('global.actions') }}</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1874,13 +1927,13 @@
                                             <td>
                                                 {{ $anesthesia->date }}
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
                                                 <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
                                                             class="bx bx-trash text-danger"></i></span></a>
 
-                                            </td>
+                                            </td> --}}
                                         </tr>
                                     @empty
                                         <div class="container">
@@ -1901,9 +1954,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
                         @if ($appointment->is_completed == 0)
+                        @can('refer-to-icu')
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#createICUModal{{ $appointment->id }}"><span><i
                                         class="bx bx-plus"></i></span></button>
+                        @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createICUModal{{ $appointment->id }}" tabindex="-1"
@@ -1973,10 +2028,20 @@
                                                 {{ $icu->created_at }}
                                             </td>
                                             <td>
+                                                @can('edit-icus')
                                                 <a href="{{ route('icus.edit', $icu->id) }}"><span><i
                                                             class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('icus.destroy', $icu->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
+                                                @endcan
+                                                @can('delete-icus')
+                                                <a href="{{ route('icus.destroy', $icu) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$icu->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
+                                                @endcan
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
 
                                             </td>
                                         </tr>

@@ -216,10 +216,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [HospitalizationController::class, 'store'])->name('store');
         Route::get('edit/{hospitalization}', [HospitalizationController::class, 'edit'])->name('edit');
         Route::put('update/{hospitalization}', [HospitalizationController::class, 'update'])->name('update');
-        Route::get('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{hospitalization}', [HospitalizationController::class, 'destroy'])->name('destroy');
         Route::get('report', [HospitalizationController::class, 'report'])->name('report');
         Route::post('report-search', [HospitalizationController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [HospitalizationController::class, 'exportReport'])->name('export-report');
+        Route::put('hospitalizations/{id}', [HospitalizationController::class, 'updateHospitalization'])->name('updateHospitalization');
     });
 
     // Under Review routes
@@ -330,7 +331,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [RelationController::class, 'store'])->name('store');
         Route::get('edit/{relation}', [RelationController::class, 'edit'])->name('edit');
         Route::put('update/{relation}', [RelationController::class, 'update'])->name('update');
-        Route::get('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{relation}', [RelationController::class, 'destroy'])->name('destroy');
     });
 
     // Complaints routes
@@ -370,6 +371,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');
         Route::get('updateStatus/{id}/update-status', [LabItemController::class, 'updateStatus'])->name('updateStatus');
         Route::get('deleteItem/{id}/delete-item', [LabItemController::class, 'deleteItem'])->name('deleteItem');
+        Route::get('editItem/{item}/edit-item', [LabItemController::class, 'edit'])->name('editItem');
+        Route::put('/lab-items/{item}', [LabItemController::class, 'update'])->name('updateItem');
 
     });
 
@@ -377,6 +380,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('getItems/{id}', [PrescriptionItemController::class, 'getItems'])->name('getItems');
         Route::get('changeStatus/{id}/update-status', [PrescriptionItemController::class, 'changeStatus'])->name('changeStatus');
         Route::get('deleteItem/{id}/delete-item', [PrescriptionItemController::class, 'deleteItem'])->name('deleteItem');
+        Route::get('editItem/{item}/edit-item', [PrescriptionItemController::class, 'edit'])->name('editItem');
+        Route::put('/prescription-items/{item}', [PrescriptionItemController::class, 'update'])->name('updateItem');
 
     });
 
@@ -455,7 +460,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [ICUController::class, 'store'])->name('store');
         Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
         Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
-        Route::get('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
+        Route::put('update/{icu}', [ICUController::class, 'updateICU'])->name('updateICU');
+        Route::delete('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
         Route::get('report', [ICUController::class, 'report'])->name('report');
         Route::post('report-search', [ICUController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [ICUController::class, 'exportReport'])->name('export-report');
@@ -516,7 +522,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
         Route::put('updateAnesthesia/{anesthesia}', [AnesthesiaController::class, 'updateAnesthesia'])->name('updateAnesthesia');
-        Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
         Route::get('report', [AnesthesiaController::class, 'report'])->name('report');
         Route::post('report-search', [AnesthesiaController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [AnesthesiaController::class, 'exportReport'])->name('export-report');

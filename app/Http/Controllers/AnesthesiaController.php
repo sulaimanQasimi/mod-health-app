@@ -190,7 +190,8 @@ class AnesthesiaController extends Controller
 
         $anesthesia->update($data);
 
-        return redirect()->back()->with('success', localize('global.anesthesia_updated_successfully.'));
+        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.anesthesia_updated_successfully.'));
+
     }
 
     /**
@@ -198,7 +199,8 @@ class AnesthesiaController extends Controller
      */
     public function destroy(Anesthesia $anesthesia)
     {
-        //
+        $anesthesia->delete();
+        return redirect()->back()->with('success', localize('global.anesthesia_deleted_successfully.'));
     }
 
     public function report()

@@ -51,7 +51,7 @@
                 <label for="job_category">{{ localize('global.job_category') }}</label>
                 <select class="form-control select2" name="job_category" required
                     id="job_category" onchange="changeType(this.value)">
-                
+
                     <option  {{ old('job_category',  (isset($patient) && $patient->job_category == '0') ? 'selected' : '')}} value="0">{{localize('global.military')}}</option>
                     <option  {{ old('job_category',  (isset($patient) && $patient->job_category == '1') ? 'selected' : '')}} value="1">{{localize('global.civilian')}}</option>
                 </select>
@@ -90,9 +90,9 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="referred_by">{{ localize('global.referred_by') }}</label>
-                <select class="form-control select2" name="referral_by">
+                <select class="form-control select2" name="referred_by">
                     @foreach ($recipients as $value)
-                    <option  {{ old('referral_by',  (isset($patient) && $patient->referral_by == $value->id) ? 'selected' : '')}} value="{{ $value->id }}" >
+                    <option  {{ old('referred_by',  (isset($patient) && $patient->referred_by == $value->id) ? 'selected' : '')}} value="{{ $value->id }}" >
                         {{ $value->name }}</option>
                     @endforeach
                 </select>

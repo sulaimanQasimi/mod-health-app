@@ -43,7 +43,7 @@ class RelationController extends Controller
      */
     public function show(Relation $relation)
     {
-        //
+        return view('pages.relations.show', compact('relation'));
     }
 
     /**
@@ -51,7 +51,7 @@ class RelationController extends Controller
      */
     public function edit(Relation $relation)
     {
-        //
+        return view('pages.relations.edit', compact('relation'));
     }
 
     /**
@@ -59,7 +59,13 @@ class RelationController extends Controller
      */
     public function update(Request $request, Relation $relation)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+        ]);
+
+        $relation->update($data);
+
+        return redirect()->route('relations.index')->with('success', localize('global.relation_updated_successfully.'));
     }
 
     /**
@@ -67,6 +73,8 @@ class RelationController extends Controller
      */
     public function destroy(Relation $relation)
     {
-        //
+        $relation->delete();
+
+        return redirect()->route('relations.index')->with('success', localize('global.relation_deleted_successfully.'));
     }
 }

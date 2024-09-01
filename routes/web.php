@@ -521,7 +521,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{anesthesia}', [AnesthesiaController::class, 'edit'])->name('edit');
         Route::put('update/{anesthesia}', [AnesthesiaController::class, 'update'])->name('update');
         Route::put('updateAnesthesia/{anesthesia}', [AnesthesiaController::class, 'updateAnesthesia'])->name('updateAnesthesia');
-        Route::get('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{anesthesia}', [AnesthesiaController::class, 'destroy'])->name('destroy');
         Route::get('report', [AnesthesiaController::class, 'report'])->name('report');
         Route::post('report-search', [AnesthesiaController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [AnesthesiaController::class, 'exportReport'])->name('export-report');

@@ -1869,9 +1869,15 @@
                                                             class="bx bx-edit"></i></span></a>
                                                 @endcan
                                                 @can('delete-anesthesias')
-                                                <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
+                                                <a href="{{ route('anesthesias.destroy', $anesthesia) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }">
+                                                    <i class="bx bx-trash text-danger"></i>
+                                                </a>
                                                 @endcan
+                                                <!-- Using a <form> element -->
+                                                <form id="delete-form-{{$anesthesia->id}}" action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
 
                                             </td>
                                         </tr>

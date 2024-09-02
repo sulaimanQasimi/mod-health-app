@@ -461,7 +461,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [ICUController::class, 'store'])->name('store');
         Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
         Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
-        Route::put('update/{icu}', [ICUController::class, 'updateICU'])->name('updateICU');
+        Route::put('update/{icu}/note', [ICUController::class, 'updateICU'])->name('updateICU');
         Route::delete('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
         Route::get('report', [ICUController::class, 'report'])->name('report');
         Route::post('report-search', [ICUController::class, 'ReportSearch'])->name('report-search');

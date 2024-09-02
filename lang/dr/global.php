@@ -876,7 +876,8 @@ return [
     'add' => 'اضافه نمودن',
     'edit_prescription_details' => 'تصحیح جزیات نسخه',
     'save_changes' => 'ثبت تغیرات',
-    'edit_hospitalization' => 'تصحیح بستر برای مریض'
+    'edit_hospitalization' => 'تصحیح بستر برای مریض',
+    'edit_daily_icu_progress' => 'تصحیح پیشرفت روزمره ICU'
 
 
 ];

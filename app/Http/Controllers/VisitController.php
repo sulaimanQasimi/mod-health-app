@@ -89,9 +89,20 @@ class VisitController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Visit $visit)
+    public function editUnderReviewVisit(Visit $visit)
     {
-        //
+        return view('pages.under_reviews.visits_edit',compact('visit'));
+    }
+
+    public function updateUnderReviewVisit(Request $request, Visit $visit)
+    {
+        $data = $request->validate([
+            'description' => 'required',
+        ]);
+
+        $visit->update($data);
+
+        return redirect()->route('under_reviews.show', $visit->under_review->id)->with('success', localize('global.visit_updated_successfully.'));
     }
 
     /**
@@ -105,8 +116,10 @@ class VisitController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Visit $visit)
+    public function destroyUnderReviewVisit(Visit $visit)
     {
-        //
+        $visit->delete();
+        return redirect()->route('under_reviews.show', $visit->under_review->id)->with('success', localize('global.visit_deleted_successfully.'));
+
     }
 }

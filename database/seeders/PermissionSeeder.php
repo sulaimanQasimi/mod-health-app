@@ -1231,6 +1231,24 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
+        Permission::create([
+            'id' => 126,
+            'name' => 'edit-under-review-visit',
+            'name_dr' => 'تصحیح نمودن بازدید تحت مشاهده',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+        Permission::create([
+            'id' => 127,
+            'name' => 'delete-under-review-visit',
+            'name_dr' => 'حذف نمودن بازدید تحت مشاهده',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
 
     }
 }

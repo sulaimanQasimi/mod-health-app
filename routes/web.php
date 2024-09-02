@@ -241,9 +241,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [VisitController::class, 'create'])->name('create');
         Route::get('show/{visit}', [VisitController::class, 'show'])->name('show');
         Route::post('store', [VisitController::class, 'store'])->name('store');
-        Route::get('edit/{visit}', [VisitController::class, 'edit'])->name('edit');
+        Route::get('editUnderReviewVisit/{visit}', [VisitController::class, 'editUnderReviewVisit'])->name('editUnderReviewVisit');
         Route::put('update/{visit}', [VisitController::class, 'update'])->name('update');
-        Route::get('destroy/{visit}', [VisitController::class, 'destroy'])->name('destroy');
+        Route::put('updateUnderReviewVisit/{visit}', [VisitController::class, 'updateUnderReviewVisit'])->name('updateUnderReviewVisit');
+        Route::delete('destroyUnderReviewVisit/{visit}', [VisitController::class, 'destroyUnderReviewVisit'])->name('destroyUnderReviewVisit');
     });
 
     // Doctors routes

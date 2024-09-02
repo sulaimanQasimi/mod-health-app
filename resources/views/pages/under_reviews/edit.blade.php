@@ -15,7 +15,7 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-12">
-                                
+
         <form action="{{ route('under_reviews.updateUnderReview',$underReview) }}" method="POST">
             @csrf
             @method('PUT')
@@ -26,38 +26,47 @@
             <input type="hidden" id="is_discharged{{ $underReview->appointment->id }}" name="is_discharged" value="0">
 
             <div class="form-group">
-                <div class="form-group">
-                    <label for="reason{{ $underReview->appointment->id }}">{{ localize('global.reason') }}</label>
-                    <textarea class="form-control" id="reason{{ $underReview->appointment->id }}" name="reason" rows="3">{{$underReview->reason}}</textarea>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="reason{{ $underReview->appointment->id }}">{{ localize('global.reason') }}</label>
+                            <textarea class="form-control" id="reason{{ $underReview->appointment->id }}" name="reason" rows="3">{{$underReview->reason}}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="remarks{{ $underReview->appointment->id }}">{{ localize('global.remarks') }}</label>
+                            <textarea class="form-control" id="remarks{{ $underReview->appointment->id }}" name="remarks" rows="3">{{$underReview->remarks}}</textarea>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="remarks{{ $underReview->appointment->id }}">{{ localize('global.remarks') }}</label>
-                    <textarea class="form-control" id="remarks{{ $underReview->appointment->id }}" name="remarks" rows="3">{{$underReview->remarks}}</textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="room_id{{ $underReview->appointment->id }}">{{ localize('global.rooms') }}</label>
-                    <select class="form-control select2" name="room_id" id="under_review_room">
-                        <option value="">{{ localize('global.select') }}</option>
-                        @foreach ($rooms as $value)
-                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                {{ $value->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="bed_id{{ $underReview->appointment->id }}">{{ localize('global.beds') }}</label>
-                    <select class="form-control select2" name="bed_id" id="under_review_bed_id">
-                        <option value="">{{ localize('global.select') }}</option>
-                        @foreach ($beds as $value)
-                            <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
-                                {{ $value->number }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="room_id{{ $underReview->appointment->id }}">{{ localize('global.rooms') }}</label>
+                            <select class="form-control select2" name="room_id" id="under_review_room">
+                                <option value="">{{ localize('global.select') }}</option>
+                                @foreach ($rooms as $value)
+                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                        {{ $value->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="bed_id{{ $underReview->appointment->id }}">{{ localize('global.beds') }}</label>
+                            <select class="form-control select2" name="bed_id" id="under_review_bed_id">
+                                <option value="">{{ localize('global.select') }}</option>
+                                @foreach ($beds as $value)
+                                    <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
+                                        {{ $value->number }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 

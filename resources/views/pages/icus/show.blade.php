@@ -1261,10 +1261,20 @@
                                                 <td>{{ $procedure->created_at }}</td>
 
                                                 <td>
+                                                    @can('edit-icu-procedure')
                                                     <a href="{{ route('procedures.edit', $procedure->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('procedures.destroy', $procedure->id) }}"><span><i
-                                                                class="bx bx-trash text-danger"></i></span></a>
+                                                    @endcan
+                                                    @can('delete-icu-procedure')
+                                                    <a href="{{ route('procedures.destroy', $procedure) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$procedure->id}}').submit(); }">
+                                                        <i class="bx bx-trash text-danger"></i>
+                                                    </a>
+                                                    @endcan
+                                                    <!-- Using a <form> element -->
+                                                    <form id="delete-form-{{$procedure->id}}" action="{{ route('procedures.destroy', $procedure) }}" method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
 
                                                 </td>
 

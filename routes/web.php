@@ -507,7 +507,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [ICUProcedureController::class, 'store'])->name('store');
         Route::get('edit/{iCUProcedure}', [ICUProcedureController::class, 'edit'])->name('edit');
         Route::put('update/{iCUProcedure}', [ICUProcedureController::class, 'update'])->name('update');
-        Route::get('destroy/{iCUProcedure}', [ICUProcedureController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{iCUProcedure}', [ICUProcedureController::class, 'destroy'])->name('destroy');
 
     });
 

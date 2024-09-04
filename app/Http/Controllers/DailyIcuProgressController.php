@@ -74,7 +74,8 @@ class DailyIcuProgressController extends Controller
      */
     public function edit(DailyIcuProgress $dailyIcuProgress)
     {
-        //
+        $labTypes = LabType::all();
+        return view('pages.daily_icu_progress.edit',compact('dailyIcuProgress','labTypes'));
     }
 
     /**
@@ -82,7 +83,40 @@ class DailyIcuProgressController extends Controller
      */
     public function update(Request $request, DailyIcuProgress $dailyIcuProgress)
     {
-        //
+        $data = $request->validate([
+            'i_c_u_id' => 'nullable',
+            'icu_day' => 'nullable',
+            'icu_diagnose' => 'nullable',
+            'daily_events' => 'nullable',
+            'hr' => 'nullable',
+            'bp' => 'nullable',
+            'spo2' => 'nullable',
+            't' => 'nullable',
+            'rr' => 'nullable',
+            'gcs' => 'nullable',
+            'cvs' => 'nullable',
+            'pupils' => 'nullable',
+            's1s2' => 'nullable',
+            'rs' => 'nullable',
+            'gi' => 'nullable',
+            'renal' => 'nullable',
+            'musculoskeletal_system' => 'nullable',
+            'extremities' => 'nullable',
+            'lab_ids' => 'nullable',
+            'assesment' => 'nullable',
+            'plan' => 'nullable'
+        ]);
+
+        // Encode lab_ids as JSON if it exists
+        if (isset($data['lab_ids'])) {
+            $data['lab_ids'] = json_encode($data['lab_ids']);
+        }
+
+        // Update the record
+        $dailyIcuProgress->update($data);
+
+        // Redirect back with success message
+        return redirect()->route('icus.show',$dailyIcuProgress->icu->id)->with('success', localize('global.daily_progress_updated_successfully.'));
     }
 
     /**

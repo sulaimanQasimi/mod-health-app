@@ -11,7 +11,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ localize('global.branches_list') }}</h5>
                     <div class="pt-3 pt-md-0 text-end">
-                        @can('create-brnaches')
+                        @can('create-branches')
                         <a class="btn btn-secondary create-new btn-primary" href="{{ route('branches.create') }}"
                            type="button">
                             <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span

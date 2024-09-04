@@ -12,7 +12,7 @@ class DailyIcuProgress extends Model
 
     protected $fillable = [
     'i_c_u_id','icu_day','icu_diagnose','daily_events','hr','bp','spo2','t','rr','gcs','cvs','pupils','s1s2','rs','gi','renal','musculoskeletal_system','extremities','lab_ids','assesment','plan'];
-    
+
     public static function boot()
     {
         parent::boot();
@@ -37,5 +37,10 @@ class DailyIcuProgress extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function icu()
+    {
+        return $this->belongsTo(ICU::class, 'i_c_u_id');
     }
 }

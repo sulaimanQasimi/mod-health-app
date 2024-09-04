@@ -44,4 +44,9 @@ class ICUProcedure extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function icu()
+    {
+        return $this->belongsTo(ICU::class, 'i_c_u_id');
+    }
 }

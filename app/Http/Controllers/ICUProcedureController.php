@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ICUProcedure;
+use App\Models\ICUProcedureType;
 use Illuminate\Http\Request;
 
 class ICUProcedureController extends Controller
@@ -57,7 +58,8 @@ class ICUProcedureController extends Controller
      */
     public function edit(ICUProcedure $iCUProcedure)
     {
-        //
+        $procedure_types = ICUProcedureType::all();
+        return view('pages.icus.icu_procedure_edit',compact('iCUProcedure','procedure_types'));
     }
 
     /**
@@ -65,7 +67,20 @@ class ICUProcedureController extends Controller
      */
     public function update(Request $request, ICUProcedure $iCUProcedure)
     {
-        //
+        // Validate the request data
+        $request->validate([
+            'icu_procedure_type_id' => 'required|exists:i_c_u_procedure_types,id',
+            'description' => 'required',
+        ]);
+
+        // Update the record
+        $iCUProcedure->icu_procedure_type_id = $request->icu_procedure_type_id;
+        $iCUProcedure->description = $request->description;
+        $iCUProcedure->save();
+
+        // Redirect back with success message
+        return redirect()->route('icus.show',$iCUProcedure->icu->id)
+                        ->with('success', localize('global.icu_procedure_updated_successfully.'));
     }
 
     /**
@@ -73,6 +88,8 @@ class ICUProcedureController extends Controller
      */
     public function destroy(ICUProcedure $iCUProcedure)
     {
-        //
+        $iCUProcedure->delete();
+        return redirect()->route('icus.show',$iCUProcedure->icu->id)
+                        ->with('success', localize('global.icu_procedure_deleted_successfully.'));
     }
 }

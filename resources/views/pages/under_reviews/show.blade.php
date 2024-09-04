@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         </div>
-                        
+
                         <div class="row text-start m-4">
                             <div class="col-md-12 mt-2 mb-2">
                             <h5 class="mb-2">{{ localize('global.reason') }}</h5>
@@ -120,9 +120,19 @@
                                     <td>{{$visit->description}}</td>
                                     <td>{{$visit->doctor->name}}</td>
                                     <td>
+                                        @can('edit-under-review-visit')
                                         <a href="{{route('visits.edit', $visit->id)}}"><span><i class="bx bx-edit"></i></span></a>
-                                        <a href="{{route('visits.destroy', $visit->id)}}"><span><i class="bx bx-trash text-danger"></i></span></a>
-
+                                        @endcan
+                                        @can('delete-under-review-visit')
+                                        <a href="{{ route('visits.destroyUnderReviewVisit', $visit) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$visit->id}}').submit(); }">
+                                            <i class="bx bx-trash text-danger"></i>
+                                        </a>
+                                        @endcan
+                                        <!-- Using a <form> element -->
+                                        <form id="delete-form-{{$visit->id}}" action="{{ route('visits.destroyUnderReviewVisit', $visit) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </td>
                                 </tr>
                                 @empty
@@ -1024,16 +1034,16 @@ prescriptionContainer.appendChild(newRow);
         $('select').select2({
             dropdownParent: $('#createPrescriptionModal1')
         });
-        
+
     }
 </script>
 
 <script>
 
-    function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data) 
+    function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data)
     {
          $('#prescription_items_table').html(data); }, error: function(xhr, status, error) {
-         // Handle the error response 
+         // Handle the error response
          console.error(error); } }); }
 
          $('#room_id').on('change', function() {

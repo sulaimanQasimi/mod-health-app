@@ -241,9 +241,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [VisitController::class, 'create'])->name('create');
         Route::get('show/{visit}', [VisitController::class, 'show'])->name('show');
         Route::post('store', [VisitController::class, 'store'])->name('store');
-        Route::get('edit/{visit}', [VisitController::class, 'edit'])->name('edit');
+        Route::get('editUnderReviewVisit/{visit}', [VisitController::class, 'editUnderReviewVisit'])->name('editUnderReviewVisit');
         Route::put('update/{visit}', [VisitController::class, 'update'])->name('update');
-        Route::get('destroy/{visit}', [VisitController::class, 'destroy'])->name('destroy');
+        Route::put('updateUnderReviewVisit/{visit}', [VisitController::class, 'updateUnderReviewVisit'])->name('updateUnderReviewVisit');
+        Route::delete('destroyUnderReviewVisit/{visit}', [VisitController::class, 'destroyUnderReviewVisit'])->name('destroyUnderReviewVisit');
     });
 
     // Doctors routes
@@ -460,7 +461,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [ICUController::class, 'store'])->name('store');
         Route::get('edit/{icu}', [ICUController::class, 'edit'])->name('edit');
         Route::put('update/{icu}', [ICUController::class, 'update'])->name('update');
-        Route::put('update/{icu}', [ICUController::class, 'updateICU'])->name('updateICU');
+        Route::put('update/{icu}/note', [ICUController::class, 'updateICU'])->name('updateICU');
         Route::delete('destroy/{icu}', [ICUController::class, 'destroy'])->name('destroy');
         Route::get('report', [ICUController::class, 'report'])->name('report');
         Route::post('report-search', [ICUController::class, 'ReportSearch'])->name('report-search');
@@ -506,7 +507,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [ICUProcedureController::class, 'store'])->name('store');
         Route::get('edit/{iCUProcedure}', [ICUProcedureController::class, 'edit'])->name('edit');
         Route::put('update/{iCUProcedure}', [ICUProcedureController::class, 'update'])->name('update');
-        Route::get('destroy/{iCUProcedure}', [ICUProcedureController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{iCUProcedure}', [ICUProcedureController::class, 'destroy'])->name('destroy');
 
     });
 

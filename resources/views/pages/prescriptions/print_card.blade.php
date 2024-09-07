@@ -381,6 +381,7 @@ footer {
 
                         <br>
                         <br>
+                        {{-- <br>
                         <b> <span class=""> Past Diagnoses</span></b>
 
                         <br>
@@ -391,7 +392,7 @@ footer {
                         </span>
 
                         <br>
-                        <br>
+                        <br> --}}
                         <b><span class="">Current Diagnose</span></b>
 
                         <br>
@@ -407,9 +408,14 @@ footer {
                         <br>
                         <span class="data">
                             @foreach ($appointment->advices as $advice)
-                            <span class="badge" style="margin-top: 3%;">{{ $advice->description }}</span>
+                            <span style="margin-top: 3%;">{{ $advice->description }}</span>
+                            <br>
                             @endforeach
                         </span>
+                        <br>
+                        <br>
+                        <b><span class="">Signature</span></b>
+                        <br>
                     </td>
                     <td width="80%">
                         <p><br></p>

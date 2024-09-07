@@ -878,7 +878,10 @@ return [
     'save_changes' => 'ثبت تغیرات',
     'edit_hospitalization' => 'تصحیح بستر برای مریض',
     'edit_daily_icu_progress' => 'تصحیح پیشرفت روزمره ICU',
-    'edit_icu_procedure' => 'تصحیح پروسیجر ICU'
+    'edit_icu_procedure' => 'تصحیح پروسیجر ICU',
+    'job_and_rank' => 'رتبه و وظیفه',
+    'register_number' => 'شماره راجستر',
+    'card_number' => 'شماره کارت'
 
 
 ];

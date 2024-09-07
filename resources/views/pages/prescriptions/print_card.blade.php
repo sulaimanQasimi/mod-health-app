@@ -75,6 +75,7 @@
             color: #000000 !important;
             font-size: 10 !important;
             font-family: sans-serif !important;
+            font-weight: bolder !important;
         }
 
         .data {
@@ -115,45 +116,63 @@
             <tbody>
                 <tr>
                     <td align="center" style="padding:0px; border: none !important;">
-                        <img src="{{ asset('assets/img/test_header.jpg') }}" alt="" height="300">
+                        <img src="{{ asset('assets/img/header.PNG') }}" alt="" height="150" width="100%">
                     </td>
                 </tr>
             </tbody>
         </table>
 
 
-        <table width="100%" class="table table-bordered pdf-header">
+        <table width="100%" class="table table-bordered pdf-header" dir="rtl">
             <tbody>
                 <tr>
-                    <td width="20%">
-                        <span class="title">Patient's Name:</span>
+                    <td width="50%" dir="rtl">
+                        <span class="title">{{localize('global.name')}}</span>
                         <span class="data">
                             {{ $patient->name }}
                         </span>
                     </td>
-                    <td width="50%">
-                        <span class="title">Doctor's Name:</span>
+                    <td width="50%" dir="rtl">
+                        <span class="title">{{localize('global.department')}}</span>
                         <span class="data">
-                            {{ $appointment->doctor->name }}
+                            {{ $appointment->doctor->department->name }}
                         </span>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <table width="100%" class="table table-bordered pdf-header">
+        <table width="100%" class="table table-bordered pdf-header" dir="rtl">
             <tbody>
                 <tr>
-                    <td width="20%">
-                        <span class="title">Advices</span>
+                    <td width="50%" dir="rtl">
+                        <span class="title">{{localize('global.father_name')}}</span>
+                        <span class="data">
+                            {{ $patient->father_name }}
+                        </span>
                     </td>
                     <td width="50%">
-                        @foreach($appointment->advices as $advice)
-                        <li>
+                        <span class="title">{{localize('global.register_number')}}</span>
                         <span class="data">
-                            {{ $advice->description }}
+                            {{ $patient->id }}
                         </span>
-                        </li>
-                        @endforeach
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table width="100%" class="table table-bordered pdf-header" dir="rtl">
+            <tbody>
+                <tr>
+                    <td width="50%" dir="rtl">
+                        <span class="title">{{localize('global.job_and_rank')}}</span>
+                        <span class="data">
+                            {{ $patient->job ?? '' }} - {{$patient->rank ?? ''}}
+                        </span>
+                    </td>
+                    <td width="50%">
+                        <span class="title">{{localize('global.card_number')}}</span>
+                        <span class="data">
+                            {{ $patient->id_card ?? '' }}
+                        </span>
                     </td>
                 </tr>
             </tbody>
@@ -302,12 +321,51 @@
         .printable {
             min-height: 800px;
         }
+
+        .badge {
+    display: inline-block;
+    padding: 0.3em 0.5em;
+    font-size: 0.875em;
+    font-weight: 700;
+    color: white;
+    background-color: #6c757d; /* Secondary color */
+    border-radius: 0.25rem;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.badge:hover {
+    background-color: #5a6268; /* Darker shade on hover */
+}
+
+footer {
+            background-color: #a7a7a79c;
+            color: white;
+            text-align: center;
+            padding: 5px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            footer {
+                font-size: 0.9em;
+            }
+        }
     </style>
 
     <div class="printable">
-
-
-
         <table class="table test beak-page">
             <thead>
 
@@ -315,28 +373,43 @@
             <tbody class=" b-000">
                 <tr>
                     <td width="20%">
-                        <b> <span class="title"> Past Health Status</span></b>
+                        <b> <span class=""> Date:</span></b>
+
+                        <span class="data">
+                            {{$appointment->created_at}}
+                        </span>
 
                         <br>
-                        <span class="data">Febrile </span>
+                        <br>
+                        <b> <span class=""> Past Diagnoses</span></b>
+
+                        <br>
+                        <span class="data">
+                            @foreach ($patient->diagnoses as $diagnose)
+                                <span class="badge" style="margin-top: 3%;"> {{$diagnose->description ?? 'Null' }}</span>
+                            @endforeach
+                        </span>
 
                         <br>
                         <br>
-                        <b><span class="title">Diagnose</span></b>
+                        <b><span class="">Current Diagnose</span></b>
 
                         <br>
                         <span class="data">
                             @foreach ($appointment->diagnose as $diagnose)
-                                {{ $diagnose->description }}
+                            <span class="badge" style="margin-top: 3%;">{{ $diagnose->description }}</span>
                             @endforeach
                         </span>
                         <br>
                         <br>
-                        <b><span class="title"> Advice</span></b>
+                        <b><span class=""> Advices</span></b>
 
                         <br>
-                        <span class="data">MP
-                            Typhoid</span>
+                        <span class="data">
+                            @foreach ($appointment->advices as $advice)
+                            <span class="badge" style="margin-top: 3%;">{{ $advice->description }}</span>
+                            @endforeach
+                        </span>
                     </td>
                     <td width="80%">
                         <p><br></p>
@@ -372,22 +445,15 @@
 
         </table>
 
-
+        <footer style="margin-top: 5%;">
+            <p>{{ QrCode::size(75)->generate($prescription->id) }}</p>
+        </footer>
     </div>
 
 
-    <table width="100%" style="padding:0px;border: none !important;">
-        <tbody>
-            <tr>
-                <td align="center" style="padding:0px; border: none !important;">
-                    <img src="{{ asset('assets/img/test_header.jpg') }}" alt="" height="150">
-                </td>
-                <td>
-                    {{ QrCode::size(75)->generate($prescription->id) }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    
+
+    
 
 </body>
 

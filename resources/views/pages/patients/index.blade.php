@@ -126,7 +126,7 @@
                         }
 
                         // Add print button
-                        actions += `<button class="btn btn-sm btn-icon text-info print-btn" data-id="${full['id']}"><i class="bx bx-printer"></i></button>`;
+                        actions += `<a href="javascript:void(0);" onclick="window.open('/patients/${full['id']}/printToken', '_blank');" class="btn btn-sm btn-icon text-info"><i class="bx bx-printer"></i></a>`;
 
                         return actions;
                     }
@@ -184,25 +184,5 @@
             }, 300);
         });
 
-        $(document).on('click', '.print-btn', function() {
-    const patientId = $(this).data('id');
-
-    fetch(`patients/patients/${patientId}/print`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({})
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(`Patient ${patientId} printed number: ${data.number}`);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to print number. Please try again.');
-    });
-});
 </script>
 @endpush

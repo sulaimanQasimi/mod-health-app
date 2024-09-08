@@ -244,7 +244,7 @@ public function addImage(Request $request, $id)
 
         if($patient_id !=''){
             $patient = Patient::find($patient_id);
-            
+
             if($tab_type == 'first'){
                 return view('pages.patients.tab1',compact('recipients','provinces','districts','relations','patient'));
             }elseif($tab_type == 'second'){
@@ -291,7 +291,7 @@ public function addImage(Request $request, $id)
         if ($request->filled('id_card')) {
             $query->where('p.id_card', $request->id_card);
         }
-        
+
         if ($request->filled('referral_name')) {
             $query->where('p.referral_name', 'like', '%' . $request->referral_name . '%');
         }
@@ -323,19 +323,19 @@ public function addImage(Request $request, $id)
             $query->where('p.district_id', $request->district_id);
         }
 
-      
+
 
         $items = $query->get();
     return view('pages.patients.reports.report', ['items' => $items]);
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items =  DB::table('patients as p')
         ->leftJoin('provinces as pr', 'p.province_id' , '=', 'pr.id')
         ->leftJoin('districts as d', 'p.district_id' , '=', 'd.id')
@@ -415,7 +415,7 @@ public function addImage(Request $request, $id)
                     $sheet->setCellValue('J' . $row . '', $item->referred_by);
                     $sheet->setCellValue('K' . $row . '', $item->province_name);
                     $sheet->setCellValue('L' . $row . '', $item->district_name);
-                    
+
                 $row++;
             }
 
@@ -438,25 +438,30 @@ return $this->exportResponse($spreadsheet);
 
     }
 
-    public function printNumber(Request $request, $patientId)
+
+public function printToken($patientId)
 {
+    $patient = Patient::findOrFail($patientId);
     $today = Carbon::today();
 
-    // Check if the patient has printed numbers today
-    $number = PrintedNumber::where('patient_id', $patientId)
-        ->where('date', $today)
-        ->count();
+    // Get the maximum printed number for today across all patients
+    $maxNumber = PrintedNumber::where('date', $today)->max('number');
 
-    // Increment the number for today's print
-    $newNumber = $number + 1;
+    // Assign the next number
+    $newNumber = ($maxNumber ? $maxNumber : 0) + 1;
 
-    // Store the new printed number
+    // Store the new printed number for the patient
     PrintedNumber::create([
         'patient_id' => $patientId,
         'number' => $newNumber,
         'date' => $today,
     ]);
 
-    return response()->json(['number' => $newNumber]);
+    // Retrieve the printed number for the view
+    $printedNumber = PrintedNumber::where('patient_id', $patientId)
+        ->where('date', $today)
+        ->latest() // Get the latest entry for today
+        ->firstOrFail(); // Ensure it retrieves today's printed number
+    return view('pages.patients.token', compact('patient', 'printedNumber'));
 }
 }

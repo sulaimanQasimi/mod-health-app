@@ -6,9 +6,11 @@ use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
 use App\Models\Patient;
+use App\Models\PrintedNumber;
 use App\Models\Province;
 use App\Models\Recipient;
 use App\Models\Relation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -435,4 +437,26 @@ return $this->exportResponse($spreadsheet);
         return $response;
 
     }
+
+    public function printNumber(Request $request, $patientId)
+{
+    $today = Carbon::today();
+
+    // Check if the patient has printed numbers today
+    $number = PrintedNumber::where('patient_id', $patientId)
+        ->where('date', $today)
+        ->count();
+
+    // Increment the number for today's print
+    $newNumber = $number + 1;
+
+    // Store the new printed number
+    PrintedNumber::create([
+        'patient_id' => $patientId,
+        'number' => $newNumber,
+        'date' => $today,
+    ]);
+
+    return response()->json(['number' => $newNumber]);
+}
 }

@@ -125,6 +125,9 @@
                                        `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-edit"></i></a>`;
                         }
 
+                        // Add print button
+                        actions += `<button class="btn btn-sm btn-icon text-info print-btn" data-id="${full['id']}"><i class="bx bx-printer"></i></button>`;
+
                         return actions;
                     }
                         }
@@ -180,5 +183,26 @@
                 $('.dataTables_length .form-select').removeClass('form-select-sm');
             }, 300);
         });
-    </script>
+
+        $(document).on('click', '.print-btn', function() {
+    const patientId = $(this).data('id');
+
+    fetch(`patients/patients/${patientId}/print`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(`Patient ${patientId} printed number: ${data.number}`);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to print number. Please try again.');
+    });
+});
+</script>
 @endpush

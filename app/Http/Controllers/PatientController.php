@@ -6,9 +6,11 @@ use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
 use App\Models\Patient;
+use App\Models\PrintedNumber;
 use App\Models\Province;
 use App\Models\Recipient;
 use App\Models\Relation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -242,7 +244,7 @@ public function addImage(Request $request, $id)
 
         if($patient_id !=''){
             $patient = Patient::find($patient_id);
-            
+
             if($tab_type == 'first'){
                 return view('pages.patients.tab1',compact('recipients','provinces','districts','relations','patient'));
             }elseif($tab_type == 'second'){
@@ -289,7 +291,7 @@ public function addImage(Request $request, $id)
         if ($request->filled('id_card')) {
             $query->where('p.id_card', $request->id_card);
         }
-        
+
         if ($request->filled('referral_name')) {
             $query->where('p.referral_name', 'like', '%' . $request->referral_name . '%');
         }
@@ -321,19 +323,19 @@ public function addImage(Request $request, $id)
             $query->where('p.district_id', $request->district_id);
         }
 
-      
+
 
         $items = $query->get();
     return view('pages.patients.reports.report', ['items' => $items]);
 
     }
 
-    
+
     public function exportReport(Request $request)
     {
 
         $data = json_decode($request->data, true);
-      
+
         $items =  DB::table('patients as p')
         ->leftJoin('provinces as pr', 'p.province_id' , '=', 'pr.id')
         ->leftJoin('districts as d', 'p.district_id' , '=', 'd.id')
@@ -413,7 +415,7 @@ public function addImage(Request $request, $id)
                     $sheet->setCellValue('J' . $row . '', $item->referred_by);
                     $sheet->setCellValue('K' . $row . '', $item->province_name);
                     $sheet->setCellValue('L' . $row . '', $item->district_name);
-                    
+
                 $row++;
             }
 
@@ -435,4 +437,31 @@ return $this->exportResponse($spreadsheet);
         return $response;
 
     }
+
+
+public function printToken($patientId)
+{
+    $patient = Patient::findOrFail($patientId);
+    $today = Carbon::today();
+
+    // Get the maximum printed number for today across all patients
+    $maxNumber = PrintedNumber::where('date', $today)->max('number');
+
+    // Assign the next number
+    $newNumber = ($maxNumber ? $maxNumber : 0) + 1;
+
+    // Store the new printed number for the patient
+    PrintedNumber::create([
+        'patient_id' => $patientId,
+        'number' => $newNumber,
+        'date' => $today,
+    ]);
+
+    // Retrieve the printed number for the view
+    $printedNumber = PrintedNumber::where('patient_id', $patientId)
+        ->where('date', $today)
+        ->latest() // Get the latest entry for today
+        ->firstOrFail(); // Ensure it retrieves today's printed number
+    return view('pages.patients.token', compact('patient', 'printedNumber'));
+}
 }

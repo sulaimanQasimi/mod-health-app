@@ -125,6 +125,9 @@
                                        `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-edit"></i></a>`;
                         }
 
+                        // Add print button
+                        actions += `<a href="javascript:void(0);" onclick="window.open('/patients/${full['id']}/printToken', '_blank');" class="btn btn-sm btn-icon text-info"><i class="bx bx-printer"></i></a>`;
+
                         return actions;
                     }
                         }
@@ -180,5 +183,6 @@
                 $('.dataTables_length .form-select').removeClass('form-select-sm');
             }, 300);
         });
-    </script>
+
+</script>
 @endpush

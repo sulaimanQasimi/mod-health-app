@@ -150,6 +150,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('report', [PatientController::class, 'report'])->name('report');
         Route::post('report-search', [PatientController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [PatientController::class, 'exportReport'])->name('export-report');
+        Route::get('{patientId}/printToken', [PatientController::class, 'printToken'])->name('printToken');
     });
 
     // Departments routes

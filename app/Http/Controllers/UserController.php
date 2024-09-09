@@ -118,30 +118,32 @@ class UserController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateUserRequest $request, $user_id)
-{
-
-    $user = User::findOrFail($user_id);
-
-    if (!empty($request->password)) {
-        $request['password'] = Hash::make($request->password);
+    {
+        $user = User::findOrFail($user_id);
+    
+        // Only hash and update the password if it's provided
+        if (!empty($request->password)) {
+            $request['password'] = Hash::make($request->password);
+        } else {
+            // Remove the password from the input if not provided
+            $request->request->remove('password');
+        }
+    
+        $user->update($request->input());
+    
+        $roles = $request['roles'];
+    
+        if (isset($roles)) {
+            $user->roles()->sync($roles);
+        } else {
+            $user->roles()->detach();
+        }
+    
+        $user->syncPermissions($request->input('permissions', []));
+    
+        return redirect()->route('users.index')
+            ->with('success', localize('global.user_update_success'));
     }
-
-    $user->update($request->input());
-
-    $roles = $request['roles'];
-
-    if (isset($roles)) {
-        $user->roles()->sync($roles);
-    } else {
-        $user->roles()->detach();
-    }
-
-    $user->syncPermissions($request->input('permissions', []));
-
-
-    return redirect()->route('users.index')
-        ->with('success', localize('global.user_update_success'));
-}
 
 
     /**

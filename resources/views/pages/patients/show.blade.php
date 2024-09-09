@@ -8,8 +8,12 @@
             @endif
         <div class="col-xl">
             <div class="card mb-4">
-
                 <div class="card-body">
+                    <div class="text-center mb-2">
+                        <a href="javascript:void(0);" onclick="window.open('/patients/{{$patient->id}}/printToken', '_blank');" class="btn btn-primary"><i class="bx bx-printer"></i>Token</a>
+
+                    </div>
+
                     <h5 class="mb-4 p-3 bg-label-primary text-center">{{ localize('global.view_patient') }}</h5>
             <div class="container">
                 <div class="row">

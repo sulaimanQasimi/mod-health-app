@@ -31,7 +31,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
                                         <div>
-                                            {{ $anesthesia->date }}
+                                            {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">

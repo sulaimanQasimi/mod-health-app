@@ -116,7 +116,7 @@ class AppointmentController extends Controller
             'appointment_date' => 'required',
             // Add any other validation rules as needed
         ]);
-
+        $validatedData['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
         // Update the appointment
         $appointment->update($validatedData);
 

@@ -85,7 +85,9 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label for="date" class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                    <input type="date" class="form-control" name="date" value="{{ $anesthesia->date }}">
+                                                    <x-tools.dariDatePicker name="date" dir="ltr"
+                                                    withID="date" withPlaceHolder="{{ localize('global.date') }}"
+                                                    withSize="3" extraClasses="" />
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label for="time" class="mt-2 mb-2">{{ localize('global.time') }}</label>

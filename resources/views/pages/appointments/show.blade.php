@@ -31,7 +31,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.date') }}</h5>
                                         <div>
-                                            {{ $appointment->date }}
+                                            {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date) }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -1136,7 +1136,9 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="date">{{ localize('global.date') }}</label>
-                                                <input type="date" class="form-control" name="date" />
+                                                <x-tools.dariDatePicker name="date" dir="ltr"
+                                                withID="date" withPlaceHolder="{{ localize('global.date') }}"
+                                                withSize="3" extraClasses="" />
                                             </div>
                                             <div class="mb-3">
                                                 <label for="time">{{ localize('global.time') }}</label>
@@ -1791,7 +1793,9 @@
                                                     <div class="col-md-4">
                                                         <label for="date"
                                                         class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                    <input type="date" class="form-control" name="date" />
+                                                        <x-tools.dariDatePicker name="date" dir="ltr"
+                                                        withID="date" withPlaceHolder="{{ localize('global.date') }}"
+                                                        withSize="3" extraClasses="" />
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="time"

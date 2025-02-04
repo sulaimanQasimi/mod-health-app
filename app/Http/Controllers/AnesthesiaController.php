@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
+use HanifHefaz\Dcter\Dcter;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -89,6 +90,7 @@ class AnesthesiaController extends Controller
         ]);
 
         $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
+        $data['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($data['date']));
 
         // Create a new appointment
         $anesthesia = Anesthesia::create($data);
@@ -137,7 +139,7 @@ class AnesthesiaController extends Controller
             'operation_anesthesist_id' => 'nullable',
 
         ]);
-
+       
         $anesthesia->update($data);
 
         if ($data['status'] == 'approved') {
@@ -187,7 +189,7 @@ class AnesthesiaController extends Controller
         ]);
 
         $data['operation_assistants_id'] = json_encode($data['operation_assistants_id']);
-
+        $data['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($data['date']));
         $anesthesia->update($data);
 
         return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.anesthesia_updated_successfully.'));

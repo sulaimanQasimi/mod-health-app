@@ -20,6 +20,7 @@
             <th>{{localize('global.number')}}</th>
             {{-- <th>{{localize('global.patient_name')}}</th> --}}
             <th>{{localize('global.title')}}</th>
+            <th>{{localize('global.date')}}</th>
             <th>{{localize('global.time')}}</th>
             <th>{{localize('global.type')}}</th>
             <th>{{localize('global.department')}}</th>
@@ -32,7 +33,8 @@
                 <td>{{ $loop->iteration }}</td>
                 {{-- <td>{{ $consultation->patient->name }}</td> --}}
                 <td>{{ $consultation->title }}</td>
-                <td>{{ $consultation->created_at }}</td>
+                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($consultation->date) }}</td>
+                <td>{{ $consultation->time }}</td>
                 <td>
                     @if($consultation->consultation_type == 0)
 

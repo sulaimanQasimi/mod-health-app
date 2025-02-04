@@ -21,6 +21,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
+use HanifHefaz\Dcter\Dcter;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -32,33 +33,29 @@ class AppointmentController extends Controller
      * Display a listing of the resource.
      */
 
-    public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
-                ->with(['patient', 'doctor'])
-                ->latest()
-                ->get();
-
-            if ($appointments) {
-                return response()->json([
-                    'data' => $appointments,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
-        }
-
-        $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
-            ->with('patient', 'doctor')
-            ->latest()
-            ->get();
-        return view('pages.appointments.index', compact('appointments'));
-    }
+     public function index(Request $request)
+     {
+         if ($request->ajax()) {
+             $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
+                 ->with(['patient', 'doctor'])
+                 ->latest()
+                 ->get()
+                 ->map(function ($appointment) {
+                     $appointment->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date);
+                     return $appointment;
+                 });
+     
+             return response()->json([
+                 'data' => $appointments,
+             ]);
+         }
+     
+         $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
+             ->with('patient', 'doctor')
+             ->latest()
+             ->get();
+         return view('pages.appointments.index', compact('appointments'));
+     }
 
     public function create()
     {
@@ -79,6 +76,8 @@ class AppointmentController extends Controller
             'status_remark' => 'nullable',
             'refferal_remarks' => 'nullable',
         ]);
+
+        $validatedData['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
 
         if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');

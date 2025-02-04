@@ -246,7 +246,9 @@
                             </div>
                             <div class="mb-3">
                                 <label for="date">{{localize('global.date')}}</label>
-                                <input type="date" class="form-control" name="date"/>
+                                <x-tools.dariDatePicker name="date" dir="ltr"
+                                withID="date" withPlaceHolder="{{ localize('global.date') }}"
+                                withSize="3" extraClasses="" />
                             </div>
                             <div class="mb-3">
                                 <label for="time">{{localize('global.time')}}</label>
@@ -271,6 +273,11 @@
 <script>
     $(document).ready(function()
 {
+
+    // setTimeout(function() {
+    //     $('#date').persianDatepicker();
+    // }, 100);
+
     $('#department_id').on('change', function()
 {
     var departmentID = $(this).val();

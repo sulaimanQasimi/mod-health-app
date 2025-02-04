@@ -33,7 +33,7 @@
     <script src="{{ asset('assets/vendor/libs/toastr/toastr.js') }}"></script>
     <!-- Page JS -->
     <script src="{{ asset('assets/js/ui-toasts.js') }}"></script>
-
+    <script src="{{ asset('assets/js/persian_datepicker.js') }}"></script>
     <!-- Hijri Date JS -->
 
     <script src="{{ asset('assets/hijri/bootstrap.js') }}"></script>

@@ -184,5 +184,11 @@
 
 });
 </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  $(".datepicker_dari").persianDatepicker({
+    formatDate: 'YYYY-MM-DD'
+});
+});
+</script>
 </html>

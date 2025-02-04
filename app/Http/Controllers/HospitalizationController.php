@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
+use HanifHefaz\Dcter\Dcter;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -70,25 +71,51 @@ class HospitalizationController extends Controller
             $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
                 ->where('is_discharged', '1')
                 ->with(['patient', 'room', 'bed'])
-                ->get();
+                ->get()
+                ->map(function ($hospitalization) {
 
-            if ($hospitalizations) {
-                return response()->json([
-                    'data' => $hospitalizations,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+                    if ($hospitalization->created_at) {
+                        $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
+                    } else {
+                        $hospitalization->jalali_date = 'Not set';
+                    }
+    
+                    if ($hospitalization->discharged_at) {
+                        $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
+                    } else {
+                        $hospitalization->jalali_discharged_at = 'Not set';
+                    }
+    
+                    return $hospitalization;
+                });
+    
+            return response()->json([
+                'data' => $hospitalizations,
+            ]);
         }
-
+    
+        // For non-AJAX requests
         $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
             ->where('is_discharged', '1')
             ->with(['patient', 'room', 'bed'])
-            ->get();
+            ->get()
+            ->map(function ($hospitalization) {
+
+                if ($hospitalization->created_at) {
+                    $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
+                } else {
+                    $hospitalization->jalali_date = 'Not set';
+                }
+    
+                if ($hospitalization->discharged_at) {
+                    $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
+                } else {
+                    $hospitalization->jalali_discharged_at = 'Not set';
+                }
+    
+                return $hospitalization;
+            });
+    
         return view('pages.hospitalizations.discharged', compact('hospitalizations'));
     }
 

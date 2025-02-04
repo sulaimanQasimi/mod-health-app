@@ -31,7 +31,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $prescription->patient->name }}</td>
                                         <td>{{ $prescription->doctor->name }}</td>
-                                        <td>{{ $prescription->created_at }}</td>
+                                        <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($prescription->created_at) }}</td>
                                         <td>{{ $prescription->is_completed == 0 ? localize('global.not_delivered') : localize('global.delivered') }}
                                         </td>
                                         <td>

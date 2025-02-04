@@ -23,7 +23,11 @@ class UnderReviewController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $under_reviews = UnderReview::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
+            $under_reviews = UnderReview::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get()
+            ->map(function ($under_review) {
+                $under_review->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($under_review->created_at);
+                return $under_review;
+            });
 
                 if ($under_reviews) {
                     return response()->json([

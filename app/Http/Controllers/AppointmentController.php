@@ -181,8 +181,13 @@ class AppointmentController extends Controller
                 ->where('is_completed', '0')
                 ->with(['patient', 'doctor'])
                 ->latest()
-                ->get();
+                ->get()
+                ->map(function ($appointment) {
+                    $appointment->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date);
+                    return $appointment;
+                });
 
+                
             if ($appointments) {
                 return response()->json([
                     'data' => $appointments,
@@ -211,7 +216,11 @@ class AppointmentController extends Controller
                 ->where('is_completed', '1')
                 ->with(['patient', 'doctor'])
                 ->latest()
-                ->get();
+                ->get()
+                ->map(function ($appointment) {
+                    $appointment->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date);
+                    return $appointment;
+                });
 
             if ($appointments) {
                 return response()->json([

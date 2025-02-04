@@ -94,18 +94,10 @@
                             }
                         },
                         {
-                            data: 'created_at',
-                            render: function(data) {
-                            var formattedDate = moment(data.created_at).format('YYYY-MM-DD HH:MM:SS');
-                            return formattedDate;
-                            }
+                            data: 'jalali_date',
                         },
                         {
-                            data: 'discharged_at',
-                            render: function(data) {
-                            var formattedDate = moment(data.discharged_at).format('YYYY-MM-DD HH:MM:SS');
-                            return formattedDate;
-                            }
+                            data: 'jalali_discharged_at',
                         },
 
                         {

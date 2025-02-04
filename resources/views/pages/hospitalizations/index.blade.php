@@ -93,11 +93,8 @@
                             }
                         },
                         {
-                            data: 'created_at',
-                            render: function(data) {
-                            var formattedDate = moment(data.created_at).format('YYYY-MM-DD HH:MM:SS');
-                            return formattedDate;
-                            }
+                            data: 'jalali_date',
+                            defaultContent: 'Not set', 
                         },
 
                         {

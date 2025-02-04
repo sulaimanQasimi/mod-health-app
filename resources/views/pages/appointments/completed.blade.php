@@ -88,7 +88,7 @@
                             }
                         },
                         {
-                            data: 'date',
+                            data: 'jalali_date',
 
                         },
                         {

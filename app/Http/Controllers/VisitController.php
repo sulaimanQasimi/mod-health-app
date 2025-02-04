@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Hospitalization;
 use App\Models\Visit;
+use HanifHefaz\Dcter\Dcter;
 use Illuminate\Http\Request;
 
 class VisitController extends Controller
@@ -14,7 +15,12 @@ class VisitController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
+            $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get()
+            ->map(function ($hospitalization) {
+                // Convert created_at to Jalali format and keep only the date part
+                $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
+                return $hospitalization;
+            });
 
                 if ($hospitalizations) {
                     return response()->json([

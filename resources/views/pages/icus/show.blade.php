@@ -77,7 +77,7 @@
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                                     <div>
-                                                        {{ $icu->patient->created_at }}
+                                                        {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($icu->patient->created_at) }}
                                                     </div>
                                                 </div>
                                             </div>

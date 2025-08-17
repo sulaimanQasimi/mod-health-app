@@ -7,12 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class PrescriptionItem extends Model
+class PrescriptionAlternativeItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['prescription_id','dosage','frequency','amount','medicine_id','medicine_type_id', 'is_delivered','usage_type_id'];
+    protected $fillable = [
+        'prescription_id',
+        'prescription_item_id',
+        'medicine_id',
+        'medicine_type_id',
+        'usage_type_id',
+        'dosage',
+        'frequency',
+        'amount',
+        'is_delivered',
+        'is_selected',
+        'notes'
+    ];
 
     public static function boot()
     {
@@ -34,24 +46,14 @@ class PrescriptionItem extends Model
         });
     }
 
-    public function appointment()
-    {
-        return $this->belongsTo(Appointment::class);
-    }
-
-    public function patient()
-    {
-        return $this->belongsTo(Patient::class);
-    }
-
-    public function doctor()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function prescription()
     {
         return $this->belongsTo(Prescription::class);
+    }
+
+    public function prescriptionItem()
+    {
+        return $this->belongsTo(PrescriptionItem::class);
     }
 
     public function medicine()
@@ -63,18 +65,24 @@ class PrescriptionItem extends Model
     {
         return $this->belongsTo(MedicineType::class);
     }
+
     public function usageType()
     {
         return $this->belongsTo(MedicineUsageType::class);
     }
 
-    public function alternativeItems()
+    public function createdBy()
     {
-        return $this->hasMany(PrescriptionAlternativeItem::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function selectedAlternative()
+    public function updatedBy()
     {
-        return $this->hasOne(PrescriptionAlternativeItem::class)->where('is_selected', 1);
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

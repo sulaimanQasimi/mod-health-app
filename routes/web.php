@@ -45,6 +45,7 @@ use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PACUController;
 use App\Http\Controllers\PatientComplaintController;
 use App\Http\Controllers\PrescriptionItemController;
+use App\Http\Controllers\PrescriptionAlternativeItemController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
@@ -386,6 +387,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('editItem/{item}/edit-item', [PrescriptionItemController::class, 'edit'])->name('editItem');
         Route::put('/prescription-items/{item}', [PrescriptionItemController::class, 'update'])->name('updateItem');
 
+    });
+
+    // Prescription Alternative Items routes
+    Route::prefix('prescription_alternative_items')->name('prescription_alternative_items.')->group(function () {
+        Route::post('store', [PrescriptionAlternativeItemController::class, 'store'])->name('store');
+        Route::put('update/{alternativeItem}', [PrescriptionAlternativeItemController::class, 'update'])->name('update');
+        Route::delete('destroy/{alternativeItem}', [PrescriptionAlternativeItemController::class, 'destroy'])->name('destroy');
+        Route::get('select/{alternativeItem}', [PrescriptionAlternativeItemController::class, 'selectAlternative'])->name('select');
+        Route::get('changeStatus/{alternativeItem}', [PrescriptionAlternativeItemController::class, 'changeStatus'])->name('changeStatus');
     });
 
     // Branches routes

@@ -8,181 +8,171 @@
         @endif
         <div class="container-xxl flex-grow-1 container-p-y">
 
+            <!-- Filters Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ localize('global.filters') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('patients.index') }}" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">{{ localize('global.search') }}</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                value="{{ request('search') }}" placeholder="{{ localize('global.search_by_name_nid_phone') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="militery_type_id" class="form-label">{{ localize('global.militery_type') }}</label>
+                            <select class="form-select" id="militery_type_id" name="militery_type_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($militeryTypes as $militeryType)
+                                    <option value="{{ $militeryType->id }}" {{ request('militery_type_id') == $militeryType->id ? 'selected' : '' }}>
+                                        {{ $militeryType->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="province_id" class="form-label">{{ localize('global.province') }}</label>
+                            <select class="form-select" id="province_id" name="province_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province->id }}" {{ request('province_id') == $province->id ? 'selected' : '' }}>
+                                        {{ $province->name_dr }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="gender" class="form-label">{{ localize('global.gender') }}</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">{{ localize('global.all') }}</option>
+                                <option value="0" {{ request('gender') == '0' ? 'selected' : '' }}>{{ localize('global.male') }}</option>
+                                <option value="1" {{ request('gender') == '1' ? 'selected' : '' }}>{{ localize('global.female') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="job_category" class="form-label">{{ localize('global.job_category') }}</label>
+                            <select class="form-select" id="job_category" name="job_category">
+                                <option value="">{{ localize('global.all') }}</option>
+                                <option value="0" {{ request('job_category') == '0' ? 'selected' : '' }}>{{ localize('global.military') }}</option>
+                                <option value="1" {{ request('job_category') == '1' ? 'selected' : '' }}>{{ localize('global.civilian') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-search"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <a href="{{ route('patients.index') }}" class="btn btn-secondary">
+                                <i class="bx bx-refresh"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ localize('global.patients_list') }}</h5>
+                    <div>
+                        <a href="{{ route('patients.create') }}" class="btn btn-primary">
+                            <i class="bx bx-plus"></i> {{ localize('global.create') }}
+                        </a>
+                    </div>
                 </div>
                 <div class="card-datatable table-responsive">
                     <table class="datatables-basic table border-top">
                         <thead>
                             <tr>
-                                <th></th>
                                 <th>{{ localize('global.id') }}</th>
                                 <th>{{ localize('global.name') }}</th>
                                 <th>{{ localize('global.last_name') }}</th>
                                 <th>{{ localize('global.province') }}</th>
+                                <th>{{ localize('global.militery_type') }}</th>
                                 <th>{{ localize('global.phone') }}</th>
-                                <th></th>
+                                <th>{{ localize('global.actions') }}</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @foreach ($patients as $patient)
+                                <tr>
+                                    <td>{{ $patient->id }}</td>
+                                    <td>{{ $patient->name }}</td>
+                                    <td>{{ $patient->last_name }}</td>
+                                    <td>{{ $patient->province->name ?? '-' }}</td>
+                                    <td>{{ $patient->militeryType?->name ?? '-' }}</td>
+                                    <td>{{ $patient->phone }}</td>
+                                    <td>
+                                        <a href="{{ route('patients.show', $patient->id) }}"
+                                            class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>
+                                        <a href="{{ route('patients.edit', $patient->id) }}"
+                                            class="btn btn-sm btn-icon text-primary"><i class="bx bx-edit"></i></a>
+                                        <a href="{{ route('patients.destroy', $patient->id) }}"
+                                            class="btn btn-sm btn-icon text-danger"><i class="bx bx-trash"></i></a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
+                    <div class="col-md-12 mt-4 mb-4">
+                        {{ $patients->links('pagination::bootstrap-4') }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="content-backdrop fade"></div>
-    </div>
 @endsection
 
 @push('custom-css')
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
-    <style>
-        .card-datatable table.dataTable thead th {
-            text-align: right;
-        }
-
-        .card-datatable table.dataTable tbody td {
-            text-align: right;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-    </style>
+<style>
+    .filter-card {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+    }
+    
+    .filter-card .card-header {
+        background-color: #e9ecef;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .btn-filter {
+        min-width: 40px;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .pagination {
+        margin-bottom: 0;
+    }
+</style>
 @endpush
 
 @push('custom-js')
-    <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
-    <script>
-        var canEdit = <?php echo auth()->user()->can('edit-patients') ? 'true' : 'false'; ?>;
-        $(function() {
-            var dt_basic_table = $('.datatables-basic'),
-                dt_basic;
-
-            if (dt_basic_table.length) {
-                dt_basic = dt_basic_table.DataTable({
-                    ajax: "{{ route('patients.index') }}",
-                    columns: [{
-                            data: 'id'
-                        },
-
-                        {
-                            data: 'id'
-                        },
-                        {
-                            data: 'name'
-                        },
-                        {
-                            data: 'last_name'
-                        },
-                        {
-                            data: 'province',
-                            render: function(data) {
-                                return data ? data.name_en : '';
-                            }
-                        },
-                        {
-                            data: 'phone'
-                        },
-
-                        {
-                            data: ''
-                        },
-
-
-                    ],
-                    columnDefs: [{
-                            // For Responsive
-                            className: 'control',
-                            orderable: false,
-                            searchable: false,
-                            responsivePriority: 2,
-                            targets: 0,
-                            render: function(data, type, full, meta) {
-                                return '';
-                            }
-                        },
-                        {
-                            // Actions
-                            targets: -1,
-                            title: '{{ localize('global.actions') }}',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, full, meta) {
-                        let actions = '';
-
-
-                            actions += `<a href="{{ url('patients/show/') }}` + `/` + full['id'] +
-                                       `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>`;
-
-                        if (canEdit) {
-                            actions += `<a href="{{ url('patients/edit/') }}` + `/` + full['id'] +
-                                       `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-edit"></i></a>`;
-                        }
-
-                        // Add print button
-                        actions += `<a href="javascript:void(0);" onclick="window.open('/patients/${full['id']}/printToken', '_blank');" class="btn btn-sm btn-icon text-info"><i class="bx bx-printer"></i></a>`;
-
-                        return actions;
-                    }
-                        }
-                    ],
-                    order: [
-                        [0, 'asc']
-                    ],
-                    dom: '<"flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-                    displayLength: 25,
-                    lengthMenu: [7, 10, 25, 50, 75, 100],
-                    buttons: [],
-                    responsive: {
-                        details: {
-                            display: $.fn.dataTable.Responsive.display.modal({
-                                header: function(row) {
-                                    var data = row.data();
-                                    return 'Details of ' + data['full_name'];
-                                }
-                            }),
-                            type: 'column',
-                            renderer: function(api, rowIdx, columns) {
-                                var data = $.map(columns, function(col, i) {
-                                    return col.title !==
-                                        '' // ? Do not show row in modal popup if title is blank (for check box)
-                                        ?
-                                        '<tr data-dt-row="' +
-                                        col.rowIndex +
-                                        '" data-dt-column="' +
-                                        col.columnIndex +
-                                        '">' +
-                                        '<td>' +
-                                        col.title +
-                                        ':' +
-                                        '</td> ' +
-                                        '<td>' +
-                                        col.data +
-                                        '</td>' +
-                                        '</tr>' :
-                                        '';
-                                }).join('');
-
-                                return data ? $('<table class="table"/><tbody />').append(data) : false;
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Filter form control to default size
-            // ? setTimeout used for multilingual table initialization
-            setTimeout(() => {
-                $('.dataTables_filter .form-control').removeClass('form-control-sm');
-                $('.dataTables_length .form-select').removeClass('form-select-sm');
-            }, 300);
-        });
-
+<script>
+$(document).ready(function() {
+    // Auto-submit form when select values change
+    $('select[name="militery_type_id"], select[name="province_id"], select[name="gender"], select[name="job_category"]').change(function() {
+        $(this).closest('form').submit();
+    });
+    
+    // Clear search on refresh button click
+    $('.btn-secondary').click(function() {
+        $('input[name="search"]').val('');
+    });
+    
+    // Add loading state to search button
+    $('form').submit(function() {
+        $('.btn-primary').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i>');
+    });
+});
 </script>
 @endpush

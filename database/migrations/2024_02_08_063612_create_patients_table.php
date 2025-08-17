@@ -43,10 +43,12 @@ return new class extends Migration
             $table->foreign('district_id')->references('id')->on('districts');
             $table->foreign('relation_id')->references('id')->on('relations');
             $table->foreign('branch_id')->references('id')->on('branches');
-            $table->softDeletes();
+            $table->date('registration_date')->nullable();
+            $table->unsignedBigInteger('militery_type_id')->nullable();
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

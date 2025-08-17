@@ -10,6 +10,7 @@ use App\Models\PrintedNumber;
 use App\Models\Province;
 use App\Models\Recipient;
 use App\Models\Relation;
+use App\Models\MiliteryType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -26,36 +27,62 @@ class PatientController extends Controller
 {
     public function index(Request $request)
     {
+        // get all patients with militery type, province, district
+        $query = Patient::where('branch_id', auth()->user()->branch_id)
+            ->with(['militeryType', 'province', 'district']);
 
-        if ($request->ajax()) {
-            $patients = Patient::where('branch_id',auth()->user()->branch_id)->with('province')->latest()->get();
 
-                if ($patients) {
-                    return response()->json([
-                        'data' => $patients,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+        // Search by name and nid and phone
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                    ->orWhere('nid', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
+            });
         }
 
-        $patients = Patient::where('branch_id',auth()->user()->branch_id)->latest()->get();
-        return view('pages.patients.index', compact('patients'));
+        // Filter by militery type
+        if ($request->filled('militery_type_id')) {
+            $query->where('militery_type_id', $request->militery_type_id);
+        }
+
+        // Filter by province
+        if ($request->filled('province_id')) {
+            $query->where('province_id', $request->province_id);
+        }
+
+        // Filter by gender 0 for male and 1 for female
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
+        // Filter by job category 0 for civilian and 1 for military
+        if ($request->filled('job_category')) {
+            $query->where('job_category', $request->job_category);
+        }
+
+        $patients = $query->latest()->paginate(15)->withQueryString();
+
+        // Get data for filters militery type, province
+        $militeryTypes = MiliteryType::all();
+        $provinces = Province::all();
+
+        return view('pages.patients.index', compact('patients', 'militeryTypes', 'provinces'));
     }
 
     public function create()
     {
         $relations = Relation::all();
-        return view('pages.patients.create',compact('relations'));
+        ;
+        return view('pages.patients.create', compact('relations', ));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
+            'militery_type_id' => 'nullable|exists:militery_types,id',
             'name' => 'required',
             'last_name' => 'nullable',
             'father_name' => 'nullable',
@@ -98,7 +125,7 @@ class PatientController extends Controller
         $departments = Department::all();
         $doctors = Doctor::all();
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.patients.show', compact('patient','departments','doctors','previousDiagnoses'));
+        return view('pages.patients.show', compact('patient', 'departments', 'doctors', 'previousDiagnoses'));
     }
 
     public function edit(Patient $patient)
@@ -107,12 +134,14 @@ class PatientController extends Controller
         $provinces = Province::all();
         $districts = District::all();
         $relations = Relation::all();
-        return view('pages.patients.create',compact('recipients','provinces','districts','relations','patient'));
+        $militeryTypes = MiliteryType::all();
+        return view('pages.patients.create', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'militeryTypes'));
     }
 
     public function update(Request $request, Patient $patient)
     {
         $data = $request->validate([
+            'militery_type_id' => 'nullable|exists:militery_types,id',
             'name' => 'required',
             'last_name' => 'nullable',
             'father_name' => 'nullable',
@@ -168,33 +197,33 @@ class PatientController extends Controller
 
 
 
-public function addImage(Request $request, $id)
-{
-    $patient = Patient::findOrFail($id);
-    $img = $request->image;
+    public function addImage(Request $request, $id)
+    {
+        $patient = Patient::findOrFail($id);
+        $img = $request->image;
 
-    $folderPath = "images/patients/";
+        $folderPath = "images/patients/";
 
-    $image_parts = explode(";base64,", $img);
-    $image_type_aux = explode("image/", $image_parts[0]);
-    $image_type = $image_type_aux[1];
+        $image_parts = explode(";base64,", $img);
+        $image_type_aux = explode("image/", $image_parts[0]);
+        $image_type = $image_type_aux[1];
 
-    $image_base64 = base64_decode($image_parts[1]);
+        $image_base64 = base64_decode($image_parts[1]);
 
-    $fileName = uniqid() . '.png';
+        $fileName = uniqid() . '.png';
 
-    $file = $folderPath . $fileName;
+        $file = $folderPath . $fileName;
 
-    // Save the image to the public folder
-    $publicPath = public_path($file);
-    File::put($publicPath, $image_base64);
+        // Save the image to the public folder
+        $publicPath = public_path($file);
+        File::put($publicPath, $image_base64);
 
-    // Update the patient's image column with the image path
-    $patient->image = $file;
-    $patient->save();
+        // Update the patient's image column with the image path
+        $patient->image = $file;
+        $patient->save();
 
-    return redirect()->route('patients.show',$patient)->with('success', localize('global.patient_image_created_successfully.'));
-}
+        return redirect()->route('patients.show', $patient)->with('success', localize('global.patient_image_created_successfully.'));
+    }
 
 
     public function scanQrCode(Request $request)
@@ -203,7 +232,7 @@ public function addImage(Request $request, $id)
         $qrCodeData = $request->input('qrCodeData');
 
         // Find the patient based on the QR code data
-        $patient = Patient::where('id', $qrCodeData)->where('branch_id',auth()->user()->branch_id)->first();
+        $patient = Patient::where('id', $qrCodeData)->where('branch_id', auth()->user()->branch_id)->first();
 
         if ($patient) {
             // Redirect to the patient's show page
@@ -229,11 +258,21 @@ public function addImage(Request $request, $id)
         $previousLabs = $patient->labs;
         $previousPrescriptions = $patient->prescriptions;
         $previousIcus = $patient->icus;
-        return view('pages.patients.history',compact('patient','previousDiagnoses','previousConsultations','previousAnesthesias',
-    'previousHospitalizations','previousLabs','previousPrescriptions','previousIcus','appointments'));
+        return view('pages.patients.history', compact(
+            'patient',
+            'previousDiagnoses',
+            'previousConsultations',
+            'previousAnesthesias',
+            'previousHospitalizations',
+            'previousLabs',
+            'previousPrescriptions',
+            'previousIcus',
+            'appointments'
+        ));
     }
 
-    public function getTab(Request $request){
+    public function getTab(Request $request)
+    {
         $recipients = Recipient::all();
         $provinces = Province::all();
         $districts = District::all();
@@ -242,24 +281,24 @@ public function addImage(Request $request, $id)
         $tab_type = $request->tab_type;
         $patient_id = $request->patient_id;
 
-        if($patient_id !=''){
+        if ($patient_id != '') {
             $patient = Patient::find($patient_id);
 
-            if($tab_type == 'first'){
-                return view('pages.patients.tab1',compact('recipients','provinces','districts','relations','patient'));
-            }elseif($tab_type == 'second'){
-                return view('pages.patients.tab2',compact('recipients','provinces','districts','relations','patient'));
-            }elseif($tab_type == 'third'){
-                return view('pages.patients.tab3',compact('recipients','provinces','districts','relations','patient'));
+            if ($tab_type == 'first') {
+                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient'));
+            } elseif ($tab_type == 'second') {
+                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient'));
+            } elseif ($tab_type == 'third') {
+                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient'));
             }
         }
 
-        if($tab_type == 'first'){
-            return view('pages.patients.tab1',compact('recipients','provinces','districts','relations'));
-        }elseif($tab_type == 'second'){
-            return view('pages.patients.tab2',compact('recipients','provinces','districts','relations'));
-        }elseif($tab_type == 'third'){
-            return view('pages.patients.tab3',compact('recipients','provinces','districts','relations'));
+        if ($tab_type == 'first') {
+            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations'));
+        } elseif ($tab_type == 'second') {
+            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations'));
+        } elseif ($tab_type == 'third') {
+            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations'));
         }
     }
 
@@ -274,11 +313,23 @@ public function addImage(Request $request, $id)
     public function reportSearch(Request $request)
     {
         $query = DB::table('patients as p')
-        ->leftJoin('provinces as pr', 'p.province_id' , '=', 'pr.id')
-        ->leftJoin('districts as d', 'p.district_id' , '=', 'd.id')
-        ->leftJoin('recipients as r', 'p.referred_by' , '=', 'r.id')
-        ->select('p.id','p.name as patient_name','p.nid', 'p.id_card', 'p.referral_name', 'p.age', 'p.gender',
-        'p.job_category', 'p.type', 'r.name as referred_by', 'pr.name_dr as province_name','d.name_dr as district_name');
+            ->leftJoin('provinces as pr', 'p.province_id', '=', 'pr.id')
+            ->leftJoin('districts as d', 'p.district_id', '=', 'd.id')
+            ->leftJoin('recipients as r', 'p.referred_by', '=', 'r.id')
+            ->select(
+                'p.id',
+                'p.name as patient_name',
+                'p.nid',
+                'p.id_card',
+                'p.referral_name',
+                'p.age',
+                'p.gender',
+                'p.job_category',
+                'p.type',
+                'r.name as referred_by',
+                'pr.name_dr as province_name',
+                'd.name_dr as district_name'
+            );
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -326,7 +377,7 @@ public function addImage(Request $request, $id)
 
 
         $items = $query->get();
-    return view('pages.patients.reports.report', ['items' => $items]);
+        return view('pages.patients.reports.report', ['items' => $items]);
 
     }
 
@@ -336,22 +387,34 @@ public function addImage(Request $request, $id)
 
         $data = json_decode($request->data, true);
 
-        $items =  DB::table('patients as p')
-        ->leftJoin('provinces as pr', 'p.province_id' , '=', 'pr.id')
-        ->leftJoin('districts as d', 'p.district_id' , '=', 'd.id')
-        ->leftJoin('recipients as r', 'p.referred_by' , '=', 'r.id')
-        ->select('p.id','p.name as patient_name','p.nid', 'p.id_card', 'p.referral_name', 'p.age', 'p.gender',
-        'p.job_category', 'p.type', 'r.name as referred_by', 'pr.name_dr as province_name','d.name_dr as district_name')
-        ->whereIn('p.id', $data)->get();
+        $items = DB::table('patients as p')
+            ->leftJoin('provinces as pr', 'p.province_id', '=', 'pr.id')
+            ->leftJoin('districts as d', 'p.district_id', '=', 'd.id')
+            ->leftJoin('recipients as r', 'p.referred_by', '=', 'r.id')
+            ->select(
+                'p.id',
+                'p.name as patient_name',
+                'p.nid',
+                'p.id_card',
+                'p.referral_name',
+                'p.age',
+                'p.gender',
+                'p.job_category',
+                'p.type',
+                'r.name as referred_by',
+                'pr.name_dr as province_name',
+                'd.name_dr as district_name'
+            )
+            ->whereIn('p.id', $data)->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.patients.reports.pdf_report',  ['items' => $items])->render();
+        $html = view('pages.patients.reports.pdf_report', ['items' => $items])->render();
         if ($request->type == 'pdf') {
             $mpdf = new Mpdf(['format' => 'A4-L']);
             $mpdf->WriteHTML($html);
             $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
+        } else {
             $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
             $sheet = $spreadsheet->getActiveSheet();
             $row = 3;
@@ -398,35 +461,36 @@ public function addImage(Request $request, $id)
                 $type = '';
                 if ($item->type == '0') {
                     $type = 'وزارت دفاع ملی';
-                } elseif($item->type == '1') {
+                } elseif ($item->type == '1') {
                     $type = 'سایر دارات';
-                } else{
+                } else {
                     $type = 'اعضای فامیل و سایرین';
                 }
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->nid);
-                    $sheet->setCellValue('D' . $row . '', $item->id_card);
-                    $sheet->setCellValue('E' . $row . '', $item->referral_name);
-                    $sheet->setCellValue('F' . $row . '', $item->age);
-                    $sheet->setCellValue('G' . $row . '', $gender);
-                    $sheet->setCellValue('H' . $row . '', $job_category);
-                    $sheet->setCellValue('I' . $row . '', $type);
-                    $sheet->setCellValue('J' . $row . '', $item->referred_by);
-                    $sheet->setCellValue('K' . $row . '', $item->province_name);
-                    $sheet->setCellValue('L' . $row . '', $item->district_name);
+                $sheet->setCellValue('A' . $row . '', ++$index);
+                $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                $sheet->setCellValue('C' . $row . '', $item->nid);
+                $sheet->setCellValue('D' . $row . '', $item->id_card);
+                $sheet->setCellValue('E' . $row . '', $item->referral_name);
+                $sheet->setCellValue('F' . $row . '', $item->age);
+                $sheet->setCellValue('G' . $row . '', $gender);
+                $sheet->setCellValue('H' . $row . '', $job_category);
+                $sheet->setCellValue('I' . $row . '', $type);
+                $sheet->setCellValue('J' . $row . '', $item->referred_by);
+                $sheet->setCellValue('K' . $row . '', $item->province_name);
+                $sheet->setCellValue('L' . $row . '', $item->district_name);
 
                 $row++;
             }
 
-return $this->exportResponse($spreadsheet);
-}
+            return $this->exportResponse($spreadsheet);
+        }
     }
 
 
-    public function exportResponse($spreadsheet){
+    public function exportResponse($spreadsheet)
+    {
         $writer = new WriterXlsx($spreadsheet);
-        $response =  new StreamedResponse(
+        $response = new StreamedResponse(
             function () use ($writer) {
                 $writer->save('php://output');
             }
@@ -439,29 +503,29 @@ return $this->exportResponse($spreadsheet);
     }
 
 
-public function printToken($patientId)
-{
-    $patient = Patient::findOrFail($patientId);
-    $today = Carbon::today();
+    public function printToken($patientId)
+    {
+        $patient = Patient::findOrFail($patientId);
+        $today = Carbon::today();
 
-    // Get the maximum printed number for today across all patients
-    $maxNumber = PrintedNumber::where('date', $today)->max('number');
+        // Get the maximum printed number for today across all patients
+        $maxNumber = PrintedNumber::where('date', $today)->max('number');
 
-    // Assign the next number
-    $newNumber = ($maxNumber ? $maxNumber : 0) + 1;
+        // Assign the next number
+        $newNumber = ($maxNumber ? $maxNumber : 0) + 1;
 
-    // Store the new printed number for the patient
-    PrintedNumber::create([
-        'patient_id' => $patientId,
-        'number' => $newNumber,
-        'date' => $today,
-    ]);
+        // Store the new printed number for the patient
+        PrintedNumber::create([
+            'patient_id' => $patientId,
+            'number' => $newNumber,
+            'date' => $today,
+        ]);
 
-    // Retrieve the printed number for the view
-    $printedNumber = PrintedNumber::where('patient_id', $patientId)
-        ->where('date', $today)
-        ->latest() // Get the latest entry for today
-        ->firstOrFail(); // Ensure it retrieves today's printed number
-    return view('pages.patients.token', compact('patient', 'printedNumber'));
-}
+        // Retrieve the printed number for the view
+        $printedNumber = PrintedNumber::where('patient_id', $patientId)
+            ->where('date', $today)
+            ->latest() // Get the latest entry for today
+            ->firstOrFail(); // Ensure it retrieves today's printed number
+        return view('pages.patients.token', compact('patient', 'printedNumber'));
+    }
 }

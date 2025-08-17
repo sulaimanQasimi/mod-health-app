@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->foreign('branch_id')
                   ->references('id')
-                  ->on('diagnoses');
+                  ->on('branches');
 
             $table->foreign('hospitalization_id')
                   ->references('id')

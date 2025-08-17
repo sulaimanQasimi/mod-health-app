@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -1276,6 +1277,49 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
+
+        //Militery Types        
+        Permission::create([
+            'id' => 131,
+            'name' => 'show-militery-types',
+            'name_dr' => 'نمایش رتبه نظامی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+            ]);
+
+
+        Permission::create([
+            'id' => 132,
+            'name' => 'create-militery-types',
+            'name_dr' => 'ایجاد رتبه نظامی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::create([
+            'id' => 133,
+            'name' => 'edit-militery-types',
+            'name_dr' => 'تصحیح رتبه نظامی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::create([
+            'id' => 134,
+            'name' => 'delete-militery-types',
+            'name_dr' => 'حذف رتبه نظامی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+        User::find(1)->givePermissionTo(Permission::all());
 
     }
 }

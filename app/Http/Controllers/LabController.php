@@ -59,7 +59,7 @@ class LabController extends Controller
 
     $labTypeIds = $data['lab_type_id'];
     unset($data['lab_type_id']);
-
+// dd($request->all());
     $lab_item_data = [
         'branch_id' => $request->branch_id,
         'appointment_id' => $request->appointment_id,

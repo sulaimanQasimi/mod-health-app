@@ -12,14 +12,45 @@ class Patient extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','last_name','phone','age','father_name','nid','province_id','district_id','referral_by','image','branch_id','job','rank','relation_id','job_type','gender','referral_name','referral_last_name','referral_father_name','referral_nid','referral_id_card','referral_phone','referral_recipient','type','id_card','job_category','referred_by'];
+    protected $fillable = [
+        'name',
+        'last_name',
+        'phone',
+        'age',
+        'father_name',
+        'nid',
+        'province_id',
+        'district_id',
+        'referral_by',
+        'image',
+        'branch_id',
+        'job',
+        'rank',
+        'relation_id',
+        'job_type',
+        'gender',
+        'referral_name',
+        'referral_last_name',
+        'referral_father_name',
+        'referral_nid',
+        'referral_id_card',
+        'referral_phone',
+        'referral_recipient',
+        'type',
+        'id_card',
+        'job_category',
+        'referred_by',
+        'registration_date',
+        'militery_type_id',
+    ];
 
 
-public static function boot()
+    public static function boot()
     {
         parent::boot();
         self::creating(function ($model) {
             $user = Auth::user();
+            $model->registration_date = now();
             $model->created_by = $user->id ?? 0;
         });
 
@@ -84,6 +115,11 @@ public static function boot()
     public function hospitalizations()
     {
         return $this->hasMany(Hospitalization::class);
+    }
+
+    public function militeryType()
+    {
+        return $this->belongsTo(MiliteryType::class);
     }
 
 }

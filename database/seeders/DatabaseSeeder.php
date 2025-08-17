@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             ProcedureTypeSeeder::class,
             MedicineUsageSeeder::class,
             DiseaseSeeder::class,
-
+            MiliteryTypeSeeder::class,
 
         ]);
     }

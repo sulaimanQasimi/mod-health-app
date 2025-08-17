@@ -1,6 +1,20 @@
 <?php
 
 return [
+    'patient_photo_capture' => 'تصویر بیمار',
+    'capture_patient_photo_description' => 'تصویر بیمار را بگیرید',
+    'patient_information' => 'معلومات بیمار',
+    'name' => 'نام',
+    'nid' => 'نمبر تذکره',
+    'age' => 'سن',
+    'years' => 'سال',
+    'live_camera' => 'دوربین زنده',
+    'take_photo' => 'تصویر بگیرید',
+    'captured_photo' => 'تصویر ثبت شده',
+    'captured_image_will_appear_here' => 'تصویر ثبت شده در اینجا ظاهر خواهد شد',
+
+    'save_photo' => 'ثبت تصویر',
+    'militery_type' => 'رتبه نظامی',
     'dashboard' => 'صفحه اصلی',
     'document' => 'اسناد',
     'completed_documents' => 'اسناد تکمیل شده',

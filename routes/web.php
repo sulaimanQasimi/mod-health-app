@@ -49,6 +49,7 @@ use App\Http\Controllers\RelationController;
 use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
 use App\Models\Prescription;
+use App\Http\Controllers\MiliteryTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -652,5 +653,14 @@ Route::group(['middleware' => ['auth']], function () {
 
 });
 
+Route::prefix('militery_types')->name('militery_types.')->group(function () {
+    Route::get('/', [MiliteryTypeController::class, 'index'])->name('index');
+    Route::get('create', [MiliteryTypeController::class, 'create'])->name('create');
+    Route::get('show/{militeryType}', [MiliteryTypeController::class, 'show'])->name('show');
+    Route::post('store', [MiliteryTypeController::class, 'store'])->name('store');
+    Route::get('edit/{militeryType}', [MiliteryTypeController::class, 'edit'])->name('edit');
+    Route::put('update/{militeryType}', [MiliteryTypeController::class, 'update'])->name('update');
+    Route::delete('destroy/{militeryType}', [MiliteryTypeController::class, 'destroy'])->name('destroy');
+});
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);

@@ -63,6 +63,12 @@
                             <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('militery_types.index') ? 'active' : '' }}">
+                        <a href="{{ route('militery_types.index') }}" class="menu-link">
+                            <div>{{ localize('global.militery_types') }}</div>
+                        </a>
+                    </li>
+                
                 </ul>
             </li>
         @endcan

@@ -52,6 +52,17 @@ class HomeController extends Controller
         $totalIcuAdmissions = ICU::where('branch_id',auth()->user()->branch_id)->count();
         $totalInPatientAdmissions = Hospitalization::where('branch_id',auth()->user()->branch_id)->count();
 
+        // Today's statistics
+        $todayPatients = Patient::where('branch_id', auth()->user()->branch_id)
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+        
+        $yesterdayPatients = Patient::where('branch_id', auth()->user()->branch_id)
+            ->whereDate('created_at', Carbon::yesterday())
+            ->count();
+        
+        $todayPatientsPercentageChange = $this->calculateTodayPercentageChange($todayPatients, $yesterdayPatients);
+
         // Retrieve data for charts
         $patientsTrendData = $this->getPatientsTrendData();
         $appointmentsTrendData = $this->getAppointmentsTrendData();
@@ -126,6 +137,8 @@ class HomeController extends Controller
             'totalOperations' => $totalOperations,
             'totalIcuAdmissions' => $totalIcuAdmissions,
             'totalInPatientAdmissions' => $totalInPatientAdmissions,
+            'todayPatients' => $todayPatients,
+            'todayPatientsPercentageChange' => $todayPatientsPercentageChange,
             'patientsTrendData' => $patientsTrendData,
             'appointmentsTrendData' => $appointmentsTrendData,
             'wordCloudData' => $wordCloudData,
@@ -222,6 +235,16 @@ class HomeController extends Controller
             $percentageChange = 0;
         }
 
+        return $percentageChange;
+    }
+
+    private function calculateTodayPercentageChange($todayCount, $yesterdayCount)
+    {
+        if ($yesterdayCount > 0) {
+            $percentageChange = round(($todayCount - $yesterdayCount) / $yesterdayCount * 100, 2);
+        } else {
+            $percentageChange = 0;
+        }
         return $percentageChange;
     }
 

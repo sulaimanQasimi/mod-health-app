@@ -388,4 +388,6 @@ return [
     'lab_type_updated_successfully' => 'Lab type updated successfully',
     'lab_type_deleted_successfully' => 'Lab type deleted successfully',
     'total' => 'Total',
+    'today_patients' => 'Today\'s Patients',
+    'today_registered_patients' => 'Patients registered today',
 ];

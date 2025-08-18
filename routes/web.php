@@ -51,27 +51,6 @@ use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
 use App\Models\Prescription;
 use App\Http\Controllers\MiliteryTypeController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-/*
-|--------------------------------------------------------------------------
-| Auth Middleware
-|--------------------------------------------------------------------------
-|
-| By default all routes are protected with auth middleware, which means users
-| have to login before using any route.
-|
-*/
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route

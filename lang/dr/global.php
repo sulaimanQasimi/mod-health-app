@@ -450,6 +450,8 @@ return [
     'lab_type_updated_successfully' => 'نوع آزمایشگاه با موفقیت به‌روزرسانی شد',
     'lab_type_deleted_successfully' => 'نوع آزمایشگاه با موفقیت حذف شد',
     'total' => 'مجموع',
+    'today_patients' => 'مریضان امروز',
+    'today_registered_patients' => 'مریضان ثبت شده امروز',
     'edit' => 'تصحیح',
     'followup_validation' => [
         'required_contact_summary' => 'خلاصه تعقیب الزامی است',

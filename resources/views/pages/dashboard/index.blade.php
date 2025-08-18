@@ -38,6 +38,41 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
+                            <div class="card border border-primary">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.today_patients') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded text-primary">{{ $todayPatients }}</h4>
+                                                @if ($todayPatientsPercentageChange > 0)
+                                                    <h4
+                                                        class="mb-0 me-2 bg-success p-1 rounded-circle bx bx-trending-up text-white">
+                                                    </h4>
+                                                    <span class="text-success">{{ $todayPatientsPercentageChange }}%</span>
+                                                @elseif ($todayPatientsPercentageChange < 0)
+                                                    <h4 class="mb-0 me-2 bg-danger p-1 rounded-circle bx bx-trending-down text-white">
+                                                    </h4>
+                                                    <span class="text-danger">{{ $todayPatientsPercentageChange }}%</span>
+                                                @else
+                                                    <h4 class="mb-0 me-2 bg-secondary p-1 rounded-circle bx bx-minus text-white">
+                                                    </h4>
+                                                    <span class="text-secondary">0%</span>
+                                                @endif
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.today_registered_patients') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-primary">
+                                                <i class="bx bx-user-plus bx-md"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-xl-3">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">

@@ -445,4 +445,6 @@ return [
     'lab_type_updated_successfully' => 'د لابراتوار ډول په بریالیتوب سره تازه شو',
     'lab_type_deleted_successfully' => 'د لابراتوار ډول په بریالیتوب سره حذف شو',
     'total' => 'مجموع',
+    'today_patients' => 'نن ورځ ناروغان',
+    'today_registered_patients' => 'نن ورځ ثبت شوی ناروغان',
 ];

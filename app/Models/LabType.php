@@ -34,4 +34,23 @@ class LabType extends Model
         });
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(LabTypeSection::class, 'section_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(LabType::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(LabType::class, 'parent_id');
+    }
 }

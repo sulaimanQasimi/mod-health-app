@@ -426,9 +426,23 @@ return [
     'search_by_name' => 'د نوم په اساس پلټنه',
     'clear' => 'پاکول',
     'no_medicines_found' => 'هیڅ درمل و نه موندل شول',
-    'created_at' => 'د جوړیدو تاریخ'
-
-
-
-
+    'created_at' => 'د جوړیدو تاریخ',
+    'search_placeholder' => 'د نوم، څانګه، یا برخه په اساس پلټنه...',
+    'all_branches' => 'ټولې څانګې',
+    'all_sections' => 'ټولې برخې',
+    'all_parents' => 'ټول والدین',
+    'no_parent' => 'هیڅ والد نه',
+    'order' => 'ترتیب',
+    'asc' => 'زیاتیدونکی',
+    'desc' => 'کمیدونکی',
+    'per_page' => 'په هر پاڼه',
+    'no_records_found' => 'هیڅ ریکارډ و نه موندل شو',
+    'branch' => 'څانګه',
+    'section' => 'برخه',
+    'parent' => 'والد',
+    'lab_types' => 'د لابراتوار ډولونه',
+    'lab_type_created_successfully' => 'د لابراتوار ډول په بریالیتوب سره جوړ شو',
+    'lab_type_updated_successfully' => 'د لابراتوار ډول په بریالیتوب سره تازه شو',
+    'lab_type_deleted_successfully' => 'د لابراتوار ډول په بریالیتوب سره حذف شو',
+    'total' => 'مجموع',
 ];

@@ -12,10 +12,65 @@ class LabTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $labTypes = LabType::all();
-        return view('pages.lab_types.index',compact('labTypes'));
+        $query = LabType::with(['branch', 'section', 'parent']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhereHas('branch', function($branchQuery) use ($search) {
+                      $branchQuery->where('name', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('section', function($sectionQuery) use ($search) {
+                      $sectionQuery->where('section', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Filter by branch
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Filter by section
+        if ($request->filled('section_id')) {
+            $query->where('section_id', $request->section_id);
+        }
+
+        // Filter by parent
+        if ($request->filled('parent_id')) {
+            if ($request->parent_id === 'null') {
+                $query->whereNull('parent_id');
+            } else {
+                $query->where('parent_id', $request->parent_id);
+            }
+        }
+
+        // Sort functionality
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        
+        if (in_array($sortBy, ['name', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
+        $perPage = $request->get('per_page', 15);
+        $labTypes = $query->paginate($perPage)->withQueryString();
+
+        // Get filter options for the view
+        $branches = Branch::orderBy('name')->get();
+        $labTypeSections = LabTypeSection::orderBy('section')->get();
+        $parentLabTypes = LabType::whereNull('parent_id')->orderBy('name')->get();
+
+        return view('pages.lab_types.index', compact(
+            'labTypes', 
+            'branches', 
+            'labTypeSections', 
+            'parentLabTypes'
+        ));
     }
 
     /**

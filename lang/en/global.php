@@ -370,9 +370,22 @@ return [
     'clear' => 'Clear',
     'no_medicines_found' => 'No medicines found',
     'created_at' => 'Created At',
-
-
-
-
-
+    'search_placeholder' => 'Search by name, branch, or section...',
+    'all_branches' => 'All Branches',
+    'all_sections' => 'All Sections',
+    'all_parents' => 'All Parents',
+    'no_parent' => 'No Parent',
+    'order' => 'Order',
+    'asc' => 'Asc',
+    'desc' => 'Desc',
+    'per_page' => 'Per Page',
+    'no_records_found' => 'No records found',
+    'branch' => 'Branch',
+    'section' => 'Section',
+    'parent' => 'Parent',
+    'lab_types' => 'Lab Types',
+    'lab_type_created_successfully' => 'Lab type created successfully',
+    'lab_type_updated_successfully' => 'Lab type updated successfully',
+    'lab_type_deleted_successfully' => 'Lab type deleted successfully',
+    'total' => 'Total',
 ];

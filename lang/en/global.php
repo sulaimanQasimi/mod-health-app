@@ -354,6 +354,22 @@ return [
     'return_requests' => 'Documents return requests',
     'header' => 'Page Header',
     'print_type' => 'Print Layout',
+    'per_page' => 'Per Page',
+    'sort_by' => 'Sort By',
+    'sort_order' => 'Sort Order',
+    'ascending' => 'Ascending',
+    'descending' => 'Descending',
+    'showing' => 'Showing',
+    'to' => 'to',
+    'of' => 'of',
+    'results' => 'results',
+    'page' => 'Page',
+    'all_types' => 'All Types',
+    'all_diseases' => 'All Diseases',
+    'search_by_name' => 'Search by name',
+    'clear' => 'Clear',
+    'no_medicines_found' => 'No medicines found',
+    'created_at' => 'Created At',
 
 
 

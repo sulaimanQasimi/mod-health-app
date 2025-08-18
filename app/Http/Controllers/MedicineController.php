@@ -14,10 +14,56 @@ class MedicineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $medicines = Medicine::latest()->paginate(15);
-        return view('pages.medicines.index', compact('medicines'));
+        $query = Medicine::with(['medicineType']);
+
+        // Search by medicine name
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by medicine type
+        if ($request->filled('medicine_type_id')) {
+            $query->where('medicine_type_id', $request->medicine_type_id);
+        }
+
+        // Filter by disease
+        if ($request->filled('disease_id')) {
+            $query->where('disease_id', 'like', '%' . $request->disease_id . '%');
+        }
+
+        // Sort options
+        $sortBy = $request->get('sort_by', 'id');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Validate sort fields
+        $allowedSortFields = ['id', 'name', 'medicine_type_id', 'created_at'];
+        if (!in_array($sortBy, $allowedSortFields)) {
+            $sortBy = 'id';
+        }
+        
+        $allowedSortOrders = ['asc', 'desc'];
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $allowedPerPage = [10, 15, 25, 50, 100];
+        if (!in_array($perPage, $allowedPerPage)) {
+            $perPage = 15;
+        }
+
+        $medicines = $query->paginate($perPage)->withQueryString();
+
+        // Get data for filters
+        $medicineTypes = MedicineType::all();
+        $diseases = Disease::all();
+
+        return view('pages.medicines.index', compact('medicines', 'medicineTypes', 'diseases'));
     }
 
     /**

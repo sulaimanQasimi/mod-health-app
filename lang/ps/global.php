@@ -410,7 +410,23 @@ return [
     'waiting_for_instruction' => 'هدایت ته منتظر',
     'waiting_for_sign' => 'امضاء ته منتظر',
     'mark_all_as_read' => 'ټول وویل شول',
-    'avatar' => 'انځور'
+    'avatar' => 'انځور',
+    'per_page' => 'په هر پاڼه',
+    'sort_by' => 'د ترتیب اساس',
+    'sort_order' => 'د ترتیب لار',
+    'ascending' => 'د زیاتیدو په لار',
+    'descending' => 'د کمیدو په لار',
+    'showing' => 'ښودل',
+    'to' => 'تر',
+    'of' => 'له',
+    'results' => 'نتایج',
+    'page' => 'پاڼه',
+    'all_types' => 'ټول ډولونه',
+    'all_diseases' => 'ټول ناروغی',
+    'search_by_name' => 'د نوم په اساس پلټنه',
+    'clear' => 'پاکول',
+    'no_medicines_found' => 'هیڅ درمل و نه موندل شول',
+    'created_at' => 'د جوړیدو تاریخ'
 
 
 

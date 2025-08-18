@@ -1,5 +1,26 @@
 @extends('layouts.master')
 <title>{{ localize('global.home_page') }}</title>
+
+<style>
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+.bg-pink {
+    background-color: #e83e8c !important;
+}
+.bg-orange {
+    background-color: #fd7e14 !important;
+}
+.bg-teal {
+    background-color: #20c997 !important;
+}
+.bg-indigo {
+    background-color: #6610f2 !important;
+}
+.bg-cyan {
+    background-color: #0dcaf0 !important;
+}
+</style>
 @section('content')
     <div class="content-wrapper">
         <div class="container-xxl flex-grow-1 container-p-y">
@@ -28,8 +49,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_patients') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-user bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-primary">
+                                                <i class="bx bx-user bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -95,8 +116,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_appointments') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-history bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-success">
+                                                <i class="bx bx-history bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -129,8 +150,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_consultations') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-chat bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-info">
+                                                <i class="bx bx-chat bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -163,8 +184,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_hospitalizations') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-bed bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-warning">
+                                                <i class="bx bx-bed bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -195,8 +216,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_checkups') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-hard-hat bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-danger">
+                                                <i class="bx bx-hard-hat bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -227,8 +248,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_icu') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-tv bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-dark">
+                                                <i class="bx bx-tv bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -261,8 +282,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_prescriptions') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-receipt bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-purple">
+                                                <i class="bx bx-receipt bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -293,8 +314,8 @@
                                             <p class="mb-0">{{ localize('global.all_registered_operations') }}</p>
                                         </div>
                                         <div class="avatar p-4">
-                                            <span class="avatar-initial rounded-circle bg-secondary">
-                                                <i class="bx bx-cut bx-md"></i>
+                                            <span class="avatar-initial rounded-circle bg-pink">
+                                                <i class="bx bx-cut bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>
@@ -314,7 +335,7 @@
                                             </div>
                                         </div>
                                         <span class="badge bg-warning rounded p-2">
-                                            <i class="bx bx-bed bx-lg"></i>
+                                            <i class="bx bx-bed bx-lg text-white"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -331,7 +352,7 @@
                                             </div>
                                         </div>
                                         <span class="badge bg-primary rounded p-2">
-                                            <i class="bx bx-bed bx-lg"></i>
+                                            <i class="bx bx-bed bx-lg text-white"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -348,7 +369,7 @@
                                             </div>
                                         </div>
                                         <span class="badge bg-success rounded p-2">
-                                            <i class="bx bx-bed bx-lg"></i>
+                                            <i class="bx bx-bed bx-lg text-white"></i>
                                         </span>
                                     </div>
                                 </div>

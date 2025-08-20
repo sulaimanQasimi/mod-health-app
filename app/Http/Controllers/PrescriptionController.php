@@ -155,7 +155,6 @@ class PrescriptionController extends Controller
 
         // If status is being set to delivered (1), create Outcome records
         if ($updatedStatus === "1") {
-            $this->createOutcomesForPrescription($prescription, $key);
         }
 
         // Return a response
@@ -165,18 +164,19 @@ class PrescriptionController extends Controller
     /**
      * Create Outcome records for prescription items and alternatives
      */
-    private function createOutcomesForPrescription($prescription, $itemIndex)
+    private function createOutcomesForPrescription($prescription)
     {
         // Get prescription items
         $prescriptionItems = PrescriptionItem::where('prescription_id', $prescription->id)->get();
-        
-        if ($prescriptionItems->count() > $itemIndex) {
-            $prescriptionItem = $prescriptionItems[$itemIndex];
+
+        foreach ($prescriptionItems as $prescriptionItem) {
+            
             
             // Check if this item has a selected alternative
             $selectedAlternative = $prescriptionItem->selectedAlternative;
             
             if ($selectedAlternative) {
+                
                 // Create Outcome for the selected alternative medicine
                 Outcome::create([
                     'medicine_id' => $selectedAlternative->medicine_id,
@@ -239,6 +239,8 @@ class PrescriptionController extends Controller
 
         // Update the prescription
         $prescription->update($validatedData);
+        $this->createOutcomesForPrescription($prescription);
+
 
         // Redirect to the prescriptions index page with a success message
         return redirect()->route('prescriptions.delivered')->with('success', localize('global.prescription_updated_successfully.'));

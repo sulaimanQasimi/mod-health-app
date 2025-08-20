@@ -11,13 +11,13 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.income_records') }}</h5>
                         <div class="pt-3 pt-md-0 text-end">
-                            @can('create-incomes')
+                            {{-- @can('create-incomes') --}}
                             <a class="btn btn-secondary create-new btn-primary" href="{{ route('incomes.create') }}"
                                 type="button">
                                 <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
                                         class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
                             </a>
-                            @endcan
+                            {{-- @endcan --}}
                         </div>
                     </div>
 

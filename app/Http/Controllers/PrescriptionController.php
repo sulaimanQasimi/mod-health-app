@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendNewPrescriptionNotification;
 use App\Models\Appointment;
+use App\Models\Outcome;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use Illuminate\Http\Request;
@@ -152,8 +153,59 @@ class PrescriptionController extends Controller
         $prescription->is_delivered = json_encode($statuses);
         $prescription->save();
 
+        // If status is being set to delivered (1), create Outcome records
+        if ($updatedStatus === "1") {
+            $this->createOutcomesForPrescription($prescription, $key);
+        }
+
         // Return a response
         return response()->json(['status' => 'success']);
+    }
+
+    /**
+     * Create Outcome records for prescription items and alternatives
+     */
+    private function createOutcomesForPrescription($prescription, $itemIndex)
+    {
+        // Get prescription items
+        $prescriptionItems = PrescriptionItem::where('prescription_id', $prescription->id)->get();
+        
+        if ($prescriptionItems->count() > $itemIndex) {
+            $prescriptionItem = $prescriptionItems[$itemIndex];
+            
+            // Check if this item has a selected alternative
+            $selectedAlternative = $prescriptionItem->selectedAlternative;
+            
+            if ($selectedAlternative) {
+                // Create Outcome for the selected alternative medicine
+                Outcome::create([
+                    'medicine_id' => $selectedAlternative->medicine_id,
+                    'amount' => $selectedAlternative->amount,
+                    'prescription_item_id' => $prescriptionItem->id,
+                    'patient_id' => $prescription->patient_id,
+                    'doctor_id' => $prescription->doctor_id,
+                    'outcome_type' => 'prescription',
+                    'batch_number' => null, // You might want to get this from prescription stock
+                    'reason' => 'Prescribed and delivered to patient',
+                    'outcome_date' => now(),
+                    'notes' => "Alternative medicine delivered for prescription item #{$prescriptionItem->id}"
+                ]);
+            } else {
+                // Create Outcome for the original prescription item
+                Outcome::create([
+                    'medicine_id' => $prescriptionItem->medicine_id,
+                    'amount' => $prescriptionItem->amount,
+                    'prescription_item_id' => $prescriptionItem->id,
+                    'patient_id' => $prescription->patient_id,
+                    'doctor_id' => $prescription->doctor_id,
+                    'outcome_type' => 'prescription',
+                    'batch_number' => null, // You might want to get this from prescription stock
+                    'reason' => 'Prescribed and delivered to patient',
+                    'outcome_date' => now(),
+                    'notes' => "Original medicine delivered for prescription item #{$prescriptionItem->id}"
+                ]);
+            }
+        }
     }
 
     public function scanQrCode(Request $request)

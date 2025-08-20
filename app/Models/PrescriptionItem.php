@@ -77,4 +77,14 @@ class PrescriptionItem extends Model
     {
         return $this->hasOne(PrescriptionAlternativeItem::class)->where('is_selected', 1);
     }
+
+    public function prescriptionStock()
+    {
+        return $this->hasOne(PrescriptionStock::class, 'medicine_id', 'medicine_id');
+    }
+
+    public function outcomes()
+    {
+        return $this->hasMany(Outcome::class);
+    }
 }

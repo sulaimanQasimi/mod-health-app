@@ -22,4 +22,19 @@ class Medicine extends Model
         $diseases = array_map('intval', json_decode($this->disease_id, true));
         return Disease::whereIn('id', $diseases)->get();
     }
+
+    public function prescriptionStocks()
+    {
+        return $this->hasMany(PrescriptionStock::class);
+    }
+
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    public function outcomes()
+    {
+        return $this->hasMany(Outcome::class);
+    }
 }

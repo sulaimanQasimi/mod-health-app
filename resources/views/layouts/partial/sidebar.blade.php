@@ -159,9 +159,14 @@
                             <div>{{ localize('global.stock_income') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('outcomes.*') ? 'active' : '' }}">
+                    <li class="menu-item {{ Route::is('outcomes.index') ? 'active' : '' }}">
                         <a href="{{ route('outcomes.index') }}" class="menu-link">
                             <div>{{ localize('global.stock_outcome') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('outcomes.report') ? 'active' : '' }}">
+                        <a href="{{ route('outcomes.report') }}" class="menu-link">
+                            <div>{{ localize('global.outcome_reports') }}</div>
                         </a>
                     </li>
                 </ul>

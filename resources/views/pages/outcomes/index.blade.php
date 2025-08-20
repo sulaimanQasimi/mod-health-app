@@ -10,6 +10,11 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.outcome_records') }}</h5>
+                        <div>
+                            <a href="{{ route('outcomes.report') }}" class="btn btn-success">
+                                <i class="bx bx-file me-1"></i>{{ localize('global.reports') }}
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Advanced Search Form -->

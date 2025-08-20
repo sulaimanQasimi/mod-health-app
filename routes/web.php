@@ -642,6 +642,9 @@ Route::group(['middleware' => ['auth']], function () {
     // Outcome routes
     Route::prefix('outcomes')->name('outcomes.')->group(function () {
         Route::get('index', [OutcomeController::class, 'index'])->name('index');
+        Route::get('report', [OutcomeController::class, 'report'])->name('report');
+        Route::post('report-search', [OutcomeController::class, 'reportSearch'])->name('report-search');
+        Route::post('export-report', [OutcomeController::class, 'exportReport'])->name('export-report');
     });
 
     // General routes

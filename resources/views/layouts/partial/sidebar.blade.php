@@ -140,6 +140,34 @@
                 </ul>
             </li>
         @endcan
+        
+        @can('show-prescriptions-menu')
+            <li class="menu-item {{ Route::is('prescription_stocks.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-package text-primary"></i>
+                    <div>{{ localize('global.prescription_stocks') }}</div>
+                </a>
+
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('prescription_stocks.index') ? 'active' : '' }}">
+                        <a href="{{ route('prescription_stocks.index') }}" class="menu-link">
+                            <div>{{ localize('global.stock_overview') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('incomes.*') ? 'active' : '' }}">
+                        <a href="{{ route('incomes.index') }}" class="menu-link">
+                            <div>{{ localize('global.stock_income') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('outcomes.*') ? 'active' : '' }}">
+                        <a href="{{ route('outcomes.index') }}" class="menu-link">
+                            <div>{{ localize('global.stock_outcome') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
+        
         @can('show-blood-bank-menu')
             <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">

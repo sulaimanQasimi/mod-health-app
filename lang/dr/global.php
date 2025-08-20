@@ -1,6 +1,20 @@
 <?php
 
 return [
+    'medicine_name' => 'نام دارو',
+    'medicine_type' => 'نوعیت دارو',
+    'current_stock' => 'سین دواخانه',
+    'available_stock' => 'سین دواخانه',
+    'reserved_stock' => 'سین دواخانه',
+    'minimum_stock' => 'سین دواخانه',
+    'maximum_stock' => 'سین دواخانه',
+    'earliest_expiry' => 'سین دواخانه',
+    'stock_status' => 'سین دواخانه',
+    'militery_type' => 'رتبه نظامی',
+    'prescription_stocks' => 'مدیریت دواخانه',
+    'stock_overview' => 'مدیریت دواخانه',
+    'stock_income' => 'واردات دواخانه',
+    'stock_outcome' => 'صادرات دواخانه',
     'batch_number' => 'شماره بچ',
     'expiry_date' => 'تاریخ انقضا',
     'supplier_name' => 'نام تامین کننده',
@@ -44,7 +58,7 @@ return [
     'captured_image_will_appear_here' => 'تصویر ثبت شده در اینجا ظاهر خواهد شد',
 
     'save_photo' => 'ثبت تصویر',
-    'militery_type' => 'رتبه نظامی',
+
     'dashboard' => 'صفحه اصلی',
     'document' => 'اسناد',
     'completed_documents' => 'اسناد تکمیل شده',

@@ -23,7 +23,10 @@ class Income extends Model
         'purchase_date',
         'invoice_number',
         'notes',
-        'income_type' // 'purchase', 'return', 'donation', etc.
+        'income_type', // 'purchase', 'return', 'donation', etc.
+        'created_by',
+        'updated_by',
+        'deleted_by'
     ];
 
     protected $casts = [

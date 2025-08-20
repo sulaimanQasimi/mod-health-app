@@ -16,8 +16,7 @@ class PrescriptionStockController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('medicine_name', 'like', "%{$search}%")
-                  ->orWhere('medicine_type_name', 'like', "%{$search}%");
+                $q->where('medicine_name', 'like', "%{$search}%");
             });
         }
 

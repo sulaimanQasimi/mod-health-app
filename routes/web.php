@@ -51,6 +51,9 @@ use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
 use App\Models\Prescription;
 use App\Http\Controllers\MiliteryTypeController;
+use App\Http\Controllers\PrescriptionStockController;
+use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\OutcomeController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -622,6 +625,23 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('index', [ReportController::class, 'index'])->name('index');
 
+    });
+
+    // Prescription Stock routes
+    Route::prefix('prescription_stocks')->name('prescription_stocks.')->group(function () {
+        Route::get('index', [PrescriptionStockController::class, 'index'])->name('index');
+    });
+
+    // Income routes
+    Route::prefix('incomes')->name('incomes.')->group(function () {
+        Route::get('index', [IncomeController::class, 'index'])->name('index');
+        Route::get('create', [IncomeController::class, 'create'])->name('create');
+        Route::post('store', [IncomeController::class, 'store'])->name('store');
+    });
+
+    // Outcome routes
+    Route::prefix('outcomes')->name('outcomes.')->group(function () {
+        Route::get('index', [OutcomeController::class, 'index'])->name('index');
     });
 
     // General routes

@@ -64,11 +64,11 @@ class IncomeController extends Controller
         $request->validate([
             'medicine_id' => 'required|exists:medicines,id',
             'amount' => 'required|integer|min:1',
-            'batch_number' => 'required|string|max:255',
-            'expiry_date' => 'required|date|after:today',
-            'supplier_name' => 'required|string|max:255',
+            'batch_number' => 'nullable|string|max:255',
+            'expiry_date' => 'nullable|date|after:today',
+            'supplier_name' => 'nullable|string|max:255',
             'purchase_price' => 'required|numeric|min:0',
-            'purchase_date' => 'required|date',
+            'purchase_date' => 'nullable|date',
             'income_type' => 'required|in:purchase,return,donation,transfer',
             'notes' => 'nullable|string'
         ]);

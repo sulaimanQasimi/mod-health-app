@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'batch_number' => 'شماره بچ',
+    'expiry_date' => 'تاریخ انقضا',
+    'supplier_name' => 'نام تامین کننده',
+    'purchase_price' => 'قیمت خرید',
+    'purchase_date' => 'تاریخ خرید',
+    'income_type' => 'نوع وارده',
+
+
     'close' => 'بستن',
     'add_alternative' => 'اضافه نمودن جایگزین',
     'medicine' => 'دارو',

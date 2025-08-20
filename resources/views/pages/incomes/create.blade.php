@@ -71,7 +71,7 @@
                                     <div class="form-group mb-3">
                                         <label for="batch_number">{{ localize('global.batch_number') }}</label>
                                         <input type="text" class="form-control @error('batch_number') is-invalid @enderror"
-                                            id="batch_number" name="batch_number" value="{{ old('batch_number') }}" required>
+                                            id="batch_number" name="batch_number" value="{{ old('batch_number') }}">
                                         @error('batch_number')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -83,7 +83,7 @@
                                     <div class="form-group mb-3">
                                         <label for="expiry_date">{{ localize('global.expiry_date') }}</label>
                                         <input type="date" class="form-control @error('expiry_date') is-invalid @enderror"
-                                            id="expiry_date" name="expiry_date" value="{{ old('expiry_date') }}" required>
+                                            id="expiry_date" name="expiry_date" value="{{ old('expiry_date') }}">
                                         @error('expiry_date')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -95,7 +95,7 @@
                                     <div class="form-group mb-3">
                                         <label for="supplier_name">{{ localize('global.supplier_name') }}</label>
                                         <input type="text" class="form-control @error('supplier_name') is-invalid @enderror"
-                                            id="supplier_name" name="supplier_name" value="{{ old('supplier_name') }}" required>
+                                            id="supplier_name" name="supplier_name" value="{{ old('supplier_name') }}">
                                         @error('supplier_name')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -131,7 +131,7 @@
                                     <div class="form-group mb-3">
                                         <label for="purchase_date">{{ localize('global.purchase_date') }}</label>
                                         <input type="date" class="form-control @error('purchase_date') is-invalid @enderror"
-                                            id="purchase_date" name="purchase_date" value="{{ old('purchase_date') }}" required>
+                                            id="purchase_date" name="purchase_date" value="{{ old('purchase_date') }}">
                                         @error('purchase_date')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>

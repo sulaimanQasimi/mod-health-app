@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PrescriptionStock extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
-
-    protected $fillable = [
+       protected $fillable = [
         'medicine_id',
         'medicine_name',
         'medicine_type_name',

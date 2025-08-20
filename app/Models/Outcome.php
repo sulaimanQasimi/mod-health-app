@@ -22,7 +22,10 @@ class Outcome extends Model
         'batch_number',
         'reason',
         'outcome_date',
-        'notes'
+        'notes',
+        'created_by',
+        'updated_by',
+        'deleted_by'
     ];
 
     protected $casts = [

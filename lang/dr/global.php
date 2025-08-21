@@ -14,7 +14,7 @@ return [
     'prescription_stocks' => 'مدیریت دواخانه',
     'stock_overview' => 'مدیریت دواخانه',
     'stock_income' => 'واردات دواخانه',
-    'stock_outcome' => 'صادرات دواخانه',
+    'stock_outcome' => 'مقدار خروجی دواخانه',
     'batch_number' => 'شماره بچ',
     'expiry_date' => 'تاریخ انقضا',
     'supplier_name' => 'نام تامین کننده',
@@ -978,7 +978,7 @@ return [
     'card_number' => 'شماره کارت',
     
     // Outcome Report Translations
-    'outcome_report' => 'راپور صادرات دواخانه',
+    'outcome_report' => 'راپور مقدار خروجی دواخانه',
     'generated_on' => 'تاریخ تولید',
     'total_records' => 'تعداد کل رکوردها',
     'report_period' => 'دوره گزارش',
@@ -989,14 +989,18 @@ return [
     'return' => 'بازگشت',
     'total_amount' => 'مقدار کل',
     'row' => 'ردیف',
-    'outcome_type' => 'نوع صادرات',
-    'outcome_date' => 'تاریخ صادرات',
+    'outcome_type' => 'نوع مقدار خروجی',
+    'outcome_date' => 'تاریخ مقدار خروجی',
     'report_generated_by' => 'گزارش تولید شده توسط',
     'report_generation_date' => 'تاریخ تولید گزارش',
     'total_records_in_report' => 'تعداد کل رکوردها در گزارش',
     'report_information' => 'اطلاعات گزارش',
     'generated_by' => 'تولید شده توسط',
-    'no_records_found' => 'هیچ رکوردی یافت نشد'
-
-
+    'no_records_found' => 'هیچ رکوردی یافت نشد',
+    'export_pdf' => 'دانلودPDF',
+    'export_excel' => 'دانلودExcel',
+    'select_all' => 'انتخاب همه',
+    'deselect_all' => 'لغو انتخاب',
+    'outcome_report' => 'گذازش خروجی دواخانه',
+    'outcome_type' => 'نوع خروجی',
 ];

@@ -36,10 +36,12 @@ class OutcomeController extends Controller
 
         // Filter by date range
         if ($request->filled('date_from')) {
-            $query->where('outcome_date', '>=', $request->date_from);
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
+            $query->where('outcome_date', '>=', $fromDate);
         }
         if ($request->filled('date_to')) {
-            $query->where('outcome_date', '<=', $request->date_to);
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_to)->datetime();
+            $query->where('outcome_date', '<=', $toDate);
         }
 
         // Sort functionality
@@ -98,14 +100,11 @@ class OutcomeController extends Controller
         // Filter by date range - Convert Persian to Gregorian
         if ($request->filled('from') && $request->filled('to')) {
             
-            Log::info($request->from);
-            Log::info($request->to);
             // Convert Persian dates to Gregorian
             $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
             $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
 
             $query->whereDate('o.outcome_date', '>=', $fromDate)->whereDate('o.outcome_date', '<=', $toDate);
-            
         }
 
         $items = $query->orderBy('o.outcome_date', 'desc')->get();

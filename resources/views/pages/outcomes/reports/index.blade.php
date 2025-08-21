@@ -78,12 +78,9 @@
             </div>
             <div class="table-responsive m-1" id="app">
                 <div class="search-document-data">
-                    <!-- Search results will be loaded here -->
                 </div>
             </div>
-            <!--/ Basic Bootstrap Table -->
         </div>
-        <!-- / Content -->
     </div>
 @endsection
 

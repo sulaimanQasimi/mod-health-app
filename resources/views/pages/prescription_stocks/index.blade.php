@@ -30,27 +30,6 @@
                                        value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine') }}">
                             </div>
                             <div class="col-md-3">
-                                <label for="stock_status" class="form-label">{{ localize('global.stock_status') }}</label>
-                                <select class="form-select" id="stock_status" name="stock_status">
-                                    <option value="">{{ localize('global.all_statuses') }}</option>
-                                    <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>
-                                        {{ localize('global.low_stock') }}
-                                    </option>
-                                    <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>
-                                        {{ localize('global.out_of_stock') }}
-                                    </option>
-                                    <option value="overstocked" {{ request('stock_status') == 'overstocked' ? 'selected' : '' }}>
-                                        {{ localize('global.overstocked') }}
-                                    </option>
-                                    <option value="expired" {{ request('stock_status') == 'expired' ? 'selected' : '' }}>
-                                        {{ localize('global.expired') }}
-                                    </option>
-                                    <option value="expiring_soon" {{ request('stock_status') == 'expiring_soon' ? 'selected' : '' }}>
-                                        {{ localize('global.expiring_soon') }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
                                 <label for="per_page" class="form-label">{{ localize('global.per_page') }}</label>
                                 <select class="form-select" id="per_page" name="per_page">
                                     @foreach([10, 15, 25, 50, 100] as $perPage)
@@ -81,19 +60,6 @@
                                     {{ localize('global.of') }} {{ $prescriptionStocks->total() }} 
                                     {{ localize('global.results') }}
                                 </span>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <label for="sort_by" class="form-label me-2 mb-0">{{ localize('global.sort_by') }}:</label>
-                                <select class="form-select form-select-sm" id="sort_by" name="sort_by" style="width: auto;" onchange="updateSort()">
-                                    <option value="medicine_name" {{ request('sort_by', 'medicine_name') == 'medicine_name' ? 'selected' : '' }}>{{ localize('global.medicine_name') }}</option>
-                                    <option value="current_stock" {{ request('sort_by') == 'current_stock' ? 'selected' : '' }}>{{ localize('global.current_stock') }}</option>
-                                    <option value="available_stock" {{ request('sort_by') == 'available_stock' ? 'selected' : '' }}>{{ localize('global.available_stock') }}</option>
-                                    <option value="earliest_expiry" {{ request('sort_by') == 'earliest_expiry' ? 'selected' : '' }}>{{ localize('global.earliest_expiry') }}</option>
-                                </select>
-                                <select class="form-select form-select-sm ms-2" id="sort_order" name="sort_order" style="width: auto;" onchange="updateSort()">
-                                    <option value="asc" {{ request('sort_order', 'asc') == 'asc' ? 'selected' : '' }}>{{ localize('global.ascending') }}</option>
-                                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>{{ localize('global.descending') }}</option>
-                                </select>
                             </div>
                         </div>
 

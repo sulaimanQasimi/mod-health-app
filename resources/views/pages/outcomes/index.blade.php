@@ -46,17 +46,21 @@
                                     </option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-                                <input type="date" class="form-control" id="date_from" name="date_from" 
-                                       value="{{ request('date_from') }}">
-                            </div>
-                            <div class="col-md-2">
-                                <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-                                <input type="date" class="form-control" id="date_to" name="date_to" 
-                                       value="{{ request('date_to') }}">
-                            </div>
                             <div class="col-md-3">
+                                <label class="form-label">{{ localize('global.between_two_date') }}</label>
+                                <div class="input-group input-daterange" id="bs-datepicker-daterange">
+                                    <input type="text" name="date_from"
+                                        placeholder="{{ localize('global.from') }}"
+                                        class="form-control form-control datepicker_dari pdp-el persian-date" 
+                                        value="{{ request('date_from') }}" />
+                                    <span class="input-group-text">...</span>
+                                    <input type="text" name="date_to"
+                                        placeholder="{{ localize('global.to') }}"
+                                        class="form-control form-control datepicker_dari pdp-el persian-date" 
+                                        value="{{ request('date_to') }}" />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
                                 <label for="per_page" class="form-label">{{ localize('global.per_page') }}</label>
                                 <select class="form-select" id="per_page" name="per_page">
                                     @foreach([10, 15, 25, 50, 100] as $perPage)
@@ -194,3 +198,11 @@
         }
     </script>
 @endsection
+@push('custom-css')
+    <style>
+        .persian-date {
+            direction: rtl;
+            text-align: right;
+        }
+    </style>
+@endpush

@@ -33,10 +33,12 @@ class IncomeController extends Controller
 
         // Filter by date range
         if ($request->filled('date_from')) {
-            $query->where('purchase_date', '>=', $request->date_from);
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
+            $query->where('purchase_date', '>=', $fromDate);
         }
         if ($request->filled('date_to')) {
-            $query->where('purchase_date', '<=', $request->date_to);
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_to)->datetime();
+            $query->where('purchase_date', '<=', $toDate);
         }
 
         // Sort functionality

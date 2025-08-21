@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-      
+
 
         // Create incomes table
         Schema::create('incomes', function (Blueprint $table) {
@@ -84,33 +83,38 @@ return new class extends Migration
             $table->index(['outcome_type']);
             $table->index(['batch_number']);
         });
-     // Create prescription_stocks view that calculates from income and outcome
-     DB::statement("
-     CREATE VIEW prescription_stocks AS
-     SELECT 
-         m.id as medicine_id,
-         m.name as medicine_name,
-         COALESCE(SUM(i.amount), 0) as total_income,
-         COALESCE(SUM(o.amount), 0) as total_outcome,
-         (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as current_stock,
-         (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as available_stock,
-         0 as reserved_stock,
-         10 as minimum_stock,
-         1000 as maximum_stock,
-         NOW() as last_updated,
-         'Auto-calculated from income and outcome' as notes,
-         m.created_at,
-         m.updated_at
-     FROM medicines m
-     LEFT JOIN incomes i ON m.id = i.medicine_id AND i.deleted_at IS NULL
-     LEFT JOIN outcomes o ON m.id = o.medicine_id AND o.deleted_at IS NULL
-     GROUP BY m.id, m.name, m.created_at, m.updated_at
+
+        // Drop the view if it exists
+        DB::statement('DROP VIEW IF EXISTS prescription_stocks');
+
+        // Create prescription_stocks view that calculates from income and outcome
+        DB::statement("
+     
+            CREATE VIEW prescription_stocks AS
+            SELECT 
+                m.id as medicine_id,
+                m.name as medicine_name,
+                COALESCE(SUM(i.amount), 0) as total_income,
+                COALESCE(SUM(o.amount), 0) as total_outcome,
+                (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as current_stock,
+                (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as available_stock,
+                0 as reserved_stock,
+                10 as minimum_stock,
+                1000 as maximum_stock,
+                NOW() as last_updated,
+                'Auto-calculated from income and outcome' as notes,
+                m.created_at,
+                m.updated_at
+            FROM medicines m
+            LEFT JOIN incomes i ON m.id = i.medicine_id AND i.deleted_at IS NULL
+            LEFT JOIN outcomes o ON m.id = o.medicine_id AND o.deleted_at IS NULL
+            GROUP BY m.id, m.name, m.created_at, m.updated_at
  ");
-   
-   
-   
-   
-   
+
+
+
+
+
     }
 
     /**

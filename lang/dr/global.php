@@ -1007,4 +1007,5 @@ return [
     'military_types' => 'رتبه نظامی',
     'civilian_types' => 'رتبه ملکی',
     'search' => 'جستجو',
+    'income_record' => 'ادویه وارده',
 ];

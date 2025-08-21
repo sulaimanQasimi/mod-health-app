@@ -1,12 +1,11 @@
 @extends('layouts.master')
 @section('title', 'گزارش خروجی دارو')
 @section('content')
-<!-- Content wrapper -->
-<div class="content-wrapper">
-    <!-- Content -->
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <!-- Basic Bootstrap Table -->
-        <div class="card">
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+
             <div class="accordion m-3" id="accordionWithIcon">
                 <div class="card accordion-item active">
                     <h2 class="accordion-header d-flex align-items-center">
@@ -22,17 +21,22 @@
                                 @csrf
                                 <div class="row g-2">
                                     <div class="col-md-3">
-                                        <label for="medicine_name" class="form-label">{{ localize('global.medicine_name') }}</label>
+                                        <label for="medicine_name"
+                                            class="form-label">{{ localize('global.medicine_name') }}</label>
                                         <input type="text" class="form-control pager-search" name="medicine_name"
-                                            value="{{ old('medicine_name') }}" placeholder="{{ localize('global.medicine_name') }}" />
+                                            value="{{ old('medicine_name') }}"
+                                            placeholder="{{ localize('global.medicine_name') }}" />
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
+                                        <label for="patient_name"
+                                            class="form-label">{{ localize('global.patient_name') }}</label>
                                         <input type="text" class="form-control pager-search" name="patient_name"
-                                            value="{{ old('patient_name') }}" placeholder="{{ localize('global.patient_name') }}" />
+                                            value="{{ old('patient_name') }}"
+                                            placeholder="{{ localize('global.patient_name') }}" />
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="outcome_type" class="form-label">{{ localize('global.outcome_type') }}</label>
+                                        <label for="outcome_type"
+                                            class="form-label">{{ localize('global.outcome_type') }}</label>
                                         <select class="form-control pager-search select2" name="outcome_type">
                                             <option value="" selected>{{ localize('global.select') }}</option>
                                             <option value="prescription">{{ localize('global.prescription') }}</option>
@@ -77,100 +81,99 @@
                     <!-- Search results will be loaded here -->
                 </div>
             </div>
+            <!--/ Basic Bootstrap Table -->
         </div>
-        <!--/ Basic Bootstrap Table -->
+        <!-- / Content -->
     </div>
-    <!-- / Content -->
-</div>
 @endsection
 
 @push('custom-js')
-<script src="{{ asset('assets/js/vue/vue.js') }}"></script>
-<script src="{{ asset('hijri/bootstrap-hijri-datetimepicker.js') }}"></script>
-<script>
-    $(document).ready(function() {
-        // Initialize Persian date pickers
-        $('.persian-date').hijriDatePicker({
-            format: 'YYYY/MM/DD',
-            hijriFormat: 'iYYYY/iMM/iDD',
-            dayViewHeaderFormat: 'MMMM iYYYY',
-            hijriDayViewHeaderFormat: 'iMMMM iYYYY',
-            showSwitcher: true,
-            allowInputToggle: true,
-            showTodayButton: true,
-            useCurrent: false,
-            isRTL: true,
-            viewMode: 'days',
-            keepOpen: false,
-            hijri: true,
-            debug: false,
-            locale: 'fa-sa',
-            icons: {
-                time: 'fa fa-clock-o',
-                date: 'fa fa-calendar',
-                up: 'fa fa-chevron-up',
-                down: 'fa fa-chevron-down',
-                previous: 'fa fa-chevron-right',
-                next: 'fa fa-chevron-left',
-                today: 'fa fa-screenshot',
-                clear: 'fa fa-trash',
-                close: 'fa fa-times'
-            },
-            tooltips: {
-                today: 'امروز',
-                clear: 'پاک کردن',
-                close: 'بستن',
-                selectMonth: 'انتخاب ماه',
-                prevMonth: 'ماه قبل',
-                nextMonth: 'ماه بعد',
-                selectYear: 'انتخاب سال',
-                prevYear: 'سال قبل',
-                nextYear: 'سال بعد',
-                selectDecade: 'انتخاب دهه',
-                prevDecade: 'دهه قبل',
-                nextDecade: 'دهه بعد',
-                prevCentury: 'قرن قبل',
-                nextCentury: 'قرن بعد',
-                pickHour: 'انتخاب ساعت',
-                incrementHour: 'افزایش ساعت',
-                decrementHour: 'کاهش ساعت',
-                pickMinute: 'انتخاب دقیقه',
-                incrementMinute: 'افزایش دقیقه',
-                decrementMinute: 'کاهش دقیقه',
-                pickSecond: 'انتخاب ثانیه',
-                incrementSecond: 'افزایش ثانیه',
-                decrementSecond: 'کاهش ثانیه',
-                togglePeriod: 'تغییر دوره',
-                selectTime: 'انتخاب زمان'
-            }
-        });
-
-        // Form submission
-        $('form').submit(function(e) {
-            e.preventDefault();
-            $.ajax({
-                type: 'post',
-                url: "{{ route('outcomes.report-search') }}",
-                data: $(this).serialize(),
-                beforeSend: function() {
-                    $('.search-document-data').html(
-                        '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
-                    );
+    <script src="{{ asset('assets/js/vue/vue.js') }}"></script>
+    <script src="{{ asset('hijri/bootstrap-hijri-datetimepicker.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize Persian date pickers
+            $('.persian-date').hijriDatePicker({
+                format: 'YYYY/MM/DD',
+                hijriFormat: 'iYYYY/iMM/iDD',
+                dayViewHeaderFormat: 'MMMM iYYYY',
+                hijriDayViewHeaderFormat: 'iMMMM iYYYY',
+                showSwitcher: true,
+                allowInputToggle: true,
+                showTodayButton: true,
+                useCurrent: false,
+                isRTL: true,
+                viewMode: 'days',
+                keepOpen: false,
+                hijri: true,
+                debug: false,
+                locale: 'fa-sa',
+                icons: {
+                    time: 'fa fa-clock-o',
+                    date: 'fa fa-calendar',
+                    up: 'fa fa-chevron-up',
+                    down: 'fa fa-chevron-down',
+                    previous: 'fa fa-chevron-right',
+                    next: 'fa fa-chevron-left',
+                    today: 'fa fa-screenshot',
+                    clear: 'fa fa-trash',
+                    close: 'fa fa-times'
                 },
-                success: function(resp) {
-                    $('.search-document-data').html(resp);
+                tooltips: {
+                    today: 'امروز',
+                    clear: 'پاک کردن',
+                    close: 'بستن',
+                    selectMonth: 'انتخاب ماه',
+                    prevMonth: 'ماه قبل',
+                    nextMonth: 'ماه بعد',
+                    selectYear: 'انتخاب سال',
+                    prevYear: 'سال قبل',
+                    nextYear: 'سال بعد',
+                    selectDecade: 'انتخاب دهه',
+                    prevDecade: 'دهه قبل',
+                    nextDecade: 'دهه بعد',
+                    prevCentury: 'قرن قبل',
+                    nextCentury: 'قرن بعد',
+                    pickHour: 'انتخاب ساعت',
+                    incrementHour: 'افزایش ساعت',
+                    decrementHour: 'کاهش ساعت',
+                    pickMinute: 'انتخاب دقیقه',
+                    incrementMinute: 'افزایش دقیقه',
+                    decrementMinute: 'کاهش دقیقه',
+                    pickSecond: 'انتخاب ثانیه',
+                    incrementSecond: 'افزایش ثانیه',
+                    decrementSecond: 'کاهش ثانیه',
+                    togglePeriod: 'تغییر دوره',
+                    selectTime: 'انتخاب زمان'
                 }
             });
+
+            // Form submission
+            $('form').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('outcomes.report-search') }}",
+                    data: $(this).serialize(),
+                    beforeSend: function () {
+                        $('.search-document-data').html(
+                            '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
+                        );
+                    },
+                    success: function (resp) {
+                        $('.search-document-data').html(resp);
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
 @endpush
 
 @push('custom-css')
-<style>
-.persian-date {
-    direction: rtl;
-    text-align: right;
-}
-</style>
+    <style>
+        .persian-date {
+            direction: rtl;
+            text-align: right;
+        }
+    </style>
 @endpush

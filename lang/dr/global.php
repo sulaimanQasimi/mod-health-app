@@ -1008,4 +1008,5 @@ return [
     'civilian_types' => 'رتبه ملکی',
     'search' => 'جستجو',
     'income_record' => 'ادویه وارده',
+    'outcome_record' => 'ادویه خروجی',
 ];

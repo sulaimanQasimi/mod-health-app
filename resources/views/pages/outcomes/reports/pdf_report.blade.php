@@ -7,7 +7,7 @@
     <style>
         @font-face {
             font-family: 'B Nazanin';
-            src: url('{{ asset("fonts/AdobeArabic-Regular.otf") }}') format('opentype');
+            src: url('{{ asset("persian_font.ttf") }}') format('opentype');
         }
         
         body {

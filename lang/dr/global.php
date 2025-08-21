@@ -1006,3 +1006,5 @@ return [
     'outcome_type' => 'نوع خروجی',
     'military_types' => 'رتبه نظامی',
     'civilian_types' => 'رتبه ملکی',
+    'search' => 'جستجو',
+];

@@ -975,7 +975,28 @@ return [
     'edit_icu_procedure' => 'تصحیح پروسیجر ICU',
     'job_and_rank' => 'رتبه و وظیفه',
     'register_number' => 'شماره راجستر',
-    'card_number' => 'شماره کارت'
+    'card_number' => 'شماره کارت',
+    
+    // Outcome Report Translations
+    'outcome_report' => 'راپور صادرات دواخانه',
+    'generated_on' => 'تاریخ تولید',
+    'total_records' => 'تعداد کل رکوردها',
+    'report_period' => 'دوره گزارش',
+    'summary_statistics' => 'آمار خلاصه',
+    'expired' => 'منقضی شده',
+    'damaged' => 'آسیب دیده',
+    'lost' => 'گم شده',
+    'return' => 'بازگشت',
+    'total_amount' => 'مقدار کل',
+    'row' => 'ردیف',
+    'outcome_type' => 'نوع صادرات',
+    'outcome_date' => 'تاریخ صادرات',
+    'report_generated_by' => 'گزارش تولید شده توسط',
+    'report_generation_date' => 'تاریخ تولید گزارش',
+    'total_records_in_report' => 'تعداد کل رکوردها در گزارش',
+    'report_information' => 'اطلاعات گزارش',
+    'generated_by' => 'تولید شده توسط',
+    'no_records_found' => 'هیچ رکوردی یافت نشد'
 
 
 ];

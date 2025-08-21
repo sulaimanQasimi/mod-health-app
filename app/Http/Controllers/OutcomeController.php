@@ -6,6 +6,7 @@ use App\Models\Outcome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Log;
+use Verta;
 
 class OutcomeController extends Controller
 {
@@ -59,7 +60,7 @@ class OutcomeController extends Controller
     }
 
     public function reportSearch(Request $request)
-    {Log::info($request->all());
+    {
         $query = DB::table('outcomes as o')
             ->leftJoin('medicines as m', 'o.medicine_id', '=', 'm.id')
             ->leftJoin('patients as p', 'o.patient_id', '=', 'p.id')
@@ -94,9 +95,17 @@ class OutcomeController extends Controller
             $query->where('o.outcome_type', $request->outcome_type);
         }
 
-        // Filter by date range
+        // Filter by date range - Convert Persian to Gregorian
         if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('o.outcome_date', [$request->from, $request->to]);
+            
+            Log::info($request->from);
+            Log::info($request->to);
+            // Convert Persian dates to Gregorian
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
+
+            $query->whereDate('o.outcome_date', '>=', $fromDate)->whereDate('o.outcome_date', '<=', $toDate);
+            
         }
 
         $items = $query->orderBy('o.outcome_date', 'desc')->get();
@@ -104,6 +113,11 @@ class OutcomeController extends Controller
         return view('pages.outcomes.reports.report', ['items' => $items]);
     }
 
+    /**
+     * Export the report to a response
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function exportReport(Request $request)
     {
         $data = json_decode($request->data, true);
@@ -188,12 +202,10 @@ class OutcomeController extends Controller
                 $sheet->setCellValue('D' . $row, $item->doctor_name);
                 $sheet->setCellValue('E' . $row, $item->amount);
                 $sheet->setCellValue('F' . $row, $outcomeType);
-                // Convert to Persian date for Excel export
+                // Convert to Persian date for Excel export using Verta
                 $outcomeDate = '';
                 if ($item->outcome_date) {
-                    $gregorianDate = \Carbon\Carbon::parse($item->outcome_date);
-                    $hijriDate = \Morilog\Jalali\Jalalian::fromDateTime($gregorianDate);
-                    $outcomeDate = $hijriDate->format('Y/m/d');
+                    $outcomeDate = \Hekmatinasser\Verta\Facades\Verta::instance($item->outcome_date)->format('Y/m/d');
                 }
                 $sheet->setCellValue('G' . $row, $outcomeDate);
                 $sheet->setCellValue('H' . $row, $item->reason);
@@ -204,7 +216,11 @@ class OutcomeController extends Controller
             return $this->exportResponse($spreadsheet);
         }
     }
-
+    /**
+     * Export the spreadsheet to a response
+     * @param mixed $spreadsheet
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function exportResponse($spreadsheet)
     {
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);

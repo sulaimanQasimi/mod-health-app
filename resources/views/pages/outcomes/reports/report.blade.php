@@ -61,11 +61,7 @@
                         </td>
                         <td>
                             @if($item->outcome_date)
-                                @php
-                                    $gregorianDate = \Carbon\Carbon::parse($item->outcome_date);
-                                    $hijriDate = \Morilog\Jalali\Jalalian::fromDateTime($gregorianDate);
-                                    echo $hijriDate->format('Y/m/d');
-                                @endphp
+                                {{ \Verta::instance($item->outcome_date)->format('Y/m/d') }}
                             @else
                                 -
                             @endif

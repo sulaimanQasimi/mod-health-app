@@ -143,13 +143,7 @@
                 <td>{{ localize('global.report_period') }}:</td>
                                  <td>
                      @if($items->min('outcome_date') && $items->max('outcome_date'))
-                         @php
-                             $minDate = \Carbon\Carbon::parse($items->min('outcome_date'));
-                             $maxDate = \Carbon\Carbon::parse($items->max('outcome_date'));
-                             $minHijri = \Morilog\Jalali\Jalalian::fromDateTime($minDate);
-                             $maxHijri = \Morilog\Jalali\Jalalian::fromDateTime($maxDate);
-                             echo $minHijri->format('Y/m/d') . ' - ' . $maxHijri->format('Y/m/d');
-                         @endphp
+                         {{ \Verta::instance($items->min('outcome_date'))->format('Y/m/d') }} - {{ \Verta::instance($items->max('outcome_date'))->format('Y/m/d') }}
                      @else
                          -
                      @endif
@@ -221,11 +215,7 @@
                     </td>
                                          <td>
                          @if($item->outcome_date)
-                             @php
-                                 $gregorianDate = \Carbon\Carbon::parse($item->outcome_date);
-                                 $hijriDate = \Morilog\Jalali\Jalalian::fromDateTime($gregorianDate);
-                                 echo $hijriDate->format('Y/m/d');
-                             @endphp
+                             {{ \Verta::instance($item->outcome_date)->format('Y/m/d') }}
                          @else
                              -
                          @endif

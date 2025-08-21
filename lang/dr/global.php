@@ -1,6 +1,8 @@
 <?php
 
 return [
+    "prescription_stock" => "مدیریت دواخانه",
+    "all_statuses" => "همه حالات",
     'medicine_name' => 'نام دارو',
     'medicine_type' => 'نوعیت دارو',
     'current_stock' => 'سین دواخانه',

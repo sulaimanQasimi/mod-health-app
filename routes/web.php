@@ -60,7 +60,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     // Log viewer route
-    Route::get('/log-viewer', function() {
+    Route::get('/log-viewer', function () {
         return route('log-viewer');
     })->name('log-viewer');
 
@@ -628,24 +628,31 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     // Prescription Stock routes
-    Route::prefix('prescription_stocks')->name('prescription_stocks.')->group(function () {
-        Route::get('index', [PrescriptionStockController::class, 'index'])->name('index');
-    });
+    Route::prefix('prescription_stocks')
+        ->middleware('permission:show-prescriptions-menu')
+        ->name('prescription_stocks.')->group(function () {
+            Route::get('/', [PrescriptionStockController::class, 'index'])->name('index');
+        });
 
     // Income routes
-    Route::prefix('incomes')->name('incomes.')->group(function () {
-        Route::get('index', [IncomeController::class, 'index'])->name('index');
-        Route::get('create', [IncomeController::class, 'create'])->name('create');
-        Route::post('store', [IncomeController::class, 'store'])->name('store');
-    });
+    Route::prefix('incomes')
+        ->middleware('permission:show-prescriptions-menu')
+
+        ->name('incomes.')->group(function () {
+            Route::get('/', [IncomeController::class, 'index'])->name('index');
+            Route::get('create', [IncomeController::class, 'create'])->name('create');
+            Route::post('store', [IncomeController::class, 'store'])->name('store');
+        });
 
     // Outcome routes
-    Route::prefix('outcomes')->name('outcomes.')->group(function () {
-        Route::get('index', [OutcomeController::class, 'index'])->name('index');
-        Route::get('report', [OutcomeController::class, 'report'])->name('report');
-        Route::post('report-search', [OutcomeController::class, 'reportSearch'])->name('report-search');
-        Route::post('export-report', [OutcomeController::class, 'exportReport'])->name('export-report');
-    });
+    Route::prefix('outcomes')
+        ->middleware('permission:show-prescriptions-menu')
+        ->name('outcomes.')->group(function () {
+            Route::get('/', [OutcomeController::class, 'index'])->name('index');
+            Route::get('report', [OutcomeController::class, 'report'])->name('report');
+            Route::post('report-search', [OutcomeController::class, 'reportSearch'])->name('report-search');
+            Route::post('export-report', [OutcomeController::class, 'exportReport'])->name('export-report');
+        });
 
     // General routes
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');

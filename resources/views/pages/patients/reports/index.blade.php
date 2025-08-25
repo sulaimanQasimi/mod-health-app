@@ -1,12 +1,11 @@
 @extends('layouts.master')
 @section('title', ' گزارش')
 @section('content')
-<!-- Content wrapper -->
-<div class="content-wrapper">
-    <!-- Content -->
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <!-- Basic Bootstrap Table -->
-        <div class="card">
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <!-- Basic Bootstrap Table -->
             <div class="accordion m-3" id="accordionWithIcon">
                 <div class="card accordion-item active">
                     <h2 class="accordion-header d-flex align-items-center">
@@ -64,7 +63,8 @@
 
                                     <div class="col-md-3">
                                         <label for="job_category">{{ localize('global.job_category') }}</label>
-                                        <select class="form-control select2 pager-search" name="job_category" id="job_category">
+                                        <select class="form-control select2 pager-search" name="job_category"
+                                            id="job_category">
                                             <option value="" selected>{{ localize('global.select') }}
                                             </option>
                                             <option value="0">{{localize('global.military')}}</option>
@@ -91,8 +91,8 @@
                                         <select class="form-control select2 pager-search" name="referred_by">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach ($recipients as $value)
-                                            <option value="{{ $value->id }}" {{ $value->name }}</option>
-                                                @endforeach
+                                                <option value="{{ $value->id }}"> {{ $value->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -103,8 +103,8 @@
                                                 onchange="getDistricts(this.value)" id="province_id">
                                                 <option value="">{{ localize('global.select') }}</option>
                                                 @foreach ($provinces as $value)
-                                                <option value="{{ $value->id }}" {{ $value->name_dr }}</option>
-                                                    @endforeach
+                                                    <option value="{{ $value->id }}"> {{ $value->name_dr }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -114,10 +114,20 @@
                                             <select class="form-control select2 pager-search" name="district_id"
                                                 id="district_id">
                                                 <option value="">{{ localize('global.select') }}</option>
-                                                @foreach ($districts as $value)
-                                                <option value="{{ $value->id }}" {{ $value->name_dr }}</option>
-                                                    @endforeach
                                             </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <label class="form-label">{{ localize('global.between_two_date') }}</label>
+                                        <div class="input-group input-daterange" id="bs-datepicker-daterange">
+                                            <input type="text" name="from" id="from_date"
+                                                placeholder="{{ localize('global.from') }}"
+                                                class="form-control form-control datepicker_dari pdp-el" />
+                                            <span class="input-group-text">...</span>
+                                            <input type="text" name="to" id="to_date"
+                                                placeholder="{{ localize('global.to') }}"
+                                                class="form-control form-control datepicker_dari pdp-el" />
                                         </div>
                                     </div>
                                 </div>
@@ -138,48 +148,65 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive m-1" id="app">
-                <div class="search-document-data">
+            <div class="card">
+
+                <div class="table-responsive m-1" id="app">
+                    <div class="search-document-data">
 
 
+                    </div>
                 </div>
             </div>
+            <!--/ Basic Bootstrap Table -->
         </div>
-        <!--/ Basic Bootstrap Table -->
+        <!-- / Content -->
     </div>
-    <!-- / Content -->
-</div>
 @endsection
 
 @push('custom-js')
-<script src="{{ asset('assets/js/vue/vue.js') }}"></script>
-<script>
-$('form').submit(function(e) {
-    e.preventDefault();
-    $.ajax({
-        type: 'post',
-        url: "{{ route('patients.report-search') }}",
-        data: $(this).serialize(),
-        beforeSend: function() {
-            // setting a timeout
-            $('.search-document-data').html(
-                '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
-            );
-
-        },
-        success: function(resp) {
-            $('.search-document-data').html(resp);
+    <script src="{{ asset('assets/js/vue/vue.js') }}"></script>
+    <script>
+        function getDistricts(province_id) {
+            var provinceID = province_id;
+            if (provinceID !== '') {
+                $.ajax({
+                    url: '/get_districts/' + provinceID,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#district_id').html(response);
+                    }
+                })
+            } else {
+                $('#district_id').html('<option value="">{{ localize("global.select") }}</option>');
+            }
         }
 
-    })
-})
-</script>
+        $('form').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: "{{ route('patients.report-search') }}",
+                data: $(this).serialize(),
+                beforeSend: function () {
+                    // setting a timeout
+                    $('.search-document-data').html(
+                        '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
+                    );
+
+                },
+                success: function (resp) {
+                    $('.search-document-data').html(resp);
+                }
+
+            })
+        })
+    </script>
 @endpush
 @push('custom-css')
-<style>
-.sadira_date_range,
-.wareda_date_range {
-    display: none;
-}
-</style>
+    <style>
+        .sadira_date_range,
+        .wareda_date_range {
+            display: none;
+        }
+    </style>
 @endpush

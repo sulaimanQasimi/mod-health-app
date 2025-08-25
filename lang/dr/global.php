@@ -1,6 +1,23 @@
 <?php
 
 return [
+    'export_report' => 'گزارش خروجی',
+    'select_export_format' => 'انتخاب فرمت خروجی',
+    'patient_records' => 'مریضان',
+    'records' => 'مریضان',
+    'patient_name' => 'نام مریض',
+    'nid' => 'نمبر تذکره',
+    'id_card' => 'نمبر کارت',
+    'referral_name' => 'معرفی کننده',
+    'age' => 'سن',
+    'gender' => 'جنسیت',
+    'job_category' => 'کتگوری وظیفوی',
+    'disease_type' => 'نوعیت مریضی',
+    'recipient_name' => 'اداره مربوطه',
+    'province' => 'ولایت',
+    'district' => 'ولسوالی',
+    'registered_date' => 'تاریخ ثبت',
+    
     "prescription_stock" => "مدیریت دواخانه",
     "all_statuses" => "همه حالات",
     'medicine_name' => 'نام دارو',

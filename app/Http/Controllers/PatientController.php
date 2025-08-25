@@ -305,10 +305,9 @@ class PatientController extends Controller
 
     public function report()
     {
-        $provinces = Province::all();
-        $districts = District::all();
+        $provinces = Province::with('districts')->get();
         $recipients = Recipient::all();
-        return view('pages.patients.reports.index', compact('provinces', 'districts', 'recipients'));
+        return view('pages.patients.reports.index', compact('provinces', 'recipients'));
     }
     public function reportSearch(Request $request)
     {
@@ -328,7 +327,8 @@ class PatientController extends Controller
                 'p.type',
                 'r.name as referred_by',
                 'pr.name_dr as province_name',
-                'd.name_dr as district_name'
+                'd.name_dr as district_name',
+                'p.registration_date'
             );
 
         if ($request->filled('patient_name')) {
@@ -372,6 +372,16 @@ class PatientController extends Controller
 
         if ($request->filled('district_id')) {
             $query->where('p.district_id', $request->district_id);
+        }
+
+        // Filter by date range - Convert Persian to Gregorian
+        if ($request->filled('from') && $request->filled('to')) {
+
+            // Convert Persian dates to Gregorian
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
+
+            $query->whereDate('p.registration_date', '>=', $fromDate)->whereDate('p.registration_date', '<=', $toDate);
         }
 
 

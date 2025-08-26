@@ -54,6 +54,7 @@ use App\Http\Controllers\MiliteryTypeController;
 use App\Http\Controllers\PrescriptionStockController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\OutcomeController;
+use App\Http\Controllers\PharmacyController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -681,5 +682,17 @@ Route::prefix('militery_types')->name('militery_types.')->group(function () {
     Route::put('update/{militeryType}', [MiliteryTypeController::class, 'update'])->name('update');
     Route::delete('destroy/{militeryType}', [MiliteryTypeController::class, 'destroy'])->name('destroy');
 });
+
+// Pharmacies routes
+Route::prefix('pharmacies')->name('pharmacies.')->group(function () {
+    Route::get('index', [PharmacyController::class, 'index'])->name('index');
+    Route::get('create', [PharmacyController::class, 'create'])->name('create');
+    Route::post('store', [PharmacyController::class, 'store'])->name('store');
+    Route::get('show/{pharmacy}', [PharmacyController::class, 'show'])->name('show');
+    Route::get('edit/{pharmacy}', [PharmacyController::class, 'edit'])->name('edit');
+    Route::put('update/{pharmacy}', [PharmacyController::class, 'update'])->name('update');
+    Route::delete('destroy/{pharmacy}', [PharmacyController::class, 'destroy'])->name('destroy');
+});
+
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);

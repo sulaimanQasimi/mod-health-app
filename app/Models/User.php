@@ -114,6 +114,10 @@ class User extends Authenticatable
         return $this->hasMany(Visit::class, 'doctor_id', 'id');
     }
 
+    public function pharmacy()
+    {
+        return $this->hasOne(Pharmacy::class);
+    }
 
 
 }

@@ -27,7 +27,7 @@
                             <div class="col-md-3">
                                 <label for="search" class="form-label">{{ localize('global.search') }}</label>
                                 <input type="text" class="form-control" id="search" name="search" 
-                                       value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine') }}">
+                                       value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine_name') }}">
                             </div>
                             <div class="col-md-3">
                                 <label for="per_page" class="form-label">{{ localize('global.per_page') }}</label>

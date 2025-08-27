@@ -303,7 +303,7 @@
 
         .btn-warning {
             background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-            border: none;
+            border: 1px solid white;
             color: white;
         }
 

@@ -19,7 +19,7 @@
                             </div>
                             <div>
                                 <h4 class="mb-0 text-white">{{ localize('global.create_pharmacy') }}</h4>
-                                <p class="text-muted mb-0" >{{ localize('global.add_new_pharmacy_description') }}</p>
+                                <p class="text-white mb-0" >{{ localize('global.add_new_pharmacy_description') }}</p>
                             </div>
                         </div>
                         <div class="page-title-right">
@@ -193,7 +193,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .page-title-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%,rgb(116, 0, 232) 100%);
             color: white;
             padding: 1.5rem;
             border-radius: 12px;
@@ -224,12 +224,6 @@
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
             border-radius: 12px;
             overflow: hidden;
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-bottom: 1px solid #dee2e6;
-            padding: 1.5rem;
         }
 
         .section-title {

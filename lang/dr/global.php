@@ -1126,4 +1126,7 @@ return [
     'pharmacy_not_found.'=>'دواخانه یافت نشد',
     'pharmacy_user_not_belong_to_pharmacy.'=>'کاربر مربوط به هیچ دواخانه ای نیست',
     'pharmacy_no_access.'=>'دواخانه دسترسی ندارد',
+    'next'=>'بعدی',
+    'previous'=>'قبلی',
+    'no_stock_records_found'=>'هیچ رکورد موجودی یافت نشد',
 ];

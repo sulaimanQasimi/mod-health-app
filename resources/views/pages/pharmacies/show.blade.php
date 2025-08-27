@@ -258,7 +258,7 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #003468a4 0%, #002448b1 100%);
             border-bottom: 1px solid #dee2e6;
             padding: 1.5rem;
         }

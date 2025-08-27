@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
+
 class PrescriptionController extends Controller
 {
     /**
@@ -21,8 +22,8 @@ class PrescriptionController extends Controller
      */
     public function index()
     {
-        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_completed',false)->latest()->paginate(10);
-        return view('pages.prescriptions.index',compact('prescriptions'));
+        $prescriptions = Prescription::where('branch_id', auth()->user()->branch_id)->where('is_completed', false)->latest()->paginate(10);
+        return view('pages.prescriptions.index', compact('prescriptions'));
     }
 
     /**
@@ -30,8 +31,8 @@ class PrescriptionController extends Controller
      */
     public function delivered()
     {
-        $prescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->where('is_completed',true)->latest()->paginate(10);
-        return view('pages.prescriptions.delivered',compact('prescriptions'));
+        $prescriptions = Prescription::where('branch_id', auth()->user()->branch_id)->where('is_completed', true)->latest()->paginate(10);
+        return view('pages.prescriptions.delivered', compact('prescriptions'));
     }
 
     /**
@@ -94,7 +95,6 @@ class PrescriptionController extends Controller
         SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
 
         return redirect()->back()->with('success', localize('global.prescription_created_successfully.'));
-
     }
 
     /**
@@ -102,7 +102,7 @@ class PrescriptionController extends Controller
      */
     public function show(Prescription $prescription)
     {
-        return view('pages.prescriptions.show',compact('prescription'));
+        return view('pages.prescriptions.show', compact('prescription'));
     }
 
     public function printCard($appointmentId, $prescriptionId)
@@ -114,7 +114,7 @@ class PrescriptionController extends Controller
 
         $patient = $appointment->patient;
 
-        return view('pages.prescriptions.print_card', compact('appointment','prescription','patient','prescriptionItems'));
+        return view('pages.prescriptions.print_card', compact('appointment', 'prescription', 'patient', 'prescriptionItems'));
     }
 
     public function updateStatus($prescriptionId, $key)
@@ -146,13 +146,13 @@ class PrescriptionController extends Controller
         $prescriptionItems = PrescriptionItem::where('prescription_id', $prescription->id)->get();
 
         foreach ($prescriptionItems as $prescriptionItem) {
-            
-            
+
+
             // Check if this item has a selected alternative
             $selectedAlternative = $prescriptionItem->selectedAlternative;
-            
+
             if ($selectedAlternative) {
-                
+
                 // Create Outcome for the selected alternative medicine
                 Outcome::create([
                     'medicine_id' => $selectedAlternative->medicine_id,
@@ -192,7 +192,7 @@ class PrescriptionController extends Controller
         $qrCodeData = $request->input('qrCodeData');
 
         // Find the patient based on the QR code data
-        $prescription = Prescription::where('id', $qrCodeData)->where('branch_id',auth()->user()->branch_id)->first();
+        $prescription = Prescription::where('id', $qrCodeData)->where('branch_id', auth()->user()->branch_id)->first();
 
         if ($prescription) {
             // Redirect to the patient's show page
@@ -212,7 +212,7 @@ class PrescriptionController extends Controller
     {
         // Check if user belongs to a pharmacy
         $userPharmacy = \App\Models\Pharmacy::where('user_id', auth()->id())->first();
-        
+
         if (!$userPharmacy) {
             return redirect()->back()->with('error', localize('global.user_not_belong_to_pharmacy'));
         }
@@ -238,10 +238,10 @@ class PrescriptionController extends Controller
     public function reportSearch(Request $request)
     {
         $query = DB::table('prescriptions as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed');
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed');
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -256,8 +256,7 @@ class PrescriptionController extends Controller
         }
 
         $items = $query->get();
-    return view('pages.prescriptions.reports.report', ['items' => $items]);
-
+        return view('pages.prescriptions.reports.report', ['items' => $items]);
     }
 
 
@@ -267,11 +266,11 @@ class PrescriptionController extends Controller
         $data = json_decode($request->data, true);
 
         $items = DB::table('prescriptions as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name','a.is_completed')
-        ->whereIn('a.id', $data)->get();
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed')
+            ->whereIn('a.id', $data)->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
@@ -280,7 +279,7 @@ class PrescriptionController extends Controller
             $mpdf = new Mpdf(['format' => 'A4-L']);
             $mpdf->WriteHTML($html);
             $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
+        } else {
             $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
             $sheet = $spreadsheet->getActiveSheet();
             $row = 3;
@@ -309,21 +308,22 @@ class PrescriptionController extends Controller
                 } else {
                     $status = 'نسخه های اجرأ شده';
                 }
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->doctor_name);
-                    $sheet->setCellValue('D' . $row . '', $item->branch_name);
-                    $sheet->setCellValue('E' . $row . '', $status);
+                $sheet->setCellValue('A' . $row . '', ++$index);
+                $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                $sheet->setCellValue('C' . $row . '', $item->doctor_name);
+                $sheet->setCellValue('D' . $row . '', $item->branch_name);
+                $sheet->setCellValue('E' . $row . '', $status);
 
                 $row++;
             }
 
-return $this->exportResponse($spreadsheet);
-}
+            return $this->exportResponse($spreadsheet);
+        }
     }
 
 
-    public function exportResponse($spreadsheet){
+    public function exportResponse($spreadsheet)
+    {
         $writer = new WriterXlsx($spreadsheet);
         $response =  new StreamedResponse(
             function () use ($writer) {
@@ -334,6 +334,5 @@ return $this->exportResponse($spreadsheet);
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
-
     }
 }

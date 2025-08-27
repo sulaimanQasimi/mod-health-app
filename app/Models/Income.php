@@ -24,6 +24,7 @@ class Income extends Model
         'invoice_number',
         'notes',
         'income_type', // 'purchase', 'return', 'donation', etc.
+        'pharmacy_id',
         'created_by',
         'updated_by',
         'deleted_by'
@@ -59,6 +60,11 @@ class Income extends Model
     public function medicine()
     {
         return $this->belongsTo(Medicine::class);
+    }
+
+    public function pharmacy()
+    {
+        return $this->belongsTo(Pharmacy::class);
     }
 
     public function prescriptionStock()

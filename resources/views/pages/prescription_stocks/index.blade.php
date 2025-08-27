@@ -27,7 +27,42 @@
                             <div class="col-md-3">
                                 <label for="search" class="form-label">{{ localize('global.search') }}</label>
                                 <input type="text" class="form-control" id="search" name="search" 
-                                       value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine_name') }}">
+                                       value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine_pharmacy') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
+                                <select class="form-select" id="pharmacy_id" name="pharmacy_id">
+                                    <option value="">{{ localize('global.all_pharmacies') }}</option>
+                                    @foreach($pharmacies as $pharmacy)
+                                        <option value="{{ $pharmacy->id }}" {{ request('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
+                                            {{ $pharmacy->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="stock_status" class="form-label">{{ localize('global.stock_status') }}</label>
+                                <select class="form-select" id="stock_status" name="stock_status">
+                                    <option value="">{{ localize('global.all_statuses') }}</option>
+                                    <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>
+                                        {{ localize('global.low_stock') }}
+                                    </option>
+                                    <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>
+                                        {{ localize('global.out_of_stock') }}
+                                    </option>
+                                    <option value="overstocked" {{ request('stock_status') == 'overstocked' ? 'selected' : '' }}>
+                                        {{ localize('global.overstocked') }}
+                                    </option>
+                                    <option value="total_low_stock" {{ request('stock_status') == 'total_low_stock' ? 'selected' : '' }}>
+                                        {{ localize('global.total_low_stock') }}
+                                    </option>
+                                    <option value="total_out_of_stock" {{ request('stock_status') == 'total_out_of_stock' ? 'selected' : '' }}>
+                                        {{ localize('global.total_out_of_stock') }}
+                                    </option>
+                                    <option value="total_overstocked" {{ request('stock_status') == 'total_overstocked' ? 'selected' : '' }}>
+                                        {{ localize('global.total_overstocked') }}
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-3">
                                 <label for="per_page" class="form-label">{{ localize('global.per_page') }}</label>
@@ -67,52 +102,60 @@
                             <thead>
                                 <tr>
                                     <th>{{localize('global.medicine_name')}}</th>
-                                    <th>{{localize('global.medicine_type')}}</th>
-                                    <th>{{localize('global.current_stock')}}</th>
-                                    <th>{{localize('global.available_stock')}}</th>
-                                    <th>{{localize('global.reserved_stock')}}</th>
+                                    <th>{{localize('global.pharmacy_name')}}</th>
+                                    <th>{{localize('global.pharmacy_stock')}}</th>
+                                    <th>{{localize('global.total_stock')}}</th>
+                                    <th>{{localize('global.pharmacy_income')}}</th>
+                                    <th>{{localize('global.pharmacy_outcome')}}</th>
                                     <th>{{localize('global.minimum_stock')}}</th>
                                     <th>{{localize('global.maximum_stock')}}</th>
-                                    <th>{{localize('global.earliest_expiry')}}</th>
                                     <th>{{localize('global.stock_status')}}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($prescriptionStocks as $stock)
                                     <tr>
-                                        <td>{{ $stock->medicine_name }}</td>
-                                        <td>{{ $stock->medicine_type_name }}</td>
                                         <td>
-                                            <span class="badge bg-{{ $stock->current_stock > 0 ? 'primary' : 'danger' }}">
-                                                {{ $stock->current_stock }}
+                                            <div class="d-flex align-items-center">
+                                                <i class="bx bx-pill me-2 text-primary"></i>
+                                                {{ $stock->medicine_name }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($stock->pharmacy_id)
+                                                <span class="badge bg-info">{{ $stock->pharmacy_name }}</span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ localize('global.general_stock') }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ $stock->pharmacy_stock > 0 ? 'primary' : 'danger' }}">
+                                                {{ $stock->pharmacy_stock }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-{{ $stock->available_stock > 0 ? 'success' : 'warning' }}">
-                                                {{ $stock->available_stock }}
+                                            <span class="badge bg-{{ $stock->total_stock > 0 ? 'success' : 'warning' }}">
+                                                {{ $stock->total_stock }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $stock->reserved_stock }}</span>
+                                            <span class="badge bg-success">{{ $stock->pharmacy_income }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">{{ $stock->pharmacy_outcome }}</span>
                                         </td>
                                         <td>{{ $stock->minimum_stock }}</td>
                                         <td>{{ $stock->maximum_stock }}</td>
                                         <td>
-                                            @if($stock->earliest_expiry)
-                                                <span class="badge bg-{{ $stock->earliest_expiry->diffInDays(now()) <= 30 ? 'warning' : 'success' }}">
-                                                    {{ $stock->earliest_expiry->format('Y-m-d') }}
-                                                </span>
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
-                                        <td>
                                             @php
-                                                $status = $stock->getComprehensiveStockStatus();
+                                                $status = $stock->pharmacy_stock > 0 ? 'normal' : 'out_of_stock';
+                                                if ($stock->pharmacy_stock <= $stock->minimum_stock && $stock->pharmacy_stock > 0) {
+                                                    $status = 'low_stock';
+                                                } elseif ($stock->pharmacy_stock >= $stock->maximum_stock) {
+                                                    $status = 'overstocked';
+                                                }
                                                 $statusColors = [
                                                     'out_of_stock' => 'danger',
-                                                    'has_expired_stock' => 'danger',
-                                                    'expiring_soon' => 'warning',
                                                     'low_stock' => 'warning',
                                                     'overstocked' => 'info',
                                                     'normal' => 'success'

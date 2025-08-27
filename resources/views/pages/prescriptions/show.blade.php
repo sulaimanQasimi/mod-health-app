@@ -43,16 +43,29 @@
                                         </td>
                                         <td>
                                             @if($prescription->is_completed == '0')
-                                            <div class="d-flex justify-content-center text-center mt-2">
-                                                <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden" name="is_completed" value="1">
-                                                    <button type="submit" class="btn btn-success">
-                                                        <span><i class="bx bx-check-shield"></i></span>
-                                                    </button>
-                                                </form>
-                                            </div>
+                                                @php
+                                                    $userPharmacy = \App\Models\Pharmacy::where('user_id', auth()->id())->first();
+                                                @endphp
+                                                
+                                                @if($userPharmacy)
+                                                    <div class="d-flex justify-content-center text-center mt-2">
+                                                        <form action="{{ route('prescriptions.changeStatus', $prescription) }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <input type="hidden" name="is_completed" value="1">
+                                                            <input type="hidden" name="pharmacy_id" value="{{ $userPharmacy->id }}">
+                                                            <button type="submit" class="btn btn-success" title="{{ localize('global.complete_prescription') }}">
+                                                                <span><i class="bx bx-check-shield"></i></span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <div class="text-center">
+                                                        <span class="badge bg-warning" title="{{ localize('global.user_not_belong_to_pharmacy') }}">
+                                                            <i class="bx bx-error-circle"></i> {{ localize('global.no_pharmacy_access') }}
+                                                        </span>
+                                                    </div>
+                                                @endif
                                             @endif
                                         </td>
                                     </tr>

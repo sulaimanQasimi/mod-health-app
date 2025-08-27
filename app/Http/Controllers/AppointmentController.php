@@ -89,7 +89,7 @@ class AppointmentController extends Controller
             $appointment = Appointment::create($validatedData);
 
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
-            return redirect()->route('appointments.completedAppointments')->with('success', localize('global.appointment_created_successfully.'));
+            return redirect()->route('appointments.completedAppointments')->with('success', localize('global.appointment_created_successfully'));
         } else {
             // Create a new appointment
             $appointment = Appointment::create($validatedData);
@@ -98,7 +98,7 @@ class AppointmentController extends Controller
         }
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.index')->with('success', localize('global.appointment_created_successfully.'));
+        return redirect()->route('appointments.index')->with('success', localize('global.appointment_created_successfully'));
     }
 
     public function edit(Appointment $appointment)
@@ -121,7 +121,7 @@ class AppointmentController extends Controller
         $appointment->update($validatedData);
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.appointment_updated_successfully.'));
+        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.appointment_updated_successfully'));
     }
 
     public function changeStatus(Request $request, Appointment $appointment)
@@ -171,7 +171,7 @@ class AppointmentController extends Controller
         $appointment->delete();
 
         // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.index')->with('success', localize('global.appointment_deleted_successfully.'));
+        return redirect()->route('appointments.index')->with('success', localize('global.appointment_deleted_successfully'));
     }
 
     public function doctorAppointments(Request $request)

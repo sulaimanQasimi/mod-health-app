@@ -511,4 +511,30 @@ return [
     'back' => 'Back',
     'back_to_list' => 'Back to List',
     'Fill in the pharmacy details below' => 'Fill in the pharmacy details below',
+    
+    // Pharmacy validation translations
+    'user_not_belong_to_pharmacy' => 'User does not belong to any pharmacy',
+    'no_pharmacy_access' => 'No Pharmacy Access',
+    'complete_prescription' => 'Complete Prescription',
+    'pharmacy_required' => 'Pharmacy access is required to complete prescriptions',
+    
+    // Prescription Stock translations
+    'prescription_stock' => 'Prescription Stock',
+    'search_by_medicine_pharmacy' => 'Search by medicine or pharmacy name',
+    'all_pharmacies' => 'All Pharmacies',
+    'all_statuses' => 'All Statuses',
+    'pharmacy_stock' => 'Pharmacy Stock',
+    'total_stock' => 'Total Stock',
+    'pharmacy_income' => 'Pharmacy Income',
+    'pharmacy_outcome' => 'Pharmacy Outcome',
+    'total_low_stock' => 'Total Low Stock',
+    'total_out_of_stock' => 'Total Out of Stock',
+    'total_overstocked' => 'Total Overstocked',
+    'general_stock' => 'General Stock',
+    'no_stock_found' => 'No stock records found',
+    'stock_status' => 'Stock Status',
+    'low_stock' => 'Low Stock',
+    'out_of_stock' => 'Out of Stock',
+    'overstocked' => 'Overstocked',
+    'normal' => 'Normal',
 ];

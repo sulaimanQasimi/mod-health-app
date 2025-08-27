@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -26,6 +27,7 @@ return new class extends Migration {
             $table->string('invoice_number')->nullable();
             $table->text('notes')->nullable();
             $table->enum('income_type', ['purchase', 'return', 'donation', 'transfer', 'adjustment'])->default('purchase');
+            $table->unsignedBigInteger('pharmacy_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
@@ -34,12 +36,14 @@ return new class extends Migration {
 
             // Foreign key constraints
             $table->foreign('medicine_id')->references('id')->on('medicines')->onDelete('cascade');
+            $table->foreign('pharmacy_id')->references('id')->on('pharmacies')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('deleted_by')->references('id')->on('users')->onDelete('set null');
 
             // Indexes for better performance
             $table->index(['medicine_id']);
+            $table->index(['pharmacy_id']);
             $table->index(['batch_number']);
             $table->index(['expiry_date']);
             $table->index(['purchase_date']);
@@ -59,6 +63,7 @@ return new class extends Migration {
             $table->text('reason')->nullable();
             $table->date('outcome_date');
             $table->text('notes')->nullable();
+            $table->unsignedBigInteger('pharmacy_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
@@ -68,6 +73,7 @@ return new class extends Migration {
             // Foreign key constraints
             $table->foreign('medicine_id')->references('id')->on('medicines')->onDelete('cascade');
             $table->foreign('prescription_item_id')->references('id')->on('prescription_items')->onDelete('set null');
+            $table->foreign('pharmacy_id')->references('id')->on('pharmacies')->onDelete('set null');
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('set null');
             $table->foreign('doctor_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
@@ -76,6 +82,7 @@ return new class extends Migration {
 
             // Indexes for better performance
             $table->index(['medicine_id']);
+            $table->index(['pharmacy_id']);
             $table->index(['prescription_item_id']);
             $table->index(['patient_id']);
             $table->index(['doctor_id']);
@@ -94,10 +101,14 @@ return new class extends Migration {
             SELECT 
                 m.id as medicine_id,
                 m.name as medicine_name,
+                p.id as pharmacy_id,
+                p.name as pharmacy_name,
+                COALESCE(SUM(CASE WHEN i.pharmacy_id = p.id THEN i.amount ELSE 0 END), 0) as pharmacy_income,
+                COALESCE(SUM(CASE WHEN o.pharmacy_id = p.id THEN o.amount ELSE 0 END), 0) as pharmacy_outcome,
+                COALESCE(SUM(CASE WHEN i.pharmacy_id = p.id THEN i.amount ELSE 0 END), 0) - COALESCE(SUM(CASE WHEN o.pharmacy_id = p.id THEN o.amount ELSE 0 END), 0) as pharmacy_stock,
                 COALESCE(SUM(i.amount), 0) as total_income,
                 COALESCE(SUM(o.amount), 0) as total_outcome,
-                (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as current_stock,
-                (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as available_stock,
+                (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as total_stock,
                 0 as reserved_stock,
                 10 as minimum_stock,
                 1000 as maximum_stock,
@@ -106,9 +117,34 @@ return new class extends Migration {
                 m.created_at,
                 m.updated_at
             FROM medicines m
+            CROSS JOIN pharmacies p
             LEFT JOIN incomes i ON m.id = i.medicine_id AND i.deleted_at IS NULL
             LEFT JOIN outcomes o ON m.id = o.medicine_id AND o.deleted_at IS NULL
+            GROUP BY m.id, m.name, p.id, p.name, m.created_at, m.updated_at
+            UNION ALL
+            SELECT 
+                m.id as medicine_id,
+                m.name as medicine_name,
+                NULL as pharmacy_id,
+                'General Stock' as pharmacy_name,
+                0 as pharmacy_income,
+                0 as pharmacy_outcome,
+                0 as pharmacy_stock,
+                COALESCE(SUM(i.amount), 0) as total_income,
+                COALESCE(SUM(o.amount), 0) as total_outcome,
+                (COALESCE(SUM(i.amount), 0) - COALESCE(SUM(o.amount), 0)) as total_stock,
+                0 as reserved_stock,
+                10 as minimum_stock,
+                1000 as maximum_stock,
+                NOW() as last_updated,
+                'Auto-calculated from income and outcome' as notes,
+                m.created_at,
+                m.updated_at
+            FROM medicines m
+            LEFT JOIN incomes i ON m.id = i.medicine_id AND i.deleted_at IS NULL AND i.pharmacy_id IS NULL
+            LEFT JOIN outcomes o ON m.id = o.medicine_id AND o.deleted_at IS NULL AND o.pharmacy_id IS NULL
             GROUP BY m.id, m.name, m.created_at, m.updated_at
+            HAVING COALESCE(SUM(i.amount), 0) > 0 OR COALESCE(SUM(o.amount), 0) > 0
  ");
 
 

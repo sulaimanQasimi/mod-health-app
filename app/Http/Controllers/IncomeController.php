@@ -78,6 +78,6 @@ class IncomeController extends Controller
         Income::create($request->all());
 
         return redirect()->route('incomes.index')
-            ->with('success', 'Income record created successfully.');
+            ->with('success', localize('global.income_record_created_successfully'));
     }
 }

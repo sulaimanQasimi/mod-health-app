@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             DiseaseSeeder::class,
             MiliteryTypeSeeder::class,
             PrescriptionStockSeeder::class,
-
+            PharmacyPermissionSeeder::class
         ]);
     }
 }

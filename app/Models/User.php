@@ -118,6 +118,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Pharmacy::class);
     }
-
-
 }

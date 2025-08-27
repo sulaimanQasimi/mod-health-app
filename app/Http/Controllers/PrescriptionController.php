@@ -105,30 +105,6 @@ class PrescriptionController extends Controller
         return view('pages.prescriptions.show',compact('prescription'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Prescription $prescription)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Prescription $prescription)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Prescription $prescription)
-    {
-        //
-    }
-
     public function printCard($appointmentId, $prescriptionId)
     {
         $appointment = Appointment::findOrFail($appointmentId);
@@ -164,7 +140,7 @@ class PrescriptionController extends Controller
     /**
      * Create Outcome records for prescription items and alternatives
      */
-    private function createOutcomesForPrescription($prescription)
+    private function createOutcomesForPrescription($prescription, $pharmacy_id = null)
     {
         // Get prescription items
         $prescriptionItems = PrescriptionItem::where('prescription_id', $prescription->id)->get();
@@ -184,6 +160,7 @@ class PrescriptionController extends Controller
                     'prescription_item_id' => $prescriptionItem->id,
                     'patient_id' => $prescription->patient_id,
                     'doctor_id' => $prescription->doctor_id,
+                    'pharmacy_id' => $pharmacy_id,
                     'outcome_type' => 'prescription',
                     'batch_number' => null, // You might want to get this from prescription stock
                     'reason' => 'Prescribed and delivered to patient',
@@ -198,6 +175,7 @@ class PrescriptionController extends Controller
                     'prescription_item_id' => $prescriptionItem->id,
                     'patient_id' => $prescription->patient_id,
                     'doctor_id' => $prescription->doctor_id,
+                    'pharmacy_id' => $pharmacy_id,
                     'outcome_type' => 'prescription',
                     'batch_number' => null, // You might want to get this from prescription stock
                     'reason' => 'Prescribed and delivered to patient',
@@ -232,18 +210,25 @@ class PrescriptionController extends Controller
 
     public function changeStatus(Request $request, Prescription $prescription)
     {
+        // Check if user belongs to a pharmacy
+        $userPharmacy = \App\Models\Pharmacy::where('user_id', auth()->id())->first();
+        
+        if (!$userPharmacy) {
+            return redirect()->back()->with('error', localize('global.user_not_belong_to_pharmacy'));
+        }
+
         // Validate the input
         $validatedData = $request->validate([
             'is_completed' => 'required',
+            'pharmacy_id' => 'required|exists:pharmacies,id',
         ]);
 
         // Update the prescription
         $prescription->update($validatedData);
-        $this->createOutcomesForPrescription($prescription);
-
+        $this->createOutcomesForPrescription($prescription, $validatedData['pharmacy_id']);
 
         // Redirect to the prescriptions index page with a success message
-        return redirect()->route('prescriptions.delivered')->with('success', localize('global.prescription_updated_successfully.'));
+        return redirect()->route('prescriptions.delivered')->with('success', localize('global.prescription_updated_successfully'));
     }
 
     public function report()

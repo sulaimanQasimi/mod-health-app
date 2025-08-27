@@ -149,6 +149,12 @@
                 </a>
 
                 <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('pharmacies.index') ? 'active' : '' }}">
+                        <a href="{{ route('pharmacies.index') }}" class="menu-link">
+                            <div>{{ localize('global.pharmacies') }}</div>
+                        </a>
+                    </li>
+
                     <li class="menu-item {{ Route::is('prescription_stocks.index') ? 'active' : '' }}">
                         <a href="{{ route('prescription_stocks.index') }}" class="menu-link">
                             <div>{{ localize('global.stock_overview') }}</div>

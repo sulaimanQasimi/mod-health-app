@@ -23,6 +23,7 @@ class Outcome extends Model
         'reason',
         'outcome_date',
         'notes',
+        'pharmacy_id',
         'created_by',
         'updated_by',
         'deleted_by'
@@ -59,6 +60,11 @@ class Outcome extends Model
     public function medicine()
     {
         return $this->belongsTo(Medicine::class);
+    }
+
+    public function pharmacy()
+    {
+        return $this->belongsTo(Pharmacy::class);
     }
 
     public function prescriptionItem()

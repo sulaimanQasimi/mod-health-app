@@ -45,4 +45,14 @@ class Pharmacy extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
+
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    public function outcomes()
+    {
+        return $this->hasMany(Outcome::class);
+    }
 }

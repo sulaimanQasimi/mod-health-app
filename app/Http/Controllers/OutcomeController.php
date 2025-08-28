@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Outcome;
+use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Log;
 use Verta;
 
@@ -12,7 +14,16 @@ class OutcomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Outcome::with(['medicine', 'patient', 'doctor', 'createdBy']);
+        $query = Outcome::with(['medicine', 'patient', 'doctor', 'createdBy', 'pharmacy']);
+
+        // Get current user's pharmacy
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Filter by pharmacy if user has one
+        if ($userPharmacy) {
+            $query->where('pharmacy_id', $userPharmacy->id);
+        }
 
         // Search functionality
         if ($request->filled('search')) {
@@ -34,6 +45,11 @@ class OutcomeController extends Controller
             $query->where('outcome_type', $request->outcome_type);
         }
 
+        // Filter by pharmacy (for admin users who can see all pharmacies)
+        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
+            $query->where('pharmacy_id', $request->pharmacy_id);
+        }
+
         // Filter by date range
         if ($request->filled('date_from')) {
             $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
@@ -53,7 +69,69 @@ class OutcomeController extends Controller
         $perPage = $request->get('per_page', 15);
         $outcomes = $query->paginate($perPage);
 
-        return view('pages.outcomes.index', compact('outcomes'));
+        // Get all pharmacies for admin filter
+        $pharmacies = null;
+        if ($user->hasRole('admin')) {
+            $pharmacies = Pharmacy::orderBy('name')->get();
+        }
+
+        return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacy'));
+    }
+
+    public function create()
+    {
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Check if user has a pharmacy assigned
+        if (!$userPharmacy) {
+            return redirect()->route('outcomes.index')
+                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
+        }
+
+        // Get data for the create form
+        $medicines = \App\Models\Medicine::orderBy('name')->get();
+        $patients = \App\Models\Patient::orderBy('name')->get();
+        $doctors = \App\Models\User::whereHas('roles', function($q) {
+            $q->where('name', 'doctor');
+        })->orderBy('name')->get();
+        $outcomeTypes = ['prescription', 'expired', 'damaged', 'lost', 'return'];
+        
+        return view('pages.outcomes.create', compact('medicines', 'patients', 'doctors', 'outcomeTypes', 'userPharmacy'));
+    }
+
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Check if user has a pharmacy assigned
+        if (!$userPharmacy) {
+            return redirect()->route('outcomes.index')
+                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
+        }
+
+        $request->validate([
+            'medicine_id' => 'required|exists:medicines,id',
+            'amount' => 'required|integer|min:1',
+            'outcome_type' => 'required|in:prescription,expired,damaged,lost,return',
+            'batch_number' => 'nullable|string|max:255',
+            'reason' => 'nullable|string',
+            'outcome_date' => 'nullable|date',
+            'patient_id' => 'nullable|exists:patients,id',
+            'doctor_id' => 'nullable|exists:users,id',
+            'prescription_item_id' => 'nullable|exists:prescription_items,id',
+            'notes' => 'nullable|string'
+        ]);
+
+        // Add pharmacy_id to the request data
+        $data = $request->all();
+        $data['pharmacy_id'] = $userPharmacy->id;
+
+        Outcome::create($data);
+
+        return redirect()->route('outcomes.index')
+            ->with('success', localize('global.outcome_record_created_successfully'));
     }
 
     public function report()
@@ -68,6 +146,7 @@ class OutcomeController extends Controller
             ->leftJoin('patients as p', 'o.patient_id', '=', 'p.id')
             ->leftJoin('users as d', 'o.doctor_id', '=', 'd.id')
             ->leftJoin('users as c', 'o.created_by', '=', 'c.id')
+            ->leftJoin('pharmacies as ph', 'o.pharmacy_id', '=', 'ph.id')
             ->select(
                 'o.id',
                 'o.amount',
@@ -79,8 +158,18 @@ class OutcomeController extends Controller
                 'm.name as medicine_name',
                 'p.name as patient_name',
                 'd.name as doctor_name',
-                'c.name as created_by_name'
+                'c.name as created_by_name',
+                'ph.name as pharmacy_name'
             );
+
+        // Get current user's pharmacy for filtering
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Filter by pharmacy if user has one (and is not admin)
+        if ($userPharmacy && !$user->hasRole('admin')) {
+            $query->where('o.pharmacy_id', $userPharmacy->id);
+        }
 
         // Filter by medicine name
         if ($request->filled('medicine_name')) {
@@ -95,6 +184,11 @@ class OutcomeController extends Controller
         // Filter by outcome type
         if ($request->filled('outcome_type')) {
             $query->where('o.outcome_type', $request->outcome_type);
+        }
+
+        // Filter by pharmacy (for admin users)
+        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
+            $query->where('o.pharmacy_id', $request->pharmacy_id);
         }
 
         // Filter by date range - Convert Persian to Gregorian
@@ -126,6 +220,7 @@ class OutcomeController extends Controller
             ->leftJoin('patients as p', 'o.patient_id', '=', 'p.id')
             ->leftJoin('users as d', 'o.doctor_id', '=', 'd.id')
             ->leftJoin('users as c', 'o.created_by', '=', 'c.id')
+            ->leftJoin('pharmacies as ph', 'o.pharmacy_id', '=', 'ph.id')
             ->select(
                 'o.id',
                 'o.amount',
@@ -137,7 +232,8 @@ class OutcomeController extends Controller
                 'm.name as medicine_name',
                 'p.name as patient_name',
                 'd.name as doctor_name',
-                'c.name as created_by_name'
+                'c.name as created_by_name',
+                'ph.name as pharmacy_name'
             )
             ->whereIn('o.id', $data)
             ->orderBy('o.outcome_date', 'desc')

@@ -9,7 +9,15 @@
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.outcome_records') }}</h5>
+                        <div>
+                            <h5 class="mb-0">{{ localize('global.outcome_records') }}</h5>
+                            @if($userPharmacy)
+                            <small class="text-muted">
+                                <i class="bx bx-building me-1"></i>
+                                {{ localize('global.pharmacy') }}: <strong>{{ $userPharmacy->name }}</strong>
+                            </small>
+                            @endif
+                        </div>
                         <div>
                             <a href="{{ route('outcomes.report') }}" class="btn btn-success">
                                 <i class="bx bx-file me-1"></i>{{ localize('global.reports') }}
@@ -46,6 +54,19 @@
                                     </option>
                                 </select>
                             </div>
+                            @if($pharmacies)
+                            <div class="col-md-2">
+                                <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
+                                <select class="form-select" id="pharmacy_id" name="pharmacy_id">
+                                    <option value="">{{ localize('global.all_pharmacies') }}</option>
+                                    @foreach ($pharmacies as $pharmacy)
+                                        <option value="{{ $pharmacy->id }}" {{ request('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
+                                            {{ $pharmacy->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
                             <div class="col-md-3">
                                 <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                 <div class="input-group input-daterange" id="bs-datepicker-daterange">
@@ -116,6 +137,7 @@
                                     <th>{{localize('global.patient')}}</th>
                                     <th>{{localize('global.doctor')}}</th>
                                     <th>{{localize('global.outcome_type')}}</th>
+                                    <th>{{localize('global.pharmacy')}}</th>
                                     <th>{{localize('global.outcome_date')}}</th>
                                     <th>{{localize('global.reason')}}</th>
                                     <th>{{localize('global.created_by')}}</th>
@@ -147,6 +169,13 @@
                                             </span>
                                         </td>
                                         <td>
+                                            @if($outcome->pharmacy)
+                                                <span class="badge bg-secondary">{{ $outcome->pharmacy->name }}</span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                        <td>
                                             @if($outcome->outcome_date)
                                                 {{ $outcome->outcome_date->format('Y-m-d') }}
                                             @else
@@ -165,7 +194,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center">{{ localize('global.no_outcome_records_found') }}</td>
+                                        <td colspan="11" class="text-center">{{ localize('global.no_outcome_records_found') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

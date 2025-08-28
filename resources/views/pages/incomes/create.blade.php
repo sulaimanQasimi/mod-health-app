@@ -12,6 +12,12 @@
                         <h5 class="mb-0">{{ localize('global.create_income_record') }}</h5>
                     </div>
                     <div class="card-body">
+                        @if($userPharmacy)
+                        <div class="alert alert-info mb-3">
+                            <i class="bx bx-info-circle me-2"></i>
+                            <strong>{{ localize('global.pharmacy') }}:</strong> {{ $userPharmacy->name }}
+                        </div>
+                        @endif
                         <form method="POST" action="{{ route('incomes.store') }}">
                             @csrf
                             <div class="row">

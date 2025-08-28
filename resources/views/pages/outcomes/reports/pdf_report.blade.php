@@ -161,6 +161,8 @@
             $lostCount = $items->where('outcome_type', 'lost')->count();
             $returnCount = $items->where('outcome_type', 'return')->count();
             $totalAmount = $items->sum('amount');
+            $pharmacyCount = $items->whereNotNull('pharmacy_name')->unique('pharmacy_name')->count();
+            $pharmacies = $items->whereNotNull('pharmacy_name')->unique('pharmacy_name')->pluck('pharmacy_name')->implode(', ');
         @endphp
         <p>{{ localize('global.prescription') }}: {{ $prescriptionCount }}</p>
         <p>{{ localize('global.expired') }}: {{ $expiredCount }}</p>
@@ -168,6 +170,9 @@
         <p>{{ localize('global.lost') }}: {{ $lostCount }}</p>
         <p>{{ localize('global.return') }}: {{ $returnCount }}</p>
         <p>{{ localize('global.total_amount') }}: {{ $totalAmount }}</p>
+        @if($pharmacyCount > 0)
+        <p>{{ localize('global.pharmacies') }}: {{ $pharmacyCount }} ({{ $pharmacies }})</p>
+        @endif
     </div>
     
     <table>
@@ -179,6 +184,7 @@
                 <th>{{ localize('global.doctor_name') }}</th>
                 <th>{{ localize('global.amount') }}</th>
                 <th>{{ localize('global.outcome_type') }}</th>
+                <th>{{ localize('global.pharmacy') }}</th>
                 <th>{{ localize('global.outcome_date') }}</th>
                 <th>{{ localize('global.reason') }}</th>
                 <th>{{ localize('global.batch_number') }}</th>
@@ -192,7 +198,7 @@
                     <td>{{ $item->patient_name ?? '-' }}</td>
                     <td>{{ $item->doctor_name ?? '-' }}</td>
                     <td>{{ $item->amount ?? '-' }}</td>
-                    <td>
+                                        <td>
                         @switch($item->outcome_type)
                             @case('prescription')
                                 <span class="badge badge-primary">{{ localize('global.prescription') }}</span>
@@ -213,19 +219,20 @@
                                 <span class="badge badge-dark">{{ $item->outcome_type }}</span>
                         @endswitch
                     </td>
-                                         <td>
-                         @if($item->outcome_date)
-                             {{ \Verta::instance($item->outcome_date)->format('Y/m/d') }}
-                         @else
-                             -
-                         @endif
-                     </td>
+                    <td>{{ $item->pharmacy_name ?? '-' }}</td>
+                    <td>
+                        @if($item->outcome_date)
+                            {{ \Verta::instance($item->outcome_date)->format('Y/m/d') }}
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td>{{ $item->reason ?? '-' }}</td>
                     <td>{{ $item->batch_number ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" style="text-align: center;">{{ localize('global.no_records_found') }}</td>
+                    <td colspan="10" style="text-align: center;">{{ localize('global.no_records_found') }}</td>
                 </tr>
             @endforelse
         </tbody>

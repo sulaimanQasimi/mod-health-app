@@ -448,6 +448,8 @@ return [
     'outcome_date' => 'Outcome Date',
     'search_by_medicine_patient' => 'Search by medicine or patient',
     'no_outcome_records_found' => 'No outcome records found',
+    'income_record_created_successfully' => 'Income record created successfully',
+    'outcome_record_created_successfully' => 'Outcome record created successfully',
     
     // Pharmacy translations
     'pharmacies' => 'Pharmacies',
@@ -522,6 +524,7 @@ return [
     'prescription_stock' => 'Prescription Stock',
     'search_by_medicine_pharmacy' => 'Search by medicine or pharmacy name',
     'all_pharmacies' => 'All Pharmacies',
+    'current_pharmacy' => 'Current Pharmacy',
     'all_statuses' => 'All Statuses',
     'pharmacy_stock' => 'Pharmacy Stock',
     'total_stock' => 'Total Stock',

@@ -148,7 +148,7 @@
             <div class="mb-3">
                 <label for="registration_date">{{ localize('global.registration_date') }}</label>
                 <input type="text" name="registration_date" id="registration_date" 
-                    value="{{ old('registration_date', isset($patient) ? $patient->registration_date : \Carbon\Carbon::now()->format('Y-m-d')) }}" 
+                    value="{{ old('registration_date', isset($patient) ? verta($patient->registration_date)->format("Y/m/d") : verta()->format('Y-m-d')) }}" 
                     class="form-control" readonly>
             </div>
         </div>

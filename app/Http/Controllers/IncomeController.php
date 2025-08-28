@@ -4,14 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Income;
 use App\Models\Medicine;
+use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class IncomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Income::with(['medicine', 'createdBy']);
+        $query = Income::with(['medicine', 'createdBy', 'pharmacy']);
+
+        // Get current user's pharmacy
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Filter by pharmacy if user has one
+        if ($userPharmacy) {
+            $query->where('pharmacy_id', $userPharmacy->id);
+        }
 
         // Search functionality
         if ($request->filled('search')) {
@@ -29,6 +40,11 @@ class IncomeController extends Controller
         // Filter by income type
         if ($request->filled('income_type')) {
             $query->where('income_type', $request->income_type);
+        }
+
+        // Filter by pharmacy (for admin users who can see all pharmacies)
+        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
+            $query->where('pharmacy_id', $request->pharmacy_id);
         }
 
         // Filter by date range
@@ -50,19 +66,43 @@ class IncomeController extends Controller
         $perPage = $request->get('per_page', 15);
         $incomes = $query->paginate($perPage);
 
-        return view('pages.incomes.index', compact('incomes'));
+        // Get all pharmacies for admin filter
+        $pharmacies = null;
+        if ($user->hasRole('admin')) {
+            $pharmacies = Pharmacy::orderBy('name')->get();
+        }
+
+        return view('pages.incomes.index', compact('incomes', 'pharmacies', 'userPharmacy'));
     }
 
     public function create()
     {
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Check if user has a pharmacy assigned
+        if (!$userPharmacy) {
+            return redirect()->route('incomes.index')
+                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
+        }
+
         $medicines = Medicine::orderBy('name')->get();
         $incomeTypes = ['purchase', 'return', 'donation', 'transfer'];
         
-        return view('pages.incomes.create', compact('medicines', 'incomeTypes'));
+        return view('pages.incomes.create', compact('medicines', 'incomeTypes', 'userPharmacy'));
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $userPharmacy = $user->pharmacy;
+
+        // Check if user has a pharmacy assigned
+        if (!$userPharmacy) {
+            return redirect()->route('incomes.index')
+                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
+        }
+
         $request->validate([
             'medicine_id' => 'required|exists:medicines,id',
             'amount' => 'required|integer|min:1',
@@ -75,7 +115,11 @@ class IncomeController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        Income::create($request->all());
+        // Add pharmacy_id to the request data
+        $data = $request->all();
+        $data['pharmacy_id'] = $userPharmacy->id;
+
+        Income::create($data);
 
         return redirect()->route('incomes.index')
             ->with('success', localize('global.income_record_created_successfully'));

@@ -27,7 +27,7 @@
                             <i class="bx bx-edit me-1"></i>
                             {{ localize('global.edit') }}
                         </a>
-                        <a href="{{ route('appointments.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <a href="{{ route('appointments.index') }}" class="btn btn-outline-primary btn-sm">
                             <i class="bx bx-arrow-back me-1"></i>
                             {{ localize('global.back') }}
                         </a>
@@ -40,9 +40,9 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-light text-dark">
                         <h5 class="mb-0 text-center">
-                            <i class="bx bx-calendar-check me-2"></i>
+                            <i class="bx bx-calendar-check me-2 text-primary"></i>
                             {{ localize('global.appointment_details') }}
                         </h5>
                     </div>
@@ -50,7 +50,7 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <div class="text-center p-3 border rounded bg-light">
-                                    <div class="text-muted small mb-1">{{ localize('global.patient_name') }}</div>
+                                    <div class="text-dark small mb-1">{{ localize('global.patient_name') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-user me-1 text-primary"></i>
                                         {{ $appointment->patient->name }}
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <div class="text-center p-3 border rounded bg-light">
+                                     <div class="text-center p-3 border rounded bg-light">
                                     <div class="text-muted small mb-1">{{ localize('global.referred_to') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-user-check me-1 text-primary"></i>
@@ -94,9 +94,9 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-info text-white">
+                    <div class="card-header bg-light text-dark">
                         <h5 class="mb-0 text-center">
-                            <i class="bx bx-history me-2"></i>
+                            <i class="bx bx-history me-2 text-info"></i>
                             {{ localize('global.patient_history') }}
                         </h5>
                     </div>
@@ -158,13 +158,13 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card shadow-sm">
-                        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="bx bx-check-shield me-2"></i>
+                                <i class="bx bx-check-shield me-2 text-primary"></i>
                                 {{ localize('global.appointment_status') }}
                             </h5>
                             @if ($appointment->is_completed == 0)
-                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#createStatusChangeModal{{ $appointment->id }}">
                                     <i class="bx bx-check-shield me-1"></i>
                                     {{ localize('global.complete_appointment') }}
@@ -224,14 +224,14 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="bx bx-popsicle me-2"></i>
+                            <i class="bx bx-popsicle me-2 text-warning"></i>
                             {{ localize('global.diagnose') }}
                         </h5>
                         @if ($appointment->is_completed == 0)
                             @can('add-diagnose')
-                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
                                     <i class="bx bx-plus me-1"></i>
                                     {{ localize('global.add') }}
@@ -334,7 +334,7 @@
                                         @if($appointment->diagnose->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-dark">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.description') }}</th>
@@ -396,18 +396,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-notepad me-2"></i>
+                                            <i class="bx bx-notepad me-2 text-success"></i>
                                             {{ localize('global.prescription') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('add-prescription')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -536,7 +536,7 @@
                                         @if($appointment->prescription->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-success">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.patient_name') }}</th>
@@ -559,13 +559,13 @@
                                                                     @endif
                                                                 </td>
                                                                 <td>
-                                                                    <a href="#" data-bs-toggle="modal"
+                                                                                                                                            <a href="#" data-bs-toggle="modal"
                                                                         onclick="getPrescriptionItems({{ $prescription->id }})"
                                                                         data-bs-target="#showPrescriptionItemModal" 
-                                                                        class="btn btn-outline-info btn-sm" title="View Details">
-                                                                        <i class="bx bx-expand me-1"></i>
-                                                                        {{ localize('global.view') }}
-                                                                    </a>
+                                                                        class="btn btn-outline-primary btn-sm" title="View Details">
+                                                                            <i class="bx bx-expand me-1"></i>
+                                                                            {{ localize('global.view') }}
+                                                                        </a>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -662,18 +662,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-command me-2"></i>
+                                            <i class="bx bx-command me-2 text-info"></i>
                                             {{ localize('global.advice') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('add-advice')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -731,7 +731,7 @@
                                         @if($appointment->advices->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-info">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.description') }}</th>
@@ -789,18 +789,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-hard-hat me-2"></i>
+                                            <i class="bx bx-hard-hat me-2 text-warning"></i>
                                             {{ localize('global.checkups') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('add-patient-labs')
-                                                <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createLabModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createLabModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -884,7 +884,7 @@
                                         @if($appointment->labs->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-warning">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.test_name') }}</th>
@@ -912,7 +912,7 @@
                                                                 <td>
                                                                     @isset($lab->result_file)
                                                                         <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
-                                                                            class="btn btn-outline-secondary btn-sm" title="View File">
+                                                                            class="btn btn-outline-primary btn-sm" title="View File">
                                                                             <i class="fa fa-file me-1"></i>
                                                                             {{ localize('global.file') }}
                                                                         </a>
@@ -921,7 +921,7 @@
                                                                 <td>
                                                                     <a href="#" data-bs-toggle="modal" onclick="getLabItems({{ $lab->id }})"
                                                                         data-bs-target="#showLabsItemModal" 
-                                                                        class="btn btn-outline-info btn-sm" title="View Details">
+                                                                        class="btn btn-outline-primary btn-sm" title="View Details">
                                                                         <i class="bx bx-expand me-1"></i>
                                                                         {{ localize('global.view') }}
                                                                     </a>
@@ -958,16 +958,16 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-secondary text-white">
+                                    <div class="card-header bg-light text-dark">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-hard-hat me-2"></i>
+                                            <i class="bx bx-hard-hat me-2 text-secondary"></i>
                                             {{ localize('global.hospitalization_checkups') }}
                                         </h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table class="table table-striped table-hover">
-                                                <thead class="table-secondary">
+                                                <thead class="table-light">
                                                     <tr>
                                                         <th>{{ localize('global.number') }}</th>
                                                         <th>{{ localize('global.test_name') }}</th>
@@ -996,7 +996,7 @@
                                                                 <td>
                                                                     @isset($lab->result_file)
                                                                         <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
-                                                                            class="btn btn-outline-secondary btn-sm">
+                                                                            class="btn btn-outline-primary btn-sm">
                                                                             <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
                                                                         </a>
                                                                     @endisset
@@ -1031,18 +1031,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-chat me-2"></i>
+                                            <i class="bx bx-chat me-2 text-primary"></i>
                                             {{ localize('global.consultations') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('add-consultations')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -1154,15 +1154,15 @@
                                     <div class="card-body">
                                         @if($appointment->consultations->count() > 0)
                                             <div class="table-responsive">
-                                                <table class="table table-striped table-hover">
-                                                    <thead class="table-primary">
-                                                        <tr>
-                                                            <th>{{ localize('global.number') }}</th>
-                                                            <th>{{ localize('global.title') }}</th>
-                                                            <th>{{ localize('global.department') }}</th>
-                                                            <th>{{ localize('global.actions') }}</th>
-                                                        </tr>
-                                                    </thead>
+                                                                                            <table class="table table-striped table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.title') }}</th>
+                                                        <th>{{ localize('global.department') }}</th>
+                                                        <th>{{ localize('global.actions') }}</th>
+                                                    </tr>
+                                                </thead>
                                                     <tbody>
                                                         @foreach ($appointment->consultations as $consultation)
                                                             <tr>
@@ -1245,18 +1245,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-transfer me-2"></i>
+                                            <i class="bx bx-transfer me-2 text-danger"></i>
                                             {{ localize('global.refer_to_another_doctor') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('refer-to-another-doctor')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.refer_patient') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.refer_patient') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -1360,18 +1360,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-revision me-2"></i>
+                                            <i class="bx bx-revision me-2 text-dark"></i>
                                             {{ localize('global.under_review') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('patient-under-review')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -1466,7 +1466,7 @@
                                         @if($appointment->under_reviews->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-dark">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.reason') }}</th>
@@ -1592,18 +1592,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-bed me-2"></i>
+                                            <i class="bx bx-bed me-2 text-success"></i>
                                             {{ localize('global.hospitalize') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('patient-hospitalization')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -1774,7 +1774,7 @@
                                         @if($appointment->hospitalization->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-success">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th class="text-wrap">{{ localize('global.reason') }}</th>
@@ -1940,18 +1940,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-first-aid me-2"></i>
+                                            <i class="bx bx-first-aid me-2 text-danger"></i>
                                             {{ localize('global.refere_to_anasthesia') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('refer-to-anesthesia')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -2117,7 +2117,7 @@
                                         @if($appointment->anesthesias->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-danger">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.operation_type') }}</th>
@@ -2197,16 +2197,16 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-warning text-dark">
+                                    <div class="card-header bg-light text-dark">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-cut me-2"></i>
+                                            <i class="bx bx-cut me-2 text-warning"></i>
                                             {{ localize('global.operations') }}
                                         </h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table class="table table-striped table-hover">
-                                                <thead class="table-warning">
+                                                <thead class="table-light">
                                                     <tr>
                                                         <th>{{ localize('global.number') }}</th>
                                                         <th>{{ localize('global.operation_type') }}</th>
@@ -2259,18 +2259,18 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
-                                            <i class="bx bx-tv me-2"></i>
+                                            <i class="bx bx-tv me-2 text-info"></i>
                                             {{ localize('global.refere_to_icu') }}
                                         </h5>
                                         @if ($appointment->is_completed == 0)
                                             @can('refer-to-icu')
-                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createICUModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
+                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createICUModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
                                             @endcan
                                         @endif
                                     </div>
@@ -2330,7 +2330,7 @@
                                         @if($appointment->icu->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-info">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.patient_name') }}</th>

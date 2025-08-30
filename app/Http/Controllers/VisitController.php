@@ -125,7 +125,7 @@ class VisitController extends Controller
     public function destroyUnderReviewVisit(Visit $visit)
     {
         $visit->delete();
-        return redirect()->route('under_reviews.show', $visit->under_review->id)->with('success', localize('global.visit_deleted_successfully.'));
+        return redirect()->back()->with('success', localize('global.visit_deleted_successfully.'));
 
     }
 }

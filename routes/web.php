@@ -231,6 +231,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{visit}', [VisitController::class, 'update'])->name('update');
         Route::put('updateUnderReviewVisit/{visit}', [VisitController::class, 'updateUnderReviewVisit'])->name('updateUnderReviewVisit');
         Route::delete('destroyUnderReviewVisit/{visit}', [VisitController::class, 'destroyUnderReviewVisit'])->name('destroyUnderReviewVisit');
+        Route::delete('destroy/{visit}', [VisitController::class, 'destroyUnderReviewVisit'])->name('destroy');
     });
 
     // Doctors routes

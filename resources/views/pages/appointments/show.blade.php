@@ -2,88 +2,173 @@
 
 @section('content')
     <style>
-        /* Page Title Box */
-        .page-title-box {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        /* Professional Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .page-title-box .breadcrumb {
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header .breadcrumb {
             background: transparent;
             padding: 0;
             margin: 0;
+            position: relative;
+            z-index: 1;
         }
 
-        .page-title-box .breadcrumb-item a {
-            color: rgba(255,255,255,0.8);
+        .page-header .breadcrumb-item a {
+            color: rgba(255,255,255,0.9);
             text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        .page-title-box .breadcrumb-item.active {
+        .page-header .breadcrumb-item a:hover {
             color: white;
         }
 
-        .page-title-box .breadcrumb-item + .breadcrumb-item::before {
-            color: rgba(255,255,255,0.6);
+        .page-header .breadcrumb-item.active {
+            color: white;
+            font-weight: 600;
         }
 
-        /* Card Styling */
+        .page-header .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255,255,255,0.7);
+            font-weight: 600;
+        }
+
+        /* Professional Card Styling */
         .card {
             border: none;
-            box-shadow: 0 2px 20px rgba(0, 187, 50, 0.08);
-            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
             overflow: hidden;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
 
         .card-header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border-bottom: 1px solid #dee2e6;
-            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            padding: 1.75rem;
             color: white;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+        }
+
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header h5 i {
+            font-size: 1.5rem;
+            opacity: 0.9;
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 2rem;
+            background: white;
         }
 
-        /* Enhanced Table Styling */
+        /* Professional Enhanced Table Styling */
         .enhanced-table {
             border-collapse: separate;
             border-spacing: 0;
             width: 100%;
-            border-radius: 8px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            margin: 2rem 0;
             background: white;
+            border: 1px solid rgba(102, 126, 234, 0.1);
         }
 
         .enhanced-table thead th {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            color: #495057;
-            font-weight: 600;
-            padding: 16px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            padding: 1.5rem 1rem;
             text-align: left;
-            border-bottom: 2px solid #dee2e6;
-            font-size: 14px;
-            text-transform: none;
-            letter-spacing: normal;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .enhanced-table thead th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
         }
 
         .enhanced-table tbody tr {
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #e9ecef;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+        }
+
+        .enhanced-table tbody tr::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .enhanced-table tbody tr:hover::before {
+            transform: scaleY(1);
         }
 
         .enhanced-table tbody tr:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .enhanced-table tbody tr:last-child {
@@ -91,140 +176,178 @@
         }
 
         .enhanced-table tbody td {
-            padding: 16px 12px;
+            padding: 1.5rem 1rem;
             vertical-align: middle;
             border: none;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            font-weight: 500;
         }
 
         .enhanced-table tbody td:first-child {
-            font-weight: 600;
-            color: #495057;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.1rem;
         }
 
-        /* Badge Styling */
+        /* Professional Badge Styling */
         .enhanced-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-            margin: 2px;
+            letter-spacing: 0.75px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.25rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .enhanced-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .badge-primary {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .badge-success {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
             color: white;
         }
 
         .badge-warning {
-            background: linear-gradient(135deg, #ffc107, #e0a800);
-            color: #212529;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, #dc3545, #c82333);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
 
-        /* Button Styling */
+        .badge-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+        }
+
+        /* Professional Button Styling */
         .btn {
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 0.875rem 1.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.025em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             color: white;
-            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
         }
 
         .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
             color: white;
-            background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+            background: linear-gradient(135deg, #4a9a23 0%, #8dd5b6 100%);
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-            color: #212529;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
         }
 
         .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
-            color: #212529;
-            background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+            color: white;
+            background: linear-gradient(135deg, #e085e7 0%, #e54b5f 100%);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
 
         .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
             color: white;
-            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+            background: linear-gradient(135deg, #ff5252 0%, #e64a19 100%);
         }
 
         .btn-info {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
         }
 
         .btn-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
             color: white;
-            background: linear-gradient(135deg, #138496 0%, #0f6674 100%);
+            background: linear-gradient(135deg, #3a9bfe 0%, #00e6fe 100%);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
         }
 
         .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
-            color: white;
-            background: linear-gradient(135deg, #545b62 0%, #3d4449 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(168, 237, 234, 0.4);
+            color: #2c3e50;
+            background: linear-gradient(135deg, #9ce4e1 0%, #fec5d2 100%);
         }
 
         .btn-outline-primary {
@@ -388,140 +511,274 @@
             box-shadow: none !important;
         }
 
-        /* Action Buttons */
+        /* Professional Action Buttons */
         .action-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             border: none;
-            margin: 0 4px;
-            transition: all 0.3s ease;
+            margin: 0 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: white;
-            font-size: 14px;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
         }
 
         .action-btn:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .action-btn.edit {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .action-btn.edit:hover {
-            background: linear-gradient(135deg, #138496 0%, #0f6674 100%);
+            background: linear-gradient(135deg, #3a9bfe 0%, #00e6fe 100%);
         }
 
         .action-btn.delete {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .action-btn.delete:hover {
-            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+            background: linear-gradient(135deg, #ff5252 0%, #e64a19 100%);
         }
 
         .action-btn.view {
-            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .action-btn.view:hover {
-            background: linear-gradient(135deg, #5a32a3 0%, #4a2b8a 100%);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         }
 
         .action-btn.add {
-            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .action-btn.add:hover {
-            background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+            background: linear-gradient(135deg, #4a9a23 0%, #8dd5b6 100%);
         }
 
-        /* Section Headers */
+        /* Professional Section Headers */
         .section-header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border-left: 4px solid #ffffff;
-            padding: 16px 20px;
-            margin: 30px 0 20px 0;
-            border-radius: 0 8px 8px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-left: 6px solid #ff6b6b;
+            padding: 1.5rem 2rem;
+            margin: 3rem 0 2rem 0;
+            border-radius: 0 16px 16px 0;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 600;
+            justify-content: space-between;
+            font-weight: 700;
             color: white;
-            font-size: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 1.25rem;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .section-header:hover::before {
+            transform: translateX(100%);
         }
 
         .section-header i {
-            font-size: 20px;
+            font-size: 1.75rem;
             color: white;
+            margin-right: 1rem;
+            opacity: 0.9;
         }
 
-        /* Info Items */
-        .info-item {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 1rem;
-            border-left: 4px solid #007bff;
+        .section-header .btn {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
             transition: all 0.3s ease;
-            margin-bottom: 1rem;
+        }
+
+        .section-header .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Professional Info Items */
+        .info-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border-left: 6px solid #667eea;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.05) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .info-item:hover::before {
+            transform: translateX(100%);
         }
 
         .info-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            transform: translateX(8px) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .info-value {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #495057;
-            margin-top: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0.75rem;
             display: flex;
             align-items: center;
+            gap: 0.75rem;
         }
 
-        /* Empty State */
+        .info-value i {
+            font-size: 1.25rem;
+            color: #667eea;
+            opacity: 0.8;
+        }
+
+        /* Professional Empty State */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 2px dashed #dee2e6;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            margin: 2rem 0;
+            border: 3px dashed rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.05) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .empty-state:hover::before {
+            transform: translateX(100%);
         }
 
         .empty-state .badge {
-            font-size: 14px;
-            padding: 8px 16px;
+            font-size: 0.9rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
-        /* Table Container */
+        .empty-state .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Professional Table Container */
         .table-container {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            margin: 2rem 0;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Form Labels */
+        .table-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+        }
+
+        /* Professional Form Labels */
         .form-label {
-            color: #6c757d;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.75px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
 
         /* Avatar */
@@ -657,8 +914,36 @@
             @if (Session::has('success') || Session::has('error'))
                 @include('components.toast')
             @endif
+            
+            <!-- Professional Page Header -->
+            <div class="page-header">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ localize('global.dashboard') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('appointments.index') }}">{{ localize('global.appointments') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ localize('global.appointment_details') }}</li>
+                    </ol>
+                </nav>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <h1 class="h3 mb-0">
+                        <i class="bx bx-calendar-check me-2"></i>
+                        {{ localize('global.appointment_details') }}
+                    </h1>
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-primary">
+                            <i class="bx bx-edit"></i>
+                            {{ localize('global.edit') }}
+                        </a>
+                        <a href="{{ route('appointments.index') }}" class="btn btn-secondary">
+                            <i class="bx bx-arrow-back"></i>
+                            {{ localize('global.back') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-xl">
-                <div class=" mb-4">
+                <div class="mb-4">
                     <div>
 
                         <div class="col-md-12">
@@ -769,23 +1054,24 @@
                         </div>
 
                         @can('update-appointment-status')
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-check-shield p-1"></i>{{ localize('global.appointment_status') }}
-
-                            </h5>
-
-                            @if ($appointment->is_completed == 0)
-                                <div class="d-flex justify-content-center text-center">
+                            <div class="section-header">
+                                <div class="d-flex align-items-center">
+                                    <i class="bx bx-check-shield"></i>
+                                    {{ localize('global.appointment_status') }}
+                                </div>
+                                @if ($appointment->is_completed == 0)
                                     <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createStatusChangeModal{{ $appointment->id }}"><span><i
-                                                class="bx bx-check-shield"></i></span></button>
-                                </div>
-                            @else
-                                <div class="d-flex justify-content-center text-center">
-                                    <span><i
-                                            class="bx bx-check-shield text-success"></i>{{ localize('global.appointment_completed') }}</span>
-                                </div>
-                            @endif
+                                        data-bs-target="#createStatusChangeModal{{ $appointment->id }}">
+                                        <i class="bx bx-check-shield"></i>
+                                        {{ localize('global.complete_appointment') }}
+                                    </button>
+                                @else
+                                    <span class="enhanced-badge badge-success">
+                                        <i class="bx bx-check-shield"></i>
+                                        {{ localize('global.appointment_completed') }}
+                                    </span>
+                                @endif
+                            </div>
 
                             <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
                                 aria-labelledby="createStatusChangeModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1470,10 +1756,11 @@
                             </div>
 
 
-                            <div class="col-md-12 d-flex justify-content-center">
-                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-hard-hat p-1"></i>{{ localize('global.hospitalization_checkups') }}
-                                </h5>
+                            <div class="section-header">
+                                <div class="d-flex align-items-center">
+                                    <i class="bx bx-hard-hat"></i>
+                                    {{ localize('global.hospitalization_checkups') }}
+                                </div>
                             </div>
                             <table class="table">
                                 <thead>
@@ -1741,15 +2028,21 @@
 
 
 
-                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-transfer p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('refer-to-another-doctor')
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endcan
-                        @endif
+                        <div class="section-header">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-transfer"></i>
+                                {{ localize('global.refer_to_another_doctor') }}
+                            </div>
+                            @if ($appointment->is_completed == 0)
+                                @can('refer-to-another-doctor')
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                        {{ localize('global.refer_patient') }}
+                                    </button>
+                                @endcan
+                            @endif
+                        </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createReferDoctorModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1992,9 +2285,11 @@
                                     </div>
                                 </div>
                             @endif
-                            <div class="col-md-12 d-flex justify-content-center">
-                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+                            <div class="section-header">
+                                <div class="d-flex align-items-center">
+                                    <i class="bx bx-glasses"></i>
+                                    {{ localize('global.related_visits') }}
+                                </div>
                             </div>
                             <table class="table">
                                 <thead>
@@ -2261,9 +2556,11 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="col-md-12 d-flex justify-content-center">
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
+                        <div class="section-header">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-glasses"></i>
+                                {{ localize('global.related_visits') }}
+                            </div>
                         </div>
                         <table class="table">
                             <thead>
@@ -2564,8 +2861,12 @@
                             @endif
                         </div>
 
-                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-cut p-1"></i>{{ localize('global.operations') }}</h5>
+                        <div class="section-header">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-cut"></i>
+                                {{ localize('global.operations') }}
+                            </div>
+                        </div>
 
                         <div class="col-md-12 mt-4">
                             <table class="table">
@@ -2729,9 +3030,11 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="col-md-12 d-flex justify-content-center">
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-glasses p-1"></i>{{ localize('global.related_icu_visits') }}</h5>
+                        <div class="section-header">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-glasses"></i>
+                                {{ localize('global.related_icu_visits') }}
+                            </div>
                         </div>
                         <table class="table">
                             <thead>
@@ -3254,4 +3557,5 @@
             });
         }
     </script>
+@endsection
 @endsection

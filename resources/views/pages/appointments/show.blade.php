@@ -1,1077 +1,184 @@
 @extends('layouts.master')
 
 @section('content')
-    <style>
-        /* Professional Page Header */
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
-            margin-bottom: 2.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .page-header .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-header .breadcrumb-item a {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .page-header .breadcrumb-item a:hover {
-            color: white;
-        }
-
-        .page-header .breadcrumb-item.active {
-            color: white;
-            font-weight: 600;
-        }
-
-        .page-header .breadcrumb-item + .breadcrumb-item::before {
-            color: rgba(255,255,255,0.7);
-            font-weight: 600;
-        }
-
-        /* Professional Card Styling */
-        .card {
-            border: none;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .card:hover {
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-bottom: none;
-            padding: 1.75rem;
-            color: white;
-            position: relative;
-        }
-
-        .card-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-        }
-
-        .card-header h5 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .card-header h5 i {
-            font-size: 1.5rem;
-            opacity: 0.9;
-        }
-
-        .card-body {
-            padding: 2rem;
-            background: white;
-        }
-
-        /* Professional Enhanced Table Styling */
-        .enhanced-table {
-            border-collapse: separate;
-            border-spacing: 0;
-            width: 100%;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            margin: 2rem 0;
-            background: white;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-        }
-
-        .enhanced-table thead th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 700;
-            padding: 1.5rem 1rem;
-            text-align: left;
-            border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-        }
-
-        .enhanced-table thead th::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-        }
-
-        .enhanced-table tbody tr {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-            position: relative;
-        }
-
-        .enhanced-table tbody tr::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-
-        .enhanced-table tbody tr:hover::before {
-            transform: scaleY(1);
-        }
-
-        .enhanced-table tbody tr:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .enhanced-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .enhanced-table tbody td {
-            padding: 1.5rem 1rem;
-            vertical-align: middle;
-            border: none;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #2c3e50;
-            font-weight: 500;
-        }
-
-        .enhanced-table tbody td:first-child {
-            font-weight: 700;
-            color: #667eea;
-            font-size: 1.1rem;
-        }
-
-        /* Professional Badge Styling */
-        .enhanced-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0.25rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .enhanced-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .badge-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-            color: white;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-        }
-
-        /* Professional Button Styling */
-        .btn {
-            border-radius: 12px;
-            padding: 0.875rem 1.75rem;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.025em;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            color: white;
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
-            color: white;
-            background: linear-gradient(135deg, #4a9a23 0%, #8dd5b6 100%);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
-            color: white;
-            background: linear-gradient(135deg, #e085e7 0%, #e54b5f 100%);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-            color: white;
-            background: linear-gradient(135deg, #ff5252 0%, #e64a19 100%);
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-        }
-
-        .btn-info:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
-            color: white;
-            background: linear-gradient(135deg, #3a9bfe 0%, #00e6fe 100%);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            color: #2c3e50;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(168, 237, 234, 0.4);
-            color: #2c3e50;
-            background: linear-gradient(135deg, #9ce4e1 0%, #fec5d2 100%);
-        }
-
-        .btn-outline-primary {
-            background: transparent;
-            color: #007bff;
-            border: 2px solid #007bff;
-        }
-
-        .btn-outline-primary:hover {
-            background: #007bff;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
-        }
-
-        .btn-outline-success {
-            background: transparent;
-            color: #28a745;
-            border: 2px solid #28a745;
-        }
-
-        .btn-outline-success:hover {
-            background: #28a745;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-outline-warning {
-            background: transparent;
-            color: #ffc107;
-            border: 2px solid #ffc107;
-        }
-
-        .btn-outline-warning:hover {
-            background: #ffc107;
-            color: #212529;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
-        }
-
-        .btn-outline-danger {
-            background: transparent;
-            color: #dc3545;
-            border: 2px solid #dc3545;
-        }
-
-        .btn-outline-danger:hover {
-            background: #dc3545;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
-        }
-
-        .btn-outline-info {
-            background: transparent;
-            color: #17a2b8;
-            border: 2px solid #17a2b8;
-        }
-
-        .btn-outline-info:hover {
-            background: #17a2b8;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
-        }
-
-        .btn-outline-secondary {
-            background: transparent;
-            color: #6c757d;
-            border: 2px solid #6c757d;
-        }
-
-        .btn-outline-secondary:hover {
-            background: #6c757d;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .btn-lg {
-            padding: 1rem 2rem;
-            font-size: 1.125rem;
-        }
-
-        /* Special Action Buttons */
-        .btn-action {
-            min-width: 40px;
-            height: 40px;
-            padding: 0;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-action.btn-sm {
-            min-width: 32px;
-            height: 32px;
-        }
-
-        .btn-action.btn-lg {
-            min-width: 48px;
-            height: 48px;
-        }
-
-        /* Button Groups */
-        .btn-group .btn {
-            border-radius: 0;
-        }
-
-        .btn-group .btn:first-child {
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
-        }
-
-        .btn-group .btn:last-child {
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-
-        /* Floating Action Button */
-        .btn-floating {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.4);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .btn-floating:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.6);
-            color: white;
-        }
-
-        /* Disabled Button States */
-        .btn:disabled,
-        .btn.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .btn:disabled:hover,
-        .btn.disabled:hover {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Professional Action Buttons */
-        .action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            border: none;
-            margin: 0 6px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-decoration: none;
-            color: white;
-            font-size: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .action-btn:hover::before {
-            left: 100%;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .action-btn.edit {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .action-btn.edit:hover {
-            background: linear-gradient(135deg, #3a9bfe 0%, #00e6fe 100%);
-        }
-
-        .action-btn.delete {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .action-btn.delete:hover {
-            background: linear-gradient(135deg, #ff5252 0%, #e64a19 100%);
-        }
-
-        .action-btn.view {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .action-btn.view:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-        }
-
-        .action-btn.add {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .action-btn.add:hover {
-            background: linear-gradient(135deg, #4a9a23 0%, #8dd5b6 100%);
-        }
-
-        /* Professional Section Headers */
-        .section-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-left: 6px solid #ff6b6b;
-            padding: 1.5rem 2rem;
-            margin: 3rem 0 2rem 0;
-            border-radius: 0 16px 16px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 700;
-            color: white;
-            font-size: 1.25rem;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
-        }
-
-        .section-header:hover::before {
-            transform: translateX(100%);
-        }
-
-        .section-header i {
-            font-size: 1.75rem;
-            color: white;
-            margin-right: 1rem;
-            opacity: 0.9;
-        }
-
-        .section-header .btn {
-            margin-left: auto;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .section-header .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Professional Info Items */
-        .info-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border-left: 6px solid #667eea;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.05) 50%, transparent 70%);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
-        }
-
-        .info-item:hover::before {
-            transform: translateX(100%);
-        }
-
-        .info-item:hover {
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-            transform: translateX(8px) translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-top: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .info-value i {
-            font-size: 1.25rem;
-            color: #667eea;
-            opacity: 0.8;
-        }
-
-        /* Professional Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 16px;
-            margin: 2rem 0;
-            border: 3px dashed rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .empty-state::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.05) 50%, transparent 70%);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
-        }
-
-        .empty-state:hover::before {
-            transform: translateX(100%);
-        }
-
-        .empty-state .badge {
-            font-size: 0.9rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .empty-state .badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Professional Table Container */
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            margin: 2rem 0;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .table-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-        }
-
-        /* Professional Form Labels */
-        .form-label {
-            color: #2c3e50;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .form-label::before {
-            content: '';
-            width: 4px;
-            height: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2px;
-        }
-
-        /* Avatar */
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        .avatar-sm {
-            width: 32px;
-            height: 32px;
-            font-size: 0.875rem;
-        }
-
-        .bg-label-success {
-            background: rgba(40, 167, 69, 0.1);
-            color: #28a745;
-        }
-
-        .bg-label-info {
-            background: rgba(23, 162, 184, 0.1);
-            color: #17a2b8;
-        }
-
-        .border-top {
-            border-top: 1px solid #e9ecef !important;
-        }
-
-        .gap-2 {
-            gap: 0.5rem;
-        }
-
-        .text-primary {
-            color: #007bff !important;
-        }
-
-        /* Dark Mode Styles */
-        [data-bs-theme="dark"] .info-item {
-            background: #2b2c40;
-            border-left-color: #696cff;
-            color: #a3a4cc;
-        }
-
-        [data-bs-theme="dark"] .info-item:hover {
-            background: #3a3b4d;
-            transform: translateX(5px);
-        }
-
-        [data-bs-theme="dark"] .info-value {
-            color: #a3a4cc;
-        }
-
-        [data-bs-theme="dark"] .form-label {
-            color: #a3a4cc;
-        }
-
-        [data-bs-theme="dark"] .card {
-            background: #2b2c40;
-            border: 1px solid #444564;
-        }
-
-        [data-bs-theme="dark"] .card-header {
-            background: #3a3b4d;
-            border-bottom: 1px solid #444564;
-            color: #a3a4cc;
-        }
-
-        [data-bs-theme="dark"] .card-body {
-            background: #2b2c40;
-            color: #a3a4cc;
-        }
-
-        [data-bs-theme="dark"] .text-primary {
-            color: #696cff !important;
-        }
-
-        [data-bs-theme="dark"] .border-top {
-            border-top: 1px solid #444564 !important;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-secondary {
-            border-color: #a3a4cc;
-            color: #a3a4cc;
-        }
-
-        [data-bs-theme="dark"] .btn-outline-secondary:hover {
-            background: #a3a4cc;
-            border-color: #a3a4cc;
-            color: #2b2c40;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .page-title-box {
-                padding: 1rem;
-            }
-            
-            .card-header {
-                padding: 1rem;
-            }
-            
-            .btn {
-                padding: 0.5rem 1rem;
-            }
-
-            .info-item {
-                padding: 0.75rem;
-            }
-
-            .enhanced-table {
-                font-size: 12px;
-            }
-
-            .enhanced-table thead th,
-            .enhanced-table tbody td {
-                padding: 12px 8px;
-            }
-
-            .section-header {
-                font-size: 16px;
-                padding: 12px 16px;
-            }
-        }
-    </style>
-
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="content-wrapper">
-            @if (Session::has('success') || Session::has('error'))
-                @include('components.toast')
-            @endif
-            
-            <!-- Professional Page Header -->
-            <div class="page-header">
+    <div class="container-fluid py-4">
+        @if (Session::has('success') || Session::has('error'))
+            @include('components.toast')
+        @endif
+        
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ localize('global.dashboard') }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('appointments.index') }}">{{ localize('global.appointments') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">{{ localize('global.dashboard') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('appointments.index') }}" class="text-decoration-none">{{ localize('global.appointments') }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ localize('global.appointment_details') }}</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <h1 class="h3 mb-0">
-                        <i class="bx bx-calendar-check me-2"></i>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0">
+                        <i class="bx bx-calendar-check me-2 text-primary"></i>
                         {{ localize('global.appointment_details') }}
-                    </h1>
+                    </h2>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-primary">
-                            <i class="bx bx-edit"></i>
+                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-primary btn-sm">
+                            <i class="bx bx-edit me-1"></i>
                             {{ localize('global.edit') }}
                         </a>
-                        <a href="{{ route('appointments.index') }}" class="btn btn-secondary">
-                            <i class="bx bx-arrow-back"></i>
+                        <a href="{{ route('appointments.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bx bx-arrow-back me-1"></i>
                             {{ localize('global.back') }}
                         </a>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-xl">
-                <div class="mb-4">
-                    <div>
-
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0 text-center">
-                                        <i class="bx bx-calendar-check me-2"></i>
-                                        {{ localize('global.appointment_details') }}
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row text-center">
-                                        <div class="col-md-3">
-                                            <div class="info-item">
-                                                <div class="form-label">{{ localize('global.patient_name') }}</div>
-                                                <div class="info-value">
-                                                    <i class="bx bx-user me-2"></i>
-                                                    {{ $appointment->patient->name }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="info-item">
-                                                <div class="form-label">{{ localize('global.referred_to') }}</div>
-                                                <div class="info-value">
-                                                    <i class="bx bx-user-check me-2"></i>
-                                                    {{ $appointment->doctor->name }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="info-item">
-                                                <div class="form-label">{{ localize('global.date') }}</div>
-                                                <div class="info-value">
-                                                    <i class="bx bx-calendar me-2"></i>
-                                                    {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date) }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="info-item">
-                                                <div class="form-label">{{ localize('global.time') }}</div>
-                                                <div class="info-value">
-                                                    <i class="bx bx-time me-2"></i>
-                                                    {{ $appointment->time }}
-                                                </div>
-                                            </div>
-                                        </div>
+        <!-- Appointment Details Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0 text-center">
+                            <i class="bx bx-calendar-check me-2"></i>
+                            {{ localize('global.appointment_details') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-light">
+                                    <div class="text-muted small mb-1">{{ localize('global.patient_name') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-user me-1 text-primary"></i>
+                                        {{ $appointment->patient->name }}
                                     </div>
                                 </div>
                             </div>
-                                <div class="row p-4">
-                                    <div class="mb-4">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h5 class="mb-0 text-center">
-                                                    <i class="bx bx-history me-2"></i>
-                                                    {{ localize('global.patient_history') }}
-                                                </h5>
-                                            </div>
-                                            <div class="card-body">
-                                                @php
-                                                    $primaryDiagnoses = $previousDiagnoses->where('type', 0);
-                                                    $finalDiagnoses = $previousDiagnoses->where('type', 1);
-                                                @endphp
-
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="info-item">
-                                                            <div class="form-label text-center mb-3">
-                                                                <i class="bx bx-popsicle me-2"></i>
-                                                                {{ localize('global.primary_diagnoses') }}
-                                                            </div>
-                                                            @foreach ($primaryDiagnoses as $diagnose)
-                                                                <div class="mb-2 p-2 bg-light rounded">
-                                                                    <small class="badge bg-warning text-dark me-2">
-                                                                        {{ $diagnose->created_at->format('Y-m-d') }}
-                                                                    </small>
-                                                                    {{ $diagnose->description }}
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="info-item">
-                                                            <div class="form-label text-center mb-3">
-                                                                <i class="bx bx-popsicle me-2"></i>
-                                                                {{ localize('global.final_diagnoses') }}
-                                                            </div>
-                                                            @foreach ($finalDiagnoses as $diagnose)
-                                                                <div class="mb-2 p-2 bg-light rounded">
-                                                                    <small class="badge bg-success text-white me-2">
-                                                                        {{ $diagnose->created_at->format('Y-m-d') }}
-                                                                    </small>
-                                                                    {{ $diagnose->description }}
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                            </div>
-                                        </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-light">
+                                    <div class="text-muted small mb-1">{{ localize('global.referred_to') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-user-check me-1 text-primary"></i>
+                                        {{ $appointment->doctor->name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-light">
+                                    <div class="text-muted small mb-1">{{ localize('global.date') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-calendar me-1 text-primary"></i>
+                                        {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-light">
+                                    <div class="text-muted small mb-1">{{ localize('global.time') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-time me-1 text-primary"></i>
+                                        {{ $appointment->time }}
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        @can('update-appointment-status')
-                            <div class="section-header">
-                                <div class="d-flex align-items-center">
-                                    <i class="bx bx-check-shield"></i>
-                                    {{ localize('global.appointment_status') }}
+        <!-- Patient History Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0 text-center">
+                            <i class="bx bx-history me-2"></i>
+                            {{ localize('global.patient_history') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @php
+                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
+                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
+                        @endphp
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-warning">
+                                    <div class="card-header bg-warning text-dark text-center">
+                                        <h6 class="mb-0">
+                                            <i class="bx bx-popsicle me-2"></i>
+                                            {{ localize('global.primary_diagnoses') }}
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        @foreach ($primaryDiagnoses as $diagnose)
+                                            <div class="mb-2 p-2 border-start border-warning border-3 bg-light rounded">
+                                                <span class="badge bg-warning text-dark me-2">
+                                                    {{ $diagnose->created_at->format('Y-m-d') }}
+                                                </span>
+                                                {{ $diagnose->description }}
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                                @if ($appointment->is_completed == 0)
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createStatusChangeModal{{ $appointment->id }}">
-                                        <i class="bx bx-check-shield"></i>
-                                        {{ localize('global.complete_appointment') }}
-                                    </button>
-                                @else
-                                    <span class="enhanced-badge badge-success">
-                                        <i class="bx bx-check-shield"></i>
-                                        {{ localize('global.appointment_completed') }}
-                                    </span>
-                                @endif
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white text-center">
+                                        <h6 class="mb-0">
+                                            <i class="bx bx-popsicle me-2"></i>
+                                            {{ localize('global.final_diagnoses') }}
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        @foreach ($finalDiagnoses as $diagnose)
+                                            <div class="mb-2 p-2 border-start border-success border-3 bg-light rounded">
+                                                <span class="badge bg-success text-white me-2">
+                                                    {{ $diagnose->created_at->format('Y-m-d') }}
+                                                </span>
+                                                {{ $diagnose->description }}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Status Section -->
+        @can('update-appointment-status')
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bx bx-check-shield me-2"></i>
+                                {{ localize('global.appointment_status') }}
+                            </h5>
+                            @if ($appointment->is_completed == 0)
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createStatusChangeModal{{ $appointment->id }}">
+                                    <i class="bx bx-check-shield me-1"></i>
+                                    {{ localize('global.complete_appointment') }}
+                                </button>
+                            @else
+                                <span class="badge bg-success fs-6">
+                                    <i class="bx bx-check-shield me-1"></i>
+                                    {{ localize('global.appointment_completed') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
 
                             <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
                                 aria-labelledby="createStatusChangeModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1113,18 +220,28 @@
                         @endcan
 
 
-                        <div class="section-header">
-                            <i class="bx bx-popsicle"></i>
+        <!-- Diagnose Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bx bx-popsicle me-2"></i>
                             {{ localize('global.diagnose') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('add-diagnose')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
-                        </div>
+                        </h5>
+                        @if ($appointment->is_completed == 0)
+                            @can('add-diagnose')
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.add') }}
+                                </button>
+                            @endcan
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1"
                             aria-labelledby="createDiagnoseModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1208,70 +325,94 @@
                             </div>
                         </div>
                         <!-- End Create Diagnose Modal -->
-                        <div class="table-container">
-                            @if($appointment->diagnose->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.description') }}</th>
-                                            <th>{{ localize('global.type') }}</th>
-                                            <th>{{ localize('global.created_at') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->diagnose as $diagnose)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $diagnose->description }}</td>
-                                                <td>
-                                                    @if ($diagnose->type == '0')
-                                                        <span
-                                                            class="enhanced-badge badge-warning">{{ localize('global.primary') }}</span>
-                                                    @else
-                                                        <span class="enhanced-badge badge-primary">{{ localize('global.final') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td dir="ltr">{{ $diagnose->created_at }}</td>
-                                                <td>
-                                                    @can('edit-diagnoses')
-                                                        <a href="{{ route('diagnoses.edit', $diagnose->id) }}" class="action-btn edit"
-                                                            title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-diagnoses')
-                                                        <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"
-                                                            class="action-btn delete" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_diagnoses') }}
+                        
+                        <!-- Diagnose Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->diagnose->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-dark">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.description') }}</th>
+                                                            <th>{{ localize('global.type') }}</th>
+                                                            <th>{{ localize('global.created_at') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->diagnose as $diagnose)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $diagnose->description }}</td>
+                                                                <td>
+                                                                    @if ($diagnose->type == '0')
+                                                                        <span class="badge bg-warning text-dark">{{ localize('global.primary') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-primary">{{ localize('global.final') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td dir="ltr">{{ $diagnose->created_at }}</td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-diagnoses')
+                                                                            <a href="{{ route('diagnoses.edit', $diagnose->id) }}" 
+                                                                               class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-diagnoses')
+                                                                            <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"
+                                                                               class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.no_previous_diagnoses') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
+                            </div>
                         </div>
 
-                        <div class="section-header">
-                            <i class="bx bx-notepad"></i>
-                            {{ localize('global.prescription') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('add-prescription')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- Prescription Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-notepad me-2"></i>
+                                            {{ localize('global.prescription') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-prescription')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}" tabindex="-1"
@@ -1387,58 +528,69 @@
                             </div>
                         </div>
 
-                        <div class="table-container">
-                            @if($appointment->prescription->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.patient_name') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($appointment->prescription as $prescription)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $prescription->patient->name }}</td>
-                                                <td>
-                                                    @if ($prescription->is_completed == '0')
-                                                        <span
-                                                            class="enhanced-badge badge-danger">{{ localize('global.not_delivered') }}</span>
-                                                    @else
-                                                        <span
-                                                            class="enhanced-badge badge-success">{{ localize('global.delivered') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <a href="#" data-bs-toggle="modal"
-                                                        onclick="getPrescriptionItems({{ $prescription->id }})"
-                                                        data-bs-target="#showPrescriptionItemModal" class="action-btn view"
-                                                        title="View Details">
-                                                        <i class="bx bx-expand"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_prescriptions') }}
+                        <!-- Prescription Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->prescription->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-success">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.patient_name') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($appointment->prescription as $prescription)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $prescription->patient->name }}</td>
+                                                                <td>
+                                                                    @if ($prescription->is_completed == '0')
+                                                                        <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#" data-bs-toggle="modal"
+                                                                        onclick="getPrescriptionItems({{ $prescription->id }})"
+                                                                        data-bs-target="#showPrescriptionItemModal" 
+                                                                        class="btn btn-outline-info btn-sm" title="View Details">
+                                                                        <i class="bx bx-expand me-1"></i>
+                                                                        {{ localize('global.view') }}
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.no_previous_prescriptions') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
-                            <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
-                                aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content" id="prescription_items_table">
+                            </div>
+                        </div>
 
-
-
-                                    </div>
+                        <!-- Prescription Details Modal -->
+                        <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
+                            aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="prescription_items_table">
+                                    <!-- Content will be loaded dynamically -->
                                 </div>
                             </div>
                         </div>
@@ -1506,17 +658,27 @@
                         </div>
 
 
-                        <div class="section-header">
-                            <i class="bx bx-command"></i>
-                            {{ localize('global.advice') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('add-advice')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createAdviceModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- Advice Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-command me-2"></i>
+                                            {{ localize('global.advice') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-advice')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create Diagnose Modal -->
                         <div class="modal fade" id="createAdviceModal{{ $appointment->id }}" tabindex="-1"
@@ -1560,65 +722,90 @@
                             </div>
                         </div>
                         <!-- End Create Diagnose Modal -->
-                        <div class="table-container">
-                            @if($appointment->advices->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.description') }}</th>
-                                            <th>{{ localize('global.by') }}</th>
-                                            <th>{{ localize('global.created_at') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->advices as $advice)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $advice->description }}</td>
-                                                <td>
-                                                    {{$advice->doctor->name}}
-                                                </td>
-                                                <td dir="ltr">{{ $advice->created_at }}</td>
-                                                <td>
-                                                    @can('edit-advices')
-                                                        <a href="{{ route('advices.edit', $advice->id) }}" class="action-btn edit"
-                                                            title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-advices')
-                                                        <a href="{{ route('advices.destroy', $advice->id) }}" class="action-btn delete"
-                                                            title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_advices') }}
+                        
+                        <!-- Advice Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->advices->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-info">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.description') }}</th>
+                                                            <th>{{ localize('global.by') }}</th>
+                                                            <th>{{ localize('global.created_at') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->advices as $advice)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $advice->description }}</td>
+                                                                <td>
+                                                                    <span class="badge bg-secondary">{{ $advice->doctor->name }}</span>
+                                                                </td>
+                                                                <td dir="ltr">{{ $advice->created_at }}</td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-advices')
+                                                                            <a href="{{ route('advices.edit', $advice->id) }}" 
+                                                                               class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-advices')
+                                                                            <a href="{{ route('advices.destroy', $advice->id) }}" 
+                                                                               class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.no_previous_advices') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
+                            </div>
                         </div>
 
-                        <div class="section-header">
-                            <i class="bx bx-hard-hat"></i>
-                            {{ localize('global.checkups') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('add-patient-labs')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createLabModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- Checkups Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-hard-hat me-2"></i>
+                                            {{ localize('global.checkups') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-patient-labs')
+                                                <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createLabModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createLabModal{{ $appointment->id }}" tabindex="-1"
@@ -1688,152 +875,179 @@
                             </div>
                         </div>
                         <!-- End Create Lab Modal -->
-                        <div class="table-container">
-                            @if($appointment->labs->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.test_name') }}</th>
-                                            <th>{{ localize('global.test_status') }}</th>
-                                            <th>{{ localize('global.result') }}</th>
-                                            <th>{{ localize('global.result_file') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->labs as $lab)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $lab->labType->name }}</td>
-                                                <td>
-                                                    @if ($lab->status == '0')
-                                                        <span
-                                                            class="enhanced-badge badge-danger">{{ localize('global.not_tested') }}</span>
-                                                    @else
-                                                        <span
-                                                            class="enhanced-badge badge-success">{{ localize('global.tested') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $lab->result }}</td>
-                                                <td>
-                                                    @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
-                                                            class="action-btn view" title="View File">
-                                                            <i class="fa fa-file"></i>
-                                                        </a>
-                                                    @endisset
-                                                </td>
-                                                <td>
-                                                    <a href="#" data-bs-toggle="modal" onclick="getLabItems({{ $lab->id }})"
-                                                        data-bs-target="#showLabsItemModal" class="action-btn view"
-                                                        title="View Details">
-                                                        <i class="bx bx-expand"></i>
-                                                    </a>
-                                                </td>
+                        
+                        <!-- Checkups Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->labs->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-warning">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.test_name') }}</th>
+                                                            <th>{{ localize('global.test_status') }}</th>
+                                                            <th>{{ localize('global.result') }}</th>
+                                                            <th>{{ localize('global.result_file') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->labs as $lab)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $lab->labType->name }}</td>
+                                                                <td>
+                                                                    @if ($lab->status == '0')
+                                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $lab->result }}</td>
+                                                                <td>
+                                                                    @isset($lab->result_file)
+                                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
+                                                                            class="btn btn-outline-secondary btn-sm" title="View File">
+                                                                            <i class="fa fa-file me-1"></i>
+                                                                            {{ localize('global.file') }}
+                                                                        </a>
+                                                                    @endisset
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#" data-bs-toggle="modal" onclick="getLabItems({{ $lab->id }})"
+                                                                        data-bs-target="#showLabsItemModal" 
+                                                                        class="btn btn-outline-info btn-sm" title="View Details">
+                                                                        <i class="bx bx-expand me-1"></i>
+                                                                        {{ localize('global.view') }}
+                                                                    </a>
+                                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_labs') }}
-                                    </div>
-                                </div>
-                            @endif
-
-
-                            <div class="modal fade modal-xl" id="showLabsItemModal" tabindex="-1"
-                                aria-labelledby="showLabsItemModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content" id="lab_items_table">
-
-
-
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="section-header">
-                                <div class="d-flex align-items-center">
-                                    <i class="bx bx-hard-hat"></i>
-                                    {{ localize('global.hospitalization_checkups') }}
-                                </div>
-                            </div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.test_name') }}</th>
-                                        <th>{{ localize('global.test_status') }}</th>
-                                        <th>{{ localize('global.result') }}</th>
-                                        <th>{{ localize('global.result_file') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($appointment->hospitalization as $single_hospitalization)
-                                        @foreach ($single_hospitalization->labs as $lab)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $lab->labType->name }}</td>
-                                                <td>
-                                                    @if ($lab->status == '0')
-                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $lab->result }}</td>
-                                                <td>
-                                                    @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                        </a>
-                                                    @endisset
-
-                                                </td>
-                                                <td>
-                                                    {{-- <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
-                                                                class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
-                                                                class="bx bx-trash text-danger"></i></span></a> --}}
-
-                                                </td>
-
-                                            </tr>
-                                        @endforeach
-                                    @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
                                                     {{ localize('global.no_previous_labs') }}
                                                 </div>
                                             </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lab Items Modal -->
+                        <div class="modal fade modal-xl" id="showLabsItemModal" tabindex="-1"
+                            aria-labelledby="showLabsItemModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="lab_items_table">
+                                    <!-- Content will be loaded dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hospitalization Checkups Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-hard-hat me-2"></i>
+                                            {{ localize('global.hospitalization_checkups') }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-secondary">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.test_name') }}</th>
+                                                        <th>{{ localize('global.test_status') }}</th>
+                                                        <th>{{ localize('global.result') }}</th>
+                                                        <th>{{ localize('global.result_file') }}</th>
+                                                        <th>{{ localize('global.actions') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($appointment->hospitalization as $single_hospitalization)
+                                                        @foreach ($single_hospitalization->labs as $lab)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-secondary rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $lab->labType->name }}</td>
+                                                                <td>
+                                                                    @if ($lab->status == '0')
+                                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $lab->result }}</td>
+                                                                <td>
+                                                                    @isset($lab->result_file)
+                                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
+                                                                            class="btn btn-outline-secondary btn-sm">
+                                                                            <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
+                                                                        </a>
+                                                                    @endisset
+                                                                </td>
+                                                                <td>
+                                                                    <!-- Actions can be added here if needed -->
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6" class="text-center">
+                                                                <div class="alert alert-info">
+                                                                    <i class="bx bx-info-circle me-2"></i>
+                                                                    {{ localize('global.no_previous_labs') }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    @endforelse
-
-                                </tbody>
-                            </table>
-
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
 
 
 
-                        <div class="section-header">
-                            <i class="bx bx-chat"></i>
-                            {{ localize('global.consultations') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('add-consultations')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createConsultationModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- Consultations Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-chat me-2"></i>
+                                            {{ localize('global.consultations') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-consultations')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createConsultationModal{{ $appointment->id }}" tabindex="-1"
@@ -1932,80 +1146,76 @@
                             </div>
                         </div>
                         <!-- End Create Lab Modal -->
-                        <div class="table-container">
-                            @if($appointment->consultations->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.title') }}</th>
-                                            <th>{{ localize('global.department') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->consultations as $consultation)
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <span class="enhanced-badge badge-primary"
-                                                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                                            {{ $loop->iteration }}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td>{{ $consultation->title }}</td>
-                                                <td>
-                                                    @foreach ($consultation->associated_departments as $department)
-                                                        <span class="enhanced-badge badge-primary">
-                                                            {{ $department->name }}
-                                                        </span>
-                                                    @endforeach
-                                                </td>
-                                                <td>
-                                                    @can('edit-consultations')
-                                                        <a href="{{ route('consultations.edit', $consultation->id) }}"
-                                                            class="action-btn edit" title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-consultations')
-                                                        <a href="{{ route('consultations.destroy', $consultation->id) }}"
-                                                            class="action-btn delete" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                </td>
-                                            </tr>
-                                            @if ($consultation->comments->isNotEmpty())
-                                                <tr>
-                                                    <td colspan="4">
-                                                        <div class="section-header"
-                                                            style="margin: 15px 0; padding: 10px 15px; font-size: 14px;">
-                                                            <i class="bx bx-chat"></i>
-                                                            {{ localize('global.related_comments') }}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="4">
-                                                        @foreach ($consultation->comments as $comment)
-                                                            <div class="row mb-3 p-3"
-                                                                style="background: #f8f9fa; border-radius: 8px; margin: 10px 0;">
-                                                                <div class="col-md-3">
-                                                                    <span
-                                                                        class="enhanced-badge badge-primary">{{ $comment->department->name }}</span>
-                                                                </div>
-                                                                <div class="col-md-1 d-flex align-items-center justify-content-center">
-                                                                    <i class="bx bx-transfer text-success"></i>
-                                                                </div>
-                                                                <div class="col-md-2">
-                                                                    <span
-                                                                        class="enhanced-badge badge-primary">{{ $comment->doctor->name }}</span>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="p-3"
-                                                                        style="text-align: justify; background: white; border-radius: 6px; border-left: 3px solid #007bff;">
+                        
+                        <!-- Consultations Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->consultations->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-primary">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.title') }}</th>
+                                                            <th>{{ localize('global.department') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->consultations as $consultation)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $consultation->title }}</td>
+                                                                <td>
+                                                                    @foreach ($consultation->associated_departments as $department)
+                                                                        <span class="badge bg-primary me-1">{{ $department->name }}</span>
+                                                                    @endforeach
+                                                                </td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-consultations')
+                                                                            <a href="{{ route('consultations.edit', $consultation->id) }}"
+                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-consultations')
+                                                                            <a href="{{ route('consultations.destroy', $consultation->id) }}"
+                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            @if ($consultation->comments->isNotEmpty())
+                                                                <tr>
+                                                                    <td colspan="4">
+                                                                        <div class="alert alert-info mb-2">
+                                                                            <i class="bx bx-chat me-2"></i>
+                                                                            {{ localize('global.related_comments') }}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4">
+                                                                        @foreach ($consultation->comments as $comment)
+                                                                            <div class="row mb-3 p-3 bg-light rounded">
+                                                                                <div class="col-md-3">
+                                                                                    <span class="badge bg-primary">{{ $comment->department->name }}</span>
+                                                                                </div>
+                                                                                <div class="col-md-1 d-flex align-items-center justify-content-center">
+                                                                                    <i class="bx bx-transfer text-success"></i>
+                                                                                </div>
+                                                                                <div class="col-md-2">
+                                                                                    <span class="badge bg-secondary">{{ $comment->doctor->name }}</span>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                    <div class="p-3 bg-white rounded border-start border-primary border-3">
                                                                         {{ $comment->comment }}
                                                                     </div>
                                                                 </div>
@@ -2017,31 +1227,41 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_consultations') }}
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.no_previous_consultations') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
+                            </div>
                         </div>
 
-
-
-                        <div class="section-header">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-transfer"></i>
-                                {{ localize('global.refer_to_another_doctor') }}
+                        <!-- Refer to Another Doctor Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-transfer me-2"></i>
+                                            {{ localize('global.refer_to_another_doctor') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('refer-to-another-doctor')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.refer_patient') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                            @if ($appointment->is_completed == 0)
-                                @can('refer-to-another-doctor')
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                        {{ localize('global.refer_patient') }}
-                                    </button>
-                                @endcan
-                            @endif
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
@@ -2122,30 +1342,41 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="container">
-                            <div class="col-md-12">
-                                <div class="row mt-2">
-                                    <div class="col-md-12">
-                                        @if ($appointment->is_completed == 1)
-                                            <i class="bx bx-check-circle text-success"></i>
-                                            <span class="bg-label-primary p-1 m-1">{{ $appointment->refferal_remarks }}</span>
+                        
+                        <!-- Referral Remarks Section -->
+                        @if ($appointment->is_completed == 1)
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="alert alert-success">
+                                        <i class="bx bx-check-circle me-2"></i>
+                                        <strong>{{ localize('global.referral_remarks') }}:</strong>
+                                        {{ $appointment->refferal_remarks }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Under Review Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-revision me-2"></i>
+                                            {{ localize('global.under_review') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('patient-under-review')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
                                         @endif
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="section-header">
-                            <i class="bx bx-revision"></i>
-                            {{ localize('global.under_review') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('patient-under-review')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createUnderReviewModal{{ $appointment->id }}" tabindex="-1"
@@ -2227,115 +1458,157 @@
                             </div>
                         </div>
 
-                        <div class="table-container">
-                            @if($appointment->under_reviews->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.reason') }}</th>
-                                            <th>{{ localize('global.remarks') }}</th>
-                                            <th>{{ localize('global.room') }}</th>
-                                            <th>{{ localize('global.bed') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->under_reviews as $underReview)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $underReview->reason }}</td>
-                                                <td>{{ $underReview->remarks }}</td>
-                                                <td>{{ $underReview->room->name }}</td>
-                                                <td>{{ $underReview->bed->number }}</td>
-                                                <td>
-                                                    @if ($underReview->is_discharged == '0')
-                                                        <span class="enhanced-badge badge-danger">
-                                                            <i class="bx bx-x-circle"></i> {{ localize('global.under_review') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="enhanced-badge badge-success">
-                                                            <i class="bx bx-check-circle"></i> {{ localize('global.discharged') }}
-                                                        </span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @can('edit-under-reviews')
-                                                        <a href="{{ route('under_reviews.edit', $underReview->id) }}"
-                                                            class="action-btn edit" title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-under-reviews')
-                                                        <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
-                                                            class="action-btn delete" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_under_reviews') }}
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="section-header">
-                                <div class="d-flex align-items-center">
-                                    <i class="bx bx-glasses"></i>
-                                    {{ localize('global.related_visits') }}
-                                </div>
-                            </div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.visit_date') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($appointment->under_reviews as $single_hospitaliztion)
-                                        @foreach ($single_hospitaliztion->visits as $visit)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $visit->description }}</td>
-                                                <td>{{ $visit->doctor->name }}</td>
-                                                <td>
-                                                    {{ $visit->created_at }}
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.no_previous_visits') }}
+                        <!-- Under Review Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->under_reviews->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-dark">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.reason') }}</th>
+                                                            <th>{{ localize('global.remarks') }}</th>
+                                                            <th>{{ localize('global.room') }}</th>
+                                                            <th>{{ localize('global.bed') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->under_reviews as $underReview)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $underReview->reason }}</td>
+                                                                <td>{{ $underReview->remarks }}</td>
+                                                                <td>
+                                                                    <span class="badge bg-secondary">{{ $underReview->room->name }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge bg-info">{{ $underReview->bed->number }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    @if ($underReview->is_discharged == '0')
+                                                                        <span class="badge bg-danger">
+                                                                            <i class="bx bx-x-circle me-1"></i> {{ localize('global.under_review') }}
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-success">
+                                                                            <i class="bx bx-check-circle me-1"></i> {{ localize('global.discharged') }}
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-under-reviews')
+                                                                            <a href="{{ route('under_reviews.edit', $underReview->id) }}"
+                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-under-reviews')
+                                                                            <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
+                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.no_previous_under_reviews') }}
                                                 </div>
                                             </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Related Visits Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-light text-dark">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-glasses me-2"></i>
+                                            {{ localize('global.related_visits') }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.description') }}</th>
+                                                        <th>{{ localize('global.by') }}</th>
+                                                        <th>{{ localize('global.visit_date') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($appointment->under_reviews as $single_hospitaliztion)
+                                                        @foreach ($single_hospitaliztion->visits as $visit)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-light text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $visit->description }}</td>
+                                                                <td>
+                                                                    <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
+                                                                </td>
+                                                                <td>{{ $visit->created_at }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="4" class="text-center">
+                                                                <div class="alert alert-info">
+                                                                    <i class="bx bx-info-circle me-2"></i>
+                                                                    {{ localize('global.no_previous_visits') }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="section-header">
-                            <i class="bx bx-bed"></i>
-                            {{ localize('global.hospitalize') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('patient-hospitalization')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- Hospitalize Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-bed me-2"></i>
+                                            {{ localize('global.hospitalize') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('patient-hospitalization')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade modal-xl" id="createHospitalizationModal{{ $appointment->id }}" tabindex="-1"
@@ -2492,154 +1765,198 @@
                             </div>
                         </div>
                         <!-- End Create Lab Modal -->
-                        <div class="table-container">
-                            @if($appointment->hospitalization->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th class="text-wrap">{{ localize('global.reason') }}</th>
-                                            <th>{{ localize('global.remarks') }}</th>
-                                            <th>{{ localize('global.room') }}</th>
-                                            <th>{{ localize('global.bed') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->hospitalization as $hospitalization)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $hospitalization->reason }}</td>
-                                                <td>{{ $hospitalization->remarks }}</td>
-                                                <td>{{ $hospitalization->room->name }}</td>
-                                                <td>{{ $hospitalization->bed->number }}</td>
-                                                <td>
-                                                    @if ($hospitalization->is_discharged == 0)
-                                                        <span class="enhanced-badge badge-danger">{{ localize('global.in_bed') }}</span>
-                                                    @else
-                                                        <span
-                                                            class="enhanced-badge badge-success">{{ localize('global.discharged') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @can('edit-hospitalizations')
-                                                        <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
-                                                            class="action-btn edit" title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-hospitalizations')
-                                                        <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
-                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
-                                                            class="action-btn delete" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                    <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$hospitalization->id}}"
-                                                        action="{{ route('hospitalizations.destroy', $hospitalization) }}"
-                                                        method="POST" style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                </td>
-                                            </tr>
+                        
+                        <!-- Hospitalization Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->hospitalization->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-success">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                                            <th>{{ localize('global.remarks') }}</th>
+                                                            <th>{{ localize('global.room') }}</th>
+                                                            <th>{{ localize('global.bed') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->hospitalization as $hospitalization)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $hospitalization->reason }}</td>
+                                                                <td>{{ $hospitalization->remarks }}</td>
+                                                                <td>
+                                                                    <span class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge bg-info">{{ $hospitalization->bed->number }}</span>
+                                                                </td>
+                                                                <td>
+                                                                    @if ($hospitalization->is_discharged == 0)
+                                                                        <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-hospitalizations')
+                                                                            <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
+                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-hospitalizations')
+                                                                            <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
+                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        <!-- Using a <form> element -->
+                                                                        <form id="delete-form-{{$hospitalization->id}}"
+                                                                            action="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                                            method="POST" style="display: none;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                        </form>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.no_previous_hospitalizations') }}
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.no_previous_hospitalizations') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
-                        </div>
-                        <div class="section-header">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-glasses"></i>
-                                {{ localize('global.related_visits') }}
                             </div>
                         </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.by') }}</th>
-                                    <th>{{ localize('global.visit_date') }}</th>
-                                    <th>{{ localize('global.vital_signs') }}</th>
-                                    <th>{{ localize('global.antibiotic') }}</th>
-                                    <th>{{ localize('global.food_type') }}</th>
-                                    <th>{{ localize('global.intake') }}</th>
-                                    <th>{{ localize('global.output') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($appointment->hospitalization as $single_hospitaliztion)
-                                    @foreach ($single_hospitaliztion->visits as $visit)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $visit->description }}</td>
-                                            <td>{{ $visit->doctor->name }}</td>
-                                            <td>{{ $visit->created_at }}</td>
-                                            <td dir="ltr">
-                                                <span class="badge bg-primary">{{ localize('global.bp') }}</span>
-                                                {{ $visit->bp }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.pr') }}</span>
-                                                {{ $visit->pr }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.rr') }}</span>
-                                                {{ $visit->rr }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.t') }}</span>
-                                                {{ $visit->t }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
-                                                {{ $visit->spo2 }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.pain') }}</span>
-                                                {{ $visit->pain }}
 
-                                            </td>
-                                            <td>{{$visit->antibiotic}}</td>
-                                            <td>
-                                                @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
-                                                    <span class="badge bg-primary">{{ $foodType->name }}</span>
-                                                @endforeach
-                                            </td>
-                                            <td>{{$visit->intake}}</td>
-                                            <td>{{$visit->output}}</td>
-                                        </tr>
-                                    @endforeach
-                                @empty
-                                    <div class="container">
-                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                            <div class=" badge bg-label-danger mt-4">
-                                                {{ localize('global.no_previous_visits') }}
-                                            </div>
+                        <!-- Related Visits Section (Hospitalization) -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-light text-dark">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-glasses me-2"></i>
+                                            {{ localize('global.related_visits') }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.description') }}</th>
+                                                        <th>{{ localize('global.by') }}</th>
+                                                        <th>{{ localize('global.visit_date') }}</th>
+                                                        <th>{{ localize('global.vital_signs') }}</th>
+                                                        <th>{{ localize('global.antibiotic') }}</th>
+                                                        <th>{{ localize('global.food_type') }}</th>
+                                                        <th>{{ localize('global.intake') }}</th>
+                                                        <th>{{ localize('global.output') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($appointment->hospitalization as $single_hospitaliztion)
+                                                        @foreach ($single_hospitaliztion->visits as $visit)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-light text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $visit->description }}</td>
+                                                                <td>
+                                                                    <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
+                                                                </td>
+                                                                <td>{{ $visit->created_at }}</td>
+                                                                <td dir="ltr">
+                                                                    <div class="small">
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.bp') }}</span>
+                                                                        {{ $visit->bp }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.pr') }}</span>
+                                                                        {{ $visit->pr }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.rr') }}</span>
+                                                                        {{ $visit->rr }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.t') }}</span>
+                                                                        {{ $visit->t }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.spo2') }}</span>
+                                                                        {{ $visit->spo2 }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.pain') }}</span>
+                                                                        {{ $visit->pain }}
+                                                                    </div>
+                                                                </td>
+                                                                <td>{{$visit->antibiotic}}</td>
+                                                                <td>
+                                                                    @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                                        <span class="badge bg-primary me-1">{{ $foodType->name }}</span>
+                                                                    @endforeach
+                                                                </td>
+                                                                <td>{{$visit->intake}}</td>
+                                                                <td>{{$visit->output}}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="9" class="text-center">
+                                                                <div class="alert alert-info">
+                                                                    <i class="bx bx-info-circle me-2"></i>
+                                                                    {{ localize('global.no_previous_visits') }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </div>
+                            </div>
+                        </div>
 
 
-                        {{-- To anasthesia --}}
-
-                        <div class="section-header">
-                            <i class="bx bx-first-aid"></i>
-                            {{ localize('global.refere_to_anasthesia') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('refer-to-anesthesia')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- Anesthesia Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-first-aid me-2"></i>
+                                            {{ localize('global.refere_to_anasthesia') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('refer-to-anesthesia')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade modal-xl" id="createAnasthesiaModal{{ $appointment->id }}" tabindex="-1"
@@ -2791,148 +2108,174 @@
                             </div>
                         </div>
                         <!-- End Create Lab Modal -->
-                        <div class="table-container">
-                            @if($appointment->anesthesias->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.operation_type') }}</th>
-                                            <th>{{ localize('global.patient_name') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.date') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->anesthesias as $anesthesia)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $anesthesia->operationType->name }}</td>
-                                                <td>{{ $anesthesia->patient->name }}</td>
-                                                <td>
-                                                    @if ($anesthesia->status == 'new')
-                                                        <span class="enhanced-badge badge-primary">
-                                                            <i class="bx bx-plus-circle"></i> New
-                                                        </span>
-                                                    @elseif ($anesthesia->status == 'rejected')
-                                                        <span class="enhanced-badge badge-danger">
-                                                            <i class="bx bx-x-circle"></i> Rejected
-                                                        </span>
-                                                    @else
-                                                        <span class="enhanced-badge badge-success">
-                                                            <i class="bx bx-check-circle"></i> Approved
-                                                        </span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $anesthesia->date }}</td>
-                                                <td>
-                                                    @can('edit-anesthesias')
-                                                        <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"
-                                                            class="action-btn edit" title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-anesthesias')
-                                                        <a href="{{ route('anesthesias.destroy', $anesthesia) }}"
-                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }"
-                                                            class="action-btn delete" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                    <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$anesthesia->id}}"
-                                                        action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST"
-                                                        style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.not_referred_to_anesthesia') }}
+                        
+                        <!-- Anesthesia Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->anesthesias->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-danger">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.operation_type') }}</th>
+                                                            <th>{{ localize('global.patient_name') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.date') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->anesthesias as $anesthesia)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-danger rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $anesthesia->operationType->name }}</td>
+                                                                <td>{{ $anesthesia->patient->name }}</td>
+                                                                <td>
+                                                                    @if ($anesthesia->status == 'new')
+                                                                        <span class="badge bg-primary">
+                                                                            <i class="bx bx-plus-circle me-1"></i> New
+                                                                        </span>
+                                                                    @elseif ($anesthesia->status == 'rejected')
+                                                                        <span class="badge bg-danger">
+                                                                            <i class="bx bx-x-circle me-1"></i> Rejected
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-success">
+                                                                            <i class="bx bx-check-circle me-1"></i> Approved
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $anesthesia->date }}</td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-anesthesias')
+                                                                            <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"
+                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-anesthesias')
+                                                                            <a href="{{ route('anesthesias.destroy', $anesthesia) }}"
+                                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }"
+                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        <!-- Using a <form> element -->
+                                                                        <form id="delete-form-{{$anesthesia->id}}"
+                                                                            action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST"
+                                                                            style="display: none;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                        </form>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.not_referred_to_anesthesia') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
-                        </div>
-
-                        <div class="section-header">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-cut"></i>
-                                {{ localize('global.operations') }}
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-4">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.operation_type') }}</th>
-                                        <th>{{ localize('global.patient_name') }}</th>
-                                        <th>{{ localize('global.status') }}</th>
-                                        <th>{{ localize('global.date') }}</th>
-                                        {{-- <th>{{ localize('global.actions') }}</th> --}}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($appointment->approved_anesthesias as $anesthesia)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $anesthesia->operationType->name }}</td>
-                                            <td>
-                                                {{ $anesthesia->patient->name }}
-                                            </td>
-                                            <td>
-                                                @if ($anesthesia->status == 'new')
-                                                    <span class="bx bx-plus-circle text-primary"></span>
-                                                @else
-                                                    <span class="bx bx-check-circle text-success"></span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                {{ $anesthesia->date }}
-                                            </td>
-                                            {{-- <td>
-                                                <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
-                                                            class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a>
-
-                                            </td> --}}
-                                        </tr>
-                                    @empty
-                                        <div class="container">
-                                            <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                <div class=" badge bg-label-danger mt-4">
-                                                    {{ localize('global.not_referred_to_operation') }}
-                                                </div>
-                                            </div>
+                        <!-- Operations Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-cut me-2"></i>
+                                            {{ localize('global.operations') }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-warning">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.operation_type') }}</th>
+                                                        <th>{{ localize('global.patient_name') }}</th>
+                                                        <th>{{ localize('global.status') }}</th>
+                                                        <th>{{ localize('global.date') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($appointment->approved_anesthesias as $anesthesia)
+                                                        <tr>
+                                                            <td>
+                                                                <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                            </td>
+                                                            <td>{{ $anesthesia->operationType->name }}</td>
+                                                            <td>{{ $anesthesia->patient->name }}</td>
+                                                            <td>
+                                                                @if ($anesthesia->status == 'new')
+                                                                    <span class="badge bg-primary">
+                                                                        <i class="bx bx-plus-circle me-1"></i> New
+                                                                    </span>
+                                                                @else
+                                                                    <span class="badge bg-success">
+                                                                        <i class="bx bx-check-circle me-1"></i> Approved
+                                                                    </span>
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $anesthesia->date }}</td>
+                                                        </tr>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="5" class="text-center">
+                                                                <div class="alert alert-info">
+                                                                    <i class="bx bx-info-circle me-2"></i>
+                                                                    {{ localize('global.not_referred_to_operation') }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-
-
-                        {{-- icu starts here --}}
-                        <div class="section-header">
-                            <i class="bx bx-tv"></i>
-                            {{ localize('global.refere_to_icu') }}
-                            @if ($appointment->is_completed == 0)
-                                @can('refer-to-icu')
-                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                        data-bs-target="#createICUModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus"></i>
-                                    </button>
-                                @endcan
-                            @endif
+                        <!-- ICU Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-tv me-2"></i>
+                                            {{ localize('global.refere_to_icu') }}
+                                        </h5>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('refer-to-icu')
+                                                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createICUModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createICUModal{{ $appointment->id }}" tabindex="-1"
@@ -2978,103 +2321,130 @@
                             </div>
                         </div>
                         <!-- End Create Lab Modal -->
-                        <div class="table-container">
-                            @if($appointment->icu->count() > 0)
-                                <table class="enhanced-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.patient_name') }}</th>
-                                            <th>{{ localize('global.description') }}</th>
-                                            <th>{{ localize('global.date') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->icu as $icu)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $icu->patient->name }}</td>
-                                                <td>{{ $icu->description }}</td>
-                                                <td>{{ $icu->created_at }}</td>
-                                                <td>
-                                                    @can('edit-icus')
-                                                        <a href="{{ route('icus.edit', $icu->id) }}" class="action-btn edit"
-                                                            title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete-icus')
-                                                        <a href="{{ route('icus.destroy', $icu) }}"
-                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$icu->id}}').submit(); }"
-                                                            class="action-btn delete" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                    @endcan
-                                                    <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu) }}"
-                                                        method="POST" style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="empty-state">
-                                    <div class="badge bg-label-danger">
-                                        {{ localize('global.not_referred_to_icu') }}
+                        
+                        <!-- ICU Table -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        @if($appointment->icu->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead class="table-info">
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.patient_name') }}</th>
+                                                            <th>{{ localize('global.description') }}</th>
+                                                            <th>{{ localize('global.date') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($appointment->icu as $icu)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $icu->patient->name }}</td>
+                                                                <td>{{ $icu->description }}</td>
+                                                                <td>{{ $icu->created_at }}</td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        @can('edit-icus')
+                                                                            <a href="{{ route('icus.edit', $icu->id) }}" 
+                                                                               class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        @can('delete-icus')
+                                                                            <a href="{{ route('icus.destroy', $icu) }}"
+                                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$icu->id}}').submit(); }"
+                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        <!-- Using a <form> element -->
+                                                                        <form id="delete-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu) }}"
+                                                                            method="POST" style="display: none;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                        </form>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="alert alert-info">
+                                                    <i class="bx bx-info-circle me-2"></i>
+                                                    {{ localize('global.not_referred_to_icu') }}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
-                        </div>
-                        <div class="section-header">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-glasses"></i>
-                                {{ localize('global.related_icu_visits') }}
                             </div>
                         </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.by') }}</th>
-                                    <th>{{ localize('global.visit_date') }}</th>
-                                    <th>{{ localize('global.vital_signs') }}</th>
-                                    <th>{{ localize('global.antibiotic') }}</th>
-                                    <th>{{ localize('global.food_type') }}</th>
-                                    <th>{{ localize('global.intake') }}</th>
-                                    <th>{{ localize('global.output') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($appointment->icu as $icu)
-                                    @forelse($icu->visits as $visit)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $visit->description }}</td>
-                                            <td>{{ $visit->doctor->name }}</td>
-                                            <td>{{ $visit->created_at }}</td>
-                                            <td dir="ltr">
-                                                <span class="badge bg-primary">{{ localize('global.bp') }}</span>
-                                                {{ $visit->bp }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.pr') }}</span>
-                                                {{ $visit->pr }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.rr') }}</span>
-                                                {{ $visit->rr }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.t') }}</span>
-                                                {{ $visit->t }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
-                                                {{ $visit->spo2 }}
-                                                <br>
-                                                <span class="badge bg-primary">{{ localize('global.pain') }}</span>
+
+                        <!-- Related ICU Visits Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-light text-dark">
+                                        <h5 class="mb-0">
+                                            <i class="bx bx-glasses me-2"></i>
+                                            {{ localize('global.related_icu_visits') }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.description') }}</th>
+                                                        <th>{{ localize('global.by') }}</th>
+                                                        <th>{{ localize('global.visit_date') }}</th>
+                                                        <th>{{ localize('global.vital_signs') }}</th>
+                                                        <th>{{ localize('global.antibiotic') }}</th>
+                                                        <th>{{ localize('global.food_type') }}</th>
+                                                        <th>{{ localize('global.intake') }}</th>
+                                                        <th>{{ localize('global.output') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($appointment->icu as $icu)
+                                                        @forelse($icu->visits as $visit)
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="badge bg-light text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                                </td>
+                                                                <td>{{ $visit->description }}</td>
+                                                                <td>
+                                                                    <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
+                                                                </td>
+                                                                <td>{{ $visit->created_at }}</td>
+                                                                <td dir="ltr">
+                                                                    <div class="small">
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.bp') }}</span>
+                                                                        {{ $visit->bp }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.pr') }}</span>
+                                                                        {{ $visit->pr }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.rr') }}</span>
+                                                                        {{ $visit->rr }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.t') }}</span>
+                                                                        {{ $visit->t }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.spo2') }}</span>
+                                                                        {{ $visit->spo2 }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary me-1">{{ localize('global.pain') }}</span>
                                                 {{ $visit->pain }}
 
                                             </td>
@@ -3557,5 +2927,4 @@
             });
         }
     </script>
-@endsection
 @endsection

@@ -1,6 +1,23 @@
 @extends('layouts.master')
 
 @section('content')
+    <style>
+        .iteration-badge {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border: 2px solid var(--bs-primary);
+            border-radius: 50%;
+            display: inline-block;
+            text-align: center;
+            font-weight: 600;
+            color: var(--bs-primary);
+        }
+        
+        .text-justify {
+            text-align: justify;
+        }
+    </style>
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
             @if (Session::has('success') || Session::has('error'))
@@ -134,22 +151,26 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    @foreach ($primaryDiagnoses as $diagnose)
-                                                        <li class="m-1 p-1">
-                                                            <span
-                                                                class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                            {{ $diagnose->description }}
-                                                        </li>
-                                                    @endforeach
+                                                    <ul class="list-unstyled">
+                                                        @foreach ($primaryDiagnoses as $diagnose)
+                                                            <li class="m-1 p-2 border-start border-warning border-3 bg-light rounded">
+                                                                <span
+                                                                    class="badge bg-warning text-dark me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                {{ $diagnose->description }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    @foreach ($finalDiagnoses as $diagnose)
-                                                        <li class="m-1 p-1">
-                                                            <span
-                                                                class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                            {{ $diagnose->description }}
-                                                        </li>
-                                                    @endforeach
+                                                    <ul class="list-unstyled">
+                                                        @foreach ($finalDiagnoses as $diagnose)
+                                                            <li class="m-1 p-2 border-start border-success border-3 bg-light rounded">
+                                                                <span
+                                                                    class="badge bg-success text-white me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                {{ $diagnose->description }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -325,7 +346,7 @@
                                                     <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
                                                         value="{{ $icu->patient_id }}">
                                                     <input type="hidden" id="appointment_id{{ $icu->id }}" name="appointment_id"
-                                                        value="{{ $icu->appointment->id }}">
+                                                        value="{{ $icu->appointment->id ?? '' }}">
                                                     <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
                                                         value="{{ auth()->user()->branch_id }}">
                                                     <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
@@ -334,11 +355,11 @@
 
                                                         <label
                                                             for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
-                                                        <input type="text" class="form-control" name="title">
+                                                        <input type="text" class="form-control" name="title" required>
 
                                                         <label
                                                             for="branch{{ $icu->id }}">{{ localize('global.branch') }}</label>
-                                                        <select class="form-control select2" name="branch" id="branch">
+                                                        <select class="form-control select2" name="branch" id="branch" required>
                                                             <option value="">{{ localize('global.select') }}</option>
                                                             @foreach ($branches as $value)
                                                                 <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
@@ -422,8 +443,7 @@
                                                     <td>
                                                         <div>
 
-                                                            <span
-                                                                style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                                            <span class="iteration-badge">{{ $loop->iteration }}</span>
                                                         </div>
                                                     </td>
                                                     <td>{{ $consultation->title }}</td>
@@ -437,8 +457,14 @@
                                                     <td>
                                                         <a href="{{ route('consultations.edit', $consultation->id) }}"><span><i
                                                                     class="bx bx-edit"></i></span></a>
-                                                        <a href="{{ route('consultations.destroy', $consultation->id) }}"><span><i
-                                                                    class="bx bx-trash text-danger"></i></span></a>
+                                                        <a href="{{ route('consultations.destroy', $consultation->id) }}" 
+                                                           onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$consultation->id}}').submit(); }">
+                                                            <span><i class="bx bx-trash text-danger"></i></span>
+                                                        </a>
+                                                        <form id="delete-form-{{$consultation->id}}" action="{{ route('consultations.destroy', $consultation->id) }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 @if ($consultation->comments->isNotEmpty())
@@ -464,7 +490,7 @@
                                                                         <span
                                                                             class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
                                                                     </div>
-                                                                    <div class="col-md-10" style="text-align: justify;">
+                                                                    <div class="col-md-10 text-justify">
                                                                         {{ $comment->comment }}
                                                                     </div>
                                                                 </div>
@@ -522,7 +548,7 @@
                                                         <label
                                                             for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
                                                         <textarea class="form-control" id="description{{ $icu->id }}"
-                                                            name="description" rows="3"></textarea>
+                                                            name="description" rows="3" required></textarea>
                                                     </div>
                                                     <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
                                                     <div class="form-group">
@@ -675,20 +701,20 @@
                                                             @csrf
                                                             @method('DELETE')
                                                         </form>
-                                                        <a href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { 
+                                                        <a href="#" onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { 
                                                                 document.getElementById('delete-form-{{$visit->id}}').submit(); }">
                                                             <span><i class="bx bx-trash text-danger"></i></span></a>
 
                                                     </td>
                                                 </tr>
                                             @empty
-                                                <div class="container">
-                                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                        <div class=" badge bg-label-danger mt-4">
+                                                <tr>
+                                                    <td colspan="10" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
                                                             {{ localize('global.no_previous_visits') }}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
@@ -721,8 +747,8 @@
                                                     @csrf
                                                     <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
                                                         value="{{ $icu->patient_id }}">
-                                                    <input type="hidden" id="appointment_id{{ $icu->appointment->id }}"
-                                                        name="appointment_id" value="{{ $icu->appointment->id }}">
+                                                    <input type="hidden" id="appointment_id{{ $icu->appointment->id ?? '' }}"
+                                                        name="appointment_id" value="{{ $icu->appointment->id ?? '' }}">
                                                     <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
                                                         value="{{ auth()->user()->branch_id }}">
                                                     <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
@@ -737,7 +763,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-2">
                                                                     <select class="form-control select2"
-                                                                        name="medicine_type_id[]">
+                                                                        name="medicine_type_id[]" required>
                                                                         <option value="">
                                                                             {{ localize('global.select') }}
                                                                         </option>
@@ -750,7 +776,7 @@
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <select class="form-control select2" name="medicine_id[]">
+                                                                    <select class="form-control select2" name="medicine_id[]" required>
                                                                         <option value="">
                                                                             {{ localize('global.select') }}
                                                                         </option>
@@ -763,7 +789,7 @@
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <select class="form-control select2" name="usage_type_id[]">
+                                                                    <select class="form-control select2" name="usage_type_id[]" required>
                                                                         <option value="">
                                                                             {{ localize('global.select') }}
                                                                         </option>
@@ -777,15 +803,15 @@
                                                                 </div>
                                                                 <div class="col-md-2">
                                                                     <input type="text" class="form-control mt-2" name="dosage[]"
-                                                                        placeholder="Dosage">
+                                                                        placeholder="Dosage" required>
                                                                 </div>
                                                                 <div class="col-md-2">
                                                                     <input type="text" class="form-control mt-2"
-                                                                        name="frequency[]" placeholder="Frequency">
+                                                                        name="frequency[]" placeholder="Frequency" required>
                                                                 </div>
                                                                 <div class="col-md-2">
                                                                     <input type="text" class="form-control mt-2" name="amount[]"
-                                                                        placeholder="Amount">
+                                                                        placeholder="Amount" required>
                                                                 </div>
                                                                 <div class="col-md-2">
                                                                     <input type="hidden" class="form-control mt-2"
@@ -844,13 +870,9 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="5">
-                                                        <div class="container">
-                                                            <div class="col-md-12 d-flex justify-content-center align-items-center">
-                                                                <div class="badge bg-label-danger mt-4">
-                                                                    {{ localize('global.no_previous_prescriptions') }}
-                                                                </div>
-                                                            </div>
+                                                    <td colspan="4" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
+                                                            {{ localize('global.no_previous_prescriptions') }}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -912,14 +934,9 @@
                                                             @endforeach
                                                         @else
                                                             <tr>
-                                                                <td colspan="5">
-                                                                    <div class="container">
-                                                                        <div
-                                                                            class="col-md-12 d-flex justify-content-center align-items-center">
-                                                                            <div class="badge bg-label-danger mt-4">
-                                                                                {{ localize('global.no_previous_prescriptions') }}
-                                                                            </div>
-                                                                        </div>
+                                                                <td colspan="4" class="text-center">
+                                                                    <div class="badge bg-label-danger mt-4">
+                                                                        {{ localize('global.no_previous_prescriptions') }}
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -958,7 +975,7 @@
                                                     @csrf
                                                     <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
                                                         value="{{ $icu->patient_id }}">
-                                                    <input type="hidden" id="appointment_id{{ $icu->appointment->id }}"
+                                                    <input type="hidden" id="appointment_id{{ $icu->appointment->id ?? '' }}"
                                                         name="appointment_id" value="{{ $icu->id }}">
                                                     <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
                                                         value="{{ auth()->user()->id }}">
@@ -970,7 +987,7 @@
                                                         <label
                                                             for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
                                                         <textarea class="form-control" id="description{{ $icu->id }}"
-                                                            name="description" rows="3"></textarea>
+                                                            name="description" rows="3" required></textarea>
 
                                                     </div>
                                             </div>
@@ -1012,19 +1029,25 @@
                                                     <td>
                                                         <a href="{{ route('advices.edit', $advice->id) }}"><span><i
                                                                     class="bx bx-edit"></i></span></a>
-                                                        <a href="{{ route('advices.destroy', $advice->id) }}"><span><i
-                                                                    class="bx bx-trash text-danger"></i></span></a>
+                                                        <a href="{{ route('advices.destroy', $advice->id) }}" 
+                                                           onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$advice->id}}').submit(); }">
+                                                            <span><i class="bx bx-trash text-danger"></i></span>
+                                                        </a>
+                                                        <form id="delete-form-{{$advice->id}}" action="{{ route('advices.destroy', $advice->id) }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
 
                                                     </td>
                                                 </tr>
                                             @empty
-                                                <div class="container">
-                                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                        <div class=" badge bg-label-danger mt-4">
+                                                <tr>
+                                                    <td colspan="5" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
                                                             {{ localize('global.no_previous_advices') }}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
@@ -1056,9 +1079,9 @@
                                                     <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
                                                         value="{{ $icu->patient_id }}">
                                                     <input type="hidden" id="appointment_id{{ $icu->id }}" name="appointment_id"
-                                                        value="{{ $icu->appointment->id }}">
+                                                        value="{{ $icu->appointment->id ?? '' }}">
                                                     <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                                        value="{{ $icu->doctor->id }}">
+                                                        value="{{ $icu->doctor->id ?? '' }}">
                                                     <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
                                                         value="{{ auth()->user()->branch_id }}">
                                                     <input type="hidden" id="hospitalization_id{{ $icu->id }}"
@@ -1146,21 +1169,27 @@
                                                     <td>
                                                         <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
                                                                     class="bx bx-edit"></i></span></a>
-                                                        <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
-                                                                    class="bx bx-trash text-danger"></i></span></a>
+                                                        <a href="{{ route('lab_tests.destroy', $lab->id) }}" 
+                                                           onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$lab->id}}').submit(); }">
+                                                            <span><i class="bx bx-trash text-danger"></i></span>
+                                                        </a>
+                                                        <form id="delete-form-{{$lab->id}}" action="{{ route('lab_tests.destroy', $lab->id) }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
 
                                                     </td>
 
                                                 </tr>
 
                                             @empty
-                                                <div class="container">
-                                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                        <div class=" badge bg-label-danger mt-4">
+                                                <tr>
+                                                    <td colspan="6" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
                                                             {{ localize('global.no_previous_labs') }}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             @endforelse
 
                                         </tbody>
@@ -1192,13 +1221,13 @@
                                                     @csrf
                                                     <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
                                                         value="{{ $icu->id }}">
-                                                    <div class="form-group">
+                                                    <div class="form-group"></div>
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <label
                                                                     for="icu_procedure_type_id{{ $icu->id }}">{{ localize('global.procedure_type') }}</label>
                                                                 <select class="form-control select2"
-                                                                    name="icu_procedure_type_id" id="icu_procedure_type_id">
+                                                                    name="icu_procedure_type_id" id="icu_procedure_type_id" required>
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
                                                                     @foreach ($procedure_types as $value)
@@ -1215,7 +1244,7 @@
                                                                 <label
                                                                     for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
                                                                 <textarea class="form-control" id="description{{ $icu->id }}"
-                                                                    name="description" rows="3"></textarea>
+                                                                    name="description" rows="3" required></textarea>
                                                             </div>
                                                         </div>
 
@@ -1263,7 +1292,7 @@
                                                         @endcan
                                                         @can('delete-icu-procedure')
                                                             <a href="{{ route('procedures.destroy', $procedure) }}"
-                                                                onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$procedure->id}}').submit(); }">
+                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$procedure->id}}').submit(); }">
                                                                 <i class="bx bx-trash text-danger"></i>
                                                             </a>
                                                         @endcan
@@ -1280,13 +1309,13 @@
                                                 </tr>
 
                                             @empty
-                                                <div class="container">
-                                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                        <div class=" badge bg-label-danger mt-4">
+                                                <tr>
+                                                    <td colspan="6" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
                                                             {{ localize('global.no_previous_procedures') }}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             @endforelse
 
                                         </tbody>
@@ -1477,13 +1506,13 @@
                                                 </tr>
 
                                             @empty
-                                                <div class="container">
-                                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                        <div class=" badge bg-label-danger mt-4">
-                                                            {{ localize('global.no_previous_labs') }}
+                                                <tr>
+                                                    <td colspan="5" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
+                                                            {{ localize('global.no_previous_progress') }}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             @endforelse
 
                                         </tbody>
@@ -1515,7 +1544,7 @@
                                                     <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
                                                         value="{{ $icu->patient_id }}">
                                                     <input type="hidden" id="appointment_id{{ $icu->id }}" name="appointment_id"
-                                                        value="{{ $icu->appointment->id }}">
+                                                        value="{{ $icu->appointment->id ?? '' }}">
                                                     <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
                                                         value="{{ $icu->id }}">
                                                     <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
@@ -1531,7 +1560,7 @@
                                                             <label
                                                                 for="reason{{ $icu->id }}">{{ localize('global.reason') }}</label>
                                                             <textarea class="form-control" id="reason{{ $icu->id }}"
-                                                                name="reason" rows="3"></textarea>
+                                                                name="reason" rows="3" required></textarea>
                                                         </div>
 
                                                         <div class="form-group">
@@ -1601,7 +1630,7 @@
                                                                     <div class="col-md-3">
                                                                         <label>{{ localize('global.companion_name') }}</label>
                                                                         <input type="text" class="form-control"
-                                                                            name="patinet_companion">
+                                                                            name="patient_companion">
                                                                     </div>
                                                                     <div class="col-md-3">
                                                                         <label>{{ localize('global.companion_father_name') }}</label>
@@ -1701,19 +1730,25 @@
                                                     <td>
                                                         <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"><span><i
                                                                     class="bx bx-edit"></i></span></a>
-                                                        <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"><span><i
-                                                                    class="bx bx-trash text-danger"></i></span></a>
+                                                        <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}" 
+                                                           onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                                            <span><i class="bx bx-trash text-danger"></i></span>
+                                                        </a>
+                                                        <form id="delete-form-{{$hospitalization->id}}" action="{{ route('hospitalizations.destroy', $hospitalization->id) }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
 
                                                     </td>
                                                 </tr>
                                             @empty
-                                                <div class="container">
-                                                    <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                        <div class=" badge bg-label-danger mt-4">
+                                                <tr>
+                                                    <td colspan="7" class="text-center">
+                                                        <div class="badge bg-label-danger mt-4">
                                                             {{ localize('global.no_previous_hospitalizations') }}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </td>
+                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
@@ -1733,7 +1768,7 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="createDischargeModalLabel{{ $icu->id }}">
-                                                    {{ localize('global.add_lab_test') }}
+                                                    {{ localize('global.discharge_patient') }}
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -1754,7 +1789,7 @@
                                                             <option value="died">{{ localize('global.died') }}</option>
                                                             <option value="moved">{{ localize('global.moved') }}</option>
                                                         </select>
-                                                        <div id="discharge_options{{ $icu->id }}" style="display: none;>
+                                                        <div id="discharge_options{{ $icu->id }}" style="display: none;">
                                                             <label for=" discharge_remark{{ $icu->id }}">
                                                             {{ localize('global.discharge_remark') }}</label>
                                                             <textarea class="form-control" id="discharge_remark{{ $icu->id }}"
@@ -1840,7 +1875,7 @@
                                             </div>
 
                                             <div class="col-md-6">
-                                                <h5 class="mb-2">{{ localize('global.casue_of_death') }}</h5>
+                                                <h5 class="mb-2">{{ localize('global.cause_of_death') }}</h5>
                                                 <div>
                                                     {{ $icu->cause_of_death }}
                                                 </div>
@@ -2026,6 +2061,7 @@
             const typeDropdown = document.createElement('select');
             typeDropdown.className = 'form-control select2 mt-2';
             typeDropdown.name = 'medicine_type_id[]';
+            typeDropdown.required = true;
 
             // Append the options to the type dropdown
             @foreach ($medicineTypes as $value)
@@ -2039,6 +2075,7 @@
                 const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2 mt-2';
             medicineDropdown.name = 'medicine_id[]';
+            medicineDropdown.required = true;
 
             // Append the options to the medicine dropdown
             var medicineOption = '';
@@ -2053,6 +2090,7 @@
                 const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2 mt-2';
             medicineUsageDropdown.name = 'usage_type_id[]';
+            medicineUsageDropdown.required = true;
 
             // Append the options to the medicine dropdown
             var medicineUsageOption = '';
@@ -2069,6 +2107,7 @@
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';
             dosageInput.placeholder = 'Dosage';
+            dosageInput.required = true;
 
             // Create the frequency input field
             const frequencyInput = document.createElement('input');
@@ -2076,6 +2115,7 @@
             frequencyInput.className = 'form-control mt-2';
             frequencyInput.name = 'frequency[]';
             frequencyInput.placeholder = 'Frequency';
+            frequencyInput.required = true;
 
             // Create the amount input field
             const amountInput = document.createElement('input');
@@ -2083,6 +2123,7 @@
             amountInput.className = 'form-control mt-2';
             amountInput.name = 'amount[]';
             amountInput.placeholder = 'Amount';
+            amountInput.required = true;
 
             // Create the delivery input field
             const deliveryInput = document.createElement('input');

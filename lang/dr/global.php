@@ -1362,4 +1362,7 @@ return [
     'daily_progress_item_deleted_successfully.'=>'قلم بررسی روزانه با موفقیت حذف شد',
     'daily_progress_item_not_found.'=>'قلم بررسی روزانه یافت نشد',
     'daily_progress_item_status_updated_successfully.'=>'حالت قلم بررسی روزانه با موفقیت ابدیت شد',
+    'are_you_sure_delete'=>'آیا مطمئن هستید که می خواهید این مورد را حذف کنید؟',
+    'complete_appointment'=>'تکمیل نوبت',
+    'refer_patient'=>'برای مریض دیگری معرفی کنید',
 ];

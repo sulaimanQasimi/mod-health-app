@@ -82,28 +82,32 @@ class BloodBankController extends Controller
     {
         // Validate the input
         $validatedData = $request->validate([
-            'group' => 'required',
-            'rh' => 'required',
-            'type' => 'required',
-            'quantity' => 'required',
-            'branch_id' => 'required',
-            'appointment_id' => 'nullable',
-            'hospitalization_id' => 'nullable',
-            'i_c_u_id' => 'nullable',
-            'operation_id' => 'nullable',
-            'under_review_id' => 'nullable',
-            'anesthesia_id' => 'nullable',
-            'patient_id' => 'nullable',
-            'department_id' => 'nullable',
-            'reject_reason' => 'nullable',
+            'group' => 'required|string',
+            'rh' => 'required|string',
+            'type' => 'required|string',
+            'quantity' => 'required|integer',
+            'branch_id' => 'required|exists:branches,id',
+            'appointment_id' => 'nullable|exists:appointments,id',
+            'hospitalization_id' => 'nullable|exists:hospitalizations,id',
+            'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
+            'operation_id' => 'nullable|exists:operations,id',
+            'under_review_id' => 'nullable|exists:under_reviews,id',
+            'anesthesia_id' => 'nullable|exists:anesthesias,id',
+            'patient_id' => 'nullable|exists:patients,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'reject_reason' => 'nullable|string',
         ]);
 
+        // Add the created_by field
+        $validatedData['created_by'] = auth()->id();
 
+        // Create the blood bank record
         $bloodBank = BloodBank::create($validatedData);
 
+        // Send notification
         SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
 
-        return redirect()->back()->with('success', localize('global.blood_request_created_successfully.'));
+        return redirect()->back()->with('success', localize('global.blood_request_created_successfully'));
     }
 
     /**

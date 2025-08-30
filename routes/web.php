@@ -227,7 +227,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [VisitController::class, 'create'])->name('create');
         Route::get('show/{visit}', [VisitController::class, 'show'])->name('show');
         Route::post('store', [VisitController::class, 'store'])->name('store');
-        Route::get('editUnderReviewVisit/{visit}', [VisitController::class, 'editUnderReviewVisit'])->name('editUnderReviewVisit');
+        Route::get('editUnderReviewVisit/{visit}', [VisitController::class, 'editUnderReviewVisit'])->name('edit');
         Route::put('update/{visit}', [VisitController::class, 'update'])->name('update');
         Route::put('updateUnderReviewVisit/{visit}', [VisitController::class, 'updateUnderReviewVisit'])->name('updateUnderReviewVisit');
         Route::delete('destroyUnderReviewVisit/{visit}', [VisitController::class, 'destroyUnderReviewVisit'])->name('destroyUnderReviewVisit');
@@ -303,7 +303,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [LabController::class, 'store'])->name('store');
         Route::get('edit/{lab}', [LabController::class, 'edit'])->name('edit');
         Route::put('update/{lab}', [LabController::class, 'update'])->name('update');
-        Route::get('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{lab}', [LabController::class, 'destroy'])->name('destroy');
         Route::get('/print-card/{lab}', [LabController::class, 'printCard'])->name('print-card');
         Route::get('report', [LabController::class, 'report'])->name('report');
         Route::post('report-search', [LabController::class, 'ReportSearch'])->name('report-search');
@@ -360,6 +360,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('deleteItem/{id}/delete-item', [LabItemController::class, 'deleteItem'])->name('deleteItem');
         Route::get('editItem/{item}/edit-item', [LabItemController::class, 'edit'])->name('editItem');
         Route::put('/lab-items/{item}', [LabItemController::class, 'update'])->name('updateItem');
+        Route::delete('destroy/{item}', [LabItemController::class, 'destroy'])->name('destroyItem');
 
     });
 

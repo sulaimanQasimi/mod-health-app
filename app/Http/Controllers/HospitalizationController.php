@@ -215,6 +215,7 @@ class HospitalizationController extends Controller
      */
     public function destroy(Hospitalization $hospitalization)
     {
+        
         $hospitalization->delete();
 
         return redirect()->back()->with('success', localize('global.hospitalization_deleted_successfully.') );

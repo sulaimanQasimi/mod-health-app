@@ -100,10 +100,6 @@
                                 </div>
                                 <!-- End Create visit Modal -->
                         <div class="col-md-12 mt-4">
-
-
-
-
                         <table class="table">
                             <thead>
                                 <tr>
@@ -148,10 +144,6 @@
                         </table>
 
                         </div>
-
-
-
-
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                             class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
 
@@ -539,11 +531,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-
-
-
-
                                     </div>
                             </div>
                             <div class="modal-footer">
@@ -558,10 +545,6 @@
                 </div>
                 <!-- End Create Lab Modal -->
                 <div class="col-md-12 mt-4">
-
-
-
-
                     <table class="table">
                         <thead>
                             <tr>
@@ -600,8 +583,17 @@
                                     <td>
                                         <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"><span><i
                                                     class="bx bx-edit"></i></span></a>
-                                        <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"><span><i
-                                                    class="bx bx-trash text-danger"></i></span></a>
+
+                                                    <form id="delete-form-{{$hospitalization->id}}" action="{{ route('hospitalizations.destroy', $hospitalization->id) }}" method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                        <a  onclick="event.preventDefault();
+                                         if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
+                                         { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                            <span><i
+                                                    class="bx bx-trash text-danger"></i></span>
+                                            </a>
 
                                     </td>
                                 </tr>
@@ -654,12 +646,6 @@
                         @endforelse
                     </tbody>
                 </table>
-
-
-
-
-
-
                         {{-- lab tests from underReview --}}
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -739,10 +725,6 @@
                     </div>
                     <!-- End Create Lab Modal -->
                     <div class="col-md-12 mt-4">
-
-
-
-
                         <table class="table">
                             <thead>
                                 <tr>
@@ -755,33 +737,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($underReview->labs as $lab)
+                                {{-- the Model is LabItem --}}
+                                @forelse ($underReview->labs as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $lab->labType->name }}</td>
+                                        <td>{{ $item->labType->name }}</td>
                                         <td>
-                                            @if ($lab->status == '0')
+                                            @if ($item->status == '0')
                                                 <span
                                                     class="badge bg-danger">{{ localize('global.not_tested') }}</span>
                                             @else
                                                 <span class="badge bg-success">{{ localize('global.tested') }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $lab->result }}</td>
+                                        <td>{{ $item->result }}</td>
                                         <td>
-                                            @isset($lab->result_file)
-                                                <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
+                                            @isset($item->result_file)
+                                                <a href="{{ asset('storage/' . $item->result_file) }}" target="_blank">
                                                     <i class="fa fa-file"></i> {{ localize('global.file') }}
                                                 </a>
                                             @endisset
 
                                         </td>
                                         <td>
-                                            <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
-                                                        class="bx bx-edit"></i></span></a>
-                                            <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
-                                                        class="bx bx-trash text-danger"></i></span></a>
-
+                                            <a href="{{ route('lab_tests.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="{{ localize('global.edit') }}">
+                                                <i class="bx bx-edit"></i>
+                                            </a>
+                                            <form id="delete-form-{{$item->id}}" action="{{ route('lab_items.destroyItem', $item->id) }}" method="POST" style="display: none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                            <a onclick="event.preventDefault();
+                                                 if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
+                                             { document.getElementById('delete-form-{{$item->id}}').submit(); }" title="{{ localize('global.delete') }}">
+                                                <i class="bx bx-trash"></i>
+                                            </a>
                                         </td>
 
                                     </tr>
@@ -1040,25 +1030,56 @@ prescriptionContainer.appendChild(newRow);
 
 <script>
 
-    function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data)
-    {
-         $('#prescription_items_table').html(data); }, error: function(xhr, status, error) {
-         // Handle the error response
-         console.error(error); } }); }
+    function getPrescriptionItems(id){ 
+        $.ajax({ 
+            type: "GET", 
+            url: "{{url('prescription_items/getItems/')}}/"+id, 
+            dataType: "html", 
+            success: function(data) {
+                $('#prescription_items_table').html(data); 
+            }, 
+            error: function(xhr, status, error) {
+                // Handle the error response
+                console.error(error); 
+            } 
+        }); 
+    }
 
-         $('#room_id').on('change', function() {
-                var roomId = $(this).val();
-                if (roomId !== '') {
-                    $.ajax({
-                        url: '/get_related_beds/' + roomId,
-                        type: 'GET',
-                        success: function(response) {
+    function deleteLabTest(id) {
+        if (confirm('{{ localize("global.are_you_sure_delete_lab_test") }}')) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("lab_tests.destroy", ":id") }}'.replace(':id', id);
 
-                            $('#bed_id').html(response);
-                        }
-                    })
+            var tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = '_token';
+            tokenInput.value = '{{ csrf_token() }}';
+
+            var methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+
+            form.appendChild(tokenInput);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    $('#room_id').on('change', function() {
+        var roomId = $(this).val();
+        if (roomId !== '') {
+            $.ajax({
+                url: '/get_related_beds/' + roomId,
+                type: 'GET',
+                success: function(response) {
+                    $('#bed_id').html(response);
                 }
             })
+        }
+    })
 
 </script>
 

@@ -2,6 +2,55 @@
 
 @section('content')
     <style>
+        /* Page Title Box */
+        .page-title-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title-box .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        .page-title-box .breadcrumb-item a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+
+        .page-title-box .breadcrumb-item.active {
+            color: white;
+        }
+
+        .page-title-box .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Card Styling */
+        .card {
+            border: none;
+            box-shadow: 0 2px 20px rgba(0, 187, 50, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-bottom: 1px solid #dee2e6;
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
         /* Enhanced Table Styling */
         .enhanced-table {
             border-collapse: separate;
@@ -15,7 +64,7 @@
         }
 
         .enhanced-table thead th {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             color: #495057;
             font-weight: 600;
             padding: 16px 12px;
@@ -86,42 +135,320 @@
             color: white;
         }
 
+        /* Button Styling */
+        .btn {
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            color: white;
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            color: white;
+            background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #212529;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+            color: #212529;
+            background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+            color: white;
+            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+            color: white;
+            background: linear-gradient(135deg, #138496 0%, #0f6674 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+            color: white;
+            background: linear-gradient(135deg, #545b62 0%, #3d4449 100%);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+
+        .btn-outline-primary:hover {
+            background: #007bff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-outline-success {
+            background: transparent;
+            color: #28a745;
+            border: 2px solid #28a745;
+        }
+
+        .btn-outline-success:hover {
+            background: #28a745;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-outline-warning {
+            background: transparent;
+            color: #ffc107;
+            border: 2px solid #ffc107;
+        }
+
+        .btn-outline-warning:hover {
+            background: #ffc107;
+            color: #212529;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-outline-danger {
+            background: transparent;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+
+        .btn-outline-danger:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-outline-info {
+            background: transparent;
+            color: #17a2b8;
+            border: 2px solid #17a2b8;
+        }
+
+        .btn-outline-info:hover {
+            background: #17a2b8;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            color: #6c757d;
+            border: 2px solid #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+        }
+
+        /* Special Action Buttons */
+        .btn-action {
+            min-width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action.btn-sm {
+            min-width: 32px;
+            height: 32px;
+        }
+
+        .btn-action.btn-lg {
+            min-width: 48px;
+            height: 48px;
+        }
+
+        /* Button Groups */
+        .btn-group .btn {
+            border-radius: 0;
+        }
+
+        .btn-group .btn:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .btn-group .btn:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Floating Action Button */
+        .btn-floating {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .btn-floating:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.6);
+            color: white;
+        }
+
+        /* Disabled Button States */
+        .btn:disabled,
+        .btn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled:hover,
+        .btn.disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
         /* Action Buttons */
         .action-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: none;
             margin: 0 4px;
             transition: all 0.3s ease;
             text-decoration: none;
             color: white;
+            font-size: 14px;
         }
 
         .action-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
         .action-btn.edit {
-            background: linear-gradient(135deg, #17a2b8, #138496);
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn.edit:hover {
+            background: linear-gradient(135deg, #138496 0%, #0f6674 100%);
         }
 
         .action-btn.delete {
-            background: linear-gradient(135deg, #dc3545, #c82333);
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn.delete:hover {
+            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
         }
 
         .action-btn.view {
-            background: linear-gradient(135deg, #6f42c1, #5a32a3);
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn.view:hover {
+            background: linear-gradient(135deg, #5a32a3 0%, #4a2b8a 100%);
+        }
+
+        .action-btn.add {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn.add:hover {
+            background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
         }
 
         /* Section Headers */
         .section-header {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-left: 4px solid #007bff;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-left: 4px solid #ffffff;
             padding: 16px 20px;
             margin: 30px 0 20px 0;
             border-radius: 0 8px 8px 0;
@@ -129,13 +456,38 @@
             align-items: center;
             gap: 12px;
             font-weight: 600;
-            color: #495057;
+            color: white;
             font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .section-header i {
             font-size: 20px;
-            color: #007bff;
+            color: white;
+        }
+
+        /* Info Items */
+        .info-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid #007bff;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .info-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #495057;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
         }
 
         /* Empty State */
@@ -162,8 +514,128 @@
             margin: 20px 0;
         }
 
+        /* Form Labels */
+        .form-label {
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .avatar-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 0.875rem;
+        }
+
+        .bg-label-success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .bg-label-info {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .border-top {
+            border-top: 1px solid #e9ecef !important;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .text-primary {
+            color: #007bff !important;
+        }
+
+        /* Dark Mode Styles */
+        [data-bs-theme="dark"] .info-item {
+            background: #2b2c40;
+            border-left-color: #696cff;
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .info-item:hover {
+            background: #3a3b4d;
+            transform: translateX(5px);
+        }
+
+        [data-bs-theme="dark"] .info-value {
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .form-label {
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background: #2b2c40;
+            border: 1px solid #444564;
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            background: #3a3b4d;
+            border-bottom: 1px solid #444564;
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .card-body {
+            background: #2b2c40;
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #696cff !important;
+        }
+
+        [data-bs-theme="dark"] .border-top {
+            border-top: 1px solid #444564 !important;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            border-color: #a3a4cc;
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background: #a3a4cc;
+            border-color: #a3a4cc;
+            color: #2b2c40;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
+            .page-title-box {
+                padding: 1rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+            }
+
+            .info-item {
+                padding: 0.75rem;
+            }
+
             .enhanced-table {
                 font-size: 12px;
             }
@@ -190,87 +662,105 @@
                     <div>
 
                         <div class="col-md-12">
-                            <div class="border border-label-primary mb-4">
-                                <h5 class="mb-4 p-3 bg-label-primary text-center">
-                                    {{ localize('global.appointment_details') }}
-                                </h5>
-
-                                <div class="row p-2 text-center">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
-                                        <div>
-                                            {{ $appointment->patient->name }}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 text-center">
+                                        <i class="bx bx-calendar-check me-2"></i>
+                                        {{ localize('global.appointment_details') }}
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-md-3">
+                                            <div class="info-item">
+                                                <div class="form-label">{{ localize('global.patient_name') }}</div>
+                                                <div class="info-value">
+                                                    <i class="bx bx-user me-2"></i>
+                                                    {{ $appointment->patient->name }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.referred_to') }}</h5>
-                                        <div>
-                                            {{ $appointment->doctor->name }}
+                                        <div class="col-md-3">
+                                            <div class="info-item">
+                                                <div class="form-label">{{ localize('global.referred_to') }}</div>
+                                                <div class="info-value">
+                                                    <i class="bx bx-user-check me-2"></i>
+                                                    {{ $appointment->doctor->name }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.date') }}</h5>
-                                        <div>
-                                            {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date) }}
+                                        <div class="col-md-3">
+                                            <div class="info-item">
+                                                <div class="form-label">{{ localize('global.date') }}</div>
+                                                <div class="info-value">
+                                                    <i class="bx bx-calendar me-2"></i>
+                                                    {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date) }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.time') }}</h5>
-                                        <div>
-                                            {{ $appointment->time }}
+                                        <div class="col-md-3">
+                                            <div class="info-item">
+                                                <div class="form-label">{{ localize('global.time') }}</div>
+                                                <div class="info-value">
+                                                    <i class="bx bx-time me-2"></i>
+                                                    {{ $appointment->time }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                                 <div class="row p-4">
                                     <div class="mb-4">
-                                        <div class="col-md-12 d-flex justify-content-center">
-                                            <h5 class="mb-4 p-1 bg-label-primary mt-4"><i
-                                                    class="bx bx-history p-1"></i>{{ localize('global.patient_history') }}
-                                            </h5>
-                                        </div>
-                                        @php
-                                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
-                                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
-                                        @endphp
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0 text-center">
+                                                    <i class="bx bx-history me-2"></i>
+                                                    {{ localize('global.patient_history') }}
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                @php
+                                                    $primaryDiagnoses = $previousDiagnoses->where('type', 0);
+                                                    $finalDiagnoses = $previousDiagnoses->where('type', 1);
+                                                @endphp
 
-                                        <div class="container">
-                                            <div class="col-md-12">
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <div class="col-md-12">
-                                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
-                                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
-                                                            </h5>
+                                                        <div class="info-item">
+                                                            <div class="form-label text-center mb-3">
+                                                                <i class="bx bx-popsicle me-2"></i>
+                                                                {{ localize('global.primary_diagnoses') }}
+                                                            </div>
+                                                            @foreach ($primaryDiagnoses as $diagnose)
+                                                                <div class="mb-2 p-2 bg-light rounded">
+                                                                    <small class="badge bg-warning text-dark me-2">
+                                                                        {{ $diagnose->created_at->format('Y-m-d') }}
+                                                                    </small>
+                                                                    {{ $diagnose->description }}
+                                                                </div>
+                                                            @endforeach
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <div class="col-md-12">
-                                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
-                                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
-                                                            </h5>
+                                                        <div class="info-item">
+                                                            <div class="form-label text-center mb-3">
+                                                                <i class="bx bx-popsicle me-2"></i>
+                                                                {{ localize('global.final_diagnoses') }}
+                                                            </div>
+                                                            @foreach ($finalDiagnoses as $diagnose)
+                                                                <div class="mb-2 p-2 bg-light rounded">
+                                                                    <small class="badge bg-success text-white me-2">
+                                                                        {{ $diagnose->created_at->format('Y-m-d') }}
+                                                                    </small>
+                                                                    {{ $diagnose->description }}
+                                                                </div>
+                                                            @endforeach
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        @foreach ($primaryDiagnoses as $diagnose)
-                                                            <li class="m-1 p-1">
-                                                                <span
-                                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                                {{ $diagnose->description }}
-                                                            </li>
-                                                        @endforeach
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        @foreach ($finalDiagnoses as $diagnose)
-                                                            <li class="m-1 p-1">
-                                                                <span
-                                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                                {{ $diagnose->description }}
-                                                            </li>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
+                                            </div>
+                                        </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1305,11 +1795,6 @@
                                                 <select class="form-control select2" name="doctor_id"
                                                     id="appointment_doctor_id">
                                                     <option value="">{{ localize('global.select') }}</option>
-                                                    @foreach ($doctors as $value)
-                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name_dr }}
-                                                        </option>
-                                                    @endforeach
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -2521,10 +3006,21 @@
                         url: '/get_labTypes/' + labSectionID,
                         type: 'GET',
                         success: function (response) {
-
                             $('#lab_type_id').html(response);
+                            // Re-initialize Select2 for the updated dropdown
+                            $('#lab_type_id').select2({
+                                dropdownParent: $('#lab_type_id').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
                         }
                     })
+                } else {
+                    // Clear the lab type dropdown if no section is selected
+                    $('#lab_type_id').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#lab_type_id').select2({
+                        dropdownParent: $('#lab_type_id').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
                 }
             })
 
@@ -2535,10 +3031,32 @@
                         url: '/get_departments/' + branchId,
                         type: 'GET',
                         success: function (response) {
-
                             $('#department').html(response);
+                            // Re-initialize Select2 for the updated dropdown
+                            $('#department').select2({
+                                dropdownParent: $('#department').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
+                            // Clear the doctor dropdown when branch changes
+                            $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                            $('#doctor_id').select2({
+                                dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
                         }
                     })
+                } else {
+                    // Clear both department and doctor dropdowns if no branch is selected
+                    $('#department').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#department').select2({
+                        dropdownParent: $('#department').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
+                    $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#doctor_id').select2({
+                        dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
                 }
             })
 
@@ -2549,10 +3067,32 @@
                         url: '/get_departments/' + branchId,
                         type: 'GET',
                         success: function (response) {
-
                             $('#referral_department_id').html(response);
+                            // Re-initialize Select2 for the updated dropdown
+                            $('#referral_department_id').select2({
+                                dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
+                            // Clear the doctor dropdown when branch changes
+                            $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                            $('#appointment_doctor_id').select2({
+                                dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
                         }
                     })
+                } else {
+                    // Clear both department and doctor dropdowns if no branch is selected
+                    $('#referral_department_id').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#referral_department_id').select2({
+                        dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
+                    $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#appointment_doctor_id').select2({
+                        dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
                 }
             })
 
@@ -2563,10 +3103,21 @@
                         url: '/get_doctors/' + departmentId,
                         type: 'GET',
                         success: function (response) {
-
                             $('#doctor_id').html(response);
+                            // Re-initialize Select2 for the updated dropdown
+                            $('#doctor_id').select2({
+                                dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
                         }
                     })
+                } else {
+                    // Clear the doctor dropdown if no department is selected
+                    $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#doctor_id').select2({
+                        dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
                 }
             })
 
@@ -2577,10 +3128,21 @@
                         url: '/get_doctors/' + departmentID,
                         type: 'GET',
                         success: function (response) {
-
                             $('#appointment_doctor_id').html(response);
+                            // Re-initialize Select2 for the updated dropdown
+                            $('#appointment_doctor_id').select2({
+                                dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                                placeholder: '--انتخاب--'
+                            });
                         }
                     })
+                } else {
+                    // Clear the doctor dropdown if no department is selected
+                    $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                    $('#appointment_doctor_id').select2({
+                        dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
                 }
             })
 

@@ -278,7 +278,7 @@
                                     '</div>' +
                                     '</div>';
                             }
-                            return '<span class="text-muted">N/A</span>';
+                            return '<span class="text-muted">{{ localize("global.not_available") }}</span>';
                         }
                     },
                     {
@@ -304,45 +304,6 @@
                     displayLength: 10,
                     lengthMenu: [10, 25, 50, 75, 100],
                     buttons: [
-                        // {
-                        //     extend: 'collection',
-                        //     className: 'btn btn-primary dropdown-toggle me-2',
-                        //     text: '<i class="bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">{{ localize("global.export") }}</span>',
-                        //     buttons: [
-                        //     //     {
-                            //         extend: 'print',
-                            //         text: '<i class="bx bx-printer me-1" ></i>{{ localize("global.print") }}',
-                            //         className: 'dropdown-item',
-                            //         exportOptions: { columns: [1, 2, 3, 4, 5] },
-                            //         customize: function (win) {
-                            //             $(win.document.body)
-                            //                 .css('font-size', '10pt')
-                            //                 .prepend('<img src="{{ asset("assets/img/logo.png") }}" style="position:absolute; top:0; left:0;" />');
-                            //             $(win.document.body).find('table')
-                            //                 .addClass('compact')
-                            //                 .css('font-size', 'inherit');
-                            //         }
-                            //     },
-                            //     {
-                            //         extend: 'pdf',
-                            //         text: '<i class="bx bxs-file-pdf me-1"></i>PDF',
-                            //         className: 'dropdown-item',
-                            //         exportOptions: { columns: [1, 2, 3, 4, 5] }
-                            //     },
-                            //     {
-                            //         extend: 'excel',
-                            //         text: '<i class="bx bxs-file me-1"></i>Excel',
-                            //         className: 'dropdown-item',
-                            //         exportOptions: { columns: [1, 2, 3, 4, 5] }
-                            //     },
-                            //     {
-                            //         extend: 'csv',
-                            //         text: '<i class="bx bxs-file-doc me-1"></i>CSV',
-                            //         className: 'dropdown-item',
-                            //         exportOptions: { columns: [1, 2, 3, 4, 5] }
-                            //     }
-                    //         ]
-                    //     }
                     ],
                     responsive: true,
                     language: {

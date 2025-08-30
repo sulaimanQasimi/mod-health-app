@@ -59,4 +59,10 @@ class LabItemController extends Controller
 
         return redirect()->route('appointments.index')->with('success', 'Lab item updated successfully.');
     }
+
+    public function destroy(LabItem $item)
+    {
+        $item->delete();
+        return redirect()->back()->with('success', localize('global.lab_item_deleted_successfully.'));
+    }
 }

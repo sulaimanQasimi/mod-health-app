@@ -45,18 +45,18 @@
                                         </span>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">{{ localize('global.pharmacy_information') }}</h5>
-                                        <small class="text-muted">{{ localize('global.pharmacy_details_description') }}</small>
+                                        <h5 class="mb-0 text-white">{{ localize('global.pharmacy_information') }}</h5>
+                                        <small class="text-white">{{ localize('global.pharmacy_details_description') }}</small>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2">
                                     @can('pharmacy.edit')
-                                    <a href="{{ route('pharmacies.edit', $pharmacy->id) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('pharmacies.edit', $pharmacy->id) }}" class="btn btn-success btn-sm">
                                         <i class="bx bx-edit me-1"></i>
                                         {{ localize('global.edit') }}
                                     </a>
                                     @endcan
-                                    <a href="{{ route('pharmacies.index') }}" class="btn btn-outline-secondary btn-sm">
+                                    <a href="{{ route('pharmacies.index') }}" class="btn btn-outline-success btn-sm">
                                         <i class="bx bx-arrow-back me-1"></i>
                                         {{ localize('global.back') }}
                                     </a>
@@ -200,7 +200,7 @@
                                     <div class="d-flex justify-content-center pt-3 border-top">
                                         <div class="d-flex gap-2">
                                             @can('pharmacy.edit')
-                                            <a href="{{ route('pharmacies.edit', $pharmacy->id) }}" class="btn btn-warning">
+                                            <a href="{{ route('pharmacies.edit', $pharmacy->id) }}" class="btn btn-success">
                                                 <i class="bx bx-edit me-1"></i>
                                                 {{ localize('global.edit_pharmacy') }}
                                             </a>
@@ -252,13 +252,13 @@
 
         .card {
             border: none;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 20px rgba(0, 187, 50, 0.08);
             border-radius: 12px;
             overflow: hidden;
         }
 
         .card-header {
-            background: linear-gradient(135deg, #003468a4 0%, #002448b1 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             border-bottom: 1px solid #dee2e6;
             padding: 1.5rem;
         }
@@ -302,7 +302,7 @@
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            background: linear-gradient(135deg,rgb(7, 255, 32) 0%,rgba(0, 134, 38, 0.7) 100%);
             border: 1px solid white;
             color: white;
         }

@@ -32,7 +32,7 @@ class PharmacyController extends Controller
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'Internal Server Error',
+                    'message' => localize('global.internal_server_error'),
                     'code' => 500,
                     'data' => [],
                 ]);
@@ -114,7 +114,7 @@ class PharmacyController extends Controller
         $pharmacy->updated_by = Auth::id();
         $pharmacy->save();
 
-        return redirect()->route('pharmacies.index')->with('success', localize('global.pharmacy_updated_successfully'));
+        return redirect()->route('pharmacies.index')->with('success', localize('global.pharmacy_updated_successfully.'));
     }
 
     /**
@@ -127,6 +127,6 @@ class PharmacyController extends Controller
         $pharmacy->save();
         $pharmacy->delete();
 
-        return redirect()->route('pharmacies.index')->with('success', localize('global.pharmacy_deleted_successfully'));
+        return redirect()->route('pharmacies.index')->with('success', localize('global.pharmacy_deleted_successfully.'));
     }
 }

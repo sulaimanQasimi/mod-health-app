@@ -133,7 +133,9 @@ class LabController extends Controller
      */
     public function destroy(Lab $lab)
     {
-        //
+        $lab->delete();
+
+        return redirect()->back()->with('success', localize('global.lab_test_deleted_successfully.'));
     }
 
     public function printCard($lab)

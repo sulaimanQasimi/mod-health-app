@@ -18,14 +18,16 @@ $(function () {
   // Select2
   // --------------------------------------------------------------------
 
-  // Default
+  // Default - only initialize Select2 for elements not inside modals
   if (select2.length) {
-    select2.each(function () {
+    select2.not('.modal .select2').each(function () {
       var $this = $(this);
-      $this.wrap('<div class="position-relative"></div>').select2({
-        placeholder: '--انتخاب--',
-        dropdownParent: $this.parent()
-      });
+      if (!$this.hasClass('select2-hidden-accessible')) {
+        $this.wrap('<div class="position-relative"></div>').select2({
+          placeholder: '--انتخاب--',
+          dropdownParent: $this.parent()
+        });
+      }
     });
   }
 

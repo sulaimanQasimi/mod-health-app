@@ -1,184 +1,184 @@
 @extends('layouts.master')
 
 @section('content')
-<style>
-    /* Enhanced Table Styling */
-    .enhanced-table {
-        border-collapse: separate;
-        border-spacing: 0;
-        width: 100%;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 20px 0;
-        background: white;
-    }
-
-    .enhanced-table thead th {
-        background: #f8f9fa;
-        color: #495057;
-        font-weight: 600;
-        padding: 16px 12px;
-        text-align: left;
-        border-bottom: 2px solid #dee2e6;
-        font-size: 14px;
-        text-transform: none;
-        letter-spacing: normal;
-    }
-
-    .enhanced-table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .enhanced-table tbody tr:hover {
-        background-color: #f8f9fa;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .enhanced-table tbody tr:last-child {
-        border-bottom: none;
-    }
-
-    .enhanced-table tbody td {
-        padding: 16px 12px;
-        vertical-align: middle;
-        border: none;
-        font-size: 14px;
-        line-height: 1.5;
-    }
-
-    .enhanced-table tbody td:first-child {
-        font-weight: 600;
-        color: #495057;
-    }
-
-    /* Badge Styling */
-    .enhanced-badge {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: inline-block;
-        margin: 2px;
-    }
-
-    .badge-primary {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-    }
-
-    .badge-success {
-        background: linear-gradient(135deg, #28a745, #1e7e34);
-        color: white;
-    }
-
-    .badge-warning {
-        background: linear-gradient(135deg, #ffc107, #e0a800);
-        color: #212529;
-    }
-
-    .badge-danger {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-        color: white;
-    }
-
-    /* Action Buttons */
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: none;
-        margin: 0 4px;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: white;
-    }
-
-    .action-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .action-btn.edit {
-        background: linear-gradient(135deg, #17a2b8, #138496);
-    }
-
-    .action-btn.delete {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-    }
-
-    .action-btn.view {
-        background: linear-gradient(135deg, #6f42c1, #5a32a3);
-    }
-
-    /* Section Headers */
-    .section-header {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border-left: 4px solid #007bff;
-        padding: 16px 20px;
-        margin: 30px 0 20px 0;
-        border-radius: 0 8px 8px 0;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-        color: #495057;
-        font-size: 18px;
-    }
-
-    .section-header i {
-        font-size: 20px;
-        color: #007bff;
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        margin: 20px 0;
-        border: 2px dashed #dee2e6;
-    }
-
-    .empty-state .badge {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
-
-    /* Table Container */
-    .table-container {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin: 20px 0;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
+    <style>
+        /* Enhanced Table Styling */
         .enhanced-table {
-            font-size: 12px;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            background: white;
         }
-        
-        .enhanced-table thead th,
+
+        .enhanced-table thead th {
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 16px 12px;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .enhanced-table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .enhanced-table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .enhanced-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
         .enhanced-table tbody td {
-            padding: 12px 8px;
+            padding: 16px 12px;
+            vertical-align: middle;
+            border: none;
+            font-size: 14px;
+            line-height: 1.5;
         }
-        
+
+        .enhanced-table tbody td:first-child {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        /* Badge Styling */
+        .enhanced-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .badge-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        .badge-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            margin: 0 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn.edit {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+
+        .action-btn.delete {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .action-btn.view {
+            background: linear-gradient(135deg, #6f42c1, #5a32a3);
+        }
+
+        /* Section Headers */
         .section-header {
-            font-size: 16px;
-            padding: 12px 16px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-left: 4px solid #007bff;
+            padding: 16px 20px;
+            margin: 30px 0 20px 0;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 18px;
         }
-    }
-</style>
+
+        .section-header i {
+            font-size: 20px;
+            color: #007bff;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px dashed #dee2e6;
+        }
+
+        .empty-state .badge {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .enhanced-table {
+                font-size: 12px;
+            }
+
+            .enhanced-table thead th,
+            .enhanced-table tbody td {
+                padding: 12px 8px;
+            }
+
+            .section-header {
+                font-size: 16px;
+                padding: 12px 16px;
+            }
+        }
+    </style>
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
@@ -192,7 +192,8 @@
                         <div class="col-md-12">
                             <div class="border border-label-primary mb-4">
                                 <h5 class="mb-4 p-3 bg-label-primary text-center">
-                                    {{ localize('global.appointment_details') }}</h5>
+                                    {{ localize('global.appointment_details') }}
+                                </h5>
 
                                 <div class="row p-2 text-center">
                                     <div class="col-md-3">
@@ -278,61 +279,61 @@
                         </div>
 
                         @can('update-appointment-status')
-                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                class="bx bx-check-shield p-1"></i>{{ localize('global.appointment_status') }}
+                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                    class="bx bx-check-shield p-1"></i>{{ localize('global.appointment_status') }}
 
-                        </h5>
+                            </h5>
 
-                        @if ($appointment->is_completed == 0)
-                            <div class="d-flex justify-content-center text-center">
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createStatusChangeModal{{ $appointment->id }}"><span><i
-                                            class="bx bx-check-shield"></i></span></button>
-                            </div>
-                        @else
-                            <div class="d-flex justify-content-center text-center">
-                                <span><i
-                                        class="bx bx-check-shield text-success"></i>{{ localize('global.appointment_completed') }}</span>
-                            </div>
-                        @endif
+                            @if ($appointment->is_completed == 0)
+                                <div class="d-flex justify-content-center text-center">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#createStatusChangeModal{{ $appointment->id }}"><span><i
+                                                class="bx bx-check-shield"></i></span></button>
+                                </div>
+                            @else
+                                <div class="d-flex justify-content-center text-center">
+                                    <span><i
+                                            class="bx bx-check-shield text-success"></i>{{ localize('global.appointment_completed') }}</span>
+                                </div>
+                            @endif
 
-                        <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
-                            aria-labelledby="createStatusChangeModalLabel{{ $appointment->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="createStatusChangeModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.make_appointment_completed') }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action="{{ route('appointments.changeStatus', $appointment) }}"
-                                            method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <input type="hidden" name="is_completed" value="1">
-
-                                            <div class="form-group">
+                            <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
+                                aria-labelledby="createStatusChangeModalLabel{{ $appointment->id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createStatusChangeModalLabel{{ $appointment->id }}">
+                                                {{ localize('global.make_appointment_completed') }}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('appointments.changeStatus', $appointment) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="is_completed" value="1">
 
                                                 <div class="form-group">
-                                                    <label
-                                                        for="status_remark{{ $appointment->id }}">{{ localize('global.status_remark') }}</label>
-                                                    <textarea class="form-control" id="status_remark{{ $appointment->id }}" name="status_remark" rows="3"></textarea>
-                                                </div>
 
-                                            </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="status_remark{{ $appointment->id }}">{{ localize('global.status_remark') }}</label>
+                                                        <textarea class="form-control" id="status_remark{{ $appointment->id }}"
+                                                            name="status_remark" rows="3"></textarea>
+                                                    </div>
+
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                            <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        </div>
+                                        </form>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
-                                    </div>
-                                    </form>
                                 </div>
                             </div>
-                        </div>
                         @endcan
 
 
@@ -340,12 +341,12 @@
                             <i class="bx bx-popsicle"></i>
                             {{ localize('global.diagnose') }}
                             @if ($appointment->is_completed == 0)
-                            @can('add-diagnose')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('add-diagnose')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create Diagnose Modal -->
@@ -355,7 +356,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createDiagnoseModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.add_diagnose') }}</h5>
+                                            {{ localize('global.add_diagnose') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -378,7 +380,8 @@
                                                 </select>
                                                 <label
                                                     for="description{{ $appointment->id }}">{{ localize('global.description_with_diaseases') }}</label>
-                                                <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
+                                                <textarea class="form-control" id="description{{ $appointment->id }}"
+                                                    name="description" rows="3"></textarea>
                                                 <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
                                                 <div class="form-group">
                                                     <div class="row">
@@ -422,8 +425,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -449,7 +451,8 @@
                                                 <td>{{ $diagnose->description }}</td>
                                                 <td>
                                                     @if ($diagnose->type == '0')
-                                                        <span class="enhanced-badge badge-warning">{{ localize('global.primary') }}</span>
+                                                        <span
+                                                            class="enhanced-badge badge-warning">{{ localize('global.primary') }}</span>
                                                     @else
                                                         <span class="enhanced-badge badge-primary">{{ localize('global.final') }}</span>
                                                     @endif
@@ -457,14 +460,16 @@
                                                 <td dir="ltr">{{ $diagnose->created_at }}</td>
                                                 <td>
                                                     @can('edit-diagnoses')
-                                                    <a href="{{ route('diagnoses.edit', $diagnose->id) }}" class="action-btn edit" title="Edit">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
+                                                        <a href="{{ route('diagnoses.edit', $diagnose->id) }}" class="action-btn edit"
+                                                            title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete-diagnoses')
-                                                    <a href="{{ route('diagnoses.destroy', $diagnose->id) }}" class="action-btn delete" title="Delete">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
+                                                        <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"
+                                                            class="action-btn delete" title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
                                                     @endcan
                                                 </td>
                                             </tr>
@@ -484,23 +489,23 @@
                             <i class="bx bx-notepad"></i>
                             {{ localize('global.prescription') }}
                             @if ($appointment->is_completed == 0)
-                            @can('add-prescription')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('add-prescription')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create Diagnose Modal -->
-                        <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}"
-                            tabindex="-1" aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}"
-                            aria-hidden="true">
+                        <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createPrescriptionModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.add_prescription') }}</h5>
+                                            {{ localize('global.add_prescription') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -522,14 +527,14 @@
                                                 <div id="prescription-input-container">
                                                     <div class="row">
                                                         <div class="col-md-2">
-                                                            <label class="form-group mb-2">{{ localize('global.medicine_type') }}</label>
-                                                            <select class="form-control select2"
-                                                                name="medicine_type_id[]" required>
+                                                            <label
+                                                                class="form-group mb-2">{{ localize('global.medicine_type') }}</label>
+                                                            <select class="form-control select2" name="medicine_type_id[]"
+                                                                required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicineTypes as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('type') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('type') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->type }}
 
                                                                     </option>
@@ -537,13 +542,14 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <label class="form-group mb-2">{{ localize('global.medicine_name') }}</label>
-                                                            <select class="form-control select2" name="medicine_id[]" required>
+                                                            <label
+                                                                class="form-group mb-2">{{ localize('global.medicine_name') }}</label>
+                                                            <select class="form-control select2" name="medicine_id[]"
+                                                                required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicines as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -551,13 +557,14 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <label class="form-group mb-2">{{ localize('global.usage_type') }}</label>
-                                                            <select class="form-control select2 mt-2" name="usage_type_id[]" required>
+                                                            <label
+                                                                class="form-group mb-2">{{ localize('global.usage_type') }}</label>
+                                                            <select class="form-control select2 mt-2" name="usage_type_id[]"
+                                                                required>
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($medicineUsageTypes as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -565,22 +572,25 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <label class="form-group">{{ localize('global.dosage') }}</label>
-                                                            <input type="text" class="form-control mt-2"
-                                                                name="dosage[]" placeholder="Dosage" required>
+                                                            <label
+                                                                class="form-group">{{ localize('global.dosage') }}</label>
+                                                            <input type="text" class="form-control mt-2" name="dosage[]"
+                                                                placeholder="Dosage" required>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <label class="form-group">{{ localize('global.frequency') }}</label>
-                                                            <input type="text" class="form-control mt-2"
-                                                                name="frequency[]" placeholder="Frequency" required>
+                                                            <label
+                                                                class="form-group">{{ localize('global.frequency') }}</label>
+                                                            <input type="text" class="form-control mt-2" name="frequency[]"
+                                                                placeholder="Frequency" required>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <label class="form-group">{{ localize('global.amount') }}</label>
-                                                            <input type="text" class="form-control mt-2"
-                                                                name="amount[]" placeholder="Amount" required>
+                                                            <label
+                                                                class="form-group">{{ localize('global.amount') }}</label>
+                                                            <input type="text" class="form-control mt-2" name="amount[]"
+                                                                placeholder="Amount" required>
                                                         </div>
-                                                        <div class="col-md-2">                                                            <input type="hidden" class="form-control mt-2"
-                                                                name="is_delivered[]" value="0">
+                                                        <div class="col-md-2"> <input type="hidden"
+                                                                class="form-control mt-2" name="is_delivered[]" value="0">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -594,8 +604,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -620,15 +629,18 @@
                                                 <td>{{ $prescription->patient->name }}</td>
                                                 <td>
                                                     @if ($prescription->is_completed == '0')
-                                                        <span class="enhanced-badge badge-danger">{{ localize('global.not_delivered') }}</span>
+                                                        <span
+                                                            class="enhanced-badge badge-danger">{{ localize('global.not_delivered') }}</span>
                                                     @else
-                                                        <span class="enhanced-badge badge-success">{{ localize('global.delivered') }}</span>
+                                                        <span
+                                                            class="enhanced-badge badge-success">{{ localize('global.delivered') }}</span>
                                                     @endif
                                                 </td>
                                                 <td>
                                                     <a href="#" data-bs-toggle="modal"
                                                         onclick="getPrescriptionItems({{ $prescription->id }})"
-                                                        data-bs-target="#showPrescriptionItemModal" class="action-btn view" title="View Details">
+                                                        data-bs-target="#showPrescriptionItemModal" class="action-btn view"
+                                                        title="View Details">
                                                         <i class="bx bx-expand"></i>
                                                     </a>
                                                 </td>
@@ -656,14 +668,14 @@
                         </div>
 
 
-                        <div class="modal fade modal-xl" id="showPrescriptionModal{{ $appointment->id }}"
-                            tabindex="-1" aria-labelledby="showPrescriptionModalLabel{{ $appointment->id }}"
-                            aria-hidden="true">
+                        <div class="modal fade modal-xl" id="showPrescriptionModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="showPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="showPrescriptionModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.show_prescription_details') }}</h5>
+                                            {{ localize('global.show_prescription_details') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -722,111 +734,114 @@
                             <i class="bx bx-command"></i>
                             {{ localize('global.advice') }}
                             @if ($appointment->is_completed == 0)
-                            @can('add-advice')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('add-advice')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createAdviceModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
-                    <!-- Create Diagnose Modal -->
-                    <div class="modal fade" id="createAdviceModal{{ $appointment->id }}" tabindex="-1"
-                        aria-labelledby="createAdviceModalLabel{{ $appointment->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="createAdviceModalLabel{{ $appointment->id }}">
-                                        {{ localize('global.add_advice') }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('advices.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" id="patient_id{{ $appointment->patient_id }}"
-                                            name="patient_id" value="{{ $appointment->patient_id }}">
-                                        <input type="hidden" id="appointment_id{{ $appointment->id }}"
-                                            name="appointment_id" value="{{ $appointment->id }}">
-                                            <input type="hidden" id="doctor_id{{ $appointment->id }}"
-                                            name="doctor_id" value="{{ auth()->user()->id }}">
+                        <!-- Create Diagnose Modal -->
+                        <div class="modal fade" id="createAdviceModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="createAdviceModalLabel{{ $appointment->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createAdviceModalLabel{{ $appointment->id }}">
+                                            {{ localize('global.add_advice') }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('advices.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}"
+                                                name="patient_id" value="{{ $appointment->patient_id }}">
+                                            <input type="hidden" id="appointment_id{{ $appointment->id }}"
+                                                name="appointment_id" value="{{ $appointment->id }}">
+                                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
+                                                value="{{ auth()->user()->id }}">
 
-                                        <!-- Add other diagnosis form fields as needed -->
-                                        <div class="form-group">
+                                            <!-- Add other diagnosis form fields as needed -->
+                                            <div class="form-group">
 
-                                            <label
-                                                for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
-                                            <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
+                                                <label
+                                                    for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
+                                                <textarea class="form-control" id="description{{ $appointment->id }}"
+                                                    name="description" rows="3"></textarea>
 
-                                        </div>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                    <button type="submit"
-                                        class="btn btn-primary">{{ localize('global.save') }}</button>
-                                </div>
-                                </form>
                             </div>
                         </div>
-                    </div>
-                    <!-- End Create Diagnose Modal -->
-                    <div class="table-container">
-                        @if($appointment->advices->count() > 0)
-                            <table class="enhanced-table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.created_at') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($appointment->advices as $advice)
+                        <!-- End Create Diagnose Modal -->
+                        <div class="table-container">
+                            @if($appointment->advices->count() > 0)
+                                <table class="enhanced-table">
+                                    <thead>
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $advice->description }}</td>
-                                            <td>
-                                                {{$advice->doctor->name}}
-                                            </td>
-                                            <td dir="ltr">{{ $advice->created_at }}</td>
-                                            <td>
-                                                @can('edit-advices')
-                                                <a href="{{ route('advices.edit', $advice->id) }}" class="action-btn edit" title="Edit">
-                                                    <i class="bx bx-edit"></i>
-                                                </a>
-                                                @endcan
-                                                @can('delete-advices')
-                                                <a href="{{ route('advices.destroy', $advice->id) }}" class="action-btn delete" title="Delete">
-                                                    <i class="bx bx-trash"></i>
-                                                </a>
-                                                @endcan
-                                            </td>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.description') }}</th>
+                                            <th>{{ localize('global.by') }}</th>
+                                            <th>{{ localize('global.created_at') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @else
-                            <div class="empty-state">
-                                <div class="badge bg-label-danger">
-                                    {{ localize('global.no_previous_advices') }}
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($appointment->advices as $advice)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $advice->description }}</td>
+                                                <td>
+                                                    {{$advice->doctor->name}}
+                                                </td>
+                                                <td dir="ltr">{{ $advice->created_at }}</td>
+                                                <td>
+                                                    @can('edit-advices')
+                                                        <a href="{{ route('advices.edit', $advice->id) }}" class="action-btn edit"
+                                                            title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
+                                                    @endcan
+                                                    @can('delete-advices')
+                                                        <a href="{{ route('advices.destroy', $advice->id) }}" class="action-btn delete"
+                                                            title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
+                                                    @endcan
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <div class="empty-state">
+                                    <div class="badge bg-label-danger">
+                                        {{ localize('global.no_previous_advices') }}
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
-                    </div>
+                            @endif
+                        </div>
 
                         <div class="section-header">
                             <i class="bx bx-hard-hat"></i>
                             {{ localize('global.checkups') }}
                             @if ($appointment->is_completed == 0)
-                            @can('add-patient-labs')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createLabModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('add-patient-labs')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createLabModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create  Lab Modal -->
@@ -836,7 +851,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createLabModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.add_lab_test') }}</h5>
+                                            {{ localize('global.add_lab_test') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -853,8 +869,7 @@
                                                 value="{{ auth()->user()->branch_id }}">
                                             <input type="hidden" id="hospitalization_id{{ $appointment->id }}"
                                                 name="hospitalization_id" value="">
-                                            <input type="hidden" id="status{{ $appointment->id }}" name="status"
-                                                value="0">
+                                            <input type="hidden" id="status{{ $appointment->id }}" name="status" value="0">
 
                                             <div class="form-group">
 
@@ -864,8 +879,7 @@
                                                     id="lab_type_section">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($labTypeSections as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->section }}
 
                                                         </option>
@@ -874,12 +888,11 @@
 
                                                 <label
                                                     for="lab_type_id{{ $appointment->id }}">{{ localize('global.lab_type') }}</label>
-                                                <select class="form-control select2" name="lab_type_id[]"
-                                                    id="lab_type_id" onchange="loadLabTypeTests()">
+                                                <select class="form-control select2" name="lab_type_id[]" id="lab_type_id"
+                                                    onchange="loadLabTypeTests()">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($labTypes as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->name }}
 
                                                         </option>
@@ -892,8 +905,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -920,23 +932,26 @@
                                                 <td>{{ $lab->labType->name }}</td>
                                                 <td>
                                                     @if ($lab->status == '0')
-                                                        <span class="enhanced-badge badge-danger">{{ localize('global.not_tested') }}</span>
+                                                        <span
+                                                            class="enhanced-badge badge-danger">{{ localize('global.not_tested') }}</span>
                                                     @else
-                                                        <span class="enhanced-badge badge-success">{{ localize('global.tested') }}</span>
+                                                        <span
+                                                            class="enhanced-badge badge-success">{{ localize('global.tested') }}</span>
                                                     @endif
                                                 </td>
                                                 <td>{{ $lab->result }}</td>
                                                 <td>
                                                     @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank" class="action-btn view" title="View File">
+                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
+                                                            class="action-btn view" title="View File">
                                                             <i class="fa fa-file"></i>
                                                         </a>
                                                     @endisset
                                                 </td>
                                                 <td>
-                                                    <a href="#" data-bs-toggle="modal"
-                                                        onclick="getLabItems({{ $lab->id }})"
-                                                        data-bs-target="#showLabsItemModal" class="action-btn view" title="View Details">
+                                                    <a href="#" data-bs-toggle="modal" onclick="getLabItems({{ $lab->id }})"
+                                                        data-bs-target="#showLabsItemModal" class="action-btn view"
+                                                        title="View Details">
                                                         <i class="bx bx-expand"></i>
                                                     </a>
                                                 </td>
@@ -989,18 +1004,15 @@
                                                 <td>{{ $lab->labType->name }}</td>
                                                 <td>
                                                     @if ($lab->status == '0')
-                                                        <span
-                                                            class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
                                                     @else
-                                                        <span
-                                                            class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
                                                     @endif
                                                 </td>
                                                 <td>{{ $lab->result }}</td>
                                                 <td>
                                                     @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}"
-                                                            target="_blank">
+                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
                                                             <i class="fa fa-file"></i> {{ localize('global.file') }}
                                                         </a>
                                                     @endisset
@@ -1008,9 +1020,9 @@
                                                 </td>
                                                 <td>
                                                     {{-- <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
-                                                            class="bx bx-edit"></i></span></a>
-                                                <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
-                                                            class="bx bx-trash text-danger"></i></span></a> --}}
+                                                                class="bx bx-edit"></i></span></a>
+                                                    <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
+                                                                class="bx bx-trash text-danger"></i></span></a> --}}
 
                                                 </td>
 
@@ -1038,12 +1050,12 @@
                             <i class="bx bx-chat"></i>
                             {{ localize('global.consultations') }}
                             @if ($appointment->is_completed == 0)
-                            @can('add-consultations')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('add-consultations')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createConsultationModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create  Lab Modal -->
@@ -1053,7 +1065,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createConsultationModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.add_consultation') }}</h5>
+                                            {{ localize('global.add_consultation') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -1078,8 +1091,7 @@
                                                 <select class="form-control select2" name="branch" id="branch">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($branches as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->name }}
 
                                                         </option>
@@ -1088,11 +1100,11 @@
 
                                                 <label
                                                     for="department{{ $appointment->id }}">{{ localize('global.department') }}</label>
-                                                <select class="form-control select2" name="department_id[]" id="department" multiple>
+                                                <select class="form-control select2" name="department_id[]" id="department"
+                                                    multiple>
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($departments as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->name }}
 
                                                         </option>
@@ -1108,19 +1120,19 @@
 
                                                 </select>
 
-                                                {{-- <label
-                                                        for="doctor_id{{ $appointment->id }}">{{ localize('global.doctors') }}</label>
-                                                    <select class="form-control select2" name="doctor_id[]"
-                                                        id="doctor_id" multiple>
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        @foreach ($doctors as $value)
-                                                            <option value="{{ $value->id }}"
-                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->name_en }}
+                                                {{-- <label for="doctor_id{{ $appointment->id }}">{{
+                                                    localize('global.doctors') }}</label>
+                                                <select class="form-control select2" name="doctor_id[]" id="doctor_id"
+                                                    multiple>
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($doctors as $value)
+                                                    <option value="{{ $value->id }}" {{ old('name')==$value->id ? 'selected'
+                                                        : '' }}>
+                                                        {{ $value->name_en }}
 
-                                                            </option>
-                                                        @endforeach
-                                                    </select> --}}
+                                                    </option>
+                                                    @endforeach
+                                                </select> --}}
 
                                                 <div class="mb-3">
                                                     <label for="date">{{ localize('global.date') }}</label>
@@ -1136,8 +1148,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -1160,7 +1171,8 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex justify-content-center">
-                                                        <span class="enhanced-badge badge-primary" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                                        <span class="enhanced-badge badge-primary"
+                                                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
                                                             {{ $loop->iteration }}
                                                         </span>
                                                     </div>
@@ -1175,21 +1187,24 @@
                                                 </td>
                                                 <td>
                                                     @can('edit-consultations')
-                                                    <a href="{{ route('consultations.edit', $consultation->id) }}" class="action-btn edit" title="Edit">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
+                                                        <a href="{{ route('consultations.edit', $consultation->id) }}"
+                                                            class="action-btn edit" title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete-consultations')
-                                                    <a href="{{ route('consultations.destroy', $consultation->id) }}" class="action-btn delete" title="Delete">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
+                                                        <a href="{{ route('consultations.destroy', $consultation->id) }}"
+                                                            class="action-btn delete" title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
                                                     @endcan
                                                 </td>
                                             </tr>
                                             @if ($consultation->comments->isNotEmpty())
                                                 <tr>
                                                     <td colspan="4">
-                                                        <div class="section-header" style="margin: 15px 0; padding: 10px 15px; font-size: 14px;">
+                                                        <div class="section-header"
+                                                            style="margin: 15px 0; padding: 10px 15px; font-size: 14px;">
                                                             <i class="bx bx-chat"></i>
                                                             {{ localize('global.related_comments') }}
                                                         </div>
@@ -1198,18 +1213,22 @@
                                                 <tr>
                                                     <td colspan="4">
                                                         @foreach ($consultation->comments as $comment)
-                                                            <div class="row mb-3 p-3" style="background: #f8f9fa; border-radius: 8px; margin: 10px 0;">
+                                                            <div class="row mb-3 p-3"
+                                                                style="background: #f8f9fa; border-radius: 8px; margin: 10px 0;">
                                                                 <div class="col-md-3">
-                                                                    <span class="enhanced-badge badge-primary">{{ $comment->department->name }}</span>
+                                                                    <span
+                                                                        class="enhanced-badge badge-primary">{{ $comment->department->name }}</span>
                                                                 </div>
                                                                 <div class="col-md-1 d-flex align-items-center justify-content-center">
                                                                     <i class="bx bx-transfer text-success"></i>
                                                                 </div>
                                                                 <div class="col-md-2">
-                                                                    <span class="enhanced-badge badge-primary">{{ $comment->doctor->name }}</span>
+                                                                    <span
+                                                                        class="enhanced-badge badge-primary">{{ $comment->doctor->name }}</span>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="p-3" style="text-align: justify; background: white; border-radius: 6px; border-left: 3px solid #007bff;">
+                                                                    <div class="p-3"
+                                                                        style="text-align: justify; background: white; border-radius: 6px; border-left: 3px solid #007bff;">
                                                                         {{ $comment->comment }}
                                                                     </div>
                                                                 </div>
@@ -1235,11 +1254,11 @@
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                 class="bx bx-transfer p-1"></i>{{ localize('global.refer_to_another_doctor') }}</h5>
                         @if ($appointment->is_completed == 0)
-                        @can('refer-to-another-doctor')
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createReferDoctorModal{{ $appointment->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                        @endcan
+                            @can('refer-to-another-doctor')
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}"><span><i
+                                            class="bx bx-plus"></i></span></button>
+                            @endcan
                         @endif
                         <!-- Create  Lab Modal -->
                         <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
@@ -1248,7 +1267,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createReferDoctorModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.refere_patient_to_another_doctor') }}</h5>
+                                            {{ localize('global.refere_patient_to_another_doctor') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -1257,13 +1277,12 @@
                                             @csrf
                                             <div class="mb-3">
                                                 <label for="branch">{{ localize('global.branch') }}</label>
-                                                <select class="form-control select2" name="branch_id"
-                                                    id="referral_branch">
+                                                <select class="form-control select2" name="branch_id" id="referral_branch">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($branches as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}</option>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 <label for="department">{{ localize('global.department') }}</label>
@@ -1271,9 +1290,9 @@
                                                     id="referral_department_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($departments as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name }}</option>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 <input type="hidden" name="patient_id"
@@ -1287,17 +1306,17 @@
                                                     id="appointment_doctor_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($doctors as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                            {{ $value->name_dr }}</option>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            {{ $value->name_dr }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="date">{{ localize('global.date') }}</label>
-                                                <x-tools.dariDatePicker name="date" dir="ltr"
-                                                withID="date" withPlaceHolder="{{ localize('global.date') }}"
-                                                withSize="3" extraClasses="" />
+                                                <x-tools.dariDatePicker name="date" dir="ltr" withID="date"
+                                                    withPlaceHolder="{{ localize('global.date') }}" withSize="3"
+                                                    extraClasses="" />
                                             </div>
                                             <div class="mb-3">
                                                 <label for="time">{{ localize('global.time') }}</label>
@@ -1307,7 +1326,8 @@
                                             <div class="form-group">
                                                 <label
                                                     for="refferal_remarks{{ $appointment->id }}">{{ localize('global.refferal_remarks') }}</label>
-                                                <textarea class="form-control" id="refferal_remarks{{ $appointment->id }}" name="refferal_remarks" rows="3"></textarea>
+                                                <textarea class="form-control" id="refferal_remarks{{ $appointment->id }}"
+                                                    name="refferal_remarks" rows="3"></textarea>
                                             </div>
 
                                             <input type="hidden" name="current_appointment_id"
@@ -1330,8 +1350,7 @@
                                     <div class="col-md-12">
                                         @if ($appointment->is_completed == 1)
                                             <i class="bx bx-check-circle text-success"></i>
-                                            <span
-                                                class="bg-label-primary p-1 m-1">{{ $appointment->refferal_remarks }}</span>
+                                            <span class="bg-label-primary p-1 m-1">{{ $appointment->refferal_remarks }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -1342,12 +1361,12 @@
                             <i class="bx bx-revision"></i>
                             {{ localize('global.under_review') }}
                             @if ($appointment->is_completed == 0)
-                            @can('patient-under-review')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('patient-under-review')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create  Lab Modal -->
@@ -1357,7 +1376,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createUnderReviewModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.refere_to_under_review') }}</h5>
+                                            {{ localize('global.refere_to_under_review') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -1380,24 +1400,24 @@
                                                 <div class="form-group">
                                                     <label
                                                         for="reason{{ $appointment->id }}">{{ localize('global.reason') }}</label>
-                                                    <textarea class="form-control" id="reason{{ $appointment->id }}" name="reason" rows="3"></textarea>
+                                                    <textarea class="form-control" id="reason{{ $appointment->id }}"
+                                                        name="reason" rows="3"></textarea>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label
                                                         for="remarks{{ $appointment->id }}">{{ localize('global.remarks') }}</label>
-                                                    <textarea class="form-control" id="remarks{{ $appointment->id }}" name="remarks" rows="3"></textarea>
+                                                    <textarea class="form-control" id="remarks{{ $appointment->id }}"
+                                                        name="remarks" rows="3"></textarea>
                                                 </div>
 
 
                                                 <label
                                                     for="room_id{{ $appointment->id }}">{{ localize('global.rooms') }}</label>
-                                                <select class="form-control select2" name="room_id"
-                                                    id="under_review_room">
+                                                <select class="form-control select2" name="room_id" id="under_review_room">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($rooms as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->name }}
 
                                                         </option>
@@ -1406,12 +1426,10 @@
 
                                                 <label
                                                     for="bed_id{{ $appointment->id }}">{{ localize('global.beds') }}</label>
-                                                <select class="form-control select2" name="bed_id"
-                                                    id="under_review_bed_id">
+                                                <select class="form-control select2" name="bed_id" id="under_review_bed_id">
                                                     <option value="">{{ localize('global.select') }}</option>
                                                     @foreach ($beds as $value)
-                                                        <option value="{{ $value->id }}"
-                                                            {{ old('number') == $value->id ? 'selected' : '' }}>
+                                                        <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
                                                             {{ $value->number }}
 
                                                         </option>
@@ -1466,14 +1484,16 @@
                                                 </td>
                                                 <td>
                                                     @can('edit-under-reviews')
-                                                    <a href="{{ route('under_reviews.edit', $underReview->id) }}" class="action-btn edit" title="Edit">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
+                                                        <a href="{{ route('under_reviews.edit', $underReview->id) }}"
+                                                            class="action-btn edit" title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete-under-reviews')
-                                                    <a href="{{ route('under_reviews.destroy', $underReview->id) }}" class="action-btn delete" title="Delete">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
+                                                        <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
+                                                            class="action-btn delete" title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
                                                     @endcan
                                                 </td>
                                             </tr>
@@ -1529,24 +1549,23 @@
                             <i class="bx bx-bed"></i>
                             {{ localize('global.hospitalize') }}
                             @if ($appointment->is_completed == 0)
-                            @can('patient-hospitalization')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('patient-hospitalization')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create  Lab Modal -->
-                        <div class="modal fade modal-xl" id="createHospitalizationModal{{ $appointment->id }}"
-                            tabindex="-1" aria-labelledby="createHospitalizationModalLabel{{ $appointment->id }}"
-                            aria-hidden="true">
+                        <div class="modal fade modal-xl" id="createHospitalizationModal{{ $appointment->id }}" tabindex="-1"
+                            aria-labelledby="createHospitalizationModalLabel{{ $appointment->id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title"
-                                            id="createHospitalizationModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.hospitalize_patient') }}</h5>
+                                        <h5 class="modal-title" id="createHospitalizationModalLabel{{ $appointment->id }}">
+                                            {{ localize('global.hospitalize_patient') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -1569,13 +1588,15 @@
                                                 <div class="form-group">
                                                     <label
                                                         for="reason{{ $appointment->id }}">{{ localize('global.reason') }}</label>
-                                                    <textarea class="form-control" id="reason{{ $appointment->id }}" name="reason" rows="3"></textarea>
+                                                    <textarea class="form-control" id="reason{{ $appointment->id }}"
+                                                        name="reason" rows="3"></textarea>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label
                                                         for="remarks{{ $appointment->id }}">{{ localize('global.remarks') }}</label>
-                                                    <textarea class="form-control" id="remarks{{ $appointment->id }}" name="remarks" rows="3"></textarea>
+                                                    <textarea class="form-control" id="remarks{{ $appointment->id }}"
+                                                        name="remarks" rows="3"></textarea>
                                                 </div>
 
                                                 <div class="form-group">
@@ -1588,8 +1609,7 @@
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($rooms as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -1600,13 +1620,11 @@
                                                         <div class="col-md-4">
                                                             <label
                                                                 for="bed_id{{ $appointment->id }}">{{ localize('global.beds') }}</label>
-                                                            <select class="form-control select2" name="bed_id"
-                                                                id="bed_id">
+                                                            <select class="form-control select2" name="bed_id" id="bed_id">
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($beds as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('number') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->number }}
                                                                     </option>
                                                                 @endforeach
@@ -1621,8 +1639,7 @@
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($foodTypes as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -1650,10 +1667,10 @@
                                                                 <select class="form-control select2"
                                                                     name="relation_to_patient">
                                                                     <option value="">
-                                                                        {{ localize('global.select') }}</option>
+                                                                        {{ localize('global.select') }}
+                                                                    </option>
                                                                     @foreach ($relations as $value)
-                                                                        <option value="{{ $value->id }}"
-                                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->name }}
 
                                                                         </option>
@@ -1665,11 +1682,14 @@
                                                                 <select class="form-control select2"
                                                                     name="companion_card_type">
                                                                     <option value="">
-                                                                        {{ localize('global.select') }}</option>
+                                                                        {{ localize('global.select') }}
+                                                                    </option>
                                                                     <option value="12">
-                                                                        {{ localize('global.12_hours') }}</option>
+                                                                        {{ localize('global.12_hours') }}
+                                                                    </option>
                                                                     <option value="24">
-                                                                        {{ localize('global.24_hours') }}</option>
+                                                                        {{ localize('global.24_hours') }}
+                                                                    </option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -1685,8 +1705,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -1719,22 +1738,28 @@
                                                     @if ($hospitalization->is_discharged == 0)
                                                         <span class="enhanced-badge badge-danger">{{ localize('global.in_bed') }}</span>
                                                     @else
-                                                        <span class="enhanced-badge badge-success">{{ localize('global.discharged') }}</span>
+                                                        <span
+                                                            class="enhanced-badge badge-success">{{ localize('global.discharged') }}</span>
                                                     @endif
                                                 </td>
                                                 <td>
                                                     @can('edit-hospitalizations')
-                                                    <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}" class="action-btn edit" title="Edit">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
+                                                        <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
+                                                            class="action-btn edit" title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete-hospitalizations')
-                                                    <a href="{{ route('hospitalizations.destroy', $hospitalization) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }" class="action-btn delete" title="Delete">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
+                                                        <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
+                                                            class="action-btn delete" title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
                                                     @endcan
                                                     <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$hospitalization->id}}" action="{{ route('hospitalizations.destroy', $hospitalization) }}" method="POST" style="display: none;">
+                                                    <form id="delete-form-{{$hospitalization->id}}"
+                                                        action="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                        method="POST" style="display: none;">
                                                         @csrf
                                                         @method('DELETE')
                                                     </form>
@@ -1759,14 +1784,14 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.visit_date') }}</th>
-                                        <th>{{ localize('global.vital_signs') }}</th>
-                                        <th>{{ localize('global.antibiotic') }}</th>
-                                        <th>{{ localize('global.food_type') }}</th>
-                                        <th>{{ localize('global.intake') }}</th>
-                                        <th>{{ localize('global.output') }}</th>
+                                    <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.by') }}</th>
+                                    <th>{{ localize('global.visit_date') }}</th>
+                                    <th>{{ localize('global.vital_signs') }}</th>
+                                    <th>{{ localize('global.antibiotic') }}</th>
+                                    <th>{{ localize('global.food_type') }}</th>
+                                    <th>{{ localize('global.intake') }}</th>
+                                    <th>{{ localize('global.output') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1826,12 +1851,12 @@
                             <i class="bx bx-first-aid"></i>
                             {{ localize('global.refere_to_anasthesia') }}
                             @if ($appointment->is_completed == 0)
-                            @can('refer-to-anesthesia')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('refer-to-anesthesia')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create  Lab Modal -->
@@ -1841,7 +1866,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createAnasthesiaModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.refere_to_anasthesia') }}</h5>
+                                            {{ localize('global.refere_to_anasthesia') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -1862,12 +1888,16 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <label
-                                                        for="plan{{ $appointment->id }}">{{ localize('global.plan') }}</label>
-                                                    <textarea class="form-control" id="plan{{ $appointment->id }}" name="plan" rows="3"></textarea>
+                                                            for="plan{{ $appointment->id }}">{{ localize('global.plan') }}</label>
+                                                        <textarea class="form-control" id="plan{{ $appointment->id }}"
+                                                            name="plan" rows="3"></textarea>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label for="other_problems{{ $appointment->id }}">{{ localize('global.other_problems') }}</label>
-                                                        <textarea class="form-control" id="other_problems{{ $appointment->id }}" name="other_problems" rows="3"></textarea>
+                                                        <label
+                                                            for="other_problems{{ $appointment->id }}">{{ localize('global.other_problems') }}</label>
+                                                        <textarea class="form-control"
+                                                            id="other_problems{{ $appointment->id }}" name="other_problems"
+                                                            rows="3"></textarea>
                                                     </div>
                                                 </div>
                                                 <h5 class="mt-2">{{ localize('global.operation_team') }}</h5>
@@ -1876,13 +1906,12 @@
                                                         <div class="col-md-4">
                                                             <label
                                                                 for="operation_surgion_id{{ $appointment->id }}">{{ localize('global.operation_surgion') }}</label>
-                                                            <select class="form-control select2"
-                                                                name="operation_surgion_id" id="operation_surgion_id">
+                                                            <select class="form-control select2" name="operation_surgion_id"
+                                                                id="operation_surgion_id">
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($operation_doctors as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -1899,8 +1928,7 @@
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($operation_doctors as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -1910,13 +1938,14 @@
                                                         <div class="col-md-4">
                                                             <label
                                                                 for="anesthesia_type{{ $appointment->id }}">{{ localize('global.anesthesia_type') }}</label>
-                                                            <select class="form-control select2"
-                                                                name="anesthesia_type"
+                                                            <select class="form-control select2" name="anesthesia_type"
                                                                 id="anesthesia_type">
                                                                 <option value="">{{ localize('global.select') }}</option>
                                                                 <option value="local">{{localize('global.local')}}</option>
-                                                                <option value="spinal">{{localize('global.spinal')}}</option>
-                                                                <option value="general">{{localize('global.general')}}</option>
+                                                                <option value="spinal">{{localize('global.spinal')}}
+                                                                </option>
+                                                                <option value="general">{{localize('global.general')}}
+                                                                </option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -1929,8 +1958,7 @@
                                                         <select class="form-control select2" name="operation_type_id">
                                                             <option value="">{{ localize('global.select') }}</option>
                                                             @foreach ($operationTypes as $value)
-                                                                <option value="{{ $value->id }}"
-                                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                     {{ $value->name }}
 
                                                                 </option>
@@ -1939,34 +1967,34 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="date"
-                                                        class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                        <x-tools.dariDatePicker name="date" dir="ltr"
-                                                        withID="date" withPlaceHolder="{{ localize('global.date') }}"
-                                                        withSize="3" extraClasses="" />
+                                                            class="mt-2 mb-2">{{ localize('global.date') }}</label>
+                                                        <x-tools.dariDatePicker name="date" dir="ltr" withID="date"
+                                                            withPlaceHolder="{{ localize('global.date') }}" withSize="3"
+                                                            extraClasses="" />
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="time"
-                                                        class="mt-2 mb-2">{{ localize('global.time') }}</label>
-                                                    <input type="time" class="form-control" name="time" />
+                                                            class="mt-2 mb-2">{{ localize('global.time') }}</label>
+                                                        <input type="time" class="form-control" name="time" />
                                                     </div>
                                                 </div>
 
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <label for="planned_duration"
-                                                        class="mt-2 mb-2">{{ localize('global.planned_duration') }}</label>
-                                                    <input type="text" class="form-control" name="planned_duration" />
+                                                            class="mt-2 mb-2">{{ localize('global.planned_duration') }}</label>
+                                                        <input type="text" class="form-control" name="planned_duration" />
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="position_on_bed"
-                                                        class="mt-2 mb-2">{{ localize('global.position_on_bed') }}</label>
-                                                    <input type="text" class="form-control" name="position_on_bed" />
+                                                            class="mt-2 mb-2">{{ localize('global.position_on_bed') }}</label>
+                                                        <input type="text" class="form-control" name="position_on_bed" />
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="estimated_blood_waste"
-                                                        class="mt-2 mb-2">{{ localize('global.estimated_blood_waste') }}</label>
-                                                    <input type="text" class="form-control"
-                                                        name="estimated_blood_waste" />
+                                                            class="mt-2 mb-2">{{ localize('global.estimated_blood_waste') }}</label>
+                                                        <input type="text" class="form-control"
+                                                            name="estimated_blood_waste" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1974,8 +2002,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -2019,17 +2046,22 @@
                                                 <td>{{ $anesthesia->date }}</td>
                                                 <td>
                                                     @can('edit-anesthesias')
-                                                    <a href="{{ route('anesthesias.edit', $anesthesia->id) }}" class="action-btn edit" title="Edit">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
+                                                        <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"
+                                                            class="action-btn edit" title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete-anesthesias')
-                                                    <a href="{{ route('anesthesias.destroy', $anesthesia) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }" class="action-btn delete" title="Delete">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
+                                                        <a href="{{ route('anesthesias.destroy', $anesthesia) }}"
+                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }"
+                                                            class="action-btn delete" title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
                                                     @endcan
                                                     <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$anesthesia->id}}" action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST" style="display: none;">
+                                                    <form id="delete-form-{{$anesthesia->id}}"
+                                                        action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST"
+                                                        style="display: none;">
                                                         @csrf
                                                         @method('DELETE')
                                                     </form>
@@ -2103,17 +2135,17 @@
 
 
 
-                        {{-- icu starts here  --}}
+                        {{-- icu starts here --}}
                         <div class="section-header">
                             <i class="bx bx-tv"></i>
                             {{ localize('global.refere_to_icu') }}
                             @if ($appointment->is_completed == 0)
-                            @can('refer-to-icu')
-                                <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
-                                    data-bs-target="#createICUModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus"></i>
-                                </button>
-                            @endcan
+                                @can('refer-to-icu')
+                                    <button type="button" class="btn btn-success ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#createICUModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus"></i>
+                                    </button>
+                                @endcan
                             @endif
                         </div>
                         <!-- Create  Lab Modal -->
@@ -2123,7 +2155,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="createICUModalLabel{{ $appointment->id }}">
-                                            {{ localize('global.refere_to_icu') }}</h5>
+                                            {{ localize('global.refere_to_icu') }}
+                                        </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -2144,15 +2177,15 @@
                                                 <div class="form-group">
                                                     <label
                                                         for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
-                                                    <textarea class="form-control" id="description{{ $appointment->id }}" name="description" rows="3"></textarea>
+                                                    <textarea class="form-control" id="description{{ $appointment->id }}"
+                                                        name="description" rows="3"></textarea>
                                                 </div>
                                             </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit"
-                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
                                     </div>
                                     </form>
                                 </div>
@@ -2180,17 +2213,21 @@
                                                 <td>{{ $icu->created_at }}</td>
                                                 <td>
                                                     @can('edit-icus')
-                                                    <a href="{{ route('icus.edit', $icu->id) }}" class="action-btn edit" title="Edit">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
+                                                        <a href="{{ route('icus.edit', $icu->id) }}" class="action-btn edit"
+                                                            title="Edit">
+                                                            <i class="bx bx-edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete-icus')
-                                                    <a href="{{ route('icus.destroy', $icu) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$icu->id}}').submit(); }" class="action-btn delete" title="Delete">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
+                                                        <a href="{{ route('icus.destroy', $icu) }}"
+                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$icu->id}}').submit(); }"
+                                                            class="action-btn delete" title="Delete">
+                                                            <i class="bx bx-trash"></i>
+                                                        </a>
                                                     @endcan
                                                     <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu) }}" method="POST" style="display: none;">
+                                                    <form id="delete-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu) }}"
+                                                        method="POST" style="display: none;">
                                                         @csrf
                                                         @method('DELETE')
                                                     </form>
@@ -2215,14 +2252,14 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.visit_date') }}</th>
-                                        <th>{{ localize('global.vital_signs') }}</th>
-                                        <th>{{ localize('global.antibiotic') }}</th>
-                                        <th>{{ localize('global.food_type') }}</th>
-                                        <th>{{ localize('global.intake') }}</th>
-                                        <th>{{ localize('global.output') }}</th>
+                                    <th>{{ localize('global.description') }}</th>
+                                    <th>{{ localize('global.by') }}</th>
+                                    <th>{{ localize('global.visit_date') }}</th>
+                                    <th>{{ localize('global.vital_signs') }}</th>
+                                    <th>{{ localize('global.antibiotic') }}</th>
+                                    <th>{{ localize('global.food_type') }}</th>
+                                    <th>{{ localize('global.intake') }}</th>
+                                    <th>{{ localize('global.output') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -2279,10 +2316,38 @@
             </div>
         </div>
     </div>
-    </div>
 @endsection
 
 @section('scripts')
+    <script>
+        // Global Select2 fix for modal compatibility
+        (function() {
+            // Override Select2's _positionDropdown method to handle modal contexts
+            if ($.fn.select2) {
+                var originalPositionDropdown = $.fn.select2.defaults.defaults.attachBody._positionDropdown;
+                $.fn.select2.defaults.defaults.attachBody._positionDropdown = function() {
+                    try {
+                        return originalPositionDropdown.apply(this, arguments);
+                    } catch (e) {
+                        // If positioning fails, use a fallback
+                        var $dropdown = this.$dropdown;
+                        var $container = this.$container;
+                        
+                        if ($dropdown && $container) {
+                            var containerOffset = $container.offset();
+                            $dropdown.css({
+                                position: 'absolute',
+                                top: containerOffset.top + $container.outerHeight(),
+                                left: containerOffset.left,
+                                width: $container.outerWidth()
+                            });
+                        }
+                    }
+                };
+            }
+        })();
+    </script>
+
     <script>
         // Get the add button and prescription input container
         const addButton = document.getElementById('addPrescriptionInput');
@@ -2290,133 +2355,172 @@
 
         // Add click event listener to the add button
         function addRow() {
-                // Create a new row div
-                const newRow = document.createElement('div');
-    newRow.className = 'row';
+            // Create a new row div
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
 
-    // Create the type dropdown
-    const typeDropdown = document.createElement('select');
-    typeDropdown.className = 'form-control select2';
-    typeDropdown.name = 'medicine_type_id[]';
+            // Create the type dropdown
+            const typeDropdown = document.createElement('select');
+            typeDropdown.className = 'form-control select2';
+            typeDropdown.name = 'medicine_type_id[]';
 
-    // Append the options to the type dropdown
-    @foreach ($medicineTypes as $value)
-        typeOption = document.createElement('option');
-        typeOption.value = '{{ $value->id }}';
-        typeOption.textContent = '{{ $value->type }}';
-        typeDropdown.appendChild(typeOption);
-    @endforeach
+            // Append the options to the type dropdown
+            @foreach ($medicineTypes as $value)
+                typeOption = document.createElement('option');
+                typeOption.value = '{{ $value->id }}';
+                typeOption.textContent = '{{ $value->type }}';
+                typeDropdown.appendChild(typeOption);
+            @endforeach
 
-    // Create the medicine dropdown
-    const medicineDropdown = document.createElement('select');
-    medicineDropdown.className = 'form-control select2';
-    medicineDropdown.name = 'medicine_id[]';
+        // Create the medicine dropdown
+        const medicineDropdown = document.createElement('select');
+            medicineDropdown.className = 'form-control select2';
+            medicineDropdown.name = 'medicine_id[]';
 
-    // Append the options to the medicine dropdown
-    var medicineOption = '';
-    @foreach ($medicines as $value)
-            medicineOption = document.createElement('option');
-            medicineOption.value = '{{ $value->id }}';
-            medicineOption.textContent = '{{ $value->name }}';
-            medicineDropdown.appendChild(medicineOption);
-    @endforeach
+            // Append the options to the medicine dropdown
+            var medicineOption = '';
+            @foreach ($medicines as $value)
+                medicineOption = document.createElement('option');
+                medicineOption.value = '{{ $value->id }}';
+                medicineOption.textContent = '{{ $value->name }}';
+                medicineDropdown.appendChild(medicineOption);
+            @endforeach
 
-    // Create the medicine dropdown
-    const medicineUsageDropdown = document.createElement('select');
-    medicineUsageDropdown.className = 'form-control select2';
-    medicineUsageDropdown.name = 'usage_type_id[]';
+        // Create the medicine dropdown
+        const medicineUsageDropdown = document.createElement('select');
+            medicineUsageDropdown.className = 'form-control select2';
+            medicineUsageDropdown.name = 'usage_type_id[]';
 
-    // Append the options to the medicine dropdown
-    var medicineUsageOption = '';
-    @foreach ($medicineUsageTypes as $value)
-            medicineUsageOption = document.createElement('option');
-            medicineUsageOption.value = '{{ $value->id }}';
-            medicineUsageOption.textContent = '{{ $value->name }}';
-            medicineUsageDropdown.appendChild(medicineUsageOption);
-    @endforeach
+            // Append the options to the medicine dropdown
+            var medicineUsageOption = '';
+            @foreach ($medicineUsageTypes as $value)
+                medicineUsageOption = document.createElement('option');
+                medicineUsageOption.value = '{{ $value->id }}';
+                medicineUsageOption.textContent = '{{ $value->name }}';
+                medicineUsageDropdown.appendChild(medicineUsageOption);
+            @endforeach
 
-    // Create the dosage input field
-    const dosageInput = document.createElement('input');
-    dosageInput.type = 'text';
-    dosageInput.className = 'form-control mt-2';
-    dosageInput.name = 'dosage[]';
-    dosageInput.placeholder = 'Dosage';
+        // Create the dosage input field
+        const dosageInput = document.createElement('input');
+            dosageInput.type = 'text';
+            dosageInput.className = 'form-control mt-2';
+            dosageInput.name = 'dosage[]';
+            dosageInput.placeholder = 'Dosage';
 
-    // Create the frequency input field
-    const frequencyInput = document.createElement('input');
-    frequencyInput.type = 'text';
-    frequencyInput.className = 'form-control mt-2';
-    frequencyInput.name = 'frequency[]';
-    frequencyInput.placeholder = 'Frequency';
+            // Create the frequency input field
+            const frequencyInput = document.createElement('input');
+            frequencyInput.type = 'text';
+            frequencyInput.className = 'form-control mt-2';
+            frequencyInput.name = 'frequency[]';
+            frequencyInput.placeholder = 'Frequency';
 
-    // Create the amount input field
-    const amountInput = document.createElement('input');
-    amountInput.type = 'text';
-    amountInput.className = 'form-control mt-2';
-    amountInput.name = 'amount[]';
-    amountInput.placeholder = 'Amount';
+            // Create the amount input field
+            const amountInput = document.createElement('input');
+            amountInput.type = 'text';
+            amountInput.className = 'form-control mt-2';
+            amountInput.name = 'amount[]';
+            amountInput.placeholder = 'Amount';
 
-    // Create the delivery input field
-    const deliveryInput = document.createElement('input');
-    deliveryInput.type = 'hidden';
-    deliveryInput.className = 'form-control mt-2';
-    deliveryInput.name = 'is_delivered[]';
-    deliveryInput.value = 0;
+            // Create the delivery input field
+            const deliveryInput = document.createElement('input');
+            deliveryInput.type = 'hidden';
+            deliveryInput.className = 'form-control mt-2';
+            deliveryInput.name = 'is_delivered[]';
+            deliveryInput.value = 0;
 
-    // Create the column divs
-    const typeCol = document.createElement('div');
-    typeCol.className = 'col-md-2';
-    const medicineCol = document.createElement('div');
-    medicineCol.className = 'col-md-2';
-    const medicineUsageCol = document.createElement('div');
-    medicineUsageCol.className = 'col-md-2';
-    const dosageCol = document.createElement('div');
-    dosageCol.className = 'col-md-2';
-    const frequencyCol = document.createElement('div');
-    frequencyCol.className = 'col-md-2';
-    const amountCol = document.createElement('div');
-    amountCol.className = 'col-md-2';
-    const deliveryCol = document.createElement('div');
-    deliveryCol.className = 'col-md-2';
+            // Create the column divs
+            const typeCol = document.createElement('div');
+            typeCol.className = 'col-md-2';
+            const medicineCol = document.createElement('div');
+            medicineCol.className = 'col-md-2';
+            const medicineUsageCol = document.createElement('div');
+            medicineUsageCol.className = 'col-md-2';
+            const dosageCol = document.createElement('div');
+            dosageCol.className = 'col-md-2';
+            const frequencyCol = document.createElement('div');
+            frequencyCol.className = 'col-md-2';
+            const amountCol = document.createElement('div');
+            amountCol.className = 'col-md-2';
+            const deliveryCol = document.createElement('div');
+            deliveryCol.className = 'col-md-2';
 
-    // Append the input fields to their respective column divs
-    typeCol.appendChild(typeDropdown);
-    medicineCol.appendChild(medicineDropdown);
-    medicineUsageCol.appendChild(medicineUsageDropdown);
-    dosageCol.appendChild(dosageInput);
-    frequencyCol.appendChild(frequencyInput);
-    amountCol.appendChild(amountInput);
-    deliveryCol.appendChild(deliveryInput);
+            // Append the input fields to their respective column divs
+            typeCol.appendChild(typeDropdown);
+            medicineCol.appendChild(medicineDropdown);
+            medicineUsageCol.appendChild(medicineUsageDropdown);
+            dosageCol.appendChild(dosageInput);
+            frequencyCol.appendChild(frequencyInput);
+            amountCol.appendChild(amountInput);
+            deliveryCol.appendChild(deliveryInput);
 
-    // Append the column divs to the new row div
-    newRow.appendChild(typeCol);
-    newRow.appendChild(medicineCol);
-    newRow.appendChild(medicineUsageCol);
-    newRow.appendChild(dosageCol);
-    newRow.appendChild(frequencyCol);
-    newRow.appendChild(amountCol);
-    newRow.appendChild(deliveryCol);
+            // Append the column divs to the new row div
+            newRow.appendChild(typeCol);
+            newRow.appendChild(medicineCol);
+            newRow.appendChild(medicineUsageCol);
+            newRow.appendChild(dosageCol);
+            newRow.appendChild(frequencyCol);
+            newRow.appendChild(amountCol);
+            newRow.appendChild(deliveryCol);
 
-    // Append the new row div to the prescription input container
-    prescriptionContainer.appendChild(newRow);
+            // Append the new row div to the prescription input container
+            prescriptionContainer.appendChild(newRow);
 
-    // Initialize the select2 plugin
-            $('select').select2({
-                dropdownParent: $('#createPrescriptionModal1')
+            // Initialize the select2 plugin for dynamically created elements
+            const newSelects = newRow.querySelectorAll('select.select2');
+            newSelects.forEach(function(select) {
+                $(select).select2({
+                    dropdownParent: $(select).closest('.modal').find('.modal-body'),
+                    placeholder: '--انتخاب--'
+                });
             });
 
         }
     </script>
 
     <script>
-        $(document).ready(function() {
-            $('#lab_type_section').on('change', function() {
+        $(document).ready(function () {
+            // Initialize Select2 for elements inside modals
+            function initializeSelect2InModals() {
+                $('.modal .select2').each(function() {
+                    var $select = $(this);
+                    var $modal = $select.closest('.modal');
+                    
+                    // Destroy existing Select2 instance if it exists
+                    if ($select.hasClass('select2-hidden-accessible')) {
+                        $select.select2('destroy');
+                    }
+                    
+                    // Initialize Select2 with proper dropdown parent
+                    $select.select2({
+                        dropdownParent: $modal.find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
+                });
+            }
+
+            // Initialize Select2 when modals are shown
+            $('.modal').on('shown.bs.modal', function() {
+                initializeSelect2InModals();
+            });
+
+            // Initialize Select2 for elements outside modals
+            $('.select2:not(.modal .select2)').each(function() {
+                var $this = $(this);
+                if (!$this.hasClass('select2-hidden-accessible')) {
+                    $this.select2({
+                        placeholder: '--انتخاب--',
+                        dropdownParent: $this.parent()
+                    });
+                }
+            });
+
+            $('#lab_type_section').on('change', function () {
                 var labSectionID = $(this).val();
                 if (labSectionID !== '') {
                     $.ajax({
                         url: '/get_labTypes/' + labSectionID,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#lab_type_id').html(response);
                         }
@@ -2424,13 +2528,13 @@
                 }
             })
 
-            $('#branch').on('change', function() {
+            $('#branch').on('change', function () {
                 var branchId = $(this).val();
                 if (branchId !== '') {
                     $.ajax({
                         url: '/get_departments/' + branchId,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#department').html(response);
                         }
@@ -2438,13 +2542,13 @@
                 }
             })
 
-            $('#referral_branch').on('change', function() {
+            $('#referral_branch').on('change', function () {
                 var branchId = $(this).val();
                 if (branchId !== '') {
                     $.ajax({
                         url: '/get_departments/' + branchId,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#referral_department_id').html(response);
                         }
@@ -2452,13 +2556,13 @@
                 }
             })
 
-            $('#department').on('change', function() {
+            $('#department').on('change', function () {
                 var departmentId = $(this).val();
                 if (departmentId !== '') {
                     $.ajax({
                         url: '/get_doctors/' + departmentId,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#doctor_id').html(response);
                         }
@@ -2466,13 +2570,13 @@
                 }
             })
 
-            $('#referral_department_id').on('change', function() {
+            $('#referral_department_id').on('change', function () {
                 var departmentID = $(this).val();
                 if (departmentID !== '') {
                     $.ajax({
                         url: '/get_doctors/' + departmentID,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#appointment_doctor_id').html(response);
                         }
@@ -2480,13 +2584,13 @@
                 }
             })
 
-            $('#room_id').on('change', function() {
+            $('#room_id').on('change', function () {
                 var roomId = $(this).val();
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#bed_id').html(response);
                         }
@@ -2494,13 +2598,13 @@
                 }
             })
 
-            $('#under_review_room').on('change', function() {
+            $('#under_review_room').on('change', function () {
                 var roomId = $(this).val();
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
-                        success: function(response) {
+                        success: function (response) {
 
                             $('#under_review_bed_id').html(response);
                         }
@@ -2521,14 +2625,14 @@
                 .then(response => response.json())
                 .then(data => {
                     // Create checkboxes for each lab type test
-                    data.forEach(function(test) {
+                    data.forEach(function (test) {
                         var checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.name = 'lab_type_id[]'; // Use an array to submit multiple values
                         checkbox.value = test.id;
 
                         // Update the lab_type_id value when a checkbox is checked/unchecked
-                        $('input').on('change', function() {
+                        $('input').on('change', function () {
                             if (this.checked) {
                                 // Append the test id to the lab_type_id value
                                 document.getElementById('lab_type_id').value += ',' + this.value;
@@ -2565,11 +2669,11 @@
                 type: "GET",
                 url: "{{ url('lab_items/getItems/') }}/" + id,
                 dataType: "html",
-                success: function(data) {
+                success: function (data) {
                     $('#lab_items_table').html(data);
                     console.log(data);
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     // Handle the error response
                     console.error(error);
                 }
@@ -2577,10 +2681,15 @@
 
         }
 
-        function getPrescriptionItems(id){ $.ajax({ type: "GET", url: "{{url('prescription_items/getItems/')}}/"+id, dataType: "html", success: function(data)
-        {
-             $('#prescription_items_table').html(data); }, error: function(xhr, status, error) {
-             // Handle the error response
-             console.error(error); } }); }
+        function getPrescriptionItems(id) {
+            $.ajax({
+                type: "GET", url: "{{url('prescription_items/getItems/')}}/" + id, dataType: "html", success: function (data) {
+                    $('#prescription_items_table').html(data);
+                }, error: function (xhr, status, error) {
+                    // Handle the error response
+                    console.error(error);
+                }
+            });
+        }
     </script>
 @endsection

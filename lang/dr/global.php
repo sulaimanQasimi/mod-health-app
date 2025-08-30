@@ -1133,4 +1133,5 @@ return [
     'next'=>'بعدی',
     'previous'=>'قبلی',
     'no_stock_records_found'=>'هیچ رکورد موجودی یافت نشد',
+    'pharmacy_created_successfully'=>'دواخانه با موفقیت ایجاد شد',
 ];

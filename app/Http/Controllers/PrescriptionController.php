@@ -94,7 +94,7 @@ class PrescriptionController extends Controller
 
         SendNewPrescriptionNotification::dispatch($prescription->created_by, $prescription->id);
 
-        return redirect()->back()->with('success', localize('global.prescription_created_successfully.'));
+        return redirect()->back()->with('success', localize('global.prescription_created_successfully'));
     }
 
     /**

@@ -34,28 +34,35 @@
         </div>
 
         <!-- Edit Appointment Form -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
-                        <h5 class="mb-0">
-                            <i class="bx bx-calendar-edit me-2 text-primary"></i>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0 text-white">
+                            <i class="bx bx-calendar-edit me-2"></i>
                             {{ localize('global.edit_appointment_details') }}
                         </h5>
                     </div>
-                    <div class="card-body">
-                        <form action="{{ route('appointments.update', $appointment) }}" method="POST">
+                    <div class="card-body p-4">
+                        <form action="{{ route('appointments.update', $appointment) }}" method="POST" class="needs-validation" novalidate>
                             @csrf
                             @method('PUT')
                             
-                            <div class="row">
+                            <!-- Patient Information Section -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3 ">
+                                        <i class="bx bx-user me-2"></i>
+                                        {{ localize('global.patient_information') }}
+                                    </h6>
+                                </div>
+                                
                                 <!-- Patient Selection -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="patient_id" class="form-label fw-bold">
-                                        <i class="bx bx-user me-1 text-primary"></i>
+                                    <label for="patient_id" class="form-label fw-semibold">
                                         {{ localize('global.patient') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-control select2 @error('patient_id') is-invalid @enderror" 
+                                    <select class="form-select border @error('patient_id') is-invalid @enderror" 
                                             name="patient_id" id="patient_id" required>
                                         <option value="">{{ localize('global.select_patient') }}</option>
                                         @foreach($patients as $patient)
@@ -72,11 +79,10 @@
 
                                 <!-- Doctor Selection -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="doctor_id" class="form-label fw-bold">
-                                        <i class="bx bx-user-check me-1 text-primary"></i>
+                                    <label for="doctor_id" class="form-label fw-semibold">
                                         {{ localize('global.doctor') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-control select2 @error('doctor_id') is-invalid @enderror" 
+                                    <select class="form-select border @error('doctor_id') is-invalid @enderror" 
                                             name="doctor_id" id="doctor_id" required>
                                         <option value="">{{ localize('global.select_doctor') }}</option>
                                         @foreach($doctors as $doctor)
@@ -90,14 +96,23 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
+
+                            <!-- Appointment Details Section -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bx bx-calendar me-2"></i>
+                                        {{ localize('global.appointment_details') }}
+                                    </h6>
+                                </div>
 
                                 <!-- Branch Selection -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="branch_id" class="form-label fw-bold">
-                                        <i class="bx bx-building me-1 text-primary"></i>
+                                    <label for="branch_id" class="form-label fw-semibold">
                                         {{ localize('global.branch') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-control select2 @error('branch_id') is-invalid @enderror" 
+                                    <select class="form-select border @error('branch_id') is-invalid @enderror" 
                                             name="branch_id" id="branch_id" required>
                                         <option value="">{{ localize('global.select_branch') }}</option>
                                         @foreach($branches as $branch)
@@ -114,11 +129,10 @@
 
                                 <!-- Date -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="date" class="form-label fw-bold">
-                                        <i class="bx bx-calendar me-1 text-primary"></i>
+                                    <label for="date" class="form-label fw-semibold">
                                         {{ localize('global.date') }} <span class="text-danger">*</span>
                                     </label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror" 
+                                    <input type="date" class="form-control border @error('date') is-invalid @enderror" 
                                            name="date" id="date" 
                                            value="{{ old('date', $appointment->date) }}" required>
                                     @error('date')
@@ -128,27 +142,35 @@
 
                                 <!-- Time -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="time" class="form-label fw-bold">
-                                        <i class="bx bx-time me-1 text-primary"></i>
+                                    <label for="time" class="form-label fw-semibold">
                                         {{ localize('global.time') }} <span class="text-danger">*</span>
                                     </label>
-                                    <input type="time" class="form-control @error('time') is-invalid @enderror" 
+                                    <input type="time" class="form-control border @error('time') is-invalid @enderror" 
                                            name="time" id="time" 
                                            value="{{ old('time', $appointment->time) }}" required>
                                     @error('time')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
+
+                            <!-- Additional Information Section -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bx bx-message-square-detail me-2"></i>
+                                        {{ localize('global.additional_information') }}
+                                    </h6>
+                                </div>
 
                                 <!-- Referral Remarks -->
-                                <div class="col-md-12 mb-3">
-                                    <label for="refferal_remarks" class="form-label fw-bold">
-                                        <i class="bx bx-message-square-detail me-1 text-primary"></i>
+                                <div class="col-12 mb-3">
+                                    <label for="refferal_remarks" class="form-label fw-semibold">
                                         {{ localize('global.referral_remarks') }}
                                     </label>
-                                    <textarea class="form-control @error('refferal_remarks') is-invalid @enderror" 
+                                    <textarea class="form-control border @error('refferal_remarks') is-invalid @enderror" 
                                               name="refferal_remarks" id="refferal_remarks" 
-                                              rows="3" placeholder="{{ localize('global.enter_referral_remarks') }}">{{ old('refferal_remarks', $appointment->refferal_remarks) }}</textarea>
+                                              rows="4" placeholder="{{ localize('global.enter_referral_remarks') }}">{{ old('refferal_remarks', $appointment->refferal_remarks) }}</textarea>
                                     @error('refferal_remarks')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -156,11 +178,11 @@
                             </div>
 
                             <!-- Form Actions -->
-                            <div class="row mt-4">
+                            <div class="row">
                                 <div class="col-12">
-                                    <div class="d-flex justify-content-end gap-2">
+                                    <div class="d-flex justify-content-end gap-3">
                                         <a href="{{ route('appointments.show', $appointment) }}" 
-                                           class="btn btn-secondary">
+                                           class="btn btn-outline-secondary">
                                             <i class="bx bx-x me-1"></i>
                                             {{ localize('global.cancel') }}
                                         </a>
@@ -182,13 +204,29 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            // Initialize Select2
-            $('.select2').select2({
+            // Initialize Select2 with better styling
+            $('.form-select').select2({
                 theme: 'bootstrap-5',
-                width: '100%'
+                width: '100%',
+                placeholder: function() {
+                    return $(this).data('placeholder') || '{{ localize("global.select") }}';
+                }
             });
 
-            // Form validation
+            // Bootstrap form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Custom form validation
             $('form').on('submit', function(e) {
                 var patientId = $('#patient_id').val();
                 var doctorId = $('#doctor_id').val();
@@ -198,9 +236,36 @@
 
                 if (!patientId || !doctorId || !branchId || !date || !time) {
                     e.preventDefault();
-                    alert('{{ localize("global.please_fill_all_required_fields") }}');
+                    
+                    // Show validation messages
+                    if (!patientId) {
+                        $('#patient_id').addClass('is-invalid');
+                        $('#patient_id').siblings('.invalid-feedback').text('{{ localize("global.please_select_patient") }}');
+                    }
+                    if (!doctorId) {
+                        $('#doctor_id').addClass('is-invalid');
+                        $('#doctor_id').siblings('.invalid-feedback').text('{{ localize("global.please_select_doctor") }}');
+                    }
+                    if (!branchId) {
+                        $('#branch_id').addClass('is-invalid');
+                        $('#branch_id').siblings('.invalid-feedback').text('{{ localize("global.please_select_branch") }}');
+                    }
+                    if (!date) {
+                        $('#date').addClass('is-invalid');
+                        $('#date').siblings('.invalid-feedback').text('{{ localize("global.please_select_date") }}');
+                    }
+                    if (!time) {
+                        $('#time').addClass('is-invalid');
+                        $('#time').siblings('.invalid-feedback').text('{{ localize("global.please_select_time") }}');
+                    }
+                    
                     return false;
                 }
+            });
+
+            // Remove validation classes on input
+            $('input, select, textarea').on('input change', function() {
+                $(this).removeClass('is-invalid');
             });
         });
     </script>

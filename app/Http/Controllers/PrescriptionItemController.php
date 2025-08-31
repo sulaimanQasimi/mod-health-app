@@ -23,7 +23,7 @@ class PrescriptionItemController extends Controller
         $item->is_delivered = $item->is_delivered == '1' ? '0' : '1';
         $item->save();
 
-        return redirect()->back()->with('success', localize('global.prescription_item_status_updated_successfully.'));
+        return redirect()->back()->with('success', localize('global.prescription_item_status_updated_successfully'));
 
     }
 

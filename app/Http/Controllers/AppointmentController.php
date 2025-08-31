@@ -8,6 +8,7 @@ use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
+use App\Models\Patient;
 use App\Models\FoodType;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
@@ -103,8 +104,12 @@ class AppointmentController extends Controller
 
     public function edit(Appointment $appointment)
     {
-        // Show the form to edit an existing appointment
-        return view('pages.appointments.edit', compact('appointment'));
+        // Get necessary data for the edit form
+        $doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $patients = Patient::all();
+        $branches = Branch::all();
+        
+        return view('pages.appointments.edit', compact('appointment', 'doctors', 'patients', 'branches'));
     }
 
     public function update(Request $request, Appointment $appointment)
@@ -113,15 +118,18 @@ class AppointmentController extends Controller
         $validatedData = $request->validate([
             'patient_id' => 'required',
             'doctor_id' => 'required',
-            'appointment_date' => 'required',
+            'date' => 'required|date',
+            'time' => 'required',
+            'branch_id' => 'required',
+            'refferal_remarks' => 'nullable|string',
             // Add any other validation rules as needed
         ]);
-        $validatedData['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
+        
         // Update the appointment
         $appointment->update($validatedData);
 
-        // Redirect to the appointments index page with a success message
-        return redirect()->route('appointments.doctorAppointments')->with('success', localize('global.appointment_updated_successfully'));
+        // Redirect to the appointments show page with a success message
+        return redirect()->route('appointments.show', $appointment)->with('success', localize('global.appointment_updated_successfully'));
     }
 
     public function changeStatus(Request $request, Appointment $appointment)

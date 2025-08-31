@@ -1365,4 +1365,11 @@ return [
     'are_you_sure_delete'=>'آیا مطمئن هستید که می خواهید این مورد را حذف کنید؟',
     'complete_appointment'=>'تکمیل نوبت',
     'refer_patient'=>'معرفی برای داکتر دیگری',
+    'no_previous_progress'=>'بررسی روزانه قبلی وجود ندارد',
+    'recovery_details'=>'جزئیات بهبود',
+    'death_details'=>'جزئیات مرگ',
+    'transfer_details'=>'جزئیات انتقال',
+    'neurological_assessment'=>'بررسی عملکرد عصبی',
+    'system_assessment'=>'بررسی عملکرد سیستمی',
+    'additional_information'=>'اطلاعات اضافی',
 ];

@@ -550,7 +550,7 @@
                                                                 <td>
                                                                     <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
                                                                 </td>
-                                                                <td>{{ $prescription->patient->name }}</td>
+                                                                <td>{{ $prescription->patient?->name ?? 'N/A' }}</td>
                                                                 <td>
                                                                     @if ($prescription->is_completed == '0')
                                                                         <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
@@ -2133,8 +2133,8 @@
                                                                 <td>
                                                                     <span class="badge bg-danger rounded-pill">{{ $loop->iteration }}</span>
                                                                 </td>
-                                                                <td>{{ $anesthesia->operationType->name }}</td>
-                                                                <td>{{ $anesthesia->patient->name }}</td>
+                                                                <td>{{ $anesthesia->operationType?->name ?? 'N/A' }}</td>
+                                                                <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
                                                                 <td>
                                                                     @if ($anesthesia->status == 'new')
                                                                         <span class="badge bg-primary">
@@ -2221,8 +2221,8 @@
                                                             <td>
                                                                 <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
                                                             </td>
-                                                            <td>{{ $anesthesia->operationType->name }}</td>
-                                                            <td>{{ $anesthesia->patient->name }}</td>
+                                                            <td>{{ $anesthesia->operationType?->name ?? 'N/A' }}</td>
+                                                            <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
                                                             <td>
                                                                 @if ($anesthesia->status == 'new')
                                                                     <span class="badge bg-primary">
@@ -2345,7 +2345,7 @@
                                                                 <td>
                                                                     <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
                                                                 </td>
-                                                                <td>{{ $icu->patient->name }}</td>
+                                                                <td>{{ $icu->patient?->name ?? 'N/A' }}</td>
                                                                 <td>{{ $icu->description }}</td>
                                                                 <td>{{ $icu->created_at }}</td>
                                                                 <td>

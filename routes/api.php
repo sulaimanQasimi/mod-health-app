@@ -18,9 +18,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::controller(SelectController::class)
-    ->prefix('select/')->group(function () {
-        Route::get('/physiotherapy-types', 'getPhysiotherapyTypes');
-        Route::get('/physiotherapists', 'getPhysiotherapists');
-        Route::get('/users', 'users');
-    });
+// Note: Select2 API routes moved to web.php for proper web authentication
+// These routes are now available at /api/select/* with auth middleware

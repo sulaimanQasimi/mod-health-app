@@ -543,6 +543,9 @@ return [
     
     // Physiotherapy translations
     'physiotherapy_procedures' => 'Physiotherapy Procedures',
+    'no_results_found' => 'No results found',
+    'searching' => 'Searching',
+    'error_loading_results' => 'Error loading results',
     'add_physiotherapy_procedure' => 'Add Physiotherapy Procedure',
     'view_physiotherapy_procedure' => 'View Physiotherapy Procedure',
     'edit_physiotherapy_procedure' => 'Edit Physiotherapy Procedure',

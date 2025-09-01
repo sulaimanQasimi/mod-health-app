@@ -48,10 +48,28 @@ class PhysiotherapyProcedureController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Pagination
+        // Get procedures with proper data formatting for DataTable
         $physiotherapyProcedures = $query->get();
 
-        return response()->json(['success' => true, 'data' => $physiotherapyProcedures,]);
+        if ($request->ajax() || $request->wantsJson()) {
+            $data = $physiotherapyProcedures->map(function($p) {
+                $percentage = $p->days_count > 0 ? ($p->counter / max(1, $p->days_count)) * 100 : 0;
+                return [
+                    'id' => $p->id,
+                    'physiotherapy_type' => $p->physiotherapyType->name ?? 'N/A',
+                    'physiotherapist' => $p->physiotherapist->name ?? 'N/A',
+                    'type' => $p->type,
+                    'duration' => $p->duration,
+                    'progress_counter' => $p->counter,
+                    'progress_total' => $p->days_count,
+                    'progress_percentage' => round($percentage, 1),
+                    'status' => $p->status,
+                    'start_date' => optional($p->start_date)->format('Y-m-d'),
+                    'actions' => '', // Placeholder for DataTables rendering
+                ];
+            });
+            return response()->json(['data' => $data]);
+        }
         //
         // return view('pages.physiotherapy.procedures.index', compact('physiotherapyProcedures', 'physiotherapyTypes'));
     }

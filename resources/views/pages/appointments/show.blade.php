@@ -2476,8 +2476,8 @@
                 typeDropdown.appendChild(typeOption);
             @endforeach
 
-                // Create the medicine dropdown
-                const medicineDropdown = document.createElement('select');
+                            // Create the medicine dropdown
+                            const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2';
             medicineDropdown.name = 'medicine_id[]';
 
@@ -2490,8 +2490,8 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
-                // Create the medicine dropdown
-                const medicineUsageDropdown = document.createElement('select');
+                            // Create the medicine dropdown
+                            const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2';
             medicineUsageDropdown.name = 'usage_type_id[]';
 
@@ -2504,8 +2504,8 @@
                 medicineUsageDropdown.appendChild(medicineUsageOption);
             @endforeach
 
-                // Create the dosage input field
-                const dosageInput = document.createElement('input');
+                            // Create the dosage input field
+                            const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';

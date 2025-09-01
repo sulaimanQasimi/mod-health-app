@@ -8,6 +8,8 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -21,26 +23,26 @@ class BloodBankController extends Controller
 
     public function new()
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','new')->paginate(15);
-        return view('pages.blood_banks.new',compact('bloodRequests'));
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'new')->paginate(15);
+        return view('pages.blood_banks.new', compact('bloodRequests'));
     }
 
     public function approved()
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','approved')->paginate(15);
-        return view('pages.blood_banks.approved',compact('bloodRequests'));
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'approved')->paginate(15);
+        return view('pages.blood_banks.approved', compact('bloodRequests'));
     }
 
     public function rejected()
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','rejected')->paginate(15);
-        return view('pages.blood_banks.rejected',compact('bloodRequests'));
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'rejected')->paginate(15);
+        return view('pages.blood_banks.rejected', compact('bloodRequests'));
     }
 
     public function delivered()
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status','delivered')->paginate(15);
-        return view('pages.blood_banks.delivered',compact('bloodRequests'));
+        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'delivered')->paginate(15);
+        return view('pages.blood_banks.delivered', compact('bloodRequests'));
     }
 
     public function approve($bloodBank)
@@ -89,21 +91,25 @@ class BloodBankController extends Controller
             'branch_id' => 'required|exists:branches,id',
             'appointment_id' => 'nullable|exists:appointments,id',
             'hospitalization_id' => 'nullable|exists:hospitalizations,id',
-            'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
-            'operation_id' => 'nullable|exists:operations,id',
-            'under_review_id' => 'nullable|exists:under_reviews,id',
             'anesthesia_id' => 'nullable|exists:anesthesias,id',
             'patient_id' => 'nullable|exists:patients,id',
             'department_id' => 'nullable|exists:departments,id',
-            'reject_reason' => 'nullable|string',
         ]);
 
-        // Add the created_by field
-        $validatedData['created_by'] = auth()->id();
-
         // Create the blood bank record
-        $bloodBank = BloodBank::create($validatedData);
-
+        $bloodBank = BloodBank::create([
+            'created_by' => auth()->id(),
+            'group' => $validatedData['group'],
+            'rh' => $validatedData['rh'],
+            'type' => $validatedData['type'],
+            'quantity' => $validatedData['quantity'],
+            'branch_id' => $validatedData['branch_id'],
+            'appointment_id' => $validatedData['appointment_id'],
+            'hospitalization_id' => $validatedData['hospitalization_id'],
+            'anesthesia_id' => $validatedData['anesthesia_id'],
+            'patient_id' => $validatedData['patient_id'],
+            'department_id' => $validatedData['department_id'],
+        ]);
         // Send notification
         SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
 
@@ -115,7 +121,7 @@ class BloodBankController extends Controller
      */
     public function show(BloodBank $bloodBank)
     {
-        return view('pages.blood_banks.show',compact('bloodBank'));
+        return view('pages.blood_banks.show', compact('bloodBank'));
     }
 
     /**
@@ -131,7 +137,25 @@ class BloodBankController extends Controller
      */
     public function update(Request $request, BloodBank $bloodBank)
     {
-        //
+        $validatedData = $request->validate([
+            'group' => 'required|string',
+            'rh' => 'required|string',
+            'type' => 'required|string',
+            'quantity' => 'required|integer',
+          
+        ]);
+        // Update the blood bank record
+        $bloodBank->update([
+                'group' => $validatedData['group'],
+                'rh' => $validatedData['rh'],
+                'type' => $validatedData['type'],
+                'quantity' => $validatedData['quantity'],
+          ]);
+        // Send notification
+        // SendNewBloodBankNotification::dispatch($bloodBank->created_by, $bloodBank->id);
+
+        return redirect()->back()->with('success', localize('global.blood_request_updated_successfully'));
+    
     }
 
     /**
@@ -139,7 +163,8 @@ class BloodBankController extends Controller
      */
     public function destroy(BloodBank $bloodBank)
     {
-        //
+        $bloodBank->delete();
+        return redirect()->back()->with('success', localize('global.blood_request_deleted_successfully'));
     }
 
     public function report()
@@ -150,10 +175,10 @@ class BloodBankController extends Controller
     public function reportSearch(Request $request)
     {
         $query = DB::table('blood_banks as bb')
-        ->leftJoin('patients as p', 'bb.patient_id' , '=', 'p.id')
-        ->leftJoin('departments as d', 'bb.department_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'bb.branch_id' , '=', 'b.id')
-        ->select('bb.id','p.name as patient_name', 'd.name as department_name','b.name as branch_name','bb.status', 'bb.group', 'bb.rh');
+            ->leftJoin('patients as p', 'bb.patient_id', '=', 'p.id')
+            ->leftJoin('departments as d', 'bb.department_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'bb.branch_id', '=', 'b.id')
+            ->select('bb.id', 'p.name as patient_name', 'd.name as department_name', 'b.name as branch_name', 'bb.status', 'bb.group', 'bb.rh');
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -180,8 +205,7 @@ class BloodBankController extends Controller
         }
 
         $items = $query->get();
-    return view('pages.blood_banks.reports.report', ['items' => $items]);
-
+        return view('pages.blood_banks.reports.report', ['items' => $items]);
     }
 
 
@@ -191,11 +215,11 @@ class BloodBankController extends Controller
         $data = json_decode($request->data, true);
 
         $items = DB::table('blood_banks as bb')
-        ->leftJoin('patients as p', 'bb.patient_id' , '=', 'p.id')
-        ->leftJoin('departments as d', 'bb.department_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'bb.branch_id' , '=', 'b.id')
-        ->select('bb.id','p.name as patient_name', 'd.name as department_name','b.name as branch_name','bb.status', 'bb.group', 'bb.rh')
-        ->whereIn('bb.id', $data)->get();
+            ->leftJoin('patients as p', 'bb.patient_id', '=', 'p.id')
+            ->leftJoin('departments as d', 'bb.department_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'bb.branch_id', '=', 'b.id')
+            ->select('bb.id', 'p.name as patient_name', 'd.name as department_name', 'b.name as branch_name', 'bb.status', 'bb.group', 'bb.rh')
+            ->whereIn('bb.id', $data)->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/blood_bank_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
@@ -204,7 +228,7 @@ class BloodBankController extends Controller
             $mpdf = new Mpdf(['format' => 'A4-L']);
             $mpdf->WriteHTML($html);
             $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
+        } else {
             $spreadsheet = $reader->load("report_templates/blood_bank_report.xlsx");
             $sheet = $spreadsheet->getActiveSheet();
             $row = 3;
@@ -227,22 +251,23 @@ class BloodBankController extends Controller
 
                     ),
                 );
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->status);
-                    $sheet->setCellValue('D' . $row . '', $item->group);
-                    $sheet->setCellValue('E' . $row . '', $item->rh);
-                    $sheet->setCellValue('F' . $row . '', $item->department_name);
+                $sheet->setCellValue('A' . $row . '', ++$index);
+                $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                $sheet->setCellValue('C' . $row . '', $item->status);
+                $sheet->setCellValue('D' . $row . '', $item->group);
+                $sheet->setCellValue('E' . $row . '', $item->rh);
+                $sheet->setCellValue('F' . $row . '', $item->department_name);
 
                 $row++;
             }
 
-return $this->exportResponse($spreadsheet);
-}
+            return $this->exportResponse($spreadsheet);
+        }
     }
 
 
-    public function exportResponse($spreadsheet){
+    public function exportResponse($spreadsheet)
+    {
         $writer = new WriterXlsx($spreadsheet);
         $response =  new StreamedResponse(
             function () use ($writer) {
@@ -253,6 +278,5 @@ return $this->exportResponse($spreadsheet);
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
-
     }
 }

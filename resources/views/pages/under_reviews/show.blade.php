@@ -320,68 +320,6 @@
                     </div>
 
 
-                    <div class="modal fade modal-xl" id="showPrescriptionModal{{ $underReview->id }}"
-                        tabindex="-1" aria-labelledby="showPrescriptionModalLabel{{ $underReview->id }}"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="showPrescriptionModalLabel{{ $underReview->id }}">
-                                        {{ localize('global.show_prescription_details') }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ localize('global.number') }}</th>
-                                                <th>{{ localize('global.date') }}</th>
-                                                {{-- <th>{{ localize('global.description') }}</th>
-                                                <th>{{ localize('global.dosage') }}</th>
-                                                <th>{{ localize('global.frequency') }}</th>
-                                                <th>{{ localize('global.amount') }}</th> --}}
-                                                <th>{{ localize('global.status') }}</th>
-                                                <th>{{ localize('global.actions') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if ($underReview->prescription)
-                                                @foreach ($underReview->prescription as $pres_list)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $pres_list->created_at }}</td>
-                                                        <td>{{ $pres_list->is_completed }}</td>
-                                                        <td>
-                                                            <a href="#" data-bs-toggle="modal"
-                                                                onclick="getPrescriptionItems({{ $pres_list->id }})"
-                                                                data-bs-target="#showPrescriptionItemModal"><span><i
-                                                                        class="bx bx-expand"></i></span></a>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            @else
-                                                <tr>
-                                                    <td colspan="5">
-                                                        <div class="container">
-                                                            <div
-                                                                class="col-md-12 d-flex justify-content-center align-items-center">
-                                                                <div class="badge bg-label-danger mt-4">
-                                                                    {{ localize('global.no_previous_prescriptions') }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
 
 
                     <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -610,42 +548,6 @@
                     </table>
 
                 </div>
-                <div class="col-md-12 d-flex justify-content-center">
-                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                            class="bx bx-glasses p-1"></i>{{ localize('global.related_visits') }}</h5>
-                </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>{{ localize('global.number') }}</th>
-                            <th>{{ localize('global.description') }}</th>
-                            <th>{{ localize('global.by') }}</th>
-                            <th>{{ localize('global.visit_date') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($underReview->hospitalization as $single_hospitaliztion)
-                            @foreach ($single_hospitaliztion->visits as $visit)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $visit->description }}</td>
-                                    <td>{{ $visit->doctor->name }}</td>
-                                    <td>
-                                        {{ $visit->created_at }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @empty
-                            <div class="container">
-                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                    <div class=" badge bg-label-danger mt-4">
-                                        {{ localize('global.no_previous_visits') }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforelse
-                    </tbody>
-                </table>
                         {{-- lab tests from underReview --}}
 
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
@@ -791,8 +693,6 @@
                     </div>
 
                         {{-- end lab tests from underReview --}}
-
-
                         {{-- discharge --}}
                         <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                             class="bx bx-walk p-1"></i>{{ localize('global.discharge_patient') }}</h5>
@@ -1049,7 +949,7 @@ prescriptionContainer.appendChild(newRow);
         if (confirm('{{ localize("global.are_you_sure_delete_lab_test") }}')) {
             var form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ route("lab_tests.destroy", ":id") }}'.replace(':id', id);
+            form.action = '{{ route("lab_tests.destroy", 0) }}'.replace(/0$/, id);
 
             var tokenInput = document.createElement('input');
             tokenInput.type = 'hidden';

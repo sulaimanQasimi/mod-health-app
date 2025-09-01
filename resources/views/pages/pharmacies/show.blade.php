@@ -200,7 +200,7 @@
                                     <div class="d-flex justify-content-center pt-3 border-top">
                                         <div class="d-flex gap-2">
                                             @can('pharmacy.edit')
-                                            <a href="{{ route('pharmacies.edit', $pharmacy->id) }}" class="btn btn-success">
+                                            <a href="{{ route('pharmacies.edit', $pharmacy->id) }}" class="btn">
                                                 <i class="bx bx-edit me-1"></i>
                                                 {{ localize('global.edit_pharmacy') }}
                                             </a>
@@ -238,7 +238,7 @@
         }
 
         .page-title-box .breadcrumb-item a {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
         }
 
@@ -264,29 +264,20 @@
         }
 
         .info-item {
-            background: #f8f9fa;
-            border-radius: 8px;
             padding: 1rem;
-            border-left: 4px solid #007bff;
-            transition: all 0.3s ease;
+            border: 1px solid #007bff;
         }
-
-        .info-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
         .info-value {
             font-size: 1rem;
             font-weight: 500;
-            color: #495057;
+            color:rgb(248, 251, 255);
             margin-top: 0.5rem;
             display: flex;
             align-items: center;
         }
 
         .form-label {
-            color: #6c757d;
+            color:rgb(255, 255, 255);
             font-weight: 500;
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
@@ -298,6 +289,15 @@
             border-radius: 8px;
             padding: 0.75rem 1.5rem;
             font-weight: 500;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg,rgb(0, 171, 17) 0%,rgba(0, 167, 47, 0.7) 100%);
+            border: 1px solid white;
+            color: white;
+        }
+        .btn:hover {
+            background: linear-gradient(white,rgb(233, 233, 233));
+            border: 1px solid white;
+            color: black;
             transition: all 0.3s ease;
         }
 

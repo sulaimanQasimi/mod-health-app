@@ -43,7 +43,7 @@ class DiseaseController extends Controller
 
         $disease = Disease::create($validatedData);
 
-        return redirect()->route('diseases.index')->with('success', 'Disease created successfully.');
+        return redirect()->route('diseases.index')->with('success', localize('global.disease_created_successfully.'));
     }
 
     /**
@@ -84,7 +84,7 @@ class DiseaseController extends Controller
 
         $disease->update($validatedData);
 
-        return redirect()->route('diseases.index')->with('success', 'Disease updated successfully.');
+        return redirect()->route('diseases.index')->with('success', localize('global.disease_updated_successfully.'));
     }
 
     /**
@@ -97,6 +97,6 @@ class DiseaseController extends Controller
     {
         $disease->delete();
 
-        return redirect()->route('diseases.index')->with('success', 'Disease deleted successfully.');
+        return redirect()->route('diseases.index')->with('success', localize('global.disease_deleted_successfully.'));
     }
 }

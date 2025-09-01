@@ -163,10 +163,12 @@
 @push('custom-css')
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.css') }}" />
 @endpush
 
 @push('custom-js')
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
 @endpush
 
 @section('scripts')
@@ -317,52 +319,134 @@
 
 
 
-            // AJAX submit (store/update)
-            $(document).on('submit', '.ajax-physio-form', function (e) {
-                e.preventDefault();
-                var $form = $(this);
-                var actionUrl = $form.attr('action');
-                var method = ($form.find('input[name="_method"]').val() || $form.attr('method') || 'POST').toUpperCase();
-                var formData = $form.serialize();
+                    // AJAX submit (store/update) with SweetAlert
+        $(document).on('submit', '.ajax-physio-form', function (e) {
+            e.preventDefault();
+            var $form = $(this);
+            var actionUrl = $form.attr('action');
+            var method = ($form.find('input[name="_method"]').val() || $form.attr('method') || 'POST').toUpperCase();
+            var formData = $form.serialize();
+            var isUpdate = method === 'PUT';
+            
+            // Disable form during submission
+            $form.find('button[type="submit"]').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> {{ localize('global.saving') }}...');
 
-                $.ajax({
-                    url: actionUrl,
-                    type: method,
-                    data: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    success: function (resp) {
-                        // After store/update, fetch latest via JSON list endpoint
-                        if (physioTable) { physioTable.ajax.reload(null, false); }
-                        // close modal
-                        var $modal = $form.closest('.modal');
-                        if ($modal.length) {
-                            $modal.modal('hide');
+            $.ajax({
+                url: actionUrl,
+                type: method,
+                data: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function (resp) {
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: "{{ localize('global.success') }}",
+                        text: isUpdate ? "{{ localize('global.physiotherapy_procedure_updated_successfully') }}" : "{{ localize('global.physiotherapy_procedure_created_successfully') }}",
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        },
+                        buttonsStyling: false,
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    
+                    // Reload table and close modal
+                    if (physioTable) { physioTable.ajax.reload(null, false); }
+                    var $modal = $form.closest('.modal');
+                    if ($modal.length) {
+                        $modal.modal('hide');
+                    }
+                },
+                error: function (xhr) {
+                    // Show error message
+                    let errorMessage = "{{ localize('global.request_failed') }}";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        // Laravel validation errors
+                        let errors = xhr.responseJSON.errors;
+                        errorMessage = Object.values(errors).flat().join('<br>');
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: "{{ localize('global.error') }}",
+                        html: errorMessage,
+                        customClass: {
+                            confirmButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    });
+                },
+                complete: function() {
+                    // Re-enable form
+                    $form.find('button[type="submit"]').prop('disabled', false).html('<i class="bx bx-save me-1"></i>' + (isUpdate ? "{{ localize('global.update') }}" : "{{ localize('global.save') }}"));
+                }
+            });
+        });
+
+                    // AJAX delete with SweetAlert
+        $(document).on('click', '.btn-ajax-physio-delete', function () {
+            var url = $(this).data('url');
+            
+            Swal.fire({
+                title: "{{ localize('global.are_you_sure') }}",
+                text: "{{ localize('global.delete_warning_text') }}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "{{ localize('global.yes_delete') }}",
+                cancelButtonText: "{{ localize('global.cancel') }}",
+                customClass: {
+                    confirmButton: 'btn btn-danger me-3',
+                    cancelButton: 'btn btn-label-secondary'
+                },
+                buttonsStyling: false
+            }).then(function (result) {
+                if (result.value) {
+                    // Show loading
+                    Swal.fire({
+                        title: "{{ localize('global.deleting') }}...",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
                         }
-                        // re-init select2 for any fresh markup inside table (if needed)
-                    },
-                    error: function (xhr) {
-                        alert(xhr.responseJSON?.message || 'Request failed');
-                    }
-                });
+                    });
+                    
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: { _method: 'DELETE', _token: '{{ csrf_token() }}' },
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        success: function (resp) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: "{{ localize('global.deleted') }}",
+                                text: "{{ localize('global.physiotherapy_procedure_deleted_successfully') }}",
+                                customClass: {
+                                    confirmButton: 'btn btn-success'
+                                },
+                                buttonsStyling: false
+                            });
+                            if (physioTable) { physioTable.ajax.reload(null, false); }
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: "{{ localize('global.error') }}",
+                                text: xhr.responseJSON?.message || "{{ localize('global.delete_failed') }}",
+                                customClass: {
+                                    confirmButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            });
+                        }
+                    });
+                }
             });
-
-            // AJAX delete
-            $(document).on('click', '.btn-ajax-physio-delete', function () {
-                var url = $(this).data('url');
-                if (!confirm("{{ localize('global.are_you_sure_delete') }}")) return;
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: { _method: 'DELETE', _token: '{{ csrf_token() }}' },
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    success: function (resp) {
-                        if (physioTable) { physioTable.ajax.reload(null, false); }
-                    },
-                    error: function (xhr) {
-                        alert(xhr.responseJSON?.message || 'Delete failed');
-                    }
-                });
-            });
+        });
 
             function renderStatusBadge(status) {
                 var map = { 'completed': 'success', 'in_progress': 'warning', 'cancelled': 'danger' };
@@ -713,6 +797,17 @@
                     })
                     .fail(function(xhr) {
                         console.error('❌ Physiotherapy Types API failed:', xhr.status, xhr.responseText);
+                        if (xhr.status === 401 || xhr.status === 403) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'API Access Issue',
+                                text: 'Physiotherapy Types API is not accessible. Please check your authentication.',
+                                customClass: {
+                                    confirmButton: 'btn btn-warning'
+                                },
+                                buttonsStyling: false
+                            });
+                        }
                     });
                 
                 // Test physiotherapists
@@ -722,6 +817,17 @@
                     })
                     .fail(function(xhr) {
                         console.error('❌ Physiotherapists API failed:', xhr.status, xhr.responseText);
+                        if (xhr.status === 401 || xhr.status === 403) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'API Access Issue',
+                                text: 'Physiotherapists API is not accessible. Please check your authentication.',
+                                customClass: {
+                                    confirmButton: 'btn btn-warning'
+                                },
+                                buttonsStyling: false
+                            });
+                        }
                     });
             });
 

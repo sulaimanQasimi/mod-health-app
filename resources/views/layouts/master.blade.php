@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
 <html class="light-style layout-navbar-fixed layout-menu-fixed" lang="en"
-      direction="{{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
-      dir="{{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
-      style="direction: {{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
-      data-theme="theme-default" data-assets-path="{{ asset('assets/') }}"
-      data-template="vertical-menu-template-no-customizer">
+    direction="{{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
+    dir="{{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
+    style="direction: {{ session()->has('language') && session()->get('language') == 'en' ? 'ltr' : 'rtl' }}"
+    data-theme="theme-default" data-assets-path="{{ asset('assets/') }}"
+    data-template="vertical-menu-template-no-customizer">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
     <title>{{ localize('global.system_name') }}</title>
 
@@ -19,9 +19,12 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
     <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/core.css')}}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default.css')}}" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default-dark.css')}}" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-semi-dark.css')}}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default.css')}}"
+        class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-default-dark.css')}}"
+        class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/css/rtl/theme-semi-dark.css')}}"
+        class="template-customizer-theme-css" />
 
     <!-- Fonts -->
     @include('layouts.partial.fonts')
@@ -119,7 +122,7 @@
 
 
 <script type="text/javascript">
-    $(function() {
+    $(function () {
 
         initHijrDatePicker();
     });
@@ -151,44 +154,45 @@
     }
 </script>
 <script>
-    $(document).ready(function() {
-    $('[name = themeRadios]').click(function() {
-        window.location.reload();
+    $(document).ready(function () {
+        $('[name = themeRadios]').click(function () {
+            window.location.reload();
+        });
+
+        $('.template-customizer-t-panel_header').html("{{localize('global.system_theme_settings')}}");
+        $('.template-customizer-t-panel_sub_header').html("{{localize('global.system_theme_subtext')}}");
+        $('.template-customizer-t-theming_header').html("{{localize('global.system_theme_system_styles')}}");
+        $('.template-customizer-t-theme_label').html("{{localize('global.system_theme_styles')}}");
+        $('[for = themeRadiostheme-default]').html("{{localize('global.system_theme_default')}}");
+        $('[for = themeRadiostheme-semi-dark]').html("{{localize('global.system_theme_semi_dark')}}");
+        $('[for = themeRadiostheme-bordered]').html("{{localize('global.system_theme_bordered')}}");
+        $('.template-customizer-t-style_label').html("{{localize('global.system_theme_dark')}}");
+        $('.template-customizer-t-style_switch_light').html("{{localize('global.system_theme_switch_light')}}");
+        $('.template-customizer-t-style_switch_dark').html("{{localize('global.system_theme_switch_dark')}}");
+        $('.template-customizer-t-layout_header').html("{{localize('global.system_theme_system_layout')}}");
+        $('.template-customizer-t-layout_label').html("{{localize('global.system_theme_layouts')}}");
+
+        $('[for = layoutRadios-static]').html("{{localize('global.system_theme_static')}}");
+        $('[for = layoutRadios-fixed]').html("{{localize('global.system_theme_fixed')}}");
+        $('.template-customizer-t-layout_navbar_label').html("{{localize('global.system_theme_fixed_navbar')}}");
+        $('.template-customizer-t-layout_footer_label').html("{{localize('global.system_theme_fixed_footer')}}");
+        $('.template-customizer-t-layout_dd_open_label').html("{{localize('global.system_theme_dropdown')}}");
+
+
+        $('.template-customizer-t-misc_header').html("{{localize('global.system_theme_misc')}}");
+        $('.template-customizer-t-rtl_label').html("{{localize('global.system_theme_rtl')}}");
+
+
+
+
     });
-
-    $('.template-customizer-t-panel_header').html("{{localize('global.system_theme_settings')}}");
-    $('.template-customizer-t-panel_sub_header').html("{{localize('global.system_theme_subtext')}}");
-    $('.template-customizer-t-theming_header').html("{{localize('global.system_theme_system_styles')}}");
-    $('.template-customizer-t-theme_label').html("{{localize('global.system_theme_styles')}}");
-    $('[for = themeRadiostheme-default]').html("{{localize('global.system_theme_default')}}");
-    $('[for = themeRadiostheme-semi-dark]').html("{{localize('global.system_theme_semi_dark')}}");
-    $('[for = themeRadiostheme-bordered]').html("{{localize('global.system_theme_bordered')}}");
-    $('.template-customizer-t-style_label').html("{{localize('global.system_theme_dark')}}");
-    $('.template-customizer-t-style_switch_light').html("{{localize('global.system_theme_switch_light')}}");
-    $('.template-customizer-t-style_switch_dark').html("{{localize('global.system_theme_switch_dark')}}");
-    $('.template-customizer-t-layout_header').html("{{localize('global.system_theme_system_layout')}}");
-    $('.template-customizer-t-layout_label').html("{{localize('global.system_theme_layouts')}}");
-
-    $('[for = layoutRadios-static]').html("{{localize('global.system_theme_static')}}");
-    $('[for = layoutRadios-fixed]').html("{{localize('global.system_theme_fixed')}}");
-    $('.template-customizer-t-layout_navbar_label').html("{{localize('global.system_theme_fixed_navbar')}}");
-    $('.template-customizer-t-layout_footer_label').html("{{localize('global.system_theme_fixed_footer')}}");
-    $('.template-customizer-t-layout_dd_open_label').html("{{localize('global.system_theme_dropdown')}}");
-
-
-    $('.template-customizer-t-misc_header').html("{{localize('global.system_theme_misc')}}");
-    $('.template-customizer-t-rtl_label').html("{{localize('global.system_theme_rtl')}}");
-
-
-
-
-});
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-  $(".datepicker_dari").persianDatepicker({
-    formatDate: 'YYYY-MM-DD'
-});
-});
+        $(".datepicker_dari").persianDatepicker({
+            formatDate: 'YYYY-MM-DD'
+        });
+    });
 </script>
+
 </html>

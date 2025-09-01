@@ -113,4 +113,9 @@ class Appointment extends Model
     {
         return $this->hasMany(Advice::class);
     }
+
+    public function physiotherapyProcedures()
+    {
+        return $this->hasMany(PhysiotherapyProcedure::class);
+    }
 }

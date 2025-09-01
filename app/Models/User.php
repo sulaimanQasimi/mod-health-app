@@ -118,4 +118,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Pharmacy::class);
     }
+
+    public function physiotherapyProcedures()
+    {
+        return $this->hasMany(PhysiotherapyProcedure::class, 'physiotherapist_id');
+    }
 }

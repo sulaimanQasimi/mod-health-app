@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\SelectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::controller(SelectController::class)
+    ->prefix('select/')->group(function () {
+        Route::get('/physiotherapy-types', 'getPhysiotherapyTypes');
+        Route::get('/physiotherapists', 'getPhysiotherapists');
+        Route::get('/users', 'users');
+    });

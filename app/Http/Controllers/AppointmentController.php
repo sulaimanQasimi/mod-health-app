@@ -169,8 +169,12 @@ class AppointmentController extends Controller
         $foodTypes = FoodType::all();
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
+        
+        // Add physiotherapy data
+        $physiotherapyTypes = \App\Models\PhysiotherapyType::all();
+        $physiotherapists = User::where('branch_id', auth()->user()->branch_id)->get();
 
-        return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'labTypeSections', 'branches', 'operationTypes', 'operation_doctors', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes'));
+        return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'labTypeSections', 'branches', 'operationTypes', 'operation_doctors', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes', 'physiotherapyTypes', 'physiotherapists'));
     }
 
     public function destroy(Appointment $appointment)

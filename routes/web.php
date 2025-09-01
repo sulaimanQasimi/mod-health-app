@@ -55,6 +55,8 @@ use App\Http\Controllers\PrescriptionStockController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\OutcomeController;
 use App\Http\Controllers\PharmacyController;
+use App\Http\Controllers\PhysiotherapyProcedureController;
+use App\Http\Controllers\PhysiotherapyReportController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -656,6 +658,31 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('report-search', [OutcomeController::class, 'reportSearch'])->name('report-search');
             Route::post('export-report', [OutcomeController::class, 'exportReport'])->name('export-report');
         });
+
+
+
+    // Physiotherapy Procedure routes (only for modals in appointment show page)
+    Route::prefix('physiotherapy-procedures')
+        ->middleware('permission:show-physiotherapy-menu')
+        ->name('physiotherapy-procedures.')->group(function () {
+            Route::get('/', [PhysiotherapyProcedureController::class, 'index'])->name('index');
+            Route::get('{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'show'])->name('show');
+            Route::post('store', [PhysiotherapyProcedureController::class, 'store'])->name('store');
+            Route::put('{physiotherapyProcedure}/update', [PhysiotherapyProcedureController::class, 'update'])->name('update');
+            Route::delete('{physiotherapyProcedure}/destroy', [PhysiotherapyProcedureController::class, 'destroy'])->name('destroy');
+            Route::post('update-counter/{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'updateCounter'])->name('update-counter');
+            Route::get('by-appointment/{appointment}', [PhysiotherapyProcedureController::class, 'getByAppointment'])->name('by-appointment');
+        });
+
+        // Physiotherapy Reports routes
+        Route::prefix('physiotherapy-reports')
+            ->middleware('permission:show-physiotherapy-reports')
+            ->name('physiotherapy-reports.')->group(function () {
+                
+                Route::get('index', [PhysiotherapyReportController::class, 'index'])->name('index');
+                Route::post('generate', [PhysiotherapyReportController::class, 'generateReport'])->name('generate');
+                Route::post('export', [PhysiotherapyReportController::class, 'exportReport'])->name('export');
+            });
 
     // General routes
     Route::get('/notification/mark-as-read/{notification}', [NotificationController::class, 'markAsRead'])->name('notification.mark_as_read');

@@ -208,7 +208,7 @@
         }
 
         .page-title-box .breadcrumb-item a {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
         }
 
@@ -228,13 +228,13 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
             border-bottom: 1px solid #dee2e6;
             padding: 1.5rem;
         }
 
         .form-label {
-            color: #495057;
+            color:rgb(255, 255, 255);
             font-weight: 500;
             margin-bottom: 0.5rem;
         }

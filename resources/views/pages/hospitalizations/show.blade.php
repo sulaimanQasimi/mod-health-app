@@ -786,7 +786,9 @@
                                                 <input type="hidden" id="patient_id{{ $hospitalization->patient_id }}"
                                                     name="patient_id" value="{{ $hospitalization->patient_id }}">
                                                 <input type="hidden" id="appointment_id{{ $hospitalization->id }}"
-                                                    name="appointment_id" value="{{ $hospitalization->id }}">
+                                                    name="appointment_id" value="{{ $hospitalization->appointment->id }}">
+                                                <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
+                                                    name="hospitalization_id" value="{{ $hospitalization->id }}">
                                                 <input type="hidden" id="doctor_id{{ $hospitalization->id }}"
                                                     name="doctor_id" value="{{ auth()->user()->id }}">
                                                 <input type="hidden" id="branch_id{{ $hospitalization->id }}"
@@ -845,53 +847,22 @@
                                                 </td>
                                             </tr>
                                         @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.not_referred_to_icu') }}
+                                            <tr>
+                                                <td colspan="5">
+                                                    <div class="container">
+                                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
+                                                            <div class=" badge bg-label-danger mt-4">
+                                                                {{ localize('global.not_referred_to_icu') }}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
+                                                </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-md-12 d-flex justify-content-center">
-                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-glasses p-1"></i>{{ localize('global.related_icu_visits') }}</h5>
-                            </div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.visit_date') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($hospitalization->icu as $icu)
-                                        @forelse($icu->visits as $visit)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $visit->description }}</td>
-                                                <td>{{ $visit->doctor->name }}</td>
-                                                <td>
-                                                    {{ $visit->created_at }}
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_visits') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforelse
-                                    @endforeach
-                                </tbody>
-                            </table>
+
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-first-aid p-1"></i>{{ localize('global.refere_to_anasthesia') }}</h5>

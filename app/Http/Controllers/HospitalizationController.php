@@ -207,7 +207,7 @@ class HospitalizationController extends Controller
         $occupied_bed->update(['is_occupied' => false]);
         $occupied_bed->save();
 
-        return redirect()->route('hospitalizations.index')->with('success', localize('global.hospitalization_updated_successfully.'));
+        return redirect()->route('hospitalizations.show', $hospitalization)->with('success', localize('global.hospitalization_updated_successfully.'));
     }
 
     /**

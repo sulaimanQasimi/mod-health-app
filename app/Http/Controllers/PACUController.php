@@ -96,14 +96,13 @@ class PACUController extends Controller
     public function update(Request $request, PACU $pacu)
     {
         $data = $request->validate([
-            'status' => 'nullable',
-
+            'description' => 'required|string',
+            'status' => 'required|in:new,completed',
         ]);
 
         $pacu->update($data);
 
-
-        return redirect()->route('pacus.new')->with('success', localize('global.pacu_updated_successfully.'));
+        return redirect()->back()->with('success', localize('global.pacu_updated_successfully.'));
     }
 
     /**
@@ -111,7 +110,8 @@ class PACUController extends Controller
      */
     public function destroy(PACU $pacu)
     {
-        //
+        $pacu->delete();
+        return redirect()->back()->with('success', localize('global.pacu_deleted_successfully.'));
     }
 
     public function complete($pacuId)

@@ -438,7 +438,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [OperationController::class, 'store'])->name('store');
         Route::get('edit/{operation}', [OperationController::class, 'edit'])->name('edit');
         Route::put('update/{operation}', [OperationController::class, 'update'])->name('update');
-        Route::put('complete/{operation}', [OperationController::class, 'complete'])->name('complete');
+        Route::put('complete/{operation:id}', [OperationController::class, 'complete'])->name('complete');
         Route::get('destroy/{operation}', [OperationController::class, 'destroy'])->name('destroy');
         Route::put('/operation/{operationId}/reserve', [OperationController::class, 'reserveOperation'])->name('reserve');
         Route::get('/operation/{operationId}/unreserve', [OperationController::class, 'unreserveOperation'])->name('unreserve');
@@ -476,7 +476,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [PACUController::class, 'store'])->name('store');
         Route::get('edit/{pacu}', [PACUController::class, 'edit'])->name('edit');
         Route::put('update/{pacu}', [PACUController::class, 'update'])->name('update');
-        Route::get('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{pacu}', [PACUController::class, 'destroy'])->name('destroy');
         Route::get('complete/{pacuId}', [PACUController::class, 'complete'])->name('complete');
         Route::get('report', [PACUController::class, 'report'])->name('report');
         Route::post('report-search', [PACUController::class, 'ReportSearch'])->name('report-search');
@@ -581,7 +581,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store', [BloodBankController::class, 'store'])->name('store');
         Route::get('edit/{bloodBank}', [BloodBankController::class, 'edit'])->name('edit');
         Route::put('update/{bloodBank}', [BloodBankController::class, 'update'])->name('update');
-        Route::get('destroy/{bloodBank}', [BloodBankController::class, 'destroy'])->name('destroy');
+        Route::delete('destroy/{bloodBank}', [BloodBankController::class, 'destroy'])->name('destroy');
         Route::get('approve/{bloodBank}', [BloodBankController::class, 'approve'])->name('approve');
         Route::get('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
         Route::put('reject/{bloodBank}', [BloodBankController::class, 'reject'])->name('reject');

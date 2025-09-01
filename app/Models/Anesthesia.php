@@ -85,7 +85,7 @@ class Anesthesia extends Model
 
     public function bloodBanks()
     {
-        return $this->hasMany(BloodBank::class, 'operation_id', 'id');
+        return $this->hasMany(BloodBank::class, 'anesthesia_id', 'id');
     }
 
     public function pacus()
@@ -126,5 +126,9 @@ class Anesthesia extends Model
         return $query->where('is_reserved', 1);
     }
 
+    public function hospitalization()
+    {
+        return $this->appointment->hospitalization;
+    }
 
 }

@@ -17,6 +17,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
 use App\Models\OperationType;
+
 class OperationController extends Controller
 {
 
@@ -82,7 +83,7 @@ class OperationController extends Controller
         $beds = Bed::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
-        return view('pages.operations.show',compact('operation','operation_doctors','rooms','beds','foodTypes','relations'));
+        return view('pages.operations.show', compact('operation', 'operation_doctors', 'rooms', 'beds', 'foodTypes', 'relations'));
     }
 
     /**
@@ -118,14 +119,10 @@ class OperationController extends Controller
             $operation->reserve();
             $operation->update($data);
             return redirect()->route('operations.reserved')->with('success', localize('global.operation_reserved_successfully.'));
-        }
-
-        elseif (isset($data['date']) && $data['date'] < $operation->date) {
+        } elseif (isset($data['date']) && $data['date'] < $operation->date) {
             $operation->update($data);
             return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
-        }
-
-        else {
+        } else {
             $operation->update($data);
             return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
         }
@@ -143,6 +140,15 @@ class OperationController extends Controller
         return redirect()->route('operations.new')->with('success', localize('global.operation_updated_successfully.'));
     }
 
+    /**
+     * 
+     * This complete the operation and return the success message 
+     * if the bed is occupied, it releases the bed
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Anesthesia $operation
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function complete(Request $request, Anesthesia $operation)
     {
         $data = $request->validate([
@@ -154,13 +160,14 @@ class OperationController extends Controller
 
         ]);
 
-        $data['room_id'] = $operation->room->id ?? '';
-        $data['bed_id'] = $operation->bed->id ?? '';
+        $data['room_id'] = $operation->room->id ?? null;
+        $data['bed_id'] = $operation->bed->id ?? null;
 
-        $occupied_bed = Bed::findOrFail($data['bed_id']);
-
-        $occupied_bed->update(['is_occupied' => false]);
-        $occupied_bed->save();
+        $occupied_bed = Bed::find($data['bed_id']);
+        if ($occupied_bed) {
+            $occupied_bed->update(['is_occupied' => false]);
+            $occupied_bed->save();
+        }
 
         $operation->update($data);
 
@@ -208,14 +215,26 @@ class OperationController extends Controller
     public function reportSearch(Request $request)
     {
         $query = DB::table('anesthesias as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->leftJoin('users as u', 'a.operation_surgion_id' , '=', 'u.id')
-        ->leftJoin('operation_types as ot', 'a.operation_type_id' , '=', 'ot.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name',
-        'b.name as branch_name', 'a.status', 'a.anesthesia_type', 'a.date', 'a.time',
-        'u.name as operation_surgion_name', 'ot.name as operation_type_name', 'a.is_operation_done', 'a.is_operation_approved', 'a.is_reserved');
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->leftJoin('users as u', 'a.operation_surgion_id', '=', 'u.id')
+            ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
+            ->select(
+                'a.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'a.status',
+                'a.anesthesia_type',
+                'a.date',
+                'a.time',
+                'u.name as operation_surgion_name',
+                'ot.name as operation_type_name',
+                'a.is_operation_done',
+                'a.is_operation_approved',
+                'a.is_reserved'
+            );
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -246,8 +265,7 @@ class OperationController extends Controller
         }
 
         $items = $query->get();
-    return view('pages.operations.reports.report', ['items' => $items]);
-
+        return view('pages.operations.reports.report', ['items' => $items]);
     }
 
 
@@ -257,15 +275,27 @@ class OperationController extends Controller
         $data = json_decode($request->data, true);
 
         $items = DB::table('anesthesias as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->leftJoin('users as u', 'a.operation_surgion_id' , '=', 'u.id')
-        ->leftJoin('operation_types as ot', 'a.operation_type_id' , '=', 'ot.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name',
-        'b.name as branch_name', 'a.status', 'a.anesthesia_type', 'a.date', 'a.time',
-        'u.name as operation_surgion_name', 'ot.name as operation_type_name', 'a.is_operation_done', 'a.is_operation_approved', 'a.is_reserved')
-        ->whereIn('a.id', $data)->get();
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->leftJoin('users as u', 'a.operation_surgion_id', '=', 'u.id')
+            ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
+            ->select(
+                'a.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'a.status',
+                'a.anesthesia_type',
+                'a.date',
+                'a.time',
+                'u.name as operation_surgion_name',
+                'ot.name as operation_type_name',
+                'a.is_operation_done',
+                'a.is_operation_approved',
+                'a.is_reserved'
+            )
+            ->whereIn('a.id', $data)->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/operations_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
@@ -274,7 +304,7 @@ class OperationController extends Controller
             $mpdf = new Mpdf(['format' => 'A4-L']);
             $mpdf->WriteHTML($html);
             $mpdf->Output('pdf_report.pdf', 'D');
-        }else {
+        } else {
             $spreadsheet = $reader->load("report_templates/operations_report.xlsx");
             $sheet = $spreadsheet->getActiveSheet();
             $row = 3;
@@ -304,42 +334,43 @@ class OperationController extends Controller
                 $operation_done = '';
                 if ($item->is_operation_done == '0') {
                     $operation_done = 'نااجراء';
-                }else {
+                } else {
                     $operation_done = 'تکمیل';
                 }
 
                 $operation_approved = '';
                 if ($item->is_operation_approved == '0') {
                     $operation_approved = 'تائید ناشده';
-                }else {
+                } else {
                     $operation_approved = 'تائید شده';
                 }
 
                 $reserved = '';
                 if ($item->is_reserved == '0') {
                     $reserved = 'ریزرف ناشده';
-                }else {
+                } else {
                     $reserved = 'ریزرف شده';
                 }
-                    $sheet->setCellValue('A' . $row . '', ++$index);
-                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                    $sheet->setCellValue('C' . $row . '', $item->operation_surgion_name);
-                    $sheet->setCellValue('D' . $row . '', $operation_done);
-                    $sheet->setCellValue('E' . $row . '', $operation_approved);
-                    $sheet->setCellValue('F' . $row . '', $reserved);
-                    $sheet->setCellValue('G' . $row . '', $item->operation_type_name);
-                    $sheet->setCellValue('H' . $row . '', $item->date);
-                    $sheet->setCellValue('I' . $row . '', $item->time);
+                $sheet->setCellValue('A' . $row . '', ++$index);
+                $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                $sheet->setCellValue('C' . $row . '', $item->operation_surgion_name);
+                $sheet->setCellValue('D' . $row . '', $operation_done);
+                $sheet->setCellValue('E' . $row . '', $operation_approved);
+                $sheet->setCellValue('F' . $row . '', $reserved);
+                $sheet->setCellValue('G' . $row . '', $item->operation_type_name);
+                $sheet->setCellValue('H' . $row . '', $item->date);
+                $sheet->setCellValue('I' . $row . '', $item->time);
 
                 $row++;
             }
 
-return $this->exportResponse($spreadsheet);
-}
+            return $this->exportResponse($spreadsheet);
+        }
     }
 
 
-    public function exportResponse($spreadsheet){
+    public function exportResponse($spreadsheet)
+    {
         $writer = new WriterXlsx($spreadsheet);
         $response =  new StreamedResponse(
             function () use ($writer) {
@@ -350,6 +381,5 @@ return $this->exportResponse($spreadsheet);
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
-
     }
 }

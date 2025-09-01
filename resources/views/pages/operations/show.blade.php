@@ -709,7 +709,8 @@
                                                                 data-bs-target="#editPACUModal{{ $pacu->id }}">
                                                                 <i class="bx bx-edit"></i>
                                                             </button>
-                                                            <form action="{{ route('pacus.destroy', $pacu->id) }}" method="POST" style="display: inline;">
+                                                            <form action="{{ route('pacus.destroy', $pacu->id) }}" method="POST"
+                                                                style="display: inline;">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="btn btn-sm btn-danger"
@@ -751,20 +752,22 @@
                                                         <form action="{{ route('pacus.update', $pacu) }}" method="POST">
                                                             @csrf
                                                             @method('PUT')
-                                                            
+
                                                             <div class="mb-3">
                                                                 <label for="edit_description{{ $pacu->id }}"
                                                                     class="form-label">{{ localize('global.description') }}</label>
                                                                 <textarea class="form-control" id="edit_description{{ $pacu->id }}"
-                                                                    name="description" rows="3" required>{{ $pacu->description }}</textarea>
+                                                                    name="description" rows="3"
+                                                                    required>{{ $pacu->description }}</textarea>
                                                             </div>
-                                                            
+
                                                             <div class="mb-3">
                                                                 <label for="edit_status{{ $pacu->id }}"
                                                                     class="form-label">{{ localize('global.status') }}</label>
                                                                 <select class="form-control form-select" name="status"
                                                                     id="edit_status{{ $pacu->id }}" required>
-                                                                    <option value="new" {{ $pacu->status == 'new' ? 'selected' : '' }}>{{ localize('global.new') }}</option>
+                                                                    <option value="new" {{ $pacu->status == 'new' ? 'selected' : '' }}>
+                                                                        {{ localize('global.new') }}</option>
                                                                     <option value="completed" {{ $pacu->status == 'completed' ? 'selected' : '' }}>{{ localize('global.completed') }}</option>
                                                                 </select>
                                                             </div>
@@ -1059,20 +1062,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Hospitalization Table -->
                                     <div class="col-md-12 mt-4">
                                         <div class="card shadow-sm">
                                             <div class="card-body">
-                                                <!-- Debug Info -->
-                                                <div class="alert alert-info mb-3">
-                                                    <strong>Debug Info:</strong><br>
-                                                    Operation ID: {{ $operation->id }}<br>
-                                                    Appointment ID: {{ $operation->appointment->id ?? 'N/A' }}<br>
-                                                    Hospitalization Count: {{ $operation->hospitalization->count() }}<br>
-                                                    Patient ID: {{ $operation->patient_id }}
-                                                </div>
-                                                
                                                 @if($operation->hospitalization->count() > 0)
                                                     <div class="table-responsive">
                                                         <table class="table table-striped table-hover">
@@ -1091,21 +1085,26 @@
                                                                 @foreach ($operation->hospitalization as $hospitalization)
                                                                     <tr>
                                                                         <td>
-                                                                            <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
+                                                                            <span
+                                                                                class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
                                                                         </td>
                                                                         <td>{{ $hospitalization->reason }}</td>
                                                                         <td>{{ $hospitalization->remarks }}</td>
                                                                         <td>
-                                                                            <span class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
+                                                                            <span
+                                                                                class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
                                                                         </td>
                                                                         <td>
-                                                                            <span class="badge bg-info">{{ $hospitalization->bed->number }}</span>
+                                                                            <span
+                                                                                class="badge bg-info">{{ $hospitalization->bed->number }}</span>
                                                                         </td>
                                                                         <td>
                                                                             @if ($hospitalization->is_discharged == 0)
-                                                                                <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                                                                <span
+                                                                                    class="badge bg-danger">{{ localize('global.in_bed') }}</span>
                                                                             @else
-                                                                                <span class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                                <span
+                                                                                    class="badge bg-success">{{ localize('global.discharged') }}</span>
                                                                             @endif
                                                                         </td>
                                                                         <td>
@@ -1310,21 +1309,26 @@
                                                                 @foreach ($operation->under_reviews as $underReview)
                                                                     <tr>
                                                                         <td>
-                                                                            <span class="badge bg-warning rounded-pill">{{ $loop->iteration }}</span>
+                                                                            <span
+                                                                                class="badge bg-warning rounded-pill">{{ $loop->iteration }}</span>
                                                                         </td>
                                                                         <td>{{ $underReview->reason }}</td>
                                                                         <td>{{ $underReview->remarks }}</td>
                                                                         <td>
-                                                                            <span class="badge bg-secondary">{{ $underReview->room->name }}</span>
+                                                                            <span
+                                                                                class="badge bg-secondary">{{ $underReview->room->name }}</span>
                                                                         </td>
                                                                         <td>
-                                                                            <span class="badge bg-info">{{ $underReview->bed->number }}</span>
+                                                                            <span
+                                                                                class="badge bg-info">{{ $underReview->bed->number }}</span>
                                                                         </td>
                                                                         <td>
                                                                             @if ($underReview->is_discharged == '0')
-                                                                                <span class="badge bg-warning">{{ localize('global.under_review') }}</span>
+                                                                                <span
+                                                                                    class="badge bg-warning">{{ localize('global.under_review') }}</span>
                                                                             @else
-                                                                                <span class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                                <span
+                                                                                    class="badge bg-success">{{ localize('global.discharged') }}</span>
                                                                             @endif
                                                                         </td>
                                                                         <td>

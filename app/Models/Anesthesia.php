@@ -128,7 +128,14 @@ class Anesthesia extends Model
 
     public function hospitalization()
     {
-        return $this->appointment->hospitalization;
+        return $this->hasManyThrough(
+            Hospitalization::class,
+            Appointment::class,
+            'id', // Foreign key on appointments table
+            'appointment_id', // Foreign key on hospitalizations table
+            'appointment_id', // Local key on anesthesias table
+            'id' // Local key on appointments table
+        );
     }
 
 }

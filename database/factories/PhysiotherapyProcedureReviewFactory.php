@@ -22,6 +22,7 @@ class PhysiotherapyProcedureReviewFactory extends Factory
             'physiotherapy_procedure_id' => PhysiotherapyProcedure::factory(),
             'description' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed', 'cancelled']),
+            'days_count' => $this->faker->numberBetween(0, 30),
             'created_by' => User::factory(),
             'updated_by' => User::factory(),
         ];

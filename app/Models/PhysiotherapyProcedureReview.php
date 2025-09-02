@@ -15,7 +15,8 @@ class PhysiotherapyProcedureReview extends Model
     protected $fillable = [
         'physiotherapy_procedure_id',
         'description',
-        'status'
+        'status',
+        'days_count'
     ];
 
     protected $casts = [

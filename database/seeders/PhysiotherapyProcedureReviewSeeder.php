@@ -28,13 +28,14 @@ class PhysiotherapyProcedureReviewSeeder extends Seeder
             $reviewCount = rand(1, 3);
             
             for ($i = 0; $i < $reviewCount; $i++) {
-                PhysiotherapyProcedureReview::create([
-                    'physiotherapy_procedure_id' => $procedure->id,
-                    'description' => $this->getSampleDescription(),
-                    'status' => $this->getRandomStatus(),
-                    'created_by' => $users->random()->id,
-                    'updated_by' => $users->random()->id,
-                ]);
+                                 PhysiotherapyProcedureReview::create([
+                     'physiotherapy_procedure_id' => $procedure->id,
+                     'description' => $this->getSampleDescription(),
+                     'status' => $this->getRandomStatus(),
+                     'days_count' => rand(0, 30),
+                     'created_by' => $users->random()->id,
+                     'updated_by' => $users->random()->id,
+                 ]);
             }
         });
     }

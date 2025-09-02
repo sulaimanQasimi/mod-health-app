@@ -433,41 +433,6 @@
             </li>
         @endcan
 
-   
-
-        {{-- @can('show-reports-menu')
-        <li class="menu-item {{ Route::is('reports.*') ? 'active open' : '' }}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-line-chart text-primary"></i>
-                <div>{{ localize('global.reports') }}</div>
-            </a>
-
-            <ul class="menu-sub">
-                <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
-                        <div>{{ localize('global.reports') }}</div>
-                    </a>
-                </li>
-                <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
-                        <div>{{ localize('global.reports') }}</div>
-                    </a>
-                </li>
-
-                <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
-                        <div>{{ localize('global.reports') }}</div>
-                    </a>
-                </li>
-
-                <li class="menu-item {{ Route::is('reports.index') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
-                        <div>{{ localize('global.reports') }}</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        @endcan --}}
 
         @can('show-settings-menu')
             <li

@@ -19,33 +19,48 @@ class PhysiotherapyReportController extends Controller
 
     public function generateReport(Request $request)
     {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-        ]);
+        try {
+            $request->validate([
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+            ]);
 
-        $startDate = Verta::parse($request->start_date)->datetime();
-        $endDate = Verta::parse($request->end_date)->datetime();
+            $startDate = Verta::parse($request->start_date)->datetime();
+            $endDate = Verta::parse($request->end_date)->datetime();
 
-        \Log::info('Generating physiotherapy report', [
-            'start_date' => $startDate,
-            'end_date' => $endDate
-        ]);
+            \Log::info('Generating physiotherapy report', [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'request_start' => $request->start_date,
+                'request_end' => $request->end_date
+            ]);
 
-        // Generate all report types for the date range
-        $data = [
-            'summary' => $this->generateSummaryReport($startDate, $endDate),
-            'detailed' => $this->generateDetailedReport($startDate, $endDate),
-            'by_type' => $this->generateByTypeReport($startDate, $endDate),
-            'by_physiotherapist' => $this->generateByPhysiotherapistReport($startDate, $endDate)
-        ];
+            // Generate all report types for the date range
+            $data = [
+                'summary' => $this->generateSummaryReport($startDate, $endDate),
+                'detailed' => $this->generateDetailedReport($startDate, $endDate),
+                'by_type' => $this->generateByTypeReport($startDate, $endDate),
+                'by_physiotherapist' => $this->generateByPhysiotherapistReport($startDate, $endDate)
+            ];
 
-        \Log::info('Generated report data structure', [
-            'data_keys' => array_keys($data),
-            'data_structure' => $data
-        ]);
+            \Log::info('Generated report data structure', [
+                'data_keys' => array_keys($data),
+                'summary_count' => isset($data['summary']['procedures']) ? $data['summary']['procedures']->count() : 0,
+                'detailed_count' => $data['detailed']->count(),
+                'by_type_count' => $data['by_type']->count(),
+                'by_physiotherapist_count' => isset($data['by_physiotherapist']['physiotherapists']) ? $data['by_physiotherapist']['physiotherapists']->count() : 0
+            ]);
 
-        return view('pages.physiotherapy.reports.result', compact('data', 'startDate', 'endDate'));
+            return view('pages.physiotherapy.reports.result', compact('data', 'startDate', 'endDate'));
+            
+        } catch (\Exception $e) {
+            \Log::error('Error generating physiotherapy report: ' . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withErrors(['error' => 'Error generating report: ' . $e->getMessage()]);
+        }
     }
 
     public function generateSummaryReport($startDate, $endDate)
@@ -173,9 +188,13 @@ class PhysiotherapyReportController extends Controller
 
     private function exportToPdf($data, $startDate, $endDate)
     {
-        // Implementation for PDF export
-        // You can use packages like dompdf or mPDF
-        return response()->json(['message' => 'PDF export functionality to be implemented']);
+        // Basic PDF export implementation
+        $html = view('pages.physiotherapy.reports.pdf', compact('data', 'startDate', 'endDate'))->render();
+        
+        // For now, return the HTML view - you can integrate with dompdf or mPDF later
+        return response($html)
+            ->header('Content-Type', 'text/html')
+            ->header('Content-Disposition', 'attachment; filename="physiotherapy_report_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.html"');
     }
 
     private function exportToExcel($data, $startDate, $endDate)

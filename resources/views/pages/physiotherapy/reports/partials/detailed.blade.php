@@ -1,7 +1,7 @@
 <div class="detailed-report">
     <h6>{{ localize('global.detailed_procedure_list') }}</h6>
     
-    @if($data['procedures']->count() > 0)
+    @if(isset($data['detailed']) && $data['detailed']->count() > 0)
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -20,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($data['procedures'] as $procedure)
+                @foreach($data['detailed'] as $procedure)
                 <tr>
                     <td>{{ $procedure->id }}</td>
                     <td>{{ $procedure->appointment->patient->name ?? 'N/A' }}</td>
@@ -52,8 +52,8 @@
         </table>
     </div>
 
-    <div class="d-flex justify-content-center mt-4">
-        {{ $data['procedures']->appends(request()->query())->links() }}
+    <div class="text-center mt-4">
+        <small class="text-muted">{{ localize('global.showing_all_procedures') }} ({{ $data['detailed']->count() }} {{ localize('global.total') }})</small>
     </div>
     @else
     <div class="text-center py-4">

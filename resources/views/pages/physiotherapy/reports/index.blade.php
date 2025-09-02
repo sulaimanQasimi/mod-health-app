@@ -19,7 +19,7 @@
                                     <div class="form-group mb-3">
                                         <label for="start_date" class="form-label">{{ localize('global.start_date') }} <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('start_date') is-invalid @enderror"
+                                        <input type="text" class="form-control datepicker_dari pdp-el persian-date @error('start_date') is-invalid @enderror"
                                             dir="ltr" id="start_date" name="start_date" value="" required readonly>
                                         @error('start_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -30,7 +30,7 @@
                                     <div class="form-group mb-3">
                                         <label for="end_date" class="form-label">{{ localize('global.end_date') }} <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('end_date') is-invalid @enderror"
+                                        <input type="text" class="form-control datepicker_dari pdp-el persian-date @error('end_date') is-invalid @enderror"
                                             dir="ltr" id="end_date" name="end_date" value="" required readonly>
                                         @error('end_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -99,46 +99,20 @@
         // Initialize Persian Datepicker
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize start date picker
-            $('#start_date').persianDatepicker({
-                format: 'YYYY/MM/DD',
-                initialValue: true,
-                autoClose: true,
-                persianNumbers: true,
-                onSelect: function(unix) {
-                    // Convert Persian date to Gregorian for form submission
-                    var gregorianDate = new Date(unix);
-                    var formattedDate = gregorianDate.getFullYear() + '-' + 
-                                      String(gregorianDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                      String(gregorianDate.getDate()).padStart(2, '0');
-                    $('#start_date').val(formattedDate);
-                }
-            });
+            // $('#start_date').persianDatepicker();
 
-            // Initialize end date picker
-            $('#end_date').persianDatepicker({
-                format: 'YYYY/MM/DD',
-                initialValue: true,
-                autoClose: true,
-                persianNumbers: true,
-                onSelect: function(unix) {
-                    // Convert Persian date to Gregorian for form submission
-                    var gregorianDate = new Date(unix);
-                    var formattedDate = gregorianDate.getFullYear() + '-' + 
-                                      String(gregorianDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                      String(gregorianDate.getDate()).padStart(2, '0');
-                    $('#end_date').val(formattedDate);
-                }
-            });
+            // // Initialize end date picker
+            // $('#end_date').persianDatepicker();
 
             // Set default end date to today if not set
-            const endDateInput = document.getElementById('end_date');
-            if (!endDateInput.value) {
-                var today = new Date();
-                var formattedToday = today.getFullYear() + '-' + 
-                                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                                   String(today.getDate()).padStart(2, '0');
-                endDateInput.value = formattedToday;
-            }
+            // const endDateInput = document.getElementById('end_date');
+            // if (!endDateInput.value) {
+            //     var today = new Date();
+            //     var formattedToday = today.getFullYear() + '-' + 
+            //                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+            //                        String(today.getDate()).padStart(2, '0');
+            //     endDateInput.value = formattedToday;
+            // }
         });
 
         // Function to export reports

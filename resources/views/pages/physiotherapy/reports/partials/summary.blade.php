@@ -5,7 +5,7 @@
         <div class="col-md-3">
             <div class="card bg-primary text-white">
                 <div class="card-body text-center">
-                    <h4>{{ $data['total_procedures'] }}</h4>
+                    <h4>{{ $data['summary']['total_procedures'] ?? 0 }}</h4>
                     <p class="mb-0">{{ localize('global.total_procedures') }}</p>
                 </div>
             </div>
@@ -13,7 +13,7 @@
         <div class="col-md-3">
             <div class="card bg-success text-white">
                 <div class="card-body text-center">
-                    <h4>{{ $data['completed_procedures'] }}</h4>
+                    <h4>{{ $data['summary']['completed_procedures'] ?? 0 }}</h4>
                     <p class="mb-0">{{ localize('global.completed') }}</p>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="col-md-3">
             <div class="card bg-warning text-white">
                 <div class="card-body text-center">
-                    <h4>{{ $data['in_progress_procedures'] }}</h4>
+                    <h4>{{ $data['summary']['in_progress_procedures'] ?? 0 }}</h4>
                     <p class="mb-0">{{ localize('global.in_progress') }}</p>
                 </div>
             </div>
@@ -29,7 +29,7 @@
         <div class="col-md-3">
             <div class="card bg-secondary text-white">
                 <div class="card-body text-center">
-                    <h4>{{ $data['pending_procedures'] }}</h4>
+                    <h4>{{ $data['summary']['pending_procedures'] ?? 0 }}</h4>
                     <p class="mb-0">{{ localize('global.pending') }}</p>
                 </div>
             </div>
@@ -42,11 +42,11 @@
                 <div class="card-body">
                     <h6 class="card-title">{{ localize('global.completion_rate') }}</h6>
                     <div class="progress mb-2" style="height: 30px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $data['completion_rate'] }}%">
-                            {{ number_format($data['completion_rate'], 1) }}%
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $data['summary']['completion_rate'] ?? 0 }}%">
+                            {{ number_format($data['summary']['completion_rate'] ?? 0, 1) }}%
                         </div>
                     </div>
-                    <small class="text-muted">{{ $data['completed_procedures'] }} {{ localize('global.out_of') }} {{ $data['total_procedures'] }} {{ localize('global.procedures_completed') }}</small>
+                    <small class="text-muted">{{ $data['summary']['completed_procedures'] ?? 0 }} {{ localize('global.out_of') }} {{ $data['summary']['total_procedures'] ?? 0 }} {{ localize('global.procedures_completed') }}</small>
                 </div>
             </div>
         </div>
@@ -57,11 +57,11 @@
                     <table class="table table-borderless">
                         <tr>
                             <td><strong>{{ localize('global.total_duration') }}:</strong></td>
-                            <td>{{ $data['total_duration'] }} {{ localize('global.minutes') }}</td>
+                            <td>{{ $data['summary']['total_duration'] ?? 0 }} {{ localize('global.minutes') }}</td>
                         </tr>
                         <tr>
                             <td><strong>{{ localize('global.average_duration') }}:</strong></td>
-                            <td>{{ $data['average_duration'] }} {{ localize('global.minutes') }}</td>
+                            <td>{{ $data['summary']['average_duration'] ?? 0 }} {{ localize('global.minutes') }}</td>
                         </tr>
                     </table>
                 </div>
@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    @if($data['procedures']->count() > 0)
+    @if(isset($data['summary']['procedures']) && $data['summary']['procedures']->count() > 0)
     <div class="mt-4">
         <h6>{{ localize('global.recent_procedures') }}</h6>
         <div class="table-responsive">
@@ -85,7 +85,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($data['procedures']->take(10) as $procedure)
+                    @foreach($data['summary']['procedures']->take(10) as $procedure)
                     <tr>
                         <td>{{ $procedure->id }}</td>
                         <td>{{ $procedure->appointment->patient->name ?? 'N/A' }}</td>

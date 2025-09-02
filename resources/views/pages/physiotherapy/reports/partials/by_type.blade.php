@@ -1,7 +1,7 @@
 <div class="by-type-report">
     <h6>{{ localize('global.procedures_by_type') }}</h6>
     
-    @if($data['types']->count() > 0)
+    @if(isset($data['by_type']) && $data['by_type']->count() > 0)
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -17,35 +17,35 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($data['types'] as $type)
+                @foreach($data['by_type'] as $type)
                 <tr>
                     <td>
-                        <strong>{{ $type->name }}</strong>
-                        @if($type->description)
-                            <br><small class="text-muted">{{ Str::limit($type->description, 50) }}</small>
+                        <strong>{{ $type['type']->name ?? 'N/A' }}</strong>
+                        @if(isset($type['type']->description) && $type['type']->description)
+                            <br><small class="text-muted">{{ Str::limit($type['type']->description, 50) }}</small>
                         @endif
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-primary">{{ $type->total_procedures }}</span>
+                        <span class="badge bg-primary">{{ $type['total_procedures'] ?? 0 }}</span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-success">{{ $type->completed_procedures }}</span>
+                        <span class="badge bg-success">{{ $type['completed_procedures'] ?? 0 }}</span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-warning">{{ $type->in_progress_procedures }}</span>
+                        <span class="badge bg-warning">{{ $type['in_progress_procedures'] ?? 0 }}</span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-secondary">{{ $type->pending_procedures }}</span>
+                        <span class="badge bg-secondary">{{ $type['pending_procedures'] ?? 0 }}</span>
                     </td>
                     <td>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $type->completion_rate }}%">
-                                {{ number_format($type->completion_rate, 1) }}%
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $type['completion_rate'] ?? 0 }}%">
+                                {{ number_format($type['completion_rate'] ?? 0, 1) }}%
                             </div>
                         </div>
                     </td>
-                    <td>{{ $type->total_duration }} {{ localize('global.minutes') }}</td>
-                    <td>{{ $type->average_duration }} {{ localize('global.minutes') }}</td>
+                    <td>{{ $type['total_duration'] ?? 0 }} {{ localize('global.minutes') }}</td>
+                    <td>{{ $type['average_duration'] ?? 0 }} {{ localize('global.minutes') }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -59,11 +59,11 @@
                     <h6 class="card-title">{{ localize('global.type_distribution') }}</h6>
                     <div class="table-responsive">
                         <table class="table table-borderless">
-                            @foreach($data['types']->take(5) as $type)
+                            @foreach($data['by_type']->take(5) as $type)
                             <tr>
-                                <td>{{ $type->name }}</td>
-                                <td class="text-end">{{ $type->total_procedures }}</td>
-                                <td class="text-end">{{ number_format(($type->total_procedures / $data['types']->sum('total_procedures')) * 100, 1) }}%</td>
+                                <td>{{ $type['type']->name ?? 'N/A' }}</td>
+                                <td class="text-end">{{ $type['total_procedures'] ?? 0 }}</td>
+                                <td class="text-end">{{ number_format(($type['total_procedures'] ?? 0) / ($data['by_type']->sum('total_procedures') ?: 1) * 100, 1) }}%</td>
                             </tr>
                             @endforeach
                         </table>
@@ -77,10 +77,10 @@
                     <h6 class="card-title">{{ localize('global.completion_by_type') }}</h6>
                     <div class="table-responsive">
                         <table class="table table-borderless">
-                            @foreach($data['types']->sortByDesc('completion_rate')->take(5) as $type)
+                            @foreach($data['by_type']->sortByDesc('completion_rate')->take(5) as $type)
                             <tr>
-                                <td>{{ $type->name }}</td>
-                                <td class="text-end">{{ number_format($type->completion_rate, 1) }}%</td>
+                                <td>{{ $type['type']->name ?? 'N/A' }}</td>
+                                <td class="text-end">{{ number_format($type['completion_rate'] ?? 0, 1) }}%</td>
                             </tr>
                             @endforeach
                         </table>

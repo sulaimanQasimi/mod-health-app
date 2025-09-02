@@ -17,9 +17,10 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="start_date" class="form-label">{{ localize('global.start_date') }} <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('start_date') is-invalid @enderror" 
-                                               id="start_date" name="start_date" value="{{ old('start_date', date('Y/m/d', strtotime('-30 days'))) }}" required readonly>
+                                        <label for="start_date" class="form-label">{{ localize('global.start_date') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('start_date') is-invalid @enderror"
+                                            dir="ltr" id="start_date" name="start_date" value="" required readonly>
                                         @error('start_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -27,9 +28,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="end_date" class="form-label">{{ localize('global.end_date') }} <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('end_date') is-invalid @enderror" 
-                                               id="end_date" name="end_date" value="{{ old('end_date', date('Y/m/d')) }}" required readonly>
+                                        <label for="end_date" class="form-label">{{ localize('global.end_date') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('end_date') is-invalid @enderror"
+                                            dir="ltr" id="end_date" name="end_date" value="" required readonly>
                                         @error('end_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -37,13 +39,19 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group mb-3">
-                                        <label for="report_type" class="form-label">{{ localize('global.report_type') }} <span class="text-danger">*</span></label>
-                                        <select class="form-select @error('report_type') is-invalid @enderror" id="report_type" name="report_type" required>
+                                        <label for="report_type" class="form-label">{{ localize('global.report_type') }}
+                                            <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('report_type') is-invalid @enderror"
+                                            id="report_type" name="report_type" required>
                                             <option value="">{{ localize('global.select_report_type') }}</option>
-                                            <option value="summary" {{ old('report_type') == 'summary' ? 'selected' : '' }}>{{ localize('global.summary_report') }}</option>
-                                            <option value="detailed" {{ old('report_type') == 'detailed' ? 'selected' : '' }}>{{ localize('global.detailed_report') }}</option>
-                                            <option value="by_type" {{ old('report_type') == 'by_type' ? 'selected' : '' }}>{{ localize('global.report_by_type') }}</option>
-                                            <option value="by_physiotherapist" {{ old('report_type') == 'by_physiotherapist' ? 'selected' : '' }}>{{ localize('global.report_by_physiotherapist') }}</option>
+                                            <option value="summary" {{ old('report_type') == 'summary' ? 'selected' : '' }}>
+                                                {{ localize('global.summary_report') }}</option>
+                                            <option value="detailed" {{ old('report_type') == 'detailed' ? 'selected' : '' }}>
+                                                {{ localize('global.detailed_report') }}</option>
+                                            <option value="by_type" {{ old('report_type') == 'by_type' ? 'selected' : '' }}>
+                                                {{ localize('global.report_by_type') }}</option>
+                                            <option value="by_physiotherapist" {{ old('report_type') == 'by_physiotherapist' ? 'selected' : '' }}>{{ localize('global.report_by_physiotherapist') }}
+                                            </option>
                                         </select>
                                         @error('report_type')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -89,7 +97,8 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <h6 class="card-title">{{ localize('global.report_by_physiotherapist') }}</h6>
-                                            <p class="card-text">{{ localize('global.report_by_physiotherapist_description') }}</p>
+                                            <p class="card-text">
+                                                {{ localize('global.report_by_physiotherapist_description') }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -103,7 +112,7 @@
 
     <script>
         // Initialize Persian Datepicker
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Initialize start date picker
             $('#start_date').persianDatepicker();
 

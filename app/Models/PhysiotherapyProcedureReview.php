@@ -7,29 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class PhysiotherapyProcedure extends Model
+class PhysiotherapyProcedureReview extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'appointment_id',
-        'physiotherapy_type_id',
-        'physiotherapist_id',
-        'type',
-        'duration',
-        'counter',
-        'days_count',
+        'physiotherapy_procedure_id',
         'description',
-        'notes',
         'status',
-        'start_date',
-        'end_date'
+        'days_count'
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'status' => 'string',
     ];
 
     public static function boot()
@@ -52,41 +43,35 @@ class PhysiotherapyProcedure extends Model
         });
     }
 
-    public function appointment()
+    /**
+     * Get the physiotherapy procedure that owns the review.
+     */
+    public function physiotherapyProcedure()
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(PhysiotherapyProcedure::class);
     }
 
-    public function physiotherapyType()
-    {
-        return $this->belongsTo(PhysiotherapyType::class);
-    }
-
-    public function physiotherapist()
-    {
-        return $this->belongsTo(User::class, 'physiotherapist_id');
-    }
-
+    /**
+     * Get the user who created the review.
+     */
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * Get the user who last updated the review.
+     */
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function patient()
-    {
-        return $this->hasOneThrough(Patient::class, Appointment::class, 'id', 'id', 'appointment_id', 'patient_id');
-    }
-
     /**
-     * Get the reviews for the physiotherapy procedure.
+     * Get the user who deleted the review.
      */
-    public function reviews()
+    public function deletedBy()
     {
-        return $this->hasMany(PhysiotherapyProcedureReview::class);
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

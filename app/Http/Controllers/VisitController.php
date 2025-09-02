@@ -15,27 +15,29 @@ class VisitController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get()
-            ->map(function ($hospitalization) {
-                // Convert created_at to Jalali format and keep only the date part
-                $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
-                return $hospitalization;
-            });
+            $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
+            ->where('is_discharged', '0')
+            ->with(['patient', 'room', 'bed'])->get()
+                ->map(function ($hospitalization) {
+                    // Convert created_at to Jalali format and keep only the date part
+                    $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
+                    return $hospitalization;
+                });
 
-                if ($hospitalizations) {
-                    return response()->json([
-                        'data' => $hospitalizations,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+            if ($hospitalizations) {
+                return response()->json([
+                    'data' => $hospitalizations,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Internal Server Error',
+                    'code' => 500,
+                    'data' => [],
+                ]);
+            }
         }
 
-        $hospitalizations = Hospitalization::where('branch_id',auth()->user()->branch_id)->where('is_discharged','0')->with(['patient','room','bed'])->get();
+        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)->where('is_discharged', '0')->with(['patient', 'room', 'bed'])->get();
         return view('pages.hospitalizations.index', compact('hospitalizations'));
     }
 
@@ -73,7 +75,7 @@ class VisitController extends Controller
             'antibiotic' => 'nullable',
 
         ]);
-        if(isset($data['food_type_id']) && $data['food_type_id'] != ''){
+        if (isset($data['food_type_id']) && $data['food_type_id'] != '') {
 
             $data['food_type_id']  = json_encode($data['food_type_id']);
         }
@@ -97,7 +99,7 @@ class VisitController extends Controller
      */
     public function editUnderReviewVisit(Visit $visit)
     {
-        return view('pages.under_reviews.visits_edit',compact('visit'));
+        return view('pages.under_reviews.visits_edit', compact('visit'));
     }
 
     public function updateUnderReviewVisit(Request $request, Visit $visit)
@@ -126,6 +128,5 @@ class VisitController extends Controller
     {
         $visit->delete();
         return redirect()->back()->with('success', localize('global.visit_deleted_successfully.'));
-
     }
 }

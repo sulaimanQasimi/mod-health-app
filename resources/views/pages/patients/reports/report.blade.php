@@ -30,13 +30,13 @@
     <!-- Data Table Section -->
     <div class="table-section">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white border-0 py-3">
+            <div class="card-header bg-none border-0 py-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-white fw-semibold">
+                    <h5 class="mb-0 text-muted fw-semibold">
                         <i class="fas fa-table me-2 text-white"></i>{{ localize('global.patient_records') }}
                     </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-white text-primary rounded-pill fw-medium">{{ $items->count() }} {{ localize('global.records') }}</span>
+                        <span class="badge bg-success text-primary rounded-pill fw-medium">{{ $items->count() }} {{ localize('global.records') }}</span>
                     </div>
                 </div>
             </div>

@@ -43,7 +43,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
+                    <div class="card-header bg-body-secondary text-body">
                         <h5 class="mb-0 text-center">
                             <i class="bx bx-calendar-check me-2 text-primary"></i>
                             {{ localize('global.appointment_details') }}
@@ -52,8 +52,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 mb-3">
-                                <div class="text-center p-3 border rounded bg-light">
-                                    <div class="text-dark small mb-1">{{ localize('global.patient_name') }}</div>
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body small mb-1">{{ localize('global.patient_name') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-user me-1 text-primary"></i>
                                         {{ $appointment->patient->name }}
@@ -61,8 +61,8 @@
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <div class="text-center p-3 border rounded bg-light">
-                                    <div class="text-muted small mb-1">{{ localize('global.referred_to') }}</div>
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.referred_to') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-user-check me-1 text-primary"></i>
                                         {{ $appointment->doctor->name }}
@@ -70,8 +70,8 @@
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <div class="text-center p-3 border rounded bg-light">
-                                    <div class="text-muted small mb-1">{{ localize('global.date') }}</div>
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.date') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-calendar me-1 text-primary"></i>
                                         {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date) }}
@@ -79,8 +79,8 @@
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <div class="text-center p-3 border rounded bg-light">
-                                    <div class="text-muted small mb-1">{{ localize('global.time') }}</div>
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.time') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-time me-1 text-primary"></i>
                                         {{ $appointment->time }}
@@ -97,7 +97,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
+                    <div class="card-header bg-body-secondary text-body">
                         <h5 class="mb-0 text-center">
                             <i class="bx bx-history me-2 text-info"></i>
                             {{ localize('global.patient_history') }}
@@ -120,7 +120,7 @@
                                     </div>
                                     <div class="card-body">
                                         @foreach ($primaryDiagnoses as $diagnose)
-                                            <div class="mb-2 p-2 border-start border-warning border-3 bg-light rounded">
+                                            <div class="mb-2 p-2 border-start border-warning border-3 bg-body-secondary rounded">
                                                 <span class="badge bg-warning text-dark me-2">
                                                     {{ $diagnose->created_at->format('Y-m-d') }}
                                                 </span>
@@ -140,7 +140,7 @@
                                     </div>
                                     <div class="card-body">
                                         @foreach ($finalDiagnoses as $diagnose)
-                                            <div class="mb-2 p-2 border-start border-success border-3 bg-light rounded">
+                                            <div class="mb-2 p-2 border-start border-success border-3 bg-body-secondary rounded">
                                                 <span class="badge bg-success text-white me-2">
                                                     {{ $diagnose->created_at->format('Y-m-d') }}
                                                 </span>
@@ -161,7 +161,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card shadow-sm">
-                        <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
                                 <i class="bx bx-check-shield me-2 text-primary"></i>
                                 {{ localize('global.appointment_status') }}
@@ -226,7 +226,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-popsicle me-2 text-warning"></i>
                             {{ localize('global.diagnose') }}
@@ -329,15 +329,15 @@
                         @if($appointment->diagnose->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.description') }}</th>
-                                            <th>{{ localize('global.type') }}</th>
-                                            <th>{{ localize('global.created_at') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
+                                                            <thead class="table-body-secondary">
+                            <tr>
+                                <th>{{ localize('global.number') }}</th>
+                                <th>{{ localize('global.description') }}</th>
+                                <th>{{ localize('global.type') }}</th>
+                                <th>{{ localize('global.created_at') }}</th>
+                                <th>{{ localize('global.actions') }}</th>
+                            </tr>
+                        </thead>
                                     <tbody>
                                         @foreach ($appointment->diagnose as $diagnose)
                                             <tr>
@@ -391,7 +391,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-notepad me-2 text-success"></i>
                             {{ localize('global.prescription') }}
@@ -520,7 +520,7 @@
                                         @if($appointment->prescription->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-light">
+                                                    <thead class="table-body-secondary">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.patient_name') }}</th>
@@ -644,7 +644,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-command me-2 text-info"></i>
                             {{ localize('global.advice') }}
@@ -711,7 +711,7 @@
                         @if($appointment->advices->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-light">
+                                    <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.description') }}</th>
@@ -769,7 +769,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-hard-hat me-2 text-warning"></i>
                             {{ localize('global.checkups') }}
@@ -861,7 +861,7 @@
                         @if($appointment->labs->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-light">
+                                    <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.test_name') }}</th>
@@ -936,7 +936,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
+                    <div class="card-header bg-body-secondary text-body">
                         <h5 class="mb-0">
                             <i class="bx bx-hard-hat me-2 text-secondary"></i>
                             {{ localize('global.hospitalization_checkups') }}
@@ -945,7 +945,7 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
-                                <thead class="table-light">
+                                <thead class="table-body-secondary">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.test_name') }}</th>
@@ -1009,7 +1009,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-chat me-2 text-primary"></i>
                             {{ localize('global.consultations') }}
@@ -1126,7 +1126,7 @@
                         @if($appointment->consultations->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-light">
+                                    <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.title') }}</th>
@@ -1175,7 +1175,7 @@
                                                 <tr>
                                                     <td colspan="4">
                                                         @foreach ($consultation->comments as $comment)
-                                                            <div class="row mb-3 p-3 bg-light rounded">
+                                                            <div class="row mb-3 p-3 bg-body-secondary rounded">
                                                                 <div class="col-md-3">
                                                                     <span class="badge bg-primary">{{ $comment->department->name }}</span>
                                                                 </div>
@@ -1186,7 +1186,7 @@
                                                                     <span class="badge bg-secondary">{{ $comment->doctor->name }}</span>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="p-3 bg-white rounded border-start border-primary border-3">
+                                                                    <div class="p-3 bg-body rounded border-start border-primary border-3">
                                                                         {{ $comment->comment }}
                                                                     </div>
                                                                 </div>
@@ -1216,7 +1216,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-transfer me-2 text-danger"></i>
                             {{ localize('global.refer_to_another_doctor') }}
@@ -1323,7 +1323,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-revision me-2 text-dark"></i>
                             {{ localize('global.under_review') }}
@@ -1422,7 +1422,7 @@
                         @if($appointment->under_reviews->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-light">
+                                    <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.reason') }}</th>
@@ -1495,7 +1495,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
+                    <div class="card-header bg-body-secondary text-body">
                         <h5 class="mb-0">
                             <i class="bx bx-glasses me-2"></i>
                             {{ localize('global.related_visits') }}
@@ -1504,7 +1504,7 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
-                                <thead class="table-light">
+                                <thead class="table-body-secondary">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.description') }}</th>
@@ -1518,7 +1518,7 @@
                                             <tr>
                                                 <td>
                                                     <span
-                                                        class="badge bg-light text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                        class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
                                                 </td>
                                                 <td>{{ $visit->description }}</td>
                                                 <td>
@@ -1549,7 +1549,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-bed me-2 text-success"></i>
                             {{ localize('global.hospitalize') }}
@@ -1721,7 +1721,7 @@
                         @if($appointment->hospitalization->count() > 0)
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-light">
+                                    <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th class="text-wrap">{{ localize('global.reason') }}</th>
@@ -1799,7 +1799,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
+                    <div class="card-header bg-body-secondary text-body">
                         <h5 class="mb-0">
                             <i class="bx bx-glasses me-2"></i>
                             {{ localize('global.related_visits') }}
@@ -1808,7 +1808,7 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
-                                <thead class="table-light">
+                                <thead class="table-body-secondary">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.description') }}</th>
@@ -1827,7 +1827,7 @@
                                             <tr>
                                                 <td>
                                                     <span
-                                                        class="badge bg-light text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                        class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
                                                 </td>
                                                 <td>{{ $visit->description }}</td>
                                                 <td>
@@ -1888,7 +1888,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-first-aid me-2 text-danger"></i>
                             {{ localize('global.refere_to_anasthesia') }}
@@ -2058,7 +2058,7 @@
                                         @if($appointment->anesthesias->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-light">
+                                                    <thead class="table-body-secondary">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.operation_type') }}</th>
@@ -2074,7 +2074,7 @@
                                                                 <td>
                                                                     <span class="badge bg-danger rounded-pill">{{ $loop->iteration }}</span>
                                                                 </td>
-                                                                <td>{{ $anesthesia->operationType->name }}</td>
+                                                                <td>{{ $anesthesia->operationType?->name }}</td>
                                                                 <td>{{ $anesthesia->patient->name }}</td>
                                                                 <td>
                                                                     @if ($anesthesia->status == 'new')
@@ -2138,7 +2138,7 @@
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-light text-dark">
+                                    <div class="card-header bg-body-secondary text-body">
                                         <h5 class="mb-0">
                                             <i class="bx bx-cut me-2 text-warning"></i>
                                             {{ localize('global.operations') }}
@@ -2147,7 +2147,7 @@
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table class="table table-striped table-hover">
-                                                <thead class="table-light">
+                                                <thead class="table-body-secondary">
                                                     <tr>
                                                         <th>{{ localize('global.number') }}</th>
                                                         <th>{{ localize('global.operation_type') }}</th>
@@ -2162,7 +2162,7 @@
                                                             <td>
                                                                 <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
                                                             </td>
-                                                            <td>{{ $anesthesia->operationType->name }}</td>
+                                                            <td>{{ $anesthesia->operationType?->name }}</td>
                                                             <td>{{ $anesthesia->patient->name }}</td>
                                                             <td>
                                                                 @if ($anesthesia->status == 'new')
@@ -2200,7 +2200,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-tv me-2 text-info"></i>
                             {{ localize('global.refere_to_icu') }}
@@ -2270,7 +2270,7 @@
                                         @if($appointment->icu->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover">
-                                                    <thead class="table-light">
+                                                    <thead class="table-body-secondary">
                                                         <tr>
                                                             <th>{{ localize('global.number') }}</th>
                                                             <th>{{ localize('global.patient_name') }}</th>
@@ -2333,7 +2333,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark">
+                    <div class="card-header bg-body-secondary text-body">
                         <h5 class="mb-0">
                             <i class="bx bx-glasses me-2"></i>
                             {{ localize('global.related_icu_visits') }}
@@ -2342,7 +2342,7 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
-                                <thead class="table-light">
+                                <thead class="table-body-secondary">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.description') }}</th>
@@ -2361,7 +2361,7 @@
                                             <tr>
                                                 <td>
                                                     <span
-                                                        class="badge bg-light text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                        class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
                                                 </td>
                                                 <td>{{ $visit->description }}</td>
                                                 <td>

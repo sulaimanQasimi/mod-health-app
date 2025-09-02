@@ -2,7 +2,7 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card shadow-sm">
-            <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+            <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="bx bx-health me-2 text-info"></i>
                     {{ localize('global.physiotherapy_procedures') }}
@@ -20,7 +20,7 @@
             <div class="card-body" id="physio_procedures_table_container">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover" id="physio_procedures_table">
-                        <thead class="table-light">
+                                                    <thead class="table-body-secondary">
                             <tr>
                                 <th>{{ localize('global.number') }}</th>
                                 <th>{{ localize('global.physiotherapy_type') }}</th>

@@ -9,7 +9,7 @@ use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PhysiotherapyReportController extends Controller
 {
@@ -180,28 +180,16 @@ class PhysiotherapyReportController extends Controller
         ];
 
         if ($format === 'pdf') {
-            return $this->exportToPdf($data, $startDate, $endDate);
+            return $this->showPrintPage($data, $startDate, $endDate);
         } else {
             return $this->exportToExcel($data, $startDate, $endDate);
         }
     }
 
-    private function exportToPdf($data, $startDate, $endDate)
+    private function showPrintPage($data, $startDate, $endDate)
     {
-        // Generate PDF using dompdf
-        $html = view('pages.physiotherapy.reports.pdf', compact('data', 'startDate', 'endDate'))->render();
-        
-        // Use dompdf to generate actual PDF
-        $pdf = Pdf::loadHTML($html);
-        
-        // Set paper size and orientation
-        $pdf->setPaper('A4', 'portrait');
-        
-        // Generate filename with date range
-        $filename = 'physiotherapy_report_' . verta($startDate)->format('Y-m-d') . '_to_' . verta($endDate)->format('Y-m-d') . '.pdf';
-        
-        // Return PDF as download
-        return $pdf->download($filename);
+        // Return the print page view
+        return view('pages.physiotherapy.reports.pdf', compact('data', 'startDate', 'endDate'));
     }
 
     private function exportToExcel($data, $startDate, $endDate)

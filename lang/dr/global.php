@@ -1852,9 +1852,10 @@ return [
     'complaint_item_status_updated_successfully.'=>'حالت قلم شکایت با موفقیت ابدیت شد',
     'complaint_item_deleted_successfully.'=>'قلم شکایت با موفقیت حذف شد',
     'complaint_item_not_found.'=>'قلم شکایت یافت نشد',
-    'update_progress'=>'به روز رسانی پیشرفت',
-
-    'current_progress'=>'پیشرفت فعلی',
+         'update_progress'=>'به روز رسانی پیشرفت',
+     'print'=>'چاپ',
+     'physiotherapy_report'=>'گزارش فیزیوتراپی',
+     'current_progress'=>'پیشرفت فعلی',
     'enter_current_session_number'=>'شماره جلسه فعلی را وارد کنید',
         'physiotherapy_reports'=>'گزارشات فیزیوتراپی',
     'report_type *'=>'نوع گزارش *',

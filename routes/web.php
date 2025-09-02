@@ -700,6 +700,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('{physiotherapyType}/toggle-status', [PhysiotherapyTypeController::class, 'toggleStatus'])->name('toggle-status');
     });
         Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
+        Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
         Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
     });
 

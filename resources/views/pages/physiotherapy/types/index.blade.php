@@ -127,10 +127,39 @@
                     </div>
 
                     @if($physiotherapyTypes->hasPages())
-                        <div class="d-flex justify-content-center mt-4">
-                            <nav aria-label="Physiotherapy Types Pagination">
-                                {{ $physiotherapyTypes->links('pagination::bootstrap-5') }}
-                            </nav>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted">
+                                        {{ localize('global.showing') }} 
+                                        <strong>{{ $physiotherapyTypes->firstItem() ?? 0 }}</strong> 
+                                        {{ localize('global.to') }} 
+                                        <strong>{{ $physiotherapyTypes->lastItem() ?? 0 }}</strong> 
+                                        {{ localize('global.of') }} 
+                                        <strong>{{ $physiotherapyTypes->total() }}</strong> 
+                                        {{ localize('global.results') }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-end">
+                                    <nav aria-label="Physiotherapy Types Pagination">
+                                        {{ $physiotherapyTypes->links('pagination::bootstrap-5') }}
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-center">
+                                    <small class="text-muted">
+                                        {{ localize('global.showing') }} 
+                                        <strong>{{ $physiotherapyTypes->count() }}</strong> 
+                                        {{ localize('global.results') }}
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>

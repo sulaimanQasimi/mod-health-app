@@ -9,6 +9,8 @@ use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PhysiotherapyReportExport;
 
 
 class PhysiotherapyReportController extends Controller
@@ -194,8 +196,10 @@ class PhysiotherapyReportController extends Controller
 
     private function exportToExcel($data, $startDate, $endDate)
     {
-        // Implementation for Excel export
-        // You can use packages like Maatwebsite Excel
-        return response()->json(['message' => 'Excel export functionality to be implemented']);
+        // Generate filename with date range
+        $filename = 'physiotherapy_report_' . verta($startDate)->format('Y-m-d') . '_to_' . verta($endDate)->format('Y-m-d') . '.xlsx';
+        
+        // Export to Excel using the PhysiotherapyReportExport class
+        return Excel::download(new PhysiotherapyReportExport($data, $startDate, $endDate), $filename);
     }
 }

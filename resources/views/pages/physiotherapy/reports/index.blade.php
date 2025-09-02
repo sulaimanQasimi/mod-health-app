@@ -38,17 +38,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary me-2">
-                                    <i class="bx bx-search"></i> {{ localize('global.generate_report') }}
-                                </button>
-                                <button type="button" class="btn btn-success me-2" onclick="exportReport('excel')">
-                                    <i class="bx bx-file"></i> {{ localize('global.export_excel') }}
-                                </button>
-                                <button type="button" class="btn btn-danger" onclick="exportReport('pdf')">
-                                    <i class="bx bx-file-pdf"></i> {{ localize('global.export_pdf') }}
-                                </button>
-                            </div>
                         </form>
 
                         <div class="mt-4">

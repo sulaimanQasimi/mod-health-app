@@ -18,8 +18,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="start_date" class="form-label">{{ localize('global.start_date') }} <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control @error('start_date') is-invalid @enderror" 
-                                               id="start_date" name="start_date" value="{{ old('start_date', date('Y-m-d', strtotime('-30 days'))) }}" required>
+                                        <input type="text" class="form-control @error('start_date') is-invalid @enderror" 
+                                               id="start_date" name="start_date" value="{{ old('start_date', date('Y/m/d', strtotime('-30 days'))) }}" required readonly>
                                         @error('start_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -28,8 +28,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="end_date" class="form-label">{{ localize('global.end_date') }} <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control @error('end_date') is-invalid @enderror" 
-                                               id="end_date" name="end_date" value="{{ old('end_date', date('Y-m-d')) }}" required>
+                                        <input type="text" class="form-control @error('end_date') is-invalid @enderror" 
+                                               id="end_date" name="end_date" value="{{ old('end_date', date('Y/m/d')) }}" required readonly>
                                         @error('end_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -102,12 +102,14 @@
     </div>
 
     <script>
-        // Set end date to today if not set
+        // Initialize Persian Datepicker
         document.addEventListener('DOMContentLoaded', function() {
-            const endDateInput = document.getElementById('end_date');
-            if (!endDateInput.value) {
-                endDateInput.value = new Date().toISOString().split('T')[0];
-            }
+            // Initialize start date picker
+            $('#start_date').persianDatepicker();
+
+            // Initialize end date picker
+            $('#end_date').persianDatepicker();
+
         });
     </script>
 @endsection

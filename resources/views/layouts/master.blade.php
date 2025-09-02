@@ -15,7 +15,7 @@
     <title>{{ localize('global.system_name') }}</title>
 
     <meta name="description" content="" />
-    
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
@@ -75,15 +75,10 @@
     @endif
 
     @yield('styles')
+    
 </head>
 
 <body>
-
-
-
-
-
-
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
@@ -184,10 +179,6 @@
 
         $('.template-customizer-t-misc_header').html("{{localize('global.system_theme_misc')}}");
         $('.template-customizer-t-rtl_label').html("{{localize('global.system_theme_rtl')}}");
-
-
-
-
     });
 </script>
 <script>

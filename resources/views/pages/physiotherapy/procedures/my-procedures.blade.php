@@ -1,7 +1,11 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid py-4">
+        @if (Session::has('success') || Session::has('error'))
+            @include('components.toast')
+        @endif
+
         <!-- Page Header -->
         <div class="page-header">
             <div class="row align-items-center">
@@ -37,13 +41,17 @@
                                 <select class="form-control" id="status" name="status">
                                     <option value="">{{ localize('global.all_statuses') }}</option>
                                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
-                                        {{ localize('global.pending') }}</option>
+                                        {{ localize('global.pending') }}
+                                    </option>
                                     <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>
-                                        {{ localize('global.in_progress') }}</option>
+                                        {{ localize('global.in_progress') }}
+                                    </option>
                                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>
-                                        {{ localize('global.completed') }}</option>
+                                        {{ localize('global.completed') }}
+                                    </option>
                                     <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                                        {{ localize('global.cancelled') }}</option>
+                                        {{ localize('global.cancelled') }}
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -361,62 +369,62 @@
             function renderProcedureDetails(data) {
                 const percentage = data.days_count > 0 ? (data.counter / data.days_count) * 100 : 0;
                 let html = `
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.patient_name') }}:</label>
-                        <p class="form-control-plaintext">${data.patient_name || 'N/A'}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.physiotherapy_type') }}:</label>
-                        <p class="form-control-plaintext">${data.physiotherapy_type_name || 'N/A'}</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.type') }}:</label>
-                        <p class="form-control-plaintext">${data.type || ''}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.duration') }}:</label>
-                        <p class="form-control-plaintext">${data.duration || ''} {{ localize('global.minutes') }}</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.progress') }}:</label>
-                        <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: ${percentage}%">
-                                ${data.counter}/${data.days_count}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.patient_name') }}:</label>
+                                    <p class="form-control-plaintext">${data.patient_name || 'N/A'}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.physiotherapy_type') }}:</label>
+                                    <p class="form-control-plaintext">${data.physiotherapy_type_name || 'N/A'}</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.status') }}:</label>
-                        <p class="form-control-plaintext">${renderStatusBadge(data.status)}</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.start_date') }}:</label>
-                        <p class="form-control-plaintext">${data.start_date || 'N/A'}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{{ localize('global.end_date') }}:</label>
-                        <p class="form-control-plaintext">${data.end_date || 'N/A'}</p>
-                    </div>
-                </div>`;
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.type') }}:</label>
+                                    <p class="form-control-plaintext">${data.type || ''}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.duration') }}:</label>
+                                    <p class="form-control-plaintext">${data.duration || ''} {{ localize('global.minutes') }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.progress') }}:</label>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: ${percentage}%">
+                                            ${data.counter}/${data.days_count}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.status') }}:</label>
+                                    <p class="form-control-plaintext">${renderStatusBadge(data.status)}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.start_date') }}:</label>
+                                    <p class="form-control-plaintext">${data.start_date || 'N/A'}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ localize('global.end_date') }}:</label>
+                                    <p class="form-control-plaintext">${data.end_date || 'N/A'}</p>
+                                </div>
+                            </div>`;
 
                 if (data.description) {
                     html += `<div class="mb-3">
-                    <label class="form-label fw-bold">{{ localize('global.description') }}:</label>
-                    <p class="form-control-plaintext">${data.description}</p>
-                </div>`;
+                                <label class="form-label fw-bold">{{ localize('global.description') }}:</label>
+                                <p class="form-control-plaintext">${data.description}</p>
+                            </div>`;
                 }
                 if (data.notes) {
                     html += `<div class="mb-3">
-                    <label class="form-label fw-bold">{{ localize('global.notes') }}:</label>
-                    <p class="form-control-plaintext">${data.notes}</p>
-                </div>`;
+                                <label class="form-label fw-bold">{{ localize('global.notes') }}:</label>
+                                <p class="form-control-plaintext">${data.notes}</p>
+                            </div>`;
                 }
 
                 $('#procedureModalBody').html(html);
@@ -446,42 +454,42 @@
             // Render add review form
             function renderAddReviewForm(data) {
                 let html = `
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">{{ localize('global.patient_name') }}:</label>
-                        <p class="form-control-plaintext">${data.patient_name || 'N/A'}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">{{ localize('global.physiotherapy_type') }}:</label>
-                        <p class="form-control-plaintext">${data.physiotherapy_type_name || 'N/A'}</p>
-                    </div>
-                </div>
-                <hr class="my-3">
-                <form class="review-form" data-procedure-id="${data.id}">
-                    <div class="mb-3">
-                        <label class="form-label">{{ localize('global.description') }} <span class="text-danger">*</span></label>
-                        <textarea class="form-control" name="description" rows="4" required placeholder="{{ localize('global.enter_review_description') }}"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">{{ localize('global.status') }} <span class="text-danger">*</span></label>
-                            <select class="form-control" name="status" required>
-                                <option value="pending">{{ localize("global.pending") }}</option>
-                                <option value="in_progress">{{ localize("global.in_progress") }}</option>
-                                <option value="completed">{{ localize("global.completed") }}</option>
-                                <option value="cancelled">{{ localize("global.cancelled") }}</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">{{ localize('global.days_count') }}</label>
-                            <input type="number" class="form-control" name="days_count" min="0" placeholder="0">
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                    </div>
-                </form>`;
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ localize('global.patient_name') }}:</label>
+                                    <p class="form-control-plaintext">${data.patient_name || 'N/A'}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ localize('global.physiotherapy_type') }}:</label>
+                                    <p class="form-control-plaintext">${data.physiotherapy_type_name || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <hr class="my-3">
+                            <form class="review-form" data-procedure-id="${data.id}">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.description') }} <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" name="description" rows="4" required placeholder="{{ localize('global.enter_review_description') }}"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ localize('global.status') }} <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="status" required>
+                                            <option value="pending">{{ localize("global.pending") }}</option>
+                                            <option value="in_progress">{{ localize("global.in_progress") }}</option>
+                                            <option value="completed">{{ localize("global.completed") }}</option>
+                                            <option value="cancelled">{{ localize("global.cancelled") }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ localize('global.days_count') }}</label>
+                                        <input type="number" class="form-control" name="days_count" min="0" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                    <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                                </div>
+                            </form>`;
 
                 $('#reviewModalBody').html(html);
 

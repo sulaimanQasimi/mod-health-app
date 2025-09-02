@@ -19,7 +19,8 @@ class PhysiotherapyProcedureController extends Controller
         $query = PhysiotherapyProcedure::with([
             'appointment.patient',
             'physiotherapyType',
-            'physiotherapist'
+            'physiotherapist',
+            'reviews'
         ]);
 
         // Search functionality
@@ -44,19 +45,31 @@ class PhysiotherapyProcedureController extends Controller
             $query->where('physiotherapy_type_id', $request->physiotherapy_type_id);
         }
 
+        // Physiotherapist filter
+        if ($request->filled('physiotherapist_id')) {
+            $query->where('physiotherapist_id', $request->physiotherapist_id);
+        }
+
+        // Date range filter
+        if ($request->filled('start_date')) {
+            $query->where('start_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('start_date', '<=', $request->end_date);
+        }
+
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Get procedures with proper data formatting for DataTable
-        $physiotherapyProcedures = $query->get();
-
         if ($request->ajax() || $request->wantsJson()) {
+            $physiotherapyProcedures = $query->get();
             $data = $physiotherapyProcedures->map(function ($p) {
                 $percentage = $p->days_count > 0 ? ($p->counter / max(1, $p->days_count)) * 100 : 0;
                 return [
                     'id' => $p->id,
+                    'patient_name' => $p->appointment->patient->name ?? 'N/A',
                     'physiotherapy_type' => $p->physiotherapyType->name ?? 'N/A',
                     'physiotherapist' => $p->physiotherapist->name ?? 'N/A',
                     'type' => $p->type,
@@ -66,13 +79,21 @@ class PhysiotherapyProcedureController extends Controller
                     'progress_percentage' => round($percentage, 1),
                     'status' => $p->status,
                     'start_date' => optional($p->start_date)->format('Y-m-d'),
+                    'reviews_count' => $p->reviews->count(),
                     'actions' => '', // Placeholder for DataTables rendering
                 ];
             });
             return response()->json(['data' => $data]);
         }
-        //
-        // return view('pages.physiotherapy.procedures.index', compact('physiotherapyProcedures', 'physiotherapyTypes'));
+
+        // For non-AJAX requests, get paginated results
+        $physiotherapyProcedures = $query->paginate(15);
+        $physiotherapyTypes = PhysiotherapyType::all();
+        $physiotherapists = User::whereHas('roles', function($q) {
+            $q->where('name', 'physiotherapist');
+        })->get();
+
+        return view('pages.physiotherapy.procedures.index', compact('physiotherapyProcedures', 'physiotherapyTypes', 'physiotherapists'));
     }
 
     /**

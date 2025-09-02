@@ -1851,5 +1851,37 @@ return [
     'complaint_item_not_found.'=>'قلم شکایت یافت نشد',
     'complaint_item_status_updated_successfully.'=>'حالت قلم شکایت با موفقیت ابدیت شد',
     'complaint_item_deleted_successfully.'=>'قلم شکایت با موفقیت حذف شد',
-    'complaint_item_not_found.'=>'قلم شکایت یافت نشد'
+    'complaint_item_not_found.'=>'قلم شکایت یافت نشد',
+    'update_progress'=>'به روز رسانی پیشرفت',
+
+    'current_progress'=>'پیشرفت فعلی',
+    'enter_current_session_number'=>'شماره جلسه فعلی را وارد کنید',
+        'physiotherapy_reports'=>'گزارشات فیزیوتراپی',
+    'report_type *'=>'نوع گزارش *',
+    'select_report_type'=>'انتخاب نوع گزارش',
+    'report_types_explanation'=>'توضیحات نوع گزارش',
+    'summary_report'=>'گزارش خلاصه',
+    'summary_report_description'=>'توضیحات گزارش خلاصه',
+
+    'detailed_report'=>'گزارش جزئی',
+    'detailed_report_description'=>'توضیحات گزارش جزئی',
+
+    'report_by_type'=>'گزارش بر اساس نوع',
+    'report_by_type_description'=>'توضیحات گزارش بر اساس نوع',
+
+    'report_by_physiotherapist'=>'گزارش بر اساس فیزیوتراپی',
+    'report_by_physiotherapist_description'=>'توضیحات گزارش بر اساس فیزیوتراپی',
+    'physiotherapy'=>'فیزیوتراپی',
+    'all_procedures'=>'همه فیزیوتراپی', 
+    'my_procedures'=>'فیزیوتراپی من',
+    'reports'=>'گزارشات',   
+    'my_physiotherapy_procedures'=>'فیزیوتراپی من',
+    'search_patient_name'=>'جستجو بر اساس نام بیمار',
+    'search'=>'جستجو',
+    'search_patient_name'=>'جستجو بر اساس نام بیمار',
+    'search'=>'جستجو',
+    'search_patient_name'=>'جستجو بر اساس نام بیمار',
+    'procedures_list'=>'لیست فیزیوتراپی',
+    "reviews"=>"بازرسی ها",
 ];
+;

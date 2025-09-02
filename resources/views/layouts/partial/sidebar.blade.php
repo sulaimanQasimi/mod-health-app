@@ -79,9 +79,19 @@
                     <div>{{ localize('global.physiotherapy') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('physiotherapy-procedures.index') ? 'active' : '' }}">
+                        <a href="{{ route('physiotherapy-procedures.index') }}" class="menu-link">
+                            <div>{{ localize('global.all_procedures') }}</div>
+                        </a>
+                    </li>
                     <li class="menu-item {{ Route::is('physiotherapy-procedures.my-procedures') ? 'active' : '' }}">
                         <a href="{{ route('physiotherapy-procedures.my-procedures') }}" class="menu-link">
                             <div>{{ localize('global.my_procedures') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('physiotherapy-reports.index') ? 'active' : '' }}">
+                        <a href="{{ route('physiotherapy-reports.index') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
                 </ul>

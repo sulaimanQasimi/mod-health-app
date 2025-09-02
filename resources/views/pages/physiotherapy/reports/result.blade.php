@@ -15,7 +15,6 @@
                                 @csrf
                                 <input type="hidden" name="start_date" value="{{ $startDate->format('Y-m-d') }}">
                                 <input type="hidden" name="end_date" value="{{ $endDate->format('Y-m-d') }}">
-                                <input type="hidden" name="report_type" value="{{ $reportType }}">
                                 <input type="hidden" name="format" value="pdf">
                                 <button type="submit" class="btn btn-danger me-2">
                                     <i class="bx bx-file-pdf"></i> {{ localize('global.export_pdf') }}
@@ -25,7 +24,6 @@
                                 @csrf
                                 <input type="hidden" name="start_date" value="{{ $startDate->format('Y-m-d') }}">
                                 <input type="hidden" name="end_date" value="{{ $endDate->format('Y-m-d') }}">
-                                <input type="hidden" name="report_type" value="{{ $reportType }}">
                                 <input type="hidden" name="format" value="excel">
                                 <button type="submit" class="btn btn-success me-2">
                                     <i class="bx bx-file"></i> {{ localize('global.export_excel') }}
@@ -42,10 +40,6 @@
                                 <h6>{{ localize('global.report_information') }}</h6>
                                 <table class="table table-borderless">
                                     <tr>
-                                        <td><strong>{{ localize('global.report_type') }}:</strong></td>
-                                        <td>{{ ucfirst(str_replace('_', ' ', $reportType)) }}</td>
-                                    </tr>
-                                    <tr>
                                         <td><strong>{{ localize('global.start_date') }}:</strong></td>
                                         <td>{{ $startDate->format('Y-m-d') }}</td>
                                     </tr>
@@ -61,15 +55,29 @@
                             </div>
                         </div>
 
-                        @if($reportType == 'summary')
+                        <!-- Summary Report -->
+                        <div class="mb-4">
+                            <h6>{{ localize('global.summary_report') }}</h6>
                             @include('pages.physiotherapy.reports.partials.summary')
-                        @elseif($reportType == 'detailed')
+                        </div>
+
+                        <!-- Detailed Report -->
+                        <div class="mb-4">
+                            <h6>{{ localize('global.detailed_report') }}</h6>
                             @include('pages.physiotherapy.reports.partials.detailed')
-                        @elseif($reportType == 'by_type')
+                        </div>
+
+                        <!-- Report by Type -->
+                        <div class="mb-4">
+                            <h6>{{ localize('global.report_by_type') }}</h6>
                             @include('pages.physiotherapy.reports.partials.by_type')
-                        @elseif($reportType == 'by_physiotherapist')
+                        </div>
+
+                        <!-- Report by Physiotherapist -->
+                        <div class="mb-4">
+                            <h6>{{ localize('global.report_by_physiotherapist') }}</h6>
                             @include('pages.physiotherapy.reports.partials.by_physiotherapist')
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>

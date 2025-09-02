@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PhysiotherapyProcedure;
 use App\Models\PhysiotherapyType;
 use App\Models\User;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -21,31 +22,30 @@ class PhysiotherapyReportController extends Controller
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'report_type' => 'required|in:summary,detailed,by_type,by_physiotherapist',
         ]);
 
-        $startDate = Carbon::parse($request->start_date);
-        $endDate = Carbon::parse($request->end_date);
-        $reportType = $request->report_type;
+        $startDate = Verta::parse($request->start_date)->datetime();
+        $endDate = Verta::parse($request->end_date)->datetime();
 
-        $data = [];
+        \Log::info('Generating physiotherapy report', [
+            'start_date' => $startDate,
+            'end_date' => $endDate
+        ]);
 
-        switch ($reportType) {
-            case 'summary':
-                $data = $this->generateSummaryReport($startDate, $endDate);
-                break;
-            case 'detailed':
-                $data = $this->generateDetailedReport($startDate, $endDate);
-                break;
-            case 'by_type':
-                $data = $this->generateByTypeReport($startDate, $endDate);
-                break;
-            case 'by_physiotherapist':
-                $data = $this->generateByPhysiotherapistReport($startDate, $endDate);
-                break;
-        }
+        // Generate all report types for the date range
+        $data = [
+            'summary' => $this->generateSummaryReport($startDate, $endDate),
+            'detailed' => $this->generateDetailedReport($startDate, $endDate),
+            'by_type' => $this->generateByTypeReport($startDate, $endDate),
+            'by_physiotherapist' => $this->generateByPhysiotherapistReport($startDate, $endDate)
+        ];
 
-        return view('pages.physiotherapy.reports.result', compact('data', 'startDate', 'endDate', 'reportType'));
+        \Log::info('Generated report data structure', [
+            'data_keys' => array_keys($data),
+            'data_structure' => $data
+        ]);
+
+        return view('pages.physiotherapy.reports.result', compact('data', 'startDate', 'endDate'));
     }
 
     public function generateSummaryReport($startDate, $endDate)
@@ -110,7 +110,8 @@ class PhysiotherapyReportController extends Controller
 
     private function generateByPhysiotherapistReport($startDate, $endDate)
     {
-        return User::whereHas('physiotherapyProcedures', function($query) use ($startDate, $endDate) {
+        // Get all users who have physiotherapy procedures in the date range
+        $physiotherapists = User::whereHas('physiotherapyProcedures', function($query) use ($startDate, $endDate) {
             $query->whereBetween('start_date', [$startDate, $endDate]);
         })
         ->with(['physiotherapyProcedures' => function($query) use ($startDate, $endDate) {
@@ -119,18 +120,28 @@ class PhysiotherapyReportController extends Controller
         ->get()
         ->map(function($physiotherapist) {
             $procedures = $physiotherapist->physiotherapyProcedures;
+            $completedProcedures = $procedures->where('status', 'completed')->count();
+            $totalProcedures = $procedures->count();
+            
             return [
-                'physiotherapist' => $physiotherapist,
-                'total_procedures' => $procedures->count(),
-                'completed_procedures' => $procedures->where('status', 'completed')->count(),
+                'name' => $physiotherapist->name,
+                'email' => $physiotherapist->email,
+                'total_procedures' => $totalProcedures,
+                'completed_procedures' => $completedProcedures,
                 'in_progress_procedures' => $procedures->where('status', 'in_progress')->count(),
                 'pending_procedures' => $procedures->where('status', 'pending')->count(),
                 'cancelled_procedures' => $procedures->where('status', 'cancelled')->count(),
                 'total_duration' => $procedures->sum('duration'),
-                'average_duration' => $procedures->count() > 0 ? $procedures->sum('duration') / $procedures->count() : 0,
-                'completion_rate' => $procedures->count() > 0 ? ($procedures->where('status', 'completed')->count() / $procedures->count()) * 100 : 0
+                'average_duration' => $totalProcedures > 0 ? round($procedures->sum('duration') / $totalProcedures, 2) : 0,
+                'completion_rate' => $totalProcedures > 0 ? round(($completedProcedures / $totalProcedures) * 100, 2) : 0,
+                'performance_score' => $totalProcedures > 0 ? round(($completedProcedures / $totalProcedures) * 100, 1) : 0,
+                'recent_procedures' => $procedures->sortByDesc('start_date')->take(5)
             ];
         });
+
+        return [
+            'physiotherapists' => $physiotherapists
+        ];
     }
 
     public function exportReport(Request $request)
@@ -138,47 +149,36 @@ class PhysiotherapyReportController extends Controller
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'report_type' => 'required|in:summary,detailed,by_type,by_physiotherapist',
             'format' => 'required|in:pdf,excel',
         ]);
 
-        $startDate = Carbon::parse($request->start_date);
-        $endDate = Carbon::parse($request->end_date);
-        $reportType = $request->report_type;
+        $startDate = Verta::parse($request->start_date)->datetime();
+        $endDate = Verta::parse($request->end_date)->datetime();
         $format = $request->format;
 
-        $data = [];
-
-        switch ($reportType) {
-            case 'summary':
-                $data = $this->generateSummaryReport($startDate, $endDate);
-                break;
-            case 'detailed':
-                $data = $this->generateDetailedReport($startDate, $endDate);
-                break;
-            case 'by_type':
-                $data = $this->generateByTypeReport($startDate, $endDate);
-                break;
-            case 'by_physiotherapist':
-                $data = $this->generateByPhysiotherapistReport($startDate, $endDate);
-                break;
-        }
+        // Generate all report types for the date range
+        $data = [
+            'summary' => $this->generateSummaryReport($startDate, $endDate),
+            'detailed' => $this->generateDetailedReport($startDate, $endDate),
+            'by_type' => $this->generateByTypeReport($startDate, $endDate),
+            'by_physiotherapist' => $this->generateByPhysiotherapistReport($startDate, $endDate)
+        ];
 
         if ($format === 'pdf') {
-            return $this->exportToPdf($data, $startDate, $endDate, $reportType);
+            return $this->exportToPdf($data, $startDate, $endDate);
         } else {
-            return $this->exportToExcel($data, $startDate, $endDate, $reportType);
+            return $this->exportToExcel($data, $startDate, $endDate);
         }
     }
 
-    private function exportToPdf($data, $startDate, $endDate, $reportType)
+    private function exportToPdf($data, $startDate, $endDate)
     {
         // Implementation for PDF export
         // You can use packages like dompdf or mPDF
         return response()->json(['message' => 'PDF export functionality to be implemented']);
     }
 
-    private function exportToExcel($data, $startDate, $endDate, $reportType)
+    private function exportToExcel($data, $startDate, $endDate)
     {
         // Implementation for Excel export
         // You can use packages like Maatwebsite Excel

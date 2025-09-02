@@ -37,37 +37,22 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-12">
-                                    <div class="form-group mb-3">
-                                        <label for="report_type" class="form-label">{{ localize('global.report_type') }}
-                                            <span class="text-danger">*</span></label>
-                                        <select class="form-select @error('report_type') is-invalid @enderror"
-                                            id="report_type" name="report_type" required>
-                                            <option value="">{{ localize('global.select_report_type') }}</option>
-                                            <option value="summary" {{ old('report_type') == 'summary' ? 'selected' : '' }}>
-                                                {{ localize('global.summary_report') }}</option>
-                                            <option value="detailed" {{ old('report_type') == 'detailed' ? 'selected' : '' }}>
-                                                {{ localize('global.detailed_report') }}</option>
-                                            <option value="by_type" {{ old('report_type') == 'by_type' ? 'selected' : '' }}>
-                                                {{ localize('global.report_by_type') }}</option>
-                                            <option value="by_physiotherapist" {{ old('report_type') == 'by_physiotherapist' ? 'selected' : '' }}>{{ localize('global.report_by_physiotherapist') }}
-                                            </option>
-                                        </select>
-                                        @error('report_type')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary me-2">
                                     <i class="bx bx-search"></i> {{ localize('global.generate_report') }}
+                                </button>
+                                <button type="button" class="btn btn-success me-2" onclick="exportReport('excel')">
+                                    <i class="bx bx-file"></i> {{ localize('global.export_excel') }}
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="exportReport('pdf')">
+                                    <i class="bx bx-file-pdf"></i> {{ localize('global.export_pdf') }}
                                 </button>
                             </div>
                         </form>
 
                         <div class="mt-4">
-                            <h6>{{ localize('global.report_types_explanation') }}</h6>
+                            <h6>{{ localize('global.report_includes') }}</h6>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="card">
@@ -114,11 +99,94 @@
         // Initialize Persian Datepicker
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize start date picker
-            $('#start_date').persianDatepicker();
+            $('#start_date').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                initialValue: true,
+                autoClose: true,
+                persianNumbers: true,
+                onSelect: function(unix) {
+                    // Convert Persian date to Gregorian for form submission
+                    var gregorianDate = new Date(unix);
+                    var formattedDate = gregorianDate.getFullYear() + '-' + 
+                                      String(gregorianDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                      String(gregorianDate.getDate()).padStart(2, '0');
+                    $('#start_date').val(formattedDate);
+                }
+            });
 
             // Initialize end date picker
-            $('#end_date').persianDatepicker();
+            $('#end_date').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                initialValue: true,
+                autoClose: true,
+                persianNumbers: true,
+                onSelect: function(unix) {
+                    // Convert Persian date to Gregorian for form submission
+                    var gregorianDate = new Date(unix);
+                    var formattedDate = gregorianDate.getFullYear() + '-' + 
+                                      String(gregorianDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                      String(gregorianDate.getDate()).padStart(2, '0');
+                    $('#end_date').val(formattedDate);
+                }
+            });
 
+            // Set default end date to today if not set
+            const endDateInput = document.getElementById('end_date');
+            if (!endDateInput.value) {
+                var today = new Date();
+                var formattedToday = today.getFullYear() + '-' + 
+                                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                                   String(today.getDate()).padStart(2, '0');
+                endDateInput.value = formattedToday;
+            }
         });
+
+        // Function to export reports
+        function exportReport(format) {
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            // Create a form for export
+            const exportForm = document.createElement('form');
+            exportForm.method = 'POST';
+            exportForm.action = '{{ route("physiotherapy-reports.export") }}';
+            
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            exportForm.appendChild(csrfToken);
+            
+            // Add dates
+            const startDateInput = document.createElement('input');
+            startDateInput.type = 'hidden';
+            startDateInput.name = 'start_date';
+            startDateInput.value = startDate;
+            exportForm.appendChild(startDateInput);
+            
+            const endDateInput = document.createElement('input');
+            endDateInput.type = 'hidden';
+            endDateInput.name = 'end_date';
+            endDateInput.value = endDate;
+            exportForm.appendChild(endDateInput);
+            
+            // Add format
+            const formatInput = document.createElement('input');
+            formatInput.type = 'hidden';
+            formatInput.name = 'format';
+            formatInput.value = format;
+            exportForm.appendChild(formatInput);
+            
+            // Submit form
+            document.body.appendChild(exportForm);
+            exportForm.submit();
+            document.body.removeChild(exportForm);
+        }
     </script>
 @endsection

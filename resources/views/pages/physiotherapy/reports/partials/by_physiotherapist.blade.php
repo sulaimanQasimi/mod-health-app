@@ -1,7 +1,7 @@
 <div class="by-physiotherapist-report">
     <h6>{{ localize('global.procedures_by_physiotherapist') }}</h6>
     
-    @if($data['physiotherapists']->count() > 0)
+    @if(isset($data['physiotherapists']) && $data['physiotherapists']->count() > 0)
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -21,33 +21,33 @@
                 @foreach($data['physiotherapists'] as $physiotherapist)
                 <tr>
                     <td>
-                        <strong>{{ $physiotherapist->name }}</strong>
-                        <br><small class="text-muted">{{ $physiotherapist->email ?? 'N/A' }}</small>
+                        <strong>{{ $physiotherapist['name'] ?? 'N/A' }}</strong>
+                        <br><small class="text-muted">{{ $physiotherapist['email'] ?? 'N/A' }}</small>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-primary">{{ $physiotherapist->total_procedures }}</span>
+                        <span class="badge bg-primary">{{ $physiotherapist['total_procedures'] ?? 0 }}</span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-success">{{ $physiotherapist->completed_procedures }}</span>
+                        <span class="badge bg-success">{{ $physiotherapist['completed_procedures'] ?? 0 }}</span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-warning">{{ $physiotherapist->in_progress_procedures }}</span>
+                        <span class="badge bg-warning">{{ $physiotherapist['in_progress_procedures'] ?? 0 }}</span>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-secondary">{{ $physiotherapist->pending_procedures }}</span>
+                        <span class="badge bg-secondary">{{ $physiotherapist['pending_procedures'] ?? 0 }}</span>
                     </td>
                     <td>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $physiotherapist->completion_rate }}%">
-                                {{ number_format($physiotherapist->completion_rate, 1) }}%
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $physiotherapist['completion_rate'] ?? 0 }}%">
+                                {{ number_format($physiotherapist['completion_rate'] ?? 0, 1) }}%
                             </div>
                         </div>
                     </td>
-                    <td>{{ $physiotherapist->total_duration }} {{ localize('global.minutes') }}</td>
-                    <td>{{ $physiotherapist->average_duration }} {{ localize('global.minutes') }}</td>
+                    <td>{{ $physiotherapist['total_duration'] ?? 0 }} {{ localize('global.minutes') }}</td>
+                    <td>{{ $physiotherapist['average_duration'] ?? 0 }} {{ localize('global.minutes') }}</td>
                     <td>
                         @php
-                            $score = $physiotherapist->performance_score;
+                            $score = $physiotherapist['performance_score'] ?? 0;
                             $scoreClass = $score >= 80 ? 'success' : ($score >= 60 ? 'warning' : 'danger');
                         @endphp
                         <span class="badge bg-{{ $scoreClass }}">{{ number_format($score, 1) }}</span>
@@ -67,9 +67,9 @@
                         <table class="table table-borderless">
                             @foreach($data['physiotherapists']->sortByDesc('performance_score')->take(5) as $physiotherapist)
                             <tr>
-                                <td>{{ $physiotherapist->name }}</td>
-                                <td class="text-end">{{ number_format($physiotherapist->performance_score, 1) }}</td>
-                                <td class="text-end">{{ $physiotherapist->total_procedures }}</td>
+                                <td>{{ $physiotherapist['name'] ?? 'N/A' }}</td>
+                                <td class="text-end">{{ number_format($physiotherapist['performance_score'] ?? 0, 1) }}</td>
+                                <td class="text-end">{{ $physiotherapist['total_procedures'] ?? 0 }}</td>
                             </tr>
                             @endforeach
                         </table>
@@ -85,8 +85,8 @@
                         <table class="table table-borderless">
                             @foreach($data['physiotherapists']->sortByDesc('completion_rate')->take(5) as $physiotherapist)
                             <tr>
-                                <td>{{ $physiotherapist->name }}</td>
-                                <td class="text-end">{{ number_format($physiotherapist->completion_rate, 1) }}%</td>
+                                <td>{{ $physiotherapist['name'] ?? 'N/A' }}</td>
+                                <td class="text-end">{{ number_format($physiotherapist['completion_rate'] ?? 0, 1) }}%</td>
                             </tr>
                             @endforeach
                         </table>
@@ -99,10 +99,10 @@
     <div class="mt-4">
         <h6>{{ localize('global.recent_procedures_by_physiotherapist') }}</h6>
         @foreach($data['physiotherapists']->take(3) as $physiotherapist)
-            @if($physiotherapist->recent_procedures->count() > 0)
+            @if(isset($physiotherapist['recent_procedures']) && $physiotherapist['recent_procedures']->count() > 0)
             <div class="card mb-3">
                 <div class="card-header">
-                    <h6 class="mb-0">{{ $physiotherapist->name }} - {{ localize('global.recent_procedures') }}</h6>
+                    <h6 class="mb-0">{{ $physiotherapist['name'] ?? 'N/A' }} - {{ localize('global.recent_procedures') }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -117,7 +117,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($physiotherapist->recent_procedures->take(5) as $procedure)
+                                @foreach($physiotherapist['recent_procedures']->take(5) as $procedure)
                                 <tr>
                                     <td>{{ $procedure->appointment->patient->name ?? 'N/A' }}</td>
                                     <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
@@ -141,7 +141,13 @@
     @else
     <div class="text-center py-4">
         <i class="bx bx-info-circle text-muted" style="font-size: 3rem;"></i>
-        <p class="text-muted mt-2">{{ localize('global.no_procedures_found_for_selected_period') }}</p>
+        <p class="text-muted mt-2">
+            @if(isset($data['physiotherapists']) && $data['physiotherapists']->count() == 0)
+                {{ localize('global.no_procedures_found_for_selected_period') }}
+            @else
+                {{ localize('global.no_physiotherapist_data_available') }}
+            @endif
+        </p>
     </div>
     @endif
 </div>

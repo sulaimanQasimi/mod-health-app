@@ -114,43 +114,9 @@
     <!-- Core JS -->
     @include('layouts.partial.js_links')
 
-
     @yield('scripts')
 </body>
 
-
-<script type="text/javascript">
-    $(function () {
-
-        initHijrDatePicker();
-    });
-
-
-
-
-    function initHijrDatePicker() {
-
-        $(".hijri-date-input").hijriDatePicker({
-            locale: "ar-sa",
-            format: "DD-MM-YYYY",
-            hijriFormat: "iYYYY-iMM-iDD",
-            dayViewHeaderFormat: "MMMM YYYY",
-            hijriDayViewHeaderFormat: "iMMMM iYYYY",
-            showSwitcher: true,
-            allowInputToggle: true,
-            showTodayButton: true,
-            useCurrent: false,
-            isRTL: false,
-            viewMode: 'days',
-            keepOpen: false,
-            hijri: true,
-            debug: false,
-            showClear: true,
-            showTodayButton: true,
-            showClose: true
-        });
-    }
-</script>
 <script>
     $(document).ready(function () {
         $('[name = themeRadios]').click(function () {
@@ -176,16 +142,8 @@
         $('.template-customizer-t-layout_footer_label').html("{{localize('global.system_theme_fixed_footer')}}");
         $('.template-customizer-t-layout_dd_open_label').html("{{localize('global.system_theme_dropdown')}}");
 
-
         $('.template-customizer-t-misc_header').html("{{localize('global.system_theme_misc')}}");
         $('.template-customizer-t-rtl_label').html("{{localize('global.system_theme_rtl')}}");
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        $(".datepicker_dari").persianDatepicker({
-            formatDate: 'YYYY-MM-DD'
-        });
     });
 </script>
 

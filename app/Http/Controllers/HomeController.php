@@ -20,6 +20,7 @@ use App\Models\Prescription;
 use App\Models\Province;
 use App\Models\Room;
 use App\Models\User;
+use App\Models\PhysiotherapyProcedure;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -51,6 +52,9 @@ class HomeController extends Controller
         $totalOperations = Anesthesia::where('branch_id',auth()->user()->branch_id)->where('is_operation_done','1')->count();
         $totalIcuAdmissions = ICU::where('branch_id',auth()->user()->branch_id)->count();
         $totalInPatientAdmissions = Hospitalization::where('branch_id',auth()->user()->branch_id)->count();
+        $totalPhysiotherapyProcedures = PhysiotherapyProcedure::whereHas('appointment', function($query) {
+            $query->where('branch_id', auth()->user()->branch_id);
+        })->count();
 
         // Today's statistics
         $todayPatients = Patient::where('branch_id', auth()->user()->branch_id)
@@ -137,6 +141,7 @@ class HomeController extends Controller
             'totalOperations' => $totalOperations,
             'totalIcuAdmissions' => $totalIcuAdmissions,
             'totalInPatientAdmissions' => $totalInPatientAdmissions,
+            'totalPhysiotherapyProcedures' => $totalPhysiotherapyProcedures,
             'todayPatients' => $todayPatients,
             'todayPatientsPercentageChange' => $todayPatientsPercentageChange,
             'patientsTrendData' => $patientsTrendData,

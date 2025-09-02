@@ -231,6 +231,28 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="card  border ">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.all_physiotherapy_procedures') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2  p-1 rounded">{{ $totalPhysiotherapyProcedures }}
+                                                </h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_registered_physiotherapy_procedures') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-teal">
+                                                <i class="bx bx-pulse bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-sm-6 col-xl-4">

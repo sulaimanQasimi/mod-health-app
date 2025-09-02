@@ -2014,5 +2014,7 @@ return [
 'review_created_successfully'=>'بازرسی با موفقیت ایجاد شد',
 'review_updated_successfully'=>'بازرسی با موفقیت ابدیت شد',
 'review_deleted_successfully'=>'بازرسی با موفقیت حذف شد',
-'review_not_found'=>'بازرسی یافت نشد'
+'review_not_found'=>'بازرسی یافت نشد',
+'all_physiotherapy_procedures'=>' فیزیوتراپی',
+'all_registered_physiotherapy_procedures'=>'همه فیزیوتراپی ثبت شده',
 ];

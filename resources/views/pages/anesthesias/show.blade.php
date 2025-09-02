@@ -19,13 +19,13 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.patient_name') }}</h5>
                                         <div>
-                                            {{ $anesthesia->patient->name }}
+                                            {{ $anesthesia->patient?->name ?? 'N/A' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_type') }}</h5>
                                         <div>
-                                            {{ $anesthesia->operationType->name }}
+                                            {{ $anesthesia->operationType?->name ?? 'N/A' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -78,7 +78,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_surgion') }}</h5>
                                         <div>
-                                            {{ $anesthesia->surgion->name }}
+                                            {{ $anesthesia->surgion?->name ?? 'N/A' }}
                                         </div>
                                     </div>
                                     @if(isset($anesthesia->anesthesia_log->name))

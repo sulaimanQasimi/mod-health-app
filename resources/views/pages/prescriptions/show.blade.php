@@ -295,7 +295,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach($item->alternativeItems as $alternative)
-                                            <tr class="{{ $alternative->is_selected ? 'table-success' : '' }}">
+                                            <tr class="{{ $alternative->is_selected ? 'table-bg-none' : '' }}">
                                                 <td>
                                                     {{ $alternative->medicine->name }}
                                                     @if($alternative->is_selected)

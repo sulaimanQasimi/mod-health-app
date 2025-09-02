@@ -122,7 +122,7 @@
                             searchable: false,
                             render: function(data, type, full, meta) {
                                 return (
-                                    `<a href="{{ url('appointments  /show/') }}` + `/` + full['id'] +
+                                    `<a href="{{ url('appointments/show/') }}` + `/` + full['id'] +
                                     `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>`
                                 );
                             }

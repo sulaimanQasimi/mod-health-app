@@ -26,11 +26,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if($reservedOperations && $reservedOperations->count() > 0)
                                 @foreach ($reservedOperations as $operation)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $operation->patient->name }}</td>
-                                        <td>{{ $operation->operationType->name }}</td>
+                                        <td>{{ $operation->patient ? $operation->patient->name : 'No Patient' }}</td>
+                                        <td>{{ $operation->operationType ? $operation->operationType->name : 'No Operation Type' }}</td>
                                         <td>
                                             @if ($operation->is_reserved == 0)
                                                 <span class="badge bg-success">{{localize('global.unreserved')}}</span>
@@ -39,24 +40,35 @@
                                             @endif
                                         </td>
                                         <td>
-                                            {{$operation->reserve_reason}}
+                                            {{$operation->reserve_reason ?? 'No Reason'}}
                                         </td>
                                         <td>
                                             <a href="{{ route('operations.show', $operation) }}"><i
                                                     class="bx bx-expand"></i></a>
 
+                                            @if($operation->patient)
                                             <a href="{{ route('patients.history', $operation->patient->id) }}"><i
                                                 class="bx bx-history"></i></a>
+                                            @else
+                                            <span class="text-muted"><i class="bx bx-history"></i></span>
+                                            @endif
                                             
                                         </td>
                                     </tr>
                                 @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="6" class="text-center">No reserved operations found</td>
+                                </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
+                    @if($reservedOperations && $reservedOperations->count() > 0)
                     <div class="d-flex justify-content-end">
                         {{ $reservedOperations->links('pagination::bootstrap-5') }}
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -28,8 +28,8 @@
                                 @foreach ($anesthesias as $anesthesia)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $anesthesia->patient->name }}</td>
-                                        <td>{{ $anesthesia->operationType->name }}</td>
+                                        <td>{{ $anesthesia->patient->name ?? 'N/A' }}</td>
+                                        <td>{{ $anesthesia->operationType->name ?? 'N/A' }}</td>
                                         <td>
                                             @if ($anesthesia->status == '0')
                                                 <span class="bx bx-x-circle text-danger"></span>

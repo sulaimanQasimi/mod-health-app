@@ -25,51 +25,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($operations as $operation
-                                
-                                )
+                                @if($operations && $operations->count() > 0)
+                                @foreach ($operations as $operation)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $operation->patient->name }}</td>
-                                        <td>{{ $operation
-                                        
-                                        ->operationType->name }}</td>
+                                        <td>{{ $operation->patient ? $operation->patient->name : 'No Patient' }}</td>
+                                        <td>{{ $operation->operationType ? $operation->operationType->name : 'No Operation Type' }}</td>
                                         <td>
-                                            @if ($operation
-                                            
-                                            ->status == '0')
+                                            @if ($operation->status == '0')
                                                 <span class="bx bx-x-circle text-danger"></span>
                                             @else
                                                 <span class="bx bx-check-circle text-success"></span>
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ route('operations.show', $operation
-                                            
-                                            ) }}"><i
+                                            <a href="{{ route('operations.show', $operation) }}"><i
                                                     class="bx bx-expand"></i></a>
-                                            {{-- <a href="{{ route('operations.edit', $operation
-                                            
-                                            ) }}"><i class="bx bx-message-square-edit"></i></a> --}}
-                                            <!-- Using an <a> tag -->
-                                            {{-- <a href="{{ route('beds.destroy', $bed) }}" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form').submit(); }">
-                        <i class="bx bx-trash"></i>
-                    </a>
-
-                    <!-- Using a <form> element -->
-                    <form id="delete-form" action="{{ route('beds.destroy', $bed) }}" method="POST" style="display: none;">
-                        @csrf
-                        @method('DELETE')
-                    </form> --}}
                                         </td>
                                     </tr>
                                 @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="5" class="text-center">No completed operations found</td>
+                                </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
+                    @if($operations && $operations->count() > 0)
                     <div class="d-flex justify-content-end">
                         {{ $operations->links('pagination::bootstrap-5') }}
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

@@ -22,7 +22,7 @@ class PhysiotherapyReportController extends Controller
         try {
             $request->validate([
                 'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
+                'end_date' => 'required|date',
             ]);
 
             $startDate = Verta::parse($request->start_date)->datetime();
@@ -166,9 +166,8 @@ class PhysiotherapyReportController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'format' => 'required|in:pdf,excel',
         ]);
-
-        $startDate = Verta::parse($request->start_date)->datetime();
-        $endDate = Verta::parse($request->end_date)->datetime();
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
         $format = $request->format;
 
         // Generate all report types for the date range
@@ -194,7 +193,7 @@ class PhysiotherapyReportController extends Controller
         // For now, return the HTML view - you can integrate with dompdf or mPDF later
         return response($html)
             ->header('Content-Type', 'text/html')
-            ->header('Content-Disposition', 'attachment; filename="physiotherapy_report_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.html"');
+            ->header('Content-Disposition', 'attachment; filename="physiotherapy_report_' . verta($startDate)->format('Y-m-d') . '_to_' . verta($endDate)->format('Y-m-d') . '.html"');
     }
 
     private function exportToExcel($data, $startDate, $endDate)

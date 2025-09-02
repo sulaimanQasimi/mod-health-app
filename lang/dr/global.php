@@ -1899,5 +1899,6 @@ return [
     'completion_by_type' => 'تکمیل بر اساس نوع',
     'procedures_by_physiotherapist' => 'فیزیوتراپی بر اساس فیزیوتراپیست',
     'no_physiotherapist_data_available' => 'اطلاعاتی برای فیزیوتراپیست موجود نیست',
+"physiotherapy_report_result"=>"گزارش فیزیوتراپی",
 ];
 ;

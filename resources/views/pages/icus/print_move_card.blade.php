@@ -4,18 +4,30 @@
 <head>
     <title>Transfer Sheet</title>
     <style>
+        @font-face {
+            font-family: 'ModFont';
+            src: url('{{ asset("assets/fonts/mod_font.ttf") }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        *{
+            font-family: 'ModFont', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
         table {
             margin: 0 auto;
             border-collapse: collapse;
             width: 80%;
+            direction: rtl;
         }
 
         th,
         td {
             padding: 10px;
-            text-align: left;
+            text-align: right;
             border: 1px solid #ddd !important;
             color: black !important;
+            direction: rtl;
         }
 
         h2 {
@@ -34,7 +46,7 @@
         <div class="col-md-6">
             <h2>{{$icu->branch ? $icu->branch->name : 'No Branch'}}</h2>
             <h6 class="text-center">{{$icu->branch ? $icu->branch->address : 'No Address'}}</h6>
-            <h5 class="text-center"> Transfer Sheet </h5>
+            <h5 class="text-center"> {{localize('global.transfer_sheet')}}</h5>
         </div>
 
 
@@ -45,28 +57,28 @@
     </div>
     <table>
         <tr>
-            <td>Name:</td>
+            <td>{{localize('global.name')}}</td>
             <td>{{ $icu->patient ? $icu->patient->name : 'No Patient' }}</td>
         </tr>
         <tr>
-            <td>Father Name:</td>
+            <td>{{localize('global.father_name')}}</td>
             <td>{{ $icu->patient ? $icu->patient->father_name : 'No Father Name' }}</td>
         </tr>
         <tr>
-            <td>Age:</td>
+            <td>{{localize('global.age')}}</td>
             <td>{{ $icu->patient ? $icu->patient->age : 'No Age' }}</td>
         </tr>
         <tr>
-            <td>Transfer Date:</td>
+            <td>{{localize('global.transfer_date')}}</td>
             <td>{{ $icu->transfer_date ?? 'No Transfer Date' }}</td>
         </tr>
         <tr>
-            <td>Brief History</td>
+            <td>{{localize('global.brief_history')}}</td>
             <td>{{ $icu->brief_history ?? 'No Brief History' }}</td>
         </tr>
 
         <tr>
-            <td>Procedures:</td>
+            <td>{{localize('global.procedures')}}</td>
             <td>
                 <div class="container">
                     <div class="col-md-12">
@@ -74,7 +86,7 @@
                             <div class="col-md-12">
                                 <div class="col-md-12">
                                     <h5 class="mb-4 p-1 bg-label-success text-center"><i
-                                            class="bx bx-popsicle p-1"></i>Procedures
+                                            class="bx bx-popsicle p-1"></i>{{localize('global.procedures')}}
                                     </h5>
                                 </div>
                             </div>
@@ -91,13 +103,13 @@
                                             class="bg-label-danger text-center p-1">{{ $procedure->procedure_type->name }}</span>
                                             @else
                                             <span
-                                            class="bg-label-danger text-center p-1">No Procedure Type</span>
+                                            class="bg-label-danger text-center p-1">{{localize('global.no_procedure_type')}}</span>
                                             @endif
                                         {{ $procedure->description ?? 'No Description' }}
                                     </li>
                                 @endforeach
                                 @else
-                                <li class="m-1 p-1">No procedures found</li>
+                                <li class="m-1 p-1">{{localize('global.no_procedures_found')}}</li>
                                 @endif
                             </div>
                         </div>
@@ -106,7 +118,7 @@
             </td>
         </tr>
         <tr>
-            <td>Diagnoses:</td>
+            <td>{{localize('global.diagnoses')}}</td>
             @php
                 $primaryDiagnoses = $icu->appointment ? $icu->appointment->diagnose->where('type', 0) : collect();
                 $finalDiagnoses = $icu->appointment ? $icu->appointment->diagnose->where('type', 1) : collect();
@@ -118,14 +130,14 @@
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <h5 class="mb-4 p-1 bg-label-warning text-center"><i
-                                            class="bx bx-popsicle p-1"></i>Primary Diagnoses
+                                            class="bx bx-popsicle p-1"></i>{{localize('global.primary_diagnoses')}}
                                     </h5>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <h5 class="mb-4 p-1 bg-label-success text-center"><i
-                                            class="bx bx-popsicle p-1"></i>Final Diagnoses
+                                            class="bx bx-popsicle p-1"></i>{{localize('global.final_diagnoses')}}
                                     </h5>
                                 </div>
                             </div>
@@ -141,7 +153,7 @@
                                     </li>
                                 @endforeach
                                 @else
-                                <li class="m-1 p-1">No primary diagnoses found</li>
+                                <li class="m-1 p-1">{{localize('global.no_primary_diagnoses_found')}}</li>
                                 @endif
                             </div>
                             <div class="col-md-6">
@@ -154,7 +166,7 @@
                                     </li>
                                 @endforeach
                                 @else
-                                <li class="m-1 p-1">No final diagnoses found</li>
+                                <li class="m-1 p-1">{{localize('global.no_final_diagnoses_found')}}</li>
                                 @endif
                             </div>
                         </div>
@@ -163,7 +175,7 @@
             </td>
         </tr>
         <tr>
-            <td>Operations:</td>
+            <td>{{localize('global.operations')}}</td>
             <td>
                 <div class="container">
                     <div class="col-md-12">
@@ -171,7 +183,7 @@
                             <div class="col-md-12">
                                 <div class="col-md-12">
                                     <h5 class="mb-4 p-1 bg-label-success text-center"><i
-                                            class="bx bx-popsicle p-1"></i>Operations
+                                            class="bx bx-popsicle p-1"></i>{{localize('global.operations')}}
                                     </h5>
                                 </div>
                             </div>
@@ -188,20 +200,20 @@
                                             class="bg-label-danger text-center p-1">{{ $operation->surgion->name }}</span>
                                             @else
                                             <span
-                                            class="bg-label-danger text-center p-1">No Surgeon</span>
+                                            class="bg-label-danger text-center p-1">{{localize('global.no_surgeon')}}</span>
                                             @endif
                                             @if($operation->operationType)
                                             <span
                                             class="bg-label-danger text-center p-1">{{ $operation->operationType->name }}</span>
                                             @else
                                             <span
-                                            class="bg-label-danger text-center p-1">No Operation Type</span>
+                                            class="bg-label-danger text-center p-1">{{localize('global.no_operation_type')}}</span>
                                             @endif
                                         {{ $operation->operation_remark ?? 'No Operation Remark' }}
                                     </li>
                                 @endforeach
                                 @else
-                                <li class="m-1 p-1">No appointments found</li>
+                                <li class="m-1 p-1">{{localize('global.no_appointments_found')}}</li>
                                 @endif
                             </div>
                         </div>
@@ -210,7 +222,7 @@
             </td>
         </tr>
         <tr>
-            <td>consultations:</td>
+            <td>{{localize('global.consultations')}}</td>
             <td>
                 <div class="container">
                     <div class="col-md-12">
@@ -218,7 +230,7 @@
                             <div class="col-md-12">
                                 <div class="col-md-12">
                                     <h5 class="mb-4 p-1 bg-label-success text-center"><i
-                                            class="bx bx-popsicle p-1"></i>consultations
+                                            class="bx bx-popsicle p-1"></i>{{localize('global.consultations')}}
                                     </h5>
                                 </div>
                             </div>
@@ -232,10 +244,10 @@
                                             class="bg-label-warning text-center p-1">{{ $consultation->created_at ? $consultation->created_at->format('Y-m-d') : 'No Date' }}</span>
                                             @if ($consultation->consultation_type ==0)
                                             <span
-                                            class="bg-label-warning text-center p-1">Normal</span>
+                                            class="bg-label-warning text-center p-1">{{localize('global.normal')}}</span>
                                             @else
                                             <span
-                                            class="bg-label-danger text-center p-1">Emergency</span>
+                                            class="bg-label-danger text-center p-1">{{localize('global.emergency')}}</span>
                                             @endif
                                         {{ $consultation->title ?? 'No Title' }}
                                         <ul>
@@ -248,14 +260,14 @@
                                             class="bg-label-danger text-center p-1">{{ $comment->department->name }}</span>
                                             @else
                                             <span
-                                            class="bg-label-danger text-center p-1">No Department</span>
+                                            class="bg-label-danger text-center p-1">{{localize('global.no_department')}}</span>
                                             @endif
                                             @if($comment->doctor)
                                             <span
                                             class="bg-label-success text-center p-1">{{ $comment->doctor->name }}</span>
                                             @else
                                             <span
-                                            class="bg-label-success text-center p-1">No Doctor</span>
+                                            class="bg-label-success text-center p-1">{{localize('global.no_doctor')}}</span>
                                             @endif
                                             {{$comment->comment ?? 'No Comment'}}
                                             </li>
@@ -264,7 +276,7 @@
                                     </li>
                                 @endforeach
                                 @else
-                                <li class="m-1 p-1">No consultations found</li>
+                                <li class="m-1 p-1">{{localize('global.no_consultations_found')}}</li>
                                 @endif
                             </div>
                         </div>

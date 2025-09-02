@@ -5,10 +5,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <style type="text/css">
+        @font-face {
+            font-family: 'ModFont';
+            src: url('{{ asset("assets/fonts/mod_font.ttf") }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
         body,
-        body *,
         .label {
-            font-family: 'Arial', sans-serif !important;
+            font-family: 'ModFont', 'Arial', sans-serif !important;
         }
 
         .excel_table_title {

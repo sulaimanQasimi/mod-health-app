@@ -227,7 +227,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('visits')->name('visits.')->group(function () {
         Route::get('index', [VisitController::class, 'index'])->name('index');
         Route::get('create', [VisitController::class, 'create'])->name('create');
-        Route::get('show/{visit}', [VisitController::class, 'show'])->name('show');
+        // Route::get('show/{visit}', [VisitController::class, 'show'])->name('show');
         Route::post('store', [VisitController::class, 'store'])->name('store');
         Route::get('editUnderReviewVisit/{visit}', [VisitController::class, 'editUnderReviewVisit'])->name('edit');
         Route::put('update/{visit}', [VisitController::class, 'update'])->name('update');

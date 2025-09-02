@@ -91,7 +91,7 @@
                             <tbody>
                                 @foreach ($prescription->prescriptionItems as $item)
                                 <!-- Original Prescription Item -->
-                                <tr class="{{ $item->selectedAlternative ? 'table-secondary' : '' }}">
+                                <tr class="{{ $item->selectedAlternative ? 'table-bg-secondary' : '' }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->medicineType->type }}</td>
                                     <td>
@@ -131,7 +131,7 @@
 
                                 <!-- Selected Alternative Item (if exists) -->
                                 @if($item->selectedAlternative)
-                                <tr class="table-success">
+                                <tr class="table-bg-none">
                                     <td>{{ $loop->iteration }}.1</td>
                                     <td>{{ $item->selectedAlternative->medicineType->type }}</td>
                                     <td>

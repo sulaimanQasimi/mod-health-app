@@ -1851,5 +1851,6 @@ return [
     'complaint_item_not_found.'=>'قلم شکایت یافت نشد',
     'complaint_item_status_updated_successfully.'=>'حالت قلم شکایت با موفقیت ابدیت شد',
     'complaint_item_deleted_successfully.'=>'قلم شکایت با موفقیت حذف شد',
-    'complaint_item_not_found.'=>'قلم شکایت یافت نشد'
+    'complaint_item_not_found.'=>'قلم شکایت یافت نشد',
+    "room_bed_assignment"=>'تخصیص اطاق',
 ];

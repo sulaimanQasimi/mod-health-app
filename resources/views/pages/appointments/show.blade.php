@@ -2075,7 +2075,7 @@
                                                                     <span class="badge bg-danger rounded-pill">{{ $loop->iteration }}</span>
                                                                 </td>
                                                                 <td>{{ $anesthesia->operationType?->name }}</td>
-                                                                <td>{{ $anesthesia->patient->name }}</td>
+                                                                <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
                                                                 <td>
                                                                     @if ($anesthesia->status == 'new')
                                                                         <span class="badge bg-primary">
@@ -2163,7 +2163,7 @@
                                                                 <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
                                                             </td>
                                                             <td>{{ $anesthesia->operationType?->name }}</td>
-                                                            <td>{{ $anesthesia->patient->name }}</td>
+                                                            <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
                                                             <td>
                                                                 @if ($anesthesia->status == 'new')
                                                                     <span class="badge bg-primary">

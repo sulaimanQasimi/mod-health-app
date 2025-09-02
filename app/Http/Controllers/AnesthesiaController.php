@@ -22,21 +22,30 @@ class AnesthesiaController extends Controller
      */
     public function new()
     {
-        $anesthesias = Anesthesia::where('status', 'new')->latest()->paginate(10);
+        $anesthesias = Anesthesia::with(['patient', 'operationType', 'surgion'])
+            ->where('status', 'new')
+            ->latest()
+            ->paginate(10);
 
         return view('pages.anesthesias.new', compact('anesthesias'));
     }
 
     public function approved()
     {
-        $anesthesias = Anesthesia::where('status', 'approved')->latest()->paginate(10);
+        $anesthesias = Anesthesia::with(['patient', 'operationType', 'surgion'])
+            ->where('status', 'approved')
+            ->latest()
+            ->paginate(10);
 
         return view('pages.anesthesias.approved', compact('anesthesias'));
     }
 
     public function rejected()
     {
-        $anesthesias = Anesthesia::where('status', 'rejected')->latest()->paginate(10);
+        $anesthesias = Anesthesia::with(['patient', 'operationType', 'surgion'])
+            ->where('status', 'rejected')
+            ->latest()
+            ->paginate(10);
 
         return view('pages.anesthesias.rejected', compact('anesthesias'));
     }

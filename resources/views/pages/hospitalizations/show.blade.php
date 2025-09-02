@@ -1044,9 +1044,9 @@
                                         @forelse ($hospitalization->anesthesias as $anesthesia)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $anesthesia->operationType->name }}</td>
+                                                <td>{{ $anesthesia->operationType?->name ?? 'N/A' }}</td>
                                                 <td>
-                                                    {{ $anesthesia->patient->name }}
+                                                    {{ $anesthesia->patient?->name ?? 'N/A' }}
                                                 </td>
                                                 <td>
                                                     @if ($anesthesia->status == 'new')

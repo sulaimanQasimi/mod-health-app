@@ -433,28 +433,7 @@
             </li>
         @endcan
 
-        @can('show-physiotherapy-menu')
-            <li
-                class="menu-item {{ Route::is('physiotherapy-procedures.*') || Route::is('physiotherapy-reports.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-health text-primary"></i>
-                    <div>{{ localize('global.physiotherapy') }}</div>
-                </a>
-
-                <ul class="menu-sub">
-                    <li class="menu-item {{ Route::is('physiotherapy-procedures.my-procedures') ? 'active' : '' }}">
-                        <a href="{{ route('physiotherapy-procedures.my-procedures') }}" class="menu-link">
-                            <div>{{ localize('global.my_procedures') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('physiotherapy-reports.index') ? 'active' : '' }}">
-                        <a href="{{ route('physiotherapy-reports.index') }}" class="menu-link">
-                            <div>{{ localize('global.reports') }}</div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        @endcan
+   
 
         {{-- @can('show-reports-menu')
         <li class="menu-item {{ Route::is('reports.*') ? 'active open' : '' }}">

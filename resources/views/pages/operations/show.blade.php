@@ -19,25 +19,25 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.patient_name') }}</h5>
                                         <div>
-                                            {{ $operation->patient->name }}
+                                            {{ $operation->patient ? $operation->patient->name : 'No Patient' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_type') }}</h5>
                                         <div>
-                                            {{ $operation->operationType->name }}
+                                            {{ $operation->operationType ? $operation->operationType->name : 'No Operation Type' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
                                         <div>
-                                            {{ $operation->date }}
+                                            {{ $operation->date ?? 'No Date' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.time') }}</h5>
                                         <div>
-                                            {{ $operation->time }}
+                                            {{ $operation->time ?? 'No Time' }}
                                         </div>
                                     </div>
                                 </div>
@@ -45,20 +45,20 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_plan') }}</h5>
                                         <div>
-                                            {{ $operation->plan }}
+                                            {{ $operation->plan ?? 'No Plan' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_duration') }}
                                         </h5>
                                         <div>
-                                            {{ $operation->planned_duration }}
+                                            {{ $operation->planned_duration ?? 'No Duration' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.position_on_bed') }}</h5>
                                         <div>
-                                            {{ $operation->position_on_bed }}
+                                            {{ $operation->position_on_bed ?? 'No Position' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -66,7 +66,7 @@
                                             {{ localize('global.estimated_blood_waste') }}
                                         </h5>
                                         <div>
-                                            {{ $operation->estimated_blood_waste }}
+                                            {{ $operation->estimated_blood_waste ?? 'No Estimate' }}
                                         </div>
                                     </div>
                                 </div>
@@ -74,16 +74,20 @@
                                     <div class="col-md-6">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.other_problems') }}</h5>
                                         <div>
-                                            {{ $operation->other_problems }}
+                                            {{ $operation->other_problems ?? 'No Problems' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_surgion') }}
                                         </h5>
                                         <div>
+                                            @if($operation->surgion)
                                             <span class="badge bg-primary">
                                                 {{ $operation->surgion->name }}
                                             </span>
+                                            @else
+                                            <span class="badge bg-secondary">No Surgeon</span>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -104,13 +108,13 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log') }}</h5>
                                         <div>
-                                            {{ $operation->anesthesia_log->name }}
+                                            {{ $operation->anesthesia_log ? $operation->anesthesia_log->name : 'No Anesthesia Log' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesist') }}</h5>
                                         <div>
-                                            {{ $operation->anesthesist->name }}
+                                            {{ $operation->anesthesist ? $operation->anesthesist->name : 'No Anesthesist' }}
                                         </div>
                                     </div>
                                     @if (isset($operation->scrub_nurse->name))
@@ -139,19 +143,19 @@
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log_reply') }}
                                         </h5>
                                         <div>
-                                            {{ $operation->anesthesia_log_reply }}
+                                            {{ $operation->anesthesia_log_reply ?? 'No Reply' }}
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_plan') }}</h5>
                                         <div>
-                                            {{ $operation->anesthesia_plan }}
+                                            {{ $operation->anesthesia_plan ?? 'No Plan' }}
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_type') }}</h5>
                                         <div>
-                                            {{ $operation->anesthesia_type }}
+                                            {{ $operation->anesthesia_type ?? 'No Type' }}
                                         </div>
                                     </div>
                                 </div>
@@ -407,7 +411,7 @@
                                                             <span class="text-danger">{{ $message }}</span>
                                                         @enderror
                                                         <input type="hidden" name="appointment_id"
-                                                            value="{{ $operation->appointment->id }}">
+                                                            value="{{ $operation->appointment ? $operation->appointment->id : '' }}">
                                                         @error('appointment_id')
                                                             <span class="text-danger">{{ $message }}</span>
                                                         @enderror
@@ -504,7 +508,7 @@
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>
-                                                            {{ $bloodBank->patient->name }}
+                                                            {{ $bloodBank->patient ? $bloodBank->patient->name : 'No Patient' }}
                                                         </td>
                                                         <td>
                                                             {{ $bloodBank->group }}
@@ -656,8 +660,8 @@
                                                         <input type="hidden" id="patient_id{{ $operation->patient_id }}"
                                                             name="patient_id" value="{{ $operation->patient_id }}">
                                                         <input type="hidden" id="appointment_id{{ $operation->id }}"
-                                                            name="appointment_id" value="{{ $operation->appointment->id }}">
-                                                        <input type="hidden" id="operation_id{{ $operation->appointment->id }}"
+                                                            name="appointment_id" value="{{ $operation->appointment ? $operation->appointment->id : '' }}">
+                                                        <input type="hidden" id="operation_id{{ $operation->appointment ? $operation->appointment->id : 'no-appointment' }}"
                                                             name="operation_id" value="{{ $operation->id }}">
                                                         <input type="hidden" id="department_id{{ $operation->id }}"
                                                             name="department_id" value="{{ auth()->user()->department_id }}">
@@ -701,7 +705,7 @@
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>
-                                                            {{ $pacu->patient->name }}
+                                                            {{ $pacu->patient ? $pacu->patient->name : 'No Patient' }}
                                                         </td>
 
                                                         <td>
@@ -1091,12 +1095,20 @@
                                                                         <td>{{ $hospitalization->reason }}</td>
                                                                         <td>{{ $hospitalization->remarks }}</td>
                                                                         <td>
+                                                                            @if($hospitalization->room)
                                                                             <span
                                                                                 class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
+                                                                            @else
+                                                                            <span class="badge bg-secondary">No Room</span>
+                                                                            @endif
                                                                         </td>
                                                                         <td>
+                                                                            @if($hospitalization->bed)
                                                                             <span
                                                                                 class="badge bg-info">{{ $hospitalization->bed->number }}</span>
+                                                                            @else
+                                                                            <span class="badge bg-info">No Bed</span>
+                                                                            @endif
                                                                         </td>
                                                                         <td>
                                                                             @if ($hospitalization->is_discharged == 0)
@@ -1219,9 +1231,9 @@
                                                         @csrf
                                                         <input type="hidden" id="patient_id{{ $operation->patient_id }}"
                                                             name="patient_id" value="{{ $operation->patient_id }}">
-                                                        <input type="hidden" id="appointment_id{{ $operation->appointment->id }}"
-                                                            name="appointment_id" value="{{ $operation->appointment->id }}">
-                                                        <input type="hidden" id="operation_id{{ $operation->appointment->id }}"
+                                                        <input type="hidden" id="appointment_id{{ $operation->appointment ? $operation->appointment->id : 'no-appointment' }}"
+                                                            name="appointment_id" value="{{ $operation->appointment ? $operation->appointment->id : '' }}">
+                                                        <input type="hidden" id="operation_id{{ $operation->appointment ? $operation->appointment->id : 'no-appointment' }}"
                                                             name="operation_id" value="{{ $operation->id }}">
                                                         <input type="hidden" id="doctor_id{{ $operation->id }}" name="doctor_id"
                                                             value="{{ auth()->user()->id }}">
@@ -1315,12 +1327,20 @@
                                                                         <td>{{ $underReview->reason }}</td>
                                                                         <td>{{ $underReview->remarks }}</td>
                                                                         <td>
+                                                                            @if($underReview->room)
                                                                             <span
                                                                                 class="badge bg-secondary">{{ $underReview->room->name }}</span>
+                                                                            @else
+                                                                            <span class="badge bg-secondary">No Room</span>
+                                                                            @endif
                                                                         </td>
                                                                         <td>
+                                                                            @if($underReview->bed)
                                                                             <span
                                                                                 class="badge bg-info">{{ $underReview->bed->number }}</span>
+                                                                            @else
+                                                                            <span class="badge bg-info">No Bed</span>
+                                                                            @endif
                                                                         </td>
                                                                         <td>
                                                                             @if ($underReview->is_discharged == '0')
@@ -1394,8 +1414,8 @@
                                                         <input type="hidden" id="patient_id{{ $operation->patient_id }}"
                                                             name="patient_id" value="{{ $operation->patient_id }}">
                                                         <input type="hidden" id="appointment_id{{ $operation->id }}"
-                                                            name="appointment_id" value="{{ $operation->appointment->id }}">
-                                                        <input type="hidden" id="operation_id{{ $operation->appointment->id }}"
+                                                            name="appointment_id" value="{{ $operation->appointment ? $operation->appointment->id : '' }}">
+                                                        <input type="hidden" id="operation_id{{ $operation->appointment ? $operation->appointment->id : 'no-appointment' }}"
                                                             name="operation_id" value="{{ $operation->id }}">
                                                         <input type="hidden" id="doctor_id{{ $operation->id }}" name="doctor_id"
                                                             value="{{ auth()->user()->id }}">
@@ -1439,7 +1459,7 @@
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>
-                                                            {{ $icu->patient->name }}
+                                                            {{ $icu->patient ? $icu->patient->name : 'No Patient' }}
                                                         </td>
                                                         <td>
                                                             {{ $icu->description }}

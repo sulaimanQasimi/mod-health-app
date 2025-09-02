@@ -57,6 +57,7 @@ use App\Http\Controllers\OutcomeController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PhysiotherapyProcedureController;
 use App\Http\Controllers\PhysiotherapyReportController;
+use App\Http\Controllers\PhysiotherapyTypeController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -684,6 +685,20 @@ Route::group(['middleware' => ['auth']], function () {
     // API Select Routes for Select2 dropdowns (Web-based, requires auth)
     Route::middleware('auth')->prefix('api/select')->group(function () {
         Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
+
+    // Physiotherapy Types routes
+    Route::prefix('physiotherapy-types')
+        ->middleware('permission:show-physiotherapy-menu')
+        ->name('physiotherapy-types.')->group(function () {
+        Route::get('/', [PhysiotherapyTypeController::class, 'index'])->name('index');
+        Route::get('create', [PhysiotherapyTypeController::class, 'create'])->name('create');
+        Route::post('store', [PhysiotherapyTypeController::class, 'store'])->name('store');
+        Route::get('{physiotherapyType}', [PhysiotherapyTypeController::class, 'show'])->name('show');
+        Route::get('{physiotherapyType}/edit', [PhysiotherapyTypeController::class, 'edit'])->name('edit');
+        Route::put('{physiotherapyType}/update', [PhysiotherapyTypeController::class, 'update'])->name('update');
+        Route::delete('{physiotherapyType}/destroy', [PhysiotherapyTypeController::class, 'destroy'])->name('destroy');
+        Route::post('{physiotherapyType}/toggle-status', [PhysiotherapyTypeController::class, 'toggleStatus'])->name('toggle-status');
+    });
         Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
         Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
     });

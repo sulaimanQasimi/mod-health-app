@@ -4,33 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\PhysiotherapyType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PhysiotherapyTypeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = PhysiotherapyType::with('createdBy');
-
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Sorting
-        $sortBy = $request->get('sort_by', 'id');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = $request->get('per_page', 15);
-        $physiotherapyTypes = $query->paginate($perPage);
+        $physiotherapyTypes = PhysiotherapyType::with(['createdBy', 'updatedBy'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
         return view('pages.physiotherapy.types.index', compact('physiotherapyTypes'));
     }
@@ -48,18 +39,31 @@ class PhysiotherapyTypeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:physiotherapy_types,name',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:1000',
+        ], [
+            'name.required' => localize('global.name_required'),
+            'name.unique' => localize('global.name_already_exists'),
+            'description.max' => localize('global.description_max_length'),
         ]);
 
-        PhysiotherapyType::create([
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
-        return redirect()->route('physiotherapy-types.index')
-                        ->with('success', localize('global.physiotherapy_type_created_successfully'));
+        try {
+            $physiotherapyType = PhysiotherapyType::create([
+                'name' => $request->name,
+                'description' => $request->description,
+            ]);
+
+            return redirect()->route('physiotherapy-types.index')
+                ->with('success', localize('global.physiotherapy_type_created_successfully'));
+        } catch (\Exception $e) {
+            \Log::error('Error creating physiotherapy type: ' . $e->getMessage());
+            return back()->withErrors(['error' => localize('global.error_creating_physiotherapy_type')])->withInput();
+        }
     }
 
     /**
@@ -67,7 +71,7 @@ class PhysiotherapyTypeController extends Controller
      */
     public function show(PhysiotherapyType $physiotherapyType)
     {
-        $physiotherapyType->load(['physiotherapyProcedures.appointment.patient', 'physiotherapyProcedures.physiotherapist']);
+        $physiotherapyType->load(['createdBy', 'updatedBy', 'physiotherapyProcedures']);
         return view('pages.physiotherapy.types.show', compact('physiotherapyType'));
     }
 
@@ -84,18 +88,31 @@ class PhysiotherapyTypeController extends Controller
      */
     public function update(Request $request, PhysiotherapyType $physiotherapyType)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:physiotherapy_types,name,' . $physiotherapyType->id,
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:1000',
+        ], [
+            'name.required' => localize('global.name_required'),
+            'name.unique' => localize('global.name_already_exists'),
+            'description.max' => localize('global.description_max_length'),
         ]);
 
-        $physiotherapyType->update([
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
-        return redirect()->route('physiotherapy-types.index')
-                        ->with('success', localize('global.physiotherapy_type_updated_successfully'));
+        try {
+            $physiotherapyType->update([
+                'name' => $request->name,
+                'description' => $request->description,
+            ]);
+
+            return redirect()->route('physiotherapy-types.index')
+                ->with('success', localize('global.physiotherapy_type_updated_successfully'));
+        } catch (\Exception $e) {
+            \Log::error('Error updating physiotherapy type: ' . $e->getMessage());
+            return back()->withErrors(['error' => localize('global.error_updating_physiotherapy_type')])->withInput();
+        }
     }
 
     /**
@@ -103,8 +120,37 @@ class PhysiotherapyTypeController extends Controller
      */
     public function destroy(PhysiotherapyType $physiotherapyType)
     {
-        $physiotherapyType->delete();
-        return redirect()->route('physiotherapy-types.index')
-                        ->with('success', localize('global.physiotherapy_type_deleted_successfully'));
+        try {
+            // Check if physiotherapy type has related procedures
+            if ($physiotherapyType->physiotherapyProcedures()->count() > 0) {
+                return back()->withErrors(['error' => localize('global.cannot_delete_physiotherapy_type_with_procedures')]);
+            }
+
+            $physiotherapyType->delete();
+
+            return redirect()->route('physiotherapy-types.index')
+                ->with('success', localize('global.physiotherapy_type_deleted_successfully'));
+        } catch (\Exception $e) {
+            \Log::error('Error deleting physiotherapy type: ' . $e->getMessage());
+            return back()->withErrors(['error' => localize('global.error_deleting_physiotherapy_type')]);
+        }
+    }
+
+    /**
+     * Toggle the status of the physiotherapy type
+     */
+    public function toggleStatus(PhysiotherapyType $physiotherapyType)
+    {
+        try {
+            $physiotherapyType->update([
+                'status' => $physiotherapyType->status === 'active' ? 'inactive' : 'active'
+            ]);
+
+            $status = $physiotherapyType->status === 'active' ? 'activated' : 'deactivated';
+            return back()->with('success', localize('global.physiotherapy_type_status_updated_successfully'));
+        } catch (\Exception $e) {
+            \Log::error('Error toggling physiotherapy type status: ' . $e->getMessage());
+            return back()->withErrors(['error' => localize('global.error_updating_physiotherapy_type_status')]);
+        }
     }
 }

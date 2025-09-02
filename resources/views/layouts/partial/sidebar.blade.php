@@ -94,6 +94,11 @@
                             <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('physiotherapy-types.index') ? 'active' : '' }}">
+                        <a href="{{ route('physiotherapy-types.index') }}" class="menu-link">
+                            <div>{{ localize('global.physiotherapy_types') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan

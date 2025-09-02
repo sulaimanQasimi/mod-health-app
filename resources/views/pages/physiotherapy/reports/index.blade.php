@@ -38,6 +38,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bx bx-search"></i> {{ localize('global.generate_report') }}
+                                </button>
+                            </div>
                         </form>
 
                         <div class="mt-4">

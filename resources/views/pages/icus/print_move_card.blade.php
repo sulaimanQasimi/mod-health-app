@@ -14,7 +14,7 @@
         td {
             padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #ddd !important;
+            border: 1px solid #ddd !important;
             color: black !important;
         }
 

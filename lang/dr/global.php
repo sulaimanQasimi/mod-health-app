@@ -1883,5 +1883,12 @@ return [
     'search_patient_name'=>'جستجو بر اساس نام بیمار',
     'procedures_list'=>'لیست فیزیوتراپی',
     "reviews"=>"بازرسی ها",
+    'created_new_blood_request'=>'ایجاد درخواست خون',
+    'blood_request_type'=>'نوع درخواست خون',
+    'blood_request_type_description'=>'توضیحات نوع درخواست خون',
+    'blood_request_type_select'=>'انتخاب نوع درخواست خون',
+    'blood_request_type_select_description'=>'توضیحات انتخاب نوع درخواست خون',
+    'blood_request_type_select_description'=>'توضیحات انتخاب نوع درخواست خون',
+    'alternatives_for'=>'جایگزین ها',
 ];
 ;

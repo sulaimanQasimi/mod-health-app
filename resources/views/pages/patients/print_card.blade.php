@@ -5,17 +5,13 @@
         window.print();
     };
 </script>
-
-
-
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
                     <title>{{localize('global.patient_card')}}</title>
-                <style>
+<style>
 *{
     margin: 00px;
     padding: 00px;
@@ -168,9 +164,9 @@
     }
 
 }
-                    </style>
+</style>
 
-                </head>
+          </head>
                 <body>
                         <div class="container">
                             <div class="padding">

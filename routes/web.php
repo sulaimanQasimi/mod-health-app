@@ -682,10 +682,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('reviews/{review}', [PhysiotherapyProcedureController::class, 'destroyReview'])->name('destroy-review');
     });
 
-    // API Select Routes for Select2 dropdowns (Web-based, requires auth)
-    Route::middleware('auth')->prefix('api/select')->group(function () {
-        Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
-
     // Physiotherapy Types routes
     Route::prefix('physiotherapy-types')
         ->middleware('permission:show-physiotherapy-menu')
@@ -699,9 +695,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('{physiotherapyType}/destroy', [PhysiotherapyTypeController::class, 'destroy'])->name('destroy');
         Route::post('{physiotherapyType}/toggle-status', [PhysiotherapyTypeController::class, 'toggleStatus'])->name('toggle-status');
     });
-        Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
+    // API Select Routes for Select2 dropdowns (Web-based, requires auth)
+    Route::middleware('auth')->prefix('api/select')->group(function () {
         Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
-        Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
+        Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
+           Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
     });
 
     // Physiotherapy Reports routes

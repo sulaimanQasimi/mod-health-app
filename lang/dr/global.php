@@ -1998,5 +1998,21 @@ return [
 "physiotherapy_type_info"=>'اطلاعات نوع فیزیوتراپی',
 "name_must_be_unique"=>'نام نوع فیزیوتراپی',
 "edit_physiotherapy_type"=>'ویرایش نوع فیزیوتراپی',
+'physiotherapy_procedure_created_successfully'=>'روش فیزیوتراپی با موفقیت ایجاد شد',
+'physiotherapy_procedure_updated_successfully'=>'روش فیزیوتراپی با موفقیت ابدیت شد',
+'physiotherapy_procedure_deleted_successfully'=>'روش فیزیوتراپی با موفقیت حذف شد',
+'physiotherapy_procedure_not_found'=>'روش فیزیوتراپی یافت نشد',
+'physiotherapy_procedure_item_status_updated_successfully'=>'حالت قلم روش فیزیوتراپی با موفقیت ابدیت شد',
+'physiotherapy_procedure_item_deleted_successfully'=>'قلم روش فیزیوتراپی با موفقیت حذف شد',
+'physiotherapy_procedure_item_not_found'=>'قلم روش فیزیوتراپی یافت نشد',
+'physiotherapy_procedure_item_status_updated_successfully'=>'حالت قلم روش فیزیوتراپی با موفقیت ابدیت شد',
+'physiotherapy_procedure_deleted_successfully'=>'روش فیزیوتراپی با موفقیت حذف شد',
+'refresh'=>'به روز رسانی',
+'add_review'=>'اضافه نمودن بازرسی',
+'edit_review'=>'ویرایش بازرسی',
+'delete_review'=>'حذف بازرسی',
+'review_created_successfully'=>'بازرسی با موفقیت ایجاد شد',
+'review_updated_successfully'=>'بازرسی با موفقیت ابدیت شد',
+'review_deleted_successfully'=>'بازرسی با موفقیت حذف شد',
+'review_not_found'=>'بازرسی یافت نشد'
 ];
-;

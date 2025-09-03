@@ -2031,4 +2031,8 @@ return [
 "review_deleted_successfully"=>"بازرسی با موفقیت حذف شد",
 "review_not_found"=>"بازرسی یافت نشد",
 'all_physiotherapists'=>'همه فیزیوتراپیست‌ها',
+'enter_review_description'=>'توضیحات بازرسی را وارد کنید',
+'review_description'=>'توضیحات بازرسی',
+'days_count'=>"تعداد روز",
+"Prescription_item_updated_successfully"=>'قلم فهرست نسخه با موفقیت ابدیت شد',
 ];

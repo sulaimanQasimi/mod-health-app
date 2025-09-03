@@ -147,7 +147,7 @@
                                 <p class="mb-0">{{ localize('global.in_progress') }}</p>
                             </div>
                             <div class="align-self-center">
-                                <i class="bx bx-play-circle bx-lg"></i>
+                                <i class="bx bx-time bx-lg"></i>
                             </div>
                         </div>
                     </div>

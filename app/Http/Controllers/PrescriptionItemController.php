@@ -63,6 +63,6 @@ public function edit(PrescriptionItem $item)
         // Update the item with new data
         $item->update($request->all());
 
-        return redirect()->route('appointments.index')->with('success', 'Prescription item updated successfully.');
+        return redirect()->route('appointments.index')->with('success', localize('global.prescription_item_updated_successfully') );
     }
 }

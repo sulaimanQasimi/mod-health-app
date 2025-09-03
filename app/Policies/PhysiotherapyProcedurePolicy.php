@@ -13,6 +13,17 @@ class PhysiotherapyProcedurePolicy
     }
 
     /**
+     * Determine whether the user can view their own physiotherapy procedures.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function viewOwn(User $user)
+    {
+        return $user->can('show-own-physiotherapy-procedures');
+    }
+
+    /**
      * Determine whether the user can view the physiotherapy procedure.
      *
      * @param  \App\Models\User  $user

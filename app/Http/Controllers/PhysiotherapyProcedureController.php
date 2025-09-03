@@ -101,6 +101,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function myProcedures(Request $request)
     {
+        // Check if user has permission to view their own procedures
+        $this->authorize('viewOwn', PhysiotherapyProcedure::class);
+
         $query = PhysiotherapyProcedure::with([
             'appointment.patient',
             'physiotherapyType',

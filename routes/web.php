@@ -667,7 +667,7 @@ Route::group(['middleware' => ['auth']], function () {
     ->middleware('permission:show-physiotherapy-menu')
     ->name('physiotherapy-procedures.')->group(function () {
         Route::get('/', [PhysiotherapyProcedureController::class, 'index'])->name('index');
-        Route::get('my-procedures', [PhysiotherapyProcedureController::class, 'myProcedures'])->name('my-procedures');
+        Route::get('my-procedures', [PhysiotherapyProcedureController::class, 'myProcedures'])->middleware('permission:show-own-physiotherapy-procedures')->name('my-procedures');
         Route::get('{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'show'])->name('show');
         Route::post('store', [PhysiotherapyProcedureController::class, 'store'])->name('store');
         Route::put('{physiotherapyProcedure}/update', [PhysiotherapyProcedureController::class, 'update'])->name('update');

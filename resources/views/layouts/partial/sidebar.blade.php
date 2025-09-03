@@ -79,11 +79,14 @@
                     <div>{{ localize('global.physiotherapy') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    @can('show-physiotherapy-procedures')
                     <li class="menu-item {{ Route::is('physiotherapy-procedures.index') ? 'active' : '' }}">
                         <a href="{{ route('physiotherapy-procedures.index') }}" class="menu-link">
                             <div>{{ localize('global.all_procedures') }}</div>
                         </a>
                     </li>
+                    @endcan
+
                     @can('show-own-physiotherapy-procedures')
                     <li class="menu-item {{ Route::is('physiotherapy-procedures.my-procedures') ? 'active' : '' }}">
                         <a href="{{ route('physiotherapy-procedures.my-procedures') }}" class="menu-link">
@@ -91,16 +94,22 @@
                         </a>
                     </li>
                     @endcan
+
+                    @can('show-physiotherapy-reports')
                     <li class="menu-item {{ Route::is('physiotherapy-reports.index') ? 'active' : '' }}">
                         <a href="{{ route('physiotherapy-reports.index') }}" class="menu-link">
                             <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
+                    @endcan
+
+                    @can('show-physiotherapy-types')
                     <li class="menu-item {{ Route::is('physiotherapy-types.index') ? 'active' : '' }}">
                         <a href="{{ route('physiotherapy-types.index') }}" class="menu-link">
                             <div>{{ localize('global.physiotherapy_types') }}</div>
                         </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
         @endcan

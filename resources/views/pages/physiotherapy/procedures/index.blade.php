@@ -78,13 +78,13 @@
                             </div>
                             <div class="col-md-2">
                                 <label for="start_date" class="form-label">{{ localize('global.start_date') }}</label>
-                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="start_date" name="start_date"
-                                    value="{{ request('start_date') }}">
+                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="start_date"
+                                    name="start_date" value="{{ request('start_date') }}">
                             </div>
                             <div class="col-md-2">
                                 <label for="end_date" class="form-label">{{ localize('global.end_date') }}</label>
-                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="end_date" name="end_date"
-                                    value="{{ request('end_date') }}">
+                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="end_date"
+                                    name="end_date" value="{{ request('end_date') }}">
                             </div>
                             <div class="col-12 d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
@@ -94,10 +94,6 @@
                                 <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">
                                     <i class="bx bx-refresh me-1"></i>
                                     {{ localize('global.reset') }}
-                                </button>
-                                <button type="button" class="btn btn-outline-success" onclick="exportData()">
-                                    <i class="bx bx-download me-1"></i>
-                                    {{ localize('global.export') }}
                                 </button>
                             </div>
                         </form>
@@ -113,7 +109,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4 class="mb-0">{{ $physiotherapyProcedures->total() }}</h4>
+                                <h4 class="mb-0 text-white">{{ $physiotherapyProcedures->total() }}</h4>
                                 <p class="mb-0">{{ localize('global.total_procedures') }}</p>
                             </div>
                             <div class="align-self-center">
@@ -128,7 +124,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4 class="mb-0">{{ $physiotherapyProcedures->where('status', 'pending')->count() }}</h4>
+                                <h4 class="mb-0 text-white">
+                                    {{ $physiotherapyProcedures->where('status', 'pending')->count() }}</h4>
                                 <p class="mb-0">{{ localize('global.pending') }}</p>
                             </div>
                             <div class="align-self-center">
@@ -143,7 +140,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4 class="mb-0">{{ $physiotherapyProcedures->where('status', 'in_progress')->count() }}</h4>
+                                <h4 class="mb-0 text-white">
+                                    {{ $physiotherapyProcedures->where('status', 'in_progress')->count() }}</h4>
                                 <p class="mb-0">{{ localize('global.in_progress') }}</p>
                             </div>
                             <div class="align-self-center">
@@ -158,7 +156,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4 class="mb-0">{{ $physiotherapyProcedures->where('status', 'completed')->count() }}</h4>
+                                <h4 class="mb-0 text-white">
+                                    {{ $physiotherapyProcedures->where('status', 'completed')->count() }}</h4>
                                 <p class="mb-0">{{ localize('global.completed') }}</p>
                             </div>
                             <div class="align-self-center">
@@ -217,7 +216,8 @@
                                             <td>
                                                 <strong>{{ $procedure->appointment->patient->name ?? 'N/A' }}</strong>
                                                 <br>
-                                                <small class="text-muted">{{ $procedure->appointment->patient->phone ?? 'N/A' }}</small>
+                                                <small
+                                                    class="text-muted">{{ $procedure->appointment->patient->phone ?? 'N/A' }}</small>
                                             </td>
                                             <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
                                             <td>
@@ -253,32 +253,33 @@
                                                     {{ localize('global.physiotherapy_procedures_' . $procedure->status) }}
                                                 </span>
                                             </td>
-                                            <td>{{ $procedure->start_date ? $procedure->start_date->format('Y-m-d') : 'N/A' }}</td>
+                                            <td>{{ $procedure->start_date ? $procedure->start_date->format('Y-m-d') : 'N/A' }}
+                                            </td>
                                             <td>
                                                 <span class="badge bg-info">
                                                     {{ $procedure->reviews->count() }} {{ localize('global.reviews') }}
                                                 </span>
                                             </td>
                                             <td>
-                                                                                                        <div class="btn-group" role="group">
-                                                            <button type="button" class="btn btn-outline-info btn-sm"
-                                                                onclick="viewProcedure({{ $procedure->id }})"
-                                                                title="{{ localize('global.view') }}">
-                                                                <i class="bx bx-show"></i>
-                                                            </button>
-                                                            @if($procedure->status !== 'completed' && $procedure->status !== 'cancelled')
-                                                                <button type="button" class="btn btn-outline-warning btn-sm"
-                                                                    onclick="updateProgress({{ $procedure->id }})"
-                                                                    title="{{ localize('global.update_progress') }}">
-                                                                    <i class="bx bx-edit"></i>
-                                                                </button>
-                                                            @endif
-                                                            <button type="button" class="btn btn-outline-primary btn-sm"
-                                                                onclick="viewReviews({{ $procedure->id }})"
-                                                                title="{{ localize('global.view_reviews') }}">
-                                                                <i class="bx bx-message-square-dots"></i>
-                                                            </button>
-                                                        </div>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-outline-info btn-sm"
+                                                        onclick="viewProcedure({{ $procedure->id }})"
+                                                        title="{{ localize('global.view') }}">
+                                                        <i class="bx bx-show"></i>
+                                                    </button>
+                                                    @if($procedure->status !== 'completed' && $procedure->status !== 'cancelled')
+                                                        <button type="button" class="btn btn-outline-warning btn-sm"
+                                                            onclick="updateProgress({{ $procedure->id }})"
+                                                            title="{{ localize('global.update_progress') }}">
+                                                            <i class="bx bx-edit"></i>
+                                                        </button>
+                                                    @endif
+                                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                                        onclick="viewReviews({{ $procedure->id }})"
+                                                        title="{{ localize('global.view_reviews') }}">
+                                                        <i class="bx bx-message-square-dots"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
@@ -348,13 +349,13 @@
             'updating': "{{ localize('global.updating') }}",
             'days': "{{ localize('global.days') }}",
             'created_by': "{{ localize('global.created_by') }}",
-            
+
             // Status values
             'pending': "{{ localize('global.pending') }}",
             'in_progress': "{{ localize('global.in_progress') }}",
             'completed': "{{ localize('global.completed') }}",
             'cancelled': "{{ localize('global.cancelled') }}",
-            
+
             // Messages
             'error_loading_data': "{{ localize('global.error_loading_data') }}",
             'request_failed': "{{ localize('global.request_failed') }}",
@@ -362,7 +363,7 @@
             'failed_to_update_progress': "{{ localize('global.failed_to_update_progress') }}",
             'error_loading_reviews': "{{ localize('global.error_loading_reviews') }}",
             'no_reviews_found': "{{ localize('global.no_reviews_found') }}",
-            
+
             // Review related
             'view_reviews': "{{ localize('global.view_reviews') }}",
             'update_progress': "{{ localize('global.update_progress') }}",

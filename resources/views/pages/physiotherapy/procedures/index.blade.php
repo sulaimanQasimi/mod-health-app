@@ -179,7 +179,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                <div class="card-header bg-none text-dark d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="bx bx-list-ul me-2 text-primary"></i>
                         {{ localize('global.procedures_list') }}
@@ -194,7 +194,7 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover" id="proceduresTable">
-                            <thead class="table-light">
+                            <thead class="table-bg-none">
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
                                     <th>{{ localize('global.patient_name') }}</th>
@@ -251,7 +251,7 @@
                                                 $color = $statusColors[$procedure->status] ?? 'secondary';
                                             @endphp
                                             <span class="badge bg-{{ $color }}">
-                                                {{ localize('global.' . $procedure->status) }}
+                                                {{ localize('global.physiotherapy_procedures_' . $procedure->status) }}
                                             </span>
                                         </td>
                                         <td>{{ $procedure->start_date ? $procedure->start_date->format('Y-m-d') : 'N/A' }}

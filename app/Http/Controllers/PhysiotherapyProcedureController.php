@@ -55,7 +55,7 @@ class PhysiotherapyProcedureController extends Controller
 
         // Date range filter
         if ($request->filled('start_date')) {
-            $query->whereDate('start_date',  Verta::parse($request->start_date)->datetime());
+            $query->whereDate('start_date', Verta::parse($request->start_date)->datetime());
         }
         if ($request->filled('end_date')) {
             $query->whereDate('end_date', '<=', Verta::parse($request->end_date)->datetime());
@@ -92,7 +92,7 @@ class PhysiotherapyProcedureController extends Controller
         // For non-AJAX requests, get paginated results
         $physiotherapyProcedures = $query->paginate(15);
         $physiotherapyTypes = PhysiotherapyType::all();
-        $physiotherapists = User::whereHas('roles', function($q) {
+        $physiotherapists = User::whereHas('roles', function ($q) {
             $q->where('name', 'physiotherapist');
         })->get();
 
@@ -134,7 +134,7 @@ class PhysiotherapyProcedureController extends Controller
 
         // Date range filter
         if ($request->filled('start_date')) {
-            $query->whereDate('start_date',  Verta::parse($request->start_date)->datetime());
+            $query->whereDate('start_date', Verta::parse($request->start_date)->datetime());
         }
         if ($request->filled('end_date')) {
             $query->whereDate('end_date', Verta::parse($request->end_date)->datetime());
@@ -173,22 +173,6 @@ class PhysiotherapyProcedureController extends Controller
 
         return view('pages.physiotherapy.procedures.my-procedures', compact('physiotherapyProcedures', 'physiotherapyTypes'));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $physiotherapyTypes = PhysiotherapyType::all();
-        $physiotherapists = User::whereHas('roles', function ($query) {
-            $query->where('name', 'physiotherapist');
-        })->get();
-        $appointments = Appointment::with('patient')->where('is_completed', false)->get();
-
-        return view('pages.physiotherapy.procedures.create', compact('physiotherapyTypes', 'physiotherapists', 'appointments'));
-    }
-
-
     /**
      * Store a newly created resource in storage.
      */

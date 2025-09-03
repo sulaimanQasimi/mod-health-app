@@ -662,44 +662,47 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 
-        // Physiotherapy Procedure routes (only for modals in appointment show page)
+    // Physiotherapy Procedure routes (only for modals in appointment show page)
     Route::prefix('physiotherapy-procedures')
-    ->middleware('permission:show-physiotherapy-menu')
-    ->name('physiotherapy-procedures.')->group(function () {
-        Route::get('/', [PhysiotherapyProcedureController::class, 'index'])->name('index');
-        Route::get('my-procedures', [PhysiotherapyProcedureController::class, 'myProcedures'])->middleware('permission:show-own-physiotherapy-procedures')->name('my-procedures');
-        Route::get('{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'show'])->name('show');
-        Route::post('store', [PhysiotherapyProcedureController::class, 'store'])->name('store');
-        Route::put('{physiotherapyProcedure}/update', [PhysiotherapyProcedureController::class, 'update'])->name('update');
-        Route::delete('{physiotherapyProcedure}/destroy', [PhysiotherapyProcedureController::class, 'destroy'])->name('destroy');
-        Route::post('update-counter/{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'updateCounter'])->name('update-counter');
-        Route::get('by-appointment/{appointment}', [PhysiotherapyProcedureController::class, 'getByAppointment'])->name('by-appointment');
-        
-        // Review routes
-        Route::get('{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'getReviews'])->name('reviews');
-        Route::post('{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'storeReview'])->name('store-review');
-        Route::put('reviews/{review}', [PhysiotherapyProcedureController::class, 'updateReview'])->name('update-review');
-        Route::delete('reviews/{review}', [PhysiotherapyProcedureController::class, 'destroyReview'])->name('destroy-review');
-    });
+        ->middleware('permission:show-physiotherapy-menu')
+        ->name('physiotherapy-procedures.')->group(function () {
+            Route::get('/', [PhysiotherapyProcedureController::class, 'index'])->name('index');
+            Route::get('my-procedures', [PhysiotherapyProcedureController::class, 'myProcedures'])->middleware('permission:show-own-physiotherapy-procedures')->name('my-procedures');
+            Route::get('by-appointment/{appointment}', [PhysiotherapyProcedureController::class, 'getByAppointment'])->name('by-appointment');
+            Route::post('store', [PhysiotherapyProcedureController::class, 'store'])->name('store');
+            
+            // Review routes (must come before the general {physiotherapyProcedure} route)
+            Route::get('{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'getReviews'])->name('reviews');
+            Route::get('{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'showReview'])->name('show-review');
+            Route::post('{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'storeReview'])->name('store-review');
+            Route::put('{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'updateReview'])->name('update-review');
+            Route::delete('{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'destroyReview'])->name('destroy-review');
+            
+            // General physiotherapy procedure routes
+            Route::get('{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'show'])->name('show');
+            Route::put('{physiotherapyProcedure}/update', [PhysiotherapyProcedureController::class, 'update'])->name('update');
+            Route::delete('{physiotherapyProcedure}/destroy', [PhysiotherapyProcedureController::class, 'destroy'])->name('destroy');
+            Route::post('update-counter/{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'updateCounter'])->name('update-counter');
+        });
 
     // Physiotherapy Types routes
     Route::prefix('physiotherapy-types')
         ->middleware('permission:show-physiotherapy-menu')
         ->name('physiotherapy-types.')->group(function () {
-        Route::get('/', [PhysiotherapyTypeController::class, 'index'])->name('index');
-        Route::get('create', [PhysiotherapyTypeController::class, 'create'])->name('create');
-        Route::post('store', [PhysiotherapyTypeController::class, 'store'])->name('store');
-        Route::get('{physiotherapyType}', [PhysiotherapyTypeController::class, 'show'])->name('show');
-        Route::get('{physiotherapyType}/edit', [PhysiotherapyTypeController::class, 'edit'])->name('edit');
-        Route::put('{physiotherapyType}/update', [PhysiotherapyTypeController::class, 'update'])->name('update');
-        Route::delete('{physiotherapyType}/destroy', [PhysiotherapyTypeController::class, 'destroy'])->name('destroy');
-        Route::post('{physiotherapyType}/toggle-status', [PhysiotherapyTypeController::class, 'toggleStatus'])->name('toggle-status');
-    });
+            Route::get('/', [PhysiotherapyTypeController::class, 'index'])->name('index');
+            Route::get('create', [PhysiotherapyTypeController::class, 'create'])->name('create');
+            Route::post('store', [PhysiotherapyTypeController::class, 'store'])->name('store');
+            Route::get('{physiotherapyType}', [PhysiotherapyTypeController::class, 'show'])->name('show');
+            Route::get('{physiotherapyType}/edit', [PhysiotherapyTypeController::class, 'edit'])->name('edit');
+            Route::put('{physiotherapyType}/update', [PhysiotherapyTypeController::class, 'update'])->name('update');
+            Route::delete('{physiotherapyType}/destroy', [PhysiotherapyTypeController::class, 'destroy'])->name('destroy');
+            Route::post('{physiotherapyType}/toggle-status', [PhysiotherapyTypeController::class, 'toggleStatus'])->name('toggle-status');
+        });
     // API Select Routes for Select2 dropdowns (Web-based, requires auth)
     Route::middleware('auth')->prefix('api/select')->group(function () {
         Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
         Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
-           Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
+        Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
     });
 
     // Physiotherapy Reports routes
@@ -727,9 +730,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get_branch_doctors/{branchId}', [HomeController::class, 'getBranchDoctors']);
     Route::get('/get_labTypes/{labTypeId}', [HomeController::class, 'getRelatedLabTypes']);
     Route::get('/lab-tests/{labTypeId}', [HomeController::class, 'getLabTypeTests']);
-
 });
 
+// Routes outside the main auth group
 Route::prefix('militery_types')->name('militery_types.')->group(function () {
     Route::get('/', [MiliteryTypeController::class, 'index'])->name('index');
     Route::get('create', [MiliteryTypeController::class, 'create'])->name('create');

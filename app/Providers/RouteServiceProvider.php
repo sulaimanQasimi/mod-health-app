@@ -28,6 +28,10 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        // Route model bindings
+        Route::model('review', \App\Models\PhysiotherapyProcedureReview::class);
+        Route::model('physiotherapyProcedure', \App\Models\PhysiotherapyProcedure::class);
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

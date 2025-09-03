@@ -429,6 +429,31 @@ class PhysiotherapyProcedureController extends Controller
     }
 
     /**
+     * Get a specific review for a physiotherapy procedure
+     */
+    public function showReview(PhysiotherapyProcedure $physiotherapyProcedure, $reviewId)
+    {
+        $this->authorize('view', $physiotherapyProcedure);
+        // Check if user has permission to view this physiotherapy procedure
+
+        $review =$reviewId;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $review->id,
+                'description' => $review->description,
+                'status' => $review->status,
+                'days_count' => $review->days_count,
+                'created_by_name' => $review->createdBy->name ?? 'N/A',
+                'updated_by_name' => $review->updatedBy->name ?? 'N/A',
+                'created_at' => $review->created_at->format('Y-m-d H:i'),
+                'updated_at' => $review->updated_at->format('Y-m-d H:i'),
+            ]
+        ]);
+    }
+
+    /**
      * Store a new review for a physiotherapy procedure
      */
     public function storeReview(Request $request, PhysiotherapyProcedure $physiotherapyProcedure)
@@ -468,10 +493,10 @@ class PhysiotherapyProcedureController extends Controller
     /**
      * Update an existing review
      */
-    public function updateReview(Request $request, PhysiotherapyProcedureReview $review)
+    public function updateReview(Request $request, PhysiotherapyProcedure $physiotherapyProcedure, PhysiotherapyProcedureReview $review)
     {
         // Check if user has permission to update this review
-        $this->authorize('update', $review->physiotherapyProcedure);
+        $this->authorize('update', $physiotherapyProcedure);
 
         $request->validate([
             'description' => 'required|string|max:1000',
@@ -505,10 +530,10 @@ class PhysiotherapyProcedureController extends Controller
     /**
      * Delete a review
      */
-    public function destroyReview(PhysiotherapyProcedureReview $review)
+    public function destroyReview(PhysiotherapyProcedure $physiotherapyProcedure, PhysiotherapyProcedureReview $review)
     {
         // Check if user has permission to delete this review
-        $this->authorize('delete', $review->physiotherapyProcedure);
+        $this->authorize('delete', $physiotherapyProcedure);
 
         $review->delete();
 

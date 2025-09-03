@@ -2017,4 +2017,5 @@ return [
 'review_not_found'=>'بازرسی یافت نشد',
 'all_physiotherapy_procedures'=>' فیزیوتراپی',
 'all_registered_physiotherapy_procedures'=>'همه فیزیوتراپی ثبت شده',
+"error_loading_data"=>"خطا در بارگیری داده",
 ];

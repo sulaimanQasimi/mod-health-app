@@ -106,13 +106,13 @@
                         <div class="col-md-6 mb-3">
                             <label for="start_date" class="form-label">{{ localize('global.start_date') }} <span
                                     class="text-danger">*</span></label>
-                            <input type="date" class="form-control" name="start_date" required>
+                            <input type="text" class="form-control  datepicker_dari pdp-el persian-date" name="start_date" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="end_date" class="form-label">{{ localize('global.end_date') }}</label>
-                        <input type="date" class="form-control" name="end_date">
+                        <input type="text" class="form-control  datepicker_dari pdp-el persian-date" name="end_date">
                     </div>
 
                     <div class="mb-3">
@@ -890,8 +890,8 @@
                     + '<option value="cancelled"' + (data.status === 'cancelled' ? ' selected' : '') + '>{{ localize('global.cancelled') }}</option>'
                     + '</select></div>'
                     + '</div><div class="row">'
-                    + '<div class="col-md-6 mb-3"><label class="form-label">{{ localize('global.start_date') }} <span class="text-danger">*</span></label><input type="date" class="form-control" name="start_date" value="' + (data.start_date || '') + '" required></div>'
-                    + '<div class="col-md-6 mb-3"><label class="form-label">{{ localize('global.end_date') }}</label><input type="date" class="form-control" name="end_date" value="' + (data.end_date || '') + '"></div>'
+                    + '<div class="col-md-6 mb-3"><label class="form-label">{{ localize('global.start_date') }} <span class="text-danger">*</span></label><input type="text" class="form-control  datepicker_dari pdp-el persian-date" name="start_date" value="' + (data.start_date || '') + '" required></div>'
+                    + '<div class="col-md-6 mb-3"><label class="form-label">{{ localize('global.end_date') }}</label><input type="text" class="form-control  datepicker_dari pdp-el persian-date" name="end_date" value="' + (data.end_date || '') + '"></div>'
                     + '</div>'
                     + '<div class="mb-3"><label class="form-label">{{ localize('global.description') }}</label><textarea class="form-control" name="description" rows="3">' + (data.description || '') + '</textarea></div>'
                     + '<div class="mb-3"><label class="form-label">{{ localize('global.notes') }}</label><textarea class="form-control" name="notes" rows="2">' + (data.notes || '') + '</textarea></div>'

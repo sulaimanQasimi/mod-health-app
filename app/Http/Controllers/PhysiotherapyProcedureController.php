@@ -7,7 +7,10 @@ use App\Models\PhysiotherapyProcedureReview;
 use App\Models\PhysiotherapyType;
 use App\Models\Appointment;
 use App\Models\User;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
+use Morilog\Jalali\Jalalian;
+use Illuminate\Support\Facades\Log;
 
 class PhysiotherapyProcedureController extends Controller
 {
@@ -52,10 +55,10 @@ class PhysiotherapyProcedureController extends Controller
 
         // Date range filter
         if ($request->filled('start_date')) {
-            $query->where('start_date', '>=', $request->start_date);
+            $query->whereDate('start_date',  Verta::parse($request->start_date)->datetime());
         }
         if ($request->filled('end_date')) {
-            $query->where('start_date', '<=', $request->end_date);
+            $query->whereDate('end_date', '<=', Verta::parse($request->end_date)->datetime());
         }
 
         // Sorting
@@ -78,7 +81,7 @@ class PhysiotherapyProcedureController extends Controller
                     'progress_total' => $p->days_count,
                     'progress_percentage' => round($percentage, 1),
                     'status' => $p->status,
-                    'start_date' => optional($p->start_date)->format('Y-m-d'),
+                    'start_date' => verta($p->start_date)->format('Y-m-d'),
                     'reviews_count' => $p->reviews->count(),
                     'actions' => '', // Placeholder for DataTables rendering
                 ];
@@ -131,10 +134,10 @@ class PhysiotherapyProcedureController extends Controller
 
         // Date range filter
         if ($request->filled('start_date')) {
-            $query->where('start_date', '>=', $request->start_date);
+            $query->whereDate('start_date',  Verta::parse($request->start_date)->datetime());
         }
         if ($request->filled('end_date')) {
-            $query->where('start_date', '<=', $request->end_date);
+            $query->whereDate('end_date', Verta::parse($request->end_date)->datetime());
         }
 
         // Sorting
@@ -156,7 +159,7 @@ class PhysiotherapyProcedureController extends Controller
                     'progress_total' => $p->days_count,
                     'progress_percentage' => round($percentage, 1),
                     'status' => $p->status,
-                    'start_date' => optional($p->start_date)->format('Y-m-d'),
+                    'start_date' => verta($p->start_date)->format('Y-m-d'),
                     'reviews_count' => $p->reviews->count(),
                     'actions' => '', // Placeholder for DataTables rendering
                 ];
@@ -203,6 +206,7 @@ class PhysiotherapyProcedureController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
+        Log::info('Request data', $request->all());
 
         $procedure = PhysiotherapyProcedure::create([
             'appointment_id' => $request->appointment_id,
@@ -215,8 +219,8 @@ class PhysiotherapyProcedureController extends Controller
             'description' => $request->description,
             'notes' => $request->notes,
             'status' => 'pending',
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'start_date' => Verta::parse($request->start_date)->datetime(),
+            'end_date' => Verta::parse($request->end_date)->datetime(),
         ]);
 
         if ($request->ajax()) {
@@ -255,8 +259,8 @@ class PhysiotherapyProcedureController extends Controller
                     'description' => $physiotherapyProcedure->description,
                     'notes' => $physiotherapyProcedure->notes,
                     'status' => $physiotherapyProcedure->status,
-                    'start_date' => optional($physiotherapyProcedure->start_date)->format('Y-m-d'),
-                    'end_date' => optional($physiotherapyProcedure->end_date)->format('Y-m-d'),
+                    'start_date' => verta($physiotherapyProcedure->start_date)->format('Y-m-d'),
+                    'end_date' => verta($physiotherapyProcedure->end_date)->format('Y-m-d'),
                     'physiotherapy_type_name' => $physiotherapyProcedure->physiotherapyType->name ?? 'N/A',
                     'physiotherapist_name' => $physiotherapyProcedure->physiotherapist->name ?? 'N/A',
                     'created_by_name' => $physiotherapyProcedure->createdBy->name ?? 'N/A',
@@ -311,8 +315,8 @@ class PhysiotherapyProcedureController extends Controller
             'description' => $request->description,
             'notes' => $request->notes,
             'status' => $request->status,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'start_date' => Verta::parse($request->start_date)->datetime(),
+            'end_date' => Verta::parse($request->end_date)->datetime(),
         ]);
 
         if ($request->ajax()) {
@@ -380,7 +384,7 @@ class PhysiotherapyProcedureController extends Controller
                     'progress_total' => $p->days_count,
                     'progress_percentage' => round($percentage, 1),
                     'status' => $p->status,
-                    'start_date' => optional($p->start_date)->format('Y-m-d'),
+                    'start_date' => verta($p->start_date)->format('Y-m-d'),
                 ];
             });
             return response()->json(['success' => true, 'data' => $data]);

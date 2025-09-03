@@ -246,7 +246,7 @@
                                         </div>
                                         <div class="avatar p-4">
                                             <span class="avatar-initial rounded-circle bg-teal">
-                                                <i class="bx bx-pulse bx-md text-white"></i>
+                                                <i class="bx bx-spa bx-md text-white"></i>
                                             </span>
                                         </div>
                                     </div>

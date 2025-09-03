@@ -260,30 +260,25 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-outline-info btn-sm"
-                                                        onclick="viewProcedure({{ $procedure->id }})"
-                                                        title="{{ localize('global.view') }}">
-                                                        <i class="bx bx-show"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-success btn-sm"
-                                                        onclick="addReview({{ $procedure->id }})"
-                                                        title="{{ localize('global.add_review') }}">
-                                                        <i class="bx bx-plus"></i>
-                                                    </button>
-                                                    @if($procedure->status !== 'completed' && $procedure->status !== 'cancelled')
-                                                        <button type="button" class="btn btn-outline-warning btn-sm"
-                                                            onclick="updateProgress({{ $procedure->id }})"
-                                                            title="{{ localize('global.update_progress') }}">
-                                                            <i class="bx bx-edit"></i>
-                                                        </button>
-                                                    @endif
-                                                    <button type="button" class="btn btn-outline-primary btn-sm"
-                                                        onclick="viewReviews({{ $procedure->id }})"
-                                                        title="{{ localize('global.view_reviews') }}">
-                                                        <i class="bx bx-message-square-dots"></i>
-                                                    </button>
-                                                </div>
+                                                                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn btn-outline-info btn-sm"
+                                                                onclick="viewProcedure({{ $procedure->id }})"
+                                                                title="{{ localize('global.view') }}">
+                                                                <i class="bx bx-show"></i>
+                                                            </button>
+                                                            @if($procedure->status !== 'completed' && $procedure->status !== 'cancelled')
+                                                                <button type="button" class="btn btn-outline-warning btn-sm"
+                                                                    onclick="updateProgress({{ $procedure->id }})"
+                                                                    title="{{ localize('global.update_progress') }}">
+                                                                    <i class="bx bx-edit"></i>
+                                                                </button>
+                                                            @endif
+                                                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                                                onclick="viewReviews({{ $procedure->id }})"
+                                                                title="{{ localize('global.view_reviews') }}">
+                                                                <i class="bx bx-message-square-dots"></i>
+                                                            </button>
+                                                        </div>
                                             </td>
                                         </tr>
                                     @empty
@@ -324,5 +319,56 @@
 
 @section('scripts')
     @parent
+    <script>
+        // Global translation variables for JavaScript
+        window.translations = {
+            // Common labels
+            'patient_name': "{{ localize('global.patient_name') }}",
+            'physiotherapy_type': "{{ localize('global.physiotherapy_type') }}",
+            'physiotherapist': "{{ localize('global.physiotherapist') }}",
+            'type': "{{ localize('global.type') }}",
+            'duration': "{{ localize('global.duration') }}",
+            'minutes': "{{ localize('global.minutes') }}",
+            'progress': "{{ localize('global.progress') }}",
+            'status': "{{ localize('global.status') }}",
+            'start_date': "{{ localize('global.start_date') }}",
+            'description': "{{ localize('global.description') }}",
+            'notes': "{{ localize('global.notes') }}",
+            'n_a': "{{ localize('global.n_a') }}",
+            'actions': "{{ localize('global.actions') }}",
+            'cancel': "{{ localize('global.cancel') }}",
+            'save': "{{ localize('global.save') }}",
+            'saving': "{{ localize('global.saving') }}",
+            'success': "{{ localize('global.success') }}",
+            'error': "{{ localize('global.error') }}",
+            'view': "{{ localize('global.view') }}",
+            'edit': "{{ localize('global.edit') }}",
+            'delete': "{{ localize('global.delete') }}",
+            'refresh': "{{ localize('global.refresh') }}",
+            'updating': "{{ localize('global.updating') }}",
+            'days': "{{ localize('global.days') }}",
+            'created_by': "{{ localize('global.created_by') }}",
+            
+            // Status values
+            'pending': "{{ localize('global.pending') }}",
+            'in_progress': "{{ localize('global.in_progress') }}",
+            'completed': "{{ localize('global.completed') }}",
+            'cancelled': "{{ localize('global.cancelled') }}",
+            
+            // Messages
+            'error_loading_data': "{{ localize('global.error_loading_data') }}",
+            'request_failed': "{{ localize('global.request_failed') }}",
+            'progress_updated_successfully': "{{ localize('global.progress_updated_successfully') }}",
+            'failed_to_update_progress': "{{ localize('global.failed_to_update_progress') }}",
+            'error_loading_reviews': "{{ localize('global.error_loading_reviews') }}",
+            'no_reviews_found': "{{ localize('global.no_reviews_found') }}",
+            
+            // Review related
+            'view_reviews': "{{ localize('global.view_reviews') }}",
+            'update_progress': "{{ localize('global.update_progress') }}",
+            'days_count': "{{ localize('global.days_count') }}",
+            'reviews': "{{ localize('global.reviews') }}"
+        };
+    </script>
     <script src="{{ asset('js/physiotherapy-procedures-index.js') }}"></script>
 @endsection

@@ -19,26 +19,7 @@
     </div>
 </div>
 
-<!-- Add Review Modal -->
-<div class="modal fade" id="addReviewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bx bx-plus me-2"></i>
-                    {{ localize('global.add_review') }}
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="reviewModalBody">
-                <div class="text-center">
-                    <i class="bx bx-loader-alt bx-spin"></i>
-                    {{ localize('global.loading') }}...
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Update Progress Modal -->
 <div class="modal fade" id="updateProgressModal" tabindex="-1">

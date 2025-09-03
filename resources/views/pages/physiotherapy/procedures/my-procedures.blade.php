@@ -91,7 +91,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-none text-dark d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-list-ul me-2 text-primary"></i>
                             {{ localize('global.procedures_list') }}

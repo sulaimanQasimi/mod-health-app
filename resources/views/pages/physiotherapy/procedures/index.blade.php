@@ -18,16 +18,6 @@
                     </ul>
                 </div>
                 <div class="col-auto">
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('physiotherapy-procedures.my-procedures') }}" class="btn btn-outline-primary">
-                            <i class="bx bx-user me-1"></i>
-                            {{ localize('global.my_procedures') }}
-                        </a>
-                        <a href="{{ route('physiotherapy-reports.index') }}" class="btn btn-outline-info">
-                            <i class="bx bx-chart me-1"></i>
-                            {{ localize('global.reports') }}
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -88,13 +78,13 @@
                             </div>
                             <div class="col-md-2">
                                 <label for="start_date" class="form-label">{{ localize('global.start_date') }}</label>
-                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="start_date"
-                                    name="start_date">
+                                <input type="date" class="form-control" id="start_date" name="start_date"
+                                    value="{{ request('start_date') }}">
                             </div>
                             <div class="col-md-2">
                                 <label for="end_date" class="form-label">{{ localize('global.end_date') }}</label>
-                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="end_date"
-                                    name="end_date">
+                                <input type="date" class="form-control" id="end_date" name="end_date"
+                                    value="{{ request('end_date') }}">
                             </div>
                             <div class="col-12 d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
@@ -153,8 +143,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <h4 class="mb-0">{{ $physiotherapyProcedures->where('status', 'in_progress')->count() }}
-                                </h4>
+                                <h4 class="mb-0">{{ $physiotherapyProcedures->where('status', 'in_progress')->count() }}</h4>
                                 <p class="mb-0">{{ localize('global.in_progress') }}</p>
                             </div>
                             <div class="align-self-center">
@@ -185,22 +174,26 @@
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-none text-dark d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="bx bx-list-ul me-2 text-primary"></i>
                             {{ localize('global.procedures_list') }}
                         </h5>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="refreshTable()">
-                                <i class="bx bx-refresh me-1"></i>
-                                {{ localize('global.refresh') }}
-                            </button>
+                            <a href="{{ route('physiotherapy-procedures.my-procedures') }}" class="btn btn-outline-primary">
+                                <i class="bx bx-user me-1"></i>
+                                {{ localize('global.my_procedures') }}
+                            </a>
+                            <a href="{{ route('physiotherapy-reports.index') }}" class="btn btn-outline-info">
+                                <i class="bx bx-chart me-1"></i>
+                                {{ localize('global.reports') }}
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover" id="proceduresTable">
-                                <thead class="table-light">
+                                <thead class="table-bg-none">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.patient_name') }}</th>
@@ -224,8 +217,7 @@
                                             <td>
                                                 <strong>{{ $procedure->appointment->patient->name ?? 'N/A' }}</strong>
                                                 <br>
-                                                <small
-                                                    class="text-muted">{{ $procedure->appointment->patient->phone ?? 'N/A' }}</small>
+                                                <small class="text-muted">{{ $procedure->appointment->patient->phone ?? 'N/A' }}</small>
                                             </td>
                                             <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
                                             <td>
@@ -258,11 +250,10 @@
                                                     $color = $statusColors[$procedure->status] ?? 'secondary';
                                                 @endphp
                                                 <span class="badge bg-{{ $color }}">
-                                                    {{ localize('global.' . $procedure->status) }}
+                                                    {{ localize('global.physiotherapy_procedures_' . $procedure->status) }}
                                                 </span>
                                             </td>
-                                            <td>{{ $procedure->start_date ? verta($procedure->start_date)->format('Y-m-d') : 'N/A' }}
-                                            </td>
+                                            <td>{{ $procedure->start_date ? $procedure->start_date->format('Y-m-d') : 'N/A' }}</td>
                                             <td>
                                                 <span class="badge bg-info">
                                                     {{ $procedure->reviews->count() }} {{ localize('global.reviews') }}
@@ -317,10 +308,10 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modals -->
-    @include('pages.physiotherapy.procedures.partials.modals')
+        <!-- Modals -->
+        @include('pages.physiotherapy.procedures.partials.modals')
+    </div>
 @endsection
 
 @push('custom-css')

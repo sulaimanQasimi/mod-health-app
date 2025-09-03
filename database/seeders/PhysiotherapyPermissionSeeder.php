@@ -57,6 +57,14 @@ class PhysiotherapyPermissionSeeder extends Seeder
         ]);
 
         Permission::firstOrCreate([
+            'name' => 'show-own-physiotherapy-procedures',
+            'guard_name' => 'web',
+        ], [
+            'name_dr' => 'نمایش روش های فیزیوتراپی خود',
+            'name_pa' => NULL,
+        ]);
+
+        Permission::firstOrCreate([
             'name' => 'create-physiotherapy-procedures',
             'guard_name' => 'web',
         ], [

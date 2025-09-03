@@ -19,6 +19,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function index(Request $request)
     {
+        // Check if user has permission to view all physiotherapy procedures
+        $this->authorize('viewAny', PhysiotherapyProcedure::class);
+
         $query = PhysiotherapyProcedure::with([
             'appointment.patient',
             'physiotherapyType',
@@ -178,6 +181,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if user has permission to create physiotherapy procedures
+        $this->authorize('create', PhysiotherapyProcedure::class);
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'physiotherapy_type_id' => 'required|exists:physiotherapy_types,id',
@@ -220,6 +226,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function show(PhysiotherapyProcedure $physiotherapyProcedure)
     {
+        // Check if user has permission to view this physiotherapy procedure
+        $this->authorize('view', $physiotherapyProcedure);
+
         $physiotherapyProcedure->load([
             'appointment.patient',
             'physiotherapyType',
@@ -261,6 +270,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function edit(PhysiotherapyProcedure $physiotherapyProcedure)
     {
+        // Check if user has permission to edit this physiotherapy procedure
+        $this->authorize('update', $physiotherapyProcedure);
+
         $physiotherapyTypes = PhysiotherapyType::all();
         $physiotherapists = User::whereHas('roles', function ($query) {
             $query->where('name', 'physiotherapist');
@@ -275,6 +287,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function update(Request $request, PhysiotherapyProcedure $physiotherapyProcedure)
     {
+        // Check if user has permission to update this physiotherapy procedure
+        $this->authorize('update', $physiotherapyProcedure);
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'physiotherapy_type_id' => 'required|exists:physiotherapy_types,id',
@@ -316,6 +331,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function destroy(PhysiotherapyProcedure $physiotherapyProcedure)
     {
+        // Check if user has permission to delete this physiotherapy procedure
+        $this->authorize('delete', $physiotherapyProcedure);
+
         $appointmentId = $physiotherapyProcedure->appointment_id;
         $physiotherapyProcedure->delete();
 
@@ -332,9 +350,8 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function updateCounter(Request $request, PhysiotherapyProcedure $physiotherapyProcedure)
     {
-        $request->validate([
-            'counter' => 'required|integer|min:0|max:' . $physiotherapyProcedure->days_count,
-        ]);
+        // Check if user has permission to update this physiotherapy procedure
+        $this->authorize('viewOwn', $physiotherapyProcedure);
 
         $physiotherapyProcedure->update([
             'counter' => $request->counter,
@@ -350,6 +367,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function getByAppointment(Appointment $appointment)
     {
+        // Check if user has permission to view physiotherapy procedures
+        $this->authorize('viewAny', PhysiotherapyProcedure::class);
+
         $physiotherapyProcedures = $appointment->physiotherapyProcedures()
             ->with(['physiotherapyType', 'physiotherapist'])
             ->orderBy('created_at', 'desc')
@@ -382,6 +402,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function getReviews(PhysiotherapyProcedure $physiotherapyProcedure)
     {
+        // Check if user has permission to view this physiotherapy procedure
+        $this->authorize('view', $physiotherapyProcedure);
+
         $reviews = $physiotherapyProcedure->reviews()
             ->with(['createdBy', 'updatedBy'])
             ->orderBy('created_at', 'desc')
@@ -410,6 +433,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function storeReview(Request $request, PhysiotherapyProcedure $physiotherapyProcedure)
     {
+        // Check if user has permission to view this physiotherapy procedure
+        $this->authorize('view', $physiotherapyProcedure);
+
         $request->validate([
             'description' => 'required|string|max:1000',
             'status' => 'required|in:pending,in_progress,completed,cancelled',
@@ -444,6 +470,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function updateReview(Request $request, PhysiotherapyProcedureReview $review)
     {
+        // Check if user has permission to update this review
+        $this->authorize('update', $review->physiotherapyProcedure);
+
         $request->validate([
             'description' => 'required|string|max:1000',
             'status' => 'required|in:pending,in_progress,completed,cancelled',
@@ -478,6 +507,9 @@ class PhysiotherapyProcedureController extends Controller
      */
     public function destroyReview(PhysiotherapyProcedureReview $review)
     {
+        // Check if user has permission to delete this review
+        $this->authorize('delete', $review->physiotherapyProcedure);
+
         $review->delete();
 
         if (request()->ajax()) {

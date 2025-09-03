@@ -2030,4 +2030,5 @@ return [
 "review_updated_successfully"=>"بازرسی با موفقیت ابدیت شد",
 "review_deleted_successfully"=>"بازرسی با موفقیت حذف شد",
 "review_not_found"=>"بازرسی یافت نشد",
+'all_physiotherapists'=>'همه فیزیوتراپیست‌ها',
 ];

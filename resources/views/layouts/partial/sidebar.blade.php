@@ -474,6 +474,13 @@
                             </a>
                         </li>
                     @endcan
+                    @role('admin')
+                        <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
+                            <a href="{{ route('backups.index') }}" class="menu-link">
+                                <div>{{ __('Backups') }}</div>
+                            </a>
+                        </li>
+                    @endrole
                     @can('show-recipients-menu')
 
                         <li class="menu-item {{ Route::is('recipients.index') ? 'active' : '' }}">
@@ -600,6 +607,13 @@
                             </a>
                         </li>
                     @endcan
+                    @role('super_admin')
+                        <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
+                            <a href="{{ route('backups.index') }}" class="menu-link">
+                                <div>{{ localize('global.backups') }}</div>
+                            </a>
+                        </li>
+                    @endrole
                 </ul>
             </li>
         @endcan

@@ -57,6 +57,7 @@ use App\Http\Controllers\OutcomeController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PhysiotherapyProcedureController;
 use App\Http\Controllers\PhysiotherapyReportController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\PhysiotherapyTypeController;
 Route::group(['middleware' => ['auth']], function () {
 
@@ -752,6 +753,18 @@ Route::prefix('pharmacies')->name('pharmacies.')->group(function () {
     Route::get('edit/{pharmacy}', [PharmacyController::class, 'edit'])->name('edit');
     Route::put('update/{pharmacy}', [PharmacyController::class, 'update'])->name('update');
     Route::delete('destroy/{pharmacy}', [PharmacyController::class, 'destroy'])->name('destroy');
+});
+
+// Backup routes
+Route::prefix('backups')->name('backups.')->group(function () {
+    Route::get('/', [BackupController::class, 'index'])->name('index');
+    Route::get('show/{backupName}', [BackupController::class, 'show'])->name('show');
+    Route::get('download/{backupName}', [BackupController::class, 'download'])->name('download');
+    Route::get('create', [BackupController::class, 'create'])->name('create');
+    Route::delete('destroy/{backupName}', [BackupController::class, 'destroy'])->name('destroy');
+    Route::post('clean', [BackupController::class, 'clean'])->name('clean');
+    Route::get('stats', [BackupController::class, 'stats'])->name('stats');
+    Route::get('test', [BackupController::class, 'test'])->name('test');
 });
 
 // Register route should be disabled be default.

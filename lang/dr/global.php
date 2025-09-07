@@ -2064,4 +2064,5 @@ return [
 'procedure_details'=>'جزئیات روش فیزیوتراپی',
 'n_a'=>'N/A',
 'no_cancel'=>'لغو شده',
+"backups"=>"مدیریت پشتیبانی",
 ];

@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Spatie\Backup\BackupDestination\BackupDestination;
+use App\Jobs\CreateBackupJob;
 
 class BackupController extends Controller
 {
@@ -106,22 +106,12 @@ class BackupController extends Controller
      */
     public function create()
     {
-        try {
-            // Run backup using Artisan command (will be queued)
-            Artisan::call('backup:run', [
-                '--disable-notifications' => true,
-                '--only-db' => true,
-            ]);
+            CreateBackupJob::dispatch();
             
-            Log::info('Backup job queued successfully');
+            Log::info('Backup job dispatched to queue');
             
             return redirect()->route('backups.index')
                 ->with('success', 'Backup has been queued and will be processed shortly!');
-        } catch (\Exception $e) {
-            Log::error('Failed to queue backup: ' . $e->getMessage());
-            return redirect()->route('backups.index')
-                ->with('error', 'Failed to queue backup: ' . $e->getMessage());
-        }
     }
 
     /**
@@ -312,4 +302,5 @@ class BackupController extends Controller
             ], 500);
         }
     }
+
 }

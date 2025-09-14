@@ -2065,4 +2065,5 @@ return [
 'n_a'=>'N/A',
 'no_cancel'=>'لغو شده',
 "backups"=>"مدیریت پشتیبانی",
+"progress_updated_successfully."=>'پیشرفت با موفقیت ابدیت شد',
 ];

@@ -60,6 +60,7 @@ use App\Http\Controllers\PhysiotherapyReportController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\PhysiotherapyTypeController;
 use App\Http\Controllers\NurseController;
+use App\Http\Controllers\DiabetesChartController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -711,12 +712,25 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{nurse}', [NurseController::class, 'destroy'])->name('destroy');
     });
 
+    // Diabetes Charts routes
+    Route::prefix('diabetes-charts')->name('diabetes-charts.')->group(function () {
+        Route::get('index', [DiabetesChartController::class, 'index'])->name('index');
+        Route::get('create', [DiabetesChartController::class, 'create'])->name('create');
+        Route::get('show/{diabetesChart}', [DiabetesChartController::class, 'show'])->name('show');
+        Route::get('print', [DiabetesChartController::class, 'print'])->name('print');
+        Route::post('store', [DiabetesChartController::class, 'store'])->name('store');
+        Route::get('edit/{diabetesChart}', [DiabetesChartController::class, 'edit'])->name('edit');
+        Route::put('update/{diabetesChart}', [DiabetesChartController::class, 'update'])->name('update');
+        Route::delete('destroy/{diabetesChart}', [DiabetesChartController::class, 'destroy'])->name('destroy');
+    });
+
     // API Select Routes for Select2 dropdowns (Web-based, requires auth)
     Route::middleware('auth')->prefix('api/select')->group(function () {
         Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
         Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
         Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
         Route::get('nurses', [NurseController::class, 'getNursesForSelect'])->name('api.select.nurses');
+        Route::get('diabetes-charts', [DiabetesChartController::class, 'getDiabetesChartsForSelect'])->name('api.select.diabetes-charts');
     });
 
     // Physiotherapy Reports routes

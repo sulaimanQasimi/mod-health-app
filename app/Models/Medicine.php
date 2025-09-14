@@ -37,4 +37,12 @@ class Medicine extends Model
     {
         return $this->hasMany(Outcome::class);
     }
+
+    /**
+     * Get the diabetes charts for this medicine.
+     */
+    public function diabetesCharts()
+    {
+        return $this->hasMany(DiabetesChart::class);
+    }
 }

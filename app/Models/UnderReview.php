@@ -78,4 +78,12 @@ class UnderReview extends Model
     {
         return $this->hasMany(Hospitalization::class);
     }
+
+    /**
+     * Get the diabetes charts for this under review record.
+     */
+    public function diabetesCharts()
+    {
+        return $this->morphMany(DiabetesChart::class, 'diabetes_chartable');
+    }
 }

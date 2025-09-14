@@ -14,6 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         \Spatie\Backup\BackupDestination\Backup::class => \App\Policies\BackupPolicy::class,
+        \App\Models\DiabetesChart::class => \App\Policies\DiabetesChartPolicy::class,
     ];
 
     /**

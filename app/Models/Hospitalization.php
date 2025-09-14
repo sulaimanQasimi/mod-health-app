@@ -96,5 +96,11 @@ class Hospitalization extends Model
         return $this->hasMany(Prescription::class);
     }
 
-
+    /**
+     * Get the diabetes charts for this hospitalization record.
+     */
+    public function diabetesCharts()
+    {
+        return $this->morphMany(DiabetesChart::class, 'diabetes_chartable');
+    }
 }

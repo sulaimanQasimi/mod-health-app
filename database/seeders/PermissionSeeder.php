@@ -1246,6 +1246,70 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
+        // Diabetes Chart Permissions
+        Permission::createOrFirst([
+            'name' => 'show-diabetes-charts-menu',
+            'name_dr' => 'نمایش مینو چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'view-diabetes-charts',
+            'name_dr' => 'نمایش چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create-diabetes-charts',
+            'name_dr' => 'ایجاد چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit-diabetes-charts',
+            'name_dr' => 'تصحیح چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete-diabetes-charts',
+            'name_dr' => 'حذف چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'restore-diabetes-charts',
+            'name_dr' => 'بازیابی چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'force-delete-diabetes-charts',
+            'name_dr' => 'حذف دائمی چارت دیابت',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
         User::find(1)->givePermissionTo(Permission::all());
 
     }

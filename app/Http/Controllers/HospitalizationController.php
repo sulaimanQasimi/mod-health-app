@@ -15,6 +15,8 @@ use App\Models\OperationType;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
+use App\Models\DiabetesChart;
+use App\Models\Nurse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -163,7 +165,7 @@ class HospitalizationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Hospitalization $hospitalization)
+    public function show(Hospitalization $hospitalization, Request $request)
     {
         $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
@@ -174,7 +176,16 @@ class HospitalizationController extends Controller
         $foodTypes = FoodType::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
-        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes'));
+        // Load diabetes charts for this hospitalization
+        $diabetesChartsQuery = DiabetesChart::where('diabetes_chartable_type', 'App\\Models\\Hospitalization')
+            ->where('diabetes_chartable_id', $hospitalization->id)
+            ->with(['nurse', 'medicine']);
+
+        $diabetesCharts = $diabetesChartsQuery->orderBy('date', 'desc')
+                                             ->orderBy('time', 'desc')
+                                             ->get();
+
+        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts'));
     }
 
     /**

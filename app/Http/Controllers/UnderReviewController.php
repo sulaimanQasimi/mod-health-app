@@ -13,6 +13,8 @@ use App\Models\OperationType;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\UnderReview;
+use App\Models\DiabetesChart;
+use App\Models\Nurse;
 use Illuminate\Http\Request;
 
 class UnderReviewController extends Controller
@@ -85,9 +87,8 @@ class UnderReviewController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(UnderReview $underReview)
+    public function show(UnderReview $underReview, Request $request)
     {
-
         $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
@@ -99,7 +100,51 @@ class UnderReviewController extends Controller
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
-        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes'));
+        // Load diabetes charts for this under review
+        $diabetesChartsQuery = DiabetesChart::where('diabetes_chartable_type', 'App\\Models\\UnderReview')
+            ->where('diabetes_chartable_id', $underReview->id)
+            ->with(['nurse', 'medicine']);
+
+        // Search functionality for diabetes charts
+        if ($request->filled('diabetes_search')) {
+            $search = $request->diabetes_search;
+            $diabetesChartsQuery->where(function ($q) use ($search) {
+                $q->where('rbs', 'like', "%{$search}%")
+                  ->orWhere('fbs', 'like', "%{$search}%")
+                  ->orWhere('insulin_dose', 'like', "%{$search}%")
+                  ->orWhereHas('nurse', function ($q) use ($search) {
+                      $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('medicine', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by date range
+        if ($request->filled('diabetes_start_date')) {
+            $diabetesChartsQuery->where('date', '>=', $request->diabetes_start_date);
+        }
+        if ($request->filled('diabetes_end_date')) {
+            $diabetesChartsQuery->where('date', '<=', $request->diabetes_end_date);
+        }
+
+        // Filter by nurse
+        if ($request->filled('diabetes_nurse_id')) {
+            $diabetesChartsQuery->where('nurse_id', $request->diabetes_nurse_id);
+        }
+
+        // Filter by medicine
+        if ($request->filled('diabetes_medicine_id')) {
+            $diabetesChartsQuery->where('medicine_id', $request->diabetes_medicine_id);
+        }
+
+        $diabetesCharts = $diabetesChartsQuery->orderBy('date', 'desc')
+                                             ->orderBy('time', 'desc')
+                                             ->get();
+
+        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts'));
     }
 
     /**

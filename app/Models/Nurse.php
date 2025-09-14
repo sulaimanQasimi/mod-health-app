@@ -103,6 +103,14 @@ class Nurse extends Model
     }
 
     /**
+     * Get the diabetes charts for this nurse.
+     */
+    public function diabetesCharts()
+    {
+        return $this->hasMany(DiabetesChart::class);
+    }
+
+    /**
      * Get the full name of the nurse.
      */
     public function getFullNameAttribute()

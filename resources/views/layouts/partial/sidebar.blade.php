@@ -475,11 +475,11 @@
                         </li>
                     @endcan
                     @role('admin')
-                        <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
-                            <a href="{{ route('backups.index') }}" class="menu-link">
-                                <div>{{ __('Backups') }}</div>
-                            </a>
-                        </li>
+                    <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
+                        <a href="{{ route('backups.index') }}" class="menu-link">
+                            <div>{{ __('Backups') }}</div>
+                        </a>
+                    </li>
                     @endrole
                     @can('show-recipients-menu')
 
@@ -607,12 +607,20 @@
                             </a>
                         </li>
                     @endcan
-                    @role('super_admin')
-                        <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
-                            <a href="{{ route('backups.index') }}" class="menu-link">
-                                <div>{{ localize('global.backups') }}</div>
+                    @can('show-nurses-menu')
+                        <li class="menu-item {{ Route::is('nurses.index') ? 'active' : '' }}">
+                            <a href="{{ route('nurses.index') }}" class="menu-link">
+                                <div>{{ localize('global.nurses') }}</div>
                             </a>
                         </li>
+                    @endcan
+
+                    @role('super_admin')
+                    <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
+                        <a href="{{ route('backups.index') }}" class="menu-link">
+                            <div>{{ localize('global.backups') }}</div>
+                        </a>
+                    </li>
                     @endrole
                 </ul>
             </li>

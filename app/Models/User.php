@@ -123,4 +123,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(PhysiotherapyProcedure::class, 'physiotherapist_id');
     }
+
+    public function nurse()
+    {
+        return $this->hasOne(Nurse::class);
+    }
 }

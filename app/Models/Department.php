@@ -48,4 +48,9 @@ class Department extends Model
     {
         return $this->hasMany(OperationType::class);
     }
+
+    public function nurses()
+    {
+        return $this->hasMany(Nurse::class);
+    }
 }

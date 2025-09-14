@@ -59,6 +59,7 @@ use App\Http\Controllers\PhysiotherapyProcedureController;
 use App\Http\Controllers\PhysiotherapyReportController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\PhysiotherapyTypeController;
+use App\Http\Controllers\NurseController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -699,11 +700,23 @@ Route::group(['middleware' => ['auth']], function () {
             Route::delete('{physiotherapyType}/destroy', [PhysiotherapyTypeController::class, 'destroy'])->name('destroy');
             Route::post('{physiotherapyType}/toggle-status', [PhysiotherapyTypeController::class, 'toggleStatus'])->name('toggle-status');
         });
+    // Nurses routes
+    Route::prefix('nurses')->name('nurses.')->group(function () {
+        Route::get('index', [NurseController::class, 'index'])->name('index');
+        Route::get('create', [NurseController::class, 'create'])->name('create');
+        Route::get('show/{nurse}', [NurseController::class, 'show'])->name('show');
+        Route::post('store', [NurseController::class, 'store'])->name('store');
+        Route::get('edit/{nurse}', [NurseController::class, 'edit'])->name('edit');
+        Route::put('update/{nurse}', [NurseController::class, 'update'])->name('update');
+        Route::delete('destroy/{nurse}', [NurseController::class, 'destroy'])->name('destroy');
+    });
+
     // API Select Routes for Select2 dropdowns (Web-based, requires auth)
     Route::middleware('auth')->prefix('api/select')->group(function () {
         Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
         Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
         Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
+        Route::get('nurses', [NurseController::class, 'getNursesForSelect'])->name('api.select.nurses');
     });
 
     // Physiotherapy Reports routes

@@ -14,28 +14,21 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        Permission::create([
-            'id' => 1,
+        Permission::createOrFirst([
             'name' => 'show-information-menu',
             'name_dr' => 'نمایش مینو پذیرش',
             'name_pa' => NULL,
             'guard_name' => 'web',
-            'created_at' => '2023-08-22 14:05:43',
-            'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 2,
+        Permission::createOrFirst([
             'name' => 'show-my-visits-menu',
             'name_dr' => 'نمایش مینو ملاقات های من',
             'name_pa' => NULL,
             'guard_name' => 'web',
-            'created_at' => '2023-08-22 14:05:43',
-            'updated_at' => '2023-08-22 09:35:32'
-        ]);
+                    ]);
 
-        Permission::create([
-            'id' => 3,
+        Permission::createOrFirst([
             'name' => 'show-my-consultations-menu',
             'name_dr' => 'نمایش مینو مشوره های من',
             'name_pa' => NULL,
@@ -44,8 +37,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 4,
+        Permission::createOrFirst([
             'name' => 'show-prescriptions-menu',
             'name_dr' => 'نمایش مینو نسخه ها',
             'name_pa' => NULL,
@@ -54,8 +46,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 5,
+        Permission::createOrFirst([
             'name' => 'show-hospitalizations-menu',
             'name_dr' => 'نمایش مینو مریضان بستر',
             'name_pa' => NULL,
@@ -64,8 +55,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 6,
+        Permission::createOrFirst([
             'name' => 'show-labs-menu',
             'name_dr' => 'نمایش مینو معاینات',
             'name_pa' => NULL,
@@ -74,8 +64,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 7,
+        Permission::createOrFirst([
             'name' => 'show-icu-menu',
             'name_dr' => 'نمایش مینو ICU',
             'name_pa' => NULL,
@@ -84,8 +73,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 8,
+        Permission::createOrFirst([
             'name' => 'show-anesthesias-menu',
             'name_dr' => 'نمایش مینو انستیزی ها',
             'name_pa' => NULL,
@@ -94,8 +82,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 9,
+        Permission::createOrFirst([
             'name' => 'show-operations-menu',
             'name_dr' => 'نمایش مینو عملیات',
             'name_pa' => NULL,
@@ -104,8 +91,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 10,
+        Permission::createOrFirst([
             'name' => 'show-settings-menu',
             'name_dr' => 'نمایش مینو تنظیمات',
             'name_pa' => NULL,
@@ -114,8 +100,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 09:35:32'
         ]);
 
-        Permission::create([
-            'id' => 11,
+        Permission::createOrFirst([
             'name' => 'show-users-menu',
             'name_dr' => 'نمایش مینو کاربران',
             'name_pa' => NULL,
@@ -124,8 +109,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:01:51'
         ]);
 
-        Permission::create([
-            'id' => 12,
+        Permission::createOrFirst([
             'name' => 'show-roles-menu',
             'name_dr' => 'نمایش مینو نقش ها',
             'name_pa' => NULL,
@@ -134,8 +118,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:02:01'
         ]);
 
-        Permission::create([
-            'id' => 13,
+        Permission::createOrFirst([
             'name' => 'show-permissions-menu',
             'name_dr' => 'نمایش مینو صلاحیت ها',
             'name_pa' => NULL,
@@ -144,8 +127,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:02:14'
         ]);
 
-        Permission::create([
-            'id' => 14,
+        Permission::createOrFirst([
             'name' => 'show-relations-menu',
             'name_dr' => 'مینو ارتباط خانواده',
             'name_pa' => NULL,
@@ -154,8 +136,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:02:28'
         ]);
 
-        Permission::create([
-            'id' => 15,
+        Permission::createOrFirst([
             'name' => 'create-users',
             'name_dr' => 'ایجاد کاربران',
             'name_pa' => NULL,
@@ -164,8 +145,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:39'
         ]);
 
-        Permission::create([
-            'id' => 16,
+        Permission::createOrFirst([
             'name' => 'edit-users',
             'name_dr' => 'تصحیح کاربران',
             'name_pa' => NULL,
@@ -174,8 +154,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 17,
+        Permission::createOrFirst([
             'name' => 'create-roles',
             'name_dr' => 'ایجاد نقش ها',
             'name_pa' => NULL,
@@ -184,8 +163,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:10:05'
         ]);
 
-        Permission::create([
-            'id' => 18,
+        Permission::createOrFirst([
             'name' => 'edit-roles',
             'name_dr' => 'تصحیح نقش ها',
             'name_pa' => NULL,
@@ -194,8 +172,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:10:14'
         ]);
 
-        Permission::create([
-            'id' => 19,
+        Permission::createOrFirst([
             'name' => 'create-permissions',
             'name_dr' => 'ایجاد صلاحیت ها',
             'name_pa' => NULL,
@@ -204,8 +181,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:10:25'
         ]);
 
-        Permission::create([
-            'id' => 20,
+        Permission::createOrFirst([
             'name' => 'edit-permissions',
             'name_dr' => 'تصحیح صلاحیت ها',
             'name_pa' => NULL,
@@ -214,8 +190,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:10:40'
         ]);
 
-        Permission::create([
-            'id' => 21,
+        Permission::createOrFirst([
             'name' => 'deactivate-users',
             'name_dr' => 'غیرفعال نمودن یوزر ها',
             'name_pa' => NULL,
@@ -224,8 +199,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 22,
+        Permission::createOrFirst([
             'name' => 'show-departments-menu',
             'name_dr' => 'نمایش مینو دیپارتمنت ها',
             'name_pa' => NULL,
@@ -234,8 +208,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 23,
+        Permission::createOrFirst([
             'name' => 'show-sections-menu',
             'name_dr' => 'نمایش مینو بخش ها',
             'name_pa' => NULL,
@@ -244,8 +217,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 24,
+        Permission::createOrFirst([
             'name' => 'show-floors-menu',
             'name_dr' => 'نمایش مینو منزل ها',
             'name_pa' => NULL,
@@ -254,8 +226,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 25,
+        Permission::createOrFirst([
             'name' => 'show-rooms-menu',
             'name_dr' => 'نمایش مینو اطاق ها',
             'name_pa' => NULL,
@@ -264,8 +235,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 26,
+        Permission::createOrFirst([
             'name' => 'show-beds-menu',
             'name_dr' => 'نمایش مینو بستر ها',
             'name_pa' => NULL,
@@ -274,8 +244,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 27,
+        Permission::createOrFirst([
             'name' => 'show-labs-types-menu',
             'name_dr' => 'نمایش مینو نوعیت معاینات',
             'name_pa' => NULL,
@@ -284,8 +253,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 28,
+        Permission::createOrFirst([
             'name' => 'show-test-types-menu',
             'name_dr' => 'نمایش مینو نوعیت تست ها',
             'name_pa' => NULL,
@@ -294,8 +262,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 29,
+        Permission::createOrFirst([
             'name' => 'show-operation-types-menu',
             'name_dr' => 'نمایش مینو نوعیت عملیات ها',
             'name_pa' => NULL,
@@ -304,8 +271,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 30,
+        Permission::createOrFirst([
             'name' => 'show-branches-menu',
             'name_dr' => 'نمایش مینو شفاخانه ها',
             'name_pa' => NULL,
@@ -314,8 +280,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 31,
+        Permission::createOrFirst([
             'name' => 'show-reports-menu',
             'name_dr' => 'نمایش مینو راپورها',
             'name_pa' => NULL,
@@ -324,8 +289,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 32,
+        Permission::createOrFirst([
             'name' => 'show-medicine-types-menu',
             'name_dr' => 'نمایش مینو نوعیت ادویه جات',
             'name_pa' => NULL,
@@ -334,8 +298,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 33,
+        Permission::createOrFirst([
             'name' => 'show-medicine-menu',
             'name_dr' => 'نمایش مینو ادویه جات',
             'name_pa' => NULL,
@@ -344,8 +307,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 34,
+        Permission::createOrFirst([
             'name' => 'show-under-review-menu',
             'name_dr' => 'نمایش مینو مریضان تحت مشاهده',
             'name_pa' => NULL,
@@ -354,8 +316,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 35,
+        Permission::createOrFirst([
             'name' => 'show-food-types-menu',
             'name_dr' => 'نمایش مینو نوعیت غذا',
             'name_pa' => NULL,
@@ -364,8 +325,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 36,
+        Permission::createOrFirst([
             'name' => 'show-blood-bank-menu',
             'name_dr' => 'نمایش مینو بانک خون',
             'name_pa' => NULL,
@@ -374,8 +334,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 37,
+        Permission::createOrFirst([
             'name' => 'show-pacu-menu',
             'name_dr' => 'نمایش مینو PACU ',
             'name_pa' => NULL,
@@ -384,8 +343,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 38,
+        Permission::createOrFirst([
             'name' => 'show-add-icu-procedures-menu',
             'name_dr' => 'نمایش مینو پروسیجر های ICU ',
             'name_pa' => NULL,
@@ -394,8 +352,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 39,
+        Permission::createOrFirst([
             'name' => 'show-medicine-usage-menu',
             'name_dr' => 'نمایش مینو طروق تطبیق ادویه',
             'name_pa' => NULL,
@@ -404,8 +361,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 40,
+        Permission::createOrFirst([
             'name' => 'show-disease-menu',
             'name_dr' => 'نمایش مینو امراض',
             'name_pa' => NULL,
@@ -414,8 +370,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:36'
         ]);
 
-        Permission::create([
-            'id' => 41,
+        Permission::createOrFirst([
             'name' => 'create-relations',
             'name_dr' => 'ایجاد ارتباط خانواده گی',
             'name_pa' => NULL,
@@ -424,8 +379,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 42,
+        Permission::createOrFirst([
             'name' => 'edit-relations',
             'name_dr' => 'تصحیح ارتباط خانواده گی',
             'name_pa' => NULL,
@@ -434,8 +388,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 43,
+        Permission::createOrFirst([
             'name' => 'delete-relations',
             'name_dr' => 'حذف ارتباط خانواده گی',
             'name_pa' => NULL,
@@ -444,8 +397,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 44,
+        Permission::createOrFirst([
             'name' => 'create-departments',
             'name_dr' => 'ایجاد دیپارتمنت ها',
             'name_pa' => NULL,
@@ -454,8 +406,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 45,
+        Permission::createOrFirst([
             'name' => 'edit-departments',
             'name_dr' => 'تصحیح دیپارتمنت ها',
             'name_pa' => NULL,
@@ -464,8 +415,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 46,
+        Permission::createOrFirst([
             'name' => 'delete-departments',
             'name_dr' => 'حذف دیپارتمنت ها',
             'name_pa' => NULL,
@@ -474,8 +424,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 47,
+        Permission::createOrFirst([
             'name' => 'create-sections',
             'name_dr' => 'ایجاد بخش ها',
             'name_pa' => NULL,
@@ -484,8 +433,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 48,
+        Permission::createOrFirst([
             'name' => 'edit-sections',
             'name_dr' => 'تصحیح بخش ها',
             'name_pa' => NULL,
@@ -494,8 +442,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 49,
+        Permission::createOrFirst([
             'name' => 'delete-sections',
             'name_dr' => 'حذف بخش ها',
             'name_pa' => NULL,
@@ -504,8 +451,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 50,
+        Permission::createOrFirst([
             'name' => 'create-floors',
             'name_dr' => 'ایجاد منزل ها',
             'name_pa' => NULL,
@@ -514,8 +460,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 51,
+        Permission::createOrFirst([
             'name' => 'edit-floors',
             'name_dr' => 'تصحیح منزل ها',
             'name_pa' => NULL,
@@ -524,8 +469,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 52,
+        Permission::createOrFirst([
             'name' => 'delete-floors',
             'name_dr' => 'حذف منزل ها',
             'name_pa' => NULL,
@@ -534,8 +478,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 53,
+        Permission::createOrFirst([
             'name' => 'create-rooms',
             'name_dr' => 'ایجاد اطاق ها',
             'name_pa' => NULL,
@@ -544,8 +487,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 54,
+        Permission::createOrFirst([
             'name' => 'edit-rooms',
             'name_dr' => 'تصحیح اطاق ها',
             'name_pa' => NULL,
@@ -554,8 +496,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 55,
+        Permission::createOrFirst([
             'name' => 'delete-rooms',
             'name_dr' => 'حذف اطاق ها',
             'name_pa' => NULL,
@@ -564,8 +505,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 56,
+        Permission::createOrFirst([
             'name' => 'show-rooms',
             'name_dr' => 'نمایش اطاق ها',
             'name_pa' => NULL,
@@ -574,8 +514,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 57,
+        Permission::createOrFirst([
             'name' => 'create-beds',
             'name_dr' => 'ایجاد بسترها',
             'name_pa' => NULL,
@@ -584,8 +523,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 58,
+        Permission::createOrFirst([
             'name' => 'edit-beds',
             'name_dr' => 'تصحیح بسترها',
             'name_pa' => NULL,
@@ -594,8 +532,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 59,
+        Permission::createOrFirst([
             'name' => 'delete-beds',
             'name_dr' => 'حذف بسترها',
             'name_pa' => NULL,
@@ -604,8 +541,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 60,
+        Permission::createOrFirst([
             'name' => 'create-lab-types',
             'name_dr' => 'ایجاد نوعیت معاینات',
             'name_pa' => NULL,
@@ -614,8 +550,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 61,
+        Permission::createOrFirst([
             'name' => 'edit-lab-types',
             'name_dr' => 'تصحیح نوعیت معاینات',
             'name_pa' => NULL,
@@ -624,8 +559,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 62,
+        Permission::createOrFirst([
             'name' => 'delete-lab-types',
             'name_dr' => 'حذف نوعیت معاینات',
             'name_pa' => NULL,
@@ -634,8 +568,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 63,
+        Permission::createOrFirst([
             'name' => 'create-labs',
             'name_dr' => 'ایجاد تست ها',
             'name_pa' => NULL,
@@ -644,8 +577,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 64,
+        Permission::createOrFirst([
             'name' => 'edit-labs',
             'name_dr' => 'تصحیح تست ها',
             'name_pa' => NULL,
@@ -654,8 +586,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 65,
+        Permission::createOrFirst([
             'name' => 'delete-labs',
             'name_dr' => 'حذف تست ها',
             'name_pa' => NULL,
@@ -664,8 +595,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 66,
+        Permission::createOrFirst([
             'name' => 'create-procedure-types',
             'name_dr' => 'ایجاد نوعیت پروسیجر های ICU',
             'name_pa' => NULL,
@@ -674,8 +604,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 67,
+        Permission::createOrFirst([
             'name' => 'edit-procedure-types',
             'name_dr' => 'تصحیح نوعیت پروسیجر های ICU',
             'name_pa' => NULL,
@@ -684,8 +613,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 68,
+        Permission::createOrFirst([
             'name' => 'delete-procedure-types',
             'name_dr' => 'حذف نوعیت پروسیجر های ICU',
             'name_pa' => NULL,
@@ -694,8 +622,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 69,
+        Permission::createOrFirst([
             'name' => 'create-operation-types',
             'name_dr' => 'ایجاد نوعیت عملیات ها',
             'name_pa' => NULL,
@@ -704,8 +631,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 70,
+        Permission::createOrFirst([
             'name' => 'edit-operation-types',
             'name_dr' => 'تصحیح نوعیت عملیات ها',
             'name_pa' => NULL,
@@ -714,8 +640,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 71,
+        Permission::createOrFirst([
             'name' => 'delete-operation-types',
             'name_dr' => 'حذف نوعیت عملیات ها',
             'name_pa' => NULL,
@@ -724,8 +649,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 72,
+        Permission::createOrFirst([
             'name' => 'create-medicine-types',
             'name_dr' => 'ایجاد نوعیت ادویه',
             'name_pa' => NULL,
@@ -734,8 +658,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 73,
+        Permission::createOrFirst([
             'name' => 'edit-medicine-types',
             'name_dr' => 'تصحیح نوعیت ادویه',
             'name_pa' => NULL,
@@ -744,8 +667,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 74,
+        Permission::createOrFirst([
             'name' => 'delete-medicine-types',
             'name_dr' => 'حذف نوعیت ادویه',
             'name_pa' => NULL,
@@ -754,8 +676,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 75,
+        Permission::createOrFirst([
             'name' => 'create-medicines',
             'name_dr' => 'ایجاد ادویه جات',
             'name_pa' => NULL,
@@ -764,8 +685,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 76,
+        Permission::createOrFirst([
             'name' => 'edit-medicines',
             'name_dr' => 'تصحیح ادویه جات',
             'name_pa' => NULL,
@@ -774,8 +694,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 77,
+        Permission::createOrFirst([
             'name' => 'delete-medicines',
             'name_dr' => 'حذف ادویه جات',
             'name_pa' => NULL,
@@ -784,8 +703,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 78,
+        Permission::createOrFirst([
             'name' => 'create-medicines-usage-types',
             'name_dr' => 'ایجاد طروق تطبیق ادویه جات',
             'name_pa' => NULL,
@@ -794,8 +712,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 79,
+        Permission::createOrFirst([
             'name' => 'edit-medicines-usage-types',
             'name_dr' => 'تصحیح طروق تطبیق ادویه جات',
             'name_pa' => NULL,
@@ -804,8 +721,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 80,
+        Permission::createOrFirst([
             'name' => 'delete-medicines-usage-types',
             'name_dr' => 'حذف طروق تطبیق ادویه جات',
             'name_pa' => NULL,
@@ -814,8 +730,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 81,
+        Permission::createOrFirst([
             'name' => 'create-hospitalization-foods',
             'name_dr' => 'ایجاد نوعیت غذا های بستر',
             'name_pa' => NULL,
@@ -824,8 +739,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 82,
+        Permission::createOrFirst([
             'name' => 'edit-hospitalization-foods',
             'name_dr' => 'تصحیح نوعیت غذا های بستر',
             'name_pa' => NULL,
@@ -834,8 +748,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 83,
+        Permission::createOrFirst([
             'name' => 'delete-hospitalization-foods',
             'name_dr' => 'حذف نوعیت غذا های بستر',
             'name_pa' => NULL,
@@ -844,8 +757,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 84,
+        Permission::createOrFirst([
             'name' => 'create-diseases',
             'name_dr' => 'ایجاد امراض',
             'name_pa' => NULL,
@@ -854,8 +766,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 85,
+        Permission::createOrFirst([
             'name' => 'edit-diseases',
             'name_dr' => 'تصحیح امراض',
             'name_pa' => NULL,
@@ -864,8 +775,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 86,
+        Permission::createOrFirst([
             'name' => 'delete-diseases',
             'name_dr' => 'حذف امراض',
             'name_pa' => NULL,
@@ -874,8 +784,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 87,
+        Permission::createOrFirst([
             'name' => 'create-branches',
             'name_dr' => 'ایجاد شفاخانه ها',
             'name_pa' => NULL,
@@ -884,8 +793,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 88,
+        Permission::createOrFirst([
             'name' => 'edit-branches',
             'name_dr' => 'تصحیح شفاخانه ها',
             'name_pa' => NULL,
@@ -894,8 +802,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 89,
+        Permission::createOrFirst([
             'name' => 'delete-branches',
             'name_dr' => 'حذف شفاخانه ها',
             'name_pa' => NULL,
@@ -904,8 +811,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 90,
+        Permission::createOrFirst([
             'name' => 'create-recipients',
             'name_dr' => 'ایجاد ادارات',
             'name_pa' => NULL,
@@ -914,8 +820,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:04'
         ]);
 
-        Permission::create([
-            'id' => 91,
+        Permission::createOrFirst([
             'name' => 'edit-recipients',
             'name_dr' => 'تصحیح ادارات',
             'name_pa' => NULL,
@@ -923,8 +828,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 92,
+        Permission::createOrFirst([
             'name' => 'show-recipients-menu',
             'name_dr' => 'تصحیح ادارات',
             'name_pa' => NULL,
@@ -933,8 +837,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:13'
         ]);
 
-        Permission::create([
-            'id' => 93,
+        Permission::createOrFirst([
             'name' => 'edit-patients',
             'name_dr' => 'تصحیح مریضان',
             'name_pa' => NULL,
@@ -942,8 +845,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 94,
+        Permission::createOrFirst([
             'name' => 'print-patient-card',
             'name_dr' => 'چاپ کارت مریضان',
             'name_pa' => NULL,
@@ -951,8 +853,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 95,
+        Permission::createOrFirst([
             'name' => 'create-appointment',
             'name_dr' => 'ایجاد ملاقات',
             'name_pa' => NULL,
@@ -960,8 +861,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 96,
+        Permission::createOrFirst([
             'name' => 'upload-patient-image',
             'name_dr' => 'آپلود نمود عکس مریض',
             'name_pa' => NULL,
@@ -969,8 +869,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 97,
+        Permission::createOrFirst([
             'name' => 'update-appointment-status',
             'name_dr' => 'تصحیح حالت ملاقات',
             'name_pa' => NULL,
@@ -978,8 +877,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 98,
+        Permission::createOrFirst([
             'name' => 'add-diagnose',
             'name_dr' => 'اضافه نمودن تشخیص',
             'name_pa' => NULL,
@@ -987,8 +885,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 99,
+        Permission::createOrFirst([
             'name' => 'add-prescription',
             'name_dr' => 'اضافه نمودن نسخه',
             'name_pa' => NULL,
@@ -996,8 +893,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 100,
+        Permission::createOrFirst([
             'name' => 'add-advice',
             'name_dr' => 'اضافه نمودن توصیه',
             'name_pa' => NULL,
@@ -1005,8 +901,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 101,
+        Permission::createOrFirst([
             'name' => 'add-patient-labs',
             'name_dr' => 'اضافه نمودن معاینات به مریض',
             'name_pa' => NULL,
@@ -1014,8 +909,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 102,
+        Permission::createOrFirst([
             'name' => 'add-consultations',
             'name_dr' => 'اضافه نمودن مشوره ها',
             'name_pa' => NULL,
@@ -1023,8 +917,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 103,
+        Permission::createOrFirst([
             'name' => 'refer-to-another-doctor',
             'name_dr' => 'معرفی مریض به داکتر/دیپارتمنت دیگر',
             'name_pa' => NULL,
@@ -1032,8 +925,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 104,
+        Permission::createOrFirst([
             'name' => 'patient-under-review',
             'name_dr' => 'معرفی مریض به تحت مشاهده',
             'name_pa' => NULL,
@@ -1041,8 +933,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 105,
+        Permission::createOrFirst([
             'name' => 'patient-hospitalization',
             'name_dr' => 'بستر نمودن مریض',
             'name_pa' => NULL,
@@ -1050,8 +941,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 106,
+        Permission::createOrFirst([
             'name' => 'refer-to-anesthesia',
             'name_dr' => 'معرفی مریض به اناستیزی',
             'name_pa' => NULL,
@@ -1059,8 +949,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 107,
+        Permission::createOrFirst([
             'name' => 'refer-to-icu',
             'name_dr' => 'معرفی مریض به ICU',
             'name_pa' => NULL,
@@ -1068,8 +957,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 108,
+        Permission::createOrFirst([
             'name' => 'edit-diagnoses',
             'name_dr' => 'تصحیح تشخیص ها',
             'name_pa' => NULL,
@@ -1077,8 +965,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 109,
+        Permission::createOrFirst([
             'name' => 'delete-diagnoses',
             'name_dr' => 'حذف تشخیص ها',
             'name_pa' => NULL,
@@ -1086,8 +973,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 110,
+        Permission::createOrFirst([
             'name' => 'edit-advices',
             'name_dr' => 'تصحیح توصیه ها',
             'name_pa' => NULL,
@@ -1095,8 +981,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 111,
+        Permission::createOrFirst([
             'name' => 'delete-advices',
             'name_dr' => 'حذف توصیه ها',
             'name_pa' => NULL,
@@ -1104,8 +989,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 112,
+        Permission::createOrFirst([
             'name' => 'edit-consultations',
             'name_dr' => 'تصحیح مشوره ها',
             'name_pa' => NULL,
@@ -1113,8 +997,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 113,
+        Permission::createOrFirst([
             'name' => 'delete-consultations',
             'name_dr' => 'حذف مشوره ها',
             'name_pa' => NULL,
@@ -1122,8 +1005,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 114,
+        Permission::createOrFirst([
             'name' => 'edit-under-reviews',
             'name_dr' => 'تصحیح تحت مشاهده',
             'name_pa' => NULL,
@@ -1131,8 +1013,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 115,
+        Permission::createOrFirst([
             'name' => 'delete-under-reviews',
             'name_dr' => 'حذف تحت مشاهده',
             'name_pa' => NULL,
@@ -1140,8 +1021,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 116,
+        Permission::createOrFirst([
             'name' => 'edit-hospitalizations',
             'name_dr' => 'تصحیح بستر مریضان',
             'name_pa' => NULL,
@@ -1149,8 +1029,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 117,
+        Permission::createOrFirst([
             'name' => 'delete-hospitalizations',
             'name_dr' => 'حذف بستر مریضان',
             'name_pa' => NULL,
@@ -1158,8 +1037,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 118,
+        Permission::createOrFirst([
             'name' => 'edit-anesthesias',
             'name_dr' => 'تصحیح انستیزی ها',
             'name_pa' => NULL,
@@ -1167,8 +1045,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 119,
+        Permission::createOrFirst([
             'name' => 'delete-anesthesias',
             'name_dr' => 'حذف انستیزی ها',
             'name_pa' => NULL,
@@ -1176,8 +1053,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 120,
+        Permission::createOrFirst([
             'name' => 'edit-icus',
             'name_dr' => 'تصحیح ICU',
             'name_pa' => NULL,
@@ -1185,8 +1061,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 121,
+        Permission::createOrFirst([
             'name' => 'delete-icus',
             'name_dr' => 'حذف ICU',
             'name_pa' => NULL,
@@ -1195,8 +1070,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:13'
         ]);
 
-        Permission::create([
-            'id' => 122,
+        Permission::createOrFirst([
             'name' => 'edit-prescription',
             'name_dr' => 'تصحیح نمودن نسخه',
             'name_pa' => NULL,
@@ -1205,8 +1079,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:13'
         ]);
 
-        Permission::create([
-            'id' => 123,
+        Permission::createOrFirst([
             'name' => 'delete-prescription',
             'name_dr' => 'حذف نمودن نسخه',
             'name_pa' => NULL,
@@ -1214,8 +1087,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 124,
+        Permission::createOrFirst([
             'name' => 'edit-lab-items',
             'name_dr' => 'تصحیح نمودن معاینات',
             'name_pa' => NULL,
@@ -1223,8 +1095,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 125,
+        Permission::createOrFirst([
             'name' => 'delete-lab-items',
             'name_dr' => 'حذف نمودن معاینات',
             'name_pa' => NULL,
@@ -1232,8 +1103,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 126,
+        Permission::createOrFirst([
             'name' => 'edit-under-review-visit',
             'name_dr' => 'تصحیح نمودن بازدید تحت مشاهده',
             'name_pa' => NULL,
@@ -1241,8 +1111,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 127,
+        Permission::createOrFirst([
             'name' => 'delete-under-review-visit',
             'name_dr' => 'حذف نمودن بازدید تحت مشاهده',
             'name_pa' => NULL,
@@ -1250,8 +1119,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 128,
+        Permission::createOrFirst([
             'name' => 'edit-daily-icu-progress',
             'name_dr' => 'تصحیح پیشرفت روزمره ICU',
             'name_pa' => NULL,
@@ -1259,8 +1127,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 129,
+        Permission::createOrFirst([
             'name' => 'edit-icu-procedure',
             'name_dr' => 'تصحیح پروسیجر ICU',
             'name_pa' => NULL,
@@ -1268,8 +1135,7 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:13'
         ]);
-        Permission::create([
-            'id' => 130,
+        Permission::createOrFirst([
             'name' => 'delete-icu-procedure',
             'name_dr' => 'حذف پروسیجر ICU',
             'name_pa' => NULL,
@@ -1279,8 +1145,7 @@ class PermissionSeeder extends Seeder
         ]);
 
         //Militery Types        
-        Permission::create([
-            'id' => 131,
+        Permission::createOrFirst([
             'name' => 'show-militery-types',
             'name_dr' => 'نمایش رتبه نظامی',
             'name_pa' => NULL,
@@ -1290,8 +1155,7 @@ class PermissionSeeder extends Seeder
             ]);
 
 
-        Permission::create([
-            'id' => 132,
+        Permission::createOrFirst([
             'name' => 'create-militery-types',
             'name_dr' => 'ایجاد رتبه نظامی',
             'name_pa' => NULL,
@@ -1300,8 +1164,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 133,
+        Permission::createOrFirst([
             'name' => 'edit-militery-types',
             'name_dr' => 'تصحیح رتبه نظامی',
             'name_pa' => NULL,
@@ -1310,8 +1173,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        Permission::create([
-            'id' => 134,
+        Permission::createOrFirst([
             'name' => 'delete-militery-types',
             'name_dr' => 'حذف رتبه نظامی',
             'name_pa' => NULL,
@@ -1319,6 +1181,71 @@ class PermissionSeeder extends Seeder
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:09:52'
         ]);
+
+        // Nurse Permissions
+        Permission::createOrFirst([
+            'name' => 'show-nurses-menu',
+            'name_dr' => 'نمایش مینو پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'view-nurses',
+            'name_dr' => 'نمایش پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create-nurses',
+            'name_dr' => 'ایجاد پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit-nurses',
+            'name_dr' => 'تصحیح پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete-nurses',
+            'name_dr' => 'حذف پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'restore-nurses',
+            'name_dr' => 'بازیابی پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'force-delete-nurses',
+            'name_dr' => 'حذف دائمی پرستاران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
         User::find(1)->givePermissionTo(Permission::all());
 
     }

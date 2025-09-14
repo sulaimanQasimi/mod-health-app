@@ -20,4 +20,9 @@ class Branch extends Model
     {
         return $this->hasMany(User::class, 'branch_id');
     }
+
+    public function nurses()
+    {
+        return $this->hasMany(Nurse::class);
+    }
 }

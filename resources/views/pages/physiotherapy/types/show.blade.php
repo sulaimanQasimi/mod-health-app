@@ -111,7 +111,7 @@
                                             <i class="fas fa-edit"></i> {{ localize('global.edit_type') }}
                                         </a>
                                         @if($physiotherapyType->physiotherapyProcedures->count() == 0)
-                                            <form action="{{ route('physiotherapy-types.destroy', $physiotherapyType) }}" method="POST" onsubmit="return confirm('{{ localize('global.confirm_delete') }}')">
+                                            <form action="{{ route('physiotherapy-types.destroy', $physiotherapyType) }}" method="POST" onsubmit="return confirm('{{ localize('global.confirm_delete')}}')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger w-100">

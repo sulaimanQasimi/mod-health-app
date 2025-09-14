@@ -103,4 +103,12 @@ class Hospitalization extends Model
     {
         return $this->morphMany(DiabetesChart::class, 'diabetes_chartable');
     }
+
+    /**
+     * Get the nurse notes for this hospitalization record.
+     */
+    public function nurseNotes()
+    {
+        return $this->morphMany(NurseNote::class, 'morphable');
+    }
 }

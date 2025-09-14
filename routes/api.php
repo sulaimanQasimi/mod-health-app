@@ -18,5 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Nurse Notes API Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('nurse-notes', \App\Http\Controllers\NurseNoteController::class);
+    Route::get('nurse-notes/for-record', [\App\Http\Controllers\NurseNoteController::class, 'getNotesForRecord']);
+    Route::get('nurse-notes/by-date-range', [\App\Http\Controllers\NurseNoteController::class, 'getNotesByDateRange']);
+});
+
 // Note: Select2 API routes moved to web.php for proper web authentication
 // These routes are now available at /api/select/* with auth middleware

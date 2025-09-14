@@ -758,6 +758,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get_branch_doctors/{branchId}', [HomeController::class, 'getBranchDoctors']);
     Route::get('/get_labTypes/{labTypeId}', [HomeController::class, 'getRelatedLabTypes']);
     Route::get('/lab-tests/{labTypeId}', [HomeController::class, 'getLabTypeTests']);
+
+    // Nurse Notes routes
+    Route::prefix('nurse-notes')->name('nurse-notes.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\NurseNoteController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\NurseNoteController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\NurseNoteController::class, 'store'])->name('store');
+        Route::get('show/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'show'])->name('show');
+        Route::get('edit/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'edit'])->name('edit');
+        Route::put('update/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'update'])->name('update');
+        Route::delete('destroy/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'destroy'])->name('destroy');
+        Route::get('print', [\App\Http\Controllers\NurseNoteController::class, 'print'])->name('print');
+    });
 });
 
 // Routes outside the main auth group

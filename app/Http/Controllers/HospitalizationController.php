@@ -17,6 +17,7 @@ use App\Models\Room;
 use App\Models\User;
 use App\Models\DiabetesChart;
 use App\Models\Nurse;
+use App\Models\NurseNote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -185,7 +186,42 @@ class HospitalizationController extends Controller
                                              ->orderBy('time', 'desc')
                                              ->get();
 
-        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts'));
+        // Load nurse notes for this hospitalization
+        $nurseNotesQuery = NurseNote::where('morphable_type', 'App\\Models\\Hospitalization')
+            ->where('morphable_id', $hospitalization->id)
+            ->with(['nurse', 'createdBy']);
+
+        // Search functionality for nurse notes
+        if ($request->filled('nurse_notes_search')) {
+            $search = $request->nurse_notes_search;
+            $nurseNotesQuery->where(function ($q) use ($search) {
+                $q->where('note_am', 'like', "%{$search}%")
+                  ->orWhere('note_pm', 'like', "%{$search}%")
+                  ->orWhereHas('nurse', function ($nurseQuery) use ($search) {
+                      $nurseQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by date range
+        if ($request->filled('nurse_notes_start_date')) {
+            $nurseNotesQuery->where('date', '>=', $request->nurse_notes_start_date);
+        }
+        if ($request->filled('nurse_notes_end_date')) {
+            $nurseNotesQuery->where('date', '<=', $request->nurse_notes_end_date);
+        }
+
+        // Filter by nurse
+        if ($request->filled('nurse_notes_nurse_id')) {
+            $nurseNotesQuery->where('nurse_id', $request->nurse_notes_nurse_id);
+        }
+
+        $nurseNotes = $nurseNotesQuery->orderBy('date', 'desc')
+                                     ->orderBy('created_at', 'desc')
+                                     ->get();
+
+        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes'));
     }
 
     /**

@@ -1310,6 +1310,70 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
+        // Nurse Notes Permissions
+        Permission::createOrFirst([
+            'name' => 'show-nurse-notes-menu',
+            'name_dr' => 'نمایش مینو یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'view-nurse-notes',
+            'name_dr' => 'نمایش یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create-nurse-notes',
+            'name_dr' => 'ایجاد یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit-nurse-notes',
+            'name_dr' => 'تصحیح یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete-nurse-notes',
+            'name_dr' => 'حذف یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'restore-nurse-notes',
+            'name_dr' => 'بازیابی یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'force-delete-nurse-notes',
+            'name_dr' => 'حذف دائمی یادداشت پرستار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
         User::find(1)->givePermissionTo(Permission::all());
 
     }

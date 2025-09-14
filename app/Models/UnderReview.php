@@ -86,4 +86,12 @@ class UnderReview extends Model
     {
         return $this->morphMany(DiabetesChart::class, 'diabetes_chartable');
     }
+
+    /**
+     * Get the nurse notes for this under review record.
+     */
+    public function nurseNotes()
+    {
+        return $this->morphMany(NurseNote::class, 'morphable');
+    }
 }

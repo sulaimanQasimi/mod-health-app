@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\DiabetesChart;
 use App\Models\Nurse;
 use App\Models\NurseNote;
+use App\Models\MedicationAdministrationRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -221,7 +222,48 @@ class HospitalizationController extends Controller
                                      ->orderBy('created_at', 'desc')
                                      ->get();
 
-        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes'));
+        // Load medication administration records for this hospitalization
+        $medicationAdministrationRecordsQuery = MedicationAdministrationRecord::where('morphable_type', 'App\\Models\\Hospitalization')
+            ->where('morphable_id', $hospitalization->id)
+            ->with(['medicine', 'nurse', 'administrationTimes', 'createdBy']);
+
+        // Search functionality for MARs
+        if ($request->filled('mar_search')) {
+            $search = $request->mar_search;
+            $medicationAdministrationRecordsQuery->where(function ($q) use ($search) {
+                $q->whereHas('medicine', function ($medicineQuery) use ($search) {
+                    $medicineQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('nurse', function ($nurseQuery) use ($search) {
+                    $nurseQuery->where('first_name', 'like', "%{$search}%")
+                              ->orWhere('last_name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Filter by date range
+        if ($request->filled('mar_start_date')) {
+            $medicationAdministrationRecordsQuery->where('order_date', '>=', $request->mar_start_date);
+        }
+        if ($request->filled('mar_end_date')) {
+            $medicationAdministrationRecordsQuery->where('order_date', '<=', $request->mar_end_date);
+        }
+
+        // Filter by nurse
+        if ($request->filled('mar_nurse_id')) {
+            $medicationAdministrationRecordsQuery->where('nurse_id', $request->mar_nurse_id);
+        }
+
+        // Filter by medicine
+        if ($request->filled('mar_medicine_id')) {
+            $medicationAdministrationRecordsQuery->where('medicine_id', $request->mar_medicine_id);
+        }
+
+        $medicationAdministrationRecords = $medicationAdministrationRecordsQuery->orderBy('order_date', 'desc')
+                                                                               ->orderBy('created_at', 'desc')
+                                                                               ->get();
+
+        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes', 'medicationAdministrationRecords'));
     }
 
     /**

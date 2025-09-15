@@ -119,6 +119,14 @@ class Nurse extends Model
     }
 
     /**
+     * Get the medication administration records for this nurse.
+     */
+    public function medicationAdministrationRecords()
+    {
+        return $this->hasMany(MedicationAdministrationRecord::class);
+    }
+
+    /**
      * Get the full name of the nurse.
      */
     public function getFullNameAttribute()

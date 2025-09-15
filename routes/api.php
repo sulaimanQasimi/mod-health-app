@@ -26,5 +26,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('nurse-notes/by-date-range', [\App\Http\Controllers\NurseNoteController::class, 'getNotesByDateRange']);
 });
 
+// Medication Administration Records API Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('medication-administration-records', \App\Http\Controllers\MedicationAdministrationRecordController::class);
+    Route::get('medication-administration-records/for-morphable', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'getRecordsForMorphable']);
+    Route::post('medication-administration-records/{medicationAdministrationRecord}/add-time', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'addAdministrationTime']);
+    Route::delete('medication-administration-times/{administrationTime}', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'removeAdministrationTime']);
+});
+
 // Note: Select2 API routes moved to web.php for proper web authentication
 // These routes are now available at /api/select/* with auth middleware

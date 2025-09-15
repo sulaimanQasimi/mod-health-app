@@ -94,4 +94,12 @@ class UnderReview extends Model
     {
         return $this->morphMany(NurseNote::class, 'morphable');
     }
+
+    /**
+     * Get the medication administration records for this under review record.
+     */
+    public function medicationAdministrationRecords()
+    {
+        return $this->morphMany(MedicationAdministrationRecord::class, 'morphable');
+    }
 }

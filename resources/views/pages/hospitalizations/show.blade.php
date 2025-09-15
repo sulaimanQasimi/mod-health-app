@@ -277,7 +277,7 @@
                                     class="bx bx-heart p-1"></i>{{ localize('global.vital_signs') }}</h5>
 
                             <div class="row mb-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     @can('create', App\Models\VitalSign::class)
                                         <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
                                             class="btn btn-primary">
@@ -285,7 +285,15 @@
                                         </a>
                                     @endcan
                                 </div>
-                                <div class="col-md-6 text-end">
+                                <div class="col-md-4 text-center">
+                                    @if($hospitalization->vitalSigns->count() > 0)
+                                        <a href="{{ route('vital-signs.print', $hospitalization->vitalSigns->first()) }}" 
+                                           class="btn btn-info" target="_blank">
+                                            <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
+                                        </a>
+                                    @endif
+                                </div>
+                                <div class="col-md-4 text-end">
                                     <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
                                         class="btn btn-outline-primary">
                                         <i class="bx bx-list-ul"></i> {{ localize('global.view_all_vital_signs') }}

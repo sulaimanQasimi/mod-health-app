@@ -170,6 +170,22 @@ class VitalSignController extends Controller
     }
 
     /**
+     * Print the vital sign chart.
+     */
+    public function print(VitalSign $vitalSign): View
+    {
+        $this->authorize('view', $vitalSign);
+
+        $vitalSign->load([
+            'vitalSignType', 
+            'morphable.patient', 
+            'schedules.nurse'
+        ]);
+
+        return view('pages.vital-signs.print', compact('vitalSign'));
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Request $request, VitalSign $vitalSign): RedirectResponse|JsonResponse

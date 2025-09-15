@@ -163,6 +163,11 @@
                         <!-- Action Buttons -->
                         <div class="row mt-4">
                             <div class="col-12">
+                                @can('view', $vitalSign)
+                                    <a href="{{ route('vital-signs.print', $vitalSign) }}" class="btn btn-info" target="_blank">
+                                        <i class="fas fa-print"></i> {{ localize('global.print_chart') }}
+                                    </a>
+                                @endcan
                                 @can('create', App\Models\VitalSignSchedule::class)
                                     <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                         data-bs-target="#createScheduleModal">

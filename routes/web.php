@@ -797,16 +797,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{vitalSignType}', [\App\Http\Controllers\VitalSignTypeController::class, 'destroy'])->name('destroy');
     });
 
-    // Vital Signs routes
-    Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\VitalSignController::class, 'index'])->name('index');
-        Route::get('create', [\App\Http\Controllers\VitalSignController::class, 'create'])->name('create');
-        Route::post('store', [\App\Http\Controllers\VitalSignController::class, 'store'])->name('store');
-        Route::get('show/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'show'])->name('show');
-        Route::get('edit/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'edit'])->name('edit');
-        Route::put('update/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'update'])->name('update');
-        Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
-    });
+// Vital Signs routes
+Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\VitalSignController::class, 'index'])->name('index');
+    Route::get('create', [\App\Http\Controllers\VitalSignController::class, 'create'])->name('create');
+    Route::post('store', [\App\Http\Controllers\VitalSignController::class, 'store'])->name('store');
+    Route::get('show/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'show'])->name('show');
+    Route::get('edit/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'edit'])->name('edit');
+    Route::put('update/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'update'])->name('update');
+    Route::get('print/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'print'])->name('print');
+    Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
+});
 
     // Vital Sign Schedules routes (for modal functionality)
     Route::prefix('vital-sign-schedules')->name('vital-sign-schedules.')->group(function () {

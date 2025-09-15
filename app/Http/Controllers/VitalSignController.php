@@ -94,6 +94,17 @@ class VitalSignController extends Controller
             ], 201);
         }
 
+        // Redirect back to the morphable model's show page
+        $morphable = $vitalSign->morphable;
+        if ($morphable) {
+            $routeName = $vitalSign->morphable_type == 'App\\Models\\Hospitalization' 
+                ? 'hospitalizations.show' 
+                : 'under_reviews.show';
+            
+            return redirect()->route($routeName, $morphable)
+                ->with('success', 'Vital sign created successfully.');
+        }
+
         return redirect()->route('vital-signs.index')
             ->with('success', 'Vital sign created successfully.');
     }

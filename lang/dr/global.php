@@ -2151,7 +2151,9 @@ return [
     'cancel' => 'لغو',
     'update_nurse' => 'بروزرسانی نرس',
     "update_nurse"=>"بروزرسانی نرس",
-    "diagnose"=>"تشخیص"
+    "diagnose"=>"تشخیص",
+    "note"=>"یادداشت",
+
 // Nurse Notes CRUD Page Translations
 "nurse_notes_list"=>"لیست یادداشت‌های پرستار",
 "create_new_nurse_note"=>"ایجاد یادداشت جدید پرستار",
@@ -2330,18 +2332,15 @@ return [
 "mar_total_records" => "کل رکوردها",
 "mar_filtered_from" => "فیلتر شده از",
 "mar_total_entries" => "کل ورودی‌ها",
-
-// Patient Record Information - اطلاعات رکورد بیمار
 "patient_record_information" => "اطلاعات رکورد بیمار",
 "record_type" => "نوع رکورد",
 "patient" => "بیمار",
-
-// MAR Print Layout - طرح چاپ سوابق تجویز دارو
 "medication_information" => "د درملو معلومات",
 "administration_times" => "د تطبيق وختونه",
 "medication" => "درمل",
 "order_date" => "د امر نیټه",
 "date_signature" => "نیټه او لاسلیک",
 "other" => "نور",
+"all_medicines" => "همه ادویه ها",
 ];
 

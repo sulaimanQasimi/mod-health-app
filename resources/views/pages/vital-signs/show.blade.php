@@ -228,13 +228,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label for="modal_day">{{ localize('day') }}</label>
-                                <input type="text" class="form-control @error('day') is-invalid @enderror" 
-                                       id="modal_day" name="day" value="{{ old('day') }}" 
-                                       placeholder="{{ localize('enter_day') }}">
-                                @error('day')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <label>{{ localize('day') }}</label>
+                                <div class="form-control-plaintext bg-light p-2 rounded">
+                                    <i class="fas fa-calendar-day text-primary"></i> 
+                                    <span id="autoDayNumber">{{ localize('auto_generated') }}</span>
+                                    <small class="text-muted d-block">{{ localize('next_day_number') }}</small>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -303,60 +302,38 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
+                        <!-- Read-only information -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
                                 <div class="form-group mb-3">
-                                    <label for="update_vital_sign_id{{ $schedule->id }}">{{ localize('vital_sign') }} <span class="text-danger">*</span></label>
-                                    <input type="hidden" name="vital_sign_id" value="{{ $schedule->vital_sign_id }}">
+                                    <label>{{ localize('vital_sign') }}</label>
                                     <div class="form-control-plaintext bg-light p-2 rounded">
                                         <i class="fas fa-heartbeat text-primary"></i> 
-                                        {{ $schedule->vitalSign->vitalSignType->name ?? 'N/A' }} - {{ class_basename($schedule->vitalSign->morphable_type) }} #{{ $schedule->vitalSign->morphable_id }}
+                                        {{ $schedule->vitalSign->vitalSignType->name ?? 'N/A' }}
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group mb-3">
-                                    <label for="update_nurse_id{{ $schedule->id }}">{{ localize('responsible_nurse') }}</label>
-                                    <select class="form-control @error('nurse_id') is-invalid @enderror" 
-                                            id="update_nurse_id{{ $schedule->id }}" name="nurse_id">
-                                        <option value="">{{ localize('select_nurse') }} ({{ localize('optional') }})</option>
-                                        @foreach($nurses as $nurse)
-                                            <option value="{{ $nurse->id }}" {{ $schedule->nurse_id == $nurse->id ? 'selected' : '' }}>
-                                                {{ $nurse->full_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('nurse_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <label>{{ localize('day') }}</label>
+                                    <div class="form-control-plaintext bg-light p-2 rounded">
+                                        <i class="fas fa-calendar-day text-primary"></i> 
+                                        {{ $schedule->day ?? 'N/A' }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label>{{ localize('responsible_nurse') }}</label>
+                                    <div class="form-control-plaintext bg-light p-2 rounded">
+                                        <i class="fas fa-user-nurse text-primary"></i> 
+                                        {{ $schedule->nurse->full_name ?? 'N/A' }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="update_day{{ $schedule->id }}">{{ localize('day') }}</label>
-                                    <input type="text" class="form-control @error('day') is-invalid @enderror" 
-                                           id="update_day{{ $schedule->id }}" name="day" value="{{ old('day', $schedule->day) }}" 
-                                           placeholder="{{ localize('enter_day') }}">
-                                    @error('day')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="update_date{{ $schedule->id }}">{{ localize('date') }}</label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror" 
-                                           id="update_date{{ $schedule->id }}" name="date" value="{{ old('date', $schedule->date ? $schedule->date->format('Y-m-d') : '') }}">
-                                    @error('date')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        
+                        <!-- Editable fields -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
@@ -381,6 +358,12 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Hidden fields to preserve data -->
+                        <input type="hidden" name="vital_sign_id" value="{{ $schedule->vital_sign_id }}">
+                        <input type="hidden" name="day" value="{{ $schedule->day }}">
+                        <input type="hidden" name="date" value="{{ $schedule->date ? $schedule->date->format('Y-m-d') : '' }}">
+                        <input type="hidden" name="nurse_id" value="{{ $schedule->nurse_id }}">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -403,6 +386,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle Create Schedule Form
     const createScheduleForm = document.getElementById('createScheduleForm');
     const createScheduleModal = document.getElementById('createScheduleModal');
+    
+    // Update day number when modal opens
+    if (createScheduleModal) {
+        createScheduleModal.addEventListener('show.bs.modal', function() {
+            updateNextDayNumber();
+        });
+    }
     
     if (createScheduleForm) {
         createScheduleForm.addEventListener('submit', function(e) {
@@ -465,6 +455,33 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = false;
             submitButton.innerHTML = originalText;
         });
+    }
+    
+    function updateNextDayNumber() {
+        // Get existing day numbers from the table
+        const existingDays = [];
+        const dayCells = document.querySelectorAll('tbody tr td:nth-child(2)'); // Day column
+        dayCells.forEach(cell => {
+            const dayText = cell.textContent.trim();
+            if (dayText && dayText.startsWith('Day ')) {
+                const dayNumber = parseInt(dayText.replace('Day ', ''));
+                if (!isNaN(dayNumber)) {
+                    existingDays.push(dayNumber);
+                }
+            }
+        });
+        
+        // Find the next available day number
+        let nextDayNumber = 1;
+        while (existingDays.includes(nextDayNumber)) {
+            nextDayNumber++;
+        }
+        
+        // Update the display
+        const autoDayElement = document.getElementById('autoDayNumber');
+        if (autoDayElement) {
+            autoDayElement.textContent = `Day ${nextDayNumber}`;
+        }
     }
     
     function showAlert(type, message) {

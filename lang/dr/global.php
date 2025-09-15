@@ -2471,6 +2471,8 @@ return [
     "error_updating_schedule" => "خطا در بروزرسانی برنامه",
     "close" => "بستن",
     "no_nurse_profile_found" => "پروفایل پرستار یافت نشد",
+    "auto_generated" => "خودکار تولید شده",
+    "next_day_number" => "شماره روز بعدی",
 "all_medicines" => "همه ادویه ها",
 ];
 

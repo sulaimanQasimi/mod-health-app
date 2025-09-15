@@ -6,6 +6,7 @@ use App\Models\VitalSignSchedule;
 use App\Models\VitalSign;
 use App\Models\Nurse;
 use App\Http\Requests\StoreVitalSignScheduleRequest;
+use App\Http\Requests\UpdateVitalSignScheduleRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -95,6 +96,20 @@ class VitalSignScheduleController extends Controller
             $data['nurse_id'] = auth()->user()->nurse->id;
         }
 
+        // Auto-generate the next day number for this vital sign
+        $vitalSignId = $data['vital_sign_id'];
+        $existingDays = VitalSignSchedule::where('vital_sign_id', $vitalSignId)
+            ->whereNotNull('day')
+            ->pluck('day')
+            ->toArray();
+        
+        $nextDayNumber = 1;
+        while (in_array("Day " . $nextDayNumber, $existingDays)) {
+            $nextDayNumber++;
+        }
+        
+        $data['day'] = "Day " . $nextDayNumber;
+
         $schedule = VitalSignSchedule::create($data);
 
         if ($request->expectsJson() || $request->ajax()) {
@@ -153,11 +168,18 @@ class VitalSignScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreVitalSignScheduleRequest $request, VitalSignSchedule $vitalSignSchedule): RedirectResponse|JsonResponse
+    public function update(UpdateVitalSignScheduleRequest $request, VitalSignSchedule $vitalSignSchedule): RedirectResponse|JsonResponse
     {
         $this->authorize('update', $vitalSignSchedule);
 
-        $vitalSignSchedule->update($request->validated());
+        $data = $request->validated();
+        
+        // Automatically assign the authenticated user's nurse profile if available
+        if (auth()->user()->nurse) {
+            $data['nurse_id'] = auth()->user()->nurse->id;
+        }
+
+        $vitalSignSchedule->update($data);
 
         if ($request->expectsJson()) {
             return response()->json([

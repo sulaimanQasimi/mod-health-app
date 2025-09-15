@@ -102,4 +102,12 @@ class UnderReview extends Model
     {
         return $this->morphMany(MedicationAdministrationRecord::class, 'morphable');
     }
+
+    /**
+     * Get the vital signs for this under review record.
+     */
+    public function vitalSigns()
+    {
+        return $this->morphMany(VitalSign::class, 'morphable');
+    }
 }

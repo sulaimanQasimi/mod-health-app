@@ -119,4 +119,12 @@ class Hospitalization extends Model
     {
         return $this->morphMany(MedicationAdministrationRecord::class, 'morphable');
     }
+
+    /**
+     * Get the vital signs for this hospitalization record.
+     */
+    public function vitalSigns()
+    {
+        return $this->morphMany(VitalSign::class, 'morphable');
+    }
 }

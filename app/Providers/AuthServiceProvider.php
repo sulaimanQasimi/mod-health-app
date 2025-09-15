@@ -16,6 +16,9 @@ class AuthServiceProvider extends ServiceProvider
         \Spatie\Backup\BackupDestination\Backup::class => \App\Policies\BackupPolicy::class,
         \App\Models\DiabetesChart::class => \App\Policies\DiabetesChartPolicy::class,
         \App\Models\MedicationAdministrationRecord::class => \App\Policies\MedicationAdministrationRecordPolicy::class,
+        \App\Models\VitalSignType::class => \App\Policies\VitalSignTypePolicy::class,
+        \App\Models\VitalSign::class => \App\Policies\VitalSignPolicy::class,
+        \App\Models\VitalSignSchedule::class => \App\Policies\VitalSignSchedulePolicy::class,
     ];
 
     /**

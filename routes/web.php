@@ -785,6 +785,29 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('{medicationAdministrationRecord}/add-time', [MedicationAdministrationRecordController::class, 'addAdministrationTime'])->name('add-time');
         Route::delete('administration-times/{administrationTime}', [MedicationAdministrationRecordController::class, 'removeAdministrationTime'])->name('remove-time');
     });
+
+    // Vital Sign Types routes
+    Route::prefix('vital-sign-types')->name('vital-sign-types.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\VitalSignTypeController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\VitalSignTypeController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\VitalSignTypeController::class, 'store'])->name('store');
+        Route::get('show/{vitalSignType}', [\App\Http\Controllers\VitalSignTypeController::class, 'show'])->name('show');
+        Route::get('edit/{vitalSignType}', [\App\Http\Controllers\VitalSignTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{vitalSignType}', [\App\Http\Controllers\VitalSignTypeController::class, 'update'])->name('update');
+        Route::delete('destroy/{vitalSignType}', [\App\Http\Controllers\VitalSignTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Vital Signs routes
+    Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\VitalSignController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\VitalSignController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\VitalSignController::class, 'store'])->name('store');
+        Route::get('show/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'show'])->name('show');
+        Route::get('edit/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'edit'])->name('edit');
+        Route::put('update/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'update'])->name('update');
+        Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
+    });
+
 });
 
 // Routes outside the main auth group

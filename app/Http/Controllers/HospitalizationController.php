@@ -263,6 +263,9 @@ class HospitalizationController extends Controller
                                                                                ->orderBy('created_at', 'desc')
                                                                                ->get();
 
+        // Load vital signs for this hospitalization
+        $hospitalization->load(['vitalSigns.vitalSignType', 'vitalSigns.schedules.nurse']);
+
         return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes', 'medicationAdministrationRecords'));
     }
 

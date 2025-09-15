@@ -265,7 +265,7 @@
         @endcan
 
         @can('show-hospitalizations-menu')
-            <li class="menu-item {{ Route::is('hospitalizations.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::is('hospitalizations.*') || Route::is('vital-sign-types.*') || Route::is('vital-signs.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-bed text-primary"></i>
                     <div>{{ localize('global.hospitalizations') }}</div>
@@ -287,6 +287,22 @@
                             <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
+                    
+                    <!-- Vital Signs Management -->
+                    @can('show-vital-sign-types-menu')
+                        <li class="menu-item {{ Route::is('vital-sign-types.*') ? 'active' : '' }}">
+                            <a href="{{ route('vital-sign-types.index') }}" class="menu-link">
+                                <div>{{ localize('vital_sign_types') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('show-vital-signs-menu')
+                        <li class="menu-item {{ Route::is('vital-signs.*') ? 'active' : '' }}">
+                            <a href="{{ route('vital-signs.index') }}" class="menu-link">
+                                <div>{{ localize('vital_signs') }}</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endcan

@@ -222,6 +222,9 @@ class UnderReviewController extends Controller
                                                                                ->orderBy('created_at', 'desc')
                                                                                ->get();
 
+        // Load vital signs for this under review
+        $underReview->load(['vitalSigns.vitalSignType', 'vitalSigns.schedules.nurse']);
+
         return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts','nurseNotes','medicationAdministrationRecords'));
     }
 

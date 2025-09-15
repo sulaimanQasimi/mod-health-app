@@ -34,5 +34,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('medication-administration-times/{administrationTime}', [\App\Http\Controllers\MedicationAdministrationRecordController::class, 'removeAdministrationTime']);
 });
 
+// Vital Sign Types API Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('vital-sign-types', \App\Http\Controllers\VitalSignTypeController::class);
+});
+
+// Vital Signs API Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('vital-signs', \App\Http\Controllers\VitalSignController::class);
+    Route::get('vital-signs/for-morphable', [\App\Http\Controllers\VitalSignController::class, 'getVitalSignsForMorphable']);
+});
+
+
 // Note: Select2 API routes moved to web.php for proper web authentication
 // These routes are now available at /api/select/* with auth middleware

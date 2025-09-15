@@ -127,6 +127,14 @@ class Nurse extends Model
     }
 
     /**
+     * Get the vital sign schedules for this nurse.
+     */
+    public function vitalSignSchedules()
+    {
+        return $this->hasMany(VitalSignSchedule::class);
+    }
+
+    /**
      * Get the full name of the nurse.
      */
     public function getFullNameAttribute()

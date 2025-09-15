@@ -63,13 +63,13 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="card-title mb-0">
-                                        <i class="fas fa-user"></i> Personal Information
+                                        <i class="fas fa-user"></i> {{ localize('global.personal_information') }}
                                     </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Full Name:</strong>
+                                            <strong>{{ localize('global.full_name') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             {{ $nurse->full_name }}
@@ -78,7 +78,7 @@
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Gender:</strong>
+                                            <strong>{{ localize('global.gender') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             <span class="badge bg-info">{{ ucfirst($nurse->gender) }}</span>
@@ -87,21 +87,21 @@
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Date of Birth:</strong>
+                                            <strong>{{ localize('global.date_of_birth') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->date_of_birth)
                                                 {{ $nurse->date_of_birth->format('F d, Y') }}
-                                                <small class="text-muted">({{ $nurse->date_of_birth->age }} years old)</small>
+                                                <small class="text-muted">({{ $nurse->date_of_birth->age }} {{ localize('global.years_old') }})</small>
                                             @else
-                                                <span class="text-muted">Not provided</span>
+                                                <span class="text-muted">{{ localize('global.not_provided') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Phone:</strong>
+                                            <strong>{{ localize('global.phone') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->phone)
@@ -109,14 +109,14 @@
                                                     <i class="fas fa-phone"></i> {{ $nurse->phone }}
                                                 </a>
                                             @else
-                                                <span class="text-muted">Not provided</span>
+                                                <span class="text-muted">{{ localize('global.not_provided') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Email:</strong>
+                                            <strong>{{ localize('global.email') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->email)
@@ -124,20 +124,20 @@
                                                     <i class="fas fa-envelope"></i> {{ $nurse->email }}
                                                 </a>
                                             @else
-                                                <span class="text-muted">Not provided</span>
+                                                <span class="text-muted">{{ localize('global.not_provided') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Address:</strong>
+                                            <strong>{{ localize('global.address') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->address)
                                                 {{ $nurse->address }}
                                             @else
-                                                <span class="text-muted">Not provided</span>
+                                                <span class="text-muted">{{ localize('global.not_provided') }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -150,13 +150,13 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="card-title mb-0">
-                                        <i class="fas fa-briefcase"></i> Employment Information
+                                        <i class="fas fa-briefcase"></i> {{ localize('global.employment_information') }}
                                     </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Employee ID:</strong>
+                                            <strong>{{ localize('global.employee_id') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             <span class="badge bg-primary">{{ $nurse->employee_id }}</span>
@@ -165,46 +165,46 @@
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Branch:</strong>
+                                            <strong>{{ localize('global.branch') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->branch)
                                                 <span class="badge bg-info">{{ $nurse->branch->name }}</span>
                                             @else
-                                                <span class="text-muted">No Branch Assigned</span>
+                                                <span class="text-muted">{{ localize('global.no_branch_assigned') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Department:</strong>
+                                            <strong>{{ localize('global.department') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->department)
                                                 <span class="badge bg-secondary">{{ $nurse->department->name }}</span>
                                             @else
-                                                <span class="text-muted">No Department Assigned</span>
+                                                <span class="text-muted">{{ localize('global.no_department_assigned') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Specialization:</strong>
+                                            <strong>{{ localize('global.specialization') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->specialization)
                                                 <span class="badge bg-info">{{ $nurse->specialization }}</span>
                                             @else
-                                                <span class="text-muted">General</span>
+                                                <span class="text-muted">{{ localize('global.general') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Shift:</strong>
+                                            <strong>{{ localize('global.shift') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             <span class="badge bg-warning">{{ ucfirst($nurse->shift) }}</span>
@@ -213,29 +213,29 @@
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Status:</strong>
+                                            <strong>{{ localize('global.status') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->employment_status == 'active')
-                                                <span class="badge bg-success">Active</span>
+                                                <span class="badge bg-success">{{ localize('global.active') }}</span>
                                             @elseif($nurse->employment_status == 'inactive')
-                                                <span class="badge bg-danger">Inactive</span>
+                                                <span class="badge bg-danger">{{ localize('global.inactive') }}</span>
                                             @else
-                                                <span class="badge bg-warning">On Leave</span>
+                                                <span class="badge bg-warning">{{ localize('global.on_leave') }}</span>
                                             @endif
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-sm-4">
-                                            <strong>Date of Joining:</strong>
+                                            <strong>{{ localize('global.date_of_joining') }}:</strong>
                                         </div>
                                         <div class="col-sm-8">
                                             @if($nurse->date_of_joining)
                                                 {{ $nurse->date_of_joining->format('F d, Y') }}
                                                 <small class="text-muted">({{ $nurse->date_of_joining->diffForHumans() }})</small>
                                             @else
-                                                <span class="text-muted">Not provided</span>
+                                                <span class="text-muted">{{ localize('global.not_provided') }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -250,26 +250,26 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="card-title mb-0">
-                                        <i class="fas fa-info-circle"></i> System Information
+                                        <i class="fas fa-info-circle"></i> {{ localize('global.system_information') }}
                                     </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="text-center">
-                                                <strong>Created By</strong>
+                                                <strong>{{ localize('global.created_by') }}</strong>
                                                 <div class="mt-2">
                                                     @if($nurse->createdBy)
                                                         <span class="badge bg-light text-dark">{{ $nurse->createdBy->name }}</span>
                                                     @else
-                                                        <span class="text-muted">System</span>
+                                                        <span class="text-muted">{{ localize('global.system') }}</span>
                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="text-center">
-                                                <strong>Created At</strong>
+                                                <strong>{{ localize('global.created_at') }}</strong>
                                                 <div class="mt-2">
                                                     <small>{{ $nurse->created_at->format('M d, Y H:i') }}</small>
                                                 </div>
@@ -277,19 +277,19 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="text-center">
-                                                <strong>Last Updated By</strong>
+                                                <strong>{{ localize('global.last_updated_by') }}</strong>
                                                 <div class="mt-2">
                                                     @if($nurse->updatedBy)
                                                         <span class="badge bg-light text-dark">{{ $nurse->updatedBy->name }}</span>
                                                     @else
-                                                        <span class="text-muted">Not updated</span>
+                                                        <span class="text-muted">{{ localize('global.not_updated') }}</span>
                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="text-center">
-                                                <strong>Last Updated</strong>
+                                                <strong>{{ localize('global.last_updated') }}</strong>
                                                 <div class="mt-2">
                                                     <small>{{ $nurse->updated_at->format('M d, Y H:i') }}</small>
                                                 </div>
@@ -312,7 +312,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i> Delete Nurse
+                                        <i class="fas fa-trash"></i> {{ localize('global.delete_nurse') }}
                                     </button>
                                 </form>
                             </div>

@@ -88,7 +88,14 @@ class VitalSignScheduleController extends Controller
     {
         $this->authorize('create', VitalSignSchedule::class);
 
-        $schedule = VitalSignSchedule::create($request->validated());
+        $data = $request->validated();
+        
+        // Automatically assign the authenticated user's nurse profile if available
+        if (auth()->user()->nurse && !isset($data['nurse_id'])) {
+            $data['nurse_id'] = auth()->user()->nurse->id;
+        }
+
+        $schedule = VitalSignSchedule::create($data);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
@@ -97,7 +104,9 @@ class VitalSignScheduleController extends Controller
             ], 201);
         }
 
-        return redirect()->route('vital-sign-schedules.index')
+        // Redirect to the vital sign show page
+        $vitalSign = $schedule->vitalSign;
+        return redirect()->route('vital-signs.show', $vitalSign)
             ->with('success', 'Vital sign schedule created successfully.');
     }
 
@@ -157,7 +166,9 @@ class VitalSignScheduleController extends Controller
             ]);
         }
 
-        return redirect()->route('vital-sign-schedules.index')
+        // Redirect to the vital sign show page
+        $vitalSign = $vitalSignSchedule->vitalSign;
+        return redirect()->route('vital-signs.show', $vitalSign)
             ->with('success', 'Vital sign schedule updated successfully.');
     }
 
@@ -176,7 +187,9 @@ class VitalSignScheduleController extends Controller
             ]);
         }
 
-        return redirect()->route('vital-sign-schedules.index')
+        // Redirect to the vital sign show page
+        $vitalSign = $vitalSignSchedule->vitalSign;
+        return redirect()->route('vital-signs.show', $vitalSign)
             ->with('success', 'Vital sign schedule deleted successfully.');
     }
 }

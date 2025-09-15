@@ -207,9 +207,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                <label for="modal_nurse_id">{{ localize('responsible_nurse') }}</label>
+                                <label>{{ localize('responsible_nurse') }}</label>
                                 @if($currentUserNurse)
-                                    <!-- If user has a nurse profile, automatically select it and show as read-only -->
                                     <input type="hidden" name="nurse_id" value="{{ $currentUserNurse->id }}">
                                     <div class="form-control-plaintext bg-light p-2 rounded">
                                         <i class="fas fa-user-nurse text-primary"></i> 
@@ -217,20 +216,11 @@
                                         <small class="text-muted d-block">{{ localize('automatically_selected') }}</small>
                                     </div>
                                 @else
-                                    <!-- If user doesn't have a nurse profile, show dropdown -->
-                                    <select class="form-control @error('nurse_id') is-invalid @enderror" 
-                                            id="modal_nurse_id" name="nurse_id">
-                                        <option value="">{{ localize('select_nurse') }} ({{ localize('optional') }})</option>
-                                        @foreach($nurses as $nurse)
-                                            <option value="{{ $nurse->id }}" {{ old('nurse_id') == $nurse->id ? 'selected' : '' }}>
-                                                {{ $nurse->full_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ localize('no_nurse_profile_found') }}
+                                    </div>
                                 @endif
-                                @error('nurse_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
                     </div>
@@ -458,9 +448,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show success message
                 showAlert('success', successMessage);
                 
-                // Reload page to show updated data
+                // Redirect to vital-sign show page to show updated data
                 setTimeout(() => {
-                    window.location.reload();
+                    window.location.href = '{{ route("vital-signs.show", $vitalSign) }}';
                 }, 1000);
             } else {
                 throw new Error('Network response was not ok');

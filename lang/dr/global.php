@@ -2470,6 +2470,7 @@ return [
     "updating" => "در حال بروزرسانی",
     "error_updating_schedule" => "خطا در بروزرسانی برنامه",
     "close" => "بستن",
+    "no_nurse_profile_found" => "پروفایل پرستار یافت نشد",
 "all_medicines" => "همه ادویه ها",
 ];
 

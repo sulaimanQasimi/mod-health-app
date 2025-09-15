@@ -72,10 +72,90 @@
                         </div>
                     </div>
 
+                    <!-- Associated Schedules -->
+                    @if($vitalSign->schedules->count() > 0)
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>{{ localize('associated') }} {{ localize('schedules') }} ({{ $vitalSign->schedules->count() }})</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('id') }}</th>
+                                            <th>{{ localize('day') }}</th>
+                                            <th>{{ localize('date') }}</th>
+                                            <th>{{ localize('morning_time') }}</th>
+                                            <th>{{ localize('evening_time') }}</th>
+                                            <th>{{ localize('nurse') }}</th>
+                                            <th>{{ localize('created_at') }}</th>
+                                            <th>{{ localize('actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($vitalSign->schedules as $schedule)
+                                            <tr>
+                                                <td>{{ $schedule->id }}</td>
+                                                <td>{{ $schedule->day ?? 'N/A' }}</td>
+                                                <td>{{ $schedule->date ? $schedule->date->format('Y-m-d') : 'N/A' }}</td>
+                                                <td>{{ $schedule->morning_time ? $schedule->morning_time->format('H:i') : 'N/A' }}</td>
+                                                <td>{{ $schedule->evening_time ? $schedule->evening_time->format('H:i') : 'N/A' }}</td>
+                                                <td>{{ $schedule->nurse->full_name ?? 'N/A' }}</td>
+                                                <td>{{ $schedule->created_at->format('Y-m-d H:i') }}</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        @can('update', $schedule)
+                                                            <button type="button" class="btn btn-warning btn-sm" 
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#updateScheduleModal{{ $schedule->id }}" 
+                                                                    title="{{ localize('edit') }}">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                        @endcan
+                                                        @can('delete', $schedule)
+                                                            <form action="{{ route('vital-sign-schedules.destroy', $schedule) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('confirm_delete') }} {{ localize('vital_sign_schedule') }}?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-sm" title="{{ localize('delete') }}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endcan
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @else
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="text-center py-4">
+                                <div class="mb-3">
+                                    <i class="bx bx-time bx-lg text-muted"></i>
+                                </div>
+                                <h5 class="text-muted">{{ localize('no_schedules_found') }}</h5>
+                                <p class="text-muted">{{ localize('add_first_schedule') }}</p>
+                                @can('create', App\Models\VitalSignSchedule::class)
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createScheduleModal">
+                                        <i class="bx bx-plus"></i> {{ localize('add_schedule') }}
+                                    </button>
+                                @endcan
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Action Buttons -->
                     <div class="row mt-4">
                         <div class="col-12">
+                            @can('create', App\Models\VitalSignSchedule::class)
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createScheduleModal">
+                                    <i class="fas fa-plus"></i> {{ localize('add_schedule') }}
+                                </button>
+                            @endcan
                             @can('update', $vitalSign)
                                 <a href="{{ route('vital-signs.edit', $vitalSign) }}" class="btn btn-warning">
                                     <i class="fas fa-edit"></i> {{ localize('edit') }}
@@ -99,5 +179,326 @@
 </div>
 
 
+
+<!-- Create Schedule Modal -->
+@can('create', App\Models\VitalSignSchedule::class)
+<div class="modal fade" id="createScheduleModal" tabindex="-1" aria-labelledby="createScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createScheduleModalLabel">
+                    <i class="fas fa-plus"></i> {{ localize('create_vital_sign_schedule') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('vital-sign-schedules.store') }}" method="POST" id="createScheduleForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="modal_vital_sign_id">{{ localize('vital_sign') }} <span class="text-danger">*</span></label>
+                                <input type="hidden" name="vital_sign_id" value="{{ $vitalSign->id }}">
+                                <div class="form-control-plaintext bg-light p-2 rounded">
+                                    <i class="fas fa-heartbeat text-primary"></i> 
+                                    {{ $vitalSign->vitalSignType->name ?? 'N/A' }} - {{ class_basename($vitalSign->morphable_type) }} #{{ $vitalSign->morphable_id }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="modal_nurse_id">{{ localize('responsible_nurse') }}</label>
+                                @if($currentUserNurse)
+                                    <!-- If user has a nurse profile, automatically select it and show as read-only -->
+                                    <input type="hidden" name="nurse_id" value="{{ $currentUserNurse->id }}">
+                                    <div class="form-control-plaintext bg-light p-2 rounded">
+                                        <i class="fas fa-user-nurse text-primary"></i> 
+                                        {{ $currentUserNurse->full_name }}
+                                        <small class="text-muted d-block">{{ localize('automatically_selected') }}</small>
+                                    </div>
+                                @else
+                                    <!-- If user doesn't have a nurse profile, show dropdown -->
+                                    <select class="form-control @error('nurse_id') is-invalid @enderror" 
+                                            id="modal_nurse_id" name="nurse_id">
+                                        <option value="">{{ localize('select_nurse') }} ({{ localize('optional') }})</option>
+                                        @foreach($nurses as $nurse)
+                                            <option value="{{ $nurse->id }}" {{ old('nurse_id') == $nurse->id ? 'selected' : '' }}>
+                                                {{ $nurse->full_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                                @error('nurse_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="modal_day">{{ localize('day') }}</label>
+                                <input type="text" class="form-control @error('day') is-invalid @enderror" 
+                                       id="modal_day" name="day" value="{{ old('day') }}" 
+                                       placeholder="{{ localize('enter_day') }}">
+                                @error('day')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="modal_date">{{ localize('date') }}</label>
+                                <input type="date" class="form-control @error('date') is-invalid @enderror" 
+                                       id="modal_date" name="date" value="{{ old('date') }}">
+                                @error('date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="modal_morning_time">{{ localize('morning_time') }}</label>
+                                <input type="time" class="form-control @error('morning_time') is-invalid @enderror" 
+                                       id="modal_morning_time" name="morning_time" value="{{ old('morning_time') }}">
+                                @error('morning_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="modal_evening_time">{{ localize('evening_time') }}</label>
+                                <input type="time" class="form-control @error('evening_time') is-invalid @enderror" 
+                                       id="modal_evening_time" name="evening_time" value="{{ old('evening_time') }}">
+                                @error('evening_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> {{ localize('cancel') }}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {{ localize('create_schedule') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
+
+<!-- Update Modals for each schedule -->
+@foreach($vitalSign->schedules as $schedule)
+    <!-- Update Schedule Modal -->
+    @can('update', $schedule)
+    <div class="modal fade" id="updateScheduleModal{{ $schedule->id }}" tabindex="-1" aria-labelledby="updateScheduleModalLabel{{ $schedule->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateScheduleModalLabel{{ $schedule->id }}">
+                        <i class="fas fa-edit"></i> {{ localize('edit_vital_sign_schedule') }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('vital-sign-schedules.update', $schedule) }}" method="POST" id="updateScheduleForm{{ $schedule->id }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="update_vital_sign_id{{ $schedule->id }}">{{ localize('vital_sign') }} <span class="text-danger">*</span></label>
+                                    <input type="hidden" name="vital_sign_id" value="{{ $schedule->vital_sign_id }}">
+                                    <div class="form-control-plaintext bg-light p-2 rounded">
+                                        <i class="fas fa-heartbeat text-primary"></i> 
+                                        {{ $schedule->vitalSign->vitalSignType->name ?? 'N/A' }} - {{ class_basename($schedule->vitalSign->morphable_type) }} #{{ $schedule->vitalSign->morphable_id }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="update_nurse_id{{ $schedule->id }}">{{ localize('responsible_nurse') }}</label>
+                                    <select class="form-control @error('nurse_id') is-invalid @enderror" 
+                                            id="update_nurse_id{{ $schedule->id }}" name="nurse_id">
+                                        <option value="">{{ localize('select_nurse') }} ({{ localize('optional') }})</option>
+                                        @foreach($nurses as $nurse)
+                                            <option value="{{ $nurse->id }}" {{ $schedule->nurse_id == $nurse->id ? 'selected' : '' }}>
+                                                {{ $nurse->full_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('nurse_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="update_day{{ $schedule->id }}">{{ localize('day') }}</label>
+                                    <input type="text" class="form-control @error('day') is-invalid @enderror" 
+                                           id="update_day{{ $schedule->id }}" name="day" value="{{ old('day', $schedule->day) }}" 
+                                           placeholder="{{ localize('enter_day') }}">
+                                    @error('day')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="update_date{{ $schedule->id }}">{{ localize('date') }}</label>
+                                    <input type="date" class="form-control @error('date') is-invalid @enderror" 
+                                           id="update_date{{ $schedule->id }}" name="date" value="{{ old('date', $schedule->date ? $schedule->date->format('Y-m-d') : '') }}">
+                                    @error('date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="update_morning_time{{ $schedule->id }}">{{ localize('morning_time') }}</label>
+                                    <input type="time" class="form-control @error('morning_time') is-invalid @enderror" 
+                                           id="update_morning_time{{ $schedule->id }}" name="morning_time" 
+                                           value="{{ old('morning_time', $schedule->morning_time ? $schedule->morning_time->format('H:i') : '') }}">
+                                    @error('morning_time')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="update_evening_time{{ $schedule->id }}">{{ localize('evening_time') }}</label>
+                                    <input type="time" class="form-control @error('evening_time') is-invalid @enderror" 
+                                           id="update_evening_time{{ $schedule->id }}" name="evening_time" 
+                                           value="{{ old('evening_time', $schedule->evening_time ? $schedule->evening_time->format('H:i') : '') }}">
+                                    @error('evening_time')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> {{ localize('cancel') }}
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ localize('update') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endcan
+@endforeach
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle Create Schedule Form
+    const createScheduleForm = document.getElementById('createScheduleForm');
+    const createScheduleModal = document.getElementById('createScheduleModal');
+    
+    if (createScheduleForm) {
+        createScheduleForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleFormSubmission(this, createScheduleModal, '{{ localize("creating") }}...', '{{ localize("vital_sign_schedule_created_successfully") }}', '{{ localize("error_creating_schedule") }}');
+        });
+    }
+    
+    // Handle Update Schedule Forms
+    const updateScheduleForms = document.querySelectorAll('[id^="updateScheduleForm"]');
+    updateScheduleForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const modalId = this.id.replace('updateScheduleForm', 'updateScheduleModal');
+            const updateModal = document.getElementById(modalId);
+            handleFormSubmission(this, updateModal, '{{ localize("updating") }}...', '{{ localize("vital_sign_schedule_updated_successfully") }}', '{{ localize("error_updating_schedule") }}');
+        });
+    });
+    
+    function handleFormSubmission(form, modal, loadingText, successMessage, errorMessage) {
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        // Disable submit button and show loading
+        submitButton.disabled = true;
+        submitButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+        
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Close modal
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                modalInstance.hide();
+                
+                // Show success message
+                showAlert('success', successMessage);
+                
+                // Reload page to show updated data
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', errorMessage);
+        })
+        .finally(() => {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        });
+    }
+    
+    function showAlert(type, message) {
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Insert at top of page
+        const container = document.querySelector('.container-fluid');
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+@endpush
 
 @endsection

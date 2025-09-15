@@ -808,6 +808,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
     });
 
+    // Vital Sign Schedules routes (for modal functionality)
+    Route::prefix('vital-sign-schedules')->name('vital-sign-schedules.')->group(function () {
+        Route::post('store', [\App\Http\Controllers\VitalSignScheduleController::class, 'store'])->name('store');
+        Route::get('edit/{vitalSignSchedule}', [\App\Http\Controllers\VitalSignScheduleController::class, 'edit'])->name('edit');
+        Route::put('update/{vitalSignSchedule}', [\App\Http\Controllers\VitalSignScheduleController::class, 'update'])->name('update');
+        Route::delete('destroy/{vitalSignSchedule}', [\App\Http\Controllers\VitalSignScheduleController::class, 'destroy'])->name('destroy');
+    });
+
 });
 
 // Routes outside the main auth group

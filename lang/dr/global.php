@@ -2441,4 +2441,7 @@ return [
     "automatically_selected" => "خودکار انتخاب شده",
     "creating" => "در حال ایجاد",
     "error_creating_schedule" => "خطا در ایجاد برنامه",
+    "updating" => "در حال بروزرسانی",
+    "error_updating_schedule" => "خطا در بروزرسانی برنامه",
+    "close" => "بستن",
 ];

@@ -113,13 +113,17 @@ class VitalSignController extends Controller
             'updatedBy'
         ]);
 
+        // Load nurses for the modal
+        $nurses = \App\Models\Nurse::orderBy('first_name')->get();
+        $currentUserNurse = auth()->user()->nurse;
+
         if ($request->expectsJson()) {
             return response()->json([
                 'data' => $vitalSign
             ]);
         }
 
-        return view('pages.vital-signs.show', compact('vitalSign'));
+        return view('pages.vital-signs.show', compact('vitalSign', 'nurses', 'currentUserNurse'));
     }
 
     /**

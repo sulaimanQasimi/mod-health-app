@@ -61,6 +61,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\PhysiotherapyTypeController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\DiabetesChartController;
+use App\Http\Controllers\MedicationAdministrationRecordController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -758,6 +759,32 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get_branch_doctors/{branchId}', [HomeController::class, 'getBranchDoctors']);
     Route::get('/get_labTypes/{labTypeId}', [HomeController::class, 'getRelatedLabTypes']);
     Route::get('/lab-tests/{labTypeId}', [HomeController::class, 'getLabTypeTests']);
+
+    // Nurse Notes routes
+    Route::prefix('nurse-notes')->name('nurse-notes.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\NurseNoteController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\NurseNoteController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\NurseNoteController::class, 'store'])->name('store');
+        Route::get('show/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'show'])->name('show');
+        Route::get('edit/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'edit'])->name('edit');
+        Route::put('update/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'update'])->name('update');
+        Route::delete('destroy/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'destroy'])->name('destroy');
+        Route::get('print', [\App\Http\Controllers\NurseNoteController::class, 'print'])->name('print');
+    });
+
+    // Medication Administration Records routes
+    Route::prefix('medication-administration-records')->name('medication-administration-records.')->group(function () {
+        Route::get('/', [MedicationAdministrationRecordController::class, 'index'])->name('index');
+        Route::get('create', [MedicationAdministrationRecordController::class, 'create'])->name('create');
+        Route::post('store', [MedicationAdministrationRecordController::class, 'store'])->name('store');
+        Route::get('show/{medicationAdministrationRecord}', [MedicationAdministrationRecordController::class, 'show'])->name('show');
+        Route::get('edit/{medicationAdministrationRecord}', [MedicationAdministrationRecordController::class, 'edit'])->name('edit');
+        Route::put('update/{medicationAdministrationRecord}', [MedicationAdministrationRecordController::class, 'update'])->name('update');
+        Route::delete('destroy/{medicationAdministrationRecord}', [MedicationAdministrationRecordController::class, 'destroy'])->name('destroy');
+        Route::get('print', [MedicationAdministrationRecordController::class, 'print'])->name('print');
+        Route::post('{medicationAdministrationRecord}/add-time', [MedicationAdministrationRecordController::class, 'addAdministrationTime'])->name('add-time');
+        Route::delete('administration-times/{administrationTime}', [MedicationAdministrationRecordController::class, 'removeAdministrationTime'])->name('remove-time');
+    });
 });
 
 // Routes outside the main auth group

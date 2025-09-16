@@ -101,4 +101,12 @@ class NutritionCareController extends Controller
             'message' => 'Nutrition care record deleted successfully'
         ]);
     }
+
+    public function print(NutritionCare $nutritionCare)
+    {
+        $this->authorize('view', $nutritionCare);
+        
+        $nutritionCare->load(['morphable.patient', 'nurse']);
+        return view('pages.nutrition-cares.print', compact('nutritionCare'));
+    }
 }

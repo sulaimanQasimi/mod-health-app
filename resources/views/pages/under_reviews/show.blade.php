@@ -674,6 +674,9 @@
                                                             <a href="{{ route('nutrition-cares.show', $nutritionCare) }}" class="btn btn-sm btn-info" title="{{ localize('global.view') }}">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
+                                                            <a href="{{ route('nutrition-cares.print', $nutritionCare) }}" class="btn btn-sm btn-primary" title="{{ localize('global.print') }}" target="_blank">
+                                                                <i class="fas fa-print"></i>
+                                                            </a>
                                                         @endcan
                                                         @can('update', $nutritionCare)
                                                             <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-sm btn-warning" title="{{ localize('global.edit') }}">

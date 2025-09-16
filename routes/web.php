@@ -675,14 +675,14 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('my-procedures', [PhysiotherapyProcedureController::class, 'myProcedures'])->middleware('permission:show-own-physiotherapy-procedures')->name('my-procedures');
             Route::get('by-appointment/{appointment}', [PhysiotherapyProcedureController::class, 'getByAppointment'])->name('by-appointment');
             Route::post('store', [PhysiotherapyProcedureController::class, 'store'])->name('store');
-            
+
             // Review routes (must come before the general {physiotherapyProcedure} route)
             Route::get('{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'getReviews'])->name('reviews');
             Route::get('{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'showReview'])->name('show-review');
             Route::post('{physiotherapyProcedure}/reviews', [PhysiotherapyProcedureController::class, 'storeReview'])->name('store-review');
             Route::put('{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'updateReview'])->name('update-review');
             Route::delete('{physiotherapyProcedure}/reviews/{review}', [PhysiotherapyProcedureController::class, 'destroyReview'])->name('destroy-review');
-            
+
             // General physiotherapy procedure routes
             Route::get('{physiotherapyProcedure}', [PhysiotherapyProcedureController::class, 'show'])->name('show');
             Route::put('{physiotherapyProcedure}/update', [PhysiotherapyProcedureController::class, 'update'])->name('update');
@@ -798,17 +798,17 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{vitalSignType}', [\App\Http\Controllers\VitalSignTypeController::class, 'destroy'])->name('destroy');
     });
 
-// Vital Signs routes
-Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\VitalSignController::class, 'index'])->name('index');
-    Route::get('create', [\App\Http\Controllers\VitalSignController::class, 'create'])->name('create');
-    Route::post('store', [\App\Http\Controllers\VitalSignController::class, 'store'])->name('store');
-    Route::get('show/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'show'])->name('show');
-    Route::get('edit/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'edit'])->name('edit');
-    Route::put('update/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'update'])->name('update');
-    Route::get('print/{morphable_type}/{morphable_id}', [\App\Http\Controllers\VitalSignController::class, 'print'])->name('print');
-    Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
-});
+    // Vital Signs routes
+    Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\VitalSignController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\VitalSignController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\VitalSignController::class, 'store'])->name('store');
+        Route::get('show/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'show'])->name('show');
+        Route::get('edit/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'edit'])->name('edit');
+        Route::put('update/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'update'])->name('update');
+        Route::get('print/{morphable_type}/{morphable_id}', [\App\Http\Controllers\VitalSignController::class, 'print'])->name('print');
+        Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
+    });
 
     // Vital Sign Schedules routes (for modal functionality)
     Route::prefix('vital-sign-schedules')->name('vital-sign-schedules.')->group(function () {
@@ -855,6 +855,9 @@ Route::prefix('backups')->name('backups.')->group(function () {
 });
 
 // Nutrition Care Routes
+
+Route::get('nutrition-cares/{nutritionCare}/print', [NutritionCareController::class, 'print'])
+    ->name('nutrition-cares.print');
 Route::resource('nutrition-cares', NutritionCareController::class);
 Route::get('nutrition-cares/{morphable_type}/{morphable_id}', [NutritionCareController::class, 'index'])
     ->name('nutrition-cares.by-morphable');

@@ -10,9 +10,14 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="card-title">{{ localize('global.nutrition_care_form') }}</h4>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-warning">
-                            <i class="fas fa-edit"></i> {{ localize('global.edit_nutrition_care') }}
+                        <a href="{{ route('nutrition-cares.print', $nutritionCare) }}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-print"></i> {{ localize('global.print') }}
                         </a>
+                        @can('update', $nutritionCare)
+                            <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> {{ localize('global.edit_nutrition_care') }}
+                            </a>
+                        @endcan
                         <a href="{{ route('nutrition-cares.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> {{ localize('global.back_to_list') }}
                         </a>

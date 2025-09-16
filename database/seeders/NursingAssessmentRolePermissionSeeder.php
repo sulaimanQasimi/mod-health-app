@@ -32,26 +32,6 @@ class NursingAssessmentRolePermissionSeeder extends Seeder
             $superAdminRole->givePermissionTo($nursingAssessmentPermissions);
         }
 
-        // Admin (ID: 2) - Gets all permissions
-        $adminRole = Role::find(2);
-        if ($adminRole) {
-            $adminRole->givePermissionTo($nursingAssessmentPermissions);
-        }
-
-        // HR (ID: 3) - Gets view, create, edit, delete permissions
-        $hrRole = Role::find(3);
-        if ($hrRole) {
-            $hrPermissions = Permission::whereIn('name', [
-                'show-nursing-assessments-menu',
-                'view_nursing_assessment',
-                'create_nursing_assessment',
-                'edit_nursing_assessment',
-                'delete_nursing_assessment',
-                'print_nursing_assessment',
-            ])->get();
-            $hrRole->givePermissionTo($hrPermissions);
-        }
-
         // Nurse (ID: 10) - Gets view, create, edit, delete, print permissions
         $nurseRole = Role::find(10);
         if ($nurseRole) {
@@ -66,8 +46,8 @@ class NursingAssessmentRolePermissionSeeder extends Seeder
             $nurseRole->givePermissionTo($nursePermissions);
         }
 
-        // Doctor (ID: 4) - Gets view and print permissions only
-        $doctorRole = Role::find(4);
+        // OPD Doctor (ID: 8) - Gets view and print permissions only
+        $doctorRole = Role::find(8);
         if ($doctorRole) {
             $doctorPermissions = Permission::whereIn('name', [
                 'show-nursing-assessments-menu',
@@ -75,6 +55,34 @@ class NursingAssessmentRolePermissionSeeder extends Seeder
                 'print_nursing_assessment',
             ])->get();
             $doctorRole->givePermissionTo($doctorPermissions);
+        }
+
+        // Hospitalization Visits (ID: 3) - Gets view, create, edit, delete permissions
+        $hospitalizationRole = Role::find(3);
+        if ($hospitalizationRole) {
+            $hospitalizationPermissions = Permission::whereIn('name', [
+                'show-nursing-assessments-menu',
+                'view_nursing_assessment',
+                'create_nursing_assessment',
+                'edit_nursing_assessment',
+                'delete_nursing_assessment',
+                'print_nursing_assessment',
+            ])->get();
+            $hospitalizationRole->givePermissionTo($hospitalizationPermissions);
+        }
+
+        // ICU Visits (ID: 4) - Gets view, create, edit, delete permissions
+        $icuRole = Role::find(4);
+        if ($icuRole) {
+            $icuPermissions = Permission::whereIn('name', [
+                'show-nursing-assessments-menu',
+                'view_nursing_assessment',
+                'create_nursing_assessment',
+                'edit_nursing_assessment',
+                'delete_nursing_assessment',
+                'print_nursing_assessment',
+            ])->get();
+            $icuRole->givePermissionTo($icuPermissions);
         }
     }
 }

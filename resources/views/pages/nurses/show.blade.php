@@ -308,7 +308,7 @@
                                 <form action="{{ route('nurses.destroy', $nurse) }}" 
                                       method="POST" 
                                       class="d-inline"
-                                      onsubmit="return confirm('Are you sure you want to delete this nurse? This action cannot be undone.')">
+                                      onsubmit="return confirm('{{ localize('global.are_you_sure_delete_nurse') }}')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">

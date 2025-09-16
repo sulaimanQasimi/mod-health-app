@@ -1438,6 +1438,66 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
+        
+        // Nursing Assessment Menu Permission
+        Permission::createOrFirst([
+            'name' => 'show-nursing-assessments-menu',
+            'name_dr' => 'نمایش مینو ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        // Nursing Assessment CRUD Permissions
+        Permission::createOrFirst([
+            'name' => 'view_nursing_assessment',
+            'name_dr' => 'نمایش ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create_nursing_assessment',
+            'name_dr' => 'ایجاد ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit_nursing_assessment',
+            'name_dr' => 'تصحیح ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete_nursing_assessment',
+            'name_dr' => 'حذف ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'restore_nursing_assessment',
+            'name_dr' => 'بازیابی ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'force_delete_nursing_assessment',
+            'name_dr' => 'حذف دائمی ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        // Print permission
+        Permission::createOrFirst([
+            'name' => 'print_nursing_assessment',
+            'name_dr' => 'چاپ ارزیابی نرسنگ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+   
         User::find(1)->givePermissionTo(Permission::all());
 
     }

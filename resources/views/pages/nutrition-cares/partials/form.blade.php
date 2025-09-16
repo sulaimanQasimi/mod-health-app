@@ -3,7 +3,14 @@
     <div class="col-md-4">
         <div class="mb-3">
             <label for="patient_name" class="form-label">{{ localize('global.patient_name') }} <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="patient_name" name="patient_name" value="{{ old('patient_name', $nutritionCare->patient_name ?? '') }}" required>
+            @if(isset($patient_name))
+                <!-- Auto-filled from context -->
+                <input type="hidden" name="patient_name" value="{{ $patient_name }}">
+                <input type="text" class="form-control" value="{{ $patient_name }}" readonly>
+            @else
+                <!-- Manual entry for standalone forms -->
+                <input type="text" class="form-control" id="patient_name" name="patient_name" value="{{ old('patient_name', $nutritionCare->patient_name ?? '') }}" required>
+            @endif
             @error('patient_name')
                 <div class="text-danger">{{ $message }}</div>
             @enderror

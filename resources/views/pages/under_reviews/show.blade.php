@@ -1352,6 +1352,7 @@
                                             $nurses = \App\Models\Nurse::all();
                                             $morphable_type = 'App\Models\UnderReview';
                                             $morphable_id = $underReview->id;
+                                            $patient_name = $underReview->patient->first_name . ' ' . $underReview->patient->last_name;
                                         @endphp
                                         @include('pages.nutrition-cares.partials.form')
                                     </div>

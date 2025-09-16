@@ -1839,6 +1839,7 @@
                                                     $nurses = \App\Models\Nurse::all();
                                                     $morphable_type = 'App\Models\Hospitalization';
                                                     $morphable_id = $hospitalization->id;
+                                                    $patient_name = $hospitalization->patient->first_name . ' ' . $hospitalization->patient->last_name;
                                                 @endphp
                                                 @include('pages.nutrition-cares.partials.form')
                                             </div>

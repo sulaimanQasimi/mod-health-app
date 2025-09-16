@@ -862,5 +862,12 @@ Route::resource('nutrition-cares', NutritionCareController::class);
 Route::get('nutrition-cares/{morphable_type}/{morphable_id}', [NutritionCareController::class, 'index'])
     ->name('nutrition-cares.by-morphable');
 
+// Nursing Assessment Routes
+Route::get('nursing-assessments/{nursingAssessment}/print', [NursingAssessmentController::class, 'print'])
+    ->name('nursing-assessments.print');
+Route::resource('nursing-assessments', NursingAssessmentController::class);
+Route::get('nursing-assessments/{morphable_type}/{morphable_id}', [NursingAssessmentController::class, 'index'])
+    ->name('nursing-assessments.by-morphable');
+
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);

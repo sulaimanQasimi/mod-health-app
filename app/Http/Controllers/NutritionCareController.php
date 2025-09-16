@@ -11,6 +11,8 @@ class NutritionCareController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', NutritionCare::class);
+
         if ($request->ajax()) {
             $nutritionCares = NutritionCare::with(['morphable.patient', 'createdBy', 'nurse'])
                 ->when($request->morphable_type, function ($query, $type) {
@@ -32,6 +34,8 @@ class NutritionCareController extends Controller
 
     public function create()
     {
+        $this->authorize('create', NutritionCare::class);
+        
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
         return view('pages.nutrition-cares.create', compact('nurses', 'currentUser'));
@@ -39,6 +43,8 @@ class NutritionCareController extends Controller
 
     public function store(StoreNutritionCareRequest $request)
     {
+        $this->authorize('create', NutritionCare::class);
+        
         $data = $request->validated();
         
         // Automatically set nurse_id from current authenticated user's nurse
@@ -56,6 +62,8 @@ class NutritionCareController extends Controller
 
     public function show(NutritionCare $nutritionCare)
     {
+        $this->authorize('view', $nutritionCare);
+        
         $nutritionCare->load(['morphable.patient', 'createdBy', 'updatedBy', 'nurse']);
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
@@ -64,6 +72,8 @@ class NutritionCareController extends Controller
 
     public function edit(NutritionCare $nutritionCare)
     {
+        $this->authorize('update', $nutritionCare);
+        
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
         return view('pages.nutrition-cares.edit', compact('nutritionCare', 'nurses', 'currentUser'));
@@ -71,6 +81,8 @@ class NutritionCareController extends Controller
 
     public function update(UpdateNutritionCareRequest $request, NutritionCare $nutritionCare)
     {
+        $this->authorize('update', $nutritionCare);
+        
         $nutritionCare->update($request->validated());
 
         return response()->json([
@@ -81,6 +93,8 @@ class NutritionCareController extends Controller
 
     public function destroy(NutritionCare $nutritionCare)
     {
+        $this->authorize('delete', $nutritionCare);
+        
         $nutritionCare->delete();
 
         return response()->json([

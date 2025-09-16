@@ -602,9 +602,11 @@
                             <i class="bx bx-food-menu p-1"></i>{{ localize('global.nutrition_care') }}
                         </h5>
                         <div class="d-flex gap-2 mb-3">
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
-                                <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
-                            </button>
+                            @can('create', \App\Models\NutritionCare::class)
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
+                                    <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                                </button>
+                            @endcan
                         </div>
 
                         @if($underReview->nutritionCares->count() > 0)
@@ -668,19 +670,25 @@
                                                 <td>{{ $nutritionCare->created_at->format('Y-m-d H:i') }}</td>
                                                 <td>
                                                     <div class="btn-group" role="group">
-                                                        <a href="{{ route('nutrition-cares.show', $nutritionCare) }}" class="btn btn-sm btn-info" title="{{ localize('global.view') }}">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                        <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-sm btn-warning" title="{{ localize('global.edit') }}">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <form action="{{ route('nutrition-cares.destroy', $nutritionCare) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-danger" title="{{ localize('global.delete') }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </form>
+                                                        @can('view', $nutritionCare)
+                                                            <a href="{{ route('nutrition-cares.show', $nutritionCare) }}" class="btn btn-sm btn-info" title="{{ localize('global.view') }}">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                        @endcan
+                                                        @can('update', $nutritionCare)
+                                                            <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-sm btn-warning" title="{{ localize('global.edit') }}">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                        @endcan
+                                                        @can('delete', $nutritionCare)
+                                                            <form action="{{ route('nutrition-cares.destroy', $nutritionCare) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-danger" title="{{ localize('global.delete') }}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endcan
                                                     </div>
                                                 </td>
                                             </tr>
@@ -695,9 +703,11 @@
                                 </div>
                                 <h5 class="text-muted">{{ localize('global.no_nutrition_care_found') }}</h5>
                                 <p class="text-muted">{{ localize('global.add_first_nutrition_care') }}</p>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
-                                    <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
-                                </button>
+                                @can('create', \App\Models\NutritionCare::class)
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
+                                        <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                                    </button>
+                                @endcan
                             </div>
                         @endif
                     </div>

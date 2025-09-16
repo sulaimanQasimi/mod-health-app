@@ -2522,6 +2522,8 @@ return [
     "nutrition_care_created_successfully" => "رکورد مراقبت تغذیه با موفقیت ایجاد شد",
     "nutrition_care_updated_successfully" => "رکورد مراقبت تغذیه با موفقیت به‌روزرسانی شد",
     "nutrition_care_deleted_successfully" => "رکورد مراقبت تغذیه با موفقیت حذف شد",
+    "creating" => "در حال ایجاد...",
+    "error_occurred" => "خطایی رخ داد",
     "no_nutrition_care_found" => "هیچ رکورد مراقبت تغذیه‌ای یافت نشد",
     "add_first_nutrition_care" => "اولین رکورد مراقبت تغذیه را اضافه کنید",
     "select_record_type" => "نوع رکورد را انتخاب کنید",

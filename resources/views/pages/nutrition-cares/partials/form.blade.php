@@ -12,14 +12,19 @@
     <div class="col-md-4">
         <div class="mb-3">
             <label for="nurse_id" class="form-label">{{ localize('global.nurse') }}</label>
-            <select class="form-control" id="nurse_id" name="nurse_id">
-                <option value="">{{ localize('global.select_nurse') }}</option>
-                @foreach($nurses ?? [] as $nurse)
-                    <option value="{{ $nurse->id }}" {{ old('nurse_id', $nutritionCare->nurse_id ?? '') == $nurse->id ? 'selected' : '' }}>
-                        {{ $nurse->full_name }}
-                    </option>
-                @endforeach
-            </select>
+            @if(auth()->user()->nurse)
+                <input type="hidden" name="nurse_id" value="{{ auth()->user()->nurse->id }}">
+                <input type="text" class="form-control" value="{{ auth()->user()->nurse->full_name }}" readonly>
+            @else
+                <select class="form-control" id="nurse_id" name="nurse_id">
+                    <option value="">{{ localize('global.select_nurse') }}</option>
+                    @foreach($nurses ?? [] as $nurse)
+                        <option value="{{ $nurse->id }}" {{ old('nurse_id', $nutritionCare->nurse_id ?? '') == $nurse->id ? 'selected' : '' }}>
+                            {{ $nurse->full_name }}
+                        </option>
+                    @endforeach
+                </select>
+            @endif
             @error('nurse_id')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -27,19 +32,28 @@
     </div>
     <div class="col-md-4">
         <div class="mb-3">
-            <label for="morphable_type" class="form-label">{{ localize('global.record_type') }} <span class="text-danger">*</span></label>
-            <select class="form-control" id="morphable_type" name="morphable_type" required>
-                <option value="">{{ localize('global.select_record_type') }}</option>
-                <option value="App\Models\UnderReview" {{ old('morphable_type', $nutritionCare->morphable_type ?? '') == 'App\Models\UnderReview' ? 'selected' : '' }}>{{ localize('global.under_review') }}</option>
-                <option value="App\Models\Hospitalization" {{ old('morphable_type', $nutritionCare->morphable_type ?? '') == 'App\Models\Hospitalization' ? 'selected' : '' }}>{{ localize('global.hospitalization') }}</option>
-            </select>
-            @error('morphable_type')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
+            <label class="form-label">{{ localize('global.record_type') }}</label>
+            @if(isset($morphable_type) && isset($morphable_id))
+                <!-- Auto-filled from context -->
+                <input type="hidden" name="morphable_type" value="{{ $morphable_type }}">
+                <input type="hidden" name="morphable_id" value="{{ $morphable_id }}">
+                <input type="text" class="form-control" value="{{ $morphable_type == 'App\Models\UnderReview' ? localize('global.under_review') : localize('global.hospitalization') }}" readonly>
+            @else
+                <!-- Manual selection for standalone forms -->
+                <select class="form-control" id="morphable_type" name="morphable_type" required>
+                    <option value="">{{ localize('global.select_record_type') }}</option>
+                    <option value="App\Models\UnderReview" {{ old('morphable_type', $nutritionCare->morphable_type ?? '') == 'App\Models\UnderReview' ? 'selected' : '' }}>{{ localize('global.under_review') }}</option>
+                    <option value="App\Models\Hospitalization" {{ old('morphable_type', $nutritionCare->morphable_type ?? '') == 'App\Models\Hospitalization' ? 'selected' : '' }}>{{ localize('global.hospitalization') }}</option>
+                </select>
+                @error('morphable_type')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            @endif
         </div>
     </div>
 </div>
 
+@if(!isset($morphable_type) || !isset($morphable_id))
 <div class="row">
     <div class="col-md-6">
         <div class="mb-3">
@@ -51,6 +65,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <!-- Observations Section -->
 <div class="row">

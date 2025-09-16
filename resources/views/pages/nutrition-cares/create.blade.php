@@ -29,6 +29,9 @@
 
                     <form action="{{ route('nutrition-cares.store') }}" method="POST">
                         @csrf
+                        @php
+                            $nurses = \App\Models\Nurse::all();
+                        @endphp
                         @include('pages.nutrition-cares.partials.form')
                         
                         <div class="row">

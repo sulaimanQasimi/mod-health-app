@@ -33,6 +33,9 @@
                     <form action="{{ route('nutrition-cares.update', $nutritionCare) }}" method="POST">
                         @csrf
                         @method('PUT')
+                        @php
+                            $nurses = \App\Models\Nurse::all();
+                        @endphp
                         @include('pages.nutrition-cares.partials.form')
                         
                         <div class="row">

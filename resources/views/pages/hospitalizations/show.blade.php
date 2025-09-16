@@ -1835,8 +1835,11 @@
                                         <form action="{{ route('nutrition-cares.store') }}" method="POST">
                                             @csrf
                                             <div class="modal-body">
-                                                <input type="hidden" name="morphable_type" value="App\Models\Hospitalization">
-                                                <input type="hidden" name="morphable_id" value="{{ $hospitalization->id }}">
+                                                @php
+                                                    $nurses = \App\Models\Nurse::all();
+                                                    $morphable_type = 'App\Models\Hospitalization';
+                                                    $morphable_id = $hospitalization->id;
+                                                @endphp
                                                 @include('pages.nutrition-cares.partials.form')
                                             </div>
                                             <div class="modal-footer">

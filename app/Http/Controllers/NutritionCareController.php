@@ -33,12 +33,20 @@ class NutritionCareController extends Controller
     public function create()
     {
         $nurses = \App\Models\Nurse::all();
-        return view('pages.nutrition-cares.create', compact('nurses'));
+        $currentUser = auth()->user()->load('nurse');
+        return view('pages.nutrition-cares.create', compact('nurses', 'currentUser'));
     }
 
     public function store(StoreNutritionCareRequest $request)
     {
-        $nutritionCare = NutritionCare::create($request->validated());
+        $data = $request->validated();
+        
+        // Automatically set nurse_id from current authenticated user's nurse
+        if (auth()->user()->nurse) {
+            $data['nurse_id'] = auth()->user()->nurse->id;
+        }
+        
+        $nutritionCare = NutritionCare::create($data);
 
         return response()->json([
             'message' => 'Nutrition care record created successfully',
@@ -50,13 +58,15 @@ class NutritionCareController extends Controller
     {
         $nutritionCare->load(['morphable.patient', 'createdBy', 'updatedBy', 'nurse']);
         $nurses = \App\Models\Nurse::all();
-        return view('pages.nutrition-cares.show', compact('nutritionCare', 'nurses'));
+        $currentUser = auth()->user()->load('nurse');
+        return view('pages.nutrition-cares.show', compact('nutritionCare', 'nurses', 'currentUser'));
     }
 
     public function edit(NutritionCare $nutritionCare)
     {
         $nurses = \App\Models\Nurse::all();
-        return view('pages.nutrition-cares.edit', compact('nutritionCare', 'nurses'));
+        $currentUser = auth()->user()->load('nurse');
+        return view('pages.nutrition-cares.edit', compact('nutritionCare', 'nurses', 'currentUser'));
     }
 
     public function update(UpdateNutritionCareRequest $request, NutritionCare $nutritionCare)

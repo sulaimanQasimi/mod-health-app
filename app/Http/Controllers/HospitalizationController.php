@@ -269,7 +269,10 @@ class HospitalizationController extends Controller
         // Load nutrition cares for this hospitalization
         $hospitalization->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
 
-        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes', 'medicationAdministrationRecords'));
+        // Load current user's nurse relationship for auto-selection
+        $currentUser = auth()->user()->load('nurse');
+
+        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes', 'medicationAdministrationRecords', 'currentUser'));
     }
 
     /**

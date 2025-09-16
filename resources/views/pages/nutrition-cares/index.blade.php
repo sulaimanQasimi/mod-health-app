@@ -109,6 +109,9 @@
             </div>
             <form id="createNutritionCareForm">
                 <div class="modal-body">
+                    @php
+                        $nurses = \App\Models\Nurse::all();
+                    @endphp
                     @include('pages.nutrition-cares.partials.form')
                 </div>
                 <div class="modal-footer">
@@ -130,6 +133,9 @@
             </div>
             <form id="editNutritionCareForm">
                 <div class="modal-body">
+                    @php
+                        $nurses = \App\Models\Nurse::all();
+                    @endphp
                     @include('pages.nutrition-cares.partials.form')
                 </div>
                 <div class="modal-footer">

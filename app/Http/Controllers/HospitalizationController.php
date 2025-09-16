@@ -266,6 +266,9 @@ class HospitalizationController extends Controller
         // Load vital signs for this hospitalization
         $hospitalization->load(['vitalSigns.vitalSignType', 'vitalSigns.schedules.nurse']);
 
+        // Load nutrition cares for this hospitalization
+        $hospitalization->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
+
         return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes', 'medicationAdministrationRecords'));
     }
 

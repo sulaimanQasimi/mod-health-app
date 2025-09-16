@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
+use App\Http\Controllers\NutritionCareController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -852,6 +853,11 @@ Route::prefix('backups')->name('backups.')->group(function () {
     Route::get('stats', [BackupController::class, 'stats'])->name('stats');
     Route::get('test', [BackupController::class, 'test'])->name('test');
 });
+
+// Nutrition Care Routes
+Route::resource('nutrition-cares', NutritionCareController::class);
+Route::get('nutrition-cares/{morphable_type}/{morphable_id}', [NutritionCareController::class, 'index'])
+    ->name('nutrition-cares.by-morphable');
 
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);

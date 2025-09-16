@@ -225,6 +225,9 @@ class UnderReviewController extends Controller
         // Load vital signs for this under review
         $underReview->load(['vitalSigns.vitalSignType', 'vitalSigns.schedules.nurse']);
 
+        // Load nutrition cares for this under review
+        $underReview->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
+
         return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts','nurseNotes','medicationAdministrationRecords'));
     }
 

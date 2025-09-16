@@ -597,7 +597,7 @@
                     </div>
 
                     <!-- Nutrition Care Section -->
-                    <div class="col-md-12 mt-4">
+                    <div class="col-md-12 mt-4" id="nutrition-care-section">
                         <h5 class="mb-4 p-3 bg-label-primary">
                             <i class="bx bx-food-menu p-1"></i>{{ localize('global.nutrition_care') }}
                         </h5>
@@ -1345,7 +1345,7 @@
                                     <h5 class="modal-title" id="createNutritionCareModalLabel">{{ localize('global.create_nutrition_care') }}</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <form action="{{ route('nutrition-cares.store') }}" method="POST">
+                                <form id="createNutritionCareForm" action="{{ route('nutrition-cares.store') }}" method="POST">
                                     @csrf
                                     <div class="modal-body">
                                         @php
@@ -1358,7 +1358,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit" class="btn btn-primary">{{ localize('global.create') }}</button>
+                                        <button type="submit" class="btn btn-primary" id="submitNutritionCareBtn">{{ localize('global.create') }}</button>
                                     </div>
                                 </form>
                             </div>
@@ -1612,6 +1612,79 @@ prescriptionContainer.appendChild(newRow);
             })
         }
     })
+
+    // Handle Nutrition Care form submission with AJAX
+    $(document).ready(function() {
+        $('#createNutritionCareForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            var form = $(this);
+            var submitBtn = $('#submitNutritionCareBtn');
+            var originalText = submitBtn.text();
+            
+            // Disable submit button and show loading
+            submitBtn.prop('disabled', true).text('{{ localize("global.creating") }}...');
+            
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    // Close modal
+                    $('#createNutritionCareModal').modal('hide');
+                    
+                    // Reload the nutrition care section
+                    reloadNutritionCareSection();
+                    
+                    // Show success message
+                    toastr.success('{{ localize("global.nutrition_care_created_successfully") }}');
+                    
+                    // Reset form
+                    form[0].reset();
+                },
+                error: function(xhr) {
+                    // Handle validation errors
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessages = [];
+                        
+                        for (var field in errors) {
+                            errorMessages.push(errors[field][0]);
+                        }
+                        
+                        toastr.error(errorMessages.join('<br>'));
+                    } else {
+                        toastr.error('{{ localize("global.error_occurred") }}');
+                    }
+                },
+                complete: function() {
+                    // Re-enable submit button
+                    submitBtn.prop('disabled', false).text(originalText);
+                }
+            });
+        });
+    });
+
+    // Function to reload nutrition care section
+    function reloadNutritionCareSection() {
+        $.ajax({
+            type: "GET",
+            url: "{{ route('nutrition-cares.by-morphable', ['App\\Models\\UnderReview', $underReview->id]) }}",
+            dataType: "html",
+            success: function (data) {
+                // Find and replace the nutrition care section
+                var nutritionCareSection = $(data).find('#nutrition-care-section');
+                if (nutritionCareSection.length > 0) {
+                    $('#nutrition-care-section').replaceWith(nutritionCareSection);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error reloading nutrition care section:', error);
+                // Fallback: reload the entire page
+                location.reload();
+            }
+        });
+    }
 
 </script>
 @endsection

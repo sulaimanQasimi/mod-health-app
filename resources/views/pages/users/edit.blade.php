@@ -132,10 +132,16 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3 mt-3">
                                     <h5>{{ localize('global.roles') }}</h5>
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" class="form-check-input" id="select_all_roles">
+                                        <label class="form-check-label fw-bold" for="select_all_roles">
+                                            {{ localize('global.select_all') }}
+                                        </label>
+                                    </div>
                                     @foreach ($roles as $value)
                                         <div class="d-flex">
                                             <div class="form-check me-3 me-lg-5">
-                                                {{ Form::checkbox('roles[]', $value->id, $user->roles->contains($value->id), ['class' => 'form-check-input']) }}
+                                                {{ Form::checkbox('roles[]', $value->id, $user->roles->contains($value->id), ['class' => 'form-check-input role-checkbox']) }}
                                                 {{ $value->name_dr }}
                                             </div>
                                         </div>
@@ -143,9 +149,15 @@
                                 </div>
                                 <div class="col-md-6 mb-3 mt-3">
                                     <h5>{{ localize('global.permissions') }}</h5>
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" class="form-check-input" id="select_all_permissions">
+                                        <label class="form-check-label fw-bold" for="select_all_permissions">
+                                            {{ localize('global.select_all') }}
+                                        </label>
+                                    </div>
                                     @foreach ($permissions as $value)
                                         <div class="form-check">
-                                            {{ Form::checkbox('permissions[]', $value->id, $user->permissions->contains($value->id), ['class' => 'form-check-input']) }}
+                                            {{ Form::checkbox('permissions[]', $value->id, $user->permissions->contains($value->id), ['class' => 'form-check-input permission-checkbox']) }}
                                                 {{ $value->name_dr }}
                                         </div>
                                     @endforeach
@@ -169,6 +181,56 @@
     <script>
         $(document).ready(function() {
             $('.select2').select2();
+
+            // Select All functionality for roles
+            $('#select_all_roles').on('change', function() {
+                var isChecked = $(this).is(':checked');
+                $('.role-checkbox').prop('checked', isChecked);
+            });
+
+            // Update Select All checkbox based on individual role checkboxes
+            $('.role-checkbox').on('change', function() {
+                var totalRoles = $('.role-checkbox').length;
+                var checkedRoles = $('.role-checkbox:checked').length;
+                
+                if (checkedRoles === totalRoles) {
+                    $('#select_all_roles').prop('checked', true);
+                } else {
+                    $('#select_all_roles').prop('checked', false);
+                }
+            });
+
+            // Initialize Select All checkbox state on page load
+            var totalRoles = $('.role-checkbox').length;
+            var checkedRoles = $('.role-checkbox:checked').length;
+            if (checkedRoles === totalRoles && totalRoles > 0) {
+                $('#select_all_roles').prop('checked', true);
+            }
+
+            // Select All functionality for permissions
+            $('#select_all_permissions').on('change', function() {
+                var isChecked = $(this).is(':checked');
+                $('.permission-checkbox').prop('checked', isChecked);
+            });
+
+            // Update Select All checkbox based on individual permission checkboxes
+            $('.permission-checkbox').on('change', function() {
+                var totalPermissions = $('.permission-checkbox').length;
+                var checkedPermissions = $('.permission-checkbox:checked').length;
+                
+                if (checkedPermissions === totalPermissions) {
+                    $('#select_all_permissions').prop('checked', true);
+                } else {
+                    $('#select_all_permissions').prop('checked', false);
+                }
+            });
+
+            // Initialize Select All checkbox state for permissions on page load
+            var totalPermissions = $('.permission-checkbox').length;
+            var checkedPermissions = $('.permission-checkbox:checked').length;
+            if (checkedPermissions === totalPermissions && totalPermissions > 0) {
+                $('#select_all_permissions').prop('checked', true);
+            }
 
             $('#branch_id').on('change', function() {
                 var branchID = $(this).val();

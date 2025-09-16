@@ -224,15 +224,15 @@
                                                     </div>
                                                     <div class="col-md-2">
                                                         <input type="text" class="form-control mt-2"
-                                                            name="dosage[]" placeholder="Dosage">
+                                                            name="dosage[]" placeholder="{{ localize('global.dosage') }}">
                                                     </div>
                                                     <div class="col-md-2">
                                                         <input type="text" class="form-control mt-2"
-                                                            name="frequency[]" placeholder="Frequency">
+                                                            name="frequency[]" placeholder="{{ localize('global.frequency') }}">
                                                     </div>
                                                     <div class="col-md-2">
                                                         <input type="text" class="form-control mt-2"
-                                                            name="amount[]" placeholder="Amount">
+                                                            name="amount[]" placeholder="{{ localize('global.amount') }}">
                                                     </div>
                                                     <div class="col-md-2">
                                                         <input type="hidden" class="form-control mt-2"
@@ -841,14 +841,14 @@
 
                     <!-- Vital Signs Management Section -->
                     <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                            class="bx bx-heart p-1"></i>{{ localize('vital_signs') }}</h5>
+                            class="bx bx-heart p-1"></i>{{ localize('global.vital_signs') }}</h5>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
                             @can('create', App\Models\VitalSign::class)
                                 <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}" 
                                    class="btn btn-primary">
-                                    <i class="bx bx-plus"></i> {{ localize('add_vital_sign') }}
+                                    <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
                                 </a>
                             @endcan
                         </div>
@@ -863,7 +863,7 @@
                         <div class="col-md-4 text-end">
                             <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}" 
                                class="btn btn-outline-primary">
-                                <i class="bx bx-list-ul"></i> {{ localize('view_all_vital_signs') }}
+                                <i class="bx bx-list-ul"></i> {{ localize('global.view_all_vital_signs') }}
                             </a>
                         </div>
                     </div>
@@ -895,13 +895,13 @@
                                                 <div class="btn-group" role="group">
                                                     @can('view', $vitalSign)
                                                         <a href="{{ route('vital-signs.show', $vitalSign) }}" 
-                                                           class="btn btn-info btn-sm" title="{{ localize('view') }}">
+                                                           class="btn btn-info btn-sm" title="{{ localize('global.view') }}">
                                                             <i class="bx bx-show"></i>
                                                         </a>
                                                     @endcan
                                                     @can('create', App\Models\VitalSignSchedule::class)
                                                         <a href="{{ route('vital-signs.show', $vitalSign) }}" 
-                                                           class="btn btn-success btn-sm" title="{{ localize('add_schedule') }}">
+                                                           class="btn btn-success btn-sm" title="{{ localize('global.add_schedule') }}">
                                                             <i class="bx bx-time"></i>
                                                         </a>
                                                     @endcan
@@ -916,7 +916,7 @@
                                 <div class="text-center mt-3">
                                     <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}" 
                                        class="btn btn-outline-primary">
-                                        {{ localize('view_all') }} ({{ $underReview->vitalSigns->count() }} {{ localize('vital_signs') }})
+                                        {{ localize('global.view_all') }} ({{ $underReview->vitalSigns->count() }} {{ localize('global.vital_signs') }})
                                     </a>
                                 </div>
                             @endif
@@ -926,12 +926,12 @@
                             <div class="mb-3">
                                 <i class="bx bx-heart bx-lg text-muted"></i>
                             </div>
-                            <h5 class="text-muted">{{ localize('no_vital_signs_found') }}</h5>
-                            <p class="text-muted">{{ localize('add_first_vital_sign') }}</p>
+                            <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
+                            <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
                             @can('create', App\Models\VitalSign::class)
                                 <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}" 
                                    class="btn btn-primary">
-                                    <i class="bx bx-plus"></i> {{ localize('add_vital_sign') }}
+                                    <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
                                 </a>
                             @endcan
                         </div>
@@ -1505,21 +1505,21 @@ const dosageInput = document.createElement('input');
 dosageInput.type = 'text';
 dosageInput.className = 'form-control mt-2';
 dosageInput.name = 'dosage[]';
-dosageInput.placeholder = 'Dosage';
+dosageInput.placeholder = '{{ localize('global.dosage') }}';
 
 // Create the frequency input field
 const frequencyInput = document.createElement('input');
 frequencyInput.type = 'text';
 frequencyInput.className = 'form-control mt-2';
 frequencyInput.name = 'frequency[]';
-frequencyInput.placeholder = 'Frequency';
+frequencyInput.placeholder = '{{ localize('global.frequency') }}';
 
 // Create the amount input field
 const amountInput = document.createElement('input');
 amountInput.type = 'text';
 amountInput.className = 'form-control mt-2';
 amountInput.name = 'amount[]';
-amountInput.placeholder = 'Amount';
+amountInput.placeholder = '{{ localize('global.amount') }}';
 
 // Create the delivery input field
 const deliveryInput = document.createElement('input');

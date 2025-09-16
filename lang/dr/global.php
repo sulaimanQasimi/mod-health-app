@@ -2531,4 +2531,5 @@ return [
     "select_record_type" => "نوع رکورد را انتخاب کنید",
     "max_5000_characters" => "حداکثر 5000 کاراکتر",
     "select_nurse" => "پرستار را انتخاب کنید",
+    "system_theme_bordered"=>"سیستم سبک بوردر",
 ];

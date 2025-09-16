@@ -22,7 +22,8 @@
                         <div class="col-md-12">
                             <div class="border border-label-primary mb-4 text-center">
                                 <h5 class="mb-4 p-3 bg-label-primary text-center">
-                                    {{ localize('global.hospitalization_details') }}</h5>
+                                    {{ localize('global.hospitalization_details') }}
+                                </h5>
 
                                 <div class="row p-2">
                                     <div class="col-md-3">
@@ -81,7 +82,8 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createVisitModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_visit') }}</h5>
+                                                {{ localize('global.add_visit') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -98,7 +100,9 @@
                                                 <div class="form-group">
                                                     <label
                                                         for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
-                                                    <textarea class="form-control" id="description{{ $hospitalization->id }}" name="description" rows="3"></textarea>
+                                                    <textarea class="form-control"
+                                                        id="description{{ $hospitalization->id }}" name="description"
+                                                        rows="3"></textarea>
                                                 </div>
                                                 <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
                                                 <div class="form-group">
@@ -140,8 +144,7 @@
                                                         <div class="col-md-6">
                                                             <label
                                                                 for="antibiotic{{ $hospitalization->id }}">{{ localize('global.antibiotic') }}</label>
-                                                            <input type="text" class="form-control"
-                                                                name="antibiotic" />
+                                                            <input type="text" class="form-control" name="antibiotic" />
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label
@@ -151,8 +154,7 @@
                                                                 <option value="">{{ localize('global.select') }}
                                                                 </option>
                                                                 @foreach ($foodTypes as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
 
                                                                     </option>
@@ -165,15 +167,13 @@
                                                         <div class="col-md-6">
                                                             <label
                                                                 for="intake{{ $hospitalization->id }}">{{ localize('global.intake') }}</label>
-                                                            <input type="text" class="form-control"
-                                                                name="intake" />
+                                                            <input type="text" class="form-control" name="intake" />
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label
                                                                 for="output{{ $hospitalization->id }}">{{ localize('global.output') }}</label>
-                                                            <input type="text" class="form-control"
-                                                                name="output" />
-                                                            
+                                                            <input type="text" class="form-control" name="output" />
+
                                                         </div>
 
                                                     </div>
@@ -274,21 +274,29 @@
 
                             <!-- Vital Signs Management Section -->
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-heart p-1"></i>{{ localize('vital_signs') }}</h5>
+                                    class="bx bx-heart p-1"></i>{{ localize('global.vital_signs') }}</h5>
 
                             <div class="row mb-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     @can('create', App\Models\VitalSign::class)
-                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                           class="btn btn-primary">
-                                            <i class="bx bx-plus"></i> {{ localize('add_vital_sign') }}
+                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                            class="btn btn-primary">
+                                            <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
                                         </a>
                                     @endcan
                                 </div>
-                                <div class="col-md-6 text-end">
-                                    <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                       class="btn btn-outline-primary">
-                                        <i class="bx bx-list-ul"></i> {{ localize('view_all_vital_signs') }}
+                                <div class="col-md-4 text-center">
+                                    @if($hospitalization->vitalSigns->count() > 0)
+                                        <a href="{{ route('vital-signs.print', ['App\\Models\\Hospitalization', $hospitalization->id]) }}" 
+                                           class="btn btn-info" target="_blank">
+                                            <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
+                                        </a>
+                                    @endif
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                        class="btn btn-outline-primary">
+                                        <i class="bx bx-list-ul"></i> {{ localize('global.view_all_vital_signs') }}
                                     </a>
                                 </div>
                             </div>
@@ -298,11 +306,11 @@
                                     <table class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
-                                                <th>{{ localize('id') }}</th>
-                                                <th>{{ localize('vital_sign_type') }}</th>
-                                                <th>{{ localize('created_at') }}</th>
+                                                <th>{{ localize('global.id') }}</th>
+                                                <th>{{ localize('global.vital_sign_type') }}</th>
+                                                <th>{{ localize('global.created_at') }}</th>
                                                 <th>{{ localize('schedules') }}</th>
-                                                <th>{{ localize('actions') }}</th>
+                                                <th>{{ localize('global.actions') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -310,23 +318,26 @@
                                                 <tr>
                                                     <td>{{ $vitalSign->id }}</td>
                                                     <td>
-                                                        <span class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
+                                                        <span
+                                                            class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
                                                     </td>
                                                     <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
                                                     <td>
-                                                        <span class="badge bg-secondary">{{ $vitalSign->schedules->count() }} {{ localize('schedules') }}</span>
+                                                        <span class="badge bg-secondary">{{ $vitalSign->schedules->count() }}
+                                                            {{ localize('global.schedules') }}</span>
                                                     </td>
                                                     <td>
                                                         <div class="btn-group" role="group">
                                                             @can('view', $vitalSign)
-                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}" 
-                                                                   class="btn btn-info btn-sm" title="{{ localize('view') }}">
+                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
+                                                                    class="btn btn-info btn-sm" title="{{ localize('global.view') }}">
                                                                     <i class="bx bx-show"></i>
                                                                 </a>
                                                             @endcan
                                                             @can('create', App\Models\VitalSignSchedule::class)
-                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}" 
-                                                                   class="btn btn-success btn-sm" title="{{ localize('add_schedule') }}">
+                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
+                                                                    class="btn btn-success btn-sm"
+                                                                    title="{{ localize('global.add_schedule') }}">
                                                                     <i class="bx bx-time"></i>
                                                                 </a>
                                                             @endcan
@@ -336,12 +347,13 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                    
+
                                     @if($hospitalization->vitalSigns->count() > 5)
                                         <div class="text-center mt-3">
-                                            <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                               class="btn btn-outline-primary">
-                                                {{ localize('view_all') }} ({{ $hospitalization->vitalSigns->count() }} {{ localize('vital_signs') }})
+                                            <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                                class="btn btn-outline-primary">
+                                                {{ localize('global.view_all') }} ({{ $hospitalization->vitalSigns->count() }}
+                                                {{ localize('global.vital_signs') }})
                                             </a>
                                         </div>
                                     @endif
@@ -351,12 +363,12 @@
                                     <div class="mb-3">
                                         <i class="bx bx-heart bx-lg text-muted"></i>
                                     </div>
-                                    <h5 class="text-muted">{{ localize('no_vital_signs_found') }}</h5>
-                                    <p class="text-muted">{{ localize('add_first_vital_sign') }}</p>
+                                    <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
+                                    <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
                                     @can('create', App\Models\VitalSign::class)
-                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                           class="btn btn-primary">
-                                            <i class="bx bx-plus"></i> {{ localize('add_vital_sign') }}
+                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                            class="btn btn-primary">
+                                            <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
                                         </a>
                                     @endcan
                                 </div>
@@ -378,7 +390,8 @@
                                         <div class="modal-header">
                                             <h5 class="modal-title"
                                                 id="createPrescriptionModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_prescription') }}</h5>
+                                                {{ localize('global.add_prescription') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -389,8 +402,7 @@
                                                     name="patient_id" value="{{ $hospitalization->patient_id }}">
                                                 <input type="hidden"
                                                     id="appointment_id{{ $hospitalization->appointment->id }}"
-                                                    name="appointment_id"
-                                                    value="{{ $hospitalization->appointment->id }}">
+                                                    name="appointment_id" value="{{ $hospitalization->appointment->id }}">
                                                 <input type="hidden" id="branch_id{{ $hospitalization->id }}"
                                                     name="branch_id" value="{{ auth()->user()->branch_id }}">
                                                 <input type="hidden" id="doctor_id{{ $hospitalization->id }}"
@@ -409,10 +421,9 @@
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
                                                                     @foreach ($medicineTypes as $value)
-                                                                        <option value="{{ $value->id }}"
-                                                                            {{ old('type') == $value->id ? 'selected' : '' }}>
+                                                                        <option value="{{ $value->id }}" {{ old('type') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->type }}
-    
+
                                                                         </option>
                                                                     @endforeach
                                                                 </select>
@@ -422,10 +433,9 @@
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
                                                                     @foreach ($medicines as $value)
-                                                                        <option value="{{ $value->id }}"
-                                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->name }}
-    
+
                                                                         </option>
                                                                     @endforeach
                                                                 </select>
@@ -435,25 +445,24 @@
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
                                                                     @foreach ($medicineUsageTypes as $value)
-                                                                        <option value="{{ $value->id }}"
-                                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->name }}
-    
+
                                                                         </option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
                                                             <div class="col-md-2">
-                                                                <input type="text" class="form-control mt-2"
-                                                                    name="dosage[]" placeholder="Dosage">
+                                                                <input type="text" class="form-control mt-2" name="dosage[]"
+                                                                    placeholder="Dosage">
                                                             </div>
                                                             <div class="col-md-2">
                                                                 <input type="text" class="form-control mt-2"
                                                                     name="frequency[]" placeholder="Frequency">
                                                             </div>
                                                             <div class="col-md-2">
-                                                                <input type="text" class="form-control mt-2"
-                                                                    name="amount[]" placeholder="Amount">
+                                                                <input type="text" class="form-control mt-2" name="amount[]"
+                                                                    placeholder="Amount">
                                                             </div>
                                                             <div class="col-md-2">
                                                                 <input type="hidden" class="form-control mt-2"
@@ -463,10 +472,9 @@
                                                     </div>
                                                 </div>
 
-                                                <button type="button" class="btn btn-primary mt-2"
-                                                    id="addPrescriptionInput" onclick="addRow()">
-                                                    <i
-                                                        class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
+                                                <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput"
+                                                    onclick="addRow()">
+                                                    <i class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
                                                 </button>
                                         </div>
                                         <div class="modal-footer">
@@ -497,11 +505,9 @@
                                                 <td>{{ $prescription->patient->name }}</td>
                                                 <td>
                                                     @if ($prescription->is_completed == '0')
-                                                        <span
-                                                            class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                                        <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
                                                     @else
-                                                        <span
-                                                            class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                                        <span class="badge bg-success">{{ localize('global.delivered') }}</span>
                                                     @endif
                                                 </td>
                                                 <td>
@@ -517,8 +523,7 @@
                                             <tr>
                                                 <td colspan="5">
                                                     <div class="container">
-                                                        <div
-                                                            class="col-md-12 d-flex justify-content-center align-items-center">
+                                                        <div class="col-md-12 d-flex justify-content-center align-items-center">
                                                             <div class="badge bg-label-danger mt-4">
                                                                 {{ localize('global.no_previous_prescriptions') }}
                                                             </div>
@@ -550,7 +555,8 @@
                                         <div class="modal-header">
                                             <h5 class="modal-title"
                                                 id="showPrescriptionModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.show_prescription_details') }}</h5>
+                                                {{ localize('global.show_prescription_details') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -561,9 +567,9 @@
                                                         <th>{{ localize('global.number') }}</th>
                                                         <th>{{ localize('global.date') }}</th>
                                                         {{-- <th>{{ localize('global.description') }}</th>
-                                                    <th>{{ localize('global.dosage') }}</th>
-                                                    <th>{{ localize('global.frequency') }}</th>
-                                                    <th>{{ localize('global.amount') }}</th> --}}
+                                                        <th>{{ localize('global.dosage') }}</th>
+                                                        <th>{{ localize('global.frequency') }}</th>
+                                                        <th>{{ localize('global.amount') }}</th> --}}
                                                         <th>{{ localize('global.status') }}</th>
                                                         <th>{{ localize('global.actions') }}</th>
                                                     </tr>
@@ -604,404 +610,527 @@
                                 </div>
                             </div>
 
-                    <div class="col-md-12 mt-4">
-                        <h5 class="mb-4 p-3 bg-label-primary">
-                            <i class="bx bx-bar-chart p-1"></i>{{ localize('global.diabetes_charts') }}
-                        </h5>
-                        <div class="d-flex gap-2 mb-3">
-                            <a href="{{ route('diabetes-charts.print', ['chartable_type' => 'App\\Models\\Hospitalization', 'chartable_id' => $hospitalization->id]) }}" 
-                               class="btn btn-info" target="_blank">
-                                <i class="fas fa-print"></i> {{ localize('global.print_chart') }}
-                            </a>
-                            <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\Hospitalization', 'chartable_id' => $hospitalization->id]) }}" 
-                               class="btn btn-success">
-                                <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
-                            </a>
-                        </div>
-
-
-                        <!-- Diabetes Charts Table -->
-                        @if($diabetesCharts->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>{{ localize('global.date') }}</th>
-                                            <th>{{ localize('global.time') }}</th>
-                                            <th>{{ localize('global.rbs') }}</th>
-                                            <th>{{ localize('global.fbs') }}</th>
-                                            <th>{{ localize('global.insulin_dose') }}</th>
-                                            <th>{{ localize('global.unit') }}</th>
-                                            <th>{{ localize('global.nurse') }}</th>
-                                            <th>{{ localize('global.medicine') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($diabetesCharts as $chart)
-                                            <tr>
-                                                <td>{{ $chart->id }}</td>
-                                                <td>
-                                                    @if($chart->date)
-                                                        <span class="badge bg-info">{{ $chart->date->format('Y-m-d') }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_set') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->time)
-                                                        <span class="badge bg-secondary">{{ $chart->formatted_time }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_set') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->rbs)
-                                                        <span class="badge bg-warning">{{ $chart->rbs }} {{ $chart->unit }}</span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->fbs)
-                                                        <span class="badge bg-success">{{ $chart->fbs }} {{ $chart->unit }}</span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->insulin_dose)
-                                                        <span class="badge bg-primary">{{ $chart->insulin_dose }}</span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->unit)
-                                                        <small>{{ $chart->unit }}</small>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->nurse)
-                                                        <span class="badge bg-info">{{ $chart->nurse->full_name }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($chart->medicine)
-                                                        <span class="badge bg-secondary">{{ $chart->medicine->name }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <a href="{{ route('diabetes-charts.show', $chart) }}" 
-                                                           class="btn btn-sm btn-info" 
-                                                           title="{{ localize('global.view') }}">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                        <a href="{{ route('diabetes-charts.edit', $chart) }}" 
-                                                           class="btn btn-sm btn-warning" 
-                                                           title="{{ localize('global.edit') }}">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <form action="{{ route('diabetes-charts.destroy', $chart) }}" 
-                                                              method="POST" 
-                                                              class="d-inline"
-                                                              onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" 
-                                                                    class="btn btn-sm btn-danger" 
-                                                                    title="{{ localize('global.delete') }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="mb-3">
-                                    <i class="bx bx-clipboard bx-lg text-muted"></i>
+                            <div class="col-md-12 mt-4">
+                                <h5 class="mb-4 p-3 bg-label-primary">
+                                    <i class="bx bx-bar-chart p-1"></i>{{ localize('global.diabetes_charts') }}
+                                </h5>
+                                <div class="d-flex gap-2 mb-3">
+                                    <a href="{{ route('diabetes-charts.print', ['chartable_type' => 'App\\Models\\Hospitalization', 'chartable_id' => $hospitalization->id]) }}"
+                                        class="btn btn-info" target="_blank">
+                                        <i class="fas fa-print"></i> {{ localize('global.print_chart') }}
+                                    </a>
+                                    <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\Hospitalization', 'chartable_id' => $hospitalization->id]) }}"
+                                        class="btn btn-success">
+                                        <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
+                                    </a>
                                 </div>
-                                <h5 class="text-muted">{{ localize('global.no_diabetes_charts_found') }}</h5>
-                                <p class="text-muted">{{ localize('global.add_first_diabetes_chart') }}</p>
-                                <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\Hospitalization', 'chartable_id' => $hospitalization->id]) }}" 
-                                   class="btn btn-primary">
-                                    <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
-                                </a>
-                            </div>
-                        @endif
-                    </div>
 
-                    <!-- Nurse Notes Section -->
-                    <div class="col-md-12 mt-4">
-                        <h5 class="mb-4 p-3 bg-label-primary">
-                            <i class="bx bx-note p-1"></i>{{ localize('global.nurse_notes') }}
-                        </h5>
-                        <div class="d-flex gap-2 mb-3">
-                            <a href="{{ route('nurse-notes.print', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                               class="btn btn-info" target="_blank">
-                                <i class="fas fa-print"></i> {{ localize('global.print_notes') }}
-                            </a>
-                            @can('create', App\Models\NurseNote::class)
-                                <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                   class="btn btn-success">
-                                    <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
-                                </a>
-                            @endcan
-                        </div>
 
-                        @if($nurseNotes->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>{{ localize('global.date') }}</th>
-                                            <th>{{ localize('global.nurse') }}</th>
-                                            <th>{{ localize('global.am_time') }}</th>
-                                            <th>{{ localize('global.pm_time') }}</th>
-                                            <th>{{ localize('global.note') }}</th>
-                                            <th>{{ localize('global.created_by') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($nurseNotes as $note)
-                                            <tr>
-                                                <td>{{ $note->id }}</td>
-                                                <td>
-                                                    @if($note->date)
-                                                        <span class="badge bg-info">{{ $note->date->format('Y-m-d') }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($note->nurse)
-                                                        <span class="badge bg-primary">{{ $note->nurse->full_name }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($note->time_am)
-                                                        <span class="badge bg-primary">{{ $note->time_am->format('H:i') }}</span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($note->time_pm)
-                                                        <span class="badge bg-primary">{{ $note->time_pm->format('H:i') }}</span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($note->note)
-                                                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ $note->note }}">
-                                                            {{ Str::limit($note->note, 50) }}
-                                                        </span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($note->createdBy)
-                                                        <span class="badge bg-secondary">{{ $note->createdBy->name }}</span>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('view', $note)
-                                                            <a href="{{ route('nurse-notes.show', $note) }}" 
-                                                               class="btn btn-sm btn-info" 
-                                                               title="{{ localize('global.view') }}">
-                                                                <i class="fas fa-eye"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('update', $note)
-                                                            <a href="{{ route('nurse-notes.edit', $note) }}" 
-                                                               class="btn btn-sm btn-warning" 
-                                                               title="{{ localize('global.edit') }}">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete', $note)
-                                                            <form action="{{ route('nurse-notes.destroy', $note) }}" 
-                                                                  method="POST" 
-                                                                  class="d-inline"
-                                                                  onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" 
-                                                                        class="btn btn-sm btn-danger" 
+                                <!-- Diabetes Charts Table -->
+                                @if($diabetesCharts->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>{{ localize('global.date') }}</th>
+                                                    <th>{{ localize('global.time') }}</th>
+                                                    <th>{{ localize('global.rbs') }}</th>
+                                                    <th>{{ localize('global.fbs') }}</th>
+                                                    <th>{{ localize('global.insulin_dose') }}</th>
+                                                    <th>{{ localize('global.unit') }}</th>
+                                                    <th>{{ localize('global.nurse') }}</th>
+                                                    <th>{{ localize('global.medicine') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($diabetesCharts as $chart)
+                                                    <tr>
+                                                        <td>{{ $chart->id }}</td>
+                                                        <td>
+                                                            @if($chart->date)
+                                                                <span class="badge bg-info">{{ $chart->date->format('Y-m-d') }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_set') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->time)
+                                                                <span class="badge bg-secondary">{{ $chart->formatted_time }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_set') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->rbs)
+                                                                <span class="badge bg-warning">{{ $chart->rbs }}
+                                                                    {{ $chart->unit }}</span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->fbs)
+                                                                <span class="badge bg-success">{{ $chart->fbs }}
+                                                                    {{ $chart->unit }}</span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->insulin_dose)
+                                                                <span class="badge bg-primary">{{ $chart->insulin_dose }}</span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->unit)
+                                                                <small>{{ $chart->unit }}</small>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->nurse)
+                                                                <span class="badge bg-info">{{ $chart->nurse->full_name }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($chart->medicine)
+                                                                <span class="badge bg-secondary">{{ $chart->medicine->name }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <a href="{{ route('diabetes-charts.show', $chart) }}"
+                                                                    class="btn btn-sm btn-info"
+                                                                    title="{{ localize('global.view') }}">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                                <a href="{{ route('diabetes-charts.edit', $chart) }}"
+                                                                    class="btn btn-sm btn-warning"
+                                                                    title="{{ localize('global.edit') }}">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <form action="{{ route('diabetes-charts.destroy', $chart) }}"
+                                                                    method="POST" class="d-inline"
+                                                                    onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger"
                                                                         title="{{ localize('global.delete') }}">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="mb-3">
+                                            <i class="bx bx-clipboard bx-lg text-muted"></i>
+                                        </div>
+                                        <h5 class="text-muted">{{ localize('global.no_diabetes_charts_found') }}</h5>
+                                        <p class="text-muted">{{ localize('global.add_first_diabetes_chart') }}</p>
+                                        <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\Hospitalization', 'chartable_id' => $hospitalization->id]) }}"
+                                            class="btn btn-primary">
+                                            <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="mb-3">
-                                    <i class="bx bx-note bx-lg text-muted"></i>
-                                </div>
-                                <h5 class="text-muted">{{ localize('global.no_nurse_notes_found') }}</h5>
-                                <p class="text-muted">{{ localize('global.add_first_nurse_note') }}</p>
-                                @can('create', App\Models\NurseNote::class)
-                                    <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                       class="btn btn-primary">
-                                        <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
-                                    </a>
-                                @endcan
-                            </div>
-                        @endif
-                    </div>
 
-                    <!-- Medication Administration Records Section -->
-                    <div class="col-md-12 mt-4">
-                        <h5 class="mb-4 p-3 bg-label-primary">
-                            <i class="bx bx-pills p-1"></i>{{ localize('global.medication_administration_records') }} ({{ localize('global.mar') }})
-                        </h5>
-                        <div class="d-flex gap-2 mb-3">
-                            <a href="{{ route('medication-administration-records.print', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                               class="btn btn-info" target="_blank">
-                                <i class="fas fa-print"></i> {{ localize('global.print_mars') }}
-                            </a>
-                            @can('create', App\Models\MedicationAdministrationRecord::class)
-                                <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                   class="btn btn-success">
-                                    <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
-                                </a>
-                            @endcan
-                        </div>
-
-                        @if($medicationAdministrationRecords->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.mar_id') }}</th>
-                                            <th>{{ localize('global.medicine') }}</th>
-                                            <th>{{ localize('global.nurse') }}</th>
-                                            <th>{{ localize('global.order_date') }}</th>
-                                            <th>{{ localize('global.signature_date') }}</th>
-                                            <th>{{ localize('global.administration_times') }}</th>
-                                            <th>{{ localize('global.mar_created_by') }}</th>
-                                            <th>{{ localize('global.mar_actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($medicationAdministrationRecords as $mar)
-                                            <tr>
-                                                <td>{{ $mar->id }}</td>
-                                                <td>
-                                                    <strong>{{ $mar->medicine->name ?? 'N/A' }}</strong>
-                                                </td>
-                                                <td>{{ $mar->nurse->full_name ?? 'N/A' }}</td>
-                                                <td>
-                                                    @if($mar->order_date)
-                                                        <span class="badge bg-info">{{ $mar->order_date->format('Y-m-d') }}</span>
-                                                    @else
-                                                        <span class="text-muted">N/A</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($mar->date_signature)
-                                                        <span class="badge bg-success">{{ $mar->date_signature->format('Y-m-d') }}</span>
-                                                    @else
-                                                        <span class="text-muted">N/A</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($mar->administrationTimes->count() > 0)
-                                                        <span class="badge badge-info">
-                                                            {{ $mar->administrationTimes->count() }} {{ localize('global.times_count') }}
-                                                        </span>
-                                                        <br>
-                                                        <small>
-                                                            @foreach($mar->administrationTimes as $time)
-                                                                {{ $time->formatted_time }}@if(!$loop->last), @endif
-                                                            @endforeach
-                                                        </small>
-                                                    @else
-                                                        <span class="text-muted">{{ localize('global.no_times_recorded') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $mar->createdBy->name ?? 'System' }}</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('view', $mar)
-                                                            <a href="{{ route('medication-administration-records.show', $mar) }}" 
-                                                               class="btn btn-sm btn-info" 
-                                                               title="{{ localize('global.mar_view') }}">
-                                                                <i class="fas fa-eye"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('update', $mar)
-                                                            <a href="{{ route('medication-administration-records.edit', $mar) }}" 
-                                                               class="btn btn-sm btn-warning" 
-                                                               title="{{ localize('global.mar_edit') }}">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete', $mar)
-                                                            <form action="{{ route('medication-administration-records.destroy', $mar) }}" 
-                                                                  method="POST" 
-                                                                  class="d-inline"
-                                                                  onsubmit="return confirm('{{ localize('global.mar_confirm_delete') }}')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-danger" 
-                                                                        title="{{ localize('global.mar_delete') }}">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="mb-3">
-                                    <i class="bx bx-pills bx-lg text-muted"></i>
-                                </div>
-                                <h5 class="text-muted">{{ localize('global.no_mars_found') }}</h5>
-                                <p class="text-muted">{{ localize('global.add_first_mar') }}</p>
-                                @can('create', App\Models\MedicationAdministrationRecord::class)
-                                    <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}" 
-                                       class="btn btn-primary">
-                                        <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
+                            <!-- Nurse Notes Section -->
+                            <div class="col-md-12 mt-4">
+                                <h5 class="mb-4 p-3 bg-label-primary">
+                                    <i class="bx bx-note p-1"></i>{{ localize('global.nurse_notes') }}
+                                </h5>
+                                <div class="d-flex gap-2 mb-3">
+                                    <a href="{{ route('nurse-notes.print', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                        class="btn btn-info" target="_blank">
+                                        <i class="fas fa-print"></i> {{ localize('global.print_notes') }}
                                     </a>
-                                @endcan
+                                    @can('create', App\Models\NurseNote::class)
+                                        <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                            class="btn btn-success">
+                                            <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
+                                        </a>
+                                    @endcan
+                                </div>
+
+                                @if($nurseNotes->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>{{ localize('global.date') }}</th>
+                                                    <th>{{ localize('global.nurse') }}</th>
+                                                    <th>{{ localize('global.am_time') }}</th>
+                                                    <th>{{ localize('global.pm_time') }}</th>
+                                                    <th>{{ localize('global.note') }}</th>
+                                                    <th>{{ localize('global.created_by') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($nurseNotes as $note)
+                                                    <tr>
+                                                        <td>{{ $note->id }}</td>
+                                                        <td>
+                                                            @if($note->date)
+                                                                <span class="badge bg-info">{{ $note->date->format('Y-m-d') }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($note->nurse)
+                                                                <span class="badge bg-primary">{{ $note->nurse->full_name }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($note->time_am)
+                                                                <span
+                                                                    class="badge bg-primary">{{ $note->time_am->format('H:i') }}</span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($note->time_pm)
+                                                                <span
+                                                                    class="badge bg-primary">{{ $note->time_pm->format('H:i') }}</span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($note->note)
+                                                                <span class="text-truncate d-inline-block" style="max-width: 200px;"
+                                                                    title="{{ $note->note }}">
+                                                                    {{ Str::limit($note->note, 50) }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($note->createdBy)
+                                                                <span class="badge bg-secondary">{{ $note->createdBy->name }}</span>
+                                                            @else
+                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('view', $note)
+                                                                    <a href="{{ route('nurse-notes.show', $note) }}"
+                                                                        class="btn btn-sm btn-info"
+                                                                        title="{{ localize('global.view') }}">
+                                                                        <i class="fas fa-eye"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('update', $note)
+                                                                    <a href="{{ route('nurse-notes.edit', $note) }}"
+                                                                        class="btn btn-sm btn-warning"
+                                                                        title="{{ localize('global.edit') }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete', $note)
+                                                                    <form action="{{ route('nurse-notes.destroy', $note) }}"
+                                                                        method="POST" class="d-inline"
+                                                                        onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                                            title="{{ localize('global.delete') }}">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                @endcan
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="mb-3">
+                                            <i class="bx bx-note bx-lg text-muted"></i>
+                                        </div>
+                                        <h5 class="text-muted">{{ localize('global.no_nurse_notes_found') }}</h5>
+                                        <p class="text-muted">{{ localize('global.add_first_nurse_note') }}</p>
+                                        @can('create', App\Models\NurseNote::class)
+                                            <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                                class="btn btn-primary">
+                                                <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
+                                            </a>
+                                        @endcan
+                                    </div>
+                                @endif
                             </div>
-                        @endif
-                    </div>
+
+                            <!-- Medication Administration Records Section -->
+                            <div class="col-md-12 mt-4">
+                                <h5 class="mb-4 p-3 bg-label-primary">
+                                    <i
+                                        class="bx bx-pills p-1"></i>{{ localize('global.medication_administration_records') }}
+                                    ({{ localize('global.mar') }})
+                                </h5>
+                                <div class="d-flex gap-2 mb-3">
+                                    <a href="{{ route('medication-administration-records.print', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                        class="btn btn-info" target="_blank">
+                                        <i class="fas fa-print"></i> {{ localize('global.print_mars') }}
+                                    </a>
+                                    @can('create', App\Models\MedicationAdministrationRecord::class)
+                                        <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                            class="btn btn-success">
+                                            <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
+                                        </a>
+                                    @endcan
+                                </div>
+
+                                @if($medicationAdministrationRecords->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{ localize('global.mar_id') }}</th>
+                                                    <th>{{ localize('global.medicine') }}</th>
+                                                    <th>{{ localize('global.nurse') }}</th>
+                                                    <th>{{ localize('global.order_date') }}</th>
+                                                    <th>{{ localize('global.signature_date') }}</th>
+                                                    <th>{{ localize('global.administration_times') }}</th>
+                                                    <th>{{ localize('global.mar_created_by') }}</th>
+                                                    <th>{{ localize('global.mar_actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($medicationAdministrationRecords as $mar)
+                                                    <tr>
+                                                        <td>{{ $mar->id }}</td>
+                                                        <td>
+                                                            <strong>{{ $mar->medicine->name ?? 'N/A' }}</strong>
+                                                        </td>
+                                                        <td>{{ $mar->nurse->full_name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @if($mar->order_date)
+                                                                <span
+                                                                    class="badge bg-info">{{ $mar->order_date->format('Y-m-d') }}</span>
+                                                            @else
+                                                                <span class="text-muted">N/A</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($mar->date_signature)
+                                                                <span
+                                                                    class="badge bg-success">{{ $mar->date_signature->format('Y-m-d') }}</span>
+                                                            @else
+                                                                <span class="text-muted">N/A</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($mar->administrationTimes->count() > 0)
+                                                                <span class="badge badge-info">
+                                                                    {{ $mar->administrationTimes->count() }}
+                                                                    {{ localize('global.times_count') }}
+                                                                </span>
+                                                                <br>
+                                                                <small>
+                                                                    @foreach($mar->administrationTimes as $time)
+                                                                        {{ $time->formatted_time }}@if(!$loop->last), @endif
+                                                                    @endforeach
+                                                                </small>
+                                                            @else
+                                                                <span
+                                                                    class="text-muted">{{ localize('global.no_times_recorded') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $mar->createdBy->name ?? 'System' }}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('view', $mar)
+                                                                    <a href="{{ route('medication-administration-records.show', $mar) }}"
+                                                                        class="btn btn-sm btn-info"
+                                                                        title="{{ localize('global.mar_view') }}">
+                                                                        <i class="fas fa-eye"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('update', $mar)
+                                                                    <a href="{{ route('medication-administration-records.edit', $mar) }}"
+                                                                        class="btn btn-sm btn-warning"
+                                                                        title="{{ localize('global.mar_edit') }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete', $mar)
+                                                                    <form
+                                                                        action="{{ route('medication-administration-records.destroy', $mar) }}"
+                                                                        method="POST" class="d-inline"
+                                                                        onsubmit="return confirm('{{ localize('global.mar_confirm_delete') }}')">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                                            title="{{ localize('global.mar_delete') }}">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                @endcan
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="mb-3">
+                                            <i class="bx bx-pills bx-lg text-muted"></i>
+                                        </div>
+                                        <h5 class="text-muted">{{ localize('global.no_mars_found') }}</h5>
+                                        <p class="text-muted">{{ localize('global.add_first_mar') }}</p>
+                                        @can('create', App\Models\MedicationAdministrationRecord::class)
+                                            <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}"
+                                                class="btn btn-primary">
+                                                <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
+                                            </a>
+                                        @endcan
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Nutrition Care Section -->
+                            <div class="col-md-12 mt-4" id="nutrition-care-section">
+                                <h5 class="mb-4 p-3 bg-label-primary">
+                                    <i class="bx bx-food-menu p-1"></i>{{ localize('global.nutrition_care') }}
+                                </h5>
+                                <div class="d-flex gap-2 mb-3">
+                                    @can('create', \App\Models\NutritionCare::class)
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
+                                            <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                                        </button>
+                                    @endcan
+                                </div>
+
+                                @if($hospitalization->nutritionCares->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{ localize('global.id') }}</th>
+                                                    <th>{{ localize('global.patient_name') }}</th>
+                                                    <th>{{ localize('global.nurse') }}</th>
+                                                    <th>{{ localize('global.observations') }}</th>
+                                                    <th>{{ localize('global.interventions') }}</th>
+                                                    <th>{{ localize('global.nutrition_care_full_note') }}</th>
+                                                    <th>{{ localize('global.date_signature') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($hospitalization->nutritionCares as $nutritionCare)
+                                                    <tr>
+                                                        <td>{{ $nutritionCare->id }}</td>
+                                                        <td>{{ $nutritionCare->patient_name }}</td>
+                                                        <td>{{ $nutritionCare->nurse->full_name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @php
+                                                                $observations = [];
+                                                                if ($nutritionCare->cough) $observations[] = localize('global.cough');
+                                                                if ($nutritionCare->sound) $observations[] = localize('global.sound');
+                                                                if ($nutritionCare->fluid_swallowing_ability) $observations[] = localize('global.fluid_swallowing_ability');
+                                                                if ($nutritionCare->weight) $observations[] = localize('global.weight');
+                                                                if ($nutritionCare->amount_and_type_of_nutrition) $observations[] = localize('global.amount_and_type_of_nutrition');
+                                                                if ($nutritionCare->diarrhea) $observations[] = localize('global.diarrhea');
+                                                                if ($nutritionCare->heart_failure_and_kidney_disease) $observations[] = localize('global.heart_failure_and_kidney_disease');
+                                                                if ($nutritionCare->remaining_materials) $observations[] = localize('global.remaining_materials');
+                                                                if ($nutritionCare->type_of_tube) $observations[] = localize('global.type_of_tube');
+                                                            @endphp
+                                                            {{ implode(', ', $observations) ?: '-' }}
+                                                        </td>
+                                                        <td>
+                                                            @php
+                                                                $interventions = [];
+                                                                if ($nutritionCare->constipation) $interventions[] = localize('global.constipation');
+                                                                if ($nutritionCare->nutrition_is_provided) $interventions[] = localize('global.nutrition_is_provided');
+                                                                if ($nutritionCare->mouth_hygiene) $interventions[] = localize('global.mouth_hygiene');
+                                                                if ($nutritionCare->oral_nutrition_advices) $interventions[] = localize('global.oral_nutrition_advices');
+                                                                if ($nutritionCare->voice_exercise) $interventions[] = localize('global.voice_exercise');
+                                                                if ($nutritionCare->swallowing_exercise) $interventions[] = localize('global.swallowing_exercise');
+                                                                if ($nutritionCare->aspiration_prevention_proceeded) $interventions[] = localize('global.aspiration_prevention_proceeded');
+                                                            @endphp
+                                                            {{ implode(', ', $interventions) ?: '-' }}
+                                                        </td>
+                                                        <td>
+                                                            @if($nutritionCare->nutrition_care_full_note)
+                                                                <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ $nutritionCare->nutrition_care_full_note }}">
+                                                                    {{ Str::limit($nutritionCare->nutrition_care_full_note, 50) }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $nutritionCare->created_at->format('Y-m-d H:i') }}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('view', $nutritionCare)
+                                                                    <a href="{{ route('nutrition-cares.show', $nutritionCare) }}" class="btn btn-sm btn-info" title="{{ localize('global.view') }}">
+                                                                        <i class="fas fa-eye"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('update', $nutritionCare)
+                                                                    <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-sm btn-warning" title="{{ localize('global.edit') }}">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete', $nutritionCare)
+                                                                    <form action="{{ route('nutrition-cares.destroy', $nutritionCare) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-sm btn-danger" title="{{ localize('global.delete') }}">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                @endcan
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="mb-3">
+                                            <i class="bx bx-food-menu bx-lg text-muted"></i>
+                                        </div>
+                                        <h5 class="text-muted">{{ localize('global.no_nutrition_care_found') }}</h5>
+                                        <p class="text-muted">{{ localize('global.add_first_nutrition_care') }}</p>
+                                        @can('create', \App\Models\NutritionCare::class)
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
+                                                <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                                            </button>
+                                        @endcan
+                                    </div>
+                                @endif
+                            </div>
 
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-command p-1"></i>{{ localize('global.advice') }}</h5>
@@ -1016,9 +1145,9 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title"
-                                                id="createAdviceModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_advice') }}</h5>
+                                            <h5 class="modal-title" id="createAdviceModalLabel{{ $hospitalization->id }}">
+                                                {{ localize('global.add_advice') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1039,7 +1168,9 @@
 
                                                     <label
                                                         for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
-                                                    <textarea class="form-control" id="description{{ $hospitalization->id }}" name="description" rows="3"></textarea>
+                                                    <textarea class="form-control"
+                                                        id="description{{ $hospitalization->id }}" name="description"
+                                                        rows="3"></textarea>
 
                                                 </div>
                                         </div>
@@ -1117,7 +1248,8 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createLabModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_lab_test') }}</h5>
+                                                {{ localize('global.add_lab_test') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1133,8 +1265,8 @@
                                                     name="doctor_id" value="{{ $hospitalization->doctor->id }}">
                                                 <input type="hidden" id="branch_id{{ $hospitalization->id }}"
                                                     name="branch_id" value="{{ auth()->user()->branch_id }}">
-                                                <input type="hidden" id="status{{ $hospitalization->id }}"
-                                                    name="status" value="0">
+                                                <input type="hidden" id="status{{ $hospitalization->id }}" name="status"
+                                                    value="0">
                                                 <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
                                                     name="hospitalization_id" value="{{ $hospitalization->id }}">
                                                 <div class="form-group">
@@ -1145,8 +1277,7 @@
                                                         id="lab_type_section">
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($labTypeSections as $value)
-                                                            <option value="{{ $value->id }}"
-                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                 {{ $value->section }}
 
                                                             </option>
@@ -1159,8 +1290,7 @@
                                                         id="lab_type_id" onchange="loadLabTypeTests()">
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($labTypes as $value)
-                                                            <option value="{{ $value->id }}"
-                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                 {{ $value->name }}
 
                                                             </option>
@@ -1204,18 +1334,15 @@
                                                 <td>{{ $lab->labType->name }}</td>
                                                 <td>
                                                     @if ($lab->status == '0')
-                                                        <span
-                                                            class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
                                                     @else
-                                                        <span
-                                                            class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
                                                     @endif
                                                 </td>
                                                 <td>{{ $lab->result }}</td>
                                                 <td>
                                                     @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}"
-                                                            target="_blank">
+                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
                                                             <i class="fa fa-file"></i> {{ localize('global.file') }}
                                                         </a>
                                                     @endisset
@@ -1246,7 +1373,7 @@
                             </div>
 
                             {{-- end lab tests from hospitalization --}}
-                            {{-- icu starts here  --}}
+                            {{-- icu starts here --}}
                             <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                     class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
                             @if ($hospitalization->is_discharged == 0)
@@ -1261,7 +1388,8 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createICUModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.refere_to_icu') }}</h5>
+                                                {{ localize('global.refere_to_icu') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1284,7 +1412,9 @@
                                                     <div class="form-group">
                                                         <label
                                                             for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
-                                                        <textarea class="form-control" id="description{{ $hospitalization->id }}" name="description" rows="3"></textarea>
+                                                        <textarea class="form-control"
+                                                            id="description{{ $hospitalization->id }}" name="description"
+                                                            rows="3"></textarea>
                                                     </div>
                                                 </div>
                                         </div>
@@ -1358,14 +1488,14 @@
                             @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createAnasthesiaModal{{ $hospitalization->id }}" tabindex="-1"
-                                aria-labelledby="createAnasthesiaModalLabel{{ $hospitalization->id }}"
-                                aria-hidden="true">
+                                aria-labelledby="createAnasthesiaModalLabel{{ $hospitalization->id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title"
                                                 id="createAnasthesiaModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.refere_to_anasthesia') }}</h5>
+                                                {{ localize('global.refere_to_anasthesia') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1375,8 +1505,7 @@
                                                 <input type="hidden" id="patient_id{{ $hospitalization->patient_id }}"
                                                     name="patient_id" value="{{ $hospitalization->patient_id }}">
                                                 <input type="hidden" id="appointment_id{{ $hospitalization->id }}"
-                                                    name="appointment_id"
-                                                    value="{{ $hospitalization->appointment->id }}">
+                                                    name="appointment_id" value="{{ $hospitalization->appointment->id }}">
                                                 <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
                                                     name="hospitalization_id" value="{{ $hospitalization->id }}">
                                                 <input type="hidden" id="doctor_id{{ $hospitalization->id }}"
@@ -1389,7 +1518,8 @@
                                                     <div class="form-group">
                                                         <label
                                                             for="plan{{ $hospitalization->id }}">{{ localize('global.plan') }}</label>
-                                                        <textarea class="form-control" id="plan{{ $hospitalization->id }}" name="plan" rows="3"></textarea>
+                                                        <textarea class="form-control" id="plan{{ $hospitalization->id }}"
+                                                            name="plan" rows="3"></textarea>
                                                     </div>
 
                                                     <h5 class="mt-2">{{ localize('global.operation_team') }}</h5>
@@ -1397,11 +1527,11 @@
                                                         id="operation_doctor_id" multiple>
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($operation_doctors as $value)
-                                                            <option value="{{ $value->id }}"
-                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->name }}
+                                                        <option value="{{ $value->id }}" {{ old('name')==$value->id ?
+                                                            'selected' : '' }}>
+                                                            {{ $value->name }}
 
-                                                            </option>
+                                                        </option>
                                                         @endforeach
                                                     </select> --}}
 
@@ -1416,8 +1546,7 @@
                                                                         {{ localize('global.select') }}
                                                                     </option>
                                                                     @foreach ($operation_doctors as $value)
-                                                                        <option value="{{ $value->id }}"
-                                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->name }}
 
                                                                         </option>
@@ -1435,8 +1564,7 @@
                                                                         {{ localize('global.select') }}
                                                                     </option>
                                                                     @foreach ($operation_doctors as $value)
-                                                                        <option value="{{ $value->id }}"
-                                                                            {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                             {{ $value->name }}
 
                                                                         </option>
@@ -1453,7 +1581,9 @@
                                                     <div class="form-group">
                                                         <label for="other_problems{{ $hospitalization->id }}"
                                                             class="mt-2 mb-2">{{ localize('global.other_problems') }}</label>
-                                                        <textarea class="form-control" id="other_problems{{ $hospitalization->id }}" name="other_problems" rows="3"></textarea>
+                                                        <textarea class="form-control"
+                                                            id="other_problems{{ $hospitalization->id }}"
+                                                            name="other_problems" rows="3"></textarea>
                                                     </div>
 
 
@@ -1462,8 +1592,7 @@
                                                     <select class="form-control select2" name="operation_type_id">
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($operationTypes as $value)
-                                                            <option value="{{ $value->id }}"
-                                                                {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                 {{ $value->name }}
 
                                                             </option>
@@ -1483,14 +1612,12 @@
                                                     <div>
                                                         <label for="planned_duration"
                                                             class="mt-2 mb-2">{{ localize('global.planned_duration') }}</label>
-                                                        <input type="text" class="form-control"
-                                                            name="planned_duration" />
+                                                        <input type="text" class="form-control" name="planned_duration" />
                                                     </div>
                                                     <div>
                                                         <label for="position_on_bed"
                                                             class="mt-2 mb-2">{{ localize('global.position_on_bed') }}</label>
-                                                        <input type="text" class="form-control"
-                                                            name="position_on_bed" />
+                                                        <input type="text" class="form-control" name="position_on_bed" />
                                                     </div>
                                                     <div>
                                                         <label for="estimated_blood_waste"
@@ -1577,20 +1704,19 @@
                             @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createComplaintModal{{ $hospitalization->id }}" tabindex="-1"
-                                aria-labelledby="createComplaintModalLabel{{ $hospitalization->id }}"
-                                aria-hidden="true">
+                                aria-labelledby="createComplaintModalLabel{{ $hospitalization->id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title"
                                                 id="createComplaintModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_complaint') }}</h5>
+                                                {{ localize('global.add_complaint') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form action="{{ route('complaints.store', $hospitalization) }}"
-                                                method="POST">
+                                            <form action="{{ route('complaints.store', $hospitalization) }}" method="POST">
                                                 @csrf
 
                                                 <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
@@ -1598,7 +1724,9 @@
                                                 <div class="form-group">
                                                     <label
                                                         for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
-                                                    <textarea class="form-control" id="description{{ $hospitalization->id }}" name="description" rows="3"></textarea>
+                                                    <textarea class="form-control"
+                                                        id="description{{ $hospitalization->id }}" name="description"
+                                                        rows="3"></textarea>
 
                                                 </div>
                                         </div>
@@ -1656,14 +1784,14 @@
                             @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createDischargeModal{{ $hospitalization->id }}" tabindex="-1"
-                                aria-labelledby="createDischargeModalLabel{{ $hospitalization->id }}"
-                                aria-hidden="true">
+                                aria-labelledby="createDischargeModalLabel{{ $hospitalization->id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title"
                                                 id="createDischargeModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_lab_test') }}</h5>
+                                                {{ localize('global.add_lab_test') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1687,8 +1815,9 @@
                                                     </select>
                                                     <label
                                                         for="discharge_remark{{ $hospitalization->id }}">{{ localize('global.discharge_remark') }}</label>
-                                                    <textarea class="form-control" id="discharge_remark{{ $hospitalization->id }}" name="discharge_remark"
-                                                        rows="3"></textarea>
+                                                    <textarea class="form-control"
+                                                        id="discharge_remark{{ $hospitalization->id }}"
+                                                        name="discharge_remark" rows="3"></textarea>
                                                     <input type="hidden" name="discharged_at"
                                                         value="{{ \Carbon\Carbon::now() }}">
                                                 </div>
@@ -1704,6 +1833,36 @@
                                 </div>
                             </div>
                             <!-- End Create Lab Modal -->
+
+                            <!-- Create Nutrition Care Modal -->
+                            <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1" aria-labelledby="createNutritionCareModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createNutritionCareModalLabel">{{ localize('global.create_nutrition_care') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form id="createNutritionCareForm" action="{{ route('nutrition-cares.store') }}" method="POST">
+                                            @csrf
+                                            <div class="modal-body">
+                                                @php
+                                                    $nurses = \App\Models\Nurse::all();
+                                                    $morphable_type = 'App\Models\Hospitalization';
+                                                    $morphable_id = $hospitalization->id;
+                                                    $patient_name = $hospitalization->patient->first_name . ' ' . $hospitalization->patient->last_name;
+                                                @endphp
+                                                @include('pages.nutrition-cares.partials.form')
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                <button type="submit" class="btn btn-primary" id="submitNutritionCareBtn">{{ localize('global.create') }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Create Nutrition Care Modal -->
+
                             <div class="col-md-12 mt-4">
                                 {{ $hospitalization->discharge_remark }}
                             </div>
@@ -1731,14 +1890,14 @@
                 .then(response => response.json())
                 .then(data => {
                     // Create checkboxes for each lab type test
-                    data.forEach(function(test) {
+                    data.forEach(function (test) {
                         var checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.name = 'lab_type_id[]'; // Use an array to submit multiple values
                         checkbox.value = test.id;
 
                         // Update the lab_type_id value when a checkbox is checked/unchecked
-                        checkbox.addEventListener('change', function() {
+                        checkbox.addEventListener('change', function () {
                             if (this.checked) {
                                 // Append the test id to the lab_type_id value
                                 document.getElementById('lab_type_id').value += ',' + this.value;
@@ -1791,8 +1950,8 @@
                 typeDropdown.appendChild(typeOption);
             @endforeach
 
-            // Create the medicine dropdown
-            const medicineDropdown = document.createElement('select');
+                // Create the medicine dropdown
+                const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2';
             medicineDropdown.name = 'medicine_id[]';
 
@@ -1805,22 +1964,22 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
-            // Create the medicine dropdown
-            const medicineUsageDropdown = document.createElement('select');
+                // Create the medicine dropdown
+                const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2';
             medicineUsageDropdown.name = 'usage_type_id[]';
 
             // Append the options to the medicine dropdown
             var medicineUsageOption = '';
             @foreach ($medicineUsageTypes as $value)
-                    medicineUsageOption = document.createElement('option');
-                    medicineUsageOption.value = '{{ $value->id }}';
-                    medicineUsageOption.textContent = '{{ $value->name }}';
-                    medicineUsageDropdown.appendChild(medicineUsageOption);
+                medicineUsageOption = document.createElement('option');
+                medicineUsageOption.value = '{{ $value->id }}';
+                medicineUsageOption.textContent = '{{ $value->name }}';
+                medicineUsageDropdown.appendChild(medicineUsageOption);
             @endforeach
 
-            // Create the dosage input field
-            const dosageInput = document.createElement('input');
+                // Create the dosage input field
+                const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';
@@ -1898,12 +2057,85 @@
                 type: "GET",
                 url: "{{ url('prescription_items/getItems/') }}/" + id,
                 dataType: "html",
-                success: function(data) {
+                success: function (data) {
                     $('#prescription_items_table').html(data);
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     // Handle the error response 
                     console.error(error);
+                }
+            });
+        }
+
+        // Handle Nutrition Care form submission with AJAX
+        $(document).ready(function() {
+            $('#createNutritionCareForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var form = $(this);
+                var submitBtn = $('#submitNutritionCareBtn');
+                var originalText = submitBtn.text();
+                
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true).text('{{ localize("global.creating") }}...');
+                
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        // Close modal
+                        $('#createNutritionCareModal').modal('hide');
+                        
+                        // Reload the nutrition care section
+                        reloadNutritionCareSection();
+                        
+                        // Show success message
+                        toastr.success('{{ localize("global.nutrition_care_created_successfully") }}');
+                        
+                        // Reset form
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        // Handle validation errors
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            var errorMessages = [];
+                            
+                            for (var field in errors) {
+                                errorMessages.push(errors[field][0]);
+                            }
+                            
+                            toastr.error(errorMessages.join('<br>'));
+                        } else {
+                            toastr.error('{{ localize("global.error_occurred") }}');
+                        }
+                    },
+                    complete: function() {
+                        // Re-enable submit button
+                        submitBtn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+        });
+
+        // Function to reload nutrition care section
+        function reloadNutritionCareSection() {
+            $.ajax({
+                type: "GET",
+                url: "{{ route('nutrition-cares.by-morphable', ['App\\Models\\Hospitalization', $hospitalization->id]) }}",
+                dataType: "html",
+                success: function (data) {
+                    // Find and replace the nutrition care section
+                    var nutritionCareSection = $(data).find('#nutrition-care-section');
+                    if (nutritionCareSection.length > 0) {
+                        $('#nutrition-care-section').replaceWith(nutritionCareSection);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error reloading nutrition care section:', error);
+                    // Fallback: reload the entire page
+                    location.reload();
                 }
             });
         }

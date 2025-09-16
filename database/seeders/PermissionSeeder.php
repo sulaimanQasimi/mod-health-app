@@ -1374,6 +1374,70 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
+        // Nutrition Care Permissions
+        Permission::createOrFirst([
+            'name' => 'show-nutrition-care-menu',
+            'name_dr' => 'نمایش مینو مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'view_nutrition_care',
+            'name_dr' => 'نمایش مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create_nutrition_care',
+            'name_dr' => 'ایجاد مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit_nutrition_care',
+            'name_dr' => 'تصحیح مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete_nutrition_care',
+            'name_dr' => 'حذف مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'restore_nutrition_care',
+            'name_dr' => 'بازیابی مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'force_delete_nutrition_care',
+            'name_dr' => 'حذف دائمی مراقبت تغذیه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
         User::find(1)->givePermissionTo(Permission::all());
 
     }

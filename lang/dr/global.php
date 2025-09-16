@@ -2341,6 +2341,8 @@ return [
     "order_date" => "د امر نیټه",
     "date_signature" => "نیټه او لاسلیک",
     "other" => "نور",
+
+    // Vital Sign Types - نوعیت علائم حیاتی
     "vital_sign_types" => "نوعیت علائم حیاتی",
     "vital_sign_type" => "نوعیت علامت حیاتی",
     "vital_sign_type_name" => "نام نوعیت علامت حیاتی",
@@ -2350,6 +2352,8 @@ return [
     "vital_sign_type_updated_successfully" => "نوعیت علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_type_deleted_successfully" => "نوعیت علامت حیاتی با موفقیت حذف شد",
     "vital_sign_type_restored_successfully" => "نوعیت علامت حیاتی با موفقیت بازیابی شد",
+
+    // Vital Signs - علائم حیاتی
     "vital_signs" => "علائم حیاتی",
     "vital_sign" => "علامت حیاتی",
     "vital_sign_type_id" => "نوعیت علامت حیاتی",
@@ -2363,6 +2367,8 @@ return [
     "vital_sign_updated_successfully" => "علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_deleted_successfully" => "علامت حیاتی با موفقیت حذف شد",
     "vital_sign_restored_successfully" => "علامت حیاتی با موفقیت بازیابی شد",
+
+    // Vital Sign Schedules - برنامه علائم حیاتی
     "vital_sign_schedules" => "برنامه علائم حیاتی",
     "vital_sign_schedule" => "برنامه علامت حیاتی",
     "morning_time" => "وقت صبح",
@@ -2377,6 +2383,8 @@ return [
     "vital_sign_schedule_updated_successfully" => "برنامه علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_schedule_deleted_successfully" => "برنامه علامت حیاتی با موفقیت حذف شد",
     "vital_sign_schedule_restored_successfully" => "برنامه علامت حیاتی با موفقیت بازیابی شد",
+
+    // Common Vital Sign Terms - اصطلاحات مشترک علائم حیاتی
     "blood_pressure" => "فشار خون",
     "pulse_rate" => "ضربان قلب",
     "temperature" => "درجه حرارت",
@@ -2387,6 +2395,8 @@ return [
     "body_mass_index" => "شاخص توده بدنی",
     "glucose_level" => "سطح گلوکز",
     "heart_rate" => "ضربان قلب",
+
+    // Form Labels - برچسب‌های فرم
     "select_vital_sign_type" => "انتخاب نوعیت علامت حیاتی",
     "select_morphable_type" => "انتخاب نوع مرجع",
     "enter_morphable_id" => "وارد کردن شناسه مرجع",
@@ -2394,6 +2404,8 @@ return [
     "select_date" => "انتخاب تاریخ",
     "enter_morning_time" => "وارد کردن وقت صبح",
     "enter_evening_time" => "وارد کردن وقت شام",
+
+    // Validation Messages - پیام‌های اعتبارسنجی
     "vital_sign_type_required" => "نوعیت علامت حیاتی الزامی است",
     "morphable_type_required" => "نوع مرجع الزامی است",
     "morphable_id_required" => "شناسه مرجع الزامی است",
@@ -2401,16 +2413,22 @@ return [
     "morning_time_format" => "فرمت وقت صبح صحیح نیست",
     "evening_time_format" => "فرمت وقت شام صحیح نیست",
     "date_before_today" => "تاریخ نمی‌تواند بعد از امروز باشد",
+
+    // Actions - عملیات
     "view_vital_signs" => "مشاهده علائم حیاتی",
     "add_vital_sign" => "اضافه کردن علامت حیاتی",
     "add_schedule" => "اضافه کردن برنامه",
     "view_schedules" => "مشاهده برنامه‌ها",
     "manage_vital_signs" => "مدیریت علائم حیاتی",
     "manage_schedules" => "مدیریت برنامه‌ها",
+
+    // Status Messages - پیام‌های وضعیت
     "no_vital_signs_found" => "هیچ علامت حیاتی یافت نشد",
     "no_schedules_found" => "هیچ برنامه‌ای یافت نشد",
     "vital_signs_for" => "علائم حیاتی برای",
     "schedules_for" => "برنامه‌های برای",
+
+    // Additional Common Terms - اصطلاحات اضافی مشترک
     "filter_by_type" => "فیلتر بر اساس نوع",
     "filter_by_vital_sign" => "فیلتر بر اساس علامت حیاتی",
     "filter_by_nurse" => "فیلتر بر اساس پرستار",
@@ -2439,6 +2457,9 @@ return [
     "created_at" => "تاریخ ایجاد",
     "updated_at" => "تاریخ بروزرسانی",
     "created_by" => "ایجاد شده توسط",
+    "diagnosis" => "مشکل",
+    "record" => "رکورد",
+    // Additional Vital Signs Integration - ادغام اضافی علائم حیاتی"
     "view_all_vital_signs" => "مشاهده همه علائم حیاتی",
     "add_first_vital_sign" => "اولین علامت حیاتی را اضافه کنید",
     "add_first_schedule" => "اولین برنامه را اضافه کنید",
@@ -2455,4 +2476,59 @@ return [
     "next_day_number" => "شماره روز بعدی",
     "all_medicines" => "همه ادویه ها",
     "you_must_have_a_nurse_profile_to_create_nurse_notes" => "شما باید یک پروفایل پرستار داشته باشید تا سوابق پرستاری ایجاد کنید.",
+    "vital_signs_chart" => "چارت علائم حیاتی",
+    "print_chart" => "چاپ چارت",
+    "print_vital_signs_chart" => "چاپ چارت علائم حیاتی",
+    "printed_on" => "چاپ شده در",
+    "morning" => "صبح",
+    "evening" => "شام",
+    "ng_tube" => "لوله بینی معده",
+    "foley" => "فولی",
+    "drain" => "درین",
+    "t_tube" => "تی تیوب",
+    "chest_tube" => "لوله سینه",
+    "urine_out" => "خروج ادرار",
+    "feeding" => "تغذیه",
+    "pain_scale" => "مقیاس درد",
+    "signature" => "امضا",
+    "no" => "شماره",
+    "all_medicines" => "همه ادویه ها",
+
+    // Nutrition Care Form
+    "nutrition_care" => "مراقبت تغذیه",
+    "nutrition_care_form" => "فرم مراقبت تغذیه",
+    "patient_name" => "نام بیمار",
+    "observations" => "مشاهدات",
+    "interventions" => "مداخلات",
+    "cough" => "Cough",
+    "sound" => "Sound",
+    "fluid_swallowing_ability" => "Fluid Swallowing Ability",
+    "weight" => "Weight",
+    "amount_and_type_of_nutrition" => "Amount and Type of Nutrition",
+    "diarrhea" => "Diarrhea",
+    "heart_failure_and_kidney_disease" => "Heart Failure and Kidney Disease",
+    "remaining_materials" => "Remaining Materials",
+    "type_of_tube" => "Type of Tube",
+    "constipation" => "Constipation",
+    "nutrition_is_provided" => "Nutrition is Provided",
+    "mouth_hygiene" => "Mouth Hygiene",
+    "oral_nutrition_advices" => "Oral Nutrition Advices",
+    "voice_exercise" => "Voice Exercise",
+    "swallowing_exercise" => "Swallowing Exercise",
+    "aspiration_prevention_proceeded" => "Aspiration Prevention Proceeded",
+    "nutrition_care_full_note" => "یادداشت کامل مراقبت تغذیه",
+    "date_signature" => "تاریخ/امضا",
+    "create_nutrition_care" => "ایجاد مراقبت تغذیه",
+    "edit_nutrition_care" => "ویرایش مراقبت تغذیه",
+    "delete_nutrition_care" => "حذف مراقبت تغذیه",
+    "nutrition_care_created_successfully" => "رکورد مراقبت تغذیه با موفقیت ایجاد شد",
+    "nutrition_care_updated_successfully" => "رکورد مراقبت تغذیه با موفقیت به‌روزرسانی شد",
+    "nutrition_care_deleted_successfully" => "رکورد مراقبت تغذیه با موفقیت حذف شد",
+    "creating" => "در حال ایجاد...",
+    "error_occurred" => "خطایی رخ داد",
+    "no_nutrition_care_found" => "هیچ رکورد مراقبت تغذیه‌ای یافت نشد",
+    "add_first_nutrition_care" => "اولین رکورد مراقبت تغذیه را اضافه کنید",
+    "select_record_type" => "نوع رکورد را انتخاب کنید",
+    "max_5000_characters" => "حداکثر 5000 کاراکتر",
+    "select_nurse" => "پرستار را انتخاب کنید",
 ];

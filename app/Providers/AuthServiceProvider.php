@@ -19,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\VitalSignType::class => \App\Policies\VitalSignTypePolicy::class,
         \App\Models\VitalSign::class => \App\Policies\VitalSignPolicy::class,
         \App\Models\VitalSignSchedule::class => \App\Policies\VitalSignSchedulePolicy::class,
+        \App\Models\NutritionCare::class => \App\Policies\NutritionCarePolicy::class,
     ];
 
     /**

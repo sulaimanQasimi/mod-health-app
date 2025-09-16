@@ -127,4 +127,12 @@ class Hospitalization extends Model
     {
         return $this->morphMany(VitalSign::class, 'morphable');
     }
+
+    /**
+     * Get the nutrition care records for this hospitalization record.
+     */
+    public function nutritionCares()
+    {
+        return $this->morphMany(NutritionCare::class, 'morphable');
+    }
 }

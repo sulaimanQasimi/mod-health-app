@@ -135,4 +135,12 @@ class Hospitalization extends Model
     {
         return $this->morphMany(NutritionCare::class, 'morphable');
     }
+
+    /**
+     * Get the nursing assessments for this hospitalization record.
+     */
+    public function nursingAssessments()
+    {
+        return $this->morphMany(NursingAssessment::class, 'morphable');
+    }
 }

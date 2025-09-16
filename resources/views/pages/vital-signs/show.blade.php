@@ -164,7 +164,7 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 @can('view', $vitalSign)
-                                    <a href="{{ route('vital-signs.print', $vitalSign) }}" class="btn btn-info" target="_blank">
+                                    <a href="{{ route('vital-signs.print', ['morphable_type' => $vitalSign->morphable_type, 'morphable_id' => $vitalSign->morphable_id]) }}" class="btn btn-info" target="_blank">
                                         <i class="fas fa-print"></i> {{ localize('global.print_chart') }}
                                     </a>
                                 @endcan

@@ -735,7 +735,7 @@
                         </div>
                         <div class="col-md-4 text-center">
                             @if($underReview->vitalSigns->count() > 0)
-                                <a href="{{ route('vital-signs.print', $underReview->vitalSigns->first()) }}" 
+                                <a href="{{ route('vital-signs.print', ['App\\Models\\UnderReview', $underReview->id]) }}" 
                                    class="btn btn-info" target="_blank">
                                     <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
                                 </a>

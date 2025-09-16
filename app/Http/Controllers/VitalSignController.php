@@ -21,7 +21,7 @@ class VitalSignController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         $this->authorize('viewAny', VitalSign::class);
-        
+
         $query = VitalSign::with(['vitalSignType', 'morphable', 'schedules.nurse', 'createdBy']);
 
         // Apply filters
@@ -70,7 +70,7 @@ class VitalSignController extends Controller
     public function create(Request $request): View
     {
         $this->authorize('create', VitalSign::class);
-        
+
         $vitalSignTypes = VitalSignType::orderBy('name')->get();
         $morphableType = $request->get('morphable_type');
         $morphableId = $request->get('morphable_id');
@@ -97,10 +97,10 @@ class VitalSignController extends Controller
         // Redirect back to the morphable model's show page
         $morphable = $vitalSign->morphable;
         if ($morphable) {
-            $routeName = $vitalSign->morphable_type == 'App\\Models\\Hospitalization' 
-                ? 'hospitalizations.show' 
+            $routeName = $vitalSign->morphable_type == 'App\\Models\\Hospitalization'
+                ? 'hospitalizations.show'
                 : 'under_reviews.show';
-            
+
             return redirect()->route($routeName, $morphable)
                 ->with('success', 'Vital sign created successfully.');
         }
@@ -117,10 +117,10 @@ class VitalSignController extends Controller
         $this->authorize('view', $vitalSign);
 
         $vitalSign->load([
-            'vitalSignType', 
-            'morphable', 
-            'schedules.nurse', 
-            'createdBy', 
+            'vitalSignType',
+            'morphable',
+            'schedules.nurse',
+            'createdBy',
             'updatedBy'
         ]);
 
@@ -143,7 +143,7 @@ class VitalSignController extends Controller
     public function edit(VitalSign $vitalSign): View
     {
         $this->authorize('update', $vitalSign);
-        
+
         $vitalSignTypes = VitalSignType::orderBy('name')->get();
 
         return view('pages.vital-signs.edit', compact('vitalSign', 'vitalSignTypes'));
@@ -172,17 +172,24 @@ class VitalSignController extends Controller
     /**
      * Print the vital sign chart.
      */
-    public function print(VitalSign $vitalSign): View
+    public function print($morphable_type, $morphable_id): View
     {
-        $this->authorize('view', $vitalSign);
+        // Load vital signs for the specific record
+        $vitalSigns = VitalSign::with([
+            'vitalSignType',
+            'schedules' => function ($query) {
+                $query->orderBy('day', 'asc')
+                    ->orderBy('morning_time', 'asc')
+                    ->orderBy('evening_time', 'asc');
+            },
+            'schedules.nurse',
+            'morphable.patient'
+        ])
+            ->where('morphable_type', $morphable_type)
+            ->where('morphable_id', $morphable_id)
+            ->get();
 
-        $vitalSign->load([
-            'vitalSignType', 
-            'morphable.patient', 
-            'schedules.nurse'
-        ]);
-
-        return view('pages.vital-signs.print', compact('vitalSign'));
+        return view('pages.vital-signs.print', compact('vitalSigns'));
     }
 
     /**
@@ -199,7 +206,7 @@ class VitalSignController extends Controller
                     'message' => 'Cannot delete vital sign with associated schedules.',
                 ], 422);
             }
-            
+
             return redirect()->back()
                 ->with('error', 'Cannot delete vital sign with associated schedules.');
         }

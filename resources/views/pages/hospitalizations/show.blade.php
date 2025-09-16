@@ -287,7 +287,7 @@
                                 </div>
                                 <div class="col-md-4 text-center">
                                     @if($hospitalization->vitalSigns->count() > 0)
-                                        <a href="{{ route('vital-signs.print', $hospitalization->vitalSigns->first()) }}" 
+                                        <a href="{{ route('vital-signs.print', ['App\\Models\\Hospitalization', $hospitalization->id]) }}" 
                                            class="btn btn-info" target="_blank">
                                             <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
                                         </a>

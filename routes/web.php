@@ -805,7 +805,7 @@ Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
     Route::get('show/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'show'])->name('show');
     Route::get('edit/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'edit'])->name('edit');
     Route::put('update/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'update'])->name('update');
-    Route::get('print/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'print'])->name('print');
+    Route::get('print/{morphable_type}/{morphable_id}', [\App\Http\Controllers\VitalSignController::class, 'print'])->name('print');
     Route::delete('destroy/{vitalSign}', [\App\Http\Controllers\VitalSignController::class, 'destroy'])->name('destroy');
 });
 

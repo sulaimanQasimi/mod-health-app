@@ -2474,6 +2474,8 @@ return [
     "no_nurse_profile_found" => "پروفایل پرستار یافت نشد",
     "auto_generated" => "خودکار تولید شده",
     "next_day_number" => "شماره روز بعدی",
+    "all_medicines" => "همه ادویه ها",
+    "you_must_have_a_nurse_profile_to_create_nurse_notes" => "شما باید یک پروفایل پرستار داشته باشید تا سوابق پرستاری ایجاد کنید.",
     "vital_signs_chart" => "چارت علائم حیاتی",
     "print_chart" => "چاپ چارت",
     "print_vital_signs_chart" => "چاپ چارت علائم حیاتی",
@@ -2533,5 +2535,5 @@ return [
     "select_record_type" => "نوع رکورد را انتخاب کنید",
     "max_5000_characters" => "حداکثر 5000 کاراکتر",
     "select_nurse" => "پرستار را انتخاب کنید",
+    "system_theme_bordered"=>"سیستم سبک بوردر",
 ];
-

@@ -216,6 +216,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('report-search', [HospitalizationController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [HospitalizationController::class, 'exportReport'])->name('export-report');
         Route::put('hospitalizations/{id}', [HospitalizationController::class, 'updateHospitalization'])->name('updateHospitalization');
+        
+        // AJAX section routes
+        Route::get('diabetes-charts-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'diabetesChartsSection'])->name('diabetes-charts-section');
+        Route::get('medication-administration-records-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'medicationAdministrationRecordsSection'])->name('medication-administration-records-section');
+        Route::get('vital-signs-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'vitalSignsSection'])->name('vital-signs-section');
+        Route::get('nutrition-care-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'nutritionCareSection'])->name('nutrition-care-section');
     });
 
     // Under Review routes

@@ -20,6 +20,7 @@ use App\Models\Nurse;
 use App\Models\NurseNote;
 use App\Models\MedicationAdministrationRecord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use HanifHefaz\Dcter\Dcter;
@@ -83,21 +84,21 @@ class HospitalizationController extends Controller
                     } else {
                         $hospitalization->jalali_date = 'Not set';
                     }
-    
+
                     if ($hospitalization->discharged_at) {
                         $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
                     } else {
                         $hospitalization->jalali_discharged_at = 'Not set';
                     }
-    
+
                     return $hospitalization;
                 });
-    
+
             return response()->json([
                 'data' => $hospitalizations,
             ]);
         }
-    
+
         // For non-AJAX requests
         $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
             ->where('is_discharged', '1')
@@ -110,16 +111,16 @@ class HospitalizationController extends Controller
                 } else {
                     $hospitalization->jalali_date = 'Not set';
                 }
-    
+
                 if ($hospitalization->discharged_at) {
                     $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
                 } else {
                     $hospitalization->jalali_discharged_at = 'Not set';
                 }
-    
+
                 return $hospitalization;
             });
-    
+
         return view('pages.hospitalizations.discharged', compact('hospitalizations'));
     }
 
@@ -169,6 +170,7 @@ class HospitalizationController extends Controller
      */
     public function show(Hospitalization $hospitalization, Request $request)
     {
+        // Load only essential data for the main page - heavy data is now loaded via AJAX
         $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
@@ -178,101 +180,26 @@ class HospitalizationController extends Controller
         $foodTypes = FoodType::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
-        // Load diabetes charts for this hospitalization
-        $diabetesChartsQuery = DiabetesChart::where('diabetes_chartable_type', 'App\\Models\\Hospitalization')
-            ->where('diabetes_chartable_id', $hospitalization->id)
-            ->with(['nurse', 'medicine']);
-
-        $diabetesCharts = $diabetesChartsQuery->orderBy('date', 'desc')
-                                             ->orderBy('time', 'desc')
-                                             ->get();
-
-        // Load nurse notes for this hospitalization
-        $nurseNotesQuery = NurseNote::where('morphable_type', 'App\\Models\\Hospitalization')
-            ->where('morphable_id', $hospitalization->id)
-            ->with(['nurse', 'createdBy']);
-
-        // Search functionality for nurse notes
-        if ($request->filled('nurse_notes_search')) {
-            $search = $request->nurse_notes_search;
-            $nurseNotesQuery->where(function ($q) use ($search) {
-                $q->where('note_am', 'like', "%{$search}%")
-                  ->orWhere('note_pm', 'like', "%{$search}%")
-                  ->orWhereHas('nurse', function ($nurseQuery) use ($search) {
-                      $nurseQuery->where('first_name', 'like', "%{$search}%")
-                                ->orWhere('last_name', 'like', "%{$search}%");
-                  });
-            });
-        }
-
-        // Filter by date range
-        if ($request->filled('nurse_notes_start_date')) {
-            $nurseNotesQuery->where('date', '>=', $request->nurse_notes_start_date);
-        }
-        if ($request->filled('nurse_notes_end_date')) {
-            $nurseNotesQuery->where('date', '<=', $request->nurse_notes_end_date);
-        }
-
-        // Filter by nurse
-        if ($request->filled('nurse_notes_nurse_id')) {
-            $nurseNotesQuery->where('nurse_id', $request->nurse_notes_nurse_id);
-        }
-
-        $nurseNotes = $nurseNotesQuery->orderBy('date', 'desc')
-                                     ->orderBy('created_at', 'desc')
-                                     ->get();
-
-        // Load medication administration records for this hospitalization
-        $medicationAdministrationRecordsQuery = MedicationAdministrationRecord::where('morphable_type', 'App\\Models\\Hospitalization')
-            ->where('morphable_id', $hospitalization->id)
-            ->with(['medicine', 'nurse', 'administrationTimes', 'createdBy']);
-
-        // Search functionality for MARs
-        if ($request->filled('mar_search')) {
-            $search = $request->mar_search;
-            $medicationAdministrationRecordsQuery->where(function ($q) use ($search) {
-                $q->whereHas('medicine', function ($medicineQuery) use ($search) {
-                    $medicineQuery->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('nurse', function ($nurseQuery) use ($search) {
-                    $nurseQuery->where('first_name', 'like', "%{$search}%")
-                              ->orWhere('last_name', 'like', "%{$search}%");
-                });
-            });
-        }
-
-        // Filter by date range
-        if ($request->filled('mar_start_date')) {
-            $medicationAdministrationRecordsQuery->where('order_date', '>=', $request->mar_start_date);
-        }
-        if ($request->filled('mar_end_date')) {
-            $medicationAdministrationRecordsQuery->where('order_date', '<=', $request->mar_end_date);
-        }
-
-        // Filter by nurse
-        if ($request->filled('mar_nurse_id')) {
-            $medicationAdministrationRecordsQuery->where('nurse_id', $request->mar_nurse_id);
-        }
-
-        // Filter by medicine
-        if ($request->filled('mar_medicine_id')) {
-            $medicationAdministrationRecordsQuery->where('medicine_id', $request->mar_medicine_id);
-        }
-
-        $medicationAdministrationRecords = $medicationAdministrationRecordsQuery->orderBy('order_date', 'desc')
-                                                                               ->orderBy('created_at', 'desc')
-                                                                               ->get();
-
-        // Load vital signs for this hospitalization
-        $hospitalization->load(['vitalSigns.vitalSignType', 'vitalSigns.schedules.nurse']);
-
-        // Load nutrition cares for this hospitalization
-        $hospitalization->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
+        // Load only basic hospitalization data with essential relationships
+        $hospitalization->load(['patient', 'doctor', 'room', 'bed']);
 
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
-
-        return view('pages.hospitalizations.show', compact('hospitalization', 'labTypeSections', 'operationTypes', 'labTypes', 'operation_doctors', 'medicineTypes', 'medicines', 'foodTypes', 'medicineUsageTypes', 'diabetesCharts', 'nurseNotes', 'medicationAdministrationRecords', 'currentUser'));
+        Benchmark::start('hospitalization.show');
+        return view('pages.hospitalizations.show', compact(
+            'hospitalization',
+            'labTypeSections',
+            'operationTypes',
+            'labTypes',
+            'operation_doctors',
+            'medicineTypes',
+            'medicines',
+            'foodTypes',
+            'medicineUsageTypes',
+            'currentUser'
+        ));
+        Benchmark::stop('hospitalization.show');
+        dd(Benchmark::get());
     }
 
     /**
@@ -284,7 +211,7 @@ class HospitalizationController extends Controller
         $beds = Bed::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
-        return view('pages.hospitalizations.edit',compact('hospitalization','rooms','beds','foodTypes','relations'));
+        return view('pages.hospitalizations.edit', compact('hospitalization', 'rooms', 'beds', 'foodTypes', 'relations'));
     }
 
     /**
@@ -313,10 +240,10 @@ class HospitalizationController extends Controller
      */
     public function destroy(Hospitalization $hospitalization)
     {
-        
+
         $hospitalization->delete();
 
-        return redirect()->back()->with('success', localize('global.hospitalization_deleted_successfully.') );
+        return redirect()->back()->with('success', localize('global.hospitalization_deleted_successfully.'));
     }
 
     public function report()
@@ -440,48 +367,188 @@ class HospitalizationController extends Controller
     }
 
     public function updateHospitalization(Request $request, $id)
-{
-    // Validate incoming request
-    $data = $request->validate([
-        'reason' => 'required',
-        'remarks' => 'required',
-        'room_id' => 'required',
-        'patient_id' => 'required',
-        'doctor_id' => 'required',
-        'bed_id' => 'required',
-        'appointment_id' => 'required',
-        'is_discharged' => 'nullable',
-        'discharge_remark' => 'nullable',
-        'branch_id' => 'required',
-        'discharge_status' => 'nullable',
-        'food_type_id' => 'nullable',
-        'patinet_companion' => 'nullable',
-        'companion_father_name' => 'nullable',
-        'relation_to_patient' => 'nullable',
-        'companion_card_type' => 'nullable',
-        'discharged_at' => 'nullable',
-        'under_review_id' => 'nullable',
-        'i_c_u_id' => 'nullable',
-    ]);
+    {
+        // Validate incoming request
+        $data = $request->validate([
+            'reason' => 'required',
+            'remarks' => 'required',
+            'room_id' => 'required',
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'bed_id' => 'required',
+            'appointment_id' => 'required',
+            'is_discharged' => 'nullable',
+            'discharge_remark' => 'nullable',
+            'branch_id' => 'required',
+            'discharge_status' => 'nullable',
+            'food_type_id' => 'nullable',
+            'patinet_companion' => 'nullable',
+            'companion_father_name' => 'nullable',
+            'relation_to_patient' => 'nullable',
+            'companion_card_type' => 'nullable',
+            'discharged_at' => 'nullable',
+            'under_review_id' => 'nullable',
+            'i_c_u_id' => 'nullable',
+        ]);
 
-    // Convert food_type_id to JSON if it exists
-    if (isset($data['food_type_id'])) {
-        $data['food_type_id'] = json_encode($data['food_type_id']);
+        // Convert food_type_id to JSON if it exists
+        if (isset($data['food_type_id'])) {
+            $data['food_type_id'] = json_encode($data['food_type_id']);
+        }
+
+        // Find the existing hospitalization record
+        $hospitalization = Hospitalization::findOrFail($id);
+
+        // Update the record with validated data
+        $hospitalization->update($data);
+
+        // Check and update bed occupancy status
+        $occupied_bed = Bed::findOrFail($data['bed_id']);
+        $occupied_bed->update(['is_occupied' => true]);
+
+        // Optionally, you can dispatch a notification if needed
+        // SendUpdateHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+
+        return redirect()->route('appointments.index')->with('success', localize('global.hospitalization_updated_successfully.'));
     }
 
-    // Find the existing hospitalization record
-    $hospitalization = Hospitalization::findOrFail($id);
+    /**
+     * Get diabetes charts section for AJAX loading
+     */
+    public function diabetesChartsSection(Request $request)
+    {
+        $morphableType = $request->morphable_type;
+        $morphableId = $request->morphable_id;
+        $morphModel = null;
 
-    // Update the record with validated data
-    $hospitalization->update($data);
+        // Load diabetes charts for this hospitalization
+        $diabetesChartsQuery = DiabetesChart::where('diabetes_chartable_type', $morphableType)
+            ->where('diabetes_chartable_id', $morphableId)
+            ->with(['nurse', 'medicine']);
 
-    // Check and update bed occupancy status
-    $occupied_bed = Bed::findOrFail($data['bed_id']);
-    $occupied_bed->update(['is_occupied' => true]);
+        // Search functionality for diabetes charts
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $diabetesChartsQuery->where(function ($q) use ($search) {
+                $q->where('blood_sugar_level', 'like', "%{$search}%")
+                    ->orWhere('insulin_dose', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%")
+                    ->orWhereHas('nurse', function ($nurseQuery) use ($search) {
+                        $nurseQuery->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('medicine', function ($medicineQuery) use ($search) {
+                        $medicineQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
 
-    // Optionally, you can dispatch a notification if needed
-    // SendUpdateHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
+        // Filter by date range
+        if ($request->filled('start_date')) {
+            $diabetesChartsQuery->where('date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $diabetesChartsQuery->where('date', '<=', $request->end_date);
+        }
 
-    return redirect()->route('appointments.index')->with('success', localize('global.hospitalization_updated_successfully.'));
-}
+        // Filter by nurse
+        if ($request->filled('nurse_id')) {
+            $diabetesChartsQuery->where('nurse_id', $request->nurse_id);
+        }
+
+        $diabetesCharts = $diabetesChartsQuery->orderBy('date', 'desc')
+            ->orderBy('time', 'desc')
+            ->get();
+
+        $morphModel = $morphableType::find($morphableId);
+
+        return view('pages.diabetes-charts.partials.section', compact('diabetesCharts', 'morphableType', 'morphableId', 'morphModel'));
+    }
+
+    /**
+     * Get medication administration records section for AJAX loading
+     */
+    public function medicationAdministrationRecordsSection(Request $request)
+    {
+        $morphableType = $request->morphable_type;
+        $morphableId = $request->morphable_id;
+        $morphModel = null;
+
+        // Load medication administration records for this hospitalization
+        $medicationAdministrationRecordsQuery = MedicationAdministrationRecord::where('morphable_type', $morphableType)
+            ->where('morphable_id', $morphableId)
+            ->with(['medicine', 'nurse', 'administrationTimes', 'createdBy']);
+
+        // Search functionality for MARs
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $medicationAdministrationRecordsQuery->where(function ($q) use ($search) {
+                $q->whereHas('medicine', function ($medicineQuery) use ($search) {
+                    $medicineQuery->where('name', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('nurse', function ($nurseQuery) use ($search) {
+                        $nurseQuery->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filter by date range
+        if ($request->filled('start_date')) {
+            $medicationAdministrationRecordsQuery->where('order_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $medicationAdministrationRecordsQuery->where('order_date', '<=', $request->end_date);
+        }
+
+        // Filter by nurse
+        if ($request->filled('nurse_id')) {
+            $medicationAdministrationRecordsQuery->where('nurse_id', $request->nurse_id);
+        }
+
+        // Filter by medicine
+        if ($request->filled('medicine_id')) {
+            $medicationAdministrationRecordsQuery->where('medicine_id', $request->medicine_id);
+        }
+
+        $medicationAdministrationRecords = $medicationAdministrationRecordsQuery->orderBy('order_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $morphModel = $morphableType::find($morphableId);
+
+        return view('pages.medication-administration-records.partials.section', compact('medicationAdministrationRecords', 'morphableType', 'morphableId', 'morphModel'));
+    }
+
+    /**
+     * Get vital signs section for AJAX loading
+     */
+    public function vitalSignsSection(Request $request)
+    {
+        $morphableType = $request->morphable_type;
+        $morphableId = $request->morphable_id;
+        $morphModel = null;
+
+        // Load vital signs for this hospitalization
+        $morphModel = $morphableType::find($morphableId);
+        $morphModel->load(['vitalSigns.vitalSignType', 'vitalSigns.schedules.nurse']);
+
+        return view('pages.vital-signs.partials.section', compact('morphableType', 'morphableId', 'morphModel'));
+    }
+
+    /**
+     * Get nutrition care section for AJAX loading
+     */
+    public function nutritionCareSection(Request $request)
+    {
+        $morphableType = $request->morphable_type;
+        $morphableId = $request->morphable_id;
+        $morphModel = null;
+
+        // Load nutrition cares for this hospitalization
+        $morphModel = $morphableType::find($morphableId);
+        $morphModel->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
+
+        return view('pages.nutrition-cares.partials.section', compact('morphableType', 'morphableId', 'morphModel'));
+    }
 }

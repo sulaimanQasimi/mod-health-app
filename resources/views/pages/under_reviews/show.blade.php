@@ -18,1405 +18,1562 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="border border-primary mb-4 shadow-sm rounded">
+                                    <h5 class="mb-0 p-3 bg-primary text-white text-center rounded-top">
+                                        <i class="bx bx-user-detail me-2"></i>{{ localize('global.under_review_details') }}
+                                    </h5>
 
-                        <div class="col-md-12">
-                            <div class="border border-label-primary mb-4 text-center">
-                                <h5 class="mb-4 p-3 bg-label-primary text-center">
-                                    {{ localize('global.under_review_details') }}
-                                </h5>
-
-                                <div class="row p-2">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
-                                        <div>
-                                            {{$underReview->patient->name}}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.referred_to') }}</h5>
-                                        <div>
-                                            {{$underReview->doctor->name}}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.date') }}</h5>
-                                        <div>
-                                            {{$underReview->created_at->format('Y-m-d')}}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2">{{ localize('global.time') }}</h5>
-                                        <div>
-                                            {{$underReview->created_at->format('H:m:s')}}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row text-start m-4">
-                                    <div class="col-md-12 mt-2 mb-2">
-                                        <h5 class="mb-2">{{ localize('global.reason') }}</h5>
-                                        <div>
-                                            {{$underReview->reason}}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 mt-2 mb-2">
-                                        <h5 class="mb-2">{{ localize('global.remarks') }}</h5>
-                                        <div>
-                                            {{$underReview->remarks}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-glasses p-1"></i>{{localize('global.visits') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createVisitModal{{ $underReview->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                            <!-- Create visit Modal -->
-                            <div class="modal fade" id="createVisitModal{{ $underReview->id }}" tabindex="-1"
-                                aria-labelledby="createVisitModalLabel{{ $underReview->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createVisitModalLabel{{ $underReview->id }}">
-                                                {{localize('global.add_visit')}}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('visits.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
-                                                    name="patient_id" value="{{ $underReview->patient_id }}">
-                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
-                                                    name="under_review_id" value="{{ $underReview->id }}">
-                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
-                                                    value="{{ $underReview->doctor->id }}">
-                                                <!-- Add other diagnosis form fields as needed -->
-                                                <div class="form-group">
-                                                    <label
-                                                        for="description{{ $underReview->id }}">{{localize('global.description')}}</label>
-                                                    <textarea class="form-control" id="description{{ $underReview->id }}"
-                                                        name="description" rows="3"></textarea>
+                                    <div class="row p-3 g-3">
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="border border-info rounded p-3 bg-light h-100">
+                                                <h6 class="mb-2 text-info">
+                                                    <i class="bx bx-user me-1"></i>{{ localize('global.patient_name') }}
+                                                </h6>
+                                                <div class="fw-bold text-dark">
+                                                    {{$underReview->patient->name}}
                                                 </div>
+                                            </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{localize('global.save')}}</button>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="border border-success rounded p-3 bg-light h-100">
+                                                <h6 class="mb-2 text-success">
+                                                    <i class="bx bx-user-check me-1"></i>{{ localize('global.referred_to') }}
+                                                </h6>
+                                                <div class="fw-bold text-dark">
+                                                    {{$underReview->doctor->name}}
+                                                </div>
+                                            </div>
                                         </div>
-                                        </form>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="border border-warning rounded p-3 bg-light h-100">
+                                                <h6 class="mb-2 text-warning">
+                                                    <i class="bx bx-calendar me-1"></i>{{ localize('global.date') }}
+                                                </h6>
+                                                <div class="fw-bold text-dark">
+                                                    {{$underReview->created_at->format('Y-m-d')}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="border border-danger rounded p-3 bg-light h-100">
+                                                <h6 class="mb-2 text-danger">
+                                                    <i class="bx bx-time me-1"></i>{{ localize('global.time') }}
+                                                </h6>
+                                                <div class="fw-bold text-dark">
+                                                    {{$underReview->created_at->format('H:i:s')}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row p-3 g-3">
+                                        <div class="col-12">
+                                            <div class="border border-secondary rounded p-3 bg-light">
+                                                <h6 class="mb-2 text-secondary">
+                                                    <i class="bx bx-info-circle me-1"></i>{{ localize('global.reason') }}
+                                                </h6>
+                                                <div class="text-dark">
+                                                    {{$underReview->reason}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="border border-dark rounded p-3 bg-light">
+                                                <h6 class="mb-2 text-dark">
+                                                    <i class="bx bx-note me-1"></i>{{ localize('global.remarks') }}
+                                                </h6>
+                                                <div class="text-dark">
+                                                    {{$underReview->remarks}}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- End Create visit Modal -->
-                            <div class="col-md-12 mt-4">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{localize('global.number')}}</th>
-                                            <th>{{localize('global.description')}}</th>
-                                            <th>{{localize('global.by')}}</th>
-                                            <th>{{localize('global.actions')}}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($underReview->visits as $visit)
-                                            <tr>
-                                                <td>{{$loop->iteration}}</td>
-                                                <td>{{$visit->description}}</td>
-                                                <td>{{$visit->doctor->name}}</td>
-                                                <td>
-                                                    @can('edit-under-review-visit')
-                                                        <a href="{{route('visits.edit', $visit->id)}}"><span><i
-                                                                    class="bx bx-edit"></i></span></a>
-                                                    @endcan
-                                                    @can('delete-under-review-visit')
-                                                        <a href="{{ route('visits.destroyUnderReviewVisit', $visit) }}"
-                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$visit->id}}').submit(); }">
-                                                            <i class="bx bx-trash text-danger"></i>
-                                                        </a>
-                                                    @endcan
-                                                    <!-- Using a <form> element -->
-                                                    <form id="delete-form-{{$visit->id}}"
-                                                        action="{{ route('visits.destroyUnderReviewVisit', $visit) }}"
-                                                        method="POST" style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_visits') }}
+                        </div>
+
+                            <!-- Visits Accordion Section -->
+                            <div class="accordion mt-4 border border-info shadow-sm rounded" id="visitsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="visitsHeading">
+                                        <button class="accordion-button collapsed bg-light border-info" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#visitsCollapse" aria-expanded="false" aria-controls="visitsCollapse">
+                                            <i class="bx bx-glasses p-1 me-2 text-info"></i><strong>{{localize('global.visits') }}</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="visitsCollapse" class="accordion-collapse collapse" aria-labelledby="visitsHeading"
+                                        data-bs-parent="#visitsAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#createVisitModal{{ $underReview->id }}">
+                                                    <i class="bx bx-plus"></i> {{localize('global.add_visit')}}
+                                                </button>
+                                            </div>
+
+                                            <!-- Create visit Modal -->
+                                            <div class="modal fade" id="createVisitModal{{ $underReview->id }}" tabindex="-1"
+                                                aria-labelledby="createVisitModalLabel{{ $underReview->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="createVisitModalLabel{{ $underReview->id }}">
+                                                                {{localize('global.add_visit')}}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{ route('visits.store') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
+                                                                    name="patient_id" value="{{ $underReview->patient_id }}">
+                                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
+                                                                    name="under_review_id" value="{{ $underReview->id }}">
+                                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
+                                                                    value="{{ $underReview->doctor->id }}">
+                                                                <!-- Add other diagnosis form fields as needed -->
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="description{{ $underReview->id }}">{{localize('global.description')}}</label>
+                                                                    <textarea class="form-control" id="description{{ $underReview->id }}"
+                                                                        name="description" rows="3"></textarea>
+                                                                </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">{{localize('global.cancel')}}</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">{{localize('global.save')}}</button>
+                                                        </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                            <!-- End Create visit Modal -->
 
-                            </div>
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createPrescriptionModal{{$underReview->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-
-                            <!-- Create Diagnose Modal -->
-                            <div class="modal fade modal-xl" id="createPrescriptionModal{{$underReview->id }}" tabindex="-1"
-                                aria-labelledby="createPrescriptionModalLabel{{$underReview->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createPrescriptionModalLabel{{$underReview->id }}">
-                                                {{ localize('global.add_prescription') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{localize('global.number')}}</th>
+                                                            <th>{{localize('global.description')}}</th>
+                                                            <th>{{localize('global.by')}}</th>
+                                                            <th>{{localize('global.actions')}}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @forelse ($underReview->visits as $visit)
+                                                            <tr>
+                                                                <td>{{$loop->iteration}}</td>
+                                                                <td>{{$visit->description}}</td>
+                                                                <td>{{$visit->doctor->name}}</td>
+                                                                <td>
+                                                                    @can('edit-under-review-visit')
+                                                                        <a href="{{route('visits.edit', $visit->id)}}"><span><i
+                                                                                    class="bx bx-edit"></i></span></a>
+                                                                    @endcan
+                                                                    @can('delete-under-review-visit')
+                                                                        <a href="{{ route('visits.destroyUnderReviewVisit', $visit) }}"
+                                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this item?')) { document.getElementById('delete-form-{{$visit->id}}').submit(); }">
+                                                                            <i class="bx bx-trash text-danger"></i>
+                                                                        </a>
+                                                                    @endcan
+                                                                    <!-- Using a <form> element -->
+                                                                    <form id="delete-form-{{$visit->id}}"
+                                                                        action="{{ route('visits.destroyUnderReviewVisit', $visit) }}"
+                                                                        method="POST" style="display: none;">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="4" class="text-center">
+                                                                    <div class="badge bg-label-danger mt-4">
+                                                                        {{ localize('global.no_previous_visits') }}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('prescriptions.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="patient_id{{$underReview->patient_id }}"
-                                                    name="patient_id" value="{{$underReview->patient_id }}">
-                                                <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
-                                                    name="appointment_id" value="{{ $underReview->appointment->id }}">
-                                                <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
-                                                    value="{{ auth()->user()->branch_id }}">
-                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
-                                                    value="{{ auth()->user()->id }}">
-                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
-                                                    name="under_review_id" value="{{ $underReview->id }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Prescription Accordion Section -->
+                            <div class="accordion mt-4 border border-success shadow-sm rounded" id="prescriptionAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="prescriptionHeading">
+                                        <button class="accordion-button collapsed bg-light border-success" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#prescriptionCollapse" aria-expanded="false" aria-controls="prescriptionCollapse">
+                                            <i class="bx bx-notepad p-1 me-2 text-success"></i><strong>{{ localize('global.prescription') }}</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="prescriptionCollapse" class="accordion-collapse collapse" aria-labelledby="prescriptionHeading"
+                                        data-bs-parent="#prescriptionAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#createPrescriptionModal{{$underReview->id }}">
+                                                    <i class="bx bx-plus"></i> {{ localize('global.add_prescription') }}
+                                                </button>
+                                            </div>
 
-                                                <!-- Add other diagnosis form fields as needed -->
-                                                <div class="form-group" id="prescription-items">
-                                                    <label>{{ localize('global.description') }}</label>
-                                                    <div id="prescription-input-container">
-                                                        <div class="row">
-                                                            <div class="col-md-2">
-                                                                <select class="form-control select2"
-                                                                    name="medicine_type_id[]">
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($medicineTypes as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('type') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->type }}
-
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <select class="form-control select2" name="medicine_id[]">
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($medicines as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <select class="form-control select2" name="usage_type_id[]">
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($medicineUsageTypes as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input type="text" class="form-control mt-2" name="dosage[]"
-                                                                    placeholder="{{ localize('global.dosage') }}">
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input type="text" class="form-control mt-2"
-                                                                    name="frequency[]"
-                                                                    placeholder="{{ localize('global.frequency') }}">
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input type="text" class="form-control mt-2" name="amount[]"
-                                                                    placeholder="{{ localize('global.amount') }}">
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input type="hidden" class="form-control mt-2"
-                                                                    name="is_delivered[]" value="0">
-                                                            </div>
+                                            <!-- Create Prescription Modal -->
+                                            <div class="modal fade modal-xl" id="createPrescriptionModal{{$underReview->id }}" tabindex="-1"
+                                                aria-labelledby="createPrescriptionModalLabel{{$underReview->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="createPrescriptionModalLabel{{$underReview->id }}">
+                                                                {{ localize('global.add_prescription') }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
                                                         </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{ route('prescriptions.store') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" id="patient_id{{$underReview->patient_id }}"
+                                                                    name="patient_id" value="{{$underReview->patient_id }}">
+                                                                <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
+                                                                    name="appointment_id" value="{{ $underReview->appointment->id }}">
+                                                                <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
+                                                                    value="{{ auth()->user()->branch_id }}">
+                                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
+                                                                    value="{{ auth()->user()->id }}">
+                                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
+                                                                    name="under_review_id" value="{{ $underReview->id }}">
+
+                                                                <!-- Add other diagnosis form fields as needed -->
+                                                                <div class="form-group" id="prescription-items">
+                                                                    <label>{{ localize('global.description') }}</label>
+                                                                    <div id="prescription-input-container">
+                                                                        <div class="row">
+                                                                            <div class="col-md-2">
+                                                                                <select class="form-control select2"
+                                                                                    name="medicine_type_id[]">
+                                                                                    <option value="">{{ localize('global.select') }}
+                                                                                    </option>
+                                                                                    @foreach ($medicineTypes as $value)
+                                                                                        <option value="{{ $value->id }}" {{ old('type') == $value->id ? 'selected' : '' }}>
+                                                                                            {{ $value->type }}
+
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <select class="form-control select2" name="medicine_id[]">
+                                                                                    <option value="">{{ localize('global.select') }}
+                                                                                    </option>
+                                                                                    @foreach ($medicines as $value)
+                                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                                            {{ $value->name }}
+
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <select class="form-control select2" name="usage_type_id[]">
+                                                                                    <option value="">{{ localize('global.select') }}
+                                                                                    </option>
+                                                                                    @foreach ($medicineUsageTypes as $value)
+                                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                                            {{ $value->name }}
+
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <input type="text" class="form-control mt-2" name="dosage[]"
+                                                                                    placeholder="{{ localize('global.dosage') }}">
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <input type="text" class="form-control mt-2"
+                                                                                    name="frequency[]"
+                                                                                    placeholder="{{ localize('global.frequency') }}">
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <input type="text" class="form-control mt-2" name="amount[]"
+                                                                                    placeholder="{{ localize('global.amount') }}">
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                <input type="hidden" class="form-control mt-2"
+                                                                                    name="is_delivered[]" value="0">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput"
+                                                                    onclick="addRow()">
+                                                                    <i class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
+                                                                </button>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                        </div>
+                                                        </form>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <!-- End Create Prescription Modal -->
 
-                                                <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput"
-                                                    onclick="addRow()">
-                                                    <i class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
-                                                </button>
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.patient_name') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @forelse($underReview->prescription as $prescription)
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                <td>{{ $prescription->patient->name }}</td>
+                                                                <td>
+                                                                    @if ($prescription->is_completed == '0')
+                                                                        <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#" data-bs-toggle="modal"
+                                                                        onclick="getPrescriptionItems({{ $prescription->id }})"
+                                                                        data-bs-target="#showPrescriptionItemModal">
+                                                                        <i class="bx bx-expand"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="4" class="text-center">
+                                                                    <div class="badge bg-label-danger mt-4">
+                                                                        {{ localize('global.no_previous_prescriptions') }}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Show Prescription Items Modal -->
+                                            <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
+                                                aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content" id="prescription_items_table">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Diabetes Charts Accordion Section -->
+                            <div class="accordion mt-4 border border-warning shadow-sm rounded" id="diabetesChartsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="diabetesChartsHeading">
+                                        <button class="accordion-button collapsed bg-light border-warning" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#diabetesChartsCollapse" aria-expanded="false" aria-controls="diabetesChartsCollapse">
+                                            <i class="bx bx-bar-chart p-1 me-2 text-warning"></i><strong>{{ localize('global.diabetes_charts') }}</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="diabetesChartsCollapse" class="accordion-collapse collapse" aria-labelledby="diabetesChartsHeading"
+                                        data-bs-parent="#diabetesChartsAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <a href="{{ route('diabetes-charts.print', ['chartable_type' => 'App\\Models\\UnderReview', 'chartable_id' => $underReview->id]) }}"
+                                                    class="btn btn-info" target="_blank">
+                                                    <i class="fas fa-print"></i> {{ localize('global.print_chart') }}
+                                                </a>
+                                                <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\UnderReview', 'chartable_id' => $underReview->id]) }}"
+                                                    class="btn btn-success">
+                                                    <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
+                                                </a>
+                                            </div>
+
+                                            @if($diabetesCharts->count() > 0)
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>{{ localize('global.date') }}</th>
+                                                                <th>{{ localize('global.time') }}</th>
+                                                                <th>{{ localize('global.rbs') }}</th>
+                                                                <th>{{ localize('global.fbs') }}</th>
+                                                                <th>{{ localize('global.insulin_dose') }}</th>
+                                                                <th>{{ localize('global.unit') }}</th>
+                                                                <th>{{ localize('global.nurse') }}</th>
+                                                                <th>{{ localize('global.medicine') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($diabetesCharts as $chart)
+                                                                <tr>
+                                                                    <td>{{ $chart->id }}</td>
+                                                                    <td>
+                                                                        @if($chart->date)
+                                                                            <span class="badge bg-info">{{ $chart->date->format('Y-m-d') }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_set') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->time)
+                                                                            <span class="badge bg-secondary">{{ $chart->formatted_time }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_set') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->rbs)
+                                                                            <span class="badge bg-warning">{{ $chart->rbs }}
+                                                                                {{ $chart->unit }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->fbs)
+                                                                            <span class="badge bg-success">{{ $chart->fbs }}
+                                                                                {{ $chart->unit }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->insulin_dose)
+                                                                            <span class="badge bg-primary">{{ $chart->insulin_dose }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->unit)
+                                                                            <small>{{ $chart->unit }}</small>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->nurse)
+                                                                            <span class="badge bg-info">{{ $chart->nurse->full_name }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($chart->medicine)
+                                                                            <span class="badge bg-secondary">{{ $chart->medicine->name }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group" role="group">
+                                                                            <a href="{{ route('diabetes-charts.show', $chart) }}"
+                                                                                class="btn btn-sm btn-info"
+                                                                                title="{{ localize('global.view') }}">
+                                                                                <i class="fas fa-eye"></i>
+                                                                            </a>
+                                                                            <a href="{{ route('diabetes-charts.edit', $chart) }}"
+                                                                                class="btn btn-sm btn-warning"
+                                                                                title="{{ localize('global.edit') }}">
+                                                                                <i class="fas fa-edit"></i>
+                                                                            </a>
+                                                                            <form action="{{ route('diabetes-charts.destroy', $chart) }}"
+                                                                                method="POST" class="d-inline"
+                                                                                onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                                                    title="{{ localize('global.delete') }}">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                </button>
+                                                                            </form>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @else
+                                                <div class="text-center py-4">
+                                                    <div class="mb-3">
+                                                        <i class="bx bx-clipboard bx-lg text-muted"></i>
+                                                    </div>
+                                                    <h5 class="text-muted">{{ localize('global.no_diabetes_charts_found') }}</h5>
+                                                    <p class="text-muted">{{ localize('global.add_first_diabetes_chart') }}</p>
+                                                    <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\UnderReview', 'chartable_id' => $underReview->id]) }}"
+                                                        class="btn btn-success">
+                                                        <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
+                                                    </a>
+                                                </div>
+                                            @endif
                                         </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Nurse Notes Accordion Section -->
+                            <div class="accordion mt-4 border border-primary shadow-sm rounded" id="nurseNotesAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="nurseNotesHeading">
+                                        <button class="accordion-button collapsed bg-light border-primary" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#nurseNotesCollapse" aria-expanded="false" aria-controls="nurseNotesCollapse">
+                                            <i class="bx bx-note p-1 me-2 text-primary"></i><strong>{{ localize('global.nurse_notes') }}</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="nurseNotesCollapse" class="accordion-collapse collapse" aria-labelledby="nurseNotesHeading"
+                                        data-bs-parent="#nurseNotesAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <a href="{{ route('nurse-notes.print', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                    class="btn btn-info" target="_blank">
+                                                    <i class="fas fa-print"></i> {{ localize('global.print_notes') }}
+                                                </a>
+                                                @can('create', App\Models\NurseNote::class)
+                                                    <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                        class="btn btn-success">
+                                                        <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
+                                                    </a>
+                                                @endcan
+                                            </div>
 
+                                            @if($nurseNotes->count() > 0)
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>{{ localize('global.date') }}</th>
+                                                                <th>{{ localize('global.nurse') }}</th>
+                                                                <th>{{ localize('global.am_time') }}</th>
+                                                                <th>{{ localize('global.pm_time') }}</th>
+                                                                <th>{{ localize('global.note') }}</th>
+                                                                <th>{{ localize('global.created_by') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($nurseNotes as $note)
+                                                                <tr>
+                                                                    <td>{{ $note->id }}</td>
+                                                                    <td>
+                                                                        @if($note->date)
+                                                                            <span class="badge bg-info">{{ $note->date->format('Y-m-d') }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($note->nurse)
+                                                                            <span class="badge bg-primary">{{ $note->nurse->full_name }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($note->time_am)
+                                                                            <span
+                                                                                class="badge bg-primary">{{ $note->time_am->format('H:i') }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($note->time_pm)
+                                                                            <span
+                                                                                class="badge bg-primary">{{ $note->time_pm->format('H:i') }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($note->note)
+                                                                            <span class="text-truncate d-inline-block" style="max-width: 200px;"
+                                                                                title="{{ $note->note }}">
+                                                                                {{ Str::limit($note->note, 50) }}
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($note->createdBy)
+                                                                            <span class="badge bg-secondary">{{ $note->createdBy->name }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">{{ localize('global.not_assigned') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group" role="group">
+                                                                            @can('view', $note)
+                                                                                <a href="{{ route('nurse-notes.show', $note) }}"
+                                                                                    class="btn btn-sm btn-info"
+                                                                                    title="{{ localize('global.view') }}">
+                                                                                    <i class="fas fa-eye"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('update', $note)
+                                                                                <a href="{{ route('nurse-notes.edit', $note) }}"
+                                                                                    class="btn btn-sm btn-warning"
+                                                                                    title="{{ localize('global.edit') }}">
+                                                                                    <i class="fas fa-edit"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('delete', $note)
+                                                                                <form action="{{ route('nurse-notes.destroy', $note) }}"
+                                                                                    method="POST" class="d-inline"
+                                                                                    onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                                                        title="{{ localize('global.delete') }}">
+                                                                                        <i class="fas fa-trash"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                            @endcan
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @else
+                                                <div class="text-center py-4">
+                                                    <div class="mb-3">
+                                                        <i class="bx bx-note bx-lg text-muted"></i>
+                                                    </div>
+                                                    <h5 class="text-muted">{{ localize('global.no_nurse_notes_found') }}</h5>
+                                                    <p class="text-muted">{{ localize('global.add_first_nurse_note') }}</p>
+                                                    @can('create', App\Models\NurseNote::class)
+                                                        <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                            class="btn btn-primary">
+                                                            <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <div class="col-md-12 mt-4">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.patient_name') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($underReview->prescription as $prescription)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $prescription->patient->name }}</td>
-                                                <td>
-                                                    @if ($prescription->is_completed == '0')
-                                                        <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.delivered') }}</span>
+                            <!-- Nutrition Care Accordion Section -->
+                            <div class="accordion mt-4 border border-secondary" id="nutritionCareAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="nutritionCareHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#nutritionCareCollapse" aria-expanded="false" aria-controls="nutritionCareCollapse">
+                                            <i class="bx bx-food-menu p-1 me-2 text-secondary"></i>{{ localize('global.nutrition_care') }}
+                                        </button>
+                                    </h2>
+                                    <div id="nutritionCareCollapse" class="accordion-collapse collapse" aria-labelledby="nutritionCareHeading"
+                                        data-bs-parent="#nutritionCareAccordion">
+                                        <div class="accordion-body" id="nutrition-care-section">
+                                            <div class="d-flex gap-2 mb-3">
+                                                @can('create', \App\Models\NutritionCare::class)
+                                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#createNutritionCareModal">
+                                                        <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                                                    </button>
+                                                @endcan
+                                            </div>
+
+                                            @if($underReview->nutritionCares->count() > 0)
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{{ localize('global.id') }}</th>
+                                                                <th>{{ localize('global.patient_name') }}</th>
+                                                                <th>{{ localize('global.nurse') }}</th>
+                                                                <th>{{ localize('global.observations') }}</th>
+                                                                <th>{{ localize('global.interventions') }}</th>
+                                                                <th>{{ localize('global.nutrition_care_full_note') }}</th>
+                                                                <th>{{ localize('global.date_signature') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($underReview->nutritionCares as $nutritionCare)
+                                                                <tr>
+                                                                    <td>{{ $nutritionCare->id }}</td>
+                                                                    <td>{{ $nutritionCare->patient_name }}</td>
+                                                                    <td>{{ $nutritionCare->nurse->full_name ?? 'N/A' }}</td>
+                                                                    <td>
+                                                                        @php
+                                                                            $observations = [];
+                                                                            if ($nutritionCare->cough)
+                                                                                $observations[] = localize('global.cough');
+                                                                            if ($nutritionCare->sound)
+                                                                                $observations[] = localize('global.sound');
+                                                                            if ($nutritionCare->fluid_swallowing_ability)
+                                                                                $observations[] = localize('global.fluid_swallowing_ability');
+                                                                            if ($nutritionCare->weight)
+                                                                                $observations[] = localize('global.weight');
+                                                                            if ($nutritionCare->amount_and_type_of_nutrition)
+                                                                                $observations[] = localize('global.amount_and_type_of_nutrition');
+                                                                            if ($nutritionCare->diarrhea)
+                                                                                $observations[] = localize('global.diarrhea');
+                                                                            if ($nutritionCare->heart_failure_and_kidney_disease)
+                                                                                $observations[] = localize('global.heart_failure_and_kidney_disease');
+                                                                            if ($nutritionCare->remaining_materials)
+                                                                                $observations[] = localize('global.remaining_materials');
+                                                                            if ($nutritionCare->type_of_tube)
+                                                                                $observations[] = localize('global.type_of_tube');
+                                                                        @endphp
+                                                                        {{ implode(', ', $observations) ?: '-' }}
+                                                                    </td>
+                                                                    <td>
+                                                                        @php
+                                                                            $interventions = [];
+                                                                            if ($nutritionCare->constipation)
+                                                                                $interventions[] = localize('global.constipation');
+                                                                            if ($nutritionCare->nutrition_is_provided)
+                                                                                $interventions[] = localize('global.nutrition_is_provided');
+                                                                            if ($nutritionCare->mouth_hygiene)
+                                                                                $interventions[] = localize('global.mouth_hygiene');
+                                                                            if ($nutritionCare->oral_nutrition_advices)
+                                                                                $interventions[] = localize('global.oral_nutrition_advices');
+                                                                            if ($nutritionCare->voice_exercise)
+                                                                                $interventions[] = localize('global.voice_exercise');
+                                                                            if ($nutritionCare->swallowing_exercise)
+                                                                                $interventions[] = localize('global.swallowing_exercise');
+                                                                            if ($nutritionCare->aspiration_prevention_proceeded)
+                                                                                $interventions[] = localize('global.aspiration_prevention_proceeded');
+                                                                        @endphp
+                                                                        {{ implode(', ', $interventions) ?: '-' }}
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($nutritionCare->nutrition_care_full_note)
+                                                                            <span class="text-truncate d-inline-block" style="max-width: 200px;"
+                                                                                title="{{ $nutritionCare->nutrition_care_full_note }}">
+                                                                                {{ Str::limit($nutritionCare->nutrition_care_full_note, 50) }}
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="text-muted">-</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>{{ $nutritionCare->created_at->format('Y-m-d H:i') }}</td>
+                                                                    <td>
+                                                                        <div class="btn-group" role="group">
+                                                                            @can('view', $nutritionCare)
+                                                                                <a href="{{ route('nutrition-cares.show', $nutritionCare) }}"
+                                                                                    class="btn btn-sm btn-info"
+                                                                                    title="{{ localize('global.view') }}">
+                                                                                    <i class="fas fa-eye"></i>
+                                                                                </a>
+                                                                                <a href="{{ route('nutrition-cares.print', $nutritionCare) }}"
+                                                                                    class="btn btn-sm btn-primary"
+                                                                                    title="{{ localize('global.print') }}" target="_blank">
+                                                                                    <i class="fas fa-print"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('update', $nutritionCare)
+                                                                                <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}"
+                                                                                    class="btn btn-sm btn-warning"
+                                                                                    title="{{ localize('global.edit') }}">
+                                                                                    <i class="fas fa-edit"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('delete', $nutritionCare)
+                                                                                <form
+                                                                                    action="{{ route('nutrition-cares.destroy', $nutritionCare) }}"
+                                                                                    method="POST" class="d-inline"
+                                                                                    onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                                                        title="{{ localize('global.delete') }}">
+                                                                                        <i class="fas fa-trash"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                            @endcan
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @else
+                                                <div class="text-center py-4">
+                                                    <div class="mb-3">
+                                                        <i class="bx bx-food-menu bx-lg text-muted"></i>
+                                                    </div>
+                                                    <h5 class="text-muted">{{ localize('global.no_nutrition_care_found') }}</h5>
+                                                    <p class="text-muted">{{ localize('global.add_first_nutrition_care') }}</p>
+                                                    @can('create', \App\Models\NutritionCare::class)
+                                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                            data-bs-target="#createNutritionCareModal">
+                                                            <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                                                        </button>
+                                                    @endcan
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Medication Administration Records Accordion Section -->
+                            <div class="accordion mt-4 border border-danger" id="medicationAdministrationRecordsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="medicationAdministrationRecordsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#medicationAdministrationRecordsCollapse" aria-expanded="false" aria-controls="medicationAdministrationRecordsCollapse">
+                                            <i class="bx bx-pills p-1 me-2 text-danger"></i>{{ localize('global.medication_administration_records') }}
+                                            ({{ localize('global.mar') }})
+                                        </button>
+                                    </h2>
+                                    <div id="medicationAdministrationRecordsCollapse" class="accordion-collapse collapse" aria-labelledby="medicationAdministrationRecordsHeading"
+                                        data-bs-parent="#medicationAdministrationRecordsAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <a href="{{ route('medication-administration-records.print', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                    class="btn btn-info" target="_blank">
+                                                    <i class="fas fa-print"></i> {{ localize('global.print_mars') }}
+                                                </a>
+                                                @can('create', App\Models\MedicationAdministrationRecord::class)
+                                                    <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                        class="btn btn-success">
+                                                        <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
+                                                    </a>
+                                                @endcan
+                                            </div>
+
+                                            @if($medicationAdministrationRecords->count() > 0)
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{{ localize('global.mar_id') }}</th>
+                                                                <th>{{ localize('global.medicine') }}</th>
+                                                                <th>{{ localize('global.nurse') }}</th>
+                                                                <th>{{ localize('global.order_date') }}</th>
+                                                                <th>{{ localize('global.signature_date') }}</th>
+                                                                <th>{{ localize('global.administration_times') }}</th>
+                                                                <th>{{ localize('global.mar_created_by') }}</th>
+                                                                <th>{{ localize('global.mar_actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($medicationAdministrationRecords as $mar)
+                                                                <tr>
+                                                                    <td>{{ $mar->id }}</td>
+                                                                    <td>
+                                                                        <strong>{{ $mar->medicine->name ?? 'N/A' }}</strong>
+                                                                    </td>
+                                                                    <td>{{ $mar->nurse->full_name ?? 'N/A' }}</td>
+                                                                    <td>
+                                                                        @if($mar->order_date)
+                                                                            <span
+                                                                                class="badge bg-info">{{ $mar->order_date->format('Y-m-d') }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">N/A</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($mar->date_signature)
+                                                                            <span
+                                                                                class="badge bg-success">{{ $mar->date_signature->format('Y-m-d') }}</span>
+                                                                        @else
+                                                                            <span class="text-muted">N/A</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        @if($mar->administrationTimes->count() > 0)
+                                                                            <span class="badge badge-info">
+                                                                                {{ $mar->administrationTimes->count() }}
+                                                                                {{ localize('global.times_count') }}
+                                                                            </span>
+                                                                            <br>
+                                                                            <small>
+                                                                                @foreach($mar->administrationTimes as $time)
+                                                                                    {{ $time->formatted_time }}@if(!$loop->last), @endif
+                                                                                @endforeach
+                                                                            </small>
+                                                                        @else
+                                                                            <span
+                                                                                class="text-muted">{{ localize('global.no_times_recorded') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>{{ $mar->createdBy->name ?? 'System' }}</td>
+                                                                    <td>
+                                                                        <div class="btn-group" role="group">
+                                                                            @can('view', $mar)
+                                                                                <a href="{{ route('medication-administration-records.show', $mar) }}"
+                                                                                    class="btn btn-sm btn-info"
+                                                                                    title="{{ localize('global.mar_view') }}">
+                                                                                    <i class="fas fa-eye"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('update', $mar)
+                                                                                <a href="{{ route('medication-administration-records.edit', $mar) }}"
+                                                                                    class="btn btn-sm btn-warning"
+                                                                                    title="{{ localize('global.mar_edit') }}">
+                                                                                    <i class="fas fa-edit"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('delete', $mar)
+                                                                                <form
+                                                                                    action="{{ route('medication-administration-records.destroy', $mar) }}"
+                                                                                    method="POST" class="d-inline"
+                                                                                    onsubmit="return confirm('{{ localize('global.mar_confirm_delete') }}')">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                                                        title="{{ localize('global.mar_delete') }}">
+                                                                                        <i class="fas fa-trash"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                            @endcan
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @else
+                                                <div class="text-center py-4">
+                                                    <div class="mb-3">
+                                                        <i class="bx bx-pills bx-lg text-muted"></i>
+                                                    </div>
+                                                    <h5 class="text-muted">{{ localize('global.no_mars_found') }}</h5>
+                                                    <p class="text-muted">{{ localize('global.add_first_mar') }}</p>
+                                                    @can('create', App\Models\MedicationAdministrationRecord::class)
+                                                        <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                            class="btn btn-primary">
+                                                            <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vital Signs Accordion Section -->
+                            <div class="accordion mt-4 border border-dark" id="vitalSignsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="vitalSignsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#vitalSignsCollapse" aria-expanded="false" aria-controls="vitalSignsCollapse">
+                                            <i class="bx bx-heart p-1 me-2 text-dark"></i>{{ localize('global.vital_signs') }}
+                                        </button>
+                                    </h2>
+                                    <div id="vitalSignsCollapse" class="accordion-collapse collapse" aria-labelledby="vitalSignsHeading"
+                                        data-bs-parent="#vitalSignsAccordion">
+                                        <div class="accordion-body">
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    @can('create', App\Models\VitalSign::class)
+                                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                            class="btn btn-primary">
+                                                            <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                                <div class="col-md-4 text-center">
+                                                    @if($underReview->vitalSigns->count() > 0)
+                                                        <a href="{{ route('vital-signs.print', ['App\\Models\\UnderReview', $underReview->id]) }}"
+                                                            class="btn btn-info" target="_blank">
+                                                            <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
+                                                        </a>
                                                     @endif
-                                                </td>
-                                                <td>
+                                                </div>
+                                                <div class="col-md-4 text-end">
+                                                    <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                        class="btn btn-outline-primary">
+                                                        <i class="bx bx-list-ul"></i> {{ localize('global.view_all_vital_signs') }}
+                                                    </a>
+                                                </div>
+                                            </div>
 
+                                            @if($underReview->vitalSigns->count() > 0)
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{{ localize('id') }}</th>
+                                                                <th>{{ localize('vital_sign_type') }}</th>
+                                                                <th>{{ localize('created_at') }}</th>
+                                                                <th>{{ localize('schedules') }}</th>
+                                                                <th>{{ localize('actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($underReview->vitalSigns->take(5) as $vitalSign)
+                                                                <tr>
+                                                                    <td>{{ $vitalSign->id }}</td>
+                                                                    <td>
+                                                                        <span
+                                                                            class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
+                                                                    </td>
+                                                                    <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
+                                                                    <td>
+                                                                        <span class="badge bg-secondary">{{ $vitalSign->schedules->count() }}
+                                                                            {{ localize('schedules') }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group" role="group">
+                                                                            @can('view', $vitalSign)
+                                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
+                                                                                    class="btn btn-info btn-sm" title="{{ localize('global.view') }}">
+                                                                                    <i class="bx bx-show"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('create', App\Models\VitalSignSchedule::class)
+                                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
+                                                                                    class="btn btn-success btn-sm"
+                                                                                    title="{{ localize('global.add_schedule') }}">
+                                                                                    <i class="bx bx-time"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
 
-                                                    <a href="#" data-bs-toggle="modal"
-                                                        onclick="getPrescriptionItems({{ $prescription->id }})"
-                                                        data-bs-target="#showPrescriptionItemModal"><span><i
-                                                                class="bx bx-expand"></i></span></a>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="5">
-                                                    <div class="container">
-                                                        <div class="col-md-12 d-flex justify-content-center align-items-center">
-                                                            <div class="badge bg-label-danger mt-4">
-                                                                {{ localize('global.no_previous_prescriptions') }}
-                                                            </div>
+                                                    @if($underReview->vitalSigns->count() > 5)
+                                                        <div class="text-center mt-3">
+                                                            <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                                class="btn btn-outline-primary">
+                                                                {{ localize('global.view_all') }} ({{ $underReview->vitalSigns->count() }}
+                                                                {{ localize('global.vital_signs') }})
+                                                            </a>
                                                         </div>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <div class="text-center py-4">
+                                                    <div class="mb-3">
+                                                        <i class="bx bx-heart bx-lg text-muted"></i>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                                <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
-                                    aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content" id="prescription_items_table">
-
-
-
+                                                    <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
+                                                    <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
+                                                    @can('create', App\Models\VitalSign::class)
+                                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                                            class="btn btn-primary">
+                                                            <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12 mt-4">
-                                <h5 class="mb-4 p-3 bg-label-primary">
-                                    <i class="bx bx-bar-chart p-1"></i>{{ localize('global.diabetes_charts') }}
-                                </h5>
-                                <div class="d-flex gap-2 mb-3">
-                                    <a href="{{ route('diabetes-charts.print', ['chartable_type' => 'App\\Models\\UnderReview', 'chartable_id' => $underReview->id]) }}"
-                                        class="btn btn-info" target="_blank">
-                                        <i class="fas fa-print"></i> {{ localize('global.print_chart') }}
-                                    </a>
-                                    <a href="{{ route('diabetes-charts.create', ['chartable_type' => 'App\\Models\\UnderReview', 'chartable_id' => $underReview->id]) }}"
-                                        class="btn btn-success">
-                                        <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
-                                    </a>
-                                </div>
 
-                                @if($diabetesCharts->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>{{ localize('global.date') }}</th>
-                                                    <th>{{ localize('global.time') }}</th>
-                                                    <th>{{ localize('global.rbs') }}</th>
-                                                    <th>{{ localize('global.fbs') }}</th>
-                                                    <th>{{ localize('global.insulin_dose') }}</th>
-                                                    <th>{{ localize('global.unit') }}</th>
-                                                    <th>{{ localize('global.nurse') }}</th>
-                                                    <th>{{ localize('global.medicine') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($diabetesCharts as $chart)
-                                                    <tr>
-                                                        <td>{{ $chart->id }}</td>
-                                                        <td>
-                                                            @if($chart->date)
-                                                                <span class="badge bg-info">{{ $chart->date->format('Y-m-d') }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_set') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->time)
-                                                                <span class="badge bg-secondary">{{ $chart->formatted_time }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_set') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->rbs)
-                                                                <span class="badge bg-warning">{{ $chart->rbs }}
-                                                                    {{ $chart->unit }}</span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->fbs)
-                                                                <span class="badge bg-success">{{ $chart->fbs }}
-                                                                    {{ $chart->unit }}</span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->insulin_dose)
-                                                                <span class="badge bg-primary">{{ $chart->insulin_dose }}</span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->unit)
-                                                                <small>{{ $chart->unit }}</small>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->nurse)
-                                                                <span class="badge bg-info">{{ $chart->nurse->full_name }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($chart->medicine)
-                                                                <span class="badge bg-secondary">{{ $chart->medicine->name }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                <a href="{{ route('diabetes-charts.show', $chart) }}"
-                                                                    class="btn btn-sm btn-info"
-                                                                    title="{{ localize('global.view') }}">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </a>
-                                                                <a href="{{ route('diabetes-charts.edit', $chart) }}"
-                                                                    class="btn btn-sm btn-warning"
-                                                                    title="{{ localize('global.edit') }}">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                <form action="{{ route('diabetes-charts.destroy', $chart) }}"
-                                                                    method="POST" class="d-inline"
-                                                                    onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-sm btn-danger"
-                                                                        title="{{ localize('global.delete') }}">
-                                                                        <i class="fas fa-trash"></i>
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-
-
-
-                                @else
-                                    <div class="text-center py-4">
-                                        <div class="mb-3">
-                                            <i class="bx bx-clipboard bx-lg text-muted"></i>
-                                        </div>
-                                        <h5 class="text-muted">{{ localize('global.no_diabetes_charts_found') }}</h5>
-                                        <p class="text-muted">{{ localize('global.add_first_diabetes_chart') }}</p>
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createDiabetesChartModal{{ $underReview->id }}">
-                                            <i class="bx bx-plus"></i> {{ localize('global.add_diabetes_chart') }}
+                            <!-- Hospitalization Accordion Section -->
+                            <div class="accordion mt-4 border border-light" id="hospitalizationAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="hospitalizationHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#hospitalizationCollapse" aria-expanded="false" aria-controls="hospitalizationCollapse">
+                                            <i class="bx bx-bed p-1 me-2 text-light"></i>{{ localize('global.hospitalize') }}
                                         </button>
-                                    </div>
-                                @endif
-                            </div>
+                                    </h2>
+                                    <div id="hospitalizationCollapse" class="accordion-collapse collapse" aria-labelledby="hospitalizationHeading"
+                                        data-bs-parent="#hospitalizationAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#createHospitalizationModal{{ $underReview->id }}">
+                                                    <i class="bx bx-plus"></i> {{ localize('global.hospitalize_patient') }}
+                                                </button>
+                                            </div>
 
-                            <!-- Nurse Notes Section -->
-                            <div class="col-md-12 mt-4">
-                                <h5 class="mb-4 p-3 bg-label-primary">
-                                    <i class="bx bx-note p-1"></i>{{ localize('global.nurse_notes') }}
-                                </h5>
-                                <div class="d-flex gap-2 mb-3">
-                                    <a href="{{ route('nurse-notes.print', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                        class="btn btn-info" target="_blank">
-                                        <i class="fas fa-print"></i> {{ localize('global.print_notes') }}
-                                    </a>
-                                    @can('create', App\Models\NurseNote::class)
-                                        <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                            class="btn btn-success">
-                                            <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
-                                        </a>
-                                    @endcan
-                                </div>
+                                            <!-- Create Hospitalization Modal -->
+                                            <div class="modal fade modal-xl" id="createHospitalizationModal{{ $underReview->id }}"
+                                                tabindex="-1" aria-labelledby="createHospitalizationModalLabel{{ $underReview->id }}"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title"
+                                                                id="createHospitalizationModalLabel{{ $underReview->id }}">
+                                                                {{ localize('global.hospitalize_patient') }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{ route('hospitalizations.store') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
+                                                                    name="patient_id" value="{{ $underReview->patient_id }}">
+                                                                <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
+                                                                    name="appointment_id" value="{{ $underReview->appointment->id }}">
+                                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
+                                                                    value="{{ auth()->user()->id }}">
+                                                                <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
+                                                                    value="{{ auth()->user()->branch_id }}">
+                                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
+                                                                    name="under_review_id" value="{{ $underReview->id }}">
+                                                                <input type="hidden" id="is_discharged{{ $underReview->id }}"
+                                                                    name="is_discharged" value="0">
 
-                                @if($nurseNotes->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>{{ localize('global.date') }}</th>
-                                                    <th>{{ localize('global.nurse') }}</th>
-                                                    <th>{{ localize('global.am_time') }}</th>
-                                                    <th>{{ localize('global.pm_time') }}</th>
-                                                    <th>{{ localize('global.note') }}</th>
-                                                    <th>{{ localize('global.created_by') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($nurseNotes as $note)
-                                                    <tr>
-                                                        <td>{{ $note->id }}</td>
-                                                        <td>
-                                                            @if($note->date)
-                                                                <span class="badge bg-info">{{ $note->date->format('Y-m-d') }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($note->nurse)
-                                                                <span class="badge bg-primary">{{ $note->nurse->full_name }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($note->time_am)
-                                                                <span
-                                                                    class="badge bg-primary">{{ $note->time_am->format('H:i') }}</span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($note->time_pm)
-                                                                <span
-                                                                    class="badge bg-primary">{{ $note->time_pm->format('H:i') }}</span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($note->note)
-                                                                <span class="text-truncate d-inline-block" style="max-width: 200px;"
-                                                                    title="{{ $note->note }}">
-                                                                    {{ Str::limit($note->note, 50) }}
-                                                                </span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($note->createdBy)
-                                                                <span class="badge bg-secondary">{{ $note->createdBy->name }}</span>
-                                                            @else
-                                                                <span class="text-muted">{{ localize('global.not_assigned') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                @can('view', $note)
-                                                                    <a href="{{ route('nurse-notes.show', $note) }}"
-                                                                        class="btn btn-sm btn-info"
-                                                                        title="{{ localize('global.view') }}">
-                                                                        <i class="fas fa-eye"></i>
+                                                                <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <label
+                                                                            for="reason{{ $underReview->id }}">{{ localize('global.reason') }}</label>
+                                                                        <textarea class="form-control" id="reason{{ $underReview->id }}"
+                                                                            name="reason" rows="3"></textarea>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <label
+                                                                            for="remarks{{ $underReview->id }}">{{ localize('global.remarks') }}</label>
+                                                                        <textarea class="form-control" id="remarks{{ $underReview->id }}"
+                                                                            name="remarks" rows="3"></textarea>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <div class="row p-2">
+                                                                            <div class="col-md-4">
+                                                                                <label
+                                                                                    for="room_id{{ $underReview->id }}">{{ localize('global.rooms') }}</label>
+                                                                                <select class="form-control select2" name="room_id"
+                                                                                    id="room_id">
+                                                                                    <option value="">{{ localize('global.select') }}
+                                                                                    </option>
+                                                                                    @foreach ($rooms as $value)
+                                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                                            {{ $value->name }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div class="col-md-4">
+                                                                                <label
+                                                                                    for="bed_id{{ $underReview->id }}">{{ localize('global.beds') }}</label>
+                                                                                <select class="form-control select2" name="bed_id"
+                                                                                    id="bed_id">
+                                                                                    <option value="">{{ localize('global.select') }}
+                                                                                    </option>
+                                                                                    @foreach ($beds as $value)
+                                                                                        <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
+                                                                                            {{ $value->number }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <div class="col-md-4">
+                                                                                <label
+                                                                                    for="food_type_id{{ $underReview->id }}">{{ localize('global.food_type') }}</label>
+                                                                                <select class="form-control select2" name="food_type_id[]"
+                                                                                    id="food_type_id" multiple>
+                                                                                    <option value="">{{ localize('global.select') }}
+                                                                                    </option>
+                                                                                    @foreach ($foodTypes as $value)
+                                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                                            {{ $value->name }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
+                                                                                class="bx bx-info-circle p-1"></i>{{ localize('global.patient_companion_info') }}
+                                                                        </h5>
+                                                                        <div class="form-group">
+                                                                            <div class="row p-2">
+                                                                                <div class="col-md-3">
+                                                                                    <label>{{ localize('global.companion_name') }}</label>
+                                                                                    <input type="text" class="form-control"
+                                                                                        name="patinet_companion">
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <label>{{ localize('global.companion_father_name') }}</label>
+                                                                                    <input type="text" class="form-control"
+                                                                                        name="companion_father_name">
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <label>{{ localize('global.relation_to_patient') }}</label>
+                                                                                    <select class="form-control select2"
+                                                                                        name="relation_to_patient">
+                                                                                        <option value="">
+                                                                                            {{ localize('global.select') }}
+                                                                                        </option>
+                                                                                        @foreach ($relations as $value)
+                                                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                                                {{ $value->name }}
+                                                                                            </option>
+                                                                                        @endforeach
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-3">
+                                                                                    <label>{{ localize('global.companion_card_type') }}</label>
+                                                                                    <select class="form-control select2"
+                                                                                        name="companion_card_type">
+                                                                                        <option value="">
+                                                                                            {{ localize('global.select') }}
+                                                                                        </option>
+                                                                                        <option value="12">
+                                                                                            {{ localize('global.12_hours') }}
+                                                                                        </option>
+                                                                                        <option value="24">
+                                                                                            {{ localize('global.24_hours') }}
+                                                                                        </option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                        </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End Create Hospitalization Modal -->
+
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                                            <th>{{ localize('global.remarks') }}</th>
+                                                            <th>{{ localize('global.room') }}</th>
+                                                            <th>{{ localize('global.bed') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @forelse ($underReview->hospitalization as $hospitalization)
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                <td>{{ $hospitalization->reason }}</td>
+                                                                <td>{{ $hospitalization->remarks }}</td>
+                                                                <td>{{ $hospitalization->room->name }}</td>
+                                                                <td>{{ $hospitalization->bed->number }}</td>
+                                                                <td>
+                                                                    @if ($hospitalization->is_discharged == 0)
+                                                                        <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}">
+                                                                        <i class="bx bx-edit"></i>
                                                                     </a>
-                                                                @endcan
-                                                                @can('update', $note)
-                                                                    <a href="{{ route('nurse-notes.edit', $note) }}"
-                                                                        class="btn btn-sm btn-warning"
-                                                                        title="{{ localize('global.edit') }}">
-                                                                        <i class="fas fa-edit"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('delete', $note)
-                                                                    <form action="{{ route('nurse-notes.destroy', $note) }}"
-                                                                        method="POST" class="d-inline"
-                                                                        onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+
+                                                                    <form id="delete-form-{{$hospitalization->id}}"
+                                                                        action="{{ route('hospitalizations.destroy', $hospitalization->id) }}"
+                                                                        method="POST" style="display: none;">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                                            title="{{ localize('global.delete') }}">
-                                                                            <i class="fas fa-trash"></i>
-                                                                        </button>
                                                                     </form>
-                                                                @endcan
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <div class="text-center py-4">
-                                        <div class="mb-3">
-                                            <i class="bx bx-note bx-lg text-muted"></i>
+                                                                    <a onclick="event.preventDefault();
+                                                                             if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
+                                                                         { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                                                        <i class="bx bx-trash text-danger"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="7" class="text-center">
+                                                                    <div class="badge bg-label-danger mt-4">
+                                                                        {{ localize('global.no_previous_hospitalizations') }}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <h5 class="text-muted">{{ localize('global.no_nurse_notes_found') }}</h5>
-                                        <p class="text-muted">{{ localize('global.add_first_nurse_note') }}</p>
-                                        @can('create', App\Models\NurseNote::class)
-                                            <a href="{{ route('nurse-notes.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                class="btn btn-primary">
-                                                <i class="bx bx-plus"></i> {{ localize('global.add_nurse_note') }}
-                                            </a>
-                                        @endcan
                                     </div>
-                                @endif
+                                </div>
                             </div>
-
-                            <!-- Nutrition Care Section -->
-                            <div class="col-md-12 mt-4" id="nutrition-care-section">
-                                <h5 class="mb-4 p-3 bg-label-primary">
-                                    <i class="bx bx-food-menu p-1"></i>{{ localize('global.nutrition_care') }}
-                                </h5>
-                                <div class="d-flex gap-2 mb-3">
-                                    @can('create', \App\Models\NutritionCare::class)
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createNutritionCareModal">
-                                            <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
+                            <!-- Lab Tests Accordion Section -->
+                            <div class="accordion mt-4 border border-info" id="labTestsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="labTestsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#labTestsCollapse" aria-expanded="false" aria-controls="labTestsCollapse">
+                                            <i class="bx bx-hard-hat p-1 me-2 text-info"></i>{{ localize('global.under_review_checkups') }}
                                         </button>
-                                    @endcan
-                                </div>
+                                    </h2>
+                                    <div id="labTestsCollapse" class="accordion-collapse collapse" aria-labelledby="labTestsHeading"
+                                        data-bs-parent="#labTestsAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#createLabModal{{ $underReview->id }}">
+                                                    <i class="bx bx-plus"></i> {{ localize('global.add_lab_test') }}
+                                                </button>
+                                            </div>
 
-                                @if($underReview->nutritionCares->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.id') }}</th>
-                                                    <th>{{ localize('global.patient_name') }}</th>
-                                                    <th>{{ localize('global.nurse') }}</th>
-                                                    <th>{{ localize('global.observations') }}</th>
-                                                    <th>{{ localize('global.interventions') }}</th>
-                                                    <th>{{ localize('global.nutrition_care_full_note') }}</th>
-                                                    <th>{{ localize('global.date_signature') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($underReview->nutritionCares as $nutritionCare)
-                                                    <tr>
-                                                        <td>{{ $nutritionCare->id }}</td>
-                                                        <td>{{ $nutritionCare->patient_name }}</td>
-                                                        <td>{{ $nutritionCare->nurse->full_name ?? 'N/A' }}</td>
-                                                        <td>
-                                                            @php
-                                                                $observations = [];
-                                                                if ($nutritionCare->cough)
-                                                                    $observations[] = localize('global.cough');
-                                                                if ($nutritionCare->sound)
-                                                                    $observations[] = localize('global.sound');
-                                                                if ($nutritionCare->fluid_swallowing_ability)
-                                                                    $observations[] = localize('global.fluid_swallowing_ability');
-                                                                if ($nutritionCare->weight)
-                                                                    $observations[] = localize('global.weight');
-                                                                if ($nutritionCare->amount_and_type_of_nutrition)
-                                                                    $observations[] = localize('global.amount_and_type_of_nutrition');
-                                                                if ($nutritionCare->diarrhea)
-                                                                    $observations[] = localize('global.diarrhea');
-                                                                if ($nutritionCare->heart_failure_and_kidney_disease)
-                                                                    $observations[] = localize('global.heart_failure_and_kidney_disease');
-                                                                if ($nutritionCare->remaining_materials)
-                                                                    $observations[] = localize('global.remaining_materials');
-                                                                if ($nutritionCare->type_of_tube)
-                                                                    $observations[] = localize('global.type_of_tube');
-                                                            @endphp
-                                                            {{ implode(', ', $observations) ?: '-' }}
-                                                        </td>
-                                                        <td>
-                                                            @php
-                                                                $interventions = [];
-                                                                if ($nutritionCare->constipation)
-                                                                    $interventions[] = localize('global.constipation');
-                                                                if ($nutritionCare->nutrition_is_provided)
-                                                                    $interventions[] = localize('global.nutrition_is_provided');
-                                                                if ($nutritionCare->mouth_hygiene)
-                                                                    $interventions[] = localize('global.mouth_hygiene');
-                                                                if ($nutritionCare->oral_nutrition_advices)
-                                                                    $interventions[] = localize('global.oral_nutrition_advices');
-                                                                if ($nutritionCare->voice_exercise)
-                                                                    $interventions[] = localize('global.voice_exercise');
-                                                                if ($nutritionCare->swallowing_exercise)
-                                                                    $interventions[] = localize('global.swallowing_exercise');
-                                                                if ($nutritionCare->aspiration_prevention_proceeded)
-                                                                    $interventions[] = localize('global.aspiration_prevention_proceeded');
-                                                            @endphp
-                                                            {{ implode(', ', $interventions) ?: '-' }}
-                                                        </td>
-                                                        <td>
-                                                            @if($nutritionCare->nutrition_care_full_note)
-                                                                <span class="text-truncate d-inline-block" style="max-width: 200px;"
-                                                                    title="{{ $nutritionCare->nutrition_care_full_note }}">
-                                                                    {{ Str::limit($nutritionCare->nutrition_care_full_note, 50) }}
-                                                                </span>
-                                                            @else
-                                                                <span class="text-muted">-</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $nutritionCare->created_at->format('Y-m-d H:i') }}</td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                @can('view', $nutritionCare)
-                                                                    <a href="{{ route('nutrition-cares.show', $nutritionCare) }}"
-                                                                        class="btn btn-sm btn-info"
-                                                                        title="{{ localize('global.view') }}">
-                                                                        <i class="fas fa-eye"></i>
-                                                                    </a>
-                                                                    <a href="{{ route('nutrition-cares.print', $nutritionCare) }}"
-                                                                        class="btn btn-sm btn-primary"
-                                                                        title="{{ localize('global.print') }}" target="_blank">
-                                                                        <i class="fas fa-print"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('update', $nutritionCare)
-                                                                    <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}"
-                                                                        class="btn btn-sm btn-warning"
-                                                                        title="{{ localize('global.edit') }}">
-                                                                        <i class="fas fa-edit"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('delete', $nutritionCare)
-                                                                    <form
-                                                                        action="{{ route('nutrition-cares.destroy', $nutritionCare) }}"
-                                                                        method="POST" class="d-inline"
-                                                                        onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                                            title="{{ localize('global.delete') }}">
-                                                                            <i class="fas fa-trash"></i>
-                                                                        </button>
-                                                                    </form>
-                                                                @endcan
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <div class="text-center py-4">
-                                        <div class="mb-3">
-                                            <i class="bx bx-food-menu bx-lg text-muted"></i>
-                                        </div>
-                                        <h5 class="text-muted">{{ localize('global.no_nutrition_care_found') }}</h5>
-                                        <p class="text-muted">{{ localize('global.add_first_nutrition_care') }}</p>
-                                        @can('create', \App\Models\NutritionCare::class)
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#createNutritionCareModal">
-                                                <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
-                                            </button>
-                                        @endcan
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Medication Administration Records Section -->
-                            <div class="col-md-12 mt-4">
-                                <h5 class="mb-4 p-3 bg-label-primary">
-                                    <i
-                                        class="bx bx-pills p-1"></i>{{ localize('global.medication_administration_records') }}
-                                    ({{ localize('global.mar') }})
-                                </h5>
-                                <div class="d-flex gap-2 mb-3">
-                                    <a href="{{ route('medication-administration-records.print', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                        class="btn btn-info" target="_blank">
-                                        <i class="fas fa-print"></i> {{ localize('global.print_mars') }}
-                                    </a>
-                                    @can('create', App\Models\MedicationAdministrationRecord::class)
-                                        <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                            class="btn btn-success">
-                                            <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
-                                        </a>
-                                    @endcan
-                                </div>
-
-                                @if($medicationAdministrationRecords->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.mar_id') }}</th>
-                                                    <th>{{ localize('global.medicine') }}</th>
-                                                    <th>{{ localize('global.nurse') }}</th>
-                                                    <th>{{ localize('global.order_date') }}</th>
-                                                    <th>{{ localize('global.signature_date') }}</th>
-                                                    <th>{{ localize('global.administration_times') }}</th>
-                                                    <th>{{ localize('global.mar_created_by') }}</th>
-                                                    <th>{{ localize('global.mar_actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($medicationAdministrationRecords as $mar)
-                                                    <tr>
-                                                        <td>{{ $mar->id }}</td>
-                                                        <td>
-                                                            <strong>{{ $mar->medicine->name ?? 'N/A' }}</strong>
-                                                        </td>
-                                                        <td>{{ $mar->nurse->full_name ?? 'N/A' }}</td>
-                                                        <td>
-                                                            @if($mar->order_date)
-                                                                <span
-                                                                    class="badge bg-info">{{ $mar->order_date->format('Y-m-d') }}</span>
-                                                            @else
-                                                                <span class="text-muted">N/A</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($mar->date_signature)
-                                                                <span
-                                                                    class="badge bg-success">{{ $mar->date_signature->format('Y-m-d') }}</span>
-                                                            @else
-                                                                <span class="text-muted">N/A</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($mar->administrationTimes->count() > 0)
-                                                                <span class="badge badge-info">
-                                                                    {{ $mar->administrationTimes->count() }}
-                                                                    {{ localize('global.times_count') }}
-                                                                </span>
-                                                                <br>
-                                                                <small>
-                                                                    @foreach($mar->administrationTimes as $time)
-                                                                        {{ $time->formatted_time }}@if(!$loop->last), @endif
-                                                                    @endforeach
-                                                                </small>
-                                                            @else
-                                                                <span
-                                                                    class="text-muted">{{ localize('global.no_times_recorded') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $mar->createdBy->name ?? 'System' }}</td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                @can('view', $mar)
-                                                                    <a href="{{ route('medication-administration-records.show', $mar) }}"
-                                                                        class="btn btn-sm btn-info"
-                                                                        title="{{ localize('global.mar_view') }}">
-                                                                        <i class="fas fa-eye"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('update', $mar)
-                                                                    <a href="{{ route('medication-administration-records.edit', $mar) }}"
-                                                                        class="btn btn-sm btn-warning"
-                                                                        title="{{ localize('global.mar_edit') }}">
-                                                                        <i class="fas fa-edit"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('delete', $mar)
-                                                                    <form
-                                                                        action="{{ route('medication-administration-records.destroy', $mar) }}"
-                                                                        method="POST" class="d-inline"
-                                                                        onsubmit="return confirm('{{ localize('global.mar_confirm_delete') }}')">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-sm btn-danger"
-                                                                            title="{{ localize('global.mar_delete') }}">
-                                                                            <i class="fas fa-trash"></i>
-                                                                        </button>
-                                                                    </form>
-                                                                @endcan
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <div class="text-center py-4">
-                                        <div class="mb-3">
-                                            <i class="bx bx-pills bx-lg text-muted"></i>
-                                        </div>
-                                        <h5 class="text-muted">{{ localize('global.no_mars_found') }}</h5>
-                                        <p class="text-muted">{{ localize('global.add_first_mar') }}</p>
-                                        @can('create', App\Models\MedicationAdministrationRecord::class)
-                                            <a href="{{ route('medication-administration-records.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                class="btn btn-primary">
-                                                <i class="bx bx-plus"></i> {{ localize('global.add_mar') }}
-                                            </a>
-                                        @endcan
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Vital Signs Management Section -->
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-heart p-1"></i>{{ localize('global.vital_signs') }}</h5>
-
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    @can('create', App\Models\VitalSign::class)
-                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                            class="btn btn-primary">
-                                            <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
-                                        </a>
-                                    @endcan
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    @if($underReview->vitalSigns->count() > 0)
-                                        <a href="{{ route('vital-signs.print', ['App\\Models\\UnderReview', $underReview->id]) }}"
-                                            class="btn btn-info" target="_blank">
-                                            <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
-                                        </a>
-                                    @endif
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                        class="btn btn-outline-primary">
-                                        <i class="bx bx-list-ul"></i> {{ localize('global.view_all_vital_signs') }}
-                                    </a>
-                                </div>
-                            </div>
-
-                            @if($underReview->vitalSigns->count() > 0)
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ localize('id') }}</th>
-                                                <th>{{ localize('vital_sign_type') }}</th>
-                                                <th>{{ localize('created_at') }}</th>
-                                                <th>{{ localize('schedules') }}</th>
-                                                <th>{{ localize('actions') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($underReview->vitalSigns->take(5) as $vitalSign)
-                                                <tr>
-                                                    <td>{{ $vitalSign->id }}</td>
-                                                    <td>
-                                                        <span
-                                                            class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
-                                                    </td>
-                                                    <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
-                                                    <td>
-                                                        <span class="badge bg-secondary">{{ $vitalSign->schedules->count() }}
-                                                            {{ localize('schedules') }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="btn-group" role="group">
-                                                            @can('view', $vitalSign)
-                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                                                    class="btn btn-info btn-sm" title="{{ localize('global.view') }}">
-                                                                    <i class="bx bx-show"></i>
-                                                                </a>
-                                                            @endcan
-                                                            @can('create', App\Models\VitalSignSchedule::class)
-                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                                                    class="btn btn-success btn-sm"
-                                                                    title="{{ localize('global.add_schedule') }}">
-                                                                    <i class="bx bx-time"></i>
-                                                                </a>
-                                                            @endcan
+                                            <!-- Create Lab Modal -->
+                                            <div class="modal fade" id="createLabModal{{ $underReview->id }}" tabindex="-1"
+                                                aria-labelledby="createLabModalLabel{{ $underReview->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="createLabModalLabel{{ $underReview->id }}">
+                                                                {{ localize('global.add_lab_test') }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-
-                                    @if($underReview->vitalSigns->count() > 5)
-                                        <div class="text-center mt-3">
-                                            <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                class="btn btn-outline-primary">
-                                                {{ localize('global.view_all') }} ({{ $underReview->vitalSigns->count() }}
-                                                {{ localize('global.vital_signs') }})
-                                            </a>
-                                        </div>
-                                    @endif
-                                </div>
-                            @else
-                                <div class="text-center py-4">
-                                    <div class="mb-3">
-                                        <i class="bx bx-heart bx-lg text-muted"></i>
-                                    </div>
-                                    <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
-                                    <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
-                                    @can('create', App\Models\VitalSign::class)
-                                        <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                            class="btn btn-primary">
-                                            <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
-                                        </a>
-                                    @endcan
-                                </div>
-                            @endif
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createHospitalizationModal{{ $underReview->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-
-                            <!-- Create  Lab Modal -->
-                            <div class="modal fade modal-xl" id="createHospitalizationModal{{ $underReview->id }}"
-                                tabindex="-1" aria-labelledby="createHospitalizationModalLabel{{ $underReview->id }}"
-                                aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"
-                                                id="createHospitalizationModalLabel{{ $underReview->id }}">
-                                                {{ localize('global.hospitalize_patient') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('hospitalizations.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
-                                                    name="patient_id" value="{{ $underReview->patient_id }}">
-                                                <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
-                                                    name="appointment_id" value="{{ $underReview->appointment->id }}">
-                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
-                                                    value="{{ auth()->user()->id }}">
-                                                <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
-                                                    value="{{ auth()->user()->branch_id }}">
-                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
-                                                    name="under_review_id" value="{{ $underReview->id }}">
-                                                <input type="hidden" id="is_discharged{{ $underReview->id }}"
-                                                    name="is_discharged" value="0">
-
-                                                <div class="form-group">
-
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="reason{{ $underReview->id }}">{{ localize('global.reason') }}</label>
-                                                        <textarea class="form-control" id="reason{{ $underReview->id }}"
-                                                            name="reason" rows="3"></textarea>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="remarks{{ $underReview->id }}">{{ localize('global.remarks') }}</label>
-                                                        <textarea class="form-control" id="remarks{{ $underReview->id }}"
-                                                            name="remarks" rows="3"></textarea>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <div class="row p-2">
-                                                            <div class="col-md-4">
-                                                                <label
-                                                                    for="room_id{{ $underReview->id }}">{{ localize('global.rooms') }}</label>
-                                                                <select class="form-control select2" name="room_id"
-                                                                    id="room_id">
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($rooms as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-4">
-                                                                <label
-                                                                    for="bed_id{{ $underReview->id }}">{{ localize('global.beds') }}</label>
-                                                                <select class="form-control select2" name="bed_id"
-                                                                    id="bed_id">
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($beds as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->number }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-4">
-                                                                <label
-                                                                    for="food_type_id{{ $underReview->id }}">{{ localize('global.food_type') }}</label>
-                                                                <select class="form-control select2" name="food_type_id[]"
-                                                                    id="food_type_id" multiple>
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($foodTypes as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                                                class="bx bx-info-circle p-1"></i>{{ localize('global.patient_companion_info') }}
-                                                        </h5>
-                                                        <div class="form-group">
-                                                            <div class="row p-2">
-                                                                <div class="col-md-3">
-                                                                    <label>{{ localize('global.companion_name') }}</label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="patinet_companion">
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <label>{{ localize('global.companion_father_name') }}</label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="companion_father_name">
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <label>{{ localize('global.relation_to_patient') }}</label>
-                                                                    <select class="form-control select2"
-                                                                        name="relation_to_patient">
-                                                                        <option value="">
-                                                                            {{ localize('global.select') }}
-                                                                        </option>
-                                                                        @foreach ($relations as $value)
+                                                        <div class="modal-body">
+                                                            <form action="{{ route('lab_tests.store') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
+                                                                    name="patient_id" value="{{ $underReview->patient_id }}">
+                                                                <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
+                                                                    name="appointment_id" value="{{ $underReview->id }}">
+                                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
+                                                                    value="{{ $underReview->doctor->id }}">
+                                                                <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
+                                                                    value="{{ auth()->user()->branch_id }}">
+                                                                <input type="hidden" id="status{{ $underReview->id }}" name="status"
+                                                                    value="0">
+                                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
+                                                                    name="under_review_id" value="{{ $underReview->id }}">
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="lab_type_section{{ $underReview->id }}">{{ localize('global.lab_type_section') }}</label>
+                                                                    <select class="form-control select2" name="lab_type_section"
+                                                                        id="lab_type_section">
+                                                                        <option value="">{{ localize('global.select') }}</option>
+                                                                        @foreach ($labTypeSections as $value)
                                                                             <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                                {{ $value->name }}
-
+                                                                                {{ $value->section }}
                                                                             </option>
                                                                         @endforeach
                                                                     </select>
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <label>{{ localize('global.companion_card_type') }}</label>
-                                                                    <select class="form-control select2"
-                                                                        name="companion_card_type">
-                                                                        <option value="">
-                                                                            {{ localize('global.select') }}
-                                                                        </option>
-                                                                        <option value="12">
-                                                                            {{ localize('global.12_hours') }}
-                                                                        </option>
-                                                                        <option value="24">
-                                                                            {{ localize('global.24_hours') }}
-                                                                        </option>
+
+                                                                    <label
+                                                                        for="lab_type_id{{ $underReview->id }}">{{ localize('global.lab_type') }}</label>
+                                                                    <select class="form-control select2" name="lab_type_id[]"
+                                                                        id="lab_type_id" onchange="loadLabTypeTests()">
+                                                                        <option value="">{{ localize('global.select') }}</option>
+                                                                        @foreach ($labTypes as $value)
+                                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                                                {{ $value->name }}
+                                                                            </option>
+                                                                        @endforeach
                                                                     </select>
+
+                                                                    <div id="labTypeTestsContainer"></div>
                                                                 </div>
-                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Create Lab Modal -->
-                            <div class="col-md-12 mt-4">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th class="text-wrap">{{ localize('global.reason') }}</th>
-                                            <th>{{ localize('global.remarks') }}</th>
-                                            <th>{{ localize('global.room') }}</th>
-                                            <th>{{ localize('global.bed') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($underReview->hospitalization as $hospitalization)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $hospitalization->reason }}</td>
-                                                <td>
-                                                    {{ $hospitalization->remarks }}
-                                                </td>
-                                                <td>
-                                                    {{ $hospitalization->room->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $hospitalization->bed->number }}
-                                                </td>
-                                                <td>
-                                                    @if ($hospitalization->is_discharged == 0)
-                                                        <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.discharged') }}</span>
-                                                    @endif
-
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"><span><i
-                                                                class="bx bx-edit"></i></span></a>
-
-                                                    <form id="delete-form-{{$hospitalization->id}}"
-                                                        action="{{ route('hospitalizations.destroy', $hospitalization->id) }}"
-                                                        method="POST" style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                    <a
-                                                        onclick="event.preventDefault();
-                                                                 if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
-                                                                 { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
-                                                        <span><i class="bx bx-trash text-danger"></i></span>
-                                                    </a>
-
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_hospitalizations') }}
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                        </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                            <!-- End Create Lab Modal -->
 
-                            </div>
-                            {{-- lab tests from underReview --}}
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-hard-hat p-1"></i>{{ localize('global.under_review_checkups') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createLabModal{{ $underReview->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                            <!-- Create  Lab Modal -->
-                            <div class="modal fade" id="createLabModal{{ $underReview->id }}" tabindex="-1"
-                                aria-labelledby="createLabModalLabel{{ $underReview->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createLabModalLabel{{ $underReview->id }}">
-                                                {{ localize('global.add_lab_test') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ localize('global.number') }}</th>
+                                                            <th>{{ localize('global.test_name') }}</th>
+                                                            <th>{{ localize('global.test_status') }}</th>
+                                                            <th>{{ localize('global.result') }}</th>
+                                                            <th>{{ localize('global.result_file') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {{-- the Model is LabItem --}}
+                                                        @forelse ($underReview->labs as $item)
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                <td>{{ $item->labType->name }}</td>
+                                                                <td>
+                                                                    @if ($item->status == '0')
+                                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $item->result }}</td>
+                                                                <td>
+                                                                    @isset($item->result_file)
+                                                                        <a href="{{ asset('storage/' . $item->result_file) }}" target="_blank">
+                                                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
+                                                                        </a>
+                                                                    @endisset
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{ route('lab_tests.edit', $item->id) }}"
+                                                                        class="btn btn-sm btn-outline-primary"
+                                                                        title="{{ localize('global.edit') }}">
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </a>
+                                                                    <form id="delete-form-{{$item->id}}"
+                                                                        action="{{ route('lab_items.destroyItem', $item->id) }}" method="POST"
+                                                                        style="display: none;">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                    </form>
+                                                                    <a onclick="event.preventDefault();
+                                                                             if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
+                                                                         { document.getElementById('delete-form-{{$item->id}}').submit(); }"
+                                                                        title="{{ localize('global.delete') }}">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="6" class="text-center">
+                                                                    <div class="badge bg-label-danger mt-4">
+                                                                        {{ localize('global.no_previous_labs') }}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('lab_tests.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="patient_id{{ $underReview->patient_id }}"
-                                                    name="patient_id" value="{{ $underReview->patient_id }}">
-                                                <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}"
-                                                    name="appointment_id" value="{{ $underReview->id }}">
-                                                <input type="hidden" id="doctor_id{{ $underReview->id }}" name="doctor_id"
-                                                    value="{{ $underReview->doctor->id }}">
-                                                <input type="hidden" id="branch_id{{ $underReview->id }}" name="branch_id"
-                                                    value="{{ auth()->user()->branch_id }}">
-                                                <input type="hidden" id="status{{ $underReview->id }}" name="status"
-                                                    value="0">
-                                                <input type="hidden" id="under_review_id{{ $underReview->id }}"
-                                                    name="under_review_id" value="{{ $underReview->id }}">
-                                                <div class="form-group">
-
-                                                    <label
-                                                        for="lab_type_section{{ $underReview->id }}">{{ localize('global.lab_type_section') }}</label>
-                                                    <select class="form-control select2" name="lab_type_section"
-                                                        id="lab_type_section">
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        @foreach ($labTypeSections as $value)
-                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->section }}
-
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-
-                                                    <label
-                                                        for="lab_type_id{{ $underReview->id }}">{{ localize('global.lab_type') }}</label>
-                                                    <select class="form-control select2" name="lab_type_id[]"
-                                                        id="lab_type_id" onchange="loadLabTypeTests()">
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        @foreach ($labTypes as $value)
-                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->name }}
-
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-
-                                                    <div id="labTypeTestsContainer"></div>
-                                                </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
-                            <!-- End Create Lab Modal -->
-                            <div class="col-md-12 mt-4">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.test_name') }}</th>
-                                            <th>{{ localize('global.test_status') }}</th>
-                                            <th>{{ localize('global.result') }}</th>
-                                            <th>{{ localize('global.result_file') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{-- the Model is LabItem --}}
-                                        @forelse ($underReview->labs as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->labType->name }}</td>
-                                                <td>
-                                                    @if ($item->status == '0')
-                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $item->result }}</td>
-                                                <td>
-                                                    @isset($item->result_file)
-                                                        <a href="{{ asset('storage/' . $item->result_file) }}" target="_blank">
-                                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                        </a>
-                                                    @endisset
+                            <!-- Discharge Accordion Section -->
+                            <div class="accordion mt-4 border border-success" id="dischargeAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="dischargeHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#dischargeCollapse" aria-expanded="false" aria-controls="dischargeCollapse">
+                                            <i class="bx bx-walk p-1 me-2 text-success"></i>{{ localize('global.discharge_patient') }}
+                                        </button>
+                                    </h2>
+                                    <div id="dischargeCollapse" class="accordion-collapse collapse" aria-labelledby="dischargeHeading"
+                                        data-bs-parent="#dischargeAccordion">
+                                        <div class="accordion-body">
+                                            <div class="d-flex gap-2 mb-3">
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#createDischargeModal{{ $underReview->id }}">
+                                                    <i class="bx bx-plus"></i> {{ localize('global.discharge_patient') }}
+                                                </button>
+                                            </div>
 
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('lab_tests.edit', $item->id) }}"
-                                                        class="btn btn-sm btn-outline-primary"
-                                                        title="{{ localize('global.edit') }}">
-                                                        <i class="bx bx-edit"></i>
-                                                    </a>
-                                                    <form id="delete-form-{{$item->id}}"
-                                                        action="{{ route('lab_items.destroyItem', $item->id) }}" method="POST"
-                                                        style="display: none;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                    <a onclick="event.preventDefault();
-                                                                         if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
-                                                                     { document.getElementById('delete-form-{{$item->id}}').submit(); }"
-                                                        title="{{ localize('global.delete') }}">
-                                                        <i class="bx bx-trash"></i>
-                                                    </a>
-                                                </td>
-
-                                            </tr>
-
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_labs') }}
+                                            <!-- Create Discharge Modal -->
+                                            <div class="modal fade" id="createDischargeModal{{ $underReview->id }}" tabindex="-1"
+                                                aria-labelledby="createDischargeModalLabel{{ $underReview->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="createDischargeModalLabel{{ $underReview->id }}">
+                                                                {{ localize('global.discharge_patient') }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{ route('under_reviews.update', $underReview) }}" method="POST">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <input type="hidden" id="is_discharged{{ $underReview->id }}"
+                                                                    name="is_discharged" value="1">
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="discharge_remark{{ $underReview->id }}">{{ localize('global.discharge_remark') }}</label>
+                                                                    <textarea class="form-control"
+                                                                        id="discharge_remark{{ $underReview->id }}" name="discharge_remark"
+                                                                        rows="3"></textarea>
+                                                                </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                        </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endforelse
+                                            <!-- End Create Discharge Modal -->
 
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{-- end lab tests from underReview --}}
-                            {{-- discharge --}}
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-walk p-1"></i>{{ localize('global.discharge_patient') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createDischargeModal{{ $underReview->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
-                            <!-- Create  Lab Modal -->
-                            <div class="modal fade" id="createDischargeModal{{ $underReview->id }}" tabindex="-1"
-                                aria-labelledby="createDischargeModalLabel{{ $underReview->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createDischargeModalLabel{{ $underReview->id }}">
-                                                {{ localize('global.add_lab_test') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('under_reviews.update', $underReview) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" id="is_discharged{{ $underReview->id }}"
-                                                    name="is_discharged" value="1">
-                                                <div class="form-group">
-                                                    <label
-                                                        for="discharge_remark{{ $underReview->id }}">{{ localize('global.discharge_remark') }}</label>
-                                                    <textarea class="form-control"
-                                                        id="discharge_remark{{ $underReview->id }}" name="discharge_remark"
-                                                        rows="3"></textarea>
+                                            @if($underReview->discharge_remark)
+                                                <div class="alert alert-info">
+                                                    <h6>{{ localize('global.discharge_remark') }}:</h6>
+                                                    <p>{{ $underReview->discharge_remark }}</p>
                                                 </div>
+                                            @else
+                                                <div class="text-center py-4">
+                                                    <div class="mb-3">
+                                                        <i class="bx bx-walk bx-lg text-muted"></i>
+                                                    </div>
+                                                    <h5 class="text-muted">{{ localize('global.no_discharge_remark') }}</h5>
+                                                    <p class="text-muted">{{ localize('global.add_discharge_remark') }}</p>
+                                                </div>
+                                            @endif
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
-                            <!-- End Create Lab Modal -->
 
-                            <!-- Nurse Notes Section -->
-                            <div id="nursing-note-section"></div>
+                            <!-- Nursing Notes Accordion Section -->
+                            <div class="accordion mt-4 border border-primary" id="nursingNotesAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="nursingNotesHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#nursingNotesCollapse" aria-expanded="false" aria-controls="nursingNotesCollapse">
+                                            <i class="bx bx-note p-1 me-2 text-primary"></i>{{ localize('global.nursing_notes') }}
+                                        </button>
+                                    </h2>
+                                    <div id="nursingNotesCollapse" class="accordion-collapse collapse" aria-labelledby="nursingNotesHeading"
+                                        data-bs-parent="#nursingNotesAccordion">
+                                        <div class="accordion-body">
+                                            <div id="nursing-note-section"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- Create Nutrition Care Modal -->
                             <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
@@ -1453,21 +1610,29 @@
                                 </div>
                             </div>
                             <!-- End Create Nutrition Care Modal -->
-
-                            <div class="col-md-12 mt-4">
-                                {{$underReview->discharge_remark}}
-                            </div>
-
-
-                            {{-- end discharge --}}
-
+ 
 
                         </div>
                     </div>
                     <!-- End Create Nutrition Care Modal -->
 
-                    <!-- Nursing Assessment Section -->
-                    <div id="nursing-assessment-section"></div>
+                    <!-- Nursing Assessment Accordion Section -->
+                    <div class="accordion mt-2 border m-2 border-warning" id="nursingAssessmentAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="nursingAssessmentHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#nursingAssessmentCollapse" aria-expanded="false" aria-controls="nursingAssessmentCollapse">
+                                    <i class="bx bx-clipboard p-1 me-2 text-warning"></i>{{ localize('global.nursing_assessment') }}
+                                </button>
+                            </h2>
+                            <div id="nursingAssessmentCollapse" class="accordion-collapse collapse" aria-labelledby="nursingAssessmentHeading"
+                                data-bs-parent="#nursingAssessmentAccordion">
+                                <div class="accordion-body">
+                                    <div id="nursing-assessment-section"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- End Create Nursing Assessment Modal -->
 
                     <div class="col-md-12 mt-4">

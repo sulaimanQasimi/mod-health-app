@@ -1,4 +1,11 @@
 <?php
+/**
+ * NutritionCareController
+ *
+ * This controller handles API endpoints for managing Nutrition Care records.
+ * It provides methods for listing, creating, and managing nutrition care data,
+ * typically used in AJAX/API requests from the frontend.
+ */
 
 namespace App\Http\Controllers;
 
@@ -13,29 +20,23 @@ class NutritionCareController extends Controller
     {
         $this->authorize('viewAny', NutritionCare::class);
 
-        if ($request->ajax()) {
-            $nutritionCares = NutritionCare::with(['morphable.patient', 'createdBy', 'nurse'])
-                ->when($request->morphable_type, function ($query, $type) {
-                    return $query->where('morphable_type', $type);
-                })
-                ->when($request->morphable_id, function ($query, $id) {
-                    return $query->where('morphable_id', $id);
-                })
-                ->get();
-
-            return response()->json([
-                'data' => $nutritionCares,
-            ]);
-        }
-
-        $nurses = \App\Models\Nurse::all();
-        return view('pages.nutrition-cares.index', compact('nurses'));
+        $nutritionCares = NutritionCare::with(['morphable.patient', 'createdBy', 'nurse'])
+            ->when($request->morphable_type, function ($query, $type) {
+                return $query->where('morphable_type', $type);
+            })
+            ->when($request->morphable_id, function ($query, $id) {
+                return $query->where('morphable_id', $id);
+            })
+            ->get();
+        return response()->json([
+            'data' => $nutritionCares,
+        ]);
     }
 
     public function create()
     {
         $this->authorize('create', NutritionCare::class);
-        
+
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
         return view('pages.nutrition-cares.create', compact('nurses', 'currentUser'));
@@ -44,14 +45,14 @@ class NutritionCareController extends Controller
     public function store(StoreNutritionCareRequest $request)
     {
         $this->authorize('create', NutritionCare::class);
-        
+
         $data = $request->validated();
-        
+
         // Automatically set nurse_id from current authenticated user's nurse
         if (auth()->user()->nurse) {
             $data['nurse_id'] = auth()->user()->nurse->id;
         }
-        
+
         $nutritionCare = NutritionCare::create($data);
 
         return response()->json([
@@ -63,17 +64,18 @@ class NutritionCareController extends Controller
     public function show(NutritionCare $nutritionCare)
     {
         $this->authorize('view', $nutritionCare);
-        
+
         $nutritionCare->load(['morphable.patient', 'createdBy', 'updatedBy', 'nurse']);
-        $nurses = \App\Models\Nurse::all();
-        $currentUser = auth()->user()->load('nurse');
-        return view('pages.nutrition-cares.show', compact('nutritionCare', 'nurses', 'currentUser'));
+            
+        return response()->json([
+            'data' => $nutritionCare->load(['morphable.patient', 'createdBy', 'updatedBy', 'nurse'])
+        ]);
     }
 
     public function edit(NutritionCare $nutritionCare)
     {
         $this->authorize('update', $nutritionCare);
-        
+
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
         return view('pages.nutrition-cares.edit', compact('nutritionCare', 'nurses', 'currentUser'));
@@ -82,7 +84,7 @@ class NutritionCareController extends Controller
     public function update(UpdateNutritionCareRequest $request, NutritionCare $nutritionCare)
     {
         $this->authorize('update', $nutritionCare);
-        
+
         $nutritionCare->update($request->validated());
 
         return response()->json([
@@ -94,7 +96,7 @@ class NutritionCareController extends Controller
     public function destroy(NutritionCare $nutritionCare)
     {
         $this->authorize('delete', $nutritionCare);
-        
+
         $nutritionCare->delete();
 
         return response()->json([
@@ -105,7 +107,7 @@ class NutritionCareController extends Controller
     public function print(NutritionCare $nutritionCare)
     {
         $this->authorize('view', $nutritionCare);
-        
+
         $nutritionCare->load(['morphable.patient', 'nurse']);
         return view('pages.nutrition-cares.print', compact('nutritionCare'));
     }

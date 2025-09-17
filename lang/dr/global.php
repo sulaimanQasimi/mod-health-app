@@ -2833,4 +2833,6 @@ return [
     "actions"=>"عملیات",
     "are_you_sure_delete_nursing_assessment"=>"آیا مطمئن هستید که می‌خواهید این فورم ارزیابی مریضی را حذف کنید؟",
     "telephone"=>"تلفن",
+    "no_nurse_notes_found"=>"هیچ یادداشت نرسی یافت نشد",
+    "add_first_nurse_note"=>"اولین یادداشت نرس را اضافه کنید",
 ];

@@ -2567,7 +2567,7 @@ return [
     "HN" => "HN (شماره شفاخانه)",
     "SN" => "SN (شماره سریال)",
     "assessment_initiated_by_nurse" => "ارزیابی آغاز شده توسط پرستار",
-    "not"=>"نخیر"
+    "not"=>"نخیر",
     "select_nurse" => "نرس را انتخاب کنید",
     "system_theme_bordered"=>"سیستم سبک بوردر",
     "vital_signs"=>"علائم حیاتی",

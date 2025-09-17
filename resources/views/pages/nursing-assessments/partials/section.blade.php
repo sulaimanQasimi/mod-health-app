@@ -6,7 +6,7 @@
         @can('create', \App\Models\NursingAssessment::class)
             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                 data-bs-target="#createNursingAssessmentModal">
-                <i class="bx bx-plus"></i> {{ localize('global.create_nursing_assessment') }}
+                <i class="bx bx-plus"></i>
             </button>
         @endcan
     </div>
@@ -33,18 +33,6 @@
                             <td>{{ Str::limit($assessment->chief_complaint, 50) }}</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    @can('view', $assessment)
-                                        <a href="{{ route('nursing-assessments.show', $assessment) }}"
-                                            class="btn btn-sm btn-outline-primary">
-                                            <i class="bx bx-show"></i>
-                                        </a>
-                                    @endcan
-                                    @can('update', $assessment)
-                                        <a href="{{ route('nursing-assessments.edit', $assessment) }}"
-                                            class="btn btn-sm btn-outline-warning">
-                                            <i class="bx bx-edit"></i>
-                                        </a>
-                                    @endcan
                                     @can('delete', $assessment)
                                         <button type="button" class="btn btn-sm btn-outline-danger"
                                             onclick="deleteNursingAssessment({{ $assessment->id }})">

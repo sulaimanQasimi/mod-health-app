@@ -179,6 +179,80 @@
             font-size: 12px;
             margin-top: 5px;
         }
+        
+        .two-column-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .three-column-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .four-column-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+        }
+        
+        .text-field {
+            border: 1px solid #000;
+            padding: 8px;
+            min-height: 20px;
+            font-size: 11px;
+        }
+        
+        .notes-section {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+        }
+        
+        .notes-table th, .notes-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+        
+        .notes-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+            width: 20%;
+        }
+        
+        .notes-content {
+            width: 80%;
+            min-height: 60px;
+            font-size: 11px;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
@@ -197,15 +271,67 @@
                 <th>{{ localize('global.patient_name') }}</th>
                 <th>{{ localize('global.patient_age') }}</th>
                 <th>{{ localize('global.file_number') }}</th>
-                <th>{{ localize('global.assessment_date') }}</th>
+                <th>{{ localize('global.hospital_number') }}</th>
+                <th>{{ localize('global.serial_number') }}</th>
             </tr>
             <tr>
                 <td>{{ $nursingAssessment->patient_name }}</td>
                 <td>{{ $nursingAssessment->patient_age ?? '________________' }}</td>
                 <td>{{ $nursingAssessment->file_number ?? '________________' }}</td>
-                <td>{{ $nursingAssessment->assessment_initiated_by_date ? $nursingAssessment->assessment_initiated_by_date->format('Y-m-d') : '________________' }}</td>
+                <td>{{ $nursingAssessment->hospital_number ?? '________________' }}</td>
+                <td>{{ $nursingAssessment->serial_number ?? '________________' }}</td>
             </tr>
         </table>
+        
+        <!-- Admission Details -->
+        <div class="section-title">{{ localize('global.admission_details') }}</div>
+        <div class="two-column-grid">
+            <div>
+                <strong>{{ localize('global.admission_date') }}:</strong> {{ $nursingAssessment->admission_date ? $nursingAssessment->admission_date->format('Y-m-d') : '________________' }}
+            </div>
+            <div>
+                <strong>{{ localize('global.admission_time') }}:</strong> {{ $nursingAssessment->admission_time ?? '________________' }}
+            </div>
+        </div>
+        
+        <div class="section-title">{{ localize('global.admitted_from') }}</div>
+        <div class="checkbox-grid">
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->admitted_from_emergency ? 'checked' : '' }}"></div>
+                {{ localize('global.emergency') }}
+            </div>
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->admitted_from_hospital ? 'checked' : '' }}"></div>
+                {{ localize('global.hospital') }}
+            </div>
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->admitted_from_family ? 'checked' : '' }}"></div>
+                {{ localize('global.family_member') }}
+            </div>
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->admitted_from_telephone ? 'checked' : '' }}"></div>
+                {{ localize('global.telephone') }}
+            </div>
+        </div>
+        
+        <div class="section-title">{{ localize('global.information_provided_by') }}</div>
+        <div class="checkbox-grid">
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->information_provided_by_patient ? 'checked' : '' }}"></div>
+                {{ localize('global.patient') }}
+            </div>
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->information_provided_by_family ? 'checked' : '' }}"></div>
+                {{ localize('global.family_member') }}
+            </div>
+        </div>
+        <div style="margin-top: 10px;">
+            <strong>{{ localize('global.number') }}:</strong> {{ $nursingAssessment->information_provided_by_number ?? '________________' }}
+        </div>
+        
+        <!-- Chief Complaint -->
+        <div class="section-title">{{ localize('global.chief_complaint') }}</div>
+        <div class="text-field">{{ $nursingAssessment->chief_complaint ?? '_________________________________________________' }}</div>
         
         <!-- Vital Signs -->
         <div class="section-title">{{ localize('global.vital_signs') }}</div>
@@ -243,6 +369,24 @@
                 <div class="vital-sign-value">{{ $nursingAssessment->bmi ?? '________________' }}</div>
             </div>
         </div>
+        
+        <!-- Pregnancy -->
+        <div class="section-title">{{ localize('global.pregnancy') }}</div>
+        <div class="checkbox-grid">
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->pregnancy_yes ? 'checked' : '' }}"></div>
+                {{ localize('global.yes') }}
+            </div>
+            <div class="checkbox-item">
+                <div class="checkbox {{ $nursingAssessment->pregnancy_no ? 'checked' : '' }}"></div>
+                {{ localize('global.no') }}
+            </div>
+        </div>
+        @if($nursingAssessment->pregnancy_yes)
+        <div style="margin-top: 10px;">
+            <strong>{{ localize('global.pregnancy_age') }}:</strong> {{ $nursingAssessment->pregnancy_age ?? '________________' }}
+        </div>
+        @endif
         
         <!-- Medical History -->
         <div class="section-title">{{ localize('global.medical_history') }}</div>

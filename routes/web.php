@@ -772,6 +772,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'update'])->name('update');
         Route::delete('destroy/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'destroy'])->name('destroy');
         Route::get('print', [\App\Http\Controllers\NurseNoteController::class, 'print'])->name('print');
+        Route::get('section/{morphable_type}/{morphable_id}', [\App\Http\Controllers\NurseNoteController::class, 'section'])->name('section');
     });
 
     // Medication Administration Records routes

@@ -287,8 +287,8 @@
                                 </div>
                                 <div class="col-md-4 text-center">
                                     @if($hospitalization->vitalSigns->count() > 0)
-                                        <a href="{{ route('vital-signs.print', ['App\\Models\\Hospitalization', $hospitalization->id]) }}" 
-                                           class="btn btn-info" target="_blank">
+                                        <a href="{{ route('vital-signs.print', ['App\\Models\\Hospitalization', $hospitalization->id]) }}"
+                                            class="btn btn-info" target="_blank">
                                             <i class="fas fa-print"></i> {{ localize('global.print_vital_signs_chart') }}
                                         </a>
                                     @endif
@@ -1023,7 +1023,8 @@
                                 </h5>
                                 <div class="d-flex gap-2 mb-3">
                                     @can('create', \App\Models\NutritionCare::class)
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#createNutritionCareModal">
                                             <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
                                         </button>
                                     @endcan
@@ -1053,34 +1054,51 @@
                                                         <td>
                                                             @php
                                                                 $observations = [];
-                                                                if ($nutritionCare->cough) $observations[] = localize('global.cough');
-                                                                if ($nutritionCare->sound) $observations[] = localize('global.sound');
-                                                                if ($nutritionCare->fluid_swallowing_ability) $observations[] = localize('global.fluid_swallowing_ability');
-                                                                if ($nutritionCare->weight) $observations[] = localize('global.weight');
-                                                                if ($nutritionCare->amount_and_type_of_nutrition) $observations[] = localize('global.amount_and_type_of_nutrition');
-                                                                if ($nutritionCare->diarrhea) $observations[] = localize('global.diarrhea');
-                                                                if ($nutritionCare->heart_failure_and_kidney_disease) $observations[] = localize('global.heart_failure_and_kidney_disease');
-                                                                if ($nutritionCare->remaining_materials) $observations[] = localize('global.remaining_materials');
-                                                                if ($nutritionCare->type_of_tube) $observations[] = localize('global.type_of_tube');
+                                                                if ($nutritionCare->cough)
+                                                                    $observations[] = localize('global.cough');
+                                                                if ($nutritionCare->sound)
+                                                                    $observations[] = localize('global.sound');
+                                                                if ($nutritionCare->fluid_swallowing_ability)
+                                                                    $observations[] = localize('global.fluid_swallowing_ability');
+                                                                if ($nutritionCare->weight)
+                                                                    $observations[] = localize('global.weight');
+                                                                if ($nutritionCare->amount_and_type_of_nutrition)
+                                                                    $observations[] = localize('global.amount_and_type_of_nutrition');
+                                                                if ($nutritionCare->diarrhea)
+                                                                    $observations[] = localize('global.diarrhea');
+                                                                if ($nutritionCare->heart_failure_and_kidney_disease)
+                                                                    $observations[] = localize('global.heart_failure_and_kidney_disease');
+                                                                if ($nutritionCare->remaining_materials)
+                                                                    $observations[] = localize('global.remaining_materials');
+                                                                if ($nutritionCare->type_of_tube)
+                                                                    $observations[] = localize('global.type_of_tube');
                                                             @endphp
                                                             {{ implode(', ', $observations) ?: '-' }}
                                                         </td>
                                                         <td>
                                                             @php
                                                                 $interventions = [];
-                                                                if ($nutritionCare->constipation) $interventions[] = localize('global.constipation');
-                                                                if ($nutritionCare->nutrition_is_provided) $interventions[] = localize('global.nutrition_is_provided');
-                                                                if ($nutritionCare->mouth_hygiene) $interventions[] = localize('global.mouth_hygiene');
-                                                                if ($nutritionCare->oral_nutrition_advices) $interventions[] = localize('global.oral_nutrition_advices');
-                                                                if ($nutritionCare->voice_exercise) $interventions[] = localize('global.voice_exercise');
-                                                                if ($nutritionCare->swallowing_exercise) $interventions[] = localize('global.swallowing_exercise');
-                                                                if ($nutritionCare->aspiration_prevention_proceeded) $interventions[] = localize('global.aspiration_prevention_proceeded');
+                                                                if ($nutritionCare->constipation)
+                                                                    $interventions[] = localize('global.constipation');
+                                                                if ($nutritionCare->nutrition_is_provided)
+                                                                    $interventions[] = localize('global.nutrition_is_provided');
+                                                                if ($nutritionCare->mouth_hygiene)
+                                                                    $interventions[] = localize('global.mouth_hygiene');
+                                                                if ($nutritionCare->oral_nutrition_advices)
+                                                                    $interventions[] = localize('global.oral_nutrition_advices');
+                                                                if ($nutritionCare->voice_exercise)
+                                                                    $interventions[] = localize('global.voice_exercise');
+                                                                if ($nutritionCare->swallowing_exercise)
+                                                                    $interventions[] = localize('global.swallowing_exercise');
+                                                                if ($nutritionCare->aspiration_prevention_proceeded)
+                                                                    $interventions[] = localize('global.aspiration_prevention_proceeded');
                                                             @endphp
                                                             {{ implode(', ', $interventions) ?: '-' }}
                                                         </td>
                                                         <td>
                                                             @if($nutritionCare->nutrition_care_full_note)
-                                                                <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ $nutritionCare->nutrition_care_full_note }}">
+                                                                <span class="text-truncate d-inline-block" style="max-width: 200px;"
+                                                                    title="{{ $nutritionCare->nutrition_care_full_note }}">
                                                                     {{ Str::limit($nutritionCare->nutrition_care_full_note, 50) }}
                                                                 </span>
                                                             @else
@@ -1091,23 +1109,33 @@
                                                         <td>
                                                             <div class="btn-group" role="group">
                                                                 @can('view', $nutritionCare)
-                                                                    <a href="{{ route('nutrition-cares.show', $nutritionCare) }}" class="btn btn-sm btn-info" title="{{ localize('global.view') }}">
+                                                                    <a href="{{ route('nutrition-cares.show', $nutritionCare) }}"
+                                                                        class="btn btn-sm btn-info"
+                                                                        title="{{ localize('global.view') }}">
                                                                         <i class="fas fa-eye"></i>
                                                                     </a>
-                                                                    <a href="{{ route('nutrition-cares.print', $nutritionCare) }}" class="btn btn-sm btn-primary" title="{{ localize('global.print') }}" target="_blank">
+                                                                    <a href="{{ route('nutrition-cares.print', $nutritionCare) }}"
+                                                                        class="btn btn-sm btn-primary"
+                                                                        title="{{ localize('global.print') }}" target="_blank">
                                                                         <i class="fas fa-print"></i>
                                                                     </a>
                                                                 @endcan
                                                                 @can('update', $nutritionCare)
-                                                                    <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}" class="btn btn-sm btn-warning" title="{{ localize('global.edit') }}">
+                                                                    <a href="{{ route('nutrition-cares.edit', $nutritionCare) }}"
+                                                                        class="btn btn-sm btn-warning"
+                                                                        title="{{ localize('global.edit') }}">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
                                                                 @endcan
                                                                 @can('delete', $nutritionCare)
-                                                                    <form action="{{ route('nutrition-cares.destroy', $nutritionCare) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
+                                                                    <form
+                                                                        action="{{ route('nutrition-cares.destroy', $nutritionCare) }}"
+                                                                        method="POST" class="d-inline"
+                                                                        onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}')">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" class="btn btn-sm btn-danger" title="{{ localize('global.delete') }}">
+                                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                                            title="{{ localize('global.delete') }}">
                                                                             <i class="fas fa-trash"></i>
                                                                         </button>
                                                                     </form>
@@ -1127,7 +1155,8 @@
                                         <h5 class="text-muted">{{ localize('global.no_nutrition_care_found') }}</h5>
                                         <p class="text-muted">{{ localize('global.add_first_nutrition_care') }}</p>
                                         @can('create', \App\Models\NutritionCare::class)
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#createNutritionCareModal">
                                                 <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
                                             </button>
                                         @endcan
@@ -1838,14 +1867,19 @@
                             <!-- End Create Lab Modal -->
 
                             <!-- Create Nutrition Care Modal -->
-                            <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1" aria-labelledby="createNutritionCareModalLabel" aria-hidden="true">
+                            <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
+                                aria-labelledby="createNutritionCareModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="createNutritionCareModalLabel">{{ localize('global.create_nutrition_care') }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h5 class="modal-title" id="createNutritionCareModalLabel">
+                                                {{ localize('global.create_nutrition_care') }}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
-                                        <form id="createNutritionCareForm" action="{{ route('nutrition-cares.store') }}" method="POST">
+                                        <form id="createNutritionCareForm" action="{{ route('nutrition-cares.store') }}"
+                                            method="POST">
                                             @csrf
                                             <div class="modal-body">
                                                 @php
@@ -1857,8 +1891,10 @@
                                                 @include('pages.nutrition-cares.partials.form')
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                <button type="submit" class="btn btn-primary" id="submitNutritionCareBtn">{{ localize('global.create') }}</button>
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                <button type="submit" class="btn btn-primary"
+                                                    id="submitNutritionCareBtn">{{ localize('global.create') }}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -1867,99 +1903,7 @@
                             <!-- End Create Nutrition Care Modal -->
 
                             <!-- Nursing Assessment Section -->
-                            <div class="col-md-12 mt-4" id="nursing-assessment-section">
-                                <h5 class="mb-4 p-3 bg-label-primary">
-                                    <i class="bx bx-clipboard p-1"></i>{{ localize('global.nursing_assessment') }}
-                                </h5>
-                                <div class="d-flex gap-2 mb-3">
-                                    @can('create', \App\Models\NursingAssessment::class)
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNursingAssessmentModal">
-                                            <i class="bx bx-plus"></i> {{ localize('global.create_nursing_assessment') }}
-                                        </button>
-                                    @endcan
-                                </div>
-
-                                @if($hospitalization->nursingAssessments->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.patient_name') }}</th>
-                                                    <th>{{ localize('global.nurse') }}</th>
-                                                    <th>{{ localize('global.assessment_date') }}</th>
-                                                    <th>{{ localize('global.chief_complaint') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($hospitalization->nursingAssessments as $assessment)
-                                                    <tr>
-                                                        <td>{{ $assessment->patient_name }}</td>
-                                                        <td>{{ $assessment->nurse->full_name ?? 'N/A' }}</td>
-                                                        <td>{{ $assessment->assessment_initiated_by_date ? $assessment->assessment_initiated_by_date->format('Y-m-d') : 'N/A' }}</td>
-                                                        <td>{{ Str::limit($assessment->chief_complaint, 50) }}</td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                @can('view', $assessment)
-                                                                    <a href="{{ route('nursing-assessments.show', $assessment) }}" class="btn btn-sm btn-outline-primary">
-                                                                        <i class="bx bx-show"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('update', $assessment)
-                                                                    <a href="{{ route('nursing-assessments.edit', $assessment) }}" class="btn btn-sm btn-outline-warning">
-                                                                        <i class="bx bx-edit"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('delete', $assessment)
-                                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteNursingAssessment({{ $assessment->id }})">
-                                                                        <i class="bx bx-trash"></i>
-                                                                    </button>
-                                                                @endcan
-                                                                @can('view', $assessment)
-                                                                    <a href="{{ route('nursing-assessments.print', $assessment) }}" class="btn btn-sm btn-outline-info" target="_blank">
-                                                                        <i class="bx bx-printer"></i>
-                                                                    </a>
-                                                                @endcan
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <div class="alert alert-info">
-                                        <i class="bx bx-info-circle"></i> {{ localize('global.no_nursing_assessments_found') }}
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Create Nursing Assessment Modal -->
-                            <div class="modal fade modal-xl" id="createNursingAssessmentModal" tabindex="-1" aria-labelledby="createNursingAssessmentModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createNursingAssessmentModalLabel">{{ localize('global.create_nursing_assessment') }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form id="createNursingAssessmentForm" action="{{ route('nursing-assessments.store') }}" method="POST">
-                                            @csrf
-                                            <div class="modal-body">
-                                                @php
-                                                    $nurses = \App\Models\Nurse::all();
-                                                    $morphable_type = 'App\Models\Hospitalization';
-                                                    $morphable_id = $hospitalization->id;
-                                                    $patient_name = $hospitalization->patient->first_name . ' ' . $hospitalization->patient->last_name;
-                                                @endphp
-                                                @include('pages.nursing-assessments.partials.form')
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                <button type="submit" class="btn btn-primary" id="submitNursingAssessmentBtn">{{ localize('global.create') }}</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
+                            <div id="nursing-assessment-section">
                             </div>
                             <!-- End Create Nursing Assessment Modal -->
 
@@ -2050,8 +1994,8 @@
                 typeDropdown.appendChild(typeOption);
             @endforeach
 
-                // Create the medicine dropdown
-                const medicineDropdown = document.createElement('select');
+                            // Create the medicine dropdown
+                            const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2';
             medicineDropdown.name = 'medicine_id[]';
 
@@ -2064,8 +2008,8 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
-                // Create the medicine dropdown
-                const medicineUsageDropdown = document.createElement('select');
+                            // Create the medicine dropdown
+                            const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2';
             medicineUsageDropdown.name = 'usage_type_id[]';
 
@@ -2078,8 +2022,8 @@
                 medicineUsageDropdown.appendChild(medicineUsageOption);
             @endforeach
 
-                // Create the dosage input field
-                const dosageInput = document.createElement('input');
+                            // Create the dosage input field
+                            const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';
@@ -2168,50 +2112,50 @@
         }
 
         // Handle Nutrition Care form submission with AJAX
-        $(document).ready(function() {
-            $('#createNutritionCareForm').on('submit', function(e) {
+        $(document).ready(function () {
+            $('#createNutritionCareForm').on('submit', function (e) {
                 e.preventDefault();
-                
+
                 var form = $(this);
                 var submitBtn = $('#submitNutritionCareBtn');
                 var originalText = submitBtn.text();
-                
+
                 // Disable submit button and show loading
                 submitBtn.prop('disabled', true).text('{{ localize("global.creating") }}...');
-                
+
                 $.ajax({
                     type: 'POST',
                     url: form.attr('action'),
                     data: form.serialize(),
-                    success: function(response) {
+                    success: function (response) {
                         // Close modal
                         $('#createNutritionCareModal').modal('hide');
-                        
+
                         // Reload the nutrition care section
                         reloadNutritionCareSection();
-                        
+
                         // Show success message
                         toastr.success('{{ localize("global.nutrition_care_created_successfully") }}');
-                        
+
                         // Reset form
                         form[0].reset();
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         // Handle validation errors
                         if (xhr.status === 422) {
                             var errors = xhr.responseJSON.errors;
                             var errorMessages = [];
-                            
+
                             for (var field in errors) {
                                 errorMessages.push(errors[field][0]);
                             }
-                            
+
                             toastr.error(errorMessages.join('<br>'));
                         } else {
                             toastr.error('{{ localize("global.error_occurred") }}');
                         }
                     },
-                    complete: function() {
+                    complete: function () {
                         // Re-enable submit button
                         submitBtn.prop('disabled', false).text(originalText);
                     }
@@ -2251,21 +2195,28 @@
                         'Accept': 'application/json'
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        // Show success message
-                        alert(data.message);
-                        // Reload the page to refresh the data
-                        location.reload();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('{{ localize("global.error_deleting_nursing_assessment") }}');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            // Show success message
+                            alert(data.message);
+                            // Reload the page to refresh the data
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('{{ localize("global.error_deleting_nursing_assessment") }}');
+                    });
             }
         }
+        $(document).ready(function () {
+            $('#nursing-assessment-section').load('{{ route('nursing-assessments.section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
+        });
+
+
+
+
     </script>
 
 @endsection

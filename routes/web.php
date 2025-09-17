@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
+use App\Http\Controllers\NursingAssessmentController;
 use App\Http\Controllers\NutritionCareController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -865,6 +866,11 @@ Route::get('nutrition-cares/{morphable_type}/{morphable_id}', [NutritionCareCont
 // Nursing Assessment Routes
 Route::get('nursing-assessments/{nursingAssessment}/print', [NursingAssessmentController::class, 'print'])
     ->name('nursing-assessments.print');
+// Section
+Route::get('nursing-assessments/section/{morphable_type}/{morphable_id}', [NursingAssessmentController::class, 'section'])
+    ->name('nursing-assessments.section');
+
+
 Route::resource('nursing-assessments', NursingAssessmentController::class);
 Route::get('nursing-assessments/{morphable_type}/{morphable_id}', [NursingAssessmentController::class, 'index'])
     ->name('nursing-assessments.by-morphable');

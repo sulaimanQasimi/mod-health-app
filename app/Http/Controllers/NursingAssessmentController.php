@@ -6,6 +6,7 @@ use App\Http\Requests\StoreNursingAssessmentRequest;
 use App\Http\Requests\UpdateNursingAssessmentRequest;
 use App\Models\NursingAssessment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NursingAssessmentController extends Controller
 {
@@ -35,7 +36,7 @@ class NursingAssessmentController extends Controller
     public function create()
     {
         $this->authorize('create', NursingAssessment::class);
-        
+
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
         return view('pages.nursing-assessments.create', compact('nurses', 'currentUser'));
@@ -44,26 +45,24 @@ class NursingAssessmentController extends Controller
     public function store(StoreNursingAssessmentRequest $request)
     {
         $this->authorize('create', NursingAssessment::class);
-        
+
         $data = $request->validated();
-        
+
         // Automatically set nurse_id from current authenticated user's nurse
         if (auth()->user()->nurse) {
             $data['nurse_id'] = auth()->user()->nurse->id;
         }
-        
-        $nursingAssessment = NursingAssessment::create($data);
 
-        return response()->json([
-            'message' => 'Nursing assessment created successfully',
-            'data' => $nursingAssessment->load(['morphable.patient', 'createdBy', 'nurse'])
-        ], 201);
+        $nursingAssessment = NursingAssessment::create($data);
+        Log::info($nursingAssessment);
+        Log::info($data);
+        return redirect()->back();
     }
 
     public function show(NursingAssessment $nursingAssessment)
     {
         $this->authorize('view', $nursingAssessment);
-        
+
         $nursingAssessment->load(['morphable.patient', 'createdBy', 'updatedBy', 'nurse']);
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
@@ -73,7 +72,7 @@ class NursingAssessmentController extends Controller
     public function edit(NursingAssessment $nursingAssessment)
     {
         $this->authorize('update', $nursingAssessment);
-        
+
         $nurses = \App\Models\Nurse::all();
         $currentUser = auth()->user()->load('nurse');
         return view('pages.nursing-assessments.edit', compact('nursingAssessment', 'nurses', 'currentUser'));
@@ -82,7 +81,7 @@ class NursingAssessmentController extends Controller
     public function update(UpdateNursingAssessmentRequest $request, NursingAssessment $nursingAssessment)
     {
         $this->authorize('update', $nursingAssessment);
-        
+
         $nursingAssessment->update($request->validated());
 
         return response()->json([
@@ -94,7 +93,7 @@ class NursingAssessmentController extends Controller
     public function destroy(NursingAssessment $nursingAssessment)
     {
         $this->authorize('delete', $nursingAssessment);
-        
+
         $nursingAssessment->delete();
 
         return response()->json([
@@ -105,8 +104,21 @@ class NursingAssessmentController extends Controller
     public function print(NursingAssessment $nursingAssessment)
     {
         $this->authorize('view', $nursingAssessment);
-        
+
         $nursingAssessment->load(['morphable.patient', 'nurse']);
         return view('pages.nursing-assessments.print', compact('nursingAssessment'));
+    }
+    public function section(Request $request)
+    {
+        $morphable_type = $request->morphable_type;
+        $morphable_id = $request->morphable_id;
+        $morphModel = null;
+        $nursingAssessments = NursingAssessment::with(['morphable.patient', 'createdBy', 'nurse'])
+            ->where('morphable_type', $morphable_type)
+            ->where('morphable_id', $morphable_id)
+            ->get();
+        $morphModel = $morphable_type::find($morphable_id);
+
+        return view('pages.nursing-assessments.partials.section', compact('nursingAssessments', 'morphable_type', 'morphable_id', 'morphModel'));
     }
 }

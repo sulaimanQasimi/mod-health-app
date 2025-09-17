@@ -224,7 +224,7 @@
             <div class="col-md-3">
                 <div class="form-check mb-2">
                     <input class="form-check-input" type="checkbox" id="pregnancy_no" name="pregnancy_no" value="1" {{ old('pregnancy_no', $nursingAssessment->pregnancy_no ?? false) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="pregnancy_no">{{ localize('global.no') }}</label>
+                    <label class="form-check-label" for="pregnancy_no">{{ localize('global.not') }}</label>
                 </div>
             </div>
             <div class="col-md-6">
@@ -258,7 +258,7 @@
                     <div class="col-md-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="underlying_disease_no" name="underlying_disease_no" value="1" {{ old('underlying_disease_no', $nursingAssessment->underlying_disease_no ?? false) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="underlying_disease_no">{{ localize('global.no') }}</label>
+                            <label class="form-check-label" for="underlying_disease_no">{{ localize('global.not') }}</label>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -294,7 +294,7 @@
                     <div class="col-md-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="hospitalization_history_no" name="hospitalization_history_no" value="1" {{ old('hospitalization_history_no', $nursingAssessment->hospitalization_history_no ?? false) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="hospitalization_history_no">{{ localize('global.no') }}</label>
+                            <label class="form-check-label" for="hospitalization_history_no">{{ localize('global.not') }}</label>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -318,7 +318,7 @@
                     <div class="col-md-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="surgical_history_no" name="surgical_history_no" value="1" {{ old('surgical_history_no', $nursingAssessment->surgical_history_no ?? false) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="surgical_history_no">{{ localize('global.no') }}</label>
+                            <label class="form-check-label" for="surgical_history_no">{{ localize('global.not') }}</label>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -342,7 +342,7 @@
                     <div class="col-md-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="allergy_history_no" name="allergy_history_no" value="1" {{ old('allergy_history_no', $nursingAssessment->allergy_history_no ?? false) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="allergy_history_no">{{ localize('global.no') }}</label>
+                            <label class="form-check-label" for="allergy_history_no">{{ localize('global.not') }}</label>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -370,7 +370,7 @@
             <div class="col-md-2">
                 <div class="form-check mb-2">
                     <input class="form-check-input" type="checkbox" id="pain_no" name="pain_no" value="1" {{ old('pain_no', $nursingAssessment->pain_no ?? false) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="pain_no">{{ localize('global.no') }}</label>
+                    <label class="form-check-label" for="pain_no">{{ localize('global.not') }}</label>
                 </div>
             </div>
             <div class="col-md-2">

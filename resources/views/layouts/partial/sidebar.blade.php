@@ -26,7 +26,7 @@
         <!-- Dashboards -->
         <li class="menu-item {{ Route::is('home') ? 'active' : '' }}">
             <a href="{{ route('home') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home text-white"></i>
+                <i class="menu-icon tf-icons bx bx-home"></i>
                 <div>{{ localize('global.dashboard') }}</div>
             </a>
         </li>
@@ -36,7 +36,7 @@
             <li
                 class="menu-item {{ Route::is('patients.*') || Route::is('scanCode') || Route::is('appointments.index') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-info-circle text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-info-circle"></i>
                     <div>{{ localize('global.reception') }}</div>
                 </a>
 
@@ -77,7 +77,7 @@
             <li
                 class="menu-item {{ Route::is('appointments.doctorAppointments') || Route::is('appointments.completedAppointments') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-time-five text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-time-five"></i>
                     <div>{{ localize('global.my_appointments') }}</div>
                 </a>
 
@@ -103,7 +103,7 @@
         @can('show-physiotherapy-menu')
             <li class="menu-item {{ Route::is('physiotherapy-procedures.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-heart text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-heart"></i>
                     <div>{{ localize('global.physiotherapy') }}</div>
                 </a>
                 <ul class="menu-sub">
@@ -144,7 +144,7 @@
         @can('show-my-consultations-menu')
             <li class="menu-item {{ Route::is('consultations.index') ? 'active' : '' }}">
                 <a href="{{ route('consultations.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-chat text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-chat"></i>
                     <div>{{ localize('global.my_consultations') }}</div>
                 </a>
             </li>
@@ -152,7 +152,7 @@
         @can('show-prescriptions-menu')
             <li class="menu-item {{ Route::is('prescriptions.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-receipt text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-receipt"></i>
                     <div>{{ localize('global.prescriptions') }}</div>
                 </a>
 
@@ -184,7 +184,7 @@
         @can('show-prescriptions-menu')
             <li class="menu-item {{ Route::is('prescription_stocks.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-package text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-package"></i>
                     <div>{{ localize('global.prescription_stocks') }}</div>
                 </a>
 
@@ -222,7 +222,7 @@
         @can('show-blood-bank-menu')
             <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-donate-blood text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-donate-blood"></i>
                     <div>{{ localize('global.blood_bank') }}</div>
                 </a>
 
@@ -258,7 +258,7 @@
         @can('show-under-review-menu')
             <li class="menu-item {{ Route::is('under_reviews.index') ? 'active' : '' }}">
                 <a href="{{ route('under_reviews.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-revision text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-revision"></i>
                     <div>{{ localize('global.under_review_patients') }}</div>
                 </a>
             </li>
@@ -267,7 +267,7 @@
         @can('show-hospitalizations-menu')
             <li class="menu-item {{ Route::is('hospitalizations.*') || Route::is('vital-sign-types.*') || Route::is('vital-signs.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-bed text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-bed"></i>
                     <div>{{ localize('global.hospitalizations') }}</div>
                 </a>
 
@@ -310,7 +310,7 @@
         @can('show-labs-menu')
             <li class="menu-item {{ Route::is('lab_tests.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-hard-hat text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-hard-hat"></i>
                     <div>{{ localize('global.checkups') }}</div>
                 </a>
 
@@ -337,7 +337,7 @@
         @can('show-icu-menu')
             <li class="menu-item {{ Route::is('icus.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-tv text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-tv"></i>
                     <div>{{ localize('global.icus') }}</div>
                 </a>
 
@@ -368,7 +368,7 @@
         @can('show-pacu-menu')
             <li class="menu-item {{ Route::is('pacus.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-tv text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-tv"></i>
                     <div>{{ localize('global.pacus') }}</div>
                 </a>
 
@@ -394,7 +394,7 @@
         @can('show-anesthesias-menu')
             <li class="menu-item {{ Route::is('anesthesias.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-first-aid text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-first-aid"></i>
                     <div>{{ localize('global.anesthesias') }}</div>
                 </a>
 
@@ -426,7 +426,7 @@
         @can('show-operations-menu')
             <li class="menu-item {{ Route::is('operations.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-cut text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-cut"></i>
                     <div>{{ localize('global.operations') }}</div>
                 </a>
 
@@ -464,7 +464,7 @@
             <li
                 class="menu-item {{ Route::is('users.index') || Route::is('roles.index') || Route::is('permissions.index') || Route::is('document-type-columns.index') || Route::is('notices.index') || Route::is('sectors.index') || Route::is('recipients.index') || Route::is('hukums.index') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-cog text-white"></i>
+                    <i class="menu-icon tf-icons bx bx-cog"></i>
                     <div>{{ localize('global.settings') }}</div>
                 </a>
 

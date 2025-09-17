@@ -136,6 +136,20 @@ class NurseNoteController extends Controller
                 ], 201);
             }
 
+            // Redirect to the morphable show page if morphable_type and morphable_id are provided
+            if ($request->filled('morphable_type') && $request->filled('morphable_id')) {
+                $morphableType = $request->morphable_type;
+                $morphableId = $request->morphable_id;
+                
+                if ($morphableType === 'App\\Models\\UnderReview') {
+                    return redirect()->route('under-review.show', $morphableId)
+                                   ->with('success', 'Nurse note created successfully.');
+                } elseif ($morphableType === 'App\\Models\\Hospitalization') {
+                    return redirect()->route('hospitalizations.show', $morphableId)
+                                   ->with('success', 'Nurse note created successfully.');
+                }
+            }
+
             return redirect()->route('nurse-notes.index')
                            ->with('success', 'Nurse note created successfully.');
         } catch (\Exception $e) {
@@ -355,5 +369,18 @@ class NurseNoteController extends Controller
         }
 
         return view('pages.nurse-notes.print', compact('nurseNotes', 'patient', 'morphableType', 'morphableId'));
+    }
+    public function section(Request $request)
+    {
+        $this->authorize('viewAny', NurseNote::class);
+        $morphableType = $request->morphable_type;
+        $morphableId = $request->morphable_id;
+        $morphModel = null;
+        $nurseNotes = NurseNote::with(['nurse', 'createdBy', 'morphable'])
+            ->where('morphable_type', $morphableType)
+            ->where('morphable_id', $morphableId)
+            ->get();
+        $morphModel = $morphableType::find($morphableId);
+        return view('pages.nurse-notes.partials.section', compact('nurseNotes', 'morphableType', 'morphableId', 'morphModel'));
     }
 }

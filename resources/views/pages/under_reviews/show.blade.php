@@ -1202,8 +1202,8 @@
                                                     </form>
                                                     <a
                                                         onclick="event.preventDefault();
-                                                         if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
-                                                         { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                                                 if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
+                                                                 { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
                                                         <span><i class="bx bx-trash text-danger"></i></span>
                                                     </a>
 
@@ -1346,8 +1346,8 @@
                                                         @method('DELETE')
                                                     </form>
                                                     <a onclick="event.preventDefault();
-                                                                 if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
-                                                             { document.getElementById('delete-form-{{$item->id}}').submit(); }"
+                                                                         if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
+                                                                     { document.getElementById('delete-form-{{$item->id}}').submit(); }"
                                                         title="{{ localize('global.delete') }}">
                                                         <i class="bx bx-trash"></i>
                                                     </a>
@@ -1414,6 +1414,9 @@
                                 </div>
                             </div>
                             <!-- End Create Lab Modal -->
+
+                            <!-- Nurse Notes Section -->
+                            <div id="nursing-note-section"></div>
 
                             <!-- Create Nutrition Care Modal -->
                             <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
@@ -1558,8 +1561,8 @@
                 typeDropdown.appendChild(typeOption);
             @endforeach
 
-        // Create the medicine dropdown
-        const medicineDropdown = document.createElement('select');
+            // Create the medicine dropdown
+            const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2';
             medicineDropdown.name = 'medicine_id[]';
 
@@ -1572,8 +1575,8 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
-        // Create the medicine dropdown
-        const medicineUsageDropdown = document.createElement('select');
+            // Create the medicine dropdown
+            const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2';
             medicineUsageDropdown.name = 'usage_type_id[]';
 
@@ -1586,8 +1589,8 @@
                 medicineUsageDropdown.appendChild(medicineUsageOption);
             @endforeach
 
-        // Create the dosage input field
-        const dosageInput = document.createElement('input');
+            // Create the dosage input field
+            const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';
@@ -1817,6 +1820,7 @@
 
         $(document).ready(function () {
             $('#nursing-assessment-section').load('{{ route('nursing-assessments.section', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}');
+            $('#nursing-note-section').load('{{ route('nurse-notes.section', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}');
         });
     </script>
 @endsection

@@ -204,7 +204,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Hospitalizations routes
     Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
-        Route::get('index', [HospitalizationController::class, 'index'])->name('index');
+        Route::get('/', [HospitalizationController::class, 'index'])->name('index');
         Route::get('discharged', [HospitalizationController::class, 'discharged'])->name('discharged');
         Route::get('create', [HospitalizationController::class, 'create'])->name('create');
         Route::get('show/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');
@@ -772,6 +772,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'update'])->name('update');
         Route::delete('destroy/{nurseNote}', [\App\Http\Controllers\NurseNoteController::class, 'destroy'])->name('destroy');
         Route::get('print', [\App\Http\Controllers\NurseNoteController::class, 'print'])->name('print');
+        Route::get('section/{morphable_type}/{morphable_id}', [\App\Http\Controllers\NurseNoteController::class, 'section'])->name('section');
     });
 
     // Medication Administration Records routes

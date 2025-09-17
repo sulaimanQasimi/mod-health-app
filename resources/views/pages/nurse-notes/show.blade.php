@@ -160,7 +160,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i> Delete
+                                        <i class="fas fa-trash"></i> {{ localize('global.delete') }}
                                     </button>
                                 </form>
                             </div>

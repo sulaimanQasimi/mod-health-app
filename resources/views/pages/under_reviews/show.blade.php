@@ -22,7 +22,8 @@
                         <div class="col-md-12">
                             <div class="border border-label-primary mb-4 text-center">
                                 <h5 class="mb-4 p-3 bg-label-primary text-center">
-                                    {{ localize('global.under_review_details') }}</h5>
+                                    {{ localize('global.under_review_details') }}
+                                </h5>
 
                                 <div class="row p-2">
                                     <div class="col-md-3">
@@ -80,7 +81,8 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createVisitModalLabel{{ $underReview->id }}">
-                                                {{localize('global.add_visit')}}</h5>
+                                                {{localize('global.add_visit')}}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1200,8 +1202,8 @@
                                                     </form>
                                                     <a
                                                         onclick="event.preventDefault();
-                                                 if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
-                                                 { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
+                                                         if(confirm('{{ localize('global.are_you_sure_delete_hospitalization to delete this item?') }} ')) 
+                                                         { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }">
                                                         <span><i class="bx bx-trash text-danger"></i></span>
                                                     </a>
 
@@ -1344,8 +1346,8 @@
                                                         @method('DELETE')
                                                     </form>
                                                     <a onclick="event.preventDefault();
-                                                         if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
-                                                     { document.getElementById('delete-form-{{$item->id}}').submit(); }"
+                                                                 if(confirm('{{ localize('global.are_you_sure_delete_lab_test') }} ')) 
+                                                             { document.getElementById('delete-form-{{$item->id}}').submit(); }"
                                                         title="{{ localize('global.delete') }}">
                                                         <i class="bx bx-trash"></i>
                                                     </a>
@@ -1420,7 +1422,8 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createNutritionCareModalLabel">
-                                                {{ localize('global.create_nutrition_care') }}</h5>
+                                                {{ localize('global.create_nutrition_care') }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -1461,100 +1464,7 @@
                     <!-- End Create Nutrition Care Modal -->
 
                     <!-- Nursing Assessment Section -->
-                    <div class="col-md-12 mt-4" id="nursing-assessment-section">
-                        <h5 class="mb-4 p-3 bg-label-primary">
-                            <i class="bx bx-clipboard p-1"></i>{{ localize('global.nursing_assessment') }}
-                        </h5>
-                        <div class="d-flex gap-2 mb-3">
-                            @can('create', \App\Models\NursingAssessment::class)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createNursingAssessmentModal">
-                                    <i class="bx bx-plus"></i> {{ localize('global.create_nursing_assessment') }}
-                                </button>
-                            @endcan
-                        </div>
-
-                        @if($underReview->nursingAssessments->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.patient_name') }}</th>
-                                            <th>{{ localize('global.nurse') }}</th>
-                                            <th>{{ localize('global.assessment_date') }}</th>
-                                            <th>{{ localize('global.chief_complaint') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($underReview->nursingAssessments as $assessment)
-                                            <tr>
-                                                <td>{{ $assessment->patient_name }}</td>
-                                                <td>{{ $assessment->nurse->full_name ?? 'N/A' }}</td>
-                                                <td>{{ $assessment->assessment_initiated_by_date ? $assessment->assessment_initiated_by_date->format('Y-m-d') : 'N/A' }}</td>
-                                                <td>{{ Str::limit($assessment->chief_complaint, 50) }}</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('view', $assessment)
-                                                            <a href="{{ route('nursing-assessments.show', $assessment) }}" class="btn btn-sm btn-outline-primary">
-                                                                <i class="bx bx-show"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('update', $assessment)
-                                                            <a href="{{ route('nursing-assessments.edit', $assessment) }}" class="btn btn-sm btn-outline-warning">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete', $assessment)
-                                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteNursingAssessment({{ $assessment->id }})">
-                                                                <i class="bx bx-trash"></i>
-                                                            </button>
-                                                        @endcan
-                                                        @can('view', $assessment)
-                                                            <a href="{{ route('nursing-assessments.print', $assessment) }}" class="btn btn-sm btn-outline-info" target="_blank">
-                                                                <i class="bx bx-printer"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="alert alert-info">
-                                <i class="bx bx-info-circle"></i> {{ localize('global.no_nursing_assessments_found') }}
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Create Nursing Assessment Modal -->
-                    <div class="modal fade modal-xl" id="createNursingAssessmentModal" tabindex="-1" aria-labelledby="createNursingAssessmentModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="createNursingAssessmentModalLabel">{{ localize('global.create_nursing_assessment') }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form id="createNursingAssessmentForm" action="{{ route('nursing-assessments.store') }}" method="POST">
-                                    @csrf
-                                    <div class="modal-body">
-                                        @php
-                                            $nurses = \App\Models\Nurse::all();
-                                            $morphable_type = 'App\Models\UnderReview';
-                                            $morphable_id = $underReview->id;
-                                            $patient_name = $underReview->patient->first_name . ' ' . $underReview->patient->last_name;
-                                        @endphp
-                                        @include('pages.nursing-assessments.partials.form')
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                        <button type="submit" class="btn btn-primary" id="submitNursingAssessmentBtn">{{ localize('global.create') }}</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="nursing-assessment-section"></div>
                     <!-- End Create Nursing Assessment Modal -->
 
                     <div class="col-md-12 mt-4">
@@ -1562,15 +1472,15 @@
                     </div>
 
 
-                        {{-- end discharge --}}
-
-
-                    </div>
+                    {{-- end discharge --}}
 
 
                 </div>
+
+
             </div>
         </div>
+    </div>
     </div>
 
 @endsection
@@ -1648,8 +1558,8 @@
                 typeDropdown.appendChild(typeOption);
             @endforeach
 
-    // Create the medicine dropdown
-    const medicineDropdown = document.createElement('select');
+        // Create the medicine dropdown
+        const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2';
             medicineDropdown.name = 'medicine_id[]';
 
@@ -1662,8 +1572,8 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
-    // Create the medicine dropdown
-    const medicineUsageDropdown = document.createElement('select');
+        // Create the medicine dropdown
+        const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2';
             medicineUsageDropdown.name = 'usage_type_id[]';
 
@@ -1676,8 +1586,8 @@
                 medicineUsageDropdown.appendChild(medicineUsageOption);
             @endforeach
 
-    // Create the dosage input field
-    const dosageInput = document.createElement('input');
+        // Create the dosage input field
+        const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';
@@ -1789,35 +1699,35 @@
             }
         }
 
-    // Delete Nursing Assessment function
-    function deleteNursingAssessment(assessmentId) {
-        if (confirm('{{ localize("global.are_you_sure_delete_nursing_assessment") }}')) {
-            fetch(`/nursing-assessments/${assessmentId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    // Show success message
-                    alert(data.message);
-                    // Reload the page to refresh the data
-                    location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('{{ localize("global.error_deleting_nursing_assessment") }}');
-            });
+        // Delete Nursing Assessment function
+        function deleteNursingAssessment(assessmentId) {
+            if (confirm('{{ localize("global.are_you_sure_delete_nursing_assessment") }}')) {
+                fetch(`/nursing-assessments/${assessmentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            // Show success message
+                            alert(data.message);
+                            // Reload the page to refresh the data
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('{{ localize("global.error_deleting_nursing_assessment") }}');
+                    });
+            }
         }
-    }
 
-</script>
-@endsection
+    </script>
+    <script>
         $('#room_id').on('change', function () {
             var roomId = $(this).val();
             if (roomId !== '') {
@@ -1904,5 +1814,9 @@
             });
         }
 
+
+        $(document).ready(function () {
+            $('#nursing-assessment-section').load('{{ route('nursing-assessments.section', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}');
+        });
     </script>
 @endsection

@@ -379,7 +379,7 @@
             </div>
             <div class="checkbox-item">
                 <div class="checkbox {{ $nursingAssessment->pregnancy_no ? 'checked' : '' }}"></div>
-                {{ localize('global.no') }}
+                {{ localize('global.not') }}
             </div>
         </div>
         @if($nursingAssessment->pregnancy_yes)
@@ -390,63 +390,188 @@
         
         <!-- Medical History -->
         <div class="section-title">{{ localize('global.medical_history') }}</div>
-        <table class="assessment-table">
-            <thead>
-                <tr>
-                    <th>{{ localize('global.underlying_disease') }}</th>
-                    <th>{{ localize('global.hospitalization_history') }}</th>
-                    <th>{{ localize('global.surgical_history') }}</th>
-                    <th>{{ localize('global.allergy_history') }}</th>
-                    <th>{{ localize('global.family_medical_history') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->underlying_disease_yes ? 'checked' : '' }}"></div>
-                        {{ localize('global.yes') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->hospitalization_history_yes ? 'checked' : '' }}"></div>
-                        {{ localize('global.yes') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->surgical_history_yes ? 'checked' : '' }}"></div>
-                        {{ localize('global.yes') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->allergy_history_yes ? 'checked' : '' }}"></div>
-                        {{ localize('global.yes') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->family_medical_history_yes ? 'checked' : '' }}"></div>
-                        {{ localize('global.yes') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->underlying_disease_no ? 'checked' : '' }}"></div>
-                        {{ localize('global.no') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->hospitalization_history_no ? 'checked' : '' }}"></div>
-                        {{ localize('global.no') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->surgical_history_no ? 'checked' : '' }}"></div>
-                        {{ localize('global.no') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->allergy_history_no ? 'checked' : '' }}"></div>
-                        {{ localize('global.no') }}
-                    </td>
-                    <td class="checkbox-cell">
-                        <div class="checkbox {{ $nursingAssessment->family_medical_history_no ? 'checked' : '' }}"></div>
-                        {{ localize('global.no') }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        
+        <!-- Underlying Disease -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.underlying_disease') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->underlying_disease_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->underlying_disease_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+            @if($nursingAssessment->underlying_disease_yes)
+            <div style="margin-top: 5px;">
+                <div class="checkbox-grid">
+                    <div class="checkbox-item">
+                        <div class="checkbox {{ $nursingAssessment->underlying_disease_dm ? 'checked' : '' }}"></div>
+                        {{ localize('global.diabetes') }}
+                    </div>
+                    <div class="checkbox-item">
+                        <div class="checkbox {{ $nursingAssessment->underlying_disease_ht ? 'checked' : '' }}"></div>
+                        {{ localize('global.hypertension') }}
+                    </div>
+                    <div class="checkbox-item">
+                        <div class="checkbox {{ $nursingAssessment->underlying_disease_other ? 'checked' : '' }}"></div>
+                        {{ localize('global.other') }}
+                    </div>
+                </div>
+                <div style="margin-top: 5px;">
+                    <strong>{{ localize('global.reasons') }}:</strong> {{ $nursingAssessment->underlying_disease_reasons ?? '________________' }}
+                </div>
+            @endif
+        </div>
+        
+        <!-- Hospitalization History -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.hospitalization_history') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->hospitalization_history_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->hospitalization_history_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+            @if($nursingAssessment->hospitalization_history_yes)
+            <div style="margin-top: 5px;">
+                <strong>{{ localize('global.reasons') }}:</strong> {{ $nursingAssessment->hospitalization_history_reasons ?? '________________' }}
+            </div>
+            @endif
+        </div>
+        
+        <!-- Surgical History -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.surgical_history') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->surgical_history_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->surgical_history_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+            @if($nursingAssessment->surgical_history_yes)
+            <div style="margin-top: 5px;">
+                <strong>{{ localize('global.reasons') }}:</strong> {{ $nursingAssessment->surgical_history_reasons ?? '________________' }}
+            </div>
+            @endif
+        </div>
+        
+        <!-- Allergy History -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.allergy_history') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->allergy_history_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->allergy_history_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+            @if($nursingAssessment->allergy_history_yes)
+            <div style="margin-top: 5px;">
+                <div class="checkbox-grid">
+                    <div class="checkbox-item">
+                        <div class="checkbox {{ $nursingAssessment->allergy_food ? 'checked' : '' }}"></div>
+                        {{ localize('global.food') }}
+                    </div>
+                    <div class="checkbox-item">
+                        <div class="checkbox {{ $nursingAssessment->allergy_others ? 'checked' : '' }}"></div>
+                        {{ localize('global.others') }}
+                    </div>
+                </div>
+            @endif
+        </div>
+        
+        <!-- Family Medical History -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.family_medical_history') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->family_medical_history_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->family_medical_history_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Follow Up -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.follow_up') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->follow_up_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->follow_up_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->follow_up_never ? 'checked' : '' }}"></div>
+                    {{ localize('global.never') }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Drugs -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.drugs') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->drugs_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->drugs_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vaccination -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.vaccination') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->vaccination_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->vaccination_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Physical Checkup -->
+        <div style="margin-bottom: 10px;">
+            <strong>{{ localize('global.physical_checkup') }}:</strong>
+            <div class="checkbox-grid">
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->physical_checkup_yes ? 'checked' : '' }}"></div>
+                    {{ localize('global.yes') }}
+                </div>
+                <div class="checkbox-item">
+                    <div class="checkbox {{ $nursingAssessment->physical_checkup_no ? 'checked' : '' }}"></div>
+                    {{ localize('global.not') }}
+                </div>
+            </div>
+        </div>
         
         <!-- Pain Assessment -->
         <div class="section-title">{{ localize('global.pain_assessment') }}</div>
@@ -475,7 +600,7 @@
                 <tr>
                     <td class="checkbox-cell">
                         <div class="checkbox {{ $nursingAssessment->pain_no ? 'checked' : '' }}"></div>
-                        {{ localize('global.no') }}
+                        {{ localize('global.not') }}
                     </td>
                     <td></td>
                     <td></td>

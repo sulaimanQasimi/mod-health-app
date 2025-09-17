@@ -28,8 +28,8 @@
         <div class="modal-content">
             <form id="createNutritionCareForm" method="POST" action="{{ route('nutrition-cares.store') }}">
                 @csrf
-                <input type="hidden" name="morphable_type" value="{{ str_replace('\\', '\\\\', get_class($morphModel)) }}">
-                <input type="hidden" name="morphable_id" value="{{ $morphModel->id }}">
+                <input type="hidden" name="morphable_type" value="{{ $morphableType }}">
+                <input type="hidden" name="morphable_id" value="{{ $morphableId }}">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createNutritionCareModalLabel">
                         <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}

@@ -2815,4 +2815,10 @@ return [
     "no_primary_diagnoses_found"=>"هیچ تشخیص اصلی ای یافت نشد",
     "no_final_diagnoses_found"=>"هیچ تشخیص نهایی ای یافت نشد",
     "dashboard"=>"داشبورد",
+    "family_medical_history"=>"تاریخچه طبی خانواده",
+    "follow_up"=>"پیگیری",
+    "drugs"=>"داروها",
+    "vaccination"=>"واکسیناسیون",
+    "physical_checkup"=>"بررسی فیزیکی",
+
 ];

@@ -204,7 +204,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Hospitalizations routes
     Route::prefix('hospitalizations')->name('hospitalizations.')->group(function () {
-        Route::get('index', [HospitalizationController::class, 'index'])->name('index');
+        Route::get('/', [HospitalizationController::class, 'index'])->name('index');
         Route::get('discharged', [HospitalizationController::class, 'discharged'])->name('discharged');
         Route::get('create', [HospitalizationController::class, 'create'])->name('create');
         Route::get('show/{hospitalization}', [HospitalizationController::class, 'show'])->name('show');

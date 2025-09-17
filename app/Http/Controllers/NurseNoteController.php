@@ -372,6 +372,7 @@ class NurseNoteController extends Controller
     }
     public function section(Request $request)
     {
+        $this->authorize('viewAny', NurseNote::class);
         $morphableType = $request->morphable_type;
         $morphableId = $request->morphable_id;
         $morphModel = null;

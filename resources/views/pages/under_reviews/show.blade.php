@@ -27,8 +27,8 @@
 
                                     <div class="row p-3 g-3">
                                         <div class="col-md-3 col-sm-6">
-                                            <div class="border border-info rounded p-3 bg-light h-100">
-                                                <h6 class="mb-2 text-info">
+                                            <div class="border border-info rounded p-3 bg-none h-100 shadow-sm">
+                                                <h6 class="mb-2 text-info fw-bold">
                                                     <i class="bx bx-user me-1"></i>{{ localize('global.patient_name') }}
                                                 </h6>
                                                 <div class="fw-bold text-dark">
@@ -37,8 +37,8 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-sm-6">
-                                            <div class="border border-success rounded p-3 bg-light h-100">
-                                                <h6 class="mb-2 text-success">
+                                            <div class="border border-success rounded p-3 bg-none h-100 shadow-sm">
+                                                <h6 class="mb-2 text-success fw-bold">
                                                     <i
                                                         class="bx bx-user-check me-1"></i>{{ localize('global.referred_to') }}
                                                 </h6>
@@ -48,8 +48,8 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-sm-6">
-                                            <div class="border border-warning rounded p-3 bg-light h-100">
-                                                <h6 class="mb-2 text-warning">
+                                            <div class="border border-warning rounded p-3 bg-none h-100 shadow-sm">
+                                                <h6 class="mb-2 text-warning fw-bold">
                                                     <i class="bx bx-calendar me-1"></i>{{ localize('global.date') }}
                                                 </h6>
                                                 <div class="fw-bold text-dark">
@@ -58,8 +58,8 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-sm-6">
-                                            <div class="border border-danger rounded p-3 bg-light h-100">
-                                                <h6 class="mb-2 text-danger">
+                                            <div class="border border-danger rounded p-3 bg-none h-100 shadow-sm">
+                                                <h6 class="mb-2 text-danger fw-bold">
                                                     <i class="bx bx-time me-1"></i>{{ localize('global.time') }}
                                                 </h6>
                                                 <div class="fw-bold text-dark">
@@ -71,8 +71,8 @@
 
                                     <div class="row p-3 g-3">
                                         <div class="col-12">
-                                            <div class="border border-secondary rounded p-3 bg-light">
-                                                <h6 class="mb-2 text-secondary">
+                                            <div class="border border-secondary rounded p-3 bg-none shadow-sm">
+                                                <h6 class="mb-2 text-secondary fw-bold">
                                                     <i class="bx bx-info-circle me-1"></i>{{ localize('global.reason') }}
                                                 </h6>
                                                 <div class="text-dark">
@@ -81,8 +81,8 @@
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <div class="border border-dark rounded p-3 bg-light">
-                                                <h6 class="mb-2 text-dark">
+                                            <div class="border border-dark rounded p-3 bg-none shadow-sm">
+                                                <h6 class="mb-2 text-dark fw-bold">
                                                     <i class="bx bx-note me-1"></i>{{ localize('global.remarks') }}
                                                 </h6>
                                                 <div class="text-dark">
@@ -99,11 +99,11 @@
                         <div class="accordion mt-4 border border-info shadow-sm rounded" id="visitsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="visitsHeading">
-                                    <button class="accordion-button collapsed bg-light border-info" type="button"
+                                    <button class="accordion-button collapsed bg-none border-info" type="button"
                                         data-bs-toggle="collapse" data-bs-target="#visitsCollapse" aria-expanded="false"
                                         aria-controls="visitsCollapse">
                                         <i
-                                            class="bx bx-glasses p-1 me-2 text-info"></i><strong>{{localize('global.visits') }}</strong>
+                                            class="bx bx-glasses p-1 me-2 text-info"></i><strong class="text-dark">{{localize('global.visits') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="visitsCollapse" class="accordion-collapse collapse" aria-labelledby="visitsHeading"
@@ -217,11 +217,11 @@
                         <div class="accordion mt-4 border border-success shadow-sm rounded" id="prescriptionAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="prescriptionHeading">
-                                    <button class="accordion-button collapsed bg-light border-success" type="button"
+                                    <button class="accordion-button collapsed bg-none border-success" type="button"
                                         data-bs-toggle="collapse" data-bs-target="#prescriptionCollapse"
                                         aria-expanded="false" aria-controls="prescriptionCollapse">
                                         <i
-                                            class="bx bx-notepad p-1 me-2 text-success"></i><strong>{{ localize('global.prescription') }}</strong>
+                                            class="bx bx-notepad p-1 me-2 text-success"></i><strong class="text-dark">{{ localize('global.prescription') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="prescriptionCollapse" class="accordion-collapse collapse"
@@ -415,11 +415,11 @@
                         <div class="accordion mt-4 border border-warning shadow-sm rounded" id="diabetesChartsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="diabetesChartsHeading">
-                                    <button class="accordion-button collapsed bg-light border-warning" type="button"
+                                    <button class="accordion-button collapsed bg-none border-warning" type="button"
                                         data-bs-toggle="collapse" data-bs-target="#diabetesChartsCollapse"
                                         aria-expanded="false" aria-controls="diabetesChartsCollapse">
                                         <i
-                                            class="bx bx-bar-chart p-1 me-2 text-warning"></i><strong>{{ localize('global.diabetes_charts') }}</strong>
+                                            class="bx bx-bar-chart p-1 me-2 text-warning"></i><strong class="text-dark">{{ localize('global.diabetes_charts') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="diabetesChartsCollapse" class="accordion-collapse collapse"
@@ -573,11 +573,11 @@
                         <div class="accordion mt-4 border border-primary shadow-sm rounded" id="nurseNotesAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="nurseNotesHeading">
-                                    <button class="accordion-button collapsed bg-light border-primary" type="button"
+                                    <button class="accordion-button collapsed bg-none border-primary" type="button"
                                         data-bs-toggle="collapse" data-bs-target="#nurseNotesCollapse" aria-expanded="false"
                                         aria-controls="nurseNotesCollapse">
                                         <i
-                                            class="bx bx-note p-1 me-2 text-primary"></i><strong>{{ localize('global.nurse_notes') }}</strong>
+                                            class="bx bx-note p-1 me-2 text-primary"></i><strong class="text-dark">{{ localize('global.nurse_notes') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="nurseNotesCollapse" class="accordion-collapse collapse"
@@ -724,14 +724,14 @@
                         </div>
 
                         <!-- Nutrition Care Accordion Section -->
-                        <div class="accordion mt-4 border border-secondary" id="nutritionCareAccordion">
+                        <div class="accordion mt-4 border border-secondary shadow-sm rounded" id="nutritionCareAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="nutritionCareHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#nutritionCareCollapse" aria-expanded="false"
                                         aria-controls="nutritionCareCollapse">
                                         <i
-                                            class="bx bx-food-menu p-1 me-2 text-secondary"></i>{{ localize('global.nutrition_care') }}
+                                            class="bx bx-food-menu p-1 me-2 text-secondary"></i><strong class="text-dark">{{ localize('global.nutrition_care') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="nutritionCareCollapse" class="accordion-collapse collapse"
@@ -885,15 +885,15 @@
                         </div>
 
                         <!-- Medication Administration Records Accordion Section -->
-                        <div class="accordion mt-4 border border-danger" id="medicationAdministrationRecordsAccordion">
+                        <div class="accordion mt-4 border border-danger shadow-sm rounded" id="medicationAdministrationRecordsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="medicationAdministrationRecordsHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#medicationAdministrationRecordsCollapse" aria-expanded="false"
                                         aria-controls="medicationAdministrationRecordsCollapse">
                                         <i
-                                            class="bx bx-pills p-1 me-2 text-danger"></i>{{ localize('global.medication_administration_records') }}
-                                        ({{ localize('global.mar') }})
+                                            class="bx bx-pills p-1 me-2 text-danger"></i><strong class="text-dark">{{ localize('global.medication_administration_records') }}
+                                        ({{ localize('global.mar') }})</strong>
                                     </button>
                                 </h2>
                                 <div id="medicationAdministrationRecordsCollapse" class="accordion-collapse collapse"
@@ -1027,13 +1027,13 @@
                         </div>
 
                         <!-- Vital Signs Accordion Section -->
-                        <div class="accordion mt-4 border border-dark" id="vitalSignsAccordion">
+                        <div class="accordion mt-4 border border-dark shadow-sm rounded" id="vitalSignsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="vitalSignsHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#vitalSignsCollapse" aria-expanded="false"
                                         aria-controls="vitalSignsCollapse">
-                                        <i class="bx bx-heart p-1 me-2 text-dark"></i>{{ localize('global.vital_signs') }}
+                                        <i class="bx bx-heart p-1 me-2 text-dark"></i><strong class="text-dark">{{ localize('global.vital_signs') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="vitalSignsCollapse" class="accordion-collapse collapse"
@@ -1147,13 +1147,13 @@
                         </div>
 
                         <!-- Hospitalization Accordion Section -->
-                        <div class="accordion mt-4 border border-light" id="hospitalizationAccordion">
+                        <div class="accordion mt-4 border border-secondary shadow-sm rounded" id="hospitalizationAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="hospitalizationHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#hospitalizationCollapse" aria-expanded="false"
                                         aria-controls="hospitalizationCollapse">
-                                        <i class="bx bx-bed p-1 me-2 text-light"></i>{{ localize('global.hospitalize') }}
+                                        <i class="bx bx-bed p-1 me-2 text-secondary"></i><strong class="text-dark">{{ localize('global.hospitalize') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="hospitalizationCollapse" class="accordion-collapse collapse"
@@ -1396,14 +1396,14 @@
                             </div>
                         </div>
                         <!-- Lab Tests Accordion Section -->
-                        <div class="accordion mt-4 border border-info" id="labTestsAccordion">
+                        <div class="accordion mt-4 border border-info shadow-sm rounded" id="labTestsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="labTestsHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#labTestsCollapse" aria-expanded="false"
                                         aria-controls="labTestsCollapse">
                                         <i
-                                            class="bx bx-hard-hat p-1 me-2 text-info"></i>{{ localize('global.under_review_checkups') }}
+                                            class="bx bx-hard-hat p-1 me-2 text-info"></i><strong class="text-dark">{{ localize('global.under_review_checkups') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="labTestsCollapse" class="accordion-collapse collapse"
@@ -1561,14 +1561,14 @@
                             </div>
                         </div>
                         <!-- Discharge Accordion Section -->
-                        <div class="accordion mt-4 border border-success" id="dischargeAccordion">
+                        <div class="accordion mt-4 border border-success shadow-sm rounded" id="dischargeAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="dischargeHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#dischargeCollapse" aria-expanded="false"
                                         aria-controls="dischargeCollapse">
                                         <i
-                                            class="bx bx-walk p-1 me-2 text-success"></i>{{ localize('global.discharge_patient') }}
+                                            class="bx bx-walk p-1 me-2 text-success"></i><strong class="text-dark">{{ localize('global.discharge_patient') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="dischargeCollapse" class="accordion-collapse collapse"
@@ -1642,14 +1642,14 @@
                         </div>
 
                         <!-- Nursing Notes Accordion Section -->
-                        <div class="accordion mt-4 border border-primary" id="nursingNotesAccordion">
+                        <div class="accordion mt-4 border border-primary shadow-sm rounded" id="nursingNotesAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="nursingNotesHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#nursingNotesCollapse" aria-expanded="false"
                                         aria-controls="nursingNotesCollapse">
                                         <i
-                                            class="bx bx-note p-1 me-2 text-primary"></i>{{ localize('global.nursing_notes') }}
+                                            class="bx bx-note p-1 me-2 text-primary"></i><strong class="text-dark">{{ localize('global.nursing_notes') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="nursingNotesCollapse" class="accordion-collapse collapse"
@@ -1697,14 +1697,14 @@
                         </div>
                         <!-- End Create Nutrition Care Modal -->
                         <!-- Nursing Assessment Accordion Section -->
-                        <div class="accordion mt-4 border m-2 border-warning" id="nursingAssessmentAccordion">
+                        <div class="accordion mt-4 border border-warning shadow-sm rounded" id="nursingAssessmentAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="nursingAssessmentHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#nursingAssessmentCollapse" aria-expanded="false"
                                         aria-controls="nursingAssessmentCollapse">
                                         <i
-                                            class="bx bx-clipboard p-1 me-2 text-warning"></i>{{ localize('global.nursing_assessment') }}
+                                            class="bx bx-clipboard p-1 me-2 text-warning"></i><strong class="text-dark">{{ localize('global.nursing_assessment') }}</strong>
                                     </button>
                                 </h2>
                                 <div id="nursingAssessmentCollapse" class="accordion-collapse collapse"

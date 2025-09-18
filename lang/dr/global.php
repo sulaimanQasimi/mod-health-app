@@ -40,8 +40,8 @@ return [
     'purchase_price' => 'قیمت خرید',
     'purchase_date' => 'تاریخ خرید',
     'income_type' => 'نوع وارده',
-
-
+    "no_discharge_remark"=>"بدون ملاحظات رخصت",
+    "add_discharge_remark"=>"اضافه نمودن ملاحظات رخصت",
     'close' => 'بستن',
     'add_alternative' => 'اضافه نمودن جایگزین',
     'medicine' => 'ادویه',
@@ -50,9 +50,10 @@ return [
     'select_type' => 'انتخاب نوعیت ادویه',
 
     // Nurse Management Translations
-    'nurses' => 'نرس',
-    'nurse' => 'نرس',
-    'nurse_management' => 'مدیریت نرس',
+    "nursing_notes"=>"یادداشت نرسینگ",
+    'nurses' => 'نرسینگ',
+    'nurse' => 'نرسینگ',
+    'nurse_management' => 'مدیریت نرسینگ',
     'add_nurse' => 'اضافه نمودن نرس',
     'edit_nurse' => 'تصحیح نرس',
     'view_nurse' => 'مشاهده نرس',

@@ -1503,6 +1503,8 @@ class PermissionSeeder extends Seeder
         $this->call(NursingAssessmentRolePermissionSeeder::class);
         $this->call(PhysiotherapyTypeSeeder::class);
         $this->call(PhysiotherapyProcedureReviewSeeder::class);
+        $this->call(VitalSignPermissionSeeder::class);
+        $this->call(VitalSignRolePermissionSeeder::class);
         User::find(1)->givePermissionTo(Permission::all());
 
     }

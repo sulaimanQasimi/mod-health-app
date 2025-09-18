@@ -287,22 +287,6 @@
                             <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
-                    
-                    <!-- Vital Signs Management -->
-                    @can('show-vital-sign-types-menu')
-                        <li class="menu-item {{ Route::is('vital-sign-types.*') ? 'active' : '' }}">
-                            <a href="{{ route('vital-sign-types.index') }}" class="menu-link">
-                                <div>{{ localize('vital_sign_types') }}</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('show-vital-signs-menu')
-                        <li class="menu-item {{ Route::is('vital-signs.*') ? 'active' : '' }}">
-                            <a href="{{ route('vital-signs.index') }}" class="menu-link">
-                                <div>{{ localize('vital_signs') }}</div>
-                            </a>
-                        </li>
-                    @endcan
                 </ul>
             </li>
         @endcan
@@ -627,6 +611,23 @@
                         <li class="menu-item {{ Route::is('nurses.index') ? 'active' : '' }}">
                             <a href="{{ route('nurses.index') }}" class="menu-link">
                                 <div>{{ localize('global.nurses') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    
+                    
+                    <!-- Vital Signs Management -->
+                    @can('show-vital-sign-types-menu')
+                        <li class="menu-item {{ Route::is('vital-sign-types.*') ? 'active' : '' }}">
+                            <a href="{{ route('vital-sign-types.index') }}" class="menu-link">
+                                <div>{{ localize('vital_sign_types') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('show-vital-signs-menu')
+                        <li class="menu-item {{ Route::is('vital-signs.*') ? 'active' : '' }}">
+                            <a href="{{ route('vital-signs.index') }}" class="menu-link">
+                                <div>{{ localize('vital_signs') }}</div>
                             </a>
                         </li>
                     @endcan

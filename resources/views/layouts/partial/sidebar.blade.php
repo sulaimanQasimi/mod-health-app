@@ -630,6 +630,23 @@
                             </a>
                         </li>
                     @endcan
+                    
+                    
+                    <!-- Vital Signs Management -->
+                    @can('show-vital-sign-types-menu')
+                        <li class="menu-item {{ Route::is('vital-sign-types.*') ? 'active' : '' }}">
+                            <a href="{{ route('vital-sign-types.index') }}" class="menu-link">
+                                <div>{{ localize('vital_sign_types') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('show-vital-signs-menu')
+                        <li class="menu-item {{ Route::is('vital-signs.*') ? 'active' : '' }}">
+                            <a href="{{ route('vital-signs.index') }}" class="menu-link">
+                                <div>{{ localize('vital_signs') }}</div>
+                            </a>
+                        </li>
+                    @endcan
 
                     @role('super_admin')
                     <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">

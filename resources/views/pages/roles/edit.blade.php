@@ -45,7 +45,17 @@
                                 <div class="row">
 
                                     <div class="col-md-6">
-                                        <h5>{{ localize('global.permissions_list') }}</h5>
+                                        <div class="select-all-container bg-white">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0 text-dark">{{ localize('global.permissions_list') }}</h5>
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input bg-info" id="selectAllPermissions">
+                                                    <label class="form-check-label fw-bold text-primary" for="selectAllPermissions">
+                                                        {{ localize('global.select_all') }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <ul id="permissions-tree">
                                             @foreach ($permissions as $value)
                                                 @include('pages.permissions.sub_permissions', [
@@ -109,6 +119,67 @@
         .main-folder-icon.open:before {
             content: "\eae0";
         }
+
+        /* Select All checkbox styling */
+        #selectAllPermissions {
+            transform: scale(1.2);
+            margin-right: 8px;
+        }
+
+        #selectAllPermissions:indeterminate {
+            background-color: var(--bs-primary, #696cff);
+            border-color: var(--bs-primary, #696cff);
+        }
+
+        /* Dark mode checkbox styling */
+        @media (prefers-color-scheme: dark) {
+            #selectAllPermissions {
+                background-color: var(--bs-dark, #343a40);
+                border-color: var(--bs-border-color, #6c757d);
+            }
+            
+            #selectAllPermissions:checked {
+                background-color: var(--bs-primary, #696cff);
+                border-color: var(--bs-primary, #696cff);
+            }
+        }
+
+        [data-bs-theme="dark"] #selectAllPermissions {
+            background-color: var(--bs-dark, #343a40);
+            border-color: var(--bs-border-color, #6c757d);
+        }
+        
+        [data-bs-theme="dark"] #selectAllPermissions:checked {
+            background-color: var(--bs-primary, #696cff);
+            border-color: var(--bs-primary, #696cff);
+        }
+
+        .select-all-container {
+            background-color: var(--bs-light, #f8f9fa);
+            border: 1px solid var(--bs-border-color, #dee2e6);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark mode compatibility */
+        @media (prefers-color-scheme: dark) {
+            .select-all-container {
+                background-color: var(--bs-dark, #343a40);
+                border-color: var(--bs-border-color-translucent, #495057);
+            }
+        }
+
+        /* Bootstrap dark mode support */
+        [data-bs-theme="dark"] .select-all-container {
+            background-color: var(--bs-dark, #343a40);
+            border-color: var(--bs-border-color-translucent, #495057);
+        }
+
+        [data-bs-theme="dark"] .select-all-container h5 {
+            color: var(--bs-light, #f8f9fa) !important;
+        }
     </style>
 @endpush
 
@@ -116,6 +187,7 @@
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script>
         $(document).ready(function() {
+            // Handle folder icon clicks
             $('.main-folder-icon').click(function() {
                 var ulElement = $(this).parent().parent().find('ul');
                 ulElement.toggle();
@@ -128,7 +200,43 @@
                 }
             });
 
+            // Initialize with folders open
             $('.main-folder-icon').click();
+
+            // Handle Select All functionality
+            $('#selectAllPermissions').change(function() {
+                var isChecked = $(this).is(':checked');
+                
+                // Select/deselect all permission checkboxes
+                $('input[name="permission[]"]').prop('checked', isChecked);
+                
+                // Update the select all checkbox state based on individual checkboxes
+                updateSelectAllState();
+            });
+
+            // Handle individual checkbox changes
+            $('input[name="permission[]"]').change(function() {
+                updateSelectAllState();
+            });
+
+            // Function to update the select all checkbox state
+            function updateSelectAllState() {
+                var totalCheckboxes = $('input[name="permission[]"]').length;
+                var checkedCheckboxes = $('input[name="permission[]"]:checked').length;
+                
+                if (checkedCheckboxes === 0) {
+                    $('#selectAllPermissions').prop('indeterminate', false);
+                    $('#selectAllPermissions').prop('checked', false);
+                } else if (checkedCheckboxes === totalCheckboxes) {
+                    $('#selectAllPermissions').prop('indeterminate', false);
+                    $('#selectAllPermissions').prop('checked', true);
+                } else {
+                    $('#selectAllPermissions').prop('indeterminate', true);
+                }
+            }
+
+            // Initialize select all state on page load
+            updateSelectAllState();
         });
     </script>
 @endpush

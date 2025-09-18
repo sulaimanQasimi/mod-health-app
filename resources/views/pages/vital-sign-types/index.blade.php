@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', localize('vital_sign_types'))
+@section('title', localize('global.vital_sign_types'))
 
 @section('content')
 <div class="container-fluid">
@@ -9,12 +9,12 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-heartbeat"></i> {{ localize('vital_sign_types') }}
+                        <i class="fas fa-heartbeat"></i> {{ localize('global.vital_sign_types') }}
                     </h3>
                     <div class="card-tools">
                         @can('create', App\Models\VitalSignType::class)
                             <a href="{{ route('vital-sign-types.create') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus"></i> {{ localize('create_vital_sign_type') }}
+                                <i class="fas fa-plus"></i> {{ localize('global.create_vital_sign_type') }}
                             </a>
                         @endcan
                     </div>
@@ -23,7 +23,7 @@
                     <!-- Search Filter -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <input type="text" class="form-control" id="search_filter" placeholder="{{ localize('search') }} {{ localize('vital_sign_types') }}...">
+                            <input type="text" class="form-control" id="search_filter" placeholder="{{ localize('search') }} {{ localize('global.vital_sign_types') }}...">
                         </div>
                     </div>
 
@@ -32,10 +32,10 @@
                         <table class="table table-bordered table-striped" id="vitalSignTypesTable">
                             <thead>
                                 <tr>
-                                    <th>{{ localize('id') }}</th>
-                                    <th>{{ localize('name') }}</th>
-                                    <th>{{ localize('created_at') }}</th>
-                                    <th>{{ localize('actions') }}</th>
+                                    <th>{{ localize('global.id') }}</th>
+                                        <th>{{ localize('global.name') }}</th>
+                                    <th>{{ localize('global.created_at') }}</th>
+                                    <th>{{ localize('global.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,7 +70,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center">{{ localize('no_vital_signs_found') }}</td>
+                                        <td colspan="4" class="text-center">{{ localize('global.no_vital_signs_found') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

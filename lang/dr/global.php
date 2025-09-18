@@ -2862,4 +2862,6 @@ return [
     "back_to_list"=>"بازگشت به لیست",
     "vital_sign_type"=>"نوع علامت حیاتی",
     "vital_signs"=>"علائم حیاتی",
+    "vital_sign_types"=>"نوعیت علائم حیاتی",
+    "confirm_delete vital_sign_type"=>"آیا مطمئن هستید که می‌خواهید این نوع علامت حیاتی را حذف کنید؟",
 ];

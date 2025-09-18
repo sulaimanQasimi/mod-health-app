@@ -48,8 +48,6 @@ return [
     'select_medicine' => 'انتخاب ادویه',
     'type' => 'نوعیت ادویه',
     'select_type' => 'انتخاب نوعیت ادویه',
-
-    // Nurse Management Translations
     "nursing_notes"=>"یادداشت نرسینگ",
     'nurses' => 'نرسینگ',
     'nurse' => 'نرسینگ',

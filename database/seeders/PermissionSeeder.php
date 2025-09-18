@@ -26,7 +26,7 @@ class PermissionSeeder extends Seeder
             'name_dr' => 'نمایش مینو ملاقات های من',
             'name_pa' => NULL,
             'guard_name' => 'web',
-                    ]);
+        ]);
 
         Permission::createOrFirst([
             'name' => 'show-my-consultations-menu',
@@ -1152,7 +1152,7 @@ class PermissionSeeder extends Seeder
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:09:52'
-            ]);
+        ]);
 
 
         Permission::createOrFirst([
@@ -1438,7 +1438,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
-        
+
         // Nursing Assessment Menu Permission
         Permission::createOrFirst([
             'name' => 'show-nursing-assessments-menu',
@@ -1497,7 +1497,12 @@ class PermissionSeeder extends Seeder
             'name_pa' => NULL,
             'guard_name' => 'web',
         ]);
-   
+        $this->call(PhysiotherapyPermissionSeeder::class);
+        $this->call(PharmacyPermissionSeeder::class);
+        $this->call(NursingAssessmentPermissionSeeder::class);
+        $this->call(NursingAssessmentRolePermissionSeeder::class);
+        $this->call(PhysiotherapyTypeSeeder::class);
+        $this->call(PhysiotherapyProcedureReviewSeeder::class);
         User::find(1)->givePermissionTo(Permission::all());
 
     }

@@ -2860,4 +2860,6 @@ return [
     "associated"=>"مرتبط",
     "details"=>"جزئیات",
     "back_to_list"=>"بازگشت به لیست",
+    "vital_sign_type"=>"نوع علامت حیاتی",
+    "vital_signs"=>"علائم حیاتی",
 ];

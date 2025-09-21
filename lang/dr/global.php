@@ -2690,6 +2690,7 @@ return [
     "anxiety_no" => "نخیر",
     "anxiety_yes" => "بلی",
     "anxiety_causes" => "علل اضطراب",
+    "created_new_blood_request" => "ایجاد درخواست خون",
     "anxiety_cause_illness" => "بیماری",
     "anxiety_cause_family" => "خانواده",
     "anxiety_cause_work" => "کار",

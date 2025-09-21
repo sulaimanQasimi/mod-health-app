@@ -10,7 +10,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="text-center mb-2">
-                        <a href="javascript:void(0);" onclick="window.open('/patients/{{$patient->id}}/printToken', '_blank');" class="btn btn-primary"><i class="bx bx-printer"></i>Token</a>
+                        <a href="javascript:void(0);" onclick="window.open('/patients/{{$patient->id}}/printToken', '_blank');" class="btn btn-primary"><i class="bx bx-printer"></i>{{ localize('global.token') }}</a>
 
                     </div>
 

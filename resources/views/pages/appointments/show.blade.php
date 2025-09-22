@@ -1103,7 +1103,7 @@
 
                                 <div class="mb-3">
                                     <label for="date">{{ localize('global.date') }}</label>
-                                    <input type="date" class="form-control" name="date" />
+                                    <input type="text" class="form-control form-control datepicker_dari pdp-el" name="date" id="date" />
                                 </div>
                                 <div class="mb-3">
                                     <label for="time">{{ localize('global.time') }}</label>

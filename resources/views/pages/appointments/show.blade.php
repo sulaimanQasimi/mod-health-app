@@ -109,44 +109,48 @@
                             $finalDiagnoses = $previousDiagnoses->where('type', 1);
                         @endphp
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-warning">
-                                    <div class="card-header bg-warning text-dark text-center">
-                                        <h6 class="mb-0">
-                                            <i class="bx bx-popsicle me-2"></i>
-                                            {{ localize('global.primary_diagnoses') }}
-                                        </h6>
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
+                                            </h5>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        @foreach ($primaryDiagnoses as $diagnose)
-                                            <div class="mb-2 p-2 border-start border-warning border-3 bg-body-secondary rounded">
-                                                <span class="badge bg-warning text-dark me-2">
-                                                    {{ $diagnose->created_at->format('Y-m-d') }}
-                                                </span>
-                                                {{ $diagnose->description }}
-                                            </div>
-                                        @endforeach
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
+                                            </h5>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-success">
-                                    <div class="card-header bg-success text-white text-center">
-                                        <h6 class="mb-0">
-                                            <i class="bx bx-popsicle me-2"></i>
-                                            {{ localize('global.final_diagnoses') }}
-                                        </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            @foreach ($primaryDiagnoses as $diagnose)
+                                                <li
+                                                    class="m-1 p-2 border-start border-warning border-3 bg-light rounded">
+                                                    <span
+                                                        class="badge bg-warning text-dark me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                    {{ $diagnose->description }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
-                                    <div class="card-body">
-                                        @foreach ($finalDiagnoses as $diagnose)
-                                            <div class="mb-2 p-2 border-start border-success border-3 bg-body-secondary rounded">
-                                                <span class="badge bg-success text-white me-2">
-                                                    {{ $diagnose->created_at->format('Y-m-d') }}
-                                                </span>
-                                                {{ $diagnose->description }}
-                                            </div>
-                                        @endforeach
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            @foreach ($finalDiagnoses as $diagnose)
+                                                <li
+                                                    class="m-1 p-2 border-start border-success border-3 bg-light rounded">
+                                                    <span
+                                                        class="badge bg-success text-white me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                    {{ $diagnose->description }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
                                 </div>
                             </div>

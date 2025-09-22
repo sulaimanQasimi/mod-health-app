@@ -735,7 +735,7 @@
                                                 <td>
                                                     <span class="badge bg-secondary">{{ $advice->doctor->name }}</span>
                                                 </td>
-                                                <td dir="ltr">{{ $advice->created_at }}</td>
+                                                <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($advice->created_at->format('Y-m-d')) }}</td>
                                                 <td>
                                                     <div class="btn-group" role="group">
                                                         @can('edit-advices')

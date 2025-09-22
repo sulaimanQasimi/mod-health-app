@@ -1,7 +1,8 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-fluid py-4">
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
         @if (Session::has('success') || Session::has('error'))
             @include('components.toast')
         @endif
@@ -2871,4 +2872,6 @@
             });
         }
     </script>
+        </div>
+    </div>
 @endsection

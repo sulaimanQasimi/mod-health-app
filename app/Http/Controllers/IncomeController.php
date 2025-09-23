@@ -15,13 +15,13 @@ class IncomeController extends Controller
     {
         $query = Income::with(['medicine', 'createdBy', 'pharmacy']);
 
-        // Get current user's pharmacy
+        // Get current user's pharmacies
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacies = $user->activePharmacies()->pluck('pharmacies.id');
 
-        // Filter by pharmacy if user has one
-        if ($userPharmacy) {
-            $query->where('pharmacy_id', $userPharmacy->id);
+        // Filter by user's pharmacies if user has any
+        if ($userPharmacies->isNotEmpty()) {
+            $query->whereIn('pharmacy_id', $userPharmacies);
         }
 
         // Search functionality
@@ -78,7 +78,7 @@ class IncomeController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacy = $user->activePharmacies()->first();
 
         // Check if user has a pharmacy assigned
         if (!$userPharmacy) {
@@ -95,7 +95,7 @@ class IncomeController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacy = $user->activePharmacies()->first();
 
         // Check if user has a pharmacy assigned
         if (!$userPharmacy) {

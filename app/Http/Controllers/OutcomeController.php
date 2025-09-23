@@ -16,13 +16,13 @@ class OutcomeController extends Controller
     {
         $query = Outcome::with(['medicine', 'patient', 'doctor', 'createdBy', 'pharmacy']);
 
-        // Get current user's pharmacy
+        // Get current user's pharmacies
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacies = $user->activePharmacies()->pluck('pharmacies.id');
 
-        // Filter by pharmacy if user has one
-        if ($userPharmacy) {
-            $query->where('pharmacy_id', $userPharmacy->id);
+        // Filter by user's pharmacies if user has any
+        if ($userPharmacies->isNotEmpty()) {
+            $query->whereIn('pharmacy_id', $userPharmacies);
         }
 
         // Search functionality
@@ -81,7 +81,7 @@ class OutcomeController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacy = $user->activePharmacies()->first();
 
         // Check if user has a pharmacy assigned
         if (!$userPharmacy) {
@@ -103,7 +103,7 @@ class OutcomeController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacy = $user->activePharmacies()->first();
 
         // Check if user has a pharmacy assigned
         if (!$userPharmacy) {
@@ -164,7 +164,7 @@ class OutcomeController extends Controller
 
         // Get current user's pharmacy for filtering
         $user = Auth::user();
-        $userPharmacy = $user->pharmacy;
+        $userPharmacy = $user->activePharmacies()->first();
 
         // Filter by pharmacy if user has one (and is not admin)
         if ($userPharmacy && !$user->hasRole('admin')) {

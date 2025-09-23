@@ -150,7 +150,7 @@ class User extends Authenticatable
     // Legacy method for backward compatibility (returns first active pharmacy)
     public function pharmacy()
     {
-        return $this->activePharmacies()->first();
+        return $this->activePharmacies();
     }
 
     public function physiotherapyProcedures()

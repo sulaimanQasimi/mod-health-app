@@ -415,7 +415,7 @@
                         @foreach ($previousAnesthesias as $anesthesia)
                             <tr>
                                 <td>{{ $loop?->iteration }}</td>
-                                <td>{{ $anesthesia?->operationType??->name ?? 'N/A' }}</td>
+                                <td>{{ $anesthesia?->operationType?->name ?? 'N/A' }}</td>
                                 <td>
                                     {{$anesthesia?->date}}
                                 </td>
@@ -423,7 +423,7 @@
                                 <td>
 
                                     <span class="badge bg-label-primary">
-                                        {{$anesthesia??->surgion??->name ?? 'N/A'}}
+                                        {{$anesthesia?->surgion?->name ?? 'N/A'}}
                                     </span>
 
                                 </td>

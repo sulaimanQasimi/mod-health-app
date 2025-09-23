@@ -73,7 +73,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" name="date" class="form-control" value="{{ request('date') }}">
+                                    <input type="text" class="form-control form-control datepicker_dari pdp-el" name="date" id="date" value="{{ request('date') }}">
                                 </div>
                                 <div class="col-md-1">
                                     <button type="submit" class="btn btn-primary">

@@ -135,7 +135,7 @@
                                                 <li
                                                     class="m-1 p-2 border-start border-warning border-3 bg-light rounded">
                                                     <span
-                                                        class="badge bg-warning text-dark me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                        class="badge bg-warning text-dark me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
                                                     {{ $diagnose->description }}
                                                 </li>
                                             @endforeach
@@ -147,7 +147,7 @@
                                                 <li
                                                     class="m-1 p-2 border-start border-success border-3 bg-light rounded">
                                                     <span
-                                                        class="badge bg-success text-white me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                        class="badge bg-success text-white me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
                                                     {{ $diagnose->description }}
                                                 </li>
                                             @endforeach

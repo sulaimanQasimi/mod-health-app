@@ -88,7 +88,7 @@
             <div class="col-md-3">
                 <div class="mb-3">
                     <label for="admitted_from_date" class="form-label">{{ localize('global.date') }}</label>
-                    <input type="date" class="form-control" id="admitted_from_date" name="admitted_from_date" value="{{ old('admitted_from_date', $nursingAssessment->admitted_from_date ?? '') }}">
+                    <input type="text" class="form-control form-control datepicker_dari pdp-el" id="admitted_from_date" name="admitted_from_date" value="{{ old('admitted_from_date', $nursingAssessment->admitted_from_date ?? '') }}" placeholder="{{ localize('global.date') }}">
                 </div>
             </div>
             <div class="col-md-6">
@@ -411,7 +411,7 @@
             <div class="col-md-3">
                 <div class="mb-3">
                     <label for="assessment_initiated_by_date" class="form-label">{{ localize('global.date') }}</label>
-                    <input type="date" class="form-control" id="assessment_initiated_by_date" name="assessment_initiated_by_date" value="{{ old('assessment_initiated_by_date', $nursingAssessment->assessment_initiated_by_date ?? '') }}">
+                    <input type="text" class="form-control form-control datepicker_dari pdp-el" id="assessment_initiated_by_date" name="assessment_initiated_by_date" value="{{ old('assessment_initiated_by_date', $nursingAssessment->assessment_initiated_by_date ?? '') }}" placeholder="{{ localize('global.date') }}">
                 </div>
             </div>
             <div class="col-md-3">
@@ -455,3 +455,22 @@
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    // Initialize Persian date picker for date inputs
+    $('.datepicker_dari').persianDatepicker({
+        formatDate: 'YYYY-MM-DD',
+        calendar: {
+            persian: {
+                locale: 'en',
+                showHint: true,
+                leapYearMode: 'algorithmic'
+            }
+        },
+        checkDate: function(unix) {
+            return true;
+        }
+    });
+});
+</script>

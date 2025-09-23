@@ -54,8 +54,8 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="date" class="form-label">{{ localize('global.date') }}</label>
-                                    <input type="date" name="date" id="date" class="form-control @error('date') is-invalid @enderror" 
-                                           value="{{ old('date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}">
+                                    <input type="text" class="form-control form-control datepicker_dari pdp-el @error('date') is-invalid @enderror" 
+                                           id="date" name="date" required>
                                     @error('date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

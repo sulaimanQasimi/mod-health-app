@@ -73,9 +73,9 @@
                                     <div class="mb-3">
                                         <label for="order_date"
                                             class="form-label">{{ localize('global.order_date') }}</label>
-                                        <input type="date" name="order_date" id="order_date"
-                                            class="form-control @error('order_date') is-invalid @enderror"
-                                            value="{{ old('order_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}">
+                                        <input type="text" name="order_date" id="order_date"
+                                            class="form-control form-control datepicker_dari pdp-el @error('order_date') is-invalid @enderror"
+                                           >
                                         @error('order_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

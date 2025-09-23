@@ -18,11 +18,11 @@ class OutcomeController extends Controller
 
         // Get current user's pharmacies
         $user = Auth::user();
-        $userPharmacies = $user->activePharmacies()->pluck('pharmacies.id');
+        $userPharmacies = $user->activePharmacies;
 
         // Filter by user's pharmacies if user has any
         if ($userPharmacies->isNotEmpty()) {
-            $query->whereIn('pharmacy_id', $userPharmacies);
+            $query->whereIn('pharmacy_id', $userPharmacies->pluck('id'));
         }
 
         // Search functionality
@@ -75,7 +75,7 @@ class OutcomeController extends Controller
             $pharmacies = Pharmacy::orderBy('name')->get();
         }
 
-        return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacy'));
+        return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacies'));
     }
 
     public function create()

@@ -11,10 +11,13 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-0">{{ localize('global.income_records') }}</h5>
-                            @if($userPharmacy)
+                            @if($userPharmacies && $userPharmacies->isNotEmpty())
                             <small class="text-muted">
                                 <i class="bx bx-building me-1"></i>
-                                {{ localize('global.pharmacy') }}: <strong>{{ $userPharmacy->name }}</strong>
+                                {{ localize('global.pharmacies') }}: 
+                                @foreach($userPharmacies as $pharmacy)
+                                    <strong>{{ $pharmacy->name }}</strong>@if(!$loop->last), @endif
+                                @endforeach
                             </small>
                             @endif
                         </div>

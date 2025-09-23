@@ -70,7 +70,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="card bg-light">
+                                <div class="card bg-none border">
                                     <div class="card-header">
                                         <h6 class="mb-0">{{ localize('global.information') }}</h6>
                                     </div>

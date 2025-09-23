@@ -88,8 +88,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="expiry_date">{{ localize('global.expiry_date') }}</label>
-                                        <input type="date" class="form-control @error('expiry_date') is-invalid @enderror"
-                                            id="expiry_date" name="expiry_date" value="{{ old('expiry_date') }}">
+                                        <input type="text" class="form-control datepicker_dari @error('expiry_date') is-invalid @enderror"
+                                            id="expiry_date" name="expiry_date" value="{{ old('expiry_date') }}" placeholder="{{ localize('global.expiry_date') }}">
                                         @error('expiry_date')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -136,8 +136,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="purchase_date">{{ localize('global.purchase_date') }}</label>
-                                        <input type="date" class="form-control @error('purchase_date') is-invalid @enderror"
-                                            id="purchase_date" name="purchase_date" value="{{ old('purchase_date') }}">
+                                        <input type="text" class="form-control datepicker_dari @error('purchase_date') is-invalid @enderror"
+                                            id="purchase_date" name="purchase_date" value="{{ old('purchase_date') }}" placeholder="{{ localize('global.purchase_date') }}">
                                         @error('purchase_date')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -187,3 +187,32 @@
         </div>
     </div>
 @endsection
+
+@push('custom-js')
+    <script src="{{ asset('ShamsiCalender/js/persianDatepicker.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize Persian date picker for date inputs
+            $('.datepicker_dari').each(function() {
+                var $this = $(this);
+                
+                // Clear any existing value that might cause issues
+                $this.val('');
+                
+                $this.persianDatepicker({
+                    formatDate: 'YYYY-MM-DD',
+                    calendar: {
+                        persian: {
+                            locale: 'en',
+                            showHint: true,
+                            leapYearMode: 'algorithmic'
+                        }
+                    },
+                    checkDate: function(unix) {
+                        return true;
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

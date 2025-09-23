@@ -71,15 +71,11 @@
                             <div class="col-md-3">
                                 <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                 <div class="input-group input-daterange" id="bs-datepicker-daterange">
-                                    <input type="text" name="date_from"
-                                        placeholder="{{ localize('global.from') }}"
-                                        class="form-control form-control datepicker_dari pdp-el persian-date" 
-                                        value="{{ request('date_from') }}" />
+                                    <input type="text" name="start_date" placeholder="{{ localize('global.from') }}"
+                                           class="form-control datepicker_dari" value="{{ request('start_date') }}" />
                                     <span class="input-group-text">...</span>
-                                    <input type="text" name="date_to"
-                                        placeholder="{{ localize('global.to') }}"
-                                        class="form-control form-control datepicker_dari pdp-el persian-date" 
-                                        value="{{ request('date_to') }}" />
+                                    <input type="text" name="end_date" placeholder="{{ localize('global.to') }}"
+                                           class="form-control datepicker_dari" value="{{ request('end_date') }}" />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -156,7 +152,7 @@
                                         <td>
                                             @if($income->expiry_date)
                                                 <span class="badge bg-{{ $income->expiry_date->diffInDays(now()) <= 30 ? 'warning' : 'success' }}">
-                                                    {{ $income->expiry_date->format('Y-m-d') }}
+                                                    {{ \Verta::instance($income->expiry_date)->formatJalaliDate() }}
                                                 </span>
                                             @else
                                                 <span class="text-muted">-</span>
@@ -166,7 +162,7 @@
                                         <td>{{ number_format($income->purchase_price, 2) }}</td>
                                         <td>
                                             @if($income->purchase_date)
-                                                {{ $income->purchase_date->format('Y-m-d') }}
+                                                {{ \Verta::instance($income->purchase_date)->formatJalaliDate() }}
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
@@ -194,7 +190,7 @@
                                         <td>{{ $income->createdBy->name ?? 'N/A' }}</td>
                                         <td>
                                             @if($income->created_at)
-                                                {{ $income->created_at->format('Y-m-d H:i') }}
+                                                {{ \Verta::instance($income->created_at)->formatJalaliDate() }} {{ \Verta::instance($income->created_at)->format('H:i') }}
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
@@ -237,73 +233,31 @@
 @endsection
 
 @push('custom-js')
-    <script src="{{ asset('hijri/bootstrap-hijri-datetimepicker.js') }}"></script>
+    <script src="{{ asset('ShamsiCalender/js/persianDatepicker.js') }}"></script>
     <script>
-        $(document).ready(function () {
-            // Initialize Persian date pickers
-            $('.persian-date').hijriDatePicker({
-                format: 'YYYY/MM/DD',
-                hijriFormat: 'iYYYY/iMM/iDD',
-                dayViewHeaderFormat: 'MMMM iYYYY',
-                hijriDayViewHeaderFormat: 'iMMMM iYYYY',
-                showSwitcher: true,
-                allowInputToggle: true,
-                showTodayButton: true,
-                useCurrent: false,
-                isRTL: true,
-                viewMode: 'days',
-                keepOpen: false,
-                hijri: true,
-                debug: false,
-                locale: 'fa-sa',
-                icons: {
-                    time: 'fa fa-clock-o',
-                    date: 'fa fa-calendar',
-                    up: 'fa fa-chevron-up',
-                    down: 'fa fa-chevron-down',
-                    previous: 'fa fa-chevron-right',
-                    next: 'fa fa-chevron-left',
-                    today: 'fa fa-screenshot',
-                    clear: 'fa fa-trash',
-                    close: 'fa fa-times'
-                },
-                tooltips: {
-                    today: 'امروز',
-                    clear: 'پاک کردن',
-                    close: 'بستن',
-                    selectMonth: 'انتخاب ماه',
-                    prevMonth: 'ماه قبل',
-                    nextMonth: 'ماه بعد',
-                    selectYear: 'انتخاب سال',
-                    prevYear: 'سال قبل',
-                    nextYear: 'سال بعد',
-                    selectDecade: 'انتخاب دهه',
-                    prevDecade: 'دهه قبل',
-                    nextDecade: 'دهه بعد',
-                    prevCentury: 'قرن قبل',
-                    nextCentury: 'قرن بعد',
-                    pickHour: 'انتخاب ساعت',
-                    incrementHour: 'افزایش ساعت',
-                    decrementHour: 'کاهش ساعت',
-                    pickMinute: 'انتخاب دقیقه',
-                    incrementMinute: 'افزایش دقیقه',
-                    decrementMinute: 'کاهش دقیقه',
-                    pickSecond: 'انتخاب ثانیه',
-                    incrementSecond: 'افزایش ثانیه',
-                    decrementSecond: 'کاهش ثانیه',
-                    togglePeriod: 'تغییر دوره',
-                    selectTime: 'انتخاب زمان'
-                }
+        $(document).ready(function() {
+            // Initialize Persian date picker for date inputs
+            $('.datepicker_dari').each(function() {
+                var $this = $(this);
+                
+                // Clear any existing value that might cause issues
+                $this.val('');
+                
+                $this.persianDatepicker({
+                    formatDate: 'YYYY-MM-DD',
+                    calendar: {
+                        persian: {
+                            locale: 'en',
+                            showHint: true,
+                            leapYearMode: 'algorithmic'
+                        }
+                    },
+                    checkDate: function(unix) {
+                        return true;
+                    }
+                });
             });
         });
     </script>
 @endpush
 
-@push('custom-css')
-    <style>
-        .persian-date {
-            direction: rtl;
-            text-align: right;
-        }
-    </style>
-@endpush

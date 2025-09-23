@@ -194,13 +194,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="order_date" class="form-label">{{ localize('global.order_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="order_date" name="order_date" value="{{ date('Y-m-d') }}" required>
+                                <input type="text" class="form-control form-control datepicker_dari pdp-el" id="order_date" name="order_date" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="date_signature" class="form-label">{{ localize('global.signature_date') }}</label>
-                                <input type="date" class="form-control" id="date_signature" name="date_signature">
+                                <input type="text" class="form-control form-control datepicker_dari pdp-el" id="date_signature" name="date_signature">
                             </div>
                         </div>
                     </div>
@@ -331,13 +331,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="edit_order_date" class="form-label">{{ localize('global.order_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="edit_order_date" name="order_date" required>
+                                <input type="text" class="form-control form-control datepicker_dari pdp-el" id="edit_order_date" name="order_date" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="edit_date_signature" class="form-label">{{ localize('global.signature_date') }}</label>
-                                <input type="date" class="form-control" id="edit_date_signature" name="date_signature">
+                                <input type="text" class="form-control form-control datepicker_dari pdp-el" id="edit_date_signature" name="date_signature">
                             </div>
                         </div>
                     </div>
@@ -947,6 +947,28 @@ $(document).ready(function() {
                     submitBtn.prop('disabled', false).text(originalText);
                 }
             });
+        });
+    });
+
+    // Initialize Persian date picker for date inputs
+    $('.datepicker_dari').each(function() {
+        var $this = $(this);
+        
+        // Clear any existing value that might cause issues
+        $this.val('');
+        
+        $this.persianDatepicker({
+            formatDate: 'YYYY-MM-DD',
+            calendar: {
+                persian: {
+                    locale: 'en',
+                    showHint: true,
+                    leapYearMode: 'algorithmic'
+                }
+            },
+            checkDate: function(unix) {
+                return true;
+            }
         });
     });
 });

@@ -39,7 +39,7 @@
                                         </div>
                                         <div class="col-md-3">
                                         <label for="patient_name" class="form-label">{{ localize('global.date') }}</label>
-                                            <input type="date" class="form-control pager-search" name="date"
+                                            <input type="text" class="form-control form-control datepicker_dari pdp-el pager-search" name="date"
                                                 value="{{ old('date') }}" placeholder="{{ localize('global.date') }}" />
                                         </div>
                                         <div class="col-md-3">

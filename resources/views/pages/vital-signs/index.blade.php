@@ -31,10 +31,10 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <input type="date" class="form-control" id="date_from_filter" placeholder="{{ localize('global.date_from') }}">
+                            <input type="text" class="form-control form-control datepicker_dari pdp-el" id="date_from_filter" placeholder="{{ localize('global.date_from') }}">
                         </div>
                         <div class="col-md-3">
-                            <input type="date" class="form-control" id="date_to_filter" placeholder="{{ localize('global.date_to') }}">
+                            <input type="text" class="form-control form-control datepicker_dari pdp-el" id="date_to_filter" placeholder="{{ localize('global.date_to') }}">
                         </div>
                         <div class="col-md-3">
                             <input type="text" class="form-control" id="search_filter" placeholder="{{ localize('global.search') }}...">

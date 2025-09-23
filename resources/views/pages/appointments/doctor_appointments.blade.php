@@ -122,7 +122,7 @@
                                 return (
                                     `<a href="{{ url('appointments/show/') }}` + `/` + full['id'] +
                                     `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>` +
-                                    `<a href="{{ url('patients/history/') }}` + `/` + full['id'] +
+                                    `<a href="{{ url('patients/history/') }}` + `/` + full['patient_id'] +
                                     `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-history"></i></a>`
                                 );
                             }

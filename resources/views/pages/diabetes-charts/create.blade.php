@@ -212,8 +212,8 @@
                                 
                                 <div class="mb-3">
                                     <label for="date" class="form-label">{{ localize('global.date') }} <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror" 
-                                           id="date" name="date" value="{{ old('date', date('Y-m-d')) }}" required>
+                                    <input type="text" class="form-control form-control datepicker_dari pdp-el @error('date') is-invalid @enderror" 
+                                           id="date" name="date" required>
                                     @error('date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

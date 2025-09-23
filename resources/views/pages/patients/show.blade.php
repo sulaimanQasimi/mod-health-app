@@ -69,45 +69,60 @@
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                     <div>
-                                        {{$patient->created_at}}
+                                        {{verta($patient->created_at)->format('Y-m-d') }}
                                     </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4 card p-1">
-                        <!-- Left side content -->
-                        <div class="row">
-                            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                {!! QrCode::size(100)->generate($patient->id) !!}
+                    <div class="col-md-4">
+                        <div class="card p-3">
+                            <div class="row">
+                                <div class="col-md-6 text-center">
+                                    <div class="mb-2">
+                                        <small class="text-muted">{{ localize('global.qr_code') }}</small>
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        {!! QrCode::size(100)->generate($patient->id) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <div class="mb-2">
+                                        <small class="text-muted">{{ localize('global.patient_image') }}</small>
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        @isset($patient->image)
+                                            <img src="{{ asset($patient->image) }}" alt="Patient Image" width="100" height="100" class="rounded">
+                                        @else
+                                            <div class="badge bg-label-danger p-3">
+                                                {{ localize('global.no_image') }}
+                                            </div>
+                                        @endisset
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 d-flex justify-content-start align-items-center">
-                                @isset($patient->image)
-                                <img src="{{ asset($patient->image) }}" alt="Patient Image" width="100" height="100">
-                            @else
-                            <div class=" badge bg-label-danger mt-4">
-                                {{ localize('global.no_image') }}
-                            </div>
-                            @endisset
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-4">
-                                @can('print-patient-card')
-                                <a href="{{ route('patients.print-card', $patient->id) }}" target="_blank" class="btn btn-primary">{{localize('global.print_card')}}</a>
-                                @endcan
-                            </div>
-
-                            <div class="col-md-4">
-                                @can('create-appointment')
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">{{localize('global.assign_appointment')}}</button>
-                                @endcan
-                            </div>
-
-                            <div class="col-md-4">
-                                @can('upload-patient-image')
-                                <a  class="btn btn-success" href="{{route('patients.webcam',$patient)}}">{{localize('global.take_image')}}</a>
-                                @endcan
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="d-grid gap-2">
+                                        @can('print-patient-card')
+                                        <a href="{{ route('patients.print-card', $patient->id) }}" target="_blank" class="btn btn-primary btn-sm">
+                                            <i class="bx bx-printer"></i> {{localize('global.print_card')}}
+                                        </a>
+                                        @endcan
+                                        
+                                        @can('create-appointment')
+                                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">
+                                            <i class="bx bx-calendar-plus"></i> {{localize('global.assign_appointment')}}
+                                        </button>
+                                        @endcan
+                                        
+                                        @can('upload-patient-image')
+                                        <a class="btn btn-success btn-sm" href="{{route('patients.webcam',$patient)}}">
+                                            <i class="bx bx-camera"></i> {{localize('global.take_image')}}
+                                        </a>
+                                        @endcan
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -131,7 +146,7 @@
                         <tr>
                             <td>{{$loop->iteration}}</td>
                             <td>{{$appointment->doctor->name}}</td>
-                            <td>{{$appointment->created_at}}</td>
+                            <td>{{ verta($appointment->created_at)->format('Y-m-d H:i') }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -168,7 +183,7 @@
                                         @foreach ($primaryDiagnoses as $diagnose)
                                             <li class="m-1 p-1">
                                                 <span
-                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                    class="bg-label-warning text-center p-1">{{ verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                                 {{ $diagnose->description }}
                                             </li>
                                         @endforeach
@@ -177,7 +192,7 @@
                                         @foreach ($finalDiagnoses as $diagnose)
                                             <li class="m-1 p-1">
                                                 <span
-                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                    class="bg-label-success text-center p-1">{{ verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                                 {{ $diagnose->description }}
                                             </li>
                                         @endforeach

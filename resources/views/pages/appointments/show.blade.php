@@ -1,7 +1,8 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-fluid py-4">
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
         @if (Session::has('success') || Session::has('error'))
             @include('components.toast')
         @endif
@@ -109,44 +110,48 @@
                             $finalDiagnoses = $previousDiagnoses->where('type', 1);
                         @endphp
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-warning">
-                                    <div class="card-header bg-warning text-dark text-center">
-                                        <h6 class="mb-0">
-                                            <i class="bx bx-popsicle me-2"></i>
-                                            {{ localize('global.primary_diagnoses') }}
-                                        </h6>
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
+                                            </h5>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        @foreach ($primaryDiagnoses as $diagnose)
-                                            <div class="mb-2 p-2 border-start border-warning border-3 bg-body-secondary rounded">
-                                                <span class="badge bg-warning text-dark me-2">
-                                                    {{ $diagnose->created_at->format('Y-m-d') }}
-                                                </span>
-                                                {{ $diagnose->description }}
-                                            </div>
-                                        @endforeach
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
+                                            </h5>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-success">
-                                    <div class="card-header bg-success text-white text-center">
-                                        <h6 class="mb-0">
-                                            <i class="bx bx-popsicle me-2"></i>
-                                            {{ localize('global.final_diagnoses') }}
-                                        </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            @foreach ($primaryDiagnoses as $diagnose)
+                                                <li
+                                                    class="m-1 p-2 border-start border-warning border-3 bg-light rounded">
+                                                    <span
+                                                        class="badge bg-warning text-dark me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
+                                                    {{ $diagnose->description }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
-                                    <div class="card-body">
-                                        @foreach ($finalDiagnoses as $diagnose)
-                                            <div class="mb-2 p-2 border-start border-success border-3 bg-body-secondary rounded">
-                                                <span class="badge bg-success text-white me-2">
-                                                    {{ $diagnose->created_at->format('Y-m-d') }}
-                                                </span>
-                                                {{ $diagnose->description }}
-                                            </div>
-                                        @endforeach
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            @foreach ($finalDiagnoses as $diagnose)
+                                                <li
+                                                    class="m-1 p-2 border-start border-success border-3 bg-light rounded">
+                                                    <span
+                                                        class="badge bg-success text-white me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
+                                                    {{ $diagnose->description }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -730,7 +735,7 @@
                                                 <td>
                                                     <span class="badge bg-secondary">{{ $advice->doctor->name }}</span>
                                                 </td>
-                                                <td dir="ltr">{{ $advice->created_at }}</td>
+                                                <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($advice->created_at->format('Y-m-d')) }}</td>
                                                 <td>
                                                     <div class="btn-group" role="group">
                                                         @can('edit-advices')
@@ -1098,7 +1103,7 @@
 
                                 <div class="mb-3">
                                     <label for="date">{{ localize('global.date') }}</label>
-                                    <input type="date" class="form-control" name="date" />
+                                    <input type="text" class="form-control form-control datepicker_dari pdp-el" name="date" id="date" />
                                 </div>
                                 <div class="mb-3">
                                     <label for="time">{{ localize('global.time') }}</label>
@@ -2867,4 +2872,6 @@
             });
         }
     </script>
+        </div>
+    </div>
 @endsection

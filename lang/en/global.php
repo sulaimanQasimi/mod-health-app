@@ -801,4 +801,7 @@ return [
     'order_date' => 'Order Date',
     'date_signature' => 'Date & Signature',
     'other' => 'Other',
+    'no_nutrition_care_found' => 'No nutrition care records found',
+    'add_first_nutrition_care' => 'Add your first nutrition care record',
+    'create_nutrition_care' => 'Create Nutrition Care',
 ];

@@ -196,7 +196,7 @@
                                                             <li
                                                                 class="m-1 p-2 border-start border-warning border-3 bg-light rounded">
                                                                 <span
-                                                                    class="badge bg-warning text-dark me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                    class="badge bg-warning text-dark me-2">{{ verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                                                 {{ $diagnose->description }}
                                                             </li>
                                                         @endforeach
@@ -208,7 +208,7 @@
                                                             <li
                                                                 class="m-1 p-2 border-start border-success border-3 bg-light rounded">
                                                                 <span
-                                                                    class="badge bg-success text-white me-2">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                    class="badge bg-success text-white me-2">{{ verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                                                 {{ $diagnose->description }}
                                                             </li>
                                                         @endforeach
@@ -449,7 +449,7 @@
 
                                                             <div class="mb-3">
                                                                 <label for="date">{{ localize('global.date') }}</label>
-                                                                <input type="date" class="form-control" name="date" />
+                                                                <input type="text" class="form-control datepicker_dari" name="date" />
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="time">{{ localize('global.time') }}</label>
@@ -709,7 +709,7 @@
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>{{ $visit->description }}</td>
                                                         <td>{{ $visit->doctor->name }}</td>
-                                                        <td>{{ $visit->created_at }}</td>
+                                                        <td>{{ verta($visit->created_at)->format('Y-m-d H:i') }}</td>
                                                         <td dir="ltr">
                                                             <span class="badge bg-primary">{{ localize('global.bp') }}</span>
                                                             {{ $visit->bp }}

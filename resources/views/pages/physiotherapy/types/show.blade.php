@@ -23,7 +23,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8">
-                            <div class="card bg-light mb-3">
+                            <div class="card bg-none border mb-3">
                                 <div class="card-header">
                                     <h6 class="mb-0">{{ localize('global.basic_information') }}</h6>
                                 </div>
@@ -45,7 +45,7 @@
                                 </div>
                             </div>
 
-                            <div class="card bg-light mb-3">
+                            <div class="card bg-none border mb-3">
                                 <div class="card-header">
                                     <h6 class="mb-0">{{ localize('global.recent_procedures') }}</h6>
                                 </div>
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            <div class="card bg-light mb-3">
+                            <div class="card bg-none border mb-3">
                                 <div class="card-header">
                                     <h6 class="mb-0">{{ localize('global.statistics') }}</h6>
                                 </div>
@@ -101,7 +101,7 @@
                                 </div>
                             </div>
 
-                            <div class="card bg-light">
+                            <div class="card bg-none border">
                                 <div class="card-header">
                                     <h6 class="mb-0">{{ localize('global.actions') }}</h6>
                                 </div>

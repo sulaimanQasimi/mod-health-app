@@ -19,25 +19,25 @@
 
                                     <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
                                     <div>
-                                        {{$patient->name}}
+                                        {{$patient?->name}}
                                     </div>
                             </div>
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.last_name') }}</h5>
                                     <div>
-                                        {{$patient->last_name}}
+                                        {{$patient?->last_name}}
                                     </div>
                             </div>
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.phone') }}</h5>
                                     <div>
-                                        {{$patient->phone}}
+                                        {{$patient?->phone}}
                                     </div>
                             </div>
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.nid') }}</h5>
                                     <div>
-                                        {{$patient->nid}}
+                                        {{$patient?->nid}}
                                     </div>
                             </div>
                         </div>
@@ -47,39 +47,39 @@
 
                                     <h5 class="mb-2">{{ localize('global.province') }}</h5>
                                     <div>
-                                        {{$patient->province->name_dr}}
+                                        {{$patient?->province?->name_dr}}
                                     </div>
                             </div>
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.district') }}</h5>
                                     <div>
-                                        {{$patient->district->name_dr}}
+                                        {{$patient?->district?->name_dr}}
                                     </div>
                             </div>
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.referred_by') }}</h5>
                                     <div>
-                                        {{$patient->recipient->name}}
+                                        {{$patient?->recipient?->name}}
                                     </div>
                             </div>
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                     <div>
-                                        {{$patient->created_at}}
+                                        {{$patient?->created_at}}
                                     </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-4 card p-1">
-                        <!-- Left side content -->
+                        <!-- Left side content -?->
                         <div class="row">
                             <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                {!! QrCode::size(100)->generate($patient->id) !!}
+                                {!! QrCode::size(100)?->generate($patient?->id) !!}
                             </div>
                             <div class="col-md-6 d-flex justify-content-start align-items-center">
-                                @isset($patient->image)
-                                <img src="{{ asset($patient->image) }}" alt="Patient Image" width="100" height="100">
+                                @isset($patient?->image)
+                                <img src="{{ asset($patient?->image) }}" alt="Patient Image" width="100" height="100">
                             @else
                             <div class=" badge bg-label-danger mt-4">
                                 {{ localize('global.no_image') }}
@@ -104,11 +104,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($patient->appointments as $appointment)
+                        @foreach ($patient?->appointments as $appointment)
                         <tr>
-                            <td>{{$loop->iteration}}</td>
-                            <td>{{$appointment->doctor->name}}</td>
-                            <td>{{$appointment->created_at}}</td>
+                            <td>{{$loop?->iteration}}</td>
+                            <td>{{$appointment?->doctor?->name}}</td>
+                            <td>{{$appointment?->created_at}}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -118,8 +118,8 @@
                 <div class="row p-4">
                     <div class="mb-4">
                         @php
-                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
-                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
+                            $primaryDiagnoses = $previousDiagnoses?->where('type', 0);
+                            $finalDiagnoses = $previousDiagnoses?->where('type', 1);
                         @endphp
 
                         <div class="container">
@@ -145,8 +145,8 @@
                                         @foreach ($primaryDiagnoses as $diagnose)
                                             <li class="m-1 p-1">
                                                 <span
-                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                {{ $diagnose->description }}
+                                                    class="bg-label-warning text-center p-1">{{ $diagnose?->created_at?->format('Y-m-d') }}</span>
+                                                {{ $diagnose?->description }}
                                             </li>
                                         @endforeach
                                     </div>
@@ -154,8 +154,8 @@
                                         @foreach ($finalDiagnoses as $diagnose)
                                             <li class="m-1 p-1">
                                                 <span
-                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
-                                                {{ $diagnose->description }}
+                                                    class="bg-label-success text-center p-1">{{ $diagnose?->created_at?->format('Y-m-d') }}</span>
+                                                {{ $diagnose?->description }}
                                             </li>
                                         @endforeach
                                     </div>
@@ -177,23 +177,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($patient->appointments as $appointment)
-                        @foreach($appointment->labs as $lab)
+                        @forelse ($patient?->appointments as $appointment)
+                        @foreach($appointment?->labs as $lab)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $lab->labType->name }}</td>
+                                <td>{{ $loop?->iteration }}</td>
+                                <td>{{ $lab?->labType?->name }}</td>
                                 <td>
-                                    @if ($lab->status == '0')
+                                    @if ($lab?->status == '0')
                                         <span
                                             class="badge bg-danger">{{ localize('global.not_tested') }}</span>
                                     @else
                                         <span class="badge bg-success">{{ localize('global.tested') }}</span>
                                     @endif
                                 </td>
-                                <td>{{ $lab->result }}</td>
+                                <td>{{ $lab?->result }}</td>
                                 <td>
-                                    @isset($lab->result_file)
-                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
+                                    @isset($lab?->result_file)
+                                        <a href="{{ asset('storage/' . $lab?->result_file) }}" target="_blank">
                                             <i class="fa fa-file"></i> {{ localize('global.file') }}
                                         </a>
                                     @endisset
@@ -236,12 +236,12 @@
                                     <div>
 
                                         <span
-                                            style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop->iteration }}</span>
+                                            style="width: 30px; height: 30px; line-height: 30px; border: 2px solid var(--bs-primary); border-radius: 50%; display: inline-block; text-align: center;">{{ $loop?->iteration }}</span>
                                     </div>
                                 </td>
-                                <td>{{ $prescription->doctor->name }}</td>
+                                <td>{{ $prescription?->doctor?->name }}</td>
                                 <td>
-                                    @if ($prescription->is_completed == '0')
+                                    @if ($prescription?->is_completed == '0')
                                                     <span
                                                         class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
                                                 @else
@@ -249,7 +249,7 @@
                                                         class="badge bg-success">{{ localize('global.delivered') }}</span>
                                                 @endif
                                 </td>
-                                <td>{{ $prescription->created_at }}</td>
+                                <td>{{ $prescription?->created_at }}</td>
 
                             </tr>
 
@@ -282,18 +282,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($prescription->prescriptionItems as $item)
+                                        @foreach ($prescription?->prescriptionItems as $item)
 
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->medicineType->type }}</td>
-                                            <td>{{ $item->medicine->name }}</td>
-                                            <td>{{ $item->dosage }}</td>
-                                            <td>{{ $item->frequency }}</td>
-                                            <td>{{ $item->amount }}</td>
+                                            <td>{{ $loop?->iteration }}</td>
+                                            <td>{{ $item?->medicineType?->type }}</td>
+                                            <td>{{ $item?->medicine?->name }}</td>
+                                            <td>{{ $item?->dosage }}</td>
+                                            <td>{{ $item?->frequency }}</td>
+                                            <td>{{ $item?->amount }}</td>
                                             <td>
                                                 <span><i
-                                                        class="{{ $item->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
+                                                        class="{{ $item?->is_delivered == 0 ? 'bx bx-x-circle text-danger' : 'bx bx-check-circle text-success' }}"></i></span>
                                             </td>
 
                                         </tr>
@@ -326,16 +326,16 @@
 
                         @forelse ($previousConsultations as $consultation)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $consultation->title }}</td>
+                                <td>{{ $loop?->iteration }}</td>
+                                <td>{{ $consultation?->title }}</td>
                                 <td>
-                                    {{$consultation->date}}
+                                    {{$consultation?->date}}
                                 </td>
-                                <td>{{ $consultation->time }}</td>
+                                <td>{{ $consultation?->time }}</td>
                                 <td>
-                                    @foreach ($consultation->associated_departments as $department)
+                                    @foreach ($consultation?->associated_departments as $department)
                                         <span class="badge bg-primary">
-                                            {{ $department->name }}
+                                            {{ $department?->name }}
                                         </span>
                                     @endforeach
                                 </td>
@@ -372,20 +372,20 @@
 
                         @foreach ($previousHospitalizations as $hospitalization)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $hospitalization->reason }}</td>
+                                <td>{{ $loop?->iteration }}</td>
+                                <td>{{ $hospitalization?->reason }}</td>
                                 <td>
-                                    {{$hospitalization->room->name}}
+                                    {{$hospitalization?->room?->name}}
                                 </td>
-                                <td>{{ $hospitalization->bed->number }}</td>
+                                <td>{{ $hospitalization?->bed?->number }}</td>
                                 <td>
 
-                                   {{$hospitalization->discharge_remark}}
+                                   {{$hospitalization?->discharge_remark}}
 
                                 </td>
                                 <td>
 
-                                   {{$hospitalization->created_at}}
+                                   {{$hospitalization?->created_at}}
 
                                 </td>
 
@@ -414,16 +414,16 @@
 
                         @foreach ($previousAnesthesias as $anesthesia)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $anesthesia->operationType?->name ?? 'N/A' }}</td>
+                                <td>{{ $loop?->iteration }}</td>
+                                <td>{{ $anesthesia?->operationType?->name ?? 'N/A' }}</td>
                                 <td>
-                                    {{$anesthesia->date}}
+                                    {{$anesthesia?->date}}
                                 </td>
-                                <td>{{ $anesthesia->time }}</td>
+                                <td>{{ $anesthesia?->time }}</td>
                                 <td>
 
                                     <span class="badge bg-label-primary">
-                                        {{$anesthesia->surgion?->name ?? 'N/A'}}
+                                        {{$anesthesia?->surgion?->name ?? 'N/A'}}
                                     </span>
 
                                 </td>

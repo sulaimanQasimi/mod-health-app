@@ -80,7 +80,7 @@
                                                         @foreach ($primaryDiagnoses as $diagnose)
                                                             <li class="m-1 p-1">
                                                                 <span
-                                                                    class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                    class="bg-label-warning text-center p-1">{{verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                                                 {{ $diagnose->description }}
                                                             </li>
                                                         @endforeach
@@ -89,7 +89,7 @@
                                                         @foreach ($finalDiagnoses as $diagnose)
                                                             <li class="m-1 p-1">
                                                                 <span
-                                                                    class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                                                    class="bg-label-success text-center p-1">{{verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                                                 {{ $diagnose->description }}
                                                             </li>
                                                         @endforeach

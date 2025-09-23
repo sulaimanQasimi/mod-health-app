@@ -10,7 +10,7 @@
             <!-- Page Header -->
             <div class="row">
                 <div class="col-12">
-                    <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <div class="page-title-box bg-none border d-flex align-items-center justify-content-between">
                         <h4 class="mb-0">{{ localize('global.pharmacy_management') }}</h4>
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
@@ -162,7 +162,6 @@
         }
 
         .page-title-box {
-            background: #efeff1;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

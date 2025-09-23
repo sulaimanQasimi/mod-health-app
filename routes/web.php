@@ -848,6 +848,12 @@ Route::prefix('pharmacies')->name('pharmacies.')->group(function () {
     Route::get('edit/{pharmacy}', [PharmacyController::class, 'edit'])->name('edit');
     Route::put('update/{pharmacy}', [PharmacyController::class, 'update'])->name('update');
     Route::delete('destroy/{pharmacy}', [PharmacyController::class, 'destroy'])->name('destroy');
+    
+    // User management routes
+    Route::get('manage-users/{pharmacy}', [PharmacyController::class, 'manageUsers'])->name('manage-users');
+    Route::post('add-user/{pharmacy}', [PharmacyController::class, 'addUser'])->name('add-user');
+    Route::post('remove-user/{pharmacy}', [PharmacyController::class, 'removeUser'])->name('remove-user');
+    Route::post('update-user-role/{pharmacy}', [PharmacyController::class, 'updateUserRole'])->name('update-user-role');
 });
 
 // Backup routes

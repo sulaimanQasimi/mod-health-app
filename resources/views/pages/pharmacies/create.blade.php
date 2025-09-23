@@ -132,26 +132,53 @@
                                     <div class="col-12">
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold">
-                                                {{ localize('global.pharmacy_user') }}
+                                                {{ localize('global.pharmacy_users') }}
                                                 <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-control select2 @error('user_id') is-invalid @enderror" 
-                                                    name="user_id" required>
-                                                <option value="">{{ localize('global.select_user') }}</option>
-                                                @foreach($users as $user)
-                                                    <option value="{{ $user->id }}"
-                                                        {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                                                        {{ $user->name }} {{ $user->last_name }} ({{ $user->email }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('user_id')
+                                            <div id="user-selection-container">
+                                                <div class="user-selection-item mb-2">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <select class="form-control select2 user-select" 
+                                                                    name="user_ids[]" required>
+                                                                <option value="">{{ localize('global.select_user') }}</option>
+                                                                @foreach($users as $user)
+                                                                    <option value="{{ $user->id }}">
+                                                                        {{ $user->name }} {{ $user->last_name }} ({{ $user->email }})
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <select class="form-control role-select" name="roles[]" required>
+                                                                <option value="staff">{{ localize('global.staff') }}</option>
+                                                                <option value="manager">{{ localize('global.manager') }}</option>
+                                                                <option value="viewer">{{ localize('global.viewer') }}</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-outline-danger btn-sm remove-user" style="display: none;">
+                                                                <i class="bx bx-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-user">
+                                                <i class="bx bx-plus"></i> {{ localize('global.add_user') }}
+                                            </button>
+                                            @error('user_ids')
+                                                <div class="invalid-feedback d-block">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                            @error('roles')
                                                 <div class="invalid-feedback d-block">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
                                             <small class="form-text text-muted">
-                                                {{ localize('global.select_user_description') }}
+                                                {{ localize('global.select_users_description') }}
                                             </small>
                                         </div>
                                     </div>
@@ -426,6 +453,54 @@
                 }
                 this.value = value;
             });
+
+            // Dynamic user selection
+            let userCounter = 1;
+            
+            $('#add-user').on('click', function() {
+                const container = $('#user-selection-container');
+                const newItem = container.find('.user-selection-item').first().clone();
+                
+                // Clear the selected value
+                newItem.find('.user-select').val('').trigger('change');
+                newItem.find('.role-select').val('staff');
+                
+                // Show remove button if more than one user
+                if (container.find('.user-selection-item').length >= 1) {
+                    container.find('.remove-user').show();
+                }
+                
+                container.append(newItem);
+                
+                // Initialize Select2 for new element
+                newItem.find('.select2').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: '{{ localize("global.select_user") }}',
+                    allowClear: true
+                });
+                
+                userCounter++;
+            });
+            
+            // Remove user selection
+            $(document).on('click', '.remove-user', function() {
+                const item = $(this).closest('.user-selection-item');
+                const container = $('#user-selection-container');
+                
+                if (container.find('.user-selection-item').length > 1) {
+                    item.remove();
+                    
+                    // Hide remove buttons if only one user left
+                    if (container.find('.user-selection-item').length === 1) {
+                        container.find('.remove-user').hide();
+                    }
+                }
+            });
+            
+            // Update remove button visibility on load
+            if ($('#user-selection-container .user-selection-item').length === 1) {
+                $('#user-selection-container .remove-user').hide();
+            }
         });
     </script>
 @endpush

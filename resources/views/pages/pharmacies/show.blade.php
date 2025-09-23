@@ -128,15 +128,112 @@
                                 <div class="col-12">
                                     <div class="info-item mb-3">
                                         <label class="form-label fw-semibold text-muted">
-                                            {{ localize('global.pharmacy_user') }}
+                                            {{ localize('global.pharmacy_users') }}
                                         </label>
                                         <div class="info-value">
-                                            <i class="bx bx-user-check me-2 text-primary"></i>
-                                            {{ $pharmacy->user ? $pharmacy->user->name . ' ' . $pharmacy->user->last_name . ' (' . $pharmacy->user->email . ')' : localize('global.not_assigned') }}
+                                            @if($pharmacy->activeUsers->count() > 0)
+                                                <div class="row">
+                                                    @foreach($pharmacy->activeUsers as $user)
+                                                        <div class="col-md-6 mb-2">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="avatar avatar-sm me-2">
+                                                                    <span class="avatar-initial rounded-circle bg-label-primary">
+                                                                        {{ $user->name[0] }}
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="fw-semibold">{{ $user->name }} {{ $user->last_name }}</div>
+                                                                    <small class="text-muted">{{ $user->email }}</small>
+                                                                    <span class="badge bg-{{ $user->pivot->role == 'manager' ? 'danger' : ($user->pivot->role == 'staff' ? 'primary' : 'secondary') }} ms-2">
+                                                                        {{ ucfirst($user->pivot->role) }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="mt-2">
+                                                    @can('pharmacy.manage_users')
+                                                        <a href="{{ route('pharmacies.manage-users', $pharmacy->id) }}" class="btn btn-sm btn-outline-primary">
+                                                            <i class="bx bx-user-plus me-1"></i>
+                                                            {{ localize('global.manage_users') }}
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                            @else
+                                                <div class="text-muted">
+                                                    <i class="bx bx-user-x me-2"></i>
+                                                    {{ localize('global.no_users_assigned') }}
+                                                </div>
+                                                @can('pharmacy.manage_users')
+                                                    <div class="mt-2">
+                                                        <a href="{{ route('pharmacies.manage-users', $pharmacy->id) }}" class="btn btn-sm btn-primary">
+                                                            <i class="bx bx-user-plus me-1"></i>
+                                                            {{ localize('global.assign_users') }}
+                                                        </a>
+                                                    </div>
+                                                @endcan
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Statistics -->
+                            @if(isset($statistics))
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="bx bx-bar-chart me-2"></i>
+                                        {{ localize('global.pharmacy_statistics') }}
+                                    </h6>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="info-item mb-3">
+                                        <label class="form-label fw-semibold text-muted">
+                                            {{ localize('global.total_users') }}
+                                        </label>
+                                        <div class="info-value">
+                                            <i class="bx bx-user me-2 text-primary"></i>
+                                            {{ $statistics['total_users'] }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="info-item mb-3">
+                                        <label class="form-label fw-semibold text-muted">
+                                            {{ localize('global.managers') }}
+                                        </label>
+                                        <div class="info-value">
+                                            <i class="bx bx-user-check me-2 text-primary"></i>
+                                            {{ $statistics['managers_count'] }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="info-item mb-3">
+                                        <label class="form-label fw-semibold text-muted">
+                                            {{ localize('global.total_incomes') }}
+                                        </label>
+                                        <div class="info-value">
+                                            <i class="bx bx-trending-up me-2 text-primary"></i>
+                                            {{ $statistics['total_incomes'] }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="info-item mb-3">
+                                        <label class="form-label fw-semibold text-muted">
+                                            {{ localize('global.total_outcomes') }}
+                                        </label>
+                                        <div class="info-value">
+                                            <i class="bx bx-trending-down me-2 text-primary"></i>
+                                            {{ $statistics['total_outcomes'] }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
                             <!-- Audit Information -->
                             <div class="row mb-4">

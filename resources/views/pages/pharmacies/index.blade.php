@@ -133,7 +133,7 @@
                                 <th>{{ localize('global.pharmacy_name') }}</th>
                                 <th>{{ localize('global.pharmacy_phone') }}</th>
                                 <th>{{ localize('global.pharmacy_address') }}</th>
-                                <th>{{ localize('global.pharmacy_user') }}</th>
+                                <th>{{ localize('global.pharmacy_users') }}</th>
                                 <th>{{ localize('global.actions') }}</th>
                             </tr>
                         </thead>
@@ -264,21 +264,30 @@
                         }
                     },
                     {
-                        data: 'user',
+                        data: 'active_users',
                         render: function (data, type, full, meta) {
-                            if (data) {
-                                return '<div class="d-flex align-items-center">' +
-                                    '<div class="avatar avatar-sm me-2">' +
-                                    '<span class="avatar-initial rounded-circle bg-label-primary">' +
-                                    data.name.charAt(0).toUpperCase() + '</span>' +
-                                    '</div>' +
-                                    '<div>' +
-                                    '<div class="fw-semibold">' + data.name + ' ' + (data.last_name || '') + '</div>' +
-                                    '<small class="text-muted">' + data.email + '</small>' +
-                                    '</div>' +
-                                    '</div>';
+                            if (data && data.length > 0) {
+                                var usersHtml = '';
+                                data.forEach(function(user, index) {
+                                    if (index < 3) { // Show only first 3 users
+                                        usersHtml += '<div class="d-flex align-items-center mb-1">' +
+                                            '<div class="avatar avatar-xs me-2">' +
+                                            '<span class="avatar-initial rounded-circle bg-label-primary">' +
+                                            user.name.charAt(0).toUpperCase() + '</span>' +
+                                            '</div>' +
+                                            '<div class="flex-grow-1">' +
+                                            '<div class="fw-semibold text-truncate" style="max-width: 120px;">' + user.name + ' ' + (user.last_name || '') + '</div>' +
+                                            '<small class="text-muted">' + user.pivot.role + '</small>' +
+                                            '</div>' +
+                                            '</div>';
+                                    }
+                                });
+                                if (data.length > 3) {
+                                    usersHtml += '<small class="text-muted">+ ' + (data.length - 3) + ' more</small>';
+                                }
+                                return usersHtml;
                             }
-                            return '<span class="text-muted">{{ localize("global.not_available") }}</span>';
+                            return '<span class="text-muted">{{ localize("global.no_users_assigned") }}</span>';
                         }
                     },
                     {
@@ -287,6 +296,9 @@
                             var actions = '<div class="d-flex gap-1">';
                             @can('pharmacy.show')
                                 actions += '<a href="{{ route("pharmacies.show", ":id") }}" class="btn btn-sm btn-icon btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize("global.show") }}"><i class="bx bx-show"></i></a>'.replace(':id', data);
+                            @endcan
+                            @can('pharmacy.manage_users')
+                                actions += '<a href="{{ route("pharmacies.manage-users", ":id") }}" class="btn btn-sm btn-icon btn-outline-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize("global.manage_users") }}"><i class="bx bx-user-plus"></i></a>'.replace(':id', data);
                             @endcan
                             @can('pharmacy.edit')
                                 actions += '<a href="{{ route("pharmacies.edit", ":id") }}" class="btn btn-sm btn-icon btn-outline-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize("global.edit") }}"><i class="bx bx-edit"></i></a>'.replace(':id', data);

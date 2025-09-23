@@ -114,9 +114,43 @@ class User extends Authenticatable
         return $this->hasMany(Visit::class, 'doctor_id', 'id');
     }
 
+    // Many-to-many relationship with pharmacies
+    public function pharmacies()
+    {
+        return $this->belongsToMany(Pharmacy::class, 'pharmacy_users', 'user_id', 'pharmacy_id')
+                    ->withPivot(['role', 'permissions', 'is_active', 'joined_at'])
+                    ->withTimestamps();
+    }
+
+    // Get active pharmacies for this user
+    public function activePharmacies()
+    {
+        return $this->pharmacies()->wherePivot('is_active', true);
+    }
+
+    // Get pharmacies where user is manager
+    public function managedPharmacies()
+    {
+        return $this->pharmacies()->wherePivot('role', 'manager');
+    }
+
+    // Check if user has access to a specific pharmacy
+    public function hasPharmacyAccess($pharmacyId)
+    {
+        return $this->pharmacies()->where('pharmacy_id', $pharmacyId)->wherePivot('is_active', true)->exists();
+    }
+
+    // Get user's role in a specific pharmacy
+    public function getPharmacyRole($pharmacyId)
+    {
+        $pharmacy = $this->pharmacies()->where('pharmacy_id', $pharmacyId)->wherePivot('is_active', true)->first();
+        return $pharmacy ? $pharmacy->pivot->role : null;
+    }
+
+    // Legacy method for backward compatibility (returns first active pharmacy)
     public function pharmacy()
     {
-        return $this->hasOne(Pharmacy::class);
+        return $this->activePharmacies()->first();
     }
 
     public function physiotherapyProcedures()

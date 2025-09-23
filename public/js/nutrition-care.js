@@ -158,10 +158,10 @@ class NutritionCareManager {
                 <div class="mb-3">
                     <i class="bx bx-food-menu bx-lg text-muted"></i>
                 </div>
-                <h5 class="text-muted">No nutrition care records found</h5>
-                <p class="text-muted">Add your first nutrition care record</p>
+                <h5 class="text-muted">{{ localize('global.no_nutrition_care_found') }}</h5>
+                <p class="text-muted">{{ localize('global.add_first_nutrition_care') }}</p>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNutritionCareModal">
-                    <i class="bx bx-plus"></i> Create Nutrition Care
+                    <i class="bx bx-plus"></i> {{ localize('global.create_nutrition_care') }}
                 </button>
             </div>`;
     }
@@ -222,9 +222,16 @@ class NutritionCareManager {
     }
 
     /**
-     * Format date and time
+     * Format date and time in Persian format
      */
     formatDateTime(dateString) {
+        // Use persianDate library for Persian date formatting
+        if (typeof persianDate !== 'undefined') {
+            const date = new Date(dateString);
+            const persianDateObj = new persianDate(date);
+            return persianDateObj.toString('YYYY/MM/DD HH:mm');
+        }
+        // Fallback to English format if persianDate is not available
         const date = new Date(dateString);
         return date.toLocaleDateString('en-CA') + ' ' + date.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'});
     }
@@ -367,7 +374,14 @@ class NutritionCareManager {
         $('#view-patient-name').text(nutritionCare.patient_name || 'N/A');
         $('#view-nurse-name').text(nutritionCare.nurse ? nutritionCare.nurse.full_name : 'N/A');
         $('#view-nutrition-care-full-note').text(nutritionCare.nutrition_care_full_note || 'N/A');
-        $('#view-created-at').text(new Date(nutritionCare.created_at).toLocaleString());
+        // Use Persian date format for view modal
+        if (typeof persianDate !== 'undefined') {
+            const date = new Date(nutritionCare.created_at);
+            const persianDateObj = new persianDate(date);
+            $('#view-created-at').text(persianDateObj.toString('YYYY/MM/DD HH:mm'));
+        } else {
+            $('#view-created-at').text(new Date(nutritionCare.created_at).toLocaleString());
+        }
         $('#view-created-by').text(nutritionCare.created_by ? nutritionCare.created_by.name : 'System');
 
         this.populateObservations(nutritionCare);

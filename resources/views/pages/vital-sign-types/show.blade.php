@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', localize('vital_sign_type') . ' - ' . localize('details'))
+@section('title', localize('global.vital_sign_type') . ' - ' . localize('global.details'))
 
 @section('content')
 <div class="container-fluid">
@@ -9,11 +9,11 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-heartbeat"></i> {{ localize('vital_sign_type') }} - {{ localize('details') }}
+                        <i class="fas fa-heartbeat"></i> {{ localize('global.vital_sign_type') }} - {{ localize('global.details') }}
                     </h3>
                     <div class="card-tools">
                         <a href="{{ route('vital-sign-types.index') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left"></i> {{ localize('back_to_list') }}
+                            <i class="fas fa-arrow-left"></i> {{ localize('global.back_to_list') }}
                         </a>
                     </div>
                 </div>
@@ -22,24 +22,24 @@
                         <div class="col-md-6">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th width="30%">{{ localize('id') }}:</th>
+                                    <th width="30%">{{ localize('global.id') }}:</th>
                                     <td>{{ $vitalSignType->id }}</td>
                                 </tr>
                                 <tr>
-                                    <th>{{ localize('name') }}:</th>
+                                    <th>{{ localize('global.name') }}:</th>
                                     <td>{{ $vitalSignType->name }}</td>
                                 </tr>
                                 <tr>
-                                    <th>{{ localize('created_at') }}:</th>
-                                    <td>{{ $vitalSignType->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <th>{{ localize('global.created_at') }}:</th>
+                                    <td>{{ verta($vitalSignType->created_at)->format('Y-m-d H:i:s') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>{{ localize('updated_at') }}:</th>
-                                    <td>{{ $vitalSignType->updated_at->format('Y-m-d H:i:s') }}</td>
+                                    <th>{{ localize('global.updated_at') }}:</th>
+                                    <td>{{ verta($vitalSignType->updated_at)->format('Y-m-d H:i:s') }}</td>
                                 </tr>
                                 @if($vitalSignType->createdBy)
                                 <tr>
-                                    <th>{{ localize('created_by') }}:</th>
+                                    <th>{{ localize('global.created_by') }}:</th>
                                     <td>{{ $vitalSignType->createdBy->name }}</td>
                                 </tr>
                                 @endif
@@ -51,15 +51,15 @@
                     @if($vitalSignType->vitalSigns->count() > 0)
                     <div class="row mt-4">
                         <div class="col-12">
-                            <h5>{{ localize('associated') }} {{ localize('vital_signs') }} ({{ $vitalSignType->vitalSigns->count() }})</h5>
+                            <h5>{{ localize('global.associated') }} {{ localize('global.vital_signs') }} ({{ $vitalSignType->vitalSigns->count() }})</h5>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>{{ localize('id') }}</th>
-                                            <th>{{ localize('related_record') }}</th>
-                                            <th>{{ localize('created_at') }}</th>
-                                            <th>{{ localize('actions') }}</th>
+                                            <th>{{ localize('global.id') }}</th>
+                                            <th>{{ localize('global.related_record') }}</th>
+                                            <th>{{ localize('global.created_at') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -73,7 +73,7 @@
                                                         N/A
                                                     @endif
                                                 </td>
-                                                <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
+                                                <td>{{ verta($vitalSign->created_at)->format('Y-m-d H:i') }}</td>
                                                 <td>
                                                     <a href="{{ route('vital-signs.show', $vitalSign) }}" class="btn btn-info btn-sm" title="{{ localize('view') }}">
                                                         <i class="fas fa-eye"></i>
@@ -93,15 +93,15 @@
                         <div class="col-12">
                             @can('update', $vitalSignType)
                                 <a href="{{ route('vital-sign-types.edit', $vitalSignType) }}" class="btn btn-warning">
-                                    <i class="fas fa-edit"></i> {{ localize('edit') }}
+                                    <i class="fas fa-edit"></i> {{ localize('global.edit') }}
                                 </a>
                             @endcan
                             @can('delete', $vitalSignType)
-                                <form action="{{ route('vital-sign-types.destroy', $vitalSignType) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('confirm_delete') }} {{ localize('vital_sign_type') }}?')">
+                                <form action="{{ route('vital-sign-types.destroy', $vitalSignType) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ localize('global.confirm_delete') }} {{ localize('global.vital_sign_type') }}?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i> {{ localize('delete') }}
+                                        <i class="fas fa-trash"></i> {{ localize('global.delete') }}
                                     </button>
                                 </form>
                             @endcan

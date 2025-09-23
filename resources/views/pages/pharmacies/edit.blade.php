@@ -194,7 +194,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .page-title-box {
-            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
             color: white;
             padding: 1.5rem;
             border-radius: 12px;
@@ -227,11 +227,6 @@
             overflow: hidden;
         }
 
-        .card-header {
-            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-            border-bottom: 1px solid #dee2e6;
-            padding: 1.5rem;
-        }
 
         .form-label {
             color:rgb(255, 255, 255);
@@ -259,7 +254,7 @@
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
             border: none;
             color: white;
         }
@@ -271,7 +266,6 @@
         }
 
         .btn-outline-secondary {
-            border: 2px solid #6c757d;
             color: #6c757d;
         }
 

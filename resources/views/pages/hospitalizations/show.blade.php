@@ -41,7 +41,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.date') }}</h5>
                                         <div>
-                                            {{ $hospitalization->created_at->format('Y-m-d') }}
+                                            {{ verta($hospitalization->created_at)->format('Y-m-d') }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -217,7 +217,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $visit->description }}</td>
                                                 <td>{{ $visit->doctor->name }}</td>
-                                                <td>{{ $visit->created_at }}</td>
+                                                <td>{{ verta($visit->created_at)->format('Y-m-d H:i') }}</td>
                                                 <td dir="ltr">
                                                     <span class="badge bg-primary">{{ localize('global.bp') }}</span>
                                                     {{ $visit->bp }}
@@ -479,7 +479,7 @@
                                                         @foreach ($hospitalization->prescription as $pres_list)
                                                             <tr>
                                                                 <td>{{ $loop->iteration }}</td>
-                                                                <td>{{ $pres_list->created_at }}</td>
+                                                                <td>{{ verta($pres_list->created_at)->format('Y-m-d H:i') }}</td>
                                                                 <td>{{ $pres_list->is_completed }}</td>
                                                                 <td>
                                                                     <a href="#" data-bs-toggle="modal"
@@ -595,7 +595,7 @@
                                                 <td>
                                                     {{ $advice->doctor->name }}
                                                 </td>
-                                                <td dir="ltr">{{ $advice->created_at }}</td>
+                                                <td dir="ltr">{{ verta($advice->created_at)->format('Y-m-d H:i') }}</td>
                                                 <td>
                                                     <a href="{{ route('advices.edit', $advice->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>
@@ -838,7 +838,7 @@
                                                     {{ $icu->description }}
                                                 </td>
                                                 <td>
-                                                    {{ $icu->created_at }}
+                                                    {{ verta($icu->created_at)->format('Y-m-d H:i') }}
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('icus.edit', $icu->id) }}"><span><i
@@ -989,7 +989,7 @@
                                                     <div>
                                                         <label for="date"
                                                             class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                        <input type="date" class="form-control" name="date" />
+                                                        <input type="text" class="form-control form-control datepicker_dari pdp-el" name="date" />
                                                     </div>
                                                     <div>
                                                         <label for="time"
@@ -1057,7 +1057,7 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    {{ $anesthesia->date }}
+                                                    {{ $anesthesia->date ? verta($anesthesia->date)->format('Y-m-d') : 'N/A' }}
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
@@ -1142,7 +1142,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $complaint->description }}</td>
                                                 <td>
-                                                    {{ $complaint->created_at }}
+                                                    {{ verta($complaint->created_at)->format('Y-m-d H:i') }}
                                                 </td>
 
 

@@ -182,7 +182,7 @@ function loadNutritionCares() {
             tbody.empty();
             
             if (response.data.length === 0) {
-                tbody.append('<tr><td colspan="7" class="text-center">No nutrition care records found</td></tr>');
+                tbody.append('<tr><td colspan="7" class="text-center">{{ localize("global.no_nutrition_care_found") }}</td></tr>');
                 return;
             }
 

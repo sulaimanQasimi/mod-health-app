@@ -2799,6 +2799,8 @@ return [
     "diagnosis"=>"مشکل",
     "record"=>"رکورد",
     'route'=>"مسیر",
+    'patient_image'=>'عکس مریض',
+    'qr_code'=>'کی ار کد',
     'view_nutrition_care_details'=>"جزئیات رژیم تغذیه",
     'nurse_auto_filled'=>"نرس خودکار پر شده",
     'enter_nutrition_care_note'=>"یادداشت رژیم تغذیه را وارد کنید",

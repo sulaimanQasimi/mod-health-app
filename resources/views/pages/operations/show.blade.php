@@ -31,7 +31,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
                                         <div>
-                                            {{ $operation->date ?? 'No Date' }}
+                                            {{ $operation->date ? verta($operation->date)->format('Y-m-d') : 'No Date' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">

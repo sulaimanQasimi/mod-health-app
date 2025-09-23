@@ -75,7 +75,7 @@ class Pharmacy extends Model
     // Check if user has access to this pharmacy
     public function hasUser($userId)
     {
-        return $this->users()->where('user_id', $userId)->wherePivot('is_active', true)->exists();
+        return $this->users()->where('users.id', $userId)->wherePivot('is_active', true)->exists();
     }
 
     // Add user to pharmacy
@@ -133,7 +133,7 @@ class Pharmacy extends Model
     public function scopeAccessibleBy($query, $userId)
     {
         return $query->whereHas('users', function ($q) use ($userId) {
-            $q->where('user_id', $userId)->where('is_active', true);
+            $q->where('users.id', $userId)->where('is_active', true);
         });
     }
 
@@ -141,7 +141,7 @@ class Pharmacy extends Model
     public function scopeWhereUserRole($query, $userId, $role)
     {
         return $query->whereHas('users', function ($q) use ($userId, $role) {
-            $q->where('user_id', $userId)->where('role', $role)->where('is_active', true);
+            $q->where('users.id', $userId)->where('role', $role)->where('is_active', true);
         });
     }
 

@@ -44,7 +44,7 @@
                                         <td>
                                             @if($prescription->is_completed == '0')
                                                 @php
-                                                    $userPharmacy = \App\Models\Pharmacy::where('user_id', auth()->id())->first();
+                                                    $userPharmacy = auth()->user()->activePharmacies()->first();
                                                 @endphp
                                                 
                                                 @if($userPharmacy)

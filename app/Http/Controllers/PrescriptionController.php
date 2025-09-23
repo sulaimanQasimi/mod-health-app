@@ -211,7 +211,7 @@ class PrescriptionController extends Controller
     public function changeStatus(Request $request, Prescription $prescription)
     {
         // Check if user belongs to a pharmacy
-        $userPharmacy = \App\Models\Pharmacy::where('user_id', auth()->id())->first();
+        $userPharmacy = auth()->user()->activePharmacies()->first();
 
         if (!$userPharmacy) {
             return redirect()->back()->with('error', localize('global.user_not_belong_to_pharmacy'));

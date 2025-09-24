@@ -31,7 +31,7 @@
                                     <h5 class="card-title">{{ localize('global.mar_basic_information') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <table class="table table-borderless">
+                                    <table class="table table-bordered">
                                         <tr>
                                             <td><strong>{{ localize('global.medicine') }}:</strong></td>
                                             <td>{{ $medicationAdministrationRecord->medicine->name ?? 'N/A' }}</td>
@@ -42,11 +42,11 @@
                                         </tr>
                                         <tr>
                                             <td><strong>{{ localize('global.order_date') }}:</strong></td>
-                                            <td>{{ $medicationAdministrationRecord->order_date ? $medicationAdministrationRecord->order_date->format('Y-m-d') : 'N/A' }}</td>
+                                            <td>{{ $medicationAdministrationRecord->order_date ? \Hekmatinasser\Verta\Facades\Verta::instance($medicationAdministrationRecord->order_date)->format('Y/m/d') : 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>{{ localize('global.signature_date') }}:</strong></td>
-                                            <td>{{ $medicationAdministrationRecord->date_signature ? $medicationAdministrationRecord->date_signature->format('Y-m-d') : 'N/A' }}</td>
+                                            <td>{{ $medicationAdministrationRecord->date_signature ? \Hekmatinasser\Verta\Facades\Verta::instance($medicationAdministrationRecord->date_signature)->format('Y/m/d') : 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>{{ localize('global.select_record_type') }}:</strong></td>
@@ -73,30 +73,30 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title">Patient Information</h5>
+                                    <h5 class="card-title">{{ localize('global.patient_information') }}</h5>
                                 </div>
                                 <div class="card-body">
                                     @if($medicationAdministrationRecord->patient)
-                                        <table class="table table-borderless">
+                                        <table class="table table-bordered">
                                             <tr>
-                                                <td><strong>Patient Name:</strong></td>
+                                                <td><strong>{{ localize('global.patient_name') }}:</strong></td>
                                                 <td>{{ $medicationAdministrationRecord->patient->first_name }} {{ $medicationAdministrationRecord->patient->last_name }}</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Patient ID:</strong></td>
+                                                <td><strong>{{ localize('global.patient_id') }}:</strong></td>
                                                 <td>{{ $medicationAdministrationRecord->patient->id }}</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Age:</strong></td>
+                                                <td><strong>{{ localize('global.age') }}:</strong></td>
                                                 <td>{{ $medicationAdministrationRecord->patient->age ?? 'N/A' }}</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Gender:</strong></td>
+                                                <td><strong>{{ localize('global.gender') }}:</strong></td>
                                                 <td>{{ $medicationAdministrationRecord->patient->gender ?? 'N/A' }}</td>
                                             </tr>
                                         </table>
                                     @else
-                                        <p class="text-muted">No patient information available</p>
+                                        <p class="text-muted">{{ localize('global.no_patient_information_available') }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -108,10 +108,10 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title">Administration Times</h5>
+                                    <h5 class="card-title">{{ localize('global.administration_times') }}</h5>
                                     @can('update', $medicationAdministrationRecord)
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTimeModal">
-                                            <i class="fas fa-plus"></i> Add Time
+                                            <i class="fas fa-plus"></i> {{ localize('global.add_time') }}
                                         </button>
                                     @endcan
                                 </div>
@@ -121,9 +121,9 @@
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th>Time</th>
-                                                        <th>Created At</th>
-                                                        <th>Actions</th>
+                                                        <th>{{ localize('global.time') }}</th>
+                                                        <th>{{ localize('global.created_at') }}</th>
+                                                        <th>{{ localize('global.actions') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -134,7 +134,7 @@
                                                                     {{ $time->formatted_time ?? 'N/A' }}
                                                                 </span>
                                                             </td>
-                                                            <td>{{ $time->created_at->format('Y-m-d H:i:s') }}</td>
+                                                            <td>{{ \Hekmatinasser\Verta\Facades\Verta::instance($time->created_at)->format('Y/m/d H:i:s') }}</td>
                                                             <td>
                                                                 @can('update', $medicationAdministrationRecord)
                                                                     <form action="{{ route('medication-administration-records.remove-time', $time) }}" 
@@ -156,7 +156,7 @@
                                         </div>
                                     @else
                                         <p class="text-muted text-center">
-                                            <i class="fas fa-info-circle"></i> No administration times recorded yet.
+                                            <i class="fas fa-info-circle"></i> {{ localize('global.no_administration_times_recorded_yet') }}
                                         </p>
                                     @endif
                                 </div>
@@ -169,24 +169,24 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title">Audit Information</h5>
+                                    <h5 class="card-title">{{ localize('global.audit_information') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <table class="table table-borderless">
+                                    <table class="table table-bordered">
                                         <tr>
-                                            <td><strong>Created At:</strong></td>
-                                            <td>{{ $medicationAdministrationRecord->created_at->format('Y-m-d H:i:s') }}</td>
+                                            <td><strong>{{ localize('global.created_at') }}:</strong></td>
+                                            <td>{{ \Hekmatinasser\Verta\Facades\Verta::instance($medicationAdministrationRecord->created_at)->format('Y/m/d H:i:s') }}</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Created By:</strong></td>
+                                            <td><strong>{{ localize('global.created_by') }}:</strong></td>
                                             <td>{{ $medicationAdministrationRecord->createdBy->name ?? 'System' }}</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Updated At:</strong></td>
-                                            <td>{{ $medicationAdministrationRecord->updated_at->format('Y-m-d H:i:s') }}</td>
+                                            <td><strong>{{ localize('global.updated_at') }}:</strong></td>
+                                            <td>{{ \Hekmatinasser\Verta\Facades\Verta::instance($medicationAdministrationRecord->updated_at)->format('Y/m/d H:i:s') }}</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Updated By:</strong></td>
+                                            <td><strong>{{ localize('global.updated_by') }}:</strong></td>
                                             <td>{{ $medicationAdministrationRecord->updatedBy->name ?? 'System' }}</td>
                                         </tr>
                                     </table>
@@ -206,20 +206,20 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addTimeModalLabel">Add Administration Time</h5>
+                <h5 class="modal-title" id="addTimeModalLabel">{{ localize('global.add_administration_time') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('medication-administration-records.add-time', $medicationAdministrationRecord) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="time" class="form-label">Administration Time <span class="text-danger">*</span></label>
+                        <label for="time" class="form-label">{{ localize('global.administration_time') }} <span class="text-danger">*</span></label>
                         <input type="time" name="time" id="time" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Time</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ localize('global.add_time') }}</button>
                 </div>
             </form>
         </div>

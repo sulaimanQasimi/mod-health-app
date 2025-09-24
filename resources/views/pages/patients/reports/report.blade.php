@@ -30,7 +30,7 @@
     <!-- Data Table Section -->
     <div class="table-section">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-none border-0 py-3">
+            <div class="card-header bg-none border border-0 py-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 text-muted fw-semibold">
                         <i class="fas fa-table me-2 text-white"></i>{{ localize('global.patient_records') }}
@@ -75,10 +75,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">{{ $item->nid }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ $item->nid }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">{{ $item->id_card }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ $item->id_card }}</span>
                                     </td>
                                     <td>
                                         <span class="text-muted">{{ $item->referral_name }}</span>
@@ -127,13 +127,13 @@
                                         <span class="text-muted">{{ $item->referred_by }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">{{ $item->province_name }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ $item->province_name }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">{{ $item->district_name }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ $item->district_name }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">{{ verta($item->registration_date)->format('Y/m/d') }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ verta($item->registration_date)->format('Y/m/d') }}</span>
                                     </td>
                                 </tr>
                             @empty

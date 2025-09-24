@@ -2798,6 +2798,7 @@ return [
     "created_by"=>"ایجاد شده توسط",
     "diagnosis"=>"مشکل",
     "record"=>"رکورد",
+    'password'=>"رمز عبور",
     'route'=>"مسیر",
     'patient_image'=>'عکس مریض',
     'qr_code'=>'کی ار کد',

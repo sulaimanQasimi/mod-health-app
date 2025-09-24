@@ -322,17 +322,84 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ### Recent Error Fixes (2024-2025):
 
-#### Fixed Issues:
+#### Critical Date-Related Errors Fixed:
+
+##### 1. ICU Show Page Date Display Errors (December 2024)
+**Error**: Tables displaying Gregorian dates instead of Persian/Dari dates
+**Files Affected**: `resources/views/pages/icus/show.blade.php`
+**Specific Errors**:
+- **Line 981**: `{{ $pres_list->created_at }}` - Prescription table showing Gregorian dates
+- **Line 1086**: `{{ $advice->created_at }}` - Advice table showing Gregorian dates  
+- **Line 1352**: `{{ $procedure->created_at }}` - Procedure table showing Gregorian dates
+- **Line 1638**: `{{ $progress->created_at }}` - Daily progress table showing Gregorian dates
+**Solution**: Converted all to `{{ verta($variable->created_at)->format('Y-m-d H:i') }}`
+**Status**: ✅ RESOLVED
+
+##### 2. Print Documents Date Format Errors (December 2024)
+**Error**: Print documents displaying inconsistent date formats
+**Files Affected**: 
+- `resources/views/pages/icus/print_move_card.blade.php`
+- `resources/views/pages/icus/print_death_card.blade.php`
+
+**Transfer Sheet Errors**:
+- **Line 100**: `{{ $procedure->created_at->format('Y-m-d') }}` - Procedure dates in Gregorian
+- **Line 151**: `{{ $diagnose->created_at->format('Y-m-d') }}` - Primary diagnosis dates in Gregorian
+- **Line 164**: `{{ $diagnose->created_at->format('Y-m-d') }}` - Final diagnosis dates in Gregorian
+- **Line 197**: `{{ $operation->created_at->format('Y-m-d') }}` - Operation dates in Gregorian
+- **Line 244**: `{{ $consultation->created_at->format('Y-m-d') }}` - Consultation dates in Gregorian
+- **Line 257**: `{{ $comment->created_at->format('Y-m-d') }}` - Comment dates in Gregorian
+
+**Death Summary Errors**:
+- **Line 79**: `{{ $icu->appointment->created_at }}` - Admission date in Gregorian
+- **Line 84**: `{{ $icu->created_at }}` - ICU admission date in Gregorian
+- **Line 105**: `{{ $procedure->created_at->format('Y-m-d') }}` - Procedure dates in Gregorian
+- **Line 147**: `{{ $diagnose->created_at->format('Y-m-d') }}` - Primary diagnosis dates in Gregorian
+- **Line 156**: `{{ $diagnose->created_at->format('Y-m-d') }}` - Final diagnosis dates in Gregorian
+
+**Solution**: Converted all to `{{ verta($variable->created_at)->format('Y-m-d') }}` or `{{ verta($variable->created_at)->format('Y-m-d H:i') }}`
+**Status**: ✅ RESOLVED
+
+##### 3. Lab Edit Form Critical Errors (December 2024)
+**Error**: Save button not working due to syntax errors
+**File Affected**: `resources/views/pages/labs/edit.blade.php`
+**Specific Errors**:
+- **Line 76**: Syntax error - `</textarea>` tag incorrectly placed in file input field
+- **Lines 80-83**: Malformed button structure causing form submission failure
+- **Missing File Display**: No indication of current file when editing
+**Solution**: 
+- Removed incorrect `</textarea>` tag
+- Fixed button structure with proper Bootstrap classes
+- Added current file display with conditional statement
+**Status**: ✅ RESOLVED
+
+##### 4. Appointment Date Picker Integration Errors (December 2024)
+**Error**: Date input using HTML5 date picker instead of Persian calendar
+**File Affected**: `resources/views/pages/appointments/edit.blade.php`
+**Specific Errors**:
+- **Line 135**: `type="date"` input causing Gregorian date selection
+- **Missing Persian Date Picker**: No JavaScript initialization for Dari calendar
+- **Date Format Conflicts**: Existing date values causing "invalid date" errors
+**Solution**:
+- Changed to `type="text"` with `class="form-control datepicker_dari"`
+- Added Persian date picker script initialization
+- Implemented proper date clearing before initialization
+**Status**: ✅ RESOLVED
+
+##### 5. Death Date Input Field Error (December 2024)
+**Error**: Death date input using HTML5 date picker in discharge modal
+**File Affected**: `resources/views/pages/icus/show.blade.php`
+**Specific Error**:
+- **Line 1991**: `type="date"` input for death date selection
+**Solution**: Changed to `type="text"` with `class="form-control datepicker_dari"`
+**Status**: ✅ RESOLVED
+
+#### Other Fixed Issues:
 - **Camera Integration Errors**: Resolved camera functionality issues in patient registration and medical
-- **Date Handling Problems**: Fixed date format and parsing errors across the application
 - **Print Functionality**: Resolved printing issues in reports and medical documents
 - **Registration System**: Fixed user and patient registration validation errors
 - **Form Field Validation**: Corrected field validation errors in various forms
 - **Nurse Selection Issues**: Fixed nurse selection and assignment functionality
 - **Seeder Errors**: Resolved database seeder errors and data population issues
-- **Dari Date Conversion**: Standardized all date displays to use Persian/Dari calendar format
-- **Form Button Issues**: Fixed save button functionality in lab edit forms
-- **Date Picker Integration**: Resolved Persian date picker initialization conflicts
 ## Conclusion
 
 The medical database application has undergone significant development with the addition of comprehensive stock management, nursing systems, enhanced reporting capabilities, and recent date format standardization. The project has benefited from contributions by Sulaiman Qasimi (custom router package development and integration) and Mohammad Rafi 10 (database seeding and geographic data management), along with recent improvements in date handling and form functionality.

@@ -97,7 +97,7 @@
                                 @foreach ($icu->procedures as $procedure)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-warning text-center p-1">{{ $procedure->created_at ? $procedure->created_at->format('Y-m-d') : 'No Date' }}</span>
+                                            class="bg-label-warning text-center p-1">{{ $procedure->created_at ? verta($procedure->created_at)->format('Y-m-d') : 'No Date' }}</span>
                                             @if($procedure->procedure_type)
                                             <span
                                             class="bg-label-danger text-center p-1">{{ $procedure->procedure_type->name }}</span>
@@ -148,7 +148,7 @@
                                 @foreach ($primaryDiagnoses as $diagnose)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-warning text-center p-1">{{ $diagnose->created_at ? $diagnose->created_at->format('Y-m-d') : 'No Date' }}</span>
+                                            class="bg-label-warning text-center p-1">{{ $diagnose->created_at ? verta($diagnose->created_at)->format('Y-m-d') : 'No Date' }}</span>
                                         {{ $diagnose->description ?? 'No Description' }}
                                     </li>
                                 @endforeach
@@ -161,7 +161,7 @@
                                 @foreach ($finalDiagnoses as $diagnose)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-success text-center p-1">{{ $diagnose->created_at ? $diagnose->created_at->format('Y-m-d') : 'No Date' }}</span>
+                                            class="bg-label-success text-center p-1">{{ $diagnose->created_at ? verta($diagnose->created_at)->format('Y-m-d') : 'No Date' }}</span>
                                         {{ $diagnose->description ?? 'No Description' }}
                                     </li>
                                 @endforeach
@@ -194,7 +194,7 @@
                                 @foreach ($icu->appointment->anesthesias as $operation)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-warning text-center p-1">{{ $operation->created_at ? $operation->created_at->format('Y-m-d') : 'No Date' }}</span>
+                                            class="bg-label-warning text-center p-1">{{ $operation->created_at ? verta($operation->created_at)->format('Y-m-d') : 'No Date' }}</span>
                                             @if($operation->surgion)
                                             <span
                                             class="bg-label-danger text-center p-1">{{ $operation->surgion->name }}</span>
@@ -241,7 +241,7 @@
                                 @foreach ($icu->consultations as $consultation)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-warning text-center p-1">{{ $consultation->created_at ? $consultation->created_at->format('Y-m-d') : 'No Date' }}</span>
+                                            class="bg-label-warning text-center p-1">{{ $consultation->created_at ? verta($consultation->created_at)->format('Y-m-d') : 'No Date' }}</span>
                                             @if ($consultation->consultation_type ==0)
                                             <span
                                             class="bg-label-warning text-center p-1">{{localize('global.normal')}}</span>
@@ -254,7 +254,7 @@
                                         @foreach($consultation->comments as $comment)
                                             <li class="m-1 p-1">
                                                 <span
-                                            class="bg-label-warning text-center p-1">{{ $comment->created_at ? $comment->created_at->format('Y-m-d') : 'No Date' }}</span>
+                                            class="bg-label-warning text-center p-1">{{ $comment->created_at ? verta($comment->created_at)->format('Y-m-d') : 'No Date' }}</span>
                                             @if($comment->department)
                                             <span
                                             class="bg-label-danger text-center p-1">{{ $comment->department->name }}</span>

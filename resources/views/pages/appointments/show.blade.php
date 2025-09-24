@@ -357,7 +357,7 @@
                                                         <span class="badge bg-primary">{{ localize('global.final') }}</span>
                                                     @endif
                                                 </td>
-                                                <td dir="ltr">{{ $diagnose->created_at }}</td>
+                                                <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($diagnose->created_at->format('Y-m-d')) }}</td>
                                                 <td>
                                                     <div class="btn-group" role="group">
                                                         @can('edit-diagnoses')
@@ -614,7 +614,7 @@
                                     @foreach ($appointment->prescription as $pres_list)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $pres_list->created_at }}</td>
+                                            <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($pres_list->created_at->format('Y-m-d')) }}</td>
                                             <td>{{ $pres_list->is_completed }}</td>
                                             <td>
                                                 <a href="#" data-bs-toggle="modal"
@@ -1529,7 +1529,7 @@
                                                 <td>
                                                     <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
                                                 </td>
-                                                <td>{{ $visit->created_at }}</td>
+                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
                                             </tr>
                                         @endforeach
                                     @empty
@@ -1833,7 +1833,7 @@
                                                 <td>
                                                     <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
                                                 </td>
-                                                <td>{{ $visit->created_at }}</td>
+                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
                                                 <td dir="ltr">
                                                     <div class="small">
                                                         <span class="badge bg-primary me-1">{{ localize('global.bp') }}</span>
@@ -2091,7 +2091,7 @@
                                                                         </span>
                                                                     @endif
                                                                 </td>
-                                                                <td>{{ $anesthesia->date }}</td>
+                                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) }}</td>
                                                                 <td>
                                                                     <div class="btn-group" role="group">
                                                                         @can('edit-anesthesias')
@@ -2287,7 +2287,7 @@
                                                                 </td>
                                                                 <td>{{ $icu->patient->name }}</td>
                                                                 <td>{{ $icu->description }}</td>
-                                                                <td>{{ $icu->created_at }}</td>
+                                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($icu->created_at->format('Y-m-d')) }}</td>
                                                                 <td>
                                                                     <div class="btn-group" role="group">
                                                                         @can('edit-icus')
@@ -2367,7 +2367,7 @@
                                                 <td>
                                                     <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
                                                 </td>
-                                                <td>{{ $visit->created_at }}</td>
+                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
                                                 <td dir="ltr">
                                                     <div class="small">
                                                         <span class="badge bg-primary me-1">{{ localize('global.bp') }}</span>

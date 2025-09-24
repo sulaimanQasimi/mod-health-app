@@ -2800,6 +2800,7 @@ return [
     "record"=>"رکورد",
     'password'=>"رمز عبور",
     'route'=>"مسیر",
+    'patient_id'=>"شناسه مریض",
     'patient_image'=>'عکس مریض',
     'qr_code'=>'کی ار کد',
     'view_nutrition_care_details'=>"جزئیات رژیم تغذیه",

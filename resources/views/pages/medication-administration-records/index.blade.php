@@ -45,10 +45,25 @@
                             <input type="text" class="form-control" id="search_filter" placeholder="{{ localize('global.mar_search') }}">
                         </div>
                     </div>
+                    
+                    <!-- Filter Actions -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary" id="search_btn">
+                                    <i class="bx bx-search"></i> {{ localize('global.search') }}
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clear_filters_btn">
+                                    <i class="bx bx-x"></i> {{ localize('global.clear_filters') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- MAR Records Table -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                    <div id="mar-records-container">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.mar_id') }}</th>
@@ -82,7 +97,7 @@
                                             {{ $mar->order_date ? $mar->order_date->format('Y-m-d') : 'N/A' }}
                                         </td>
                                         <td>
-                                            {{ $mar->date_signature ? $mar->date_signature->format('Y-m-d') : 'N/A' }}
+                                            {{ $mar->date_signature ? verta($mar->date_signature)->format('Y-m-d') : 'N/A' }}
                                         </td>
                                         <td>
                                             @if($mar->administrationTimes->count() > 0)
@@ -137,14 +152,15 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    @if($medicationAdministrationRecords->hasPages())
-                        <div class="d-flex justify-content-center">
-                            {{ $medicationAdministrationRecords->links() }}
                         </div>
-                    @endif
+
+                        <!-- Pagination -->
+                        @if($medicationAdministrationRecords->hasPages())
+                            <div class="d-flex justify-content-center">
+                                {{ $medicationAdministrationRecords->links() }}
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,12 +171,73 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Filter functionality
-    $('#medicine_filter, #nurse_filter, #order_date_filter, #search_filter').on('change keyup', function() {
-        // Implement filtering logic here
-        // This would typically make an AJAX request to filter the results
-        console.log('Filter changed');
+    // Search button functionality
+    $('#search_btn').on('click', function() {
+        applyFilters();
     });
+    
+    // Clear filters button functionality
+    $('#clear_filters_btn').on('click', function() {
+        clearFilters();
+    });
+    
+    // Auto-filter on change for select elements
+    $('#medicine_filter, #nurse_filter').on('change', function() {
+        applyFilters();
+    });
+    
+    // Auto-filter on keyup for text inputs
+    $('#order_date_filter, #search_filter').on('keyup', function() {
+        clearTimeout(window.filterTimeout);
+        window.filterTimeout = setTimeout(function() {
+            applyFilters();
+        }, 500); // Wait 500ms after user stops typing
+    });
+    
+    function applyFilters() {
+        var medicineId = $('#medicine_filter').val();
+        var nurseId = $('#nurse_filter').val();
+        var orderDate = $('#order_date_filter').val();
+        var searchTerm = $('#search_filter').val();
+        
+        // Show loading state
+        $('#search_btn').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> {{ localize("global.searching") }}...');
+        
+        // Make AJAX request to filter results
+        $.ajax({
+            url: '{{ route("medication-administration-records.index") }}',
+            method: 'GET',
+            data: {
+                medicine_id: medicineId,
+                nurse_id: nurseId,
+                order_date: orderDate,
+                search: searchTerm
+            },
+            success: function(response) {
+                // Replace the entire records container with filtered results
+                var $newContent = $(response).find('#mar-records-container');
+                $('#mar-records-container').html($newContent.html());
+            },
+            error: function(xhr) {
+                console.error('Filter error:', xhr);
+                alert('{{ localize("global.error_occurred") }}');
+            },
+            complete: function() {
+                // Re-enable search button
+                $('#search_btn').prop('disabled', false).html('<i class="bx bx-search"></i> {{ localize("global.search") }}');
+            }
+        });
+    }
+    
+    function clearFilters() {
+        $('#medicine_filter').val('');
+        $('#nurse_filter').val('');
+        $('#order_date_filter').val('');
+        $('#search_filter').val('');
+        
+        // Reload the page to show all records
+        window.location.reload();
+    }
 });
 </script>
 @endpush

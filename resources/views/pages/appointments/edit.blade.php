@@ -58,7 +58,7 @@
                                 </div>
                                 
                                 <!-- Patient Selection -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3 border p-2">
                                     <label for="patient_id" class="form-label fw-semibold">
                                         {{ localize('global.patient') }} <span class="text-danger">*</span>
                                     </label>
@@ -78,7 +78,7 @@
                                 </div>
 
                                 <!-- Doctor Selection -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3 border p-2">
                                     <label for="doctor_id" class="form-label fw-semibold">
                                         {{ localize('global.doctor') }} <span class="text-danger">*</span>
                                     </label>
@@ -108,7 +108,7 @@
                                 </div>
 
                                 <!-- Branch Selection -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3 border p-2">
                                     <label for="branch_id" class="form-label fw-semibold">
                                         {{ localize('global.branch') }} <span class="text-danger">*</span>
                                     </label>
@@ -128,20 +128,20 @@
                                 </div>
 
                                 <!-- Date -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3 border p-2">
                                     <label for="date" class="form-label fw-semibold">
                                         {{ localize('global.date') }} <span class="text-danger">*</span>
                                     </label>
-                                    <input type="date" class="form-control border @error('date') is-invalid @enderror" 
+                                    <input type="text" class="form-control datepicker_dari @error('date') is-invalid @enderror" 
                                            name="date" id="date" 
-                                           value="{{ old('date', $appointment->date) }}" required>
+                                           placeholder="{{ localize('global.select_date') }}" required>
                                     @error('date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <!-- Time -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3 border p-2">
                                     <label for="time" class="form-label fw-semibold">
                                         {{ localize('global.time') }} <span class="text-danger">*</span>
                                     </label>
@@ -201,9 +201,34 @@
     </div>
 @endsection
 
+@push('custom-js')
+    <script src="{{ asset('ShamsiCalender/js/persianDatepicker.js') }}"></script>
+@endpush
+
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Initialize Persian date picker for date inputs
+            $('.datepicker_dari').each(function() {
+                var $this = $(this);
+                
+                // Clear any existing value that might cause issues
+                $this.val('');
+                
+                $this.persianDatepicker({
+                    formatDate: 'YYYY-MM-DD',
+                    calendar: {
+                        persian: {
+                            locale: 'en',
+                            showHint: true,
+                            leapYearMode: 'algorithmic'
+                        }
+                    },
+                    checkDate: function(unix) {
+                        return true;
+                    }
+                });
+            });
             // Initialize Select2 with better styling
             $('.form-select').select2({
                 theme: 'bootstrap-5',

@@ -131,7 +131,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
+                                            <label class="form-label border p-2 fw-semibold">
                                                 {{ localize('global.pharmacy_users') }}
                                                 <span class="text-danger">*</span>
                                             </label>
@@ -139,7 +139,7 @@
                                                 <div class="user-selection-item mb-2">
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <select class="form-control select2 user-select" 
+                                                            <select class="form-control border select2 user-select" 
                                                                     name="user_ids[]" required>
                                                                 <option value="">{{ localize('global.select_user') }}</option>
                                                                 @foreach($users as $user)

@@ -33,8 +33,9 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Package Management**: Integrated custom router package with proper VCS configuration
 - **Repository Configuration**: Set up GitHub repository integration for custom package development
 
-### Mohammad Rafi 10 Contributions
+### Mohammad Rafi 10 and sulaiman qasimi Contributions
 **Email**: mohammadrafishirzai83@gmail.com
+**Email**: sulaimanqasimy@gmail.com
 
 #### Database Seeding & Data Management
 - **User Seeding**: Implemented comprehensive user seeding with test accounts

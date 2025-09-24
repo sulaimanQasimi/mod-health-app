@@ -2089,7 +2089,7 @@
                                             <div class="row">
                                                 <div class="col-md-2 text-center">
                                                     <a href="{{ route('icus.print-death-card', $icu) }}" target="_blank"
-                                                        class="btn btn-primary">Death Summary</a>
+                                                        class="btn btn-primary">{{ localize('global.death_summary') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -2106,7 +2106,7 @@
                                             <div class="row">
                                                 <div class="col-md-2 text-center">
                                                     <a href="{{ route('icus.print-move-card', $icu) }}" target="_blank"
-                                                        class="btn btn-primary">Transfer Sheet</a>
+                                                        class="btn btn-primary">{{ localize('global.transfer_sheet') }}</a>
                                                 </div>
                                             </div>
                                         </div>

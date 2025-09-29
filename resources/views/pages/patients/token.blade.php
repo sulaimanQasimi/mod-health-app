@@ -63,7 +63,7 @@
         <div class="details">
             <p>{{ $patient->name }} {{ $patient->last_name }}</p>
             <h1 class="bigFont">{{ $printedNumber->number }}</h1>
-            <p>{{ \Carbon\Carbon::parse($printedNumber->date)->format('Y-m-d') }}</p>
+            <p>{{ verta($printedNumber->date)->format('Y-m-d') }}</p>
         </div>
     </div>
     <script>

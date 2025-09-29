@@ -275,6 +275,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('report', [AppointmentController::class, 'report'])->name('report');
         Route::post('report-search', [AppointmentController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [AppointmentController::class, 'exportReport'])->name('export-report');
+        Route::get('{appointment}/printToken', [AppointmentController::class, 'printToken'])->name('printToken');
     });
 
     // Diagnoses routes

@@ -513,29 +513,4 @@ class PatientController extends Controller
     }
 
 
-    public function printToken($patientId)
-    {
-        $patient = Patient::findOrFail($patientId);
-        $today = Carbon::today();
-
-        // Get the maximum printed number for today across all patients
-        $maxNumber = PrintedNumber::where('date', $today)->max('number');
-
-        // Assign the next number
-        $newNumber = ($maxNumber ? $maxNumber : 0) + 1;
-
-        // Store the new printed number for the patient
-        PrintedNumber::create([
-            'patient_id' => $patientId,
-            'number' => $newNumber,
-            'date' => $today,
-        ]);
-
-        // Retrieve the printed number for the view
-        $printedNumber = PrintedNumber::where('patient_id', $patientId)
-            ->where('date', $today)
-            ->latest() // Get the latest entry for today
-            ->firstOrFail(); // Ensure it retrieves today's printed number
-        return view('pages.patients.token', compact('patient', 'printedNumber'));
-    }
 }

@@ -27,6 +27,10 @@
                         {{ localize('global.appointment_details') }}
                     </h2>
                     <div class="d-flex gap-2">
+                        <a href="javascript:void(0);" onclick="window.open('/appointments/{{$appointment->id}}/printToken', '_blank');" class="btn btn-success btn-sm">
+                            <i class="bx bx-printer me-1"></i>
+                            {{ localize('global.token') }}
+                        </a>
                         <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-primary btn-sm">
                             <i class="bx bx-edit me-1"></i>
                             {{ localize('global.edit') }}

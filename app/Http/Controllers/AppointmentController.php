@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\Patient;
+use App\Models\PrintedNumber;
 use App\Models\FoodType;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
@@ -19,6 +20,7 @@ use App\Models\OperationType;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -351,5 +353,57 @@ class AppointmentController extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
+    }
+    
+    public function printToken(Appointment $appointment)
+    {
+        $patient = $appointment->patient;
+        $today = Carbon::today();
+        
+        // Get the doctor from the appointment
+        $doctor = $appointment->doctor;
+        
+        // Check if doctor has department_id
+        if (!$doctor || !$doctor->department_id) {
+            return redirect()->back()->with('error', localize('global.doctor_department_not_found'));
+        }
+        
+        $departmentId = $doctor->department_id;
+
+        // Check if patient already has a token for today in this department
+        $existingToken = PrintedNumber::where('patient_id', $patient->id)
+            ->where('date', $today)
+            ->where('department_id', $departmentId)
+            ->first();
+
+        // If token already exists, return the existing token
+        if ($existingToken) {
+            $printedNumber = $existingToken;
+            return view('pages.patients.token', compact('patient', 'printedNumber'));
+        }
+
+        // Get the maximum printed number for today for this specific department
+        $maxNumber = PrintedNumber::where('date', $today)
+            ->where('department_id', $departmentId)
+            ->max('number');
+
+        // Assign the next number for this department
+        $newNumber = ($maxNumber ? $maxNumber : 0) + 1;
+
+        // Store the new printed number for the patient with department ID
+        PrintedNumber::create([
+            'patient_id' => $patient->id,
+            'number' => $newNumber,
+            'date' => $today,
+            'department_id' => $departmentId,
+        ]);
+
+        // Retrieve the printed number for the view
+        $printedNumber = PrintedNumber::where('patient_id', $patient->id)
+            ->where('date', $today)
+            ->where('department_id', $departmentId)
+            ->latest() // Get the latest entry for today
+            ->firstOrFail(); // Ensure it retrieves today's printed number
+        return view('pages.patients.token', compact('patient', 'printedNumber'));
     }
 }

@@ -65,7 +65,7 @@
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                     <div>
-                                        {{$patient?->created_at}}
+                                        {{verta($patient?->created_at)->format('Y/m/d')}}
                                     </div>
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                         <tr>
                             <td>{{$loop?->iteration}}</td>
                             <td>{{$appointment?->doctor?->name}}</td>
-                            <td>{{$appointment?->created_at}}</td>
+                            <td>{{verta($appointment?->created_at)->format('Y/m/d')}}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -145,7 +145,7 @@
                                         @foreach ($primaryDiagnoses as $diagnose)
                                             <li class="m-1 p-1">
                                                 <span
-                                                    class="bg-label-warning text-center p-1">{{ $diagnose?->created_at?->format('Y-m-d') }}</span>
+                                                    class="bg-label-warning text-center p-1">{{ verta($diagnose?->created_at)->format('Y/m/d') }}</span>
                                                 {{ $diagnose?->description }}
                                             </li>
                                         @endforeach
@@ -154,7 +154,7 @@
                                         @foreach ($finalDiagnoses as $diagnose)
                                             <li class="m-1 p-1">
                                                 <span
-                                                    class="bg-label-success text-center p-1">{{ $diagnose?->created_at?->format('Y-m-d') }}</span>
+                                                    class="bg-label-success text-center p-1">{{ verta($diagnose?->created_at)->format('Y/m/d') }}</span>
                                                 {{ $diagnose?->description }}
                                             </li>
                                         @endforeach
@@ -249,7 +249,7 @@
                                                         class="badge bg-success">{{ localize('global.delivered') }}</span>
                                                 @endif
                                 </td>
-                                <td>{{ $prescription?->created_at }}</td>
+                                <td>{{ verta($prescription?->created_at)->format('Y/m/d') }}</td>
 
                             </tr>
 
@@ -385,7 +385,7 @@
                                 </td>
                                 <td>
 
-                                   {{$hospitalization?->created_at}}
+                                   {{verta($hospitalization?->created_at)->format('Y/m/d')}}
 
                                 </td>
 

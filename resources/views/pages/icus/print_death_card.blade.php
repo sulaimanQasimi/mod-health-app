@@ -4,7 +4,18 @@
 <head>
     <title>Death Summary</title>
     <style>
+         @font-face {
+            font-family: 'ModFont';
+            src: url('{{ asset("assets/fonts/mod_font.ttf") }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        *{
+            font-family: 'ModFont', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
         table {
+            direction: rtl;
             margin: 0 auto;
             border-collapse: collapse;
             width: 80%;
@@ -12,8 +23,9 @@
 
         th,
         td {
+            direction: rtl;
             padding: 10px;
-            text-align: left;
+            text-align: right;
             border-bottom: 1px solid #ddd !important;
             color: black !important;
         }
@@ -35,7 +47,7 @@
         <div class="col-md-6">
             <h2>{{$icu->branch->name}}</h2>
             <h6 class="text-center">{{$icu->branch->address}}</h6>
-            <h5 class="text-center"> Death Summary </h5>
+            <h5 class="text-center"> {{localize('global.death_summary')}} </h5>
         </div>
 
 
@@ -47,32 +59,32 @@
 
     <table>
         <tr>
-            <td>Name:</td>
+            <td>{{localize('global.name')}}:</td>
             <td>{{ $icu->patient->name }}</td>
         </tr>
         <tr>
-            <td>Father Name:</td>
+            <td>{{localize('global.father_name')}}:</td>
             <td>{{ $icu->patient->father_name }}</td>
         </tr>
         <tr>
-            <td>Age:</td>
+            <td>{{localize('global.age')}}:</td>
             <td>{{ $icu->patient->age }}</td>
         </tr>
         <tr>
-            <td>Rank:</td>
+            <td>{{localize('global.rank')}}:</td>
             <td>{{ $icu->patient->rank }}</td>
         </tr>
         <tr>
-            <td>Admission Date:</td>
-            <td>{{ $icu->appointment->created_at }}</td>
+            <td>{{localize('global.admission_date')}}:</td>
+            <td>{{ verta($icu->appointment->created_at)->format('Y-m-d H:i') }}</td>
         </tr>
 
         <tr>
-            <td>ICU Admission Date:</td>
-            <td>{{ $icu->created_at }}</td>
+            <td>{{localize('global.icu_admission_date')}}:</td>
+            <td>{{ verta($icu->created_at)->format('Y-m-d H:i') }}</td>
         </tr>
         <tr>
-            <td>Procedures:</td>
+            <td>{{localize('global.procedures')}}:</td>
             <td>
                 <div class="container">
                     <div class="col-md-12">
@@ -90,7 +102,7 @@
                                 @foreach ($icu->procedures as $procedure)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-warning text-center p-1">{{ $procedure->created_at->format('Y-m-d') }}</span>
+                                            class="bg-label-warning text-center p-1">{{ verta($procedure->created_at)->format('Y-m-d') }}</span>
                                             <span
                                             class="bg-label-danger text-center p-1">{{ $procedure->procedure_type->name }}</span>
                                         {{ $procedure->description }}
@@ -103,7 +115,7 @@
             </td>
         </tr>
         <tr>
-            <td>Diagnose:</td>
+            <td>{{localize('global.diagnose')}}:</td>
             @php
                 $primaryDiagnoses = $icu->appointment->diagnose->where('type', 0);
                 $finalDiagnoses = $icu->appointment->diagnose->where('type', 1);
@@ -132,7 +144,7 @@
                                 @foreach ($primaryDiagnoses as $diagnose)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-warning text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                            class="bg-label-warning text-center p-1">{{ verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                         {{ $diagnose->description }}
                                     </li>
                                 @endforeach
@@ -141,7 +153,7 @@
                                 @foreach ($finalDiagnoses as $diagnose)
                                     <li class="m-1 p-1">
                                         <span
-                                            class="bg-label-success text-center p-1">{{ $diagnose->created_at->format('Y-m-d') }}</span>
+                                            class="bg-label-success text-center p-1">{{ verta($diagnose->created_at)->format('Y-m-d') }}</span>
                                         {{ $diagnose->description }}
                                     </li>
                                 @endforeach
@@ -152,7 +164,7 @@
             </td>
         </tr>
         <tr>
-            <td>Cause of Death:</td>
+            <td>{{localize('global.cause_of_death')}}:</td>
             <td>{{ $icu->cause_of_death }}</td>
         </tr>
     </table>

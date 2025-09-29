@@ -250,7 +250,7 @@
                                         </label>
                                         <div class="info-value">
                                             <i class="bx bx-calendar me-2 text-primary"></i>
-                                            {{ $pharmacy->created_at ? $pharmacy->created_at->format('Y-m-d H:i:s') : localize('global.not_available') }}
+                                            {{ $pharmacy->created_at ? verta($pharmacy->created_at)->format('Y-m-d H:i:s') : localize('global.not_available') }}
                                         </div>
                                     </div>
                                 </div>
@@ -261,7 +261,7 @@
                                         </label>
                                         <div class="info-value">
                                             <i class="bx bx-calendar-check me-2 text-primary"></i>
-                                            {{ $pharmacy->updated_at ? $pharmacy->updated_at->format('Y-m-d H:i:s') : localize('global.not_available') }}
+                                            {{ $pharmacy->updated_at ? verta($pharmacy->updated_at)->format('Y-m-d H:i:s') : localize('global.not_available') }}
                                         </div>
                                     </div>
                                 </div>

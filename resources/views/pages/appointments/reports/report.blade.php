@@ -47,7 +47,7 @@
                             </span> 
                         @endif
                         </td>
-                        <td>{{ $item->date }}</td>
+                        <td>{{ \Hekmatinasser\Verta\Facades\Verta::createFromFormat('Y-m-d', $item->date)->format('Y/m/d') }}</td>
                         <td>{{ $item->time }}</td>
                         
                     </tr>

@@ -978,7 +978,7 @@
                                                                 @foreach ($icu->prescription as $pres_list)
                                                                     <tr>
                                                                         <td>{{ $loop->iteration }}</td>
-                                                                        <td>{{ $pres_list->created_at }}</td>
+                                                                        <td>{{ verta($pres_list->created_at)->format('Y-m-d H:i') }}</td>
                                                                         <td>{{ $pres_list->is_completed }}</td>
                                                                         <td>
                                                                             <a href="#" data-bs-toggle="modal"
@@ -1083,7 +1083,7 @@
                                                         <td>
                                                             {{ $advice->doctor->name }}
                                                         </td>
-                                                        <td dir="ltr">{{ $advice->created_at }}</td>
+                                                        <td dir="ltr">{{ verta($advice->created_at)->format('Y-m-d H:i') }}</td>
                                                         <td>
                                                             <a href="{{ route('advices.edit', $advice->id) }}"
                                                                 class="btn btn-outline-primary btn-sm" title="Edit">
@@ -1349,7 +1349,7 @@
                                                     <td>
                                                         {{ $procedure->createdBy->name }}
                                                     </td>
-                                                    <td>{{ $procedure->created_at }}</td>
+                                                    <td>{{ verta($procedure->created_at)->format('Y-m-d H:i') }}</td>
 
                                                     <td>
                                                         @can('edit-icu-procedure')
@@ -1635,7 +1635,7 @@
                                                     <td>
                                                         {{ $progress->createdBy->name }}
                                                     </td>
-                                                    <td>{{ $progress->created_at }}</td>
+                                                    <td>{{ verta($progress->created_at)->format('Y-m-d H:i') }}</td>
 
                                                     <td>
                                                         <a href="{{ route('daily_icu_progress.show', $progress->id) }}"
@@ -1988,7 +1988,7 @@
                                                             </label>
                                                             <div class="row">
                                                                 <div class="col-md-6">
-                                                                    <input type="date" class="form-control" name="death_date"
+                                                                    <input type="text" class="form-control datepicker_dari" name="death_date"
                                                                         id="death_date{{ $icu->id }}">
                                                                 </div>
                                                                 <div class="col-md-6">
@@ -2089,7 +2089,7 @@
                                             <div class="row">
                                                 <div class="col-md-2 text-center">
                                                     <a href="{{ route('icus.print-death-card', $icu) }}" target="_blank"
-                                                        class="btn btn-primary">Death Summary</a>
+                                                        class="btn btn-primary">{{ localize('global.death_summary') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -2106,7 +2106,7 @@
                                             <div class="row">
                                                 <div class="col-md-2 text-center">
                                                     <a href="{{ route('icus.print-move-card', $icu) }}" target="_blank"
-                                                        class="btn btn-primary">Transfer Sheet</a>
+                                                        class="btn btn-primary">{{ localize('global.transfer_sheet') }}</a>
                                                 </div>
                                             </div>
                                         </div>

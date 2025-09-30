@@ -1,5 +1,3 @@
-<!-- resources/views/print.blade.php -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,9 +59,11 @@
 <body>
     <div class="container">
         <div class="details">
+
             <p>{{ $patient->name }} {{ $patient->last_name }}</p>
             <h1 class="bigFont">{{ $printedNumber->number }}</h1>
             <p>{{ verta($printedNumber->date)->format('Y-m-d') }}</p>
+            {{ $name  }}
         </div>
     </div>
     <script>

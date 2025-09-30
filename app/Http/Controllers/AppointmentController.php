@@ -379,7 +379,11 @@ class AppointmentController extends Controller
         // If token already exists, return the existing token
         if ($existingToken) {
             $printedNumber = $existingToken;
-            return view('pages.patients.token', compact('patient', 'printedNumber'));
+            return view('pages.patients.token', [
+                'patient'=>$patient, 
+                'printedNumber'=>$printedNumber,
+                'name'=>$doctor?->name
+                ]);
         }
 
         // Get the maximum printed number for today for this specific department
@@ -404,6 +408,10 @@ class AppointmentController extends Controller
             ->where('department_id', $departmentId)
             ->latest() // Get the latest entry for today
             ->firstOrFail(); // Ensure it retrieves today's printed number
-        return view('pages.patients.token', compact('patient', 'printedNumber'));
+        return view('pages.patients.token',[
+'patient'=>$patient, 
+'printedNumber'=>$printedNumber,
+'name'=>$doctor?->name
+]);
     }
 }

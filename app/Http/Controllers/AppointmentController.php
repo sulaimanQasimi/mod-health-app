@@ -44,7 +44,7 @@ class AppointmentController extends Controller
                  ->latest()
                  ->get()
                  ->map(function ($appointment) {
-                     $appointment->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date);
+                     $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
                      return $appointment;
                  });
      
@@ -197,7 +197,7 @@ class AppointmentController extends Controller
                 ->latest()
                 ->get()
                 ->map(function ($appointment) {
-                    $appointment->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date);
+                    $appointment->jalali_date =Dcter::GregorianToJalali($appointment->date);
                     return $appointment;
                 });
 
@@ -232,7 +232,7 @@ class AppointmentController extends Controller
                 ->latest()
                 ->get()
                 ->map(function ($appointment) {
-                    $appointment->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($appointment->date);
+                    $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
                     return $appointment;
                 });
 
@@ -382,7 +382,8 @@ class AppointmentController extends Controller
             return view('pages.patients.token', [
                 'patient'=>$patient, 
                 'printedNumber'=>$printedNumber,
-                'name'=>$doctor?->name
+                'name'=>$doctor?->name,
+                'appointment'=>$appointment
                 ]);
         }
 
@@ -411,7 +412,9 @@ class AppointmentController extends Controller
         return view('pages.patients.token',[
 'patient'=>$patient, 
 'printedNumber'=>$printedNumber,
-'name'=>$doctor?->name
+'name'=>$doctor?->name,
+'appointment'=>$appointment
+
 ]);
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('rh');
             $table->enum('type', ['Fresh', 'RBC', 'PRBC','Platelets','Plasma','Whole Blood'])->default('Fresh');
             $table->string('quantity');
-            $table->text('reject_reason',512)->nullable();
+            $table->text('reject_reason')->nullable();
             $table->enum('status', ['new', 'approved','rejected','delivered'])->default('new');
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('appointment_id')->nullable();

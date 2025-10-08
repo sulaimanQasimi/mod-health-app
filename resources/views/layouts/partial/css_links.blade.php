@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css')}}" />
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/typeahead-js/typeahead.css')}}" />
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/apex-charts/apex-charts.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/css/persian_datepicker.css')}}" type="text/css" />
+    <link rel="stylesheet" href="{{asset('assets/persian date2/css/persianDatepicker-default.css')}}" type="text/css" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/toastr/toastr.css') }}" />

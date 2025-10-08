@@ -2419,8 +2419,11 @@
                 </div>
             </div>
         </div>
-        <!-- Physiotherapy Procedures Section -->
-        @include('pages.appointments.physiotherapy_procedures_crud')
+        @can('show-physiotherapy-procedures')
+            
+            <!-- Physiotherapy Procedures Section -->
+            @include('pages.appointments.physiotherapy_procedures_crud')
+        @endcan
 
     </div>
 @endsection

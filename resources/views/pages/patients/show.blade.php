@@ -284,27 +284,80 @@
 <script>
     $(document).ready(function()
 {
+    // Initialize Select2 when modal is shown
+    $('#createAppointmentModal').on('shown.bs.modal', function () {
+        // Destroy existing Select2 instances if they exist
+        if ($('#department_id').hasClass('select2-hidden-accessible')) {
+            $('#department_id').select2('destroy');
+        }
+        if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
+            $('#doctor_id').select2('destroy');
+        }
+        
+        // Initialize Select2 for department dropdown
+        $('#department_id').select2({
+            placeholder: "{{ localize('global.select') }}",
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#createAppointmentModal')
+        });
 
-    // setTimeout(function() {
-    //     $('#date').persianDatepicker();
-    // }, 100);
+        // Initialize Select2 for doctor dropdown
+        $('#doctor_id').select2({
+            placeholder: "{{ localize('global.select') }}",
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#createAppointmentModal')
+        });
+    });
 
-    $('#department_id').on('change', function()
-{
-    var departmentID = $(this).val();
-    if(departmentID !== '')
+    // Handle department change to load doctors
+    $(document).on('change', '#department_id', function()
     {
-        $.ajax({
-            url: '/get_doctors/' + departmentID,
-            type: 'GET',
-            success: function(response)
-            {
-
-                $('#doctor_id').html(response);
+        var departmentID = $(this).val();
+        if(departmentID !== '')
+        {
+            $.ajax({
+                url: '/get_doctors/' + departmentID,
+                type: 'GET',
+                success: function(response)
+                {
+                    // Destroy existing Select2 instance
+                    if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
+                        $('#doctor_id').select2('destroy');
+                    }
+                    
+                    // Clear existing options and add new ones
+                    $('#doctor_id').empty();
+                    $('#doctor_id').append('<option value="">{{ localize("global.select") }}</option>');
+                    $('#doctor_id').append(response);
+                    
+                    // Reinitialize Select2 for doctor dropdown
+                    $('#doctor_id').select2({
+                        placeholder: "{{ localize('global.select') }}",
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#createAppointmentModal')
+                    });
+                }
+            })
+        } else {
+            // Destroy existing Select2 instance
+            if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
+                $('#doctor_id').select2('destroy');
             }
-        })
-    }
-})
+            
+            // Clear doctor dropdown if no department selected
+            $('#doctor_id').empty();
+            $('#doctor_id').append('<option value="">{{ localize("global.select") }}</option>');
+            $('#doctor_id').select2({
+                placeholder: "{{ localize('global.select') }}",
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#createAppointmentModal')
+            });
+        }
+    });
 })
 </script>
 

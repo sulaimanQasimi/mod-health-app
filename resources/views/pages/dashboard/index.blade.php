@@ -361,7 +361,7 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('assets/js/chartjs.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/chartjs/chartjs.js') }}"></script>
     <script src="{{ asset('assets/js/echarts.js') }}"></script>
     <script src="{{ asset('assets/js/highcharts.js') }}"></script>
     <script src="{{ asset('assets/js/wordcloud.js') }}"></script>

@@ -47,6 +47,6 @@
     <!-- loader js -->
     <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js')}}"></script>
 
-    <script src="../../assets/vendor/libs/chartjs/chartjs.js"></script>
-    <script src="../../assets/js/charts-chartjs.js"></script>
+    <script src="{{ asset('assets/vendor/libs/chartjs/chartjs.js') }}"></script>
+    <script src="{{ asset('assets/js/charts-chartjs.js') }}"></script>
     @stack('custom-js')

@@ -94,6 +94,27 @@
         }
         $(document).ready(function () {
             getTab('{{$tab_name}}');
+            
+            // Initialize select2 with search functionality for all dropdowns
+            $('.select2').select2({
+                placeholder: function() {
+                    return $(this).data('placeholder') || 'Select an option';
+                },
+                allowClear: true,
+                width: '100%',
+                minimumInputLength: 0,
+                language: {
+                    noResults: function() {
+                        return "No results found";
+                    },
+                    searching: function() {
+                        return "Searching...";
+                    },
+                    inputTooShort: function() {
+                        return "Type to search";
+                    }
+                }
+            });
         })
 
         function getDistricts(province_id) {
@@ -125,7 +146,32 @@
                     // Update the container with the response
                     var tab_id = '#' + tab_type;
                     $(tab_id).html(data);
-                    $('.select2').select2();
+                    
+                    // Initialize select2 with search functionality and auto focus
+                    $('.select2').select2({
+                        placeholder: function() {
+                            return $(this).data('placeholder') || 'Select an option';
+                        },
+                        allowClear: true,
+                        width: '100%',
+                        minimumInputLength: 0,
+                        language: {
+                            noResults: function() {
+                                return "No results found";
+                            },
+                            searching: function() {
+                                return "Searching...";
+                            },
+                            inputTooShort: function() {
+                                return "Type to search";
+                            }
+                        }
+                    }).on('select2:open', function() {
+                        // Auto focus on search input when dropdown opens
+                        setTimeout(function() {
+                            $('.select2-search__field').focus();
+                        }, 100);
+                    });
                     
                     // Initialize appointment form functionality
                     initializeAppointmentForm();
@@ -137,8 +183,27 @@
         }
 
         function initializeAppointmentForm() {
-            // Initialize select2 for doctor dropdown
-            $('.select2').select2();
+            // Initialize select2 with search functionality and auto focus
+            $('.select2').select2({
+                placeholder: function() {
+                    return $(this).data('placeholder') || 'Select an option';
+                },
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "No results found";
+                    },
+                    searching: function() {
+                        return "Searching...";
+                    }
+                }
+            }).on('select2:open', function() {
+                // Auto focus on search input when dropdown opens
+                setTimeout(function() {
+                    $('.select2-search__field').focus();
+                }, 100);
+            });
         }
 
         function loadDoctorsByDepartment(departmentId) {
@@ -172,8 +237,25 @@
                         doctorSelect.innerHTML = '<option value="">{{ localize("global.no_doctors_available") }}</option>';
                     }
                     
-                    // Reinitialize select2
-                    $(doctorSelect).select2();
+                    // Reinitialize select2 with search functionality and auto focus
+                    $(doctorSelect).select2({
+                        placeholder: 'Select a doctor',
+                        allowClear: true,
+                        width: '100%',
+                        language: {
+                            noResults: function() {
+                                return "No doctors found";
+                            },
+                            searching: function() {
+                                return "Searching doctors...";
+                            }
+                        }
+                    }).on('select2:open', function() {
+                        // Auto focus on search input when dropdown opens
+                        setTimeout(function() {
+                            $('.select2-search__field').focus();
+                        }, 100);
+                    });
                 },
                 error: function (xhr, status, error) {
                     console.error('Error loading doctors:', error);

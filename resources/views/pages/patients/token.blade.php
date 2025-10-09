@@ -64,7 +64,7 @@
             <p>{{ verta($printedNumber->date)->format('Y-m-d') }}</p>
             {{ $name  }}
             <br>
-            {{ $appointment?->doctor?->department?->name }}
+            {{ $appointment?->department?->name }}
         </div>
     </div>
     <script>

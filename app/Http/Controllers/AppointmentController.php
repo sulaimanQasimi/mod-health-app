@@ -360,15 +360,13 @@ class AppointmentController extends Controller
         $patient = $appointment->patient;
         $today = Carbon::today();
         
-        // Get the doctor from the appointment
-        $doctor = $appointment->doctor;
         
         // Check if doctor has department_id
-        if (!$doctor || !$doctor->department_id) {
+        if (!$appointment->department_id) {
             return redirect()->back()->with('error', localize('global.doctor_department_not_found'));
         }
         
-        $departmentId = $doctor->department_id;
+        $departmentId = $appointment->department_id;
 
         // Check if patient already has a token for today in this department
         $existingToken = PrintedNumber::where('patient_id', $patient->id)
@@ -382,7 +380,7 @@ class AppointmentController extends Controller
             return view('pages.patients.token', [
                 'patient'=>$patient, 
                 'printedNumber'=>$printedNumber,
-                'name'=>$doctor?->name,
+                'name'=>$appointment->doctor?->name,
                 'appointment'=>$appointment
                 ]);
         }
@@ -412,7 +410,7 @@ class AppointmentController extends Controller
         return view('pages.patients.token',[
 'patient'=>$patient, 
 'printedNumber'=>$printedNumber,
-'name'=>$doctor?->name,
+'name'=>$appointment->doctor?->name,
 'appointment'=>$appointment
 
 ]);

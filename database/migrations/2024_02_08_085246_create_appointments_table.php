@@ -26,9 +26,11 @@ return new class extends Migration
             $table->foreign('patient_id')
                 ->references('id')
                 ->on('patients');
+
             $table->foreign('branch_id')
                 ->references('id')
                 ->on('branches');
+                
             $table->foreign('doctor_id')
                 ->references('id')
                 ->on('users');

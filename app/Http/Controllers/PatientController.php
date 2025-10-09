@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Branch;
 use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
@@ -113,17 +114,19 @@ class PatientController extends Controller
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             // Appointment validation
-            'appointment_doctor_id' => 'nullable|exists:doctors,id'
+            'appointment_doctor_id' => 'nullable|exists:doctors,id',
+            'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
         ]);
 
         $patient = Patient::create($data);
 
-        // Create appointment if doctor is selected
-        if ($request->filled('appointment_doctor_id')) {
+        // Create appointment if doctor and department are selected
+        if ($request->filled('appointment_doctor_id') && $request->filled('appointment_department_id')) {
             $now = now();
             $appointmentData = [
                 'patient_id' => $patient->id,
                 'doctor_id' => $request->appointment_doctor_id,
+                'department_id' => $request->appointment_department_id,
                 'branch_id' => $patient->branch_id,
                 'date' => $now->format('Y-m-d'),
                 'time' => $now->format('H:i:s'),
@@ -297,6 +300,7 @@ class PatientController extends Controller
         $districts = District::all();
         $relations = Relation::all();
         $doctors = Doctor::all();
+        $departments = Department::all();
 
         $tab_type = $request->tab_type;
         $patient_id = $request->patient_id;
@@ -305,23 +309,40 @@ class PatientController extends Controller
             $patient = Patient::find($patient_id);
 
             if ($tab_type == 'first') {
-                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors'));
+                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments'));
             } elseif ($tab_type == 'second') {
-                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors'));
+                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments'));
             } elseif ($tab_type == 'third') {
-                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors'));
+                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments'));
             }
         }
 
         if ($tab_type == 'first') {
-            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors'));
+            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments'));
         } elseif ($tab_type == 'second') {
-            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors'));
+            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments'));
         } elseif ($tab_type == 'third') {
-            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors'));
+            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments'));
         }
     }
 
+    public function getDoctorsByDepartment($departmentId)
+    {
+        try {
+            $doctors = Doctor::where('department_id', $departmentId)->get();
+            
+            return response()->json([
+                'success' => true,
+                'doctors' => $doctors
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'doctors' => []
+            ], 500);
+        }
+    }
 
     public function report()
     {

@@ -12,7 +12,7 @@ class Appointment extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['patient_id','doctor_id','branch_id','date','time','is_completed','status_remark','refferal_remarks'];
+    protected $fillable = ['patient_id','doctor_id','department_id','branch_id','date','time','is_completed','status_remark','refferal_remarks'];
 
     public static function boot()
     {
@@ -42,6 +42,11 @@ class Appointment extends Model
     public function doctor()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
     public function diagnose()

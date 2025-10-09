@@ -141,6 +141,47 @@
             $('.select2').select2();
         }
 
+        function loadDoctorsByDepartment(departmentId) {
+            const doctorSelect = document.getElementById('appointment_doctor_id');
+            
+            if (departmentId === '') {
+                doctorSelect.innerHTML = '<option value="">{{ localize("global.select_doctor_first") }}</option>';
+                doctorSelect.disabled = true;
+                return;
+            }
+
+            // Show loading state
+            doctorSelect.innerHTML = '<option value="">{{ localize("global.loading") }}...</option>';
+            doctorSelect.disabled = true;
+
+            $.ajax({
+                url: '/patients/get-doctors-by-department/' + departmentId,
+                type: 'GET',
+                success: function (response) {
+                    doctorSelect.innerHTML = '<option value="">{{ localize("global.select_doctor") }}</option>';
+                    
+                    if (response.success && response.doctors && response.doctors.length > 0) {
+                        response.doctors.forEach(function(doctor) {
+                            const option = document.createElement('option');
+                            option.value = doctor.id;
+                            option.textContent = doctor.name;
+                            doctorSelect.appendChild(option);
+                        });
+                        doctorSelect.disabled = false;
+                    } else {
+                        doctorSelect.innerHTML = '<option value="">{{ localize("global.no_doctors_available") }}</option>';
+                    }
+                    
+                    // Reinitialize select2
+                    $(doctorSelect).select2();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading doctors:', error);
+                    doctorSelect.innerHTML = '<option value="">{{ localize("global.error_loading_doctors") }}</option>';
+                }
+            });
+        }
+
 
 
     </script>

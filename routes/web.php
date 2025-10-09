@@ -141,6 +141,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('webcam/{patient}', [PatientController::class, 'webcam'])->name('webcam');
         Route::post('capture/{id}', [PatientController::class, 'addImage'])->name('capture');
         Route::get('get-tab', [PatientController::class, 'getTab'])->name('get-tab');
+        Route::get('get-doctors-by-department/{departmentId}', [PatientController::class, 'getDoctorsByDepartment'])->name('get-doctors-by-department');
         Route::get('report', [PatientController::class, 'report'])->name('report');
         Route::post('report-search', [PatientController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [PatientController::class, 'exportReport'])->name('export-report');

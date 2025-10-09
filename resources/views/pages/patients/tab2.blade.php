@@ -129,14 +129,22 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="appointment_doctor_id">{{ localize('global.doctor') }}</label>
-                        <select class="form-control select2" name="appointment_doctor_id" id="appointment_doctor_id">
-                            <option value="">{{ localize('global.select_doctor') }}</option>
-                            @foreach ($doctors as $doctor)
-                                <option value="{{ $doctor->id }}" {{ old('appointment_doctor_id') == $doctor->id ? 'selected' : '' }}>
-                                    {{ $doctor->name }}
+                        <label for="appointment_department_id">{{ localize('global.department') }} <span class="text-danger">*</span></label>
+                        <select class="form-control select2" name="appointment_department_id" id="appointment_department_id" required onchange="loadDoctorsByDepartment(this.value)">
+                            <option value="">{{ localize('global.select_department') }}</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}" {{ old('appointment_department_id') == $department->id ? 'selected' : '' }}>
+                                    {{ $department->name }}
                                 </option>
                             @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="appointment_doctor_id">{{ localize('global.doctor') }}</label>
+                        <select class="form-control select2" name="appointment_doctor_id" id="appointment_doctor_id" disabled>
+                            <option value="">{{ localize('global.select_doctor_first') }}</option>
                         </select>
                     </div>
                 </div>

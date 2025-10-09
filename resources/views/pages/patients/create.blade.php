@@ -96,25 +96,7 @@
             getTab('{{$tab_name}}');
             
             // Initialize select2 with search functionality for all dropdowns
-            $('.select2').select2({
-                placeholder: function() {
-                    return $(this).data('placeholder') || 'Select an option';
-                },
-                allowClear: true,
-                width: '100%',
-                minimumInputLength: 0,
-                language: {
-                    noResults: function() {
-                        return "No results found";
-                    },
-                    searching: function() {
-                        return "Searching...";
-                    },
-                    inputTooShort: function() {
-                        return "Type to search";
-                    }
-                }
-            });
+            initializeSelect2WithAutoFocus();
         })
 
         function getDistricts(province_id) {
@@ -148,30 +130,7 @@
                     $(tab_id).html(data);
                     
                     // Initialize select2 with search functionality and auto focus
-                    $('.select2').select2({
-                        placeholder: function() {
-                            return $(this).data('placeholder') || 'Select an option';
-                        },
-                        allowClear: true,
-                        width: '100%',
-                        minimumInputLength: 0,
-                        language: {
-                            noResults: function() {
-                                return "No results found";
-                            },
-                            searching: function() {
-                                return "Searching...";
-                            },
-                            inputTooShort: function() {
-                                return "Type to search";
-                            }
-                        }
-                    }).on('select2:open', function() {
-                        // Auto focus on search input when dropdown opens
-                        setTimeout(function() {
-                            $('.select2-search__field').focus();
-                        }, 100);
-                    });
+                    initializeSelect2WithAutoFocus();
                     
                     // Initialize appointment form functionality
                     initializeAppointmentForm();
@@ -182,20 +141,24 @@
             });
         }
 
-        function initializeAppointmentForm() {
-            // Initialize select2 with search functionality and auto focus
+        function initializeSelect2WithAutoFocus() {
+            // Initialize select2 with search functionality and auto focus for all dropdowns
             $('.select2').select2({
                 placeholder: function() {
                     return $(this).data('placeholder') || 'Select an option';
                 },
                 allowClear: true,
                 width: '100%',
+                minimumInputLength: 0,
                 language: {
                     noResults: function() {
                         return "No results found";
                     },
                     searching: function() {
                         return "Searching...";
+                    },
+                    inputTooShort: function() {
+                        return "Type to search";
                     }
                 }
             }).on('select2:open', function() {
@@ -204,6 +167,11 @@
                     $('.select2-search__field').focus();
                 }, 100);
             });
+        }
+
+        function initializeAppointmentForm() {
+            // Initialize select2 with search functionality and auto focus
+            initializeSelect2WithAutoFocus();
         }
 
         function loadDoctorsByDepartment(departmentId) {
@@ -242,12 +210,16 @@
                         placeholder: 'Select a doctor',
                         allowClear: true,
                         width: '100%',
+                        minimumInputLength: 0,
                         language: {
                             noResults: function() {
                                 return "No doctors found";
                             },
                             searching: function() {
                                 return "Searching doctors...";
+                            },
+                            inputTooShort: function() {
+                                return "Type to search";
                             }
                         }
                     }).on('select2:open', function() {
@@ -264,7 +236,13 @@
             });
         }
 
-
+        // Global event listener for any select2 dropdowns that might be added dynamically
+        $(document).on('select2:open', '.select2', function() {
+            // Auto focus on search input when any select2 dropdown opens
+            setTimeout(function() {
+                $('.select2-search__field').focus();
+            }, 100);
+        });
 
     </script>
 @endsection

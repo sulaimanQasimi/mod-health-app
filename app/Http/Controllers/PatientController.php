@@ -113,25 +113,20 @@ class PatientController extends Controller
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             // Appointment validation
-            'appointment_doctor_id' => 'nullable|exists:doctors,id',
-            'appointment_date' => 'nullable|date',
-            'appointment_time' => 'nullable',
-            'appointment_status_remark' => 'nullable|string|max:192',
-            'appointment_refferal_remarks' => 'nullable|string|max:192'
+            'appointment_doctor_id' => 'nullable|exists:doctors,id'
         ]);
 
         $patient = Patient::create($data);
 
-        // Create appointment if appointment data is provided
-        if ($request->filled('appointment_doctor_id') && $request->filled('appointment_date') && $request->filled('appointment_time')) {
+        // Create appointment if doctor is selected
+        if ($request->filled('appointment_doctor_id')) {
+            $now = now();
             $appointmentData = [
                 'patient_id' => $patient->id,
                 'doctor_id' => $request->appointment_doctor_id,
                 'branch_id' => $patient->branch_id,
-                'date' => Dcter::JalaliToGregorian(Dcter::Carbonize($request->appointment_date)),
-                'time' => $request->appointment_time,
-                'status_remark' => $request->appointment_status_remark,
-                'refferal_remarks' => $request->appointment_refferal_remarks,
+                'date' => $now->format('Y-m-d'),
+                'time' => $now->format('H:i:s'),
                 'is_completed' => 0
             ];
 

@@ -121,7 +121,9 @@ class PatientController extends Controller
         $patient = Patient::create($data);
 
         // Create appointment if doctor and department are selected
-        if ($request->filled('appointment_doctor_id') && $request->filled('appointment_department_id')) {
+        if ($request->filled('appointment_doctor_id')
+         || 
+        $request->filled('appointment_department_id')) {
             $now = now();
             $appointmentData = [
                 'patient_id' => $patient->id,
@@ -137,9 +139,10 @@ class PatientController extends Controller
             
             // Send notification for new appointment
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+       return redirect()->route('appointments.show', $appointment->id)->with('success', localize('global.patient_created_successfully.'));
         }
 
-        return redirect()->route('patients.index')->with('success', localize('global.patient_created_successfully.'));
+        return redirect()->route('patients.show', $patient->id)->with('success', localize('global.patient_created_successfully.'));
     }
 
     public function show(Patient $patient)

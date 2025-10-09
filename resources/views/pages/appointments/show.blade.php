@@ -70,7 +70,7 @@
                                     <div class="text-body-secondary small mb-1">{{ localize('global.referred_to') }}</div>
                                     <div class="fw-bold">
                                         <i class="bx bx-user-check me-1 text-primary"></i>
-                                        {{ $appointment->doctor->name }}
+                                        {{ $appointment->doctor?->name }}
                                     </div>
                                 </div>
                             </div>

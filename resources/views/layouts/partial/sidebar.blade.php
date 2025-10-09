@@ -75,13 +75,19 @@
 
         @can('show-my-visits-menu')
             <li
-                class="menu-item {{ Route::is('appointments.doctorAppointments') || Route::is('appointments.completedAppointments') ? 'active open' : '' }}">
+                class="menu-item {{ Route::is('appointments.doctorAppointments') || Route::is('appointments.completedAppointments') || Route::is('appointments.departmentAppointments') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-time-five"></i>
                     <div>{{ localize('global.my_appointments') }}</div>
                 </a>
 
                 <ul class="menu-sub">
+                    
+                    <li class="menu-item {{ Route::is('appointments.departmentAppointments') ? 'active' : '' }}">
+                        <a href="{{ route('appointments.departmentAppointments') }}" class="menu-link">
+                            <div>{{ localize('global.department_appointments') }}</div>
+                        </a>
+                    </li>
                     <li class="menu-item {{ Route::is('appointments.doctorAppointments') ? 'active' : '' }}">
                         <a href="{{ route('appointments.doctorAppointments') }}" class="menu-link">
                             <div>{{ localize('global.ongoing_appointments') }}</div>

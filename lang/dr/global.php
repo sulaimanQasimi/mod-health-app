@@ -2928,4 +2928,5 @@ return [
     "no_nutrition_care_found"=>"هیچ رکورد مراقبت تغذیه‌ای یافت نشد",
     "add_first_nutrition_care"=>"اولین رکورد مراقبت تغذیه‌ای خود را اضافه کنید",
     "create_nutrition_care"=>"ایجاد مراقبت تغذیه‌ای",
+    "department_appointments"=>"ملاقات های بخش",
 ];

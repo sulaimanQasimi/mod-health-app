@@ -257,6 +257,68 @@ class AppointmentController extends Controller
         return view('pages.appointments.completed', compact('appointments'));
     }
 
+    public function departmentAppointments(Request $request)
+    {
+        // Get the current user's department
+        $userDepartment = auth()->user()->department_id;
+        
+        if (!$userDepartment) {
+            return redirect()->back()->with('error', localize('global.no_department_assigned'));
+        }
+
+        if ($request->ajax()) {
+            $appointments = Appointment::where('department_id', $userDepartment)
+                ->whereNull('doctor_id') // Only appointments without assigned doctor
+                ->with(['patient', 'department'])
+                ->latest()
+                ->get()
+                ->map(function ($appointment) {
+                    $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+                    return $appointment;
+                });
+
+            if ($appointments) {
+                return response()->json([
+                    'data' => $appointments,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Internal Server Error',
+                    'code' => 500,
+                    'data' => [],
+                ]);
+            }
+        }
+
+        $appointments = Appointment::where('department_id', $userDepartment)
+            ->whereNull('doctor_id')
+            ->with(['patient', 'department'])
+            ->latest()
+            ->get();
+        return view('pages.appointments.department', compact('appointments'));
+    }
+
+    public function acceptAppointment(Request $request, Appointment $appointment)
+    {
+        // Check if the appointment belongs to the user's department
+        if ($appointment->department_id !== auth()->user()->department_id) {
+            return redirect()->back()->with('error', localize('global.unauthorized_access'));
+        }
+
+        // Check if appointment is already assigned to a doctor
+        if ($appointment->doctor_id) {
+            return redirect()->back()->with('error', localize('global.appointment_already_assigned'));
+        }
+
+        // Assign the current doctor to the appointment
+        $appointment->update([
+            'doctor_id' => auth()->user()->id
+        ]);
+
+        return redirect()->route('appointments.departmentAppointments')
+            ->with('success', localize('global.appointment_accepted_successfully'));
+    }
+
     public function report()
     {
         return view('pages.appointments.reports.index');

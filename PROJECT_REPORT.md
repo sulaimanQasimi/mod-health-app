@@ -169,24 +169,37 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ## Identified Issues & Problems
 
-### 1. Code Quality Issues (13 Linter Errors Found)
+### 1. Current Linter Errors (25 Errors Found - January 2025)
 
-#### Critical Issues:
+#### Composer Package Issues:
+- **composer.json**:
+  - Line 24:9: 'laravelcollective/html' has been abandoned (Warning)
+
+#### Language File Issues:
+- **lang/ps/global.php** (12 duplicate key warnings):
+  - Lines 76, 101, 12, 211, 215, 289, 353, 399, 419, 437, 441, 475: Duplicate array keys detected
+  - **Impact**: Potential language translation conflicts in Pashto language support
+
+- **lang/en/global.php** (12 duplicate key warnings):
+  - Lines 76, 101, 198, 262, 329, 362, 380, 462, 481, 483, 484, 486: Duplicate array keys detected
+  - **Impact**: Potential language translation conflicts in English language support
+
+#### Previous Critical Issues (Resolved):
 - **Date Method Calls**: 
-  - `app/Models/Income.php` - Lines 93, 99: Incorrect date method calls
-  - `resources/views/pages/nurse-notes/edit.blade.php` - Line 54: Unknown date::format() method
+  - `app/Models/Income.php` - Lines 93, 99: Incorrect date method calls (RESOLVED)
+  - `resources/views/pages/nurse-notes/edit.blade.php` - Line 54: Unknown date::format() method (RESOLVED)
 
-#### Controller Issues:
+#### Controller Issues (Resolved):
 - **PatientController.php**:
-  - Line 66: Unknown method `withQueryString()`
-  - Lines 98, 113, 157, 172: Duplicate array keys
+  - Line 66: Unknown method `withQueryString()` (RESOLVED)
+  - Lines 98, 113, 157, 172: Duplicate array keys (RESOLVED)
 
-#### View Issues:
-- **QrCode Class**: Unknown class usage in multiple views
-- **Assignment Issues**: Same variable assignments in nursing assessment views
+#### View Issues (Resolved):
+- **QrCode Class**: Unknown class usage in multiple views (RESOLVED)
+- **Assignment Issues**: Same variable assignments in nursing assessment views (RESOLVED)
 
-#### Return Value Issues:
-- **OutcomeController.php** - Line 214: Not all code paths return a value
+#### Return Value Issues (Resolved):
+- **OutcomeController.php** - Line 214: Not all code paths return a value (RESOLVED)
 
 ### 2. Database Issues
 - **Migration Dependencies**: Some migrations may have dependency issues
@@ -262,10 +275,52 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - `2025_09_16_051538_add_nurse_id_to_nutrition_cares_table.php`
 - `2025_09_16_061450_create_nursing_assessments_table.php`
 
-### Recent Changes & Improvements (December 2024):
+### Recent Changes & Improvements (December 2024 - January 2025):
 
-#### Date Format Standardization (NEW)
-**Implementation Date**: December 2024
+#### 1. Appointment System Enhancements (NEW)
+**Implementation Date**: January 2025
+**Contributor**: Development Team
+
+##### Patient Controller Improvements:
+- **Enhanced Appointment Creation Logic** (`app/Http/Controllers/PatientController.php`):
+  - **Department Selection Integration**: Added dynamic department selection in patient creation
+  - **Doctor Loading**: Implemented dynamic doctor loading based on selected department
+  - **Appointment Token Printing**: Refactored appointment token printing logic to use `department_id` directly from appointment
+  - **Null-Safe Operations**: Updated appointment and patient views to use null-safe operator for doctor access
+  - **Select2 Integration**: Enhanced Select2 initialization for improved maintainability in patient creation view
+
+##### Appointment Management Features:
+- **Appointment Creation Process**: Refactored appointment creation process in PatientController
+- **Department-Based Doctor Loading**: Implemented department selection and dynamic doctor loading
+- **Enhanced Views**: Updated appointment and patient views with improved functionality
+- **Notification System**: Integrated appointment notifications with department-based routing
+
+#### 2. Frontend JavaScript Enhancements (NEW)
+**Implementation Date**: January 2025
+**Contributor**: Development Team
+
+##### Forms-Pickers.js Improvements:
+- **Flatpickr Integration**: Enhanced flatpickr initialization and error handling
+- **Library Availability Checks**: Added checks for moment.js and bootstrap-daterangepicker availability
+- **Error Handling**: Implemented comprehensive error handling for missing dependencies
+- **DOM Ready State**: Added proper DOM ready state checking before initialization
+
+##### Select2 Integration Enhancements:
+- **Improved Initialization**: Enhanced Select2 integration for dropdowns in patient creation view
+- **Error Prevention**: Added checks for library availability before initialization
+- **Maintainability**: Refactored Select2 initialization for improved maintainability
+
+#### 3. Internationalization (i18n) Configuration Updates (NEW)
+**Implementation Date**: January 2025
+**Contributor**: Development Team
+
+##### i18n Configuration Fixes:
+- **LoadPath Correction**: Fixed loadPath in i18n configuration to include leading slash for correct JSON file path
+- **Language File Updates**: Enhanced language file structure and organization
+- **Multi-language Support**: Improved support for English, Dari, and Pashto languages
+
+#### 4. Date Format Standardization (CONTINUED)
+**Implementation Date**: December 2024 - January 2025
 **Contributor**: Development Team
 
 ##### ICU Module Date Conversions:
@@ -307,7 +362,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
   - **JavaScript Configuration**: Implemented proper Persian date picker with `formatDate: 'YYYY-MM-DD'` and calendar settings
   - **Form Validation**: Enhanced form validation with proper error handling for date inputs
 
-#### Sulaiman Qasimi Enhanced Contributions:
+#### 5. Sulaiman Qasimi Enhanced Contributions:
 
 ##### Custom Router Package Updates:
 - **Package Version**: Updated to latest development version
@@ -320,6 +375,27 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Documentation**: Improved package documentation and usage examples
 - **Integration**: Streamlined integration process with Laravel 10 medical application
 - **Testing**: Added comprehensive testing suite for custom router functionality
+
+### Recent Git Commits & Changes (January 2025):
+
+#### Latest Commits (Recent 10):
+1. **9551bfc**: Refactor appointment token printing logic to use department_id directly from appointment
+2. **deff62a**: Update appointment and patient views to use null-safe operator for doctor access
+3. **54a8319**: Update appointment creation logic in PatientController and enhance appointment view
+4. **cfdd504**: Refactor Select2 initialization for improved maintainability in patient creation view
+5. **e93ebd6**: Add checks for moment.js and bootstrap-daterangepicker availability in forms-pickers.js
+6. **983bfcf**: Enhance flatpickr initialization and error handling in forms-pickers.js
+7. **0f8439b**: Fix loadPath in i18n configuration to include leading slash for correct JSON file path
+8. **4c84296**: Enhance Select2 integration for dropdowns in patient creation view
+9. **a78b5e2**: Implement department selection and dynamic doctor loading in PatientController
+10. **cf0a0ae**: Refactor appointment creation process in PatientController and update related views
+
+#### Key Changes Implemented:
+- **Appointment System**: Complete refactoring of appointment creation and management
+- **Department Integration**: Dynamic department selection and doctor loading
+- **Frontend Improvements**: Enhanced JavaScript error handling and library checks
+- **i18n Configuration**: Fixed internationalization path issues
+- **Select2 Integration**: Improved dropdown functionality and maintainability
 
 ### Recent Error Fixes (2024-2025):
 
@@ -405,7 +481,16 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 The medical database application has undergone significant development with the addition of comprehensive stock management, nursing systems, enhanced reporting capabilities, and recent date format standardization. The project has benefited from contributions by Sulaiman Qasimi (custom router package development and integration) and Mohammad Rafi 10 (database seeding and geographic data management), along with recent improvements in date handling and form functionality.
 
-### Recent Achievements (December 2024):
+### Recent Achievements (December 2024 - January 2025):
+
+#### January 2025 Achievements:
+- **Appointment System Enhancement**: Successfully implemented dynamic department selection and doctor loading
+- **Frontend JavaScript Improvements**: Enhanced forms-pickers.js with better error handling and library availability checks
+- **Select2 Integration**: Improved Select2 initialization for better maintainability and user experience
+- **i18n Configuration**: Fixed loadPath issues in internationalization configuration
+- **Patient Management**: Enhanced patient creation process with department-based appointment creation
+
+#### December 2024 Achievements:
 - **Date Format Standardization**: Successfully converted all date displays to Persian/Dari calendar format using Verta
 - **ICU Module Enhancement**: Improved date handling across all ICU-related tables and print documents
 - **Form Functionality**: Fixed critical form issues in lab and appointment modules
@@ -417,16 +502,31 @@ The medical database application has undergone significant development with the 
 - **Mohammad Rafi 10**: Database seeding, user management, geographic data implementation, and recent date format improvements
 - **Development Team**: Date standardization, form fixes, and user interface enhancements
 
-### Current Status:
+### Current Status (January 2025):
 The application has significantly improved in terms of:
+- **Appointment Management**: Enhanced with dynamic department selection and doctor loading
+- **Frontend Stability**: Improved JavaScript error handling and library availability checks
 - **Date Consistency**: All date displays now use Persian/Dari calendar format
 - **Form Functionality**: Resolved critical form submission issues
 - **Print Documents**: Standardized date formats across all medical documents
-- **User Interface**: Enhanced date picker functionality for better user experience
+- **User Interface**: Enhanced date picker functionality and Select2 integration
+- **Internationalization**: Fixed i18n configuration issues
+
+### Current Issues Requiring Attention:
+1. **Language File Duplicates**: 24 duplicate key warnings in language files (English and Pashto)
+2. **Abandoned Package**: laravelcollective/html package marked as abandoned
+3. **Language File Organization**: Need to clean up duplicate keys in global.php files
 
 ### Priority Actions:
-1. **High Priority**: Continue monitoring and fixing any remaining linter errors
-2. **Medium Priority**: Implement comprehensive testing for new date functionality
-3. **Low Priority**: Performance optimizations and additional UI improvements
+1. **High Priority**: 
+   - Fix duplicate keys in language files (lang/en/global.php and lang/ps/global.php)
+   - Replace abandoned laravelcollective/html package with alternative
+   - Clean up language file organization
+2. **Medium Priority**: 
+   - Implement comprehensive testing for new appointment functionality
+   - Performance optimization for large datasets
+3. **Low Priority**: 
+   - Additional UI improvements and user experience enhancements
+   - Advanced reporting features
 
-The application is now more functional with improved date handling and form functionality, making it more suitable for production deployment with proper Persian/Dari calendar support.
+The application is now more functional with improved appointment management, enhanced frontend stability, and better date handling, making it more suitable for production deployment with proper Persian/Dari calendar support and dynamic department-based workflows.

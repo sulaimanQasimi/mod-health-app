@@ -555,6 +555,7 @@ return [
     'no_parent' => 'بدون والد',
     'no_records_found' => 'هیچ رکوردی یافت نشد',
     'parent' => 'والد',
+    'select_doctor_first'=>'داکتر را انتخاب کنید',
     'lab_types' => 'نوعیت تست ها',
     'lab_type_created_successfully' => 'نوع لابراتوار با موفقیت ایجاد شد',
     'lab_type_updated_successfully' => 'نوع لابراتوار با موفقیت به‌روزرسانی شد',

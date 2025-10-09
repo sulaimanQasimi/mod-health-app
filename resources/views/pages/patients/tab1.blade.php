@@ -156,6 +156,57 @@
         <input type="hidden" name="branch_id" value="{{ Auth::user()->branch_id }}">
         <input type="hidden" name="type" value="0">
 
+        <!-- Appointment Section -->
+        <div class="col-12 mt-4">
+            <h5 class="mb-3 bg-label-info p-2">{{ localize('global.create_appointment') }}</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="appointment_doctor_id">{{ localize('global.doctor') }}</label>
+                        <select class="form-control select2" name="appointment_doctor_id" id="appointment_doctor_id">
+                            <option value="">{{ localize('global.select_doctor') }}</option>
+                            @foreach ($doctors as $doctor)
+                                <option value="{{ $doctor->id }}" {{ old('appointment_doctor_id') == $doctor->id ? 'selected' : '' }}>
+                                    {{ $doctor->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="appointment_date">{{ localize('global.appointment_date') }}</label>
+                        <input type="text" name="appointment_date" id="appointment_date" 
+                               value="{{ old('appointment_date', verta()->format('Y-m-d')) }}" 
+                               class="form-control" placeholder="YYYY-MM-DD">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="appointment_time">{{ localize('global.appointment_time') }}</label>
+                        <input type="time" name="appointment_time" id="appointment_time" 
+                               value="{{ old('appointment_time') }}" 
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="appointment_status_remark">{{ localize('global.status_remark') }}</label>
+                        <textarea name="appointment_status_remark" id="appointment_status_remark" 
+                                  class="form-control" rows="2" 
+                                  placeholder="{{ localize('global.optional_remarks') }}">{{ old('appointment_status_remark') }}</textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="appointment_refferal_remarks">{{ localize('global.referral_remarks') }}</label>
+                        <textarea name="appointment_refferal_remarks" id="appointment_refferal_remarks" 
+                                  class="form-control" rows="2" 
+                                  placeholder="{{ localize('global.optional_referral_remarks') }}">{{ old('appointment_refferal_remarks') }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
     <button type="submit" class="btn btn-primary">{{ isset($patient) ? localize('global.update') : localize('global.create') }}</button>

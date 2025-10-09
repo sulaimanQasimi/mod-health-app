@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Department;
 use App\Models\District;
 use App\Models\Doctor;
@@ -12,6 +13,7 @@ use App\Models\Recipient;
 use App\Models\Relation;
 use App\Models\MiliteryType;
 use Carbon\Carbon;
+use HanifHefaz\Dcter\Dcter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +24,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
+use App\Jobs\SendNewAppointmentNotification;
 
 class PatientController extends Controller
 {
@@ -95,7 +98,6 @@ class PatientController extends Controller
             'branch_id' => 'required',
             'job' => 'nullable',
             'rank' => 'nullable',
-            'age' => 'nullable',
             'job_type' => 'nullable',
             'gender' => 'required',
             'referral_name' => 'nullable',
@@ -110,12 +112,34 @@ class PatientController extends Controller
             'id_card' => 'nullable|numeric',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
-            'relation_id' => 'nullable'
+            // Appointment validation
+            'appointment_doctor_id' => 'nullable|exists:doctors,id',
+            'appointment_date' => 'nullable|date',
+            'appointment_time' => 'nullable',
+            'appointment_status_remark' => 'nullable|string|max:192',
+            'appointment_refferal_remarks' => 'nullable|string|max:192'
         ]);
-
 
         $patient = Patient::create($data);
 
+        // Create appointment if appointment data is provided
+        if ($request->filled('appointment_doctor_id') && $request->filled('appointment_date') && $request->filled('appointment_time')) {
+            $appointmentData = [
+                'patient_id' => $patient->id,
+                'doctor_id' => $request->appointment_doctor_id,
+                'branch_id' => $patient->branch_id,
+                'date' => Dcter::JalaliToGregorian(Dcter::Carbonize($request->appointment_date)),
+                'time' => $request->appointment_time,
+                'status_remark' => $request->appointment_status_remark,
+                'refferal_remarks' => $request->appointment_refferal_remarks,
+                'is_completed' => 0
+            ];
+
+            $appointment = Appointment::create($appointmentData);
+            
+            // Send notification for new appointment
+            SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+        }
 
         return redirect()->route('patients.index')->with('success', localize('global.patient_created_successfully.'));
     }
@@ -277,6 +301,7 @@ class PatientController extends Controller
         $provinces = Province::all();
         $districts = District::all();
         $relations = Relation::all();
+        $doctors = Doctor::all();
 
         $tab_type = $request->tab_type;
         $patient_id = $request->patient_id;
@@ -285,20 +310,20 @@ class PatientController extends Controller
             $patient = Patient::find($patient_id);
 
             if ($tab_type == 'first') {
-                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient'));
+                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors'));
             } elseif ($tab_type == 'second') {
-                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient'));
+                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors'));
             } elseif ($tab_type == 'third') {
-                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient'));
+                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors'));
             }
         }
 
         if ($tab_type == 'first') {
-            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations'));
+            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors'));
         } elseif ($tab_type == 'second') {
-            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations'));
+            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors'));
         } elseif ($tab_type == 'third') {
-            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations'));
+            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors'));
         }
     }
 

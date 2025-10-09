@@ -126,11 +126,31 @@
                     var tab_id = '#' + tab_type;
                     $(tab_id).html(data);
                     $('.select2').select2();
+                    
+                    // Initialize appointment form functionality
+                    initializeAppointmentForm();
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
                 }
             });
+        }
+
+        function initializeAppointmentForm() {
+            // Set default appointment date to today
+            const today = new Date();
+            const appointmentDateInput = document.getElementById('appointment_date');
+            if (appointmentDateInput && !appointmentDateInput.value) {
+                appointmentDateInput.value = today.toISOString().split('T')[0];
+            }
+            
+            // Set default appointment time to next hour
+            const appointmentTimeInput = document.getElementById('appointment_time');
+            if (appointmentTimeInput && !appointmentTimeInput.value) {
+                const nextHour = new Date();
+                nextHour.setHours(nextHour.getHours() + 1);
+                appointmentTimeInput.value = nextHour.toTimeString().slice(0, 5);
+            }
         }
 
 

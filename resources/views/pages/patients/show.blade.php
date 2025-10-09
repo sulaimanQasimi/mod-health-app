@@ -141,7 +141,7 @@
                         @foreach ($patient->appointments as $appointment)
                         <tr>
                             <td>{{$loop->iteration}}</td>
-                            <td>{{$appointment->doctor->name}}</td>
+                            <td>{{$appointment->doctor?->name}}</td>
                             <td>{{ verta($appointment->created_at)->format('Y-m-d H:i') }}</td>
                         </tr>
                         @endforeach

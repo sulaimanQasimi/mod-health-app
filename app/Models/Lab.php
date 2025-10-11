@@ -45,6 +45,11 @@ class Lab extends Model
         return $this->belongsTo(Patient::class);
     }
 
+    public function doctor()
+    {
+        return $this->belongsTo(User::class, 'doctor_id');
+    }
+
     public function labs()
     {
         return $this->belongsTo(Appointment::class);

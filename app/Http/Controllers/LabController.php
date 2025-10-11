@@ -19,12 +19,32 @@ class LabController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $labs = Lab::where('branch_id', auth()->user()->branch_id)
-        ->where('status',false)
-        ->latest()->paginate(10);
-        return view('pages.labs.index',compact('labs'));
+        // Ensure user has a branch_id
+        $user = auth()->user();
+        if (!$user->branch_id) {
+            abort(403, 'User does not have an assigned branch.');
+        }
+
+        $labs = Lab::where('branch_id', $user->branch_id)
+            ->where('status', false)
+            ->with(['labType', 'patient', 'doctor'])
+            ->latest()
+            ->paginate(10);
+
+        // Handle AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('pages.labs.partials.lab-table', compact('labs'))->render(),
+                'pagination' => view('pagination::bootstrap-4', ['paginator' => $labs])->render(),
+                'current_page' => $labs->currentPage(),
+                'last_page' => $labs->lastPage(),
+                'total' => $labs->total()
+            ]);
+        }
+
+        return view('pages.labs.index', compact('labs'));
     }
 
     public function completed()

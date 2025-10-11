@@ -23,6 +23,19 @@
                                         <input type="text" name="section" id="section" value="{{ old('section', $labTypeSection->section) }}" class="form-control">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="section_id">{{localize('global.related_section')}}</label>
+                                        <select class="form-control select2" name="section_id" id="section_id">
+                                            <option value="">{{ localize('global.select_section') }}</option>
+                                            @foreach($sections as $section)
+                                                <option value="{{ $section->id }}" {{ old('section_id', $labTypeSection->section_id) == $section->id ? 'selected' : '' }}>
+                                                    {{ $section->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">{{ localize('global.update') }}</button>
                         </form>

@@ -11,9 +11,9 @@ class LabTypeSection extends Model
 
     protected $fillable = ['section', 'section_id'];
 
-    public function section()
+    public function relatedSection()
     {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(Section::class, 'section_id');
     }
 
     public function labTypes()

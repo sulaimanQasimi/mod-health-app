@@ -29,6 +29,7 @@
         <tr>
             <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
+            <th>{{localize('global.related_section')}}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
     </thead>
@@ -37,6 +38,13 @@
             <tr>
                 <td>{{ $loop->iteration}}</td>
                 <td>{{ $labTypeSection->section }}</td>
+                <td>
+                    @if($labTypeSection->section_id && $labTypeSection->relatedSection)
+                        <span class="badge bg-primary">{{ $labTypeSection->relatedSection->name }}</span>
+                    @else
+                        <span class="badge bg-secondary">{{ localize('global.no_section') }}</span>
+                    @endif
+                </td>
                 <td>
                     {{-- <a href="{{ route('lab_type_sections.show', $labTypeSection) }}"><i class="bx bx-show-alt"></i></a> --}}
                     @can('edit-lab-types')
@@ -57,6 +65,13 @@
         @endforeach
     </tbody>
 </table>
+
+<!-- Pagination -->
+@if($labTypeSections->hasPages())
+    <div class="d-flex justify-content-center mt-3">
+        {{ $labTypeSections->links() }}
+    </div>
+@endif
 </div>
             </div>
         </div>

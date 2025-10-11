@@ -33,10 +33,10 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
-
         $data = $request->validate([
             'name' => 'required',
-            'department_id' => 'required'
+            'department_id' => 'required',
+            'branch_id' => 'required'
         ]);
 
         Section::create($data);
@@ -69,6 +69,7 @@ class SectionController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'department_id' => 'required',
+            'branch_id' => 'required'
         ]);
 
         $section->update($data);

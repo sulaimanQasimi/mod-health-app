@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LabTypeSection;
+use App\Models\Section;
 use Illuminate\Http\Request;
 
 class LabTypeSectionController extends Controller
@@ -12,7 +13,7 @@ class LabTypeSectionController extends Controller
      */
     public function index()
     {
-        $labTypeSections = LabTypeSection::all();
+        $labTypeSections = LabTypeSection::with('relatedSection')->paginate(10);
         return view('pages.lab_type_sections.index',compact('labTypeSections'));
     }
 
@@ -21,7 +22,8 @@ class LabTypeSectionController extends Controller
      */
     public function create()
     {
-        return view('pages.lab_type_sections.create');
+        $sections = Section::all();
+        return view('pages.lab_type_sections.create', compact('sections'));
     }
 
     /**
@@ -31,6 +33,7 @@ class LabTypeSectionController extends Controller
     {
         $data = $request->validate([
             'section' => 'required',
+            'section_id' => 'nullable|exists:sections,id',
         ]);
 
         LabTypeSection::create($data);
@@ -51,7 +54,8 @@ class LabTypeSectionController extends Controller
      */
     public function edit(LabTypeSection $labTypeSection)
     {
-        return view('pages.lab_type_sections.edit', compact('labTypeSection'));
+        $sections = Section::all();
+        return view('pages.lab_type_sections.edit', compact('labTypeSection', 'sections'));
     }
 
     /**
@@ -61,6 +65,7 @@ class LabTypeSectionController extends Controller
     {
         $data = $request->validate([
             'section' => 'required',
+            'section_id' => 'nullable|exists:sections,id',
         ]);
 
         $labTypeSection->update($data);

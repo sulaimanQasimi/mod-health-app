@@ -29,6 +29,7 @@
             <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
             <th>{{localize('global.departments')}}</th>
+            <th>{{localize('global.lab_type_sections')}}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
     </thead>
@@ -38,6 +39,9 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $section->name }}</td>
                 <td>{{ $section->department->name ?? 'NULL' }}</td>
+                <td>
+                    <span class="badge bg-info">{{ $section->labTypeSections->count() }} {{ localize('global.sections') }}</span>
+                </td>
                 <td>
                     {{-- <a href="{{ route('sections.show', $section) }}"><i class="bx bx-show-alt"></i></a> --}}
                     @can('delete-sections')
@@ -59,6 +63,13 @@
         @endforeach
     </tbody>
 </table>
+
+<!-- Pagination -->
+@if($sections->hasPages())
+    <div class="d-flex justify-content-center mt-3">
+        {{ $sections->links() }}
+    </div>
+@endif
 </div>
             </div>
         </div>

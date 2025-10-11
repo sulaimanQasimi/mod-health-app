@@ -59,4 +59,9 @@ class Lab extends Model
         return $this->hasMany(LabItem::class);
     }
 
+    public function labTypeSection()
+    {
+        return $this->belongsTo(LabTypeSection::class);
+    }
+
 }

@@ -21,15 +21,17 @@ class LabController extends Controller
      */
     public function index(Request $request)
     {
-        // Ensure user has a branch_id
+        // Ensure user has a section_id
         $user = auth()->user();
-        if (!$user->branch_id) {
-            abort(403, 'User does not have an assigned branch.');
+        if (!$user->section_id) {
+            abort(403, 'User does not have an assigned section.');
         }
 
-        $labs = Lab::where('branch_id', $user->branch_id)
+        $labs = Lab::whereHas('labTypeSection', function($query) use ($user) {
+                $query->where('section_id', $user->section_id);
+            })
             ->where('status', false)
-            ->with(['labType', 'patient', 'doctor'])
+            ->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection'])
             ->latest()
             ->paginate(10);
 
@@ -49,7 +51,14 @@ class LabController extends Controller
 
     public function completed()
     {
-        $labs = Lab::where('branch_id', auth()->user()->branch_id)->where('status',true)->latest()->paginate(10);
+        $user = auth()->user();
+        $labs = Lab::whereHas('labTypeSection', function($query) use ($user) {
+                $query->where('section_id', $user->section_id);
+            })
+            ->where('status', true)
+            ->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection'])
+            ->latest()
+            ->paginate(10);
         return view('pages.labs.completed',compact('labs'));
     }
 

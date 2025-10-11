@@ -11,10 +11,13 @@
         "vite": "^7.1.2"
     },
     "dependencies": {
+        "@vitejs/plugin-vue": "^6.0.1",
+        "@vue/compiler-sfc": "^3.5.22",
         "echarts": "^5.5.0",
         "echarts-wordcloud": "^2.1.0",
         "jquery": "^3.7.1",
         "persian-datepicker": "^1.2.0",
+        "vue": "^3.5.22",
         "webcamjs": "^1.0.26"
     }
 }

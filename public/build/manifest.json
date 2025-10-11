@@ -1,4 +1,13 @@
 {
+  "public/assets/js/vue/lab-app.js": {
+    "file": "assets/lab-app-BLIIZMdN.js",
+    "name": "lab-app",
+    "src": "public/assets/js/vue/lab-app.js",
+    "isEntry": true,
+    "css": [
+      "assets/lab-app-BiQljv_H.css"
+    ]
+  },
   "resources/css/app.css": {
     "file": "assets/app-tn0RQdqM.css",
     "src": "resources/css/app.css",

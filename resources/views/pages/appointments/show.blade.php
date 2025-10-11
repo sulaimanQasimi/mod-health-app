@@ -774,169 +774,42 @@
             </div>
         </div>
 
-        <!-- Checkups Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-hard-hat me-2 text-warning"></i>
-                            {{ localize('global.checkups') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('add-patient-labs')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createLabModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Create  Lab Modal -->
-        <div class="modal fade" id="createLabModal{{ $appointment->id }}" tabindex="-1"
-            aria-labelledby="createLabModalLabel{{ $appointment->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createLabModalLabel{{ $appointment->id }}">
-                            {{ localize('global.add_lab_test') }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('lab_tests.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id"
-                                value="{{ $appointment->patient_id }}">
-                            <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
-                                value="{{ $appointment->id }}">
-                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                value="{{ $appointment->doctor?->id }}">
-                            <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
-                                value="{{ auth()->user()->branch_id }}">
-                            <input type="hidden" id="hospitalization_id{{ $appointment->id }}" name="hospitalization_id"
-                                value="">
-                            <input type="hidden" id="status{{ $appointment->id }}" name="status" value="0">
-
-                            <div class="form-group">
-
-                                <label
-                                    for="lab_type_section{{ $appointment->id }}">{{ localize('global.lab_type_section') }}</label>
-                                <select class="form-control select2" name="lab_type_section" id="lab_type_section">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($labTypeSections as $value)
-                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->section }}
-
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <label for="lab_type_id{{ $appointment->id }}">{{ localize('global.lab_type') }}</label>
-                                <select class="form-control select2" name="lab_type_id[]" id="lab_type_id"
-                                    onchange="loadLabTypeTests()">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($labTypes as $value)
-                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}
-
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <div id="labTypeTestsContainer"></div>
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- End Create Lab Modal -->
-
-        <!-- Checkups Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        @if($appointment->labs->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-body-secondary">
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.test_name') }}</th>
-                                            <th>{{ localize('global.test_status') }}</th>
-                                            <th>{{ localize('global.result') }}</th>
-                                            <th>{{ localize('global.result_file') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->labs as $lab)
-                                            <tr>
-                                                <td>
-                                                    <span
-                                                        class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $lab->labType->name }}</td>
-                                                <td>
-                                                    @if ($lab->status == '0')
-                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $lab->result }}</td>
-                                                <td>
-                                                    @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
-                                                            class="btn btn-outline-primary btn-sm" title="View File">
-                                                            <i class="fa fa-file me-1"></i>
-                                                            {{ localize('global.file') }}
-                                                        </a>
-                                                    @endisset
-                                                </td>
-                                                <td>
-                                                    <a href="#" data-bs-toggle="modal" onclick="getLabItems({{ $lab->id }})"
-                                                        data-bs-target="#showLabsItemModal" class="btn btn-outline-primary btn-sm"
-                                                        title="View Details">
-                                                        <i class="bx bx-expand me-1"></i>
-                                                        {{ localize('global.view') }}
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
+        <!-- Lab Section Vue Component -->
+        <div id="lab-section-container" 
+             data-appointment='@json($appointment)'
+             data-permissions='@json([
+                 "canAddLab" => auth()->user()->can("add-patient-labs"),
+                 "canEditLab" => auth()->user()->can("edit-patient-labs"),
+                 "canDeleteLab" => auth()->user()->can("delete-patient-labs")
+             ])'>
+            <!-- Fallback content while Vue loads -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bx bx-hard-hat me-2 text-warning"></i>
+                                {{ localize('global.checkups') }}
+                            </h5>
+                            @if ($appointment->is_completed == 0)
+                                @can('add-patient-labs')
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#createLabModal{{ $appointment->id }}">
+                                        <i class="bx bx-plus me-1"></i>
+                                        {{ localize('global.add') }}
+                                    </button>
+                                @endcan
+                            @endif
+                        </div>
+                        <div class="card-body">
                             <div class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_previous_labs') }}
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
+                                <p class="mt-2">{{ localize('global.loading_lab_section') }}</p>
                             </div>
-                        @endif
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lab Items Modal -->
-        <div class="modal fade modal-xl" id="showLabsItemModal" tabindex="-1" aria-labelledby="showLabsItemModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content" id="lab_items_table">
-                    <!-- Content will be loaded dynamically -->
                 </div>
             </div>
         </div>
@@ -2429,6 +2302,9 @@
 @endsection
 
 @section('scripts')
+    <!-- Vue.js Lab Section -->
+    @vite(['public/assets/js/vue/lab-app.js'])
+    <script src="{{ asset('assets/js/vue/debug-lab.js') }}"></script>
     <script>
         // Global Select2 fix for modal compatibility
         (function () {

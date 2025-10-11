@@ -772,6 +772,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get_labTypes/{labTypeId}', [HomeController::class, 'getRelatedLabTypes']);
     Route::get('/lab-tests/{labTypeId}', [HomeController::class, 'getLabTypeTests']);
 
+    // Lab Ajax routes
+    Route::prefix('lab-ajax')->name('lab-ajax.')->group(function () {
+        Route::get('lab-type-sections', [\App\Http\Controllers\LabAjaxController::class, 'getLabTypeSections']);
+        Route::get('lab-types/{sectionId}', [\App\Http\Controllers\LabAjaxController::class, 'getLabTypesBySection']);
+        Route::get('lab-type-tests/{labTypeId}', [\App\Http\Controllers\LabAjaxController::class, 'getLabTypeTests']);
+        Route::post('store', [\App\Http\Controllers\LabAjaxController::class, 'storeLabTest']);
+        Route::get('appointment-labs/{appointmentId}', [\App\Http\Controllers\LabAjaxController::class, 'getAppointmentLabs']);
+        Route::get('lab-items/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'getLabItems']);
+        Route::put('update-status/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'updateLabStatus']);
+        Route::delete('delete/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'deleteLabTest']);
+    });
+
     // Nurse Notes routes
     Route::prefix('nurse-notes')->name('nurse-notes.')->group(function () {
         Route::get('/', [\App\Http\Controllers\NurseNoteController::class, 'index'])->name('index');

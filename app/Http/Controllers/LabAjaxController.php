@@ -40,23 +40,16 @@ class LabAjaxController extends Controller
      */
     public function getLabTypesBySection($sectionId)
     {
-        try {
-            $labTypes = LabType::where('lab_type_section_id', $sectionId)
-                ->where('parent_id', null) // Only parent lab types
+            $labTypes = LabType::where('section_id', $sectionId)
                 ->get();
+            
+            \Log::info('Found ' . $labTypes->count() . ' lab types');
             
             return response()->json([
                 'success' => true,
                 'data' => $labTypes
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch lab types',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+     }
 
     /**
      * Get lab type tests by lab type ID

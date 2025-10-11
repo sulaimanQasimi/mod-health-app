@@ -9,7 +9,12 @@ class LabTypeSection extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['section'];
+    protected $fillable = ['section', 'section_id'];
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 
     public function labTypes()
     {

@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lab_types', function (Blueprint $table) {
-            $table->unsignedBigInteger('department_section_id')->nullable()->after('section_id');
-            $table->foreign('department_section_id')->references('id')->on('sections');
+            //
         });
     }
 
@@ -23,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('lab_types', function (Blueprint $table) {
-            $table->dropForeign(['department_section_id']);
-            $table->dropColumn('department_section_id');
+            //
         });
     }
 };

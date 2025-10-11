@@ -14,7 +14,7 @@ class SectionController extends Controller
      */
     public function index()
     {
-        $sections = Section::all();
+        $sections = Section::with(['department', 'labTypeSections'])->paginate(10);
         return view('pages.sections.index',compact('sections'));
     }
 

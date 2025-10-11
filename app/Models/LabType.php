@@ -12,7 +12,7 @@ class LabType extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','branch_id','parent_id','section_id','department_section_id'];
+    protected $fillable = ['name','branch_id','parent_id','section_id'];
 
     public static function boot()
     {
@@ -42,11 +42,6 @@ class LabType extends Model
     public function section()
     {
         return $this->belongsTo(LabTypeSection::class, 'section_id');
-    }
-
-    public function departmentSection()
-    {
-        return $this->belongsTo(Section::class, 'department_section_id');
     }
 
     public function parent()

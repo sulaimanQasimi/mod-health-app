@@ -119,6 +119,7 @@ class PatientController extends Controller
         ]);
 
         $patient = Patient::create($data);
+        $appointment = null;
 
         // Create appointment if doctor and department are selected
         if ($request->filled('appointment_doctor_id')
@@ -139,7 +140,37 @@ class PatientController extends Controller
             
             // Send notification for new appointment
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
-       return redirect()->route('appointments.show', $appointment->id)->with('success', localize('global.patient_created_successfully.'));
+        }
+
+        // Handle AJAX requests
+        if ($request->ajax() || $request->expectsJson()) {
+            $response = [
+                'success' => true,
+                'message' => localize('global.patient_created_successfully.'),
+                'patient' => [
+                    'id' => $patient->id,
+                    'name' => $patient->name,
+                    'last_name' => $patient->last_name,
+                ]
+            ];
+
+            if ($appointment) {
+                $response['appointment'] = [
+                    'id' => $appointment->id,
+                    'department' => $appointment->department->name ?? '',
+                    'doctor' => $appointment->doctor->name ?? '',
+                    'date' => $appointment->date,
+                    'time' => $appointment->time,
+                    'token_url' => route('appointments.printToken', $appointment->id)
+                ];
+            }
+
+            return response()->json($response);
+        }
+
+        // Handle non-AJAX requests (backward compatibility)
+        if ($appointment) {
+            return redirect()->route('appointments.show', $appointment->id)->with('success', localize('global.patient_created_successfully.'));
         }
 
         return redirect()->route('patients.show', $patient->id)->with('success', localize('global.patient_created_successfully.'));

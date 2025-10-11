@@ -2930,4 +2930,6 @@ return [
     "add_first_nutrition_care"=>"اولین رکورد مراقبت تغذیه‌ای خود را اضافه کنید",
     "create_nutrition_care"=>"ایجاد مراقبت تغذیه‌ای",
     "department_appointments"=>"ملاقات های بخش",
+    "token_ready_message"=>"توکن برای مریض آماده است",
+    "print_token"=>"چاپ توکن",
 ];

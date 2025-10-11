@@ -69,6 +69,51 @@
             </div>
         </div>
     </div>
+
+    <!-- Token Modal -->
+    <div class="modal fade" id="tokenModal" tabindex="-1" aria-labelledby="tokenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tokenModalLabel">
+                        <i class="bx bx-printer me-2 text-success"></i>
+                        {{ localize('global.token_ready') }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">{{ localize('global.patient_information') }}</h6>
+                            <p><strong>{{ localize('global.name') }}:</strong> <span id="modal-patient-name"></span></p>
+                            <p><strong>{{ localize('global.last_name') }}:</strong> <span id="modal-patient-lastname"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">{{ localize('global.appointment_information') }}</h6>
+                            <p><strong>{{ localize('global.department') }}:</strong> <span id="modal-appointment-department"></span></p>
+                            <p><strong>{{ localize('global.doctor') }}:</strong> <span id="modal-appointment-doctor"></span></p>
+                            <p><strong>{{ localize('global.date') }}:</strong> <span id="modal-appointment-date"></span></p>
+                            <p><strong>{{ localize('global.time') }}:</strong> <span id="modal-appointment-time"></span></p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <i class="bx bx-info-circle me-2"></i>
+                        {{ localize('global.token_ready_message') }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x me-1"></i>
+                        {{ localize('global.close') }}
+                    </button>
+                    <button type="button" class="btn btn-success" id="printTokenBtn">
+                        <i class="bx bx-printer me-1"></i>
+                        {{ localize('global.print_token') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @php
     if (isset($patient) && $patient->type == '0') {
@@ -242,6 +287,161 @@
             setTimeout(function() {
                 $('.select2-search__field').focus();
             }, 100);
+        });
+
+        // AJAX Patient Form Submission
+        function submitPatientForm(formId) {
+            const form = $('#' + formId);
+            const submitBtn = form.find('button[type="submit"]');
+            const originalBtnText = submitBtn.html();
+            
+            // Disable submit button and show loading
+            submitBtn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin me-1"></i>{{ localize("global.creating") }}...');
+            
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Show success message
+                        showSuccessMessage(response.message);
+                        
+                        // Clear form fields
+                        clearFormFields(formId);
+                        
+                        // Show token modal if appointment was created
+                        if (response.appointment) {
+                            showTokenModal(response.patient, response.appointment);
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        // Handle validation errors
+                        const errors = xhr.responseJSON.errors;
+                        displayValidationErrors(errors);
+                    } else {
+                        // Handle general errors
+                        showErrorMessage('{{ localize("global.error_occurred") }}');
+                    }
+                },
+                complete: function() {
+                    // Re-enable submit button
+                    submitBtn.prop('disabled', false).html(originalBtnText);
+                }
+            });
+        }
+
+        // Clear form fields after successful submission
+        function clearFormFields(formId) {
+            const form = $('#' + formId);
+            
+            // Clear all text inputs
+            form.find('input[type="text"], input[type="number"]').val('');
+            
+            // Clear select2 dropdowns
+            form.find('.select2').val(null).trigger('change');
+            
+            // Reset district dropdown to default state
+            $('#district_id').html('<option value="">{{ localize("global.select") }}</option>');
+            
+            // Reset appointment dropdowns
+            $('#appointment_doctor_id').html('<option value="">{{ localize("global.select_doctor_first") }}</option>').prop('disabled', true);
+            $('#appointment_department_id').val(null).trigger('change');
+            
+            // Re-initialize select2 for cleared dropdowns
+            initializeSelect2WithAutoFocus();
+        }
+
+        // Display validation errors
+        function displayValidationErrors(errors) {
+            // Clear previous error messages
+            $('.error-message').remove();
+            $('.is-invalid').removeClass('is-invalid');
+            
+            // Display new errors
+            $.each(errors, function(field, messages) {
+                const input = $('[name="' + field + '"]');
+                input.addClass('is-invalid');
+                
+                const errorHtml = '<div class="error-message text-danger small mt-1">' + messages[0] + '</div>';
+                input.after(errorHtml);
+            });
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            // Create and show toast notification
+            const toastHtml = `
+                <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bx bx-check-circle me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            $('body').append(toastHtml);
+            $('.toast').toast('show');
+            
+            // Remove toast after 5 seconds
+            setTimeout(function() {
+                $('.toast').remove();
+            }, 5000);
+        }
+
+        // Show error message
+        function showErrorMessage(message) {
+            const toastHtml = `
+                <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bx bx-error-circle me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            $('body').append(toastHtml);
+            $('.toast').toast('show');
+            
+            // Remove toast after 5 seconds
+            setTimeout(function() {
+                $('.toast').remove();
+            }, 5000);
+        }
+
+        // Show token modal with appointment data
+        function showTokenModal(patient, appointment) {
+            // Populate modal with data
+            $('#modal-patient-name').text(patient.name);
+            $('#modal-patient-lastname').text(patient.last_name || '');
+            $('#modal-appointment-department').text(appointment.department);
+            $('#modal-appointment-doctor').text(appointment.doctor);
+            $('#modal-appointment-date').text(appointment.date);
+            $('#modal-appointment-time').text(appointment.time);
+            
+            // Set up print token button
+            $('#printTokenBtn').off('click').on('click', function() {
+                window.open(appointment.token_url, '_blank');
+            });
+            
+            // Show modal
+            $('#tokenModal').modal('show');
+        }
+
+        // Bind AJAX form submission to all patient forms
+        $(document).on('submit', '#patient-form-tab1, #patient-form-tab2, #patient-form-tab3', function(e) {
+            e.preventDefault();
+            const formId = $(this).attr('id');
+            submitPatientForm(formId);
         });
 
     </script>

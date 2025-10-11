@@ -1,4 +1,4 @@
-<form action="{{ isset($patient) ? route('patients.update', $patient->id) : route('patients.store') }}" method="POST">
+<form id="patient-form-tab3" action="{{ isset($patient) ? route('patients.update', $patient->id) : route('patients.store') }}" method="POST">
     @csrf
     @isset($patient)
         @method('PUT')

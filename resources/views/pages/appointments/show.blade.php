@@ -2433,27 +2433,31 @@
         // Global Select2 fix for modal compatibility
         (function () {
             // Override Select2's _positionDropdown method to handle modal contexts
-            if ($.fn.select2) {
+            if ($.fn.select2 && $.fn.select2.defaults && $.fn.select2.defaults.defaults && $.fn.select2.defaults.defaults.attachBody) {
                 var originalPositionDropdown = $.fn.select2.defaults.defaults.attachBody._positionDropdown;
-                $.fn.select2.defaults.defaults.attachBody._positionDropdown = function () {
-                    try {
-                        return originalPositionDropdown.apply(this, arguments);
-                    } catch (e) {
-                        // If positioning fails, use a fallback
-                        var $dropdown = this.$dropdown;
-                        var $container = this.$container;
+                
+                // Only override if the original method exists
+                if (originalPositionDropdown && typeof originalPositionDropdown === 'function') {
+                    $.fn.select2.defaults.defaults.attachBody._positionDropdown = function () {
+                        try {
+                            return originalPositionDropdown.apply(this, arguments);
+                        } catch (e) {
+                            // If positioning fails, use a fallback
+                            var $dropdown = this.$dropdown;
+                            var $container = this.$container;
 
-                        if ($dropdown && $container) {
-                            var containerOffset = $container.offset();
-                            $dropdown.css({
-                                position: 'absolute',
-                                top: containerOffset.top + $container.outerHeight(),
-                                left: containerOffset.left,
-                                width: $container.outerWidth()
-                            });
+                            if ($dropdown && $container) {
+                                var containerOffset = $container.offset();
+                                $dropdown.css({
+                                    position: 'absolute',
+                                    top: containerOffset.top + $container.outerHeight(),
+                                    left: containerOffset.left,
+                                    width: $container.outerWidth()
+                                });
+                            }
                         }
-                    }
-                };
+                    };
+                }
             }
         })();
     </script>
@@ -2578,10 +2582,12 @@
             // Initialize the select2 plugin for dynamically created elements
             const newSelects = newRow.querySelectorAll('select.select2');
             newSelects.forEach(function (select) {
-                $(select).select2({
-                    dropdownParent: $(select).closest('.modal').find('.modal-body'),
-                    placeholder: '--انتخاب--'
-                });
+                if (typeof $.fn.select2 !== 'undefined') {
+                    $(select).select2({
+                        dropdownParent: $(select).closest('.modal').find('.modal-body'),
+                        placeholder: '--انتخاب--'
+                    });
+                }
             });
 
         }
@@ -2589,6 +2595,12 @@
 
     <script>
         $(document).ready(function () {
+            // Check if Select2 is available before initializing
+            if (typeof $.fn.select2 === 'undefined') {
+                console.warn('Select2 is not loaded. Skipping Select2 initialization.');
+                return;
+            }
+
             // Initialize Select2 for elements inside modals
             function initializeSelect2InModals() {
                 $('.modal .select2').each(function () {
@@ -2601,10 +2613,12 @@
                     }
 
                     // Initialize Select2 with proper dropdown parent
-                    $select.select2({
-                        dropdownParent: $modal.find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $select.select2({
+                            dropdownParent: $modal.find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                    }
                 });
             }
 
@@ -2616,7 +2630,7 @@
             // Initialize Select2 for elements outside modals
             $('.select2:not(.modal .select2)').each(function () {
                 var $this = $(this);
-                if (!$this.hasClass('select2-hidden-accessible')) {
+                if (!$this.hasClass('select2-hidden-accessible') && typeof $.fn.select2 !== 'undefined') {
                     $this.select2({
                         placeholder: '--انتخاب--',
                         dropdownParent: $this.parent()
@@ -2633,19 +2647,23 @@
                         success: function (response) {
                             $('#lab_type_id').html(response);
                             // Re-initialize Select2 for the updated dropdown
-                            $('#lab_type_id').select2({
-                                dropdownParent: $('#lab_type_id').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $('#lab_type_id').select2({
+                                    dropdownParent: $('#lab_type_id').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                            }
                         }
                     })
                 } else {
                     // Clear the lab type dropdown if no section is selected
                     $('#lab_type_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#lab_type_id').select2({
-                        dropdownParent: $('#lab_type_id').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $('#lab_type_id').select2({
+                            dropdownParent: $('#lab_type_id').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                    }
                 }
             })
 
@@ -2658,30 +2676,34 @@
                         success: function (response) {
                             $('#department').html(response);
                             // Re-initialize Select2 for the updated dropdown
-                            $('#department').select2({
-                                dropdownParent: $('#department').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
-                            // Clear the doctor dropdown when branch changes
-                            $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                            $('#doctor_id').select2({
-                                dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $('#department').select2({
+                                    dropdownParent: $('#department').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                                // Clear the doctor dropdown when branch changes
+                                $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                                $('#doctor_id').select2({
+                                    dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                            }
                         }
                     })
                 } else {
                     // Clear both department and doctor dropdowns if no branch is selected
                     $('#department').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#department').select2({
-                        dropdownParent: $('#department').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
-                    $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#doctor_id').select2({
-                        dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $('#department').select2({
+                            dropdownParent: $('#department').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                        $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                        $('#doctor_id').select2({
+                            dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                    }
                 }
             })
 
@@ -2694,30 +2716,34 @@
                         success: function (response) {
                             $('#referral_department_id').html(response);
                             // Re-initialize Select2 for the updated dropdown
-                            $('#referral_department_id').select2({
-                                dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
-                            // Clear the doctor dropdown when branch changes
-                            $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                            $('#appointment_doctor_id').select2({
-                                dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $('#referral_department_id').select2({
+                                    dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                                // Clear the doctor dropdown when branch changes
+                                $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                                $('#appointment_doctor_id').select2({
+                                    dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                            }
                         }
                     })
                 } else {
                     // Clear both department and doctor dropdowns if no branch is selected
                     $('#referral_department_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#referral_department_id').select2({
-                        dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
-                    $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#appointment_doctor_id').select2({
-                        dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $('#referral_department_id').select2({
+                            dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                        $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
+                        $('#appointment_doctor_id').select2({
+                            dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                    }
                 }
             })
 
@@ -2730,19 +2756,23 @@
                         success: function (response) {
                             $('#doctor_id').html(response);
                             // Re-initialize Select2 for the updated dropdown
-                            $('#doctor_id').select2({
-                                dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $('#doctor_id').select2({
+                                    dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                            }
                         }
                     })
                 } else {
                     // Clear the doctor dropdown if no department is selected
                     $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#doctor_id').select2({
-                        dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $('#doctor_id').select2({
+                            dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                    }
                 }
             })
 
@@ -2755,19 +2785,23 @@
                         success: function (response) {
                             $('#appointment_doctor_id').html(response);
                             // Re-initialize Select2 for the updated dropdown
-                            $('#appointment_doctor_id').select2({
-                                dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                                placeholder: '--انتخاب--'
-                            });
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $('#appointment_doctor_id').select2({
+                                    dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                                    placeholder: '--انتخاب--'
+                                });
+                            }
                         }
                     })
                 } else {
                     // Clear the doctor dropdown if no department is selected
                     $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    $('#appointment_doctor_id').select2({
-                        dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                        placeholder: '--انتخاب--'
-                    });
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $('#appointment_doctor_id').select2({
+                            dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
+                            placeholder: '--انتخاب--'
+                        });
+                    }
                 }
             })
 

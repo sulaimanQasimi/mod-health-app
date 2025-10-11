@@ -2932,4 +2932,5 @@ return [
     "department_appointments"=>"ملاقات های بخش",
     "token_ready_message"=>"توکن برای مریض آماده است",
     "print_token"=>"چاپ توکن",
+    "appointment_information"=>"اطلاعات ملاقات",
 ];

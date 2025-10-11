@@ -53,6 +53,17 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
+                                <label for="department_section_id" class="form-label">{{ localize('global.department_section') }}</label>
+                                <select class="form-select" id="department_section_id" name="department_section_id">
+                                    <option value="">{{ localize('global.all_department_sections') }}</option>
+                                    @foreach($sections as $section)
+                                        <option value="{{ $section->id }}" {{ request('department_section_id') == $section->id ? 'selected' : '' }}>
+                                            {{ $section->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
                                 <label for="parent_id" class="form-label">{{ localize('global.parent') }}</label>
                                 <select class="form-select" id="parent_id" name="parent_id">
                                     <option value="">{{ localize('global.all_parents') }}</option>
@@ -129,6 +140,7 @@
                                 <th>{{localize('global.name')}}</th>
                                 <th>{{localize('global.branch')}}</th>
                                 <th>{{localize('global.section')}}</th>
+                                <th>{{localize('global.department_section')}}</th>
                                 <th>{{localize('global.parent')}}</th>
                                 <th>{{localize('global.actions')}}</th>
                             </tr>
@@ -140,6 +152,7 @@
                                     <td>{{ $labType->name }}</td>
                                     <td>{{ $labType->branch->name ?? '-' }}</td>
                                     <td>{{ $labType->section->section ?? '-' }}</td>
+                                    <td>{{ $labType->departmentSection->name ?? '-' }}</td>
                                     <td>{{ $labType->parent->name ?? '-' }}</td>
                                     <td>
                                         {{-- <a href="{{ route('lab_types.show', $labType) }}"><i class="bx bx-show-alt"></i></a> --}}
@@ -160,7 +173,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">{{ localize('global.no_records_found') }}</td>
+                                    <td colspan="7" class="text-center">{{ localize('global.no_records_found') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

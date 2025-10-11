@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\Section;
 use Illuminate\Http\Request;
 
 class LabTypeController extends Controller
@@ -14,7 +15,7 @@ class LabTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = LabType::with(['branch', 'section', 'parent']);
+        $query = LabType::with(['branch', 'section', 'departmentSection', 'parent']);
 
         // Search functionality
         if ($request->filled('search')) {
@@ -26,6 +27,9 @@ class LabTypeController extends Controller
                   })
                   ->orWhereHas('section', function($sectionQuery) use ($search) {
                       $sectionQuery->where('section', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('departmentSection', function($departmentSectionQuery) use ($search) {
+                      $departmentSectionQuery->where('name', 'like', '%' . $search . '%');
                   });
             });
         }
@@ -38,6 +42,11 @@ class LabTypeController extends Controller
         // Filter by section
         if ($request->filled('section_id')) {
             $query->where('section_id', $request->section_id);
+        }
+
+        // Filter by department section
+        if ($request->filled('department_section_id')) {
+            $query->where('department_section_id', $request->department_section_id);
         }
 
         // Filter by parent
@@ -58,17 +67,19 @@ class LabTypeController extends Controller
         }
 
         $perPage = $request->get('per_page', 15);
-        $labTypes = $query->paginate($perPage)->withQueryString();
+        $labTypes = $query->paginate($perPage)->appends(request()->query());
 
         // Get filter options for the view
         $branches = Branch::orderBy('name')->get();
         $labTypeSections = LabTypeSection::orderBy('section')->get();
+        $sections = Section::orderBy('name')->get();
         $parentLabTypes = LabType::whereNull('parent_id')->orderBy('name')->get();
 
         return view('pages.lab_types.index', compact(
             'labTypes', 
             'branches', 
             'labTypeSections', 
+            'sections',
             'parentLabTypes'
         ));
     }
@@ -81,7 +92,8 @@ class LabTypeController extends Controller
         $branches = Branch::all();
         $labTypes = LabType::all();
         $labTypeSections = LabTypeSection::all();
-        return view('pages.lab_types.create',compact('branches','labTypes','labTypeSections'));
+        $sections = Section::all();
+        return view('pages.lab_types.create',compact('branches','labTypes','labTypeSections','sections'));
     }
 
     /**
@@ -93,6 +105,7 @@ class LabTypeController extends Controller
             'name' => 'required',
             'branch_id' => 'required',
             'section_id' => 'required',
+            'department_section_id' => 'nullable',
             'parent_id' => 'nullable',
         ]);
 
@@ -117,7 +130,8 @@ class LabTypeController extends Controller
         $branches = Branch::all();
         $labTypes = LabType::all();
         $labTypeSections = LabTypeSection::all();
-        return view('pages.lab_types.edit', compact('labType', 'branches', 'labTypes', 'labTypeSections'));
+        $sections = Section::all();
+        return view('pages.lab_types.edit', compact('labType', 'branches', 'labTypes', 'labTypeSections', 'sections'));
     }
 
     /**
@@ -129,6 +143,7 @@ class LabTypeController extends Controller
             'name' => 'required',
             'branch_id' => 'required',
             'section_id' => 'required',
+            'department_section_id' => 'nullable',
             'parent_id' => 'nullable',
         ]);
 

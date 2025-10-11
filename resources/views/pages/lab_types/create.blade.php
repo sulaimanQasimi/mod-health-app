@@ -43,8 +43,22 @@
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach($labTypeSections as $value)
                                                 <option value="{{ $value->id }}"
-                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
+                                                    {{ old('section_id') == $value->id ? 'selected' : '' }}>
                                                 {{ $value->section }}</option>
+                                            @endforeach
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="department_section">{{localize('global.department_section')}}</label>
+                                        <select class="form-control select2" name="department_section_id" id="department_section_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($sections as $value)
+                                                <option value="{{ $value->id }}"
+                                                    {{ old('department_section_id') == $value->id ? 'selected' : '' }}>
+                                                {{ $value->name }}</option>
                                             @endforeach
 
                                         </select>

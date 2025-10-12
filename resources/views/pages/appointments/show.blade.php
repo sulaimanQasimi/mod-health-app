@@ -1428,54 +1428,62 @@
                 </div>
             </div>
         </div>
-        <!-- Related Visits Section -->
+        <!-- Related Visits Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body">
-                        <h5 class="mb-0">
-                            <i class="bx bx-glasses me-2"></i>
-                            {{ localize('global.related_visits') }}
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-body-secondary">
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.visit_date') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($appointment->under_reviews as $single_hospitaliztion)
-                                        @foreach ($single_hospitaliztion->visits as $visit)
+                <div class="accordion" id="relatedVisitsAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="relatedVisitsHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#relatedVisitsCollapse" 
+                                aria-expanded="false" aria-controls="relatedVisitsCollapse">
+                                <i class="bx bx-glasses me-2"></i>
+                                {{ localize('global.related_visits') }}
+                            </button>
+                        </h2>
+                        <div id="relatedVisitsCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="relatedVisitsHeading" data-bs-parent="#relatedVisitsAccordion">
+                            <div class="accordion-body">
+                                <!-- Related Visits Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-body-secondary">
                                             <tr>
-                                                <td>
-                                                    <span
-                                                        class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $visit->description }}</td>
-                                                <td>
-                                                    <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
-                                                </td>
-                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
+                                                <th>{{ localize('global.number') }}</th>
+                                                <th>{{ localize('global.description') }}</th>
+                                                <th>{{ localize('global.by') }}</th>
+                                                <th>{{ localize('global.visit_date') }}</th>
                                             </tr>
-                                        @endforeach
-                                    @empty
-                                        <tr>
-                                            <td colspan="4" class="text-center">
-                                                <div class="alert alert-info">
-                                                    <i class="bx bx-info-circle me-2"></i>
-                                                    {{ localize('global.no_previous_visits') }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($appointment->under_reviews as $single_hospitaliztion)
+                                                @foreach ($single_hospitaliztion->visits as $visit)
+                                                    <tr>
+                                                        <td>
+                                                            <span
+                                                                class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $visit->description }}</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
+                                                        </td>
+                                                        <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center">
+                                                        <div class="alert alert-info">
+                                                            <i class="bx bx-info-circle me-2"></i>
+                                                            {{ localize('global.no_previous_visits') }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1735,88 +1743,96 @@
             </div>
         </div>
 
-        <!-- Related Visits Section (Hospitalization) -->
+        <!-- Related Visits Section (Hospitalization) Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body">
-                        <h5 class="mb-0">
-                            <i class="bx bx-glasses me-2"></i>
-                            {{ localize('global.related_visits') }}
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-body-secondary">
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.description') }}</th>
-                                        <th>{{ localize('global.by') }}</th>
-                                        <th>{{ localize('global.visit_date') }}</th>
-                                        <th>{{ localize('global.vital_signs') }}</th>
-                                        <th>{{ localize('global.antibiotic') }}</th>
-                                        <th>{{ localize('global.food_type') }}</th>
-                                        <th>{{ localize('global.intake') }}</th>
-                                        <th>{{ localize('global.output') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($appointment->hospitalization as $single_hospitaliztion)
-                                        @foreach ($single_hospitaliztion->visits as $visit)
+                <div class="accordion" id="relatedVisitsHospitalizationAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="relatedVisitsHospitalizationHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#relatedVisitsHospitalizationCollapse" 
+                                aria-expanded="false" aria-controls="relatedVisitsHospitalizationCollapse">
+                                <i class="bx bx-glasses me-2"></i>
+                                {{ localize('global.related_visits') }} ({{ localize('global.hospitalization') }})
+                            </button>
+                        </h2>
+                        <div id="relatedVisitsHospitalizationCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="relatedVisitsHospitalizationHeading" data-bs-parent="#relatedVisitsHospitalizationAccordion">
+                            <div class="accordion-body">
+                                <!-- Related Visits Table (Hospitalization) -->
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-body-secondary">
                                             <tr>
-                                                <td>
-                                                    <span
-                                                        class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $visit->description }}</td>
-                                                <td>
-                                                    <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
-                                                </td>
-                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
-                                                <td dir="ltr">
-                                                    <div class="small">
-                                                        <span class="badge bg-primary me-1">{{ localize('global.bp') }}</span>
-                                                        {{ $visit->bp }}
-                                                        <br>
-                                                        <span class="badge bg-primary me-1">{{ localize('global.pr') }}</span>
-                                                        {{ $visit->pr }}
-                                                        <br>
-                                                        <span class="badge bg-primary me-1">{{ localize('global.rr') }}</span>
-                                                        {{ $visit->rr }}
-                                                        <br>
-                                                        <span class="badge bg-primary me-1">{{ localize('global.t') }}</span>
-                                                        {{ $visit->t }}
-                                                        <br>
-                                                        <span class="badge bg-primary me-1">{{ localize('global.spo2') }}</span>
-                                                        {{ $visit->spo2 }}
-                                                        <br>
-                                                        <span class="badge bg-primary me-1">{{ localize('global.pain') }}</span>
-                                                        {{ $visit->pain }}
-                                                    </div>
-                                                </td>
-                                                <td>{{$visit->antibiotic}}</td>
-                                                <td>
-                                                    @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
-                                                        <span class="badge bg-primary me-1">{{ $foodType->name }}</span>
-                                                    @endforeach
-                                                </td>
-                                                <td>{{$visit->intake}}</td>
-                                                <td>{{$visit->output}}</td>
+                                                <th>{{ localize('global.number') }}</th>
+                                                <th>{{ localize('global.description') }}</th>
+                                                <th>{{ localize('global.by') }}</th>
+                                                <th>{{ localize('global.visit_date') }}</th>
+                                                <th>{{ localize('global.vital_signs') }}</th>
+                                                <th>{{ localize('global.antibiotic') }}</th>
+                                                <th>{{ localize('global.food_type') }}</th>
+                                                <th>{{ localize('global.intake') }}</th>
+                                                <th>{{ localize('global.output') }}</th>
                                             </tr>
-                                        @endforeach
-                                    @empty
-                                        <tr>
-                                            <td colspan="9" class="text-center">
-                                                <div class="alert alert-info">
-                                                    <i class="bx bx-info-circle me-2"></i>
-                                                    {{ localize('global.no_previous_visits') }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($appointment->hospitalization as $single_hospitaliztion)
+                                                @foreach ($single_hospitaliztion->visits as $visit)
+                                                    <tr>
+                                                        <td>
+                                                            <span
+                                                                class="badge bg-body-secondary text-body rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $visit->description }}</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">{{ $visit->doctor->name }}</span>
+                                                        </td>
+                                                        <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($visit->created_at->format('Y-m-d')) }}</td>
+                                                        <td dir="ltr">
+                                                            <div class="small">
+                                                                <span class="badge bg-primary me-1">{{ localize('global.bp') }}</span>
+                                                                {{ $visit->bp }}
+                                                                <br>
+                                                                <span class="badge bg-primary me-1">{{ localize('global.pr') }}</span>
+                                                                {{ $visit->pr }}
+                                                                <br>
+                                                                <span class="badge bg-primary me-1">{{ localize('global.rr') }}</span>
+                                                                {{ $visit->rr }}
+                                                                <br>
+                                                                <span class="badge bg-primary me-1">{{ localize('global.t') }}</span>
+                                                                {{ $visit->t }}
+                                                                <br>
+                                                                <span class="badge bg-primary me-1">{{ localize('global.spo2') }}</span>
+                                                                {{ $visit->spo2 }}
+                                                                <br>
+                                                                <span class="badge bg-primary me-1">{{ localize('global.pain') }}</span>
+                                                                {{ $visit->pain }}
+                                                            </div>
+                                                        </td>
+                                                        <td>{{$visit->antibiotic}}</td>
+                                                        <td>
+                                                            @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                                <span class="badge bg-primary me-1">{{ $foodType->name }}</span>
+                                                            @endforeach
+                                                        </td>
+                                                        <td>{{$visit->intake}}</td>
+                                                        <td>{{$visit->output}}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="9" class="text-center">
+                                                        <div class="alert alert-info">
+                                                            <i class="bx bx-info-circle me-2"></i>
+                                                            {{ localize('global.no_previous_visits') }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

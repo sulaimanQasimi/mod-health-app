@@ -19,8 +19,10 @@ This is a comprehensive medical database application built with Laravel 10, desi
 ## Developers Contributions
 
 ### Sulaiman Qasimi and Mohammad Rafi 10 Contributions
-**GitHub Repository**: https://github.com/sulaimanQasimi/
-**GitHub Repository**: https://github.com/mohhamdrafi10/
+**GitHub Repository (Sulaiman Qasimi)**: https://github.com/sulaimanQasimi/
+**GitHub Repository (Mohammad Rafi 10)**: https://github.com/mohhamdrafi10/
+**Main Project Repository**: https://github.com/sulaimanQasimi/mod-health-app
+**Collaborative Repository**: https://github.com/mohhamdrafi10/mod-health-app
 
 #### Custom Router Package Integration
 - **Package**: `sulaimanqasimi/router` (dev-main)
@@ -33,9 +35,11 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Package Management**: Integrated custom router package with proper VCS configuration
 - **Repository Configuration**: Set up GitHub repository integration for custom package development
 
-### Mohammad Rafi 10 and sulaiman qasimi Contributions
-**Email**: mohammadrafishirzai83@gmail.com
-**Email**: sulaimanqasimy@gmail.com
+### Mohammad Rafi 10 and Sulaiman Qasimi Contributions
+**Email (Mohammad Rafi 10)**: mohammadrafishirzai83@gmail.com
+**Email (Sulaiman Qasimi)**: sulaimanqasimy@gmail.com
+**Primary Repository**: https://github.com/sulaimanQasimi/mod-health-app
+**Secondary Repository**: https://github.com/mohhamdrafi10/mod-health-app
 
 #### Database Seeding & Data Management
 - **User Seeding**: Implemented comprehensive user seeding with test accounts
@@ -46,6 +50,25 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **UserSeeder.php**: Created test user accounts including admin and medical staff accounts
 - **DistrictSeeder.php**: Implemented comprehensive district data covering all Afghan provinces
 - **Data Localization**: Added support for multiple languages (English, Dari, Pashto) in geographic data
+
+## Repository Structure & Collaboration
+
+### GitHub Repository Management
+- **Primary Repository**: https://github.com/sulaimanQasimi/mod-health-app
+  - Main development repository
+  - Primary source for releases and documentation
+  - Integration with custom router package
+
+- **Collaborative Repository**: https://github.com/mohhamdrafi10/mod-health-app
+  - Secondary development repository
+  - Database seeding and geographic data contributions
+  - Cross-repository synchronization
+
+### Repository Synchronization
+- **Cross-Repository Development**: Both repositories maintain synchronized development
+- **Feature Branch Strategy**: Development features are shared between repositories
+- **Code Review Process**: Collaborative review process across both repositories
+- **Release Management**: Coordinated releases from primary repository
 
 ## Recent Major Changes & New Features
 
@@ -498,8 +521,14 @@ The medical database application has undergone significant development with the 
 - **User Experience**: Enhanced date picker functionality with Persian calendar integration
 
 ### Key Contributors:
-- **Sulaiman Qasimi**: Custom router package development, integration, and performance optimization
-- **Mohammad Rafi 10**: Database seeding, user management, geographic data implementation, and recent date format improvements
+- **Sulaiman Qasimi**: 
+  - Repository: https://github.com/sulaimanQasimi/mod-health-app
+  - Custom router package development, integration, and performance optimization
+  - Primary repository management and release coordination
+- **Mohammad Rafi 10**: 
+  - Repository: https://github.com/mohhamdrafi10/mod-health-app
+  - Database seeding, user management, geographic data implementation, and recent date format improvements
+  - Collaborative repository synchronization and feature development
 - **Development Team**: Date standardization, form fixes, and user interface enhancements
 
 ### Current Status (January 2025):

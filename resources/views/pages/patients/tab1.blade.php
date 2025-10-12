@@ -319,4 +319,11 @@ function persianToJulianDay(year, month, day) {
 function isLeapYear(year) {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
+
+// Auto-focus functionality for all Select2 dropdowns
+$(document).on('select2:open', () => {
+  setTimeout(() => {
+    document.querySelector('.select2-container--open .select2-search__field')?.focus();
+  }, 50);
+});
 </script>

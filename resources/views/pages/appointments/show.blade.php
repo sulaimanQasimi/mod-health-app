@@ -2070,67 +2070,74 @@
             </div>
         </div>
 
-                        <!-- Operations Section -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-body-secondary text-body">
-                                        <h5 class="mb-0">
-                                            <i class="bx bx-cut me-2 text-warning"></i>
-                                            {{ localize('global.operations') }}
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped table-hover">
-                                                <thead class="table-body-secondary">
-                                                    <tr>
-                                                        <th>{{ localize('global.number') }}</th>
-                                                        <th>{{ localize('global.operation_type') }}</th>
-                                                        <th>{{ localize('global.patient_name') }}</th>
-                                                        <th>{{ localize('global.status') }}</th>
-                                                        <th>{{ localize('global.date') }}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @forelse ($appointment->approved_anesthesias as $anesthesia)
-                                                        <tr>
-                                                            <td>
-                                                                <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
-                                                            </td>
-                                                            <td>{{ $anesthesia->operationType?->name }}</td>
-                                                            <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
-                                                            <td>
-                                                                @if ($anesthesia->status == 'new')
-                                                                    <span class="badge bg-primary">
-                                                                        <i class="bx bx-plus-circle me-1"></i> New
-                                                                    </span>
-                                                                @else
-                                                                    <span class="badge bg-success">
-                                                                        <i class="bx bx-check-circle me-1"></i> Approved
-                                                                    </span>
-                                                                @endif
-                                                            </td>
-                                                            <td>{{ $anesthesia->date }}</td>
-                                                        </tr>
-                                                        </tr>
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="5" class="text-center">
-                                                                <div class="alert alert-info">
-                                                                    <i class="bx bx-info-circle me-2"></i>
-                                                                    {{ localize('global.not_referred_to_operation') }}
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforelse
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+        <!-- Operations Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="operationAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="operationHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#operationCollapse" 
+                                aria-expanded="false" aria-controls="operationCollapse">
+                                <i class="bx bx-cut me-2 text-warning"></i>
+                                {{ localize('global.operations') }}
+                            </button>
+                        </h2>
+                        <div id="operationCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="operationHeading" data-bs-parent="#operationAccordion">
+                            <div class="accordion-body">
+                                <!-- Operations Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-body-secondary">
+                                            <tr>
+                                                <th>{{ localize('global.number') }}</th>
+                                                <th>{{ localize('global.operation_type') }}</th>
+                                                <th>{{ localize('global.patient_name') }}</th>
+                                                <th>{{ localize('global.status') }}</th>
+                                                <th>{{ localize('global.date') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($appointment->approved_anesthesias as $anesthesia)
+                                                <tr>
+                                                    <td>
+                                                        <span class="badge bg-warning text-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                    </td>
+                                                    <td>{{ $anesthesia->operationType?->name }}</td>
+                                                    <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
+                                                    <td>
+                                                        @if ($anesthesia->status == 'new')
+                                                            <span class="badge bg-primary">
+                                                                <i class="bx bx-plus-circle me-1"></i> New
+                                                            </span>
+                                                        @else
+                                                            <span class="badge bg-success">
+                                                                <i class="bx bx-check-circle me-1"></i> Approved
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $anesthesia->date }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="5" class="text-center">
+                                                        <div class="alert alert-info">
+                                                            <i class="bx bx-info-circle me-2"></i>
+                                                            {{ localize('global.not_referred_to_operation') }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ICU Section -->
         <div class="row mb-4">

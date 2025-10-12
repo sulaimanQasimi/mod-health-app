@@ -541,7 +541,23 @@ export default {
         },
 
         async deleteLab(labId) {
-            if (!confirm('Are you sure you want to delete this lab test?')) {
+            const result = await Swal.fire({
+                title: 'حذف آزمایش',
+                text: 'آیا از حذف این آزمایش اطمینان دارید؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'بله، حذف کن',
+                cancelButtonText: 'لغو',
+                customClass: { 
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            });
+
+            if (!result.isConfirmed) {
                 return;
             }
 
@@ -602,13 +618,25 @@ export default {
         },
 
         showSuccess(message) {
-            // You can implement your own success notification here
-            alert('Success: ' + message);
+            Swal.fire({
+                icon: 'success',
+                title: 'موفقیت',
+                text: message,
+                customClass: { confirmButton: 'btn btn-success' },
+                buttonsStyling: false,
+                confirmButtonText: 'تأیید'
+            });
         },
 
         showError(message) {
-            // You can implement your own error notification here
-            alert('Error: ' + message);
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا',
+                text: message,
+                customClass: { confirmButton: 'btn btn-danger' },
+                buttonsStyling: false,
+                confirmButtonText: 'تأیید'
+            });
         }
     }
 }

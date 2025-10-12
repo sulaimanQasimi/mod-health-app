@@ -100,6 +100,12 @@
                                 </div>
                             </div>
 
+                            <!-- Info message about modal behavior -->
+                            <div class="alert alert-info mt-3">
+                                <i class="bx bx-info-circle me-2"></i>
+                                <strong>نکته:</strong> پس از ایجاد آزمایش، مودال باز می‌ماند تا بتوانید آزمایشات بیشتری اضافه کنید. برای بستن مودال از دکمه "لغو" یا "ایجاد و بستن" استفاده کنید.
+                            </div>
+
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -108,12 +114,21 @@
                         </button>
                         <button 
                             type="button" 
-                            class="btn btn-primary" 
+                            class="btn btn-success" 
                             @click="createLabTest"
                             :disabled="loading"
                         >
                             <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                            ایجاد
+                            ایجاد و ادامه
+                        </button>
+                        <button 
+                            type="button" 
+                            class="btn btn-primary" 
+                            @click="createLabTestAndClose"
+                            :disabled="loading"
+                        >
+                            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                            ایجاد و بستن
                         </button>
                     </div>
                 </div>
@@ -502,9 +517,71 @@ export default {
                 const data = await response.json();
 
                 if (data.success) {
-                    this.showSuccess(data.message);
+                    this.showSuccess(data.message + ' - Modal will stay open for adding more labs');
                     // Don't close the modal - keep it open for adding more labs
                     // this.closeCreateModal();
+                    this.loadAppointmentLabs();
+                    this.resetForm();
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                console.error('Error creating lab test:', error);
+                this.showError('Failed to create lab test');
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async createLabTestAndClose() {
+            if (!this.form.lab_type_section_id || !this.form.lab_type_id) {
+                this.showError('Please select lab type section and lab type');
+                return;
+            }
+
+            // Check if at least one test is selected (main lab type or additional tests)
+            if (this.form.selected_tests.length === 0 && !this.form.lab_type_id) {
+                this.showError('Please select at least one lab test');
+                return;
+            }
+
+            this.loading = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('lab_type_section_id', this.form.lab_type_section_id);
+                formData.append('appointment_id', this.appointment.id);
+                formData.append('patient_id', this.appointment.patient_id);
+                formData.append('doctor_id', this.appointment.doctor_id);
+                formData.append('branch_id', this.appointment.branch_id);
+
+                // Add the main lab type and selected tests as lab_type_id array
+                const labTypeIds = [this.form.lab_type_id];
+                if (this.form.selected_tests.length > 0) {
+                    labTypeIds.push(...this.form.selected_tests);
+                }
+                
+                // Send all lab type IDs as array
+                labTypeIds.forEach(labTypeId => {
+                    formData.append('lab_type_id[]', labTypeId);
+                });
+
+                const response = await fetch('/lab-ajax/store', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    this.showSuccess(data.message);
+                    this.closeCreateModal();
                     this.loadAppointmentLabs();
                     this.resetForm();
                 } else {

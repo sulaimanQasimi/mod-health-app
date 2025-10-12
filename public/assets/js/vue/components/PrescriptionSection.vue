@@ -166,11 +166,14 @@
                                             class="form-control" 
                                             :placeholder="'مقدار'" 
                                             required>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
                                         <button 
                                             v-if="form.prescription_items.length > 1"
                                             type="button" 
-                                            class="btn btn-danger btn-sm mt-1" 
-                                            @click="removePrescriptionItem(index)">
+                                            class="btn btn-danger btn-sm" 
+                                            @click="removePrescriptionItem(index)"
+                                            title="حذف آیتم">
                                             <i class="bx bx-trash"></i>
                                         </button>
                                     </div>
@@ -255,20 +258,32 @@
                                                  </span>
                                             </td>
                                             <td v-if="canEditPrescription">
-                                                <button 
-                                                    v-if="!item.is_delivered"
-                                                    type="button" 
-                                                    class="btn btn-success btn-sm" 
-                                                    @click="markAsDelivered(item.id)">
-                                                    <i class="bx bx-check"></i>
-                                                </button>
-                                                <button 
-                                                    v-else
-                                                    type="button" 
-                                                    class="btn btn-warning btn-sm" 
-                                                    @click="markAsNotDelivered(item.id)">
-                                                    <i class="bx bx-x"></i>
-                                                </button>
+                                                <div class="d-flex gap-1">
+                                                    <button 
+                                                        v-if="!item.is_delivered"
+                                                        type="button" 
+                                                        class="btn btn-success btn-sm" 
+                                                        @click="markAsDelivered(item.id)"
+                                                        title="تحویل شده">
+                                                        <i class="bx bx-check"></i>
+                                                    </button>
+                                                    <button 
+                                                        v-else
+                                                        type="button" 
+                                                        class="btn btn-warning btn-sm" 
+                                                        @click="markAsNotDelivered(item.id)"
+                                                        title="تحویل نشده">
+                                                        <i class="bx bx-x"></i>
+                                                    </button>
+                                                    <button 
+                                                        v-if="!item.is_delivered"
+                                                        type="button" 
+                                                        class="btn btn-danger btn-sm" 
+                                                        @click="deletePrescriptionItem(item.id)"
+                                                        title="حذف آیتم">
+                                                        <i class="bx bx-trash"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -409,18 +424,20 @@ export default {
             }
         },
 
-        async viewPrescriptionItems(prescriptionId) {
-            try {
-                const response = await fetch(`/prescription-ajax/prescription-items/${prescriptionId}`);
-                const data = await response.json();
-                if (data.success) {
-                    this.selectedPrescription = data.data;
-                    this.showPrescriptionItemsModal = true;
-                }
-            } catch (error) {
-                console.error('Error loading prescription items:', error);
-            }
-        },
+         async viewPrescriptionItems(prescriptionId) {
+             try {
+                 const response = await fetch(`/prescription-ajax/prescription-items/${prescriptionId}`);
+                 const data = await response.json();
+                 if (data.success) {
+                     this.selectedPrescription = data.data;
+                     console.log('Selected prescription:', this.selectedPrescription);
+                     console.log('Can edit prescription:', this.canEditPrescription);
+                     this.showPrescriptionItemsModal = true;
+                 }
+             } catch (error) {
+                 console.error('Error loading prescription items:', error);
+             }
+         },
 
          async submitPrescription() {
              this.loading = true;
@@ -432,7 +449,7 @@ export default {
                  );
 
                  if (hasEmptyFields) {
-                     this.showNotification('Please fill in all fields', 'error');
+                     this.showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
                      this.loading = false;
                      return;
                  }
@@ -465,67 +482,77 @@ export default {
                 });
 
                 const data = await response.json();
-                if (data.success) {
-                    this.showCreateModal = false;
-                    this.loadAppointmentPrescriptions();
-                    this.showNotification('Prescription created successfully', 'success');
-                } else {
-                    this.showNotification(data.message || 'Failed to create prescription', 'error');
-                }
-            } catch (error) {
-                console.error('Error creating prescription:', error);
-                this.showNotification('Failed to create prescription', 'error');
+                 if (data.success) {
+                     this.showCreateModal = false;
+                     this.loadAppointmentPrescriptions();
+                     this.showNotification('نسخه با موفقیت ایجاد شد', 'success');
+                 } else {
+                     this.showNotification(data.message || 'خطا در ایجاد نسخه', 'error');
+                 }
+             } catch (error) {
+                 console.error('Error creating prescription:', error);
+                 this.showNotification('خطا در ایجاد نسخه', 'error');
             } finally {
                 this.loading = false;
             }
         },
 
-        async markAsDelivered(itemId) {
-            try {
-                const response = await fetch(`/prescription-ajax/update-item-status/${itemId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ is_delivered: true })
-                });
+         async markAsDelivered(itemId) {
+             try {
+                 const response = await fetch(`/prescription-ajax/update-item-status/${itemId}`, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                     },
+                     body: JSON.stringify({ is_delivered: true })
+                 });
 
-                const data = await response.json();
-                if (data.success) {
-                    this.loadAppointmentPrescriptions();
-                    this.showNotification('Item marked as delivered', 'success');
-                }
-            } catch (error) {
-                console.error('Error updating item status:', error);
-            }
-        },
+                 const data = await response.json();
+                 if (data.success) {
+                     this.loadAppointmentPrescriptions();
+                     // Refresh the prescription items view if modal is open
+                     if (this.selectedPrescription) {
+                         const prescriptionId = this.selectedPrescription.id;
+                         this.viewPrescriptionItems(prescriptionId);
+                     }
+                     this.showNotification('آیتم به عنوان تحویل شده علامت‌گذاری شد', 'success');
+                 }
+             } catch (error) {
+                 console.error('Error updating item status:', error);
+             }
+         },
 
-        async markAsNotDelivered(itemId) {
-            try {
-                const response = await fetch(`/prescription-ajax/update-item-status/${itemId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ is_delivered: false })
-                });
+         async markAsNotDelivered(itemId) {
+             try {
+                 const response = await fetch(`/prescription-ajax/update-item-status/${itemId}`, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                     },
+                     body: JSON.stringify({ is_delivered: false })
+                 });
 
-                const data = await response.json();
-                if (data.success) {
-                    this.loadAppointmentPrescriptions();
-                    this.showNotification('Item marked as not delivered', 'success');
-                }
-            } catch (error) {
-                console.error('Error updating item status:', error);
-            }
-        },
+                 const data = await response.json();
+                 if (data.success) {
+                     this.loadAppointmentPrescriptions();
+                     // Refresh the prescription items view if modal is open
+                     if (this.selectedPrescription) {
+                         const prescriptionId = this.selectedPrescription.id;
+                         this.viewPrescriptionItems(prescriptionId);
+                     }
+                     this.showNotification('آیتم به عنوان تحویل نشده علامت‌گذاری شد', 'success');
+                 }
+             } catch (error) {
+                 console.error('Error updating item status:', error);
+             }
+         },
 
-        async deletePrescription(prescriptionId) {
-            if (!confirm('Are you sure you want to delete this prescription?')) {
-                return;
-            }
+         async deletePrescription(prescriptionId) {
+             if (!confirm('آیا مطمئن هستید که می‌خواهید این نسخه را حذف کنید؟')) {
+                 return;
+             }
 
             try {
                 const response = await fetch(`/prescription-ajax/delete/${prescriptionId}`, {
@@ -535,18 +562,49 @@ export default {
                     }
                 });
 
-                const data = await response.json();
-                if (data.success) {
-                    this.loadAppointmentPrescriptions();
-                    this.showNotification('Prescription deleted successfully', 'success');
-                } else {
-                    this.showNotification(data.message || 'Failed to delete prescription', 'error');
-                }
-            } catch (error) {
-                console.error('Error deleting prescription:', error);
-                this.showNotification('Failed to delete prescription', 'error');
-            }
-        },
+                 const data = await response.json();
+                 if (data.success) {
+                     this.loadAppointmentPrescriptions();
+                     this.showNotification('نسخه با موفقیت حذف شد', 'success');
+                 } else {
+                     this.showNotification(data.message || 'خطا در حذف نسخه', 'error');
+                 }
+             } catch (error) {
+                 console.error('Error deleting prescription:', error);
+                 this.showNotification('خطا در حذف نسخه', 'error');
+             }
+         },
+
+         async deletePrescriptionItem(itemId) {
+             if (!confirm('آیا مطمئن هستید که می‌خواهید این آیتم نسخه را حذف کنید؟')) {
+                 return;
+             }
+
+             try {
+                 const response = await fetch(`/prescription-ajax/delete-item/${itemId}`, {
+                     method: 'DELETE',
+                     headers: {
+                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                     }
+                 });
+
+                 const data = await response.json();
+                 if (data.success) {
+                     // Reload the prescription items to reflect the deletion
+                     if (this.selectedPrescription) {
+                         const prescriptionId = this.selectedPrescription.id;
+                         this.viewPrescriptionItems(prescriptionId);
+                     }
+                     this.loadAppointmentPrescriptions();
+                     this.showNotification('آیتم نسخه با موفقیت حذف شد', 'success');
+                 } else {
+                     this.showNotification(data.message || 'خطا در حذف آیتم نسخه', 'error');
+                 }
+             } catch (error) {
+                 console.error('Error deleting prescription item:', error);
+                 this.showNotification('خطا در حذف آیتم نسخه', 'error');
+             }
+         },
 
          addPrescriptionItem() {
              this.form.prescription_items.push({

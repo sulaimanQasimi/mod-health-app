@@ -2931,6 +2931,189 @@
                 }
             });
         }
+
+        // Function to update accordion counters dynamically
+        function updateAccordionCounter(accordionId, count) {
+            const accordionButton = document.querySelector(`[data-bs-target="#${accordionId}"]`);
+            if (accordionButton) {
+                // Remove existing counter if it exists
+                const existingCounter = accordionButton.querySelector('.badge');
+                if (existingCounter) {
+                    existingCounter.remove();
+                }
+                
+                // Add new counter if count > 0
+                if (count > 0) {
+                    const counterSpan = document.createElement('span');
+                    counterSpan.className = 'badge ms-2';
+                    
+                    // Set appropriate badge color based on accordion type
+                    if (accordionId.includes('prescription')) {
+                        counterSpan.className += ' bg-success';
+                    } else if (accordionId.includes('advice')) {
+                        counterSpan.className += ' bg-info';
+                    } else if (accordionId.includes('lab')) {
+                        counterSpan.className += ' bg-warning text-dark';
+                    } else if (accordionId.includes('hospitalization')) {
+                        counterSpan.className += ' bg-secondary';
+                    } else if (accordionId.includes('consultation')) {
+                        counterSpan.className += ' bg-primary';
+                    } else if (accordionId.includes('underReview')) {
+                        counterSpan.className += ' bg-dark';
+                    } else if (accordionId.includes('hospitalize')) {
+                        counterSpan.className += ' bg-success';
+                    } else if (accordionId.includes('anesthesia')) {
+                        counterSpan.className += ' bg-danger';
+                    } else if (accordionId.includes('operation')) {
+                        counterSpan.className += ' bg-warning text-dark';
+                    } else if (accordionId.includes('icu')) {
+                        counterSpan.className += ' bg-info';
+                    }
+                    
+                    counterSpan.textContent = count;
+                    accordionButton.appendChild(counterSpan);
+                }
+            }
+        }
+
+        // Function to increment counter for a specific accordion
+        function incrementAccordionCounter(accordionId) {
+            const accordionButton = document.querySelector(`[data-bs-target="#${accordionId}"]`);
+            if (accordionButton) {
+                const existingCounter = accordionButton.querySelector('.badge');
+                let currentCount = 0;
+                
+                if (existingCounter) {
+                    currentCount = parseInt(existingCounter.textContent) || 0;
+                }
+                
+                updateAccordionCounter(accordionId, currentCount + 1);
+            }
+        }
+
+        // Function to refresh counters after form submission
+        function refreshCounters() {
+            // This function will be called after successful form submissions
+            // You can implement AJAX calls here to get updated counts from the server
+            // For now, we'll use a simple approach that increments the counter
+        }
+
+        // Function to refresh all counters (useful for page load)
+        function refreshAllCounters() {
+            // This function can be used to refresh all counters from server data
+            // For now, we'll just ensure all existing counters are properly displayed
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                const target = button.getAttribute('data-bs-target');
+                if (target && target.includes('Collapse')) {
+                    const existingBadge = button.querySelector('.badge');
+                    if (existingBadge) {
+                        // Counter already exists, no need to refresh
+                        return;
+                    }
+                }
+            });
+        }
+
+        // Listen for successful form submissions and update counters
+        $(document).ready(function() {
+            // Global AJAX success handler to update counters
+            $(document).ajaxSuccess(function(event, xhr, settings) {
+                // Check if the request was successful and update appropriate counter
+                if (xhr.status === 200 || xhr.status === 201) {
+                    const url = settings.url;
+                    
+                    // Update prescription counter
+                    if (url.includes('prescriptions.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('prescriptionCollapse');
+                        }, 500);
+                    }
+                    
+                    // Update advice counter
+                    if (url.includes('advices.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('adviceCollapse');
+                        }, 500);
+                    }
+                    
+                    // Update consultation counter
+                    if (url.includes('consultations.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('consultationCollapse');
+                        }, 500);
+                    }
+                    
+                    // Update under review counter
+                    if (url.includes('under_reviews.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('underReviewCollapse');
+                        }, 500);
+                    }
+                    
+                    // Update hospitalization counter
+                    if (url.includes('hospitalizations.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('hospitalizeCollapse');
+                        }, 500);
+                    }
+                    
+                    // Update anesthesia counter
+                    if (url.includes('anesthesias.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('anesthesiaCollapse');
+                        }, 500);
+                    }
+                    
+                    // Update ICU counter
+                    if (url.includes('icus.store')) {
+                        setTimeout(function() {
+                            incrementAccordionCounter('icuCollapse');
+                        }, 500);
+                    }
+                }
+            });
+
+            // Also listen for form submissions (for non-AJAX forms)
+            $('form').on('submit', function() {
+                const action = $(this).attr('action');
+                
+                if (action && action.includes('store')) {
+                    // Store the form action in localStorage to track on page reload
+                    const formType = getFormTypeFromAction(action);
+                    if (formType) {
+                        localStorage.setItem('pendingCounterIncrement', formType);
+                    }
+                }
+            });
+
+            // Listen for page load events to refresh counters
+            $(window).on('load', function() {
+                // Check for pending counter increments from form submissions
+                const pendingIncrement = localStorage.getItem('pendingCounterIncrement');
+                if (pendingIncrement) {
+                    setTimeout(function() {
+                        incrementAccordionCounter(pendingIncrement);
+                        localStorage.removeItem('pendingCounterIncrement');
+                    }, 1000);
+                }
+                
+                // Refresh all counters on page load
+                refreshAllCounters();
+            });
+
+            // Function to get accordion ID from form action
+            function getFormTypeFromAction(action) {
+                if (action.includes('prescriptions.store')) return 'prescriptionCollapse';
+                if (action.includes('advices.store')) return 'adviceCollapse';
+                if (action.includes('consultations.store')) return 'consultationCollapse';
+                if (action.includes('under_reviews.store')) return 'underReviewCollapse';
+                if (action.includes('hospitalizations.store')) return 'hospitalizeCollapse';
+                if (action.includes('anesthesias.store')) return 'anesthesiaCollapse';
+                if (action.includes('icus.store')) return 'icuCollapse';
+                return null;
+            }
+        });
     </script>
         </div>
     </div>

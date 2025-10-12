@@ -1812,28 +1812,38 @@
         </div>
 
 
-        <!-- Anesthesia Section -->
+        <!-- Anesthesia Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-first-aid me-2 text-danger"></i>
-                            {{ localize('global.refere_to_anasthesia') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('refer-to-anesthesia')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div class="accordion" id="anesthesiaAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="anesthesiaHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#anesthesiaCollapse" 
+                                aria-expanded="false" aria-controls="anesthesiaCollapse">
+                                <i class="bx bx-first-aid me-2 text-danger"></i>
+                                {{ localize('global.refere_to_anasthesia') }}
+                            </button>
+                        </h2>
+                        <div id="anesthesiaCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="anesthesiaHeading" data-bs-parent="#anesthesiaAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('refer-to-anesthesia')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createAnasthesiaModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
         <!-- Create  Lab Modal -->
         <div class="modal fade modal-xl" id="createAnasthesiaModal{{ $appointment->id }}" tabindex="-1"
             aria-labelledby="createAnasthesiaModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1978,89 +1988,87 @@
                         </div>
                         <!-- End Create Lab Modal -->
                         
-                        <!-- Anesthesia Table -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        @if($appointment->anesthesias->count() > 0)
-                                            <div class="table-responsive">
-                                                <table class="table table-striped table-hover">
-                                                    <thead class="table-body-secondary">
-                                                        <tr>
-                                                            <th>{{ localize('global.number') }}</th>
-                                                            <th>{{ localize('global.operation_type') }}</th>
-                                                            <th>{{ localize('global.patient_name') }}</th>
-                                                            <th>{{ localize('global.status') }}</th>
-                                                            <th>{{ localize('global.date') }}</th>
-                                                            <th>{{ localize('global.actions') }}</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($appointment->anesthesias as $anesthesia)
-                                                            <tr>
-                                                                <td>
-                                                                    <span class="badge bg-danger rounded-pill">{{ $loop->iteration }}</span>
-                                                                </td>
-                                                                <td>{{ $anesthesia->operationType?->name }}</td>
-                                                                <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
-                                                                <td>
-                                                                    @if ($anesthesia->status == 'new')
-                                                                        <span class="badge bg-primary">
-                                                                            <i class="bx bx-plus-circle me-1"></i> New
-                                                                        </span>
-                                                                    @elseif ($anesthesia->status == 'rejected')
-                                                                        <span class="badge bg-danger">
-                                                                            <i class="bx bx-x-circle me-1"></i> Rejected
-                                                                        </span>
-                                                                    @else
-                                                                        <span class="badge bg-success">
-                                                                            <i class="bx bx-check-circle me-1"></i> Approved
-                                                                        </span>
-                                                                    @endif
-                                                                </td>
-                                                                <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) }}</td>
-                                                                <td>
-                                                                    <div class="btn-group" role="group">
-                                                                        @can('edit-anesthesias')
-                                                                            <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"
-                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                                <i class="bx bx-edit"></i>
-                                                                            </a>
-                                                                        @endcan
-                                                                        @can('delete-anesthesias')
-                                                                            <a href="{{ route('anesthesias.destroy', $anesthesia) }}"
-                                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }"
-                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                                <i class="bx bx-trash"></i>
-                                                                            </a>
-                                                                        @endcan
-                                                                        <!-- Using a <form> element -->
-                                                                        <form id="delete-form-{{$anesthesia->id}}"
-                                                                            action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST"
-                                                                            style="display: none;">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                        </form>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        @else
-                                            <div class="text-center py-4">
-                                                <div class="alert alert-info">
-                                                    <i class="bx bx-info-circle me-2"></i>
-                                                    {{ localize('global.not_referred_to_anesthesia') }}
-                                                </div>
-                                            </div>
-                                        @endif
+                                <!-- Anesthesia Table -->
+                                @if($appointment->anesthesias->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
+                                                <tr>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th>{{ localize('global.operation_type') }}</th>
+                                                    <th>{{ localize('global.patient_name') }}</th>
+                                                    <th>{{ localize('global.status') }}</th>
+                                                    <th>{{ localize('global.date') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($appointment->anesthesias as $anesthesia)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-danger rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $anesthesia->operationType?->name }}</td>
+                                                        <td>{{ $anesthesia->patient?->name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @if ($anesthesia->status == 'new')
+                                                                <span class="badge bg-primary">
+                                                                    <i class="bx bx-plus-circle me-1"></i> New
+                                                                </span>
+                                                            @elseif ($anesthesia->status == 'rejected')
+                                                                <span class="badge bg-danger">
+                                                                    <i class="bx bx-x-circle me-1"></i> Rejected
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-success">
+                                                                    <i class="bx bx-check-circle me-1"></i> Approved
+                                                                </span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) }}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('edit-anesthesias')
+                                                                    <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"
+                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete-anesthesias')
+                                                                    <a href="{{ route('anesthesias.destroy', $anesthesia) }}"
+                                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$anesthesia->id}}').submit(); }"
+                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                <!-- Using a <form> element -->
+                                                                <form id="delete-form-{{$anesthesia->id}}"
+                                                                    action="{{ route('anesthesias.destroy', $anesthesia) }}" method="POST"
+                                                                    style="display: none;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.not_referred_to_anesthesia') }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
                         <!-- Operations Section -->
                         <div class="row mb-4">

@@ -42,7 +42,8 @@
                                 <label for="lab_type_section">بخش آزمایش</label>
                                 <select 
                                     v-model="form.lab_type_section_id" 
-                                    class="form-control" 
+                                    class="form-control select2" 
+                                    id="lab_type_section_select"
                                     @change="loadLabTypes"
                                     required
                                 >
@@ -61,7 +62,8 @@
                                 <label for="lab_type_id">نوع آزمایش</label>
                                 <select 
                                     v-model="form.lab_type_id" 
-                                    class="form-control" 
+                                    class="form-control select2" 
+                                    id="lab_type_id_select"
                                     @change="loadLabTypeTests"
                                     required
                                 >
@@ -103,7 +105,7 @@
                             <!-- Info message about modal behavior -->
                             <div class="alert alert-info mt-3">
                                 <i class="bx bx-info-circle me-2"></i>
-                                <strong>نکته:</strong> پس از ایجاد آزمایش، مودال باز می‌ماند تا بتوانید آزمایشات بیشتری اضافه کنید. برای بستن مودال از دکمه "لغو" یا "ایجاد و بستن" استفاده کنید.
+                                <strong>نکته:</strong> پس از ایجاد آزمایش، مودال باز می‌ماند و فیلدها حفظ می‌شوند تا بتوانید آزمایشات مشابه اضافه کنید. برای بستن مودال از دکمه "لغو" یا "ایجاد و بستن" استفاده کنید.
                             </div>
 
                         </form>
@@ -359,12 +361,31 @@ export default {
         this.loadLabTypeSections();
         this.loadAppointmentLabs();
     },
+    updated() {
+        // Initialize Select2 when component updates
+        this.$nextTick(() => {
+            this.initializeSelect2();
+        });
+    },
     watch: {
         showCreateModal(newVal) {
             console.log('showCreateModal changed to:', newVal);
+            if (newVal) {
+                // Initialize Select2 when modal opens
+                this.$nextTick(() => {
+                    this.initializeSelect2();
+                });
+            } else {
+                // Destroy Select2 when modal closes
+                this.destroySelect2();
+            }
         },
         labTypes(newVal) {
             console.log('labTypes changed to:', newVal);
+            // Re-initialize Select2 when lab types change
+            this.$nextTick(() => {
+                this.initializeSelect2();
+            });
         }
     },
     methods: {
@@ -394,6 +415,11 @@ export default {
             if (!this.form.lab_type_section_id) {
                 this.labTypes = [];
                 this.labTypeTests = [];
+                // Reset lab type selection
+                this.form.lab_type_id = '';
+                this.$nextTick(() => {
+                    this.initializeSelect2();
+                });
                 return;
             }
 
@@ -411,6 +437,12 @@ export default {
                 if (data.success) {
                     console.log('Setting labTypes to:', data.data);
                     this.labTypes = data.data;
+                    // Reset lab type selection when section changes
+                    this.form.lab_type_id = '';
+                    this.labTypeTests = [];
+                    this.$nextTick(() => {
+                        this.initializeSelect2();
+                    });
                     console.log('labTypes after setting:', this.labTypes);
                 } else {
                     this.showError(data.message);
@@ -521,7 +553,9 @@ export default {
                     // Don't close the modal - keep it open for adding more labs
                     // this.closeCreateModal();
                     this.loadAppointmentLabs();
-                    this.resetForm();
+                    // Only reset selected tests, keep other fields
+                    this.form.selected_tests = [];
+                    this.labTypeTests = [];
                 } else {
                     this.showError(data.message);
                 }
@@ -665,6 +699,7 @@ export default {
         },
 
         closeCreateModal() {
+            this.destroySelect2();
             this.showCreateModal = false;
             this.resetForm();
         },
@@ -672,6 +707,10 @@ export default {
         openCreateModal() {
             console.log('Opening create modal');
             this.showCreateModal = true;
+            // Initialize Select2 after modal is shown
+            this.$nextTick(() => {
+                this.initializeSelect2();
+            });
         },
 
         closeLabItemsModal() {
@@ -680,14 +719,11 @@ export default {
         },
 
         resetForm() {
-            this.form = {
-                lab_type_section_id: '',
-                lab_type_id: '',
-                selected_tests: [],
-                status: '0'
-            };
-            this.labTypes = [];
+            // Don't reset the form fields - keep them for adding more labs
+            // Only reset the selected tests and clear dependent dropdowns
+            this.form.selected_tests = [];
             this.labTypeTests = [];
+            // Keep lab_type_section_id and lab_type_id for convenience
         },
 
         formatDate(dateString) {
@@ -715,6 +751,70 @@ export default {
                 buttonsStyling: false,
                 confirmButtonText: 'تأیید'
             });
+        },
+
+        initializeSelect2() {
+            // Initialize Select2 for lab type section
+            if (document.getElementById('lab_type_section_select')) {
+                $('#lab_type_section_select').select2({
+                    placeholder: 'انتخاب بخش آزمایش',
+                    allowClear: true,
+                    dropdownParent: $('.modal-body'),
+                    language: {
+                        noResults: function() {
+                            return "نتیجه‌ای یافت نشد";
+                        },
+                        searching: function() {
+                            return "در حال جستجو...";
+                        }
+                    }
+                }).on('select2:open', function() {
+                    // Auto-focus on search input
+                    setTimeout(() => {
+                        $('.select2-search__field').focus();
+                    }, 100);
+                }).on('change', (e) => {
+                    // Handle change event
+                    this.form.lab_type_section_id = e.target.value;
+                    this.loadLabTypes();
+                });
+            }
+
+            // Initialize Select2 for lab type
+            if (document.getElementById('lab_type_id_select')) {
+                $('#lab_type_id_select').select2({
+                    placeholder: 'انتخاب نوع آزمایش',
+                    allowClear: true,
+                    dropdownParent: $('.modal-body'),
+                    language: {
+                        noResults: function() {
+                            return "نتیجه‌ای یافت نشد";
+                        },
+                        searching: function() {
+                            return "در حال جستجو...";
+                        }
+                    }
+                }).on('select2:open', function() {
+                    // Auto-focus on search input
+                    setTimeout(() => {
+                        $('.select2-search__field').focus();
+                    }, 100);
+                }).on('change', (e) => {
+                    // Handle change event
+                    this.form.lab_type_id = e.target.value;
+                    this.loadLabTypeTests();
+                });
+            }
+        },
+
+        destroySelect2() {
+            // Destroy existing Select2 instances
+            if ($('#lab_type_section_select').hasClass('select2-hidden-accessible')) {
+                $('#lab_type_section_select').select2('destroy');
+            }
+            if ($('#lab_type_id_select').hasClass('select2-hidden-accessible')) {
+                $('#lab_type_id_select').select2('destroy');
+            }
         }
     }
 }

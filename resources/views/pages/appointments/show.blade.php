@@ -421,245 +421,24 @@
                         <div id="prescriptionCollapse" class="accordion-collapse collapse" 
                             aria-labelledby="prescriptionHeading" data-bs-parent="#prescriptionAccordion">
                             <div class="accordion-body">
-                                <!-- Add Button and Table Header -->
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div></div> <!-- Empty div for spacing -->
-                                    <div>
-                                        @if ($appointment->is_completed == 0)
-                                            @can('add-prescription')
-                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
-                                            @endcan
-                                        @endif
+                                <!-- Prescription Section Vue Component -->
+                                <div id="prescription-section-container" 
+                                     data-appointment='@json($appointment)'
+                                     data-permissions='@json([
+                                         "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                         "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                         "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                     ])'>
+                                    <!-- Fallback content while Vue loads -->
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
                                     </div>
                                 </div>
-                                
-                                <!-- Prescription Table -->
-                                @if($appointment->prescription->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead class="table-body-secondary">
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.patient_name') }}</th>
-                                                    <th>{{ localize('global.status') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($appointment->prescription as $prescription)
-                                                    <tr>
-                                                        <td>
-                                                            <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
-                                                        </td>
-                                                        <td>{{ $prescription->patient?->name ?? 'N/A' }}</td>
-                                                        <td>
-                                                            @if ($prescription->is_completed == '0')
-                                                                <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
-                                                            @else
-                                                                <span class="badge bg-success">{{ localize('global.delivered') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                                        <a href="#" data-bs-toggle="modal"
-                                                            onclick="getPrescriptionItems({{ $prescription->id }})"
-                                                            data-bs-target="#showPrescriptionItemModal" 
-                                                            class="btn btn-outline-primary btn-sm" title="View Details">
-                                                        <i class="bx bx-expand me-1"></i>
-                                                        {{ localize('global.view') }}
-                                                    </a>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <div class="text-center py-4">
-                                        <div class="alert alert-info">
-                                            <i class="bx bx-info-circle me-2"></i>
-                                            {{ localize('global.no_previous_prescriptions') }}
-                                        </div>
-                                    </div>
-                                @endif
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Create Diagnose Modal -->
-        <div class="modal fade modal-xl" id="createPrescriptionModal{{ $appointment->id }}" tabindex="-1"
-            aria-labelledby="createPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createPrescriptionModalLabel{{ $appointment->id }}">
-                            {{ localize('global.add_prescription') }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('prescriptions.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id"
-                                value="{{ $appointment->patient_id }}">
-                            <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
-                                value="{{ $appointment->id }}">
-                            <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
-                                value="{{ auth()->user()->branch_id }}">
-                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                value="{{ auth()->user()->id }}">
-
-                            <!-- Add other diagnosis form fields as needed -->
-                            <div class="form-group" id="prescription-items">
-
-                                <div id="prescription-input-container">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <label class="form-group mb-2">{{ localize('global.medicine_type') }}</label>
-                                            <select class="form-control select2" name="medicine_type_id[]" required>
-                                                <option value="">{{ localize('global.select') }}
-                                                </option>
-                                                @foreach ($medicineTypes as $value)
-                                                    <option value="{{ $value->id }}" {{ old('type') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->type }}
-
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-group mb-2">{{ localize('global.medicine_name') }}</label>
-                                            <select class="form-control select2" name="medicine_id[]" required>
-                                                <option value="">{{ localize('global.select') }}
-                                                </option>
-                                                @foreach ($medicines as $value)
-                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->name }}
-
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-group mb-2">{{ localize('global.usage_type') }}</label>
-                                            <select class="form-control select2 mt-2" name="usage_type_id[]" required>
-                                                <option value="">{{ localize('global.select') }}
-                                                </option>
-                                                @foreach ($medicineUsageTypes as $value)
-                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->name }}
-
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-group">{{ localize('global.dosage') }}</label>
-                                            <input type="text" class="form-control mt-2" name="dosage[]"
-                                                placeholder="Dosage" required>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-group">{{ localize('global.frequency') }}</label>
-                                            <input type="text" class="form-control mt-2" name="frequency[]"
-                                                placeholder="Frequency" required>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-group">{{ localize('global.amount') }}</label>
-                                            <input type="text" class="form-control mt-2" name="amount[]"
-                                                placeholder="Amount" required>
-                                        </div>
-                                        <div class="col-md-2"> <input type="hidden" class="form-control mt-2"
-                                                name="is_delivered[]" value="0">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="button" class="btn btn-primary mt-2" id="addPrescriptionInput" onclick="addRow()">
-                                <i class="bx bx-plus"></i>{{ localize('global.add_prescription_item') }}
-                            </button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Prescription Details Modal -->
-        <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
-            aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content" id="prescription_items_table">
-                    <!-- Content will be loaded dynamically -->
-                </div>
-            </div>
-        </div>
-
-
-        <div class="modal fade modal-xl" id="showPrescriptionModal{{ $appointment->id }}" tabindex="-1"
-            aria-labelledby="showPrescriptionModalLabel{{ $appointment->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="showPrescriptionModalLabel{{ $appointment->id }}">
-                            {{ localize('global.show_prescription_details') }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{ localize('global.number') }}</th>
-                                    <th>{{ localize('global.date') }}</th>
-                                    {{-- <th>{{ localize('global.description') }}</th>
-                                    <th>{{ localize('global.dosage') }}</th>
-                                    <th>{{ localize('global.frequency') }}</th>
-                                    <th>{{ localize('global.amount') }}</th> --}}
-                                    <th>{{ localize('global.status') }}</th>
-                                    <th>{{ localize('global.actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if ($appointment->prescription)
-                                    @foreach ($appointment->prescription as $pres_list)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($pres_list->created_at->format('Y-m-d')) }}</td>
-                                            <td>{{ $pres_list->is_completed }}</td>
-                                            <td>
-                                                <a href="#" data-bs-toggle="modal"
-                                                    onclick="getPrescriptionItems({{ $pres_list->id }})"
-                                                    data-bs-target="#showPrescriptionItemModal"><span><i
-                                                            class="bx bx-expand"></i></span></a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-items-center">
-                                                    <div class="badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_prescriptions') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -2448,6 +2227,9 @@
     <!-- Vue.js Lab Section -->
     @vite(['public/assets/js/vue/lab-app.js'])
     <script src="{{ asset('assets/js/vue/debug-lab.js') }}"></script>
+    
+    <!-- Vue.js Prescription Section -->
+    @vite(['public/assets/js/vue/prescription-app.js'])
     <script>
         // Global Select2 fix for modal compatibility
         (function () {

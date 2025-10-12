@@ -503,7 +503,8 @@ export default {
 
                 if (data.success) {
                     this.showSuccess(data.message);
-                    this.closeCreateModal();
+                    // Don't close the modal - keep it open for adding more labs
+                    // this.closeCreateModal();
                     this.loadAppointmentLabs();
                     this.resetForm();
                 } else {

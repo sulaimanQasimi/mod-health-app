@@ -402,24 +402,88 @@
             </div>
         </div>
 
-        <!-- Prescription Section -->
+        <!-- Prescription Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-notepad me-2 text-success"></i>
-                            {{ localize('global.prescription') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('add-prescription')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
+                <div class="accordion" id="prescriptionAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="prescriptionHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#prescriptionCollapse" 
+                                aria-expanded="false" aria-controls="prescriptionCollapse">
+                                <i class="bx bx-notepad me-2 text-success"></i>
+                                {{ localize('global.prescription') }}
+                            </button>
+                        </h2>
+                        <div id="prescriptionCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="prescriptionHeading" data-bs-parent="#prescriptionAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button and Table Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-prescription')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createPrescriptionModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <!-- Prescription Table -->
+                                @if($appointment->prescription->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
+                                                <tr>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th>{{ localize('global.patient_name') }}</th>
+                                                    <th>{{ localize('global.status') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($appointment->prescription as $prescription)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $prescription->patient?->name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @if ($prescription->is_completed == '0')
+                                                                <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                                            @else
+                                                                <span class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                                        <a href="#" data-bs-toggle="modal"
+                                                            onclick="getPrescriptionItems({{ $prescription->id }})"
+                                                            data-bs-target="#showPrescriptionItemModal" 
+                                                            class="btn btn-outline-primary btn-sm" title="View Details">
+                                                        <i class="bx bx-expand me-1"></i>
+                                                        {{ localize('global.view') }}
+                                                    </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_previous_prescriptions') }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -527,62 +591,6 @@
             </div>
         </div>
 
-                        <!-- Prescription Table -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        @if($appointment->prescription->count() > 0)
-                                            <div class="table-responsive">
-                                                <table class="table table-striped table-hover">
-                                                    <thead class="table-body-secondary">
-                                                        <tr>
-                                                            <th>{{ localize('global.number') }}</th>
-                                                            <th>{{ localize('global.patient_name') }}</th>
-                                                            <th>{{ localize('global.status') }}</th>
-                                                            <th>{{ localize('global.actions') }}</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach($appointment->prescription as $prescription)
-                                                            <tr>
-                                                                <td>
-                                                                    <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
-                                                                </td>
-                                                                <td>{{ $prescription->patient?->name ?? 'N/A' }}</td>
-                                                                <td>
-                                                                    @if ($prescription->is_completed == '0')
-                                                                        <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
-                                                                    @else
-                                                                        <span class="badge bg-success">{{ localize('global.delivered') }}</span>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                                                                                            <a href="#" data-bs-toggle="modal"
-                                                                        onclick="getPrescriptionItems({{ $prescription->id }})"
-                                                                        data-bs-target="#showPrescriptionItemModal" 
-                                                                        class="btn btn-outline-primary btn-sm" title="View Details">
-                                                                            <i class="bx bx-expand me-1"></i>
-                                                                            {{ localize('global.view') }}
-                                                                        </a>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        @else
-                                            <div class="text-center py-4">
-                                                <div class="alert alert-info">
-                                                    <i class="bx bx-info-circle me-2"></i>
-                                                    {{ localize('global.no_previous_prescriptions') }}
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
         <!-- Prescription Details Modal -->
         <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"

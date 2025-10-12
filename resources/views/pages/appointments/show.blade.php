@@ -914,28 +914,38 @@
 
 
 
-        <!-- Consultations Section -->
+        <!-- Consultations Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-chat me-2 text-primary"></i>
-                            {{ localize('global.consultations') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('add-consultations')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div class="accordion" id="consultationAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="consultationHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#consultationCollapse" 
+                                aria-expanded="false" aria-controls="consultationCollapse">
+                                <i class="bx bx-chat me-2 text-primary"></i>
+                                {{ localize('global.consultations') }}
+                            </button>
+                        </h2>
+                        <div id="consultationCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="consultationHeading" data-bs-parent="#consultationAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-consultations')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
         <!-- Create  Lab Modal -->
         <div class="modal fade" id="createConsultationModal{{ $appointment->id }}" tabindex="-1"
             aria-labelledby="createConsultationModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1027,95 +1037,93 @@
         </div>
         <!-- End Create Lab Modal -->
 
-        <!-- Consultations Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        @if($appointment->consultations->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-body-secondary">
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.title') }}</th>
-                                            <th>{{ localize('global.department') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->consultations as $consultation)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $consultation->title }}</td>
-                                                <td>
-                                                    @foreach ($consultation->associated_departments as $department)
-                                                        <span class="badge bg-primary me-1">{{ $department->name }}</span>
-                                                    @endforeach
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('edit-consultations')
-                                                            <a href="{{ route('consultations.edit', $consultation->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete-consultations')
-                                                            <a href="{{ route('consultations.destroy', $consultation->id) }}"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            @if ($consultation->comments->isNotEmpty())
+                                <!-- Consultations Table -->
+                                @if($appointment->consultations->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
                                                 <tr>
-                                                    <td colspan="4">
-                                                        <div class="alert alert-info mb-2">
-                                                            <i class="bx bx-chat me-2"></i>
-                                                            {{ localize('global.related_comments') }}
-                                                        </div>
-                                                    </td>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th>{{ localize('global.title') }}</th>
+                                                    <th>{{ localize('global.department') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
                                                 </tr>
-                                                <tr>
-                                                    <td colspan="4">
-                                                        @foreach ($consultation->comments as $comment)
-                                                            <div class="row mb-3 p-3 bg-body-secondary rounded">
-                                                                <div class="col-md-3">
-                                                                    <span class="badge bg-primary">{{ $comment->department->name }}</span>
-                                                                </div>
-                                                                <div class="col-md-1 d-flex align-items-center justify-content-center">
-                                                                    <i class="bx bx-transfer text-success"></i>
-                                                                </div>
-                                                                <div class="col-md-2">
-                                                                    <span class="badge bg-secondary">{{ $comment->doctor->name }}</span>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="p-3 bg-body rounded border-start border-primary border-3">
-                                                                        {{ $comment->comment }}
-                                                                    </div>
-                                                                </div>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($appointment->consultations as $consultation)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $consultation->title }}</td>
+                                                        <td>
+                                                            @foreach ($consultation->associated_departments as $department)
+                                                                <span class="badge bg-primary me-1">{{ $department->name }}</span>
+                                                            @endforeach
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('edit-consultations')
+                                                                    <a href="{{ route('consultations.edit', $consultation->id) }}"
+                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete-consultations')
+                                                                    <a href="{{ route('consultations.destroy', $consultation->id) }}"
+                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </a>
+                                                                @endcan
                                                             </div>
-                                                        @endforeach
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                        </td>
+                                                    </tr>
+                                                    @if ($consultation->comments->isNotEmpty())
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                <div class="alert alert-info mb-2">
+                                                                    <i class="bx bx-chat me-2"></i>
+                                                                    {{ localize('global.related_comments') }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                @foreach ($consultation->comments as $comment)
+                                                                    <div class="row mb-3 p-3 bg-body-secondary rounded">
+                                                                        <div class="col-md-3">
+                                                                            <span class="badge bg-primary">{{ $comment->department->name }}</span>
+                                                                        </div>
+                                                                        <div class="col-md-1 d-flex align-items-center justify-content-center">
+                                                                            <i class="bx bx-transfer text-success"></i>
+                                                                        </div>
+                                                                        <div class="col-md-2">
+                                                                            <span class="badge bg-secondary">{{ $comment->doctor->name }}</span>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="p-3 bg-body rounded border-start border-primary border-3">
+                                                                                {{ $comment->comment }}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_previous_consultations') }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_previous_consultations') }}
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>

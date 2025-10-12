@@ -1,7 +1,8 @@
 import { createApp } from 'vue';
 import LabSection from './components/LabSection.vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
 
-// Make Vue and createApp available globally for debugging
+// Make Vue and createApp available globally
 window.Vue = { createApp };
 window.createApp = createApp;
 
@@ -41,23 +42,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const appointmentData = JSON.parse(labContainer.dataset.appointment || '{}');
             const permissions = JSON.parse(labContainer.dataset.permissions || '{}');
             
-            console.log('Initializing Vue Lab App with:', { appointmentData, permissions });
-            
             const app = createLabApp(appointmentData, permissions);
             app.mount('#lab-section-container');
-            
-            console.log('Vue Lab App mounted successfully');
         } catch (error) {
-            console.error('Error initializing Vue Lab App:', error);
             // Show fallback content if Vue fails
             showFallbackContent();
         }
-    } else {
-        console.warn('Lab section container not found');
     }
 });
 
-// Make createApp available globally for debugging
+// Make createApp available globally
 window.createApp = createApp;
 
 // Fallback function to show basic lab section if Vue fails

@@ -40,42 +40,36 @@
 
                             <div class="form-group mb-3">
                                 <label for="lab_type_section">بخش آزمایش</label>
-                                <select 
-                                    v-model="form.lab_type_section_id" 
-                                    class="form-control select2" 
-                                    id="lab_type_section_select"
-                                    @change="loadLabTypes"
-                                    required
+                                <multiselect
+                                    v-model="selectedLabTypeSection"
+                                    :options="labTypeSections"
+                                    :searchable="true"
+                                    :close-on-select="true"
+                                    :show-labels="false"
+                                    placeholder="انتخاب بخش آزمایش"
+                                    label="section"
+                                    track-by="id"
+                                    @select="onSectionSelect"
+                                    @clear="onSectionClear"
                                 >
-                                    <option value="">انتخاب کنید</option>
-                                    <option 
-                                        v-for="section in labTypeSections" 
-                                        :key="section.id" 
-                                        :value="section.id"
-                                    >
-                                        {{ section.section }}
-                                    </option>
-                                </select>
+                                </multiselect>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label for="lab_type_id">نوع آزمایش</label>
-                                <select 
-                                    v-model="form.lab_type_id" 
-                                    class="form-control select2" 
-                                    id="lab_type_id_select"
-                                    @change="loadLabTypeTests"
-                                    required
+                                <multiselect
+                                    v-model="selectedLabType"
+                                    :options="labTypes"
+                                    :searchable="true"
+                                    :close-on-select="true"
+                                    :show-labels="false"
+                                    placeholder="انتخاب نوع آزمایش"
+                                    label="name"
+                                    track-by="id"
+                                    @select="onLabTypeSelect"
+                                    @clear="onLabTypeClear"
                                 >
-                                    <option value="">انتخاب کنید</option>
-                                    <option 
-                                        v-for="labType in labTypes" 
-                                        :key="labType.id" 
-                                        :value="labType.id"
-                                    >
-                                        {{ labType.name }}
-                                    </option>
-                                </select>
+                                </multiselect>
                             </div>
 
                             <div v-if="labTypeTests.length > 0" class="form-group mb-3">
@@ -315,7 +309,12 @@
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect'
+
 export default {
+    components: {
+        Multiselect
+    },
     name: 'LabSection',
     props: {
         appointment: {
@@ -349,6 +348,8 @@ export default {
             labTypes: [],
             labTypeTests: [],
             selectedLab: null,
+            selectedLabTypeSection: null,
+            selectedLabType: null,
             form: {
                 lab_type_section_id: '',
                 lab_type_id: '',
@@ -357,35 +358,15 @@ export default {
         }
     },
     mounted() {
-        console.log('LabSection component mounted');
         this.loadLabTypeSections();
         this.loadAppointmentLabs();
     },
-    updated() {
-        // Initialize Select2 when component updates
-        this.$nextTick(() => {
-            this.initializeSelect2();
-        });
-    },
     watch: {
         showCreateModal(newVal) {
-            console.log('showCreateModal changed to:', newVal);
-            if (newVal) {
-                // Initialize Select2 when modal opens
-                this.$nextTick(() => {
-                    this.initializeSelect2();
-                });
-            } else {
-                // Destroy Select2 when modal closes
-                this.destroySelect2();
+            if (!newVal) {
+                // Reset form when modal closes
+                this.resetForm();
             }
-        },
-        labTypes(newVal) {
-            console.log('labTypes changed to:', newVal);
-            // Re-initialize Select2 when lab types change
-            this.$nextTick(() => {
-                this.initializeSelect2();
-            });
         }
     },
     methods: {
@@ -406,7 +387,6 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error loading lab type sections:', error);
                 this.showError('Failed to load lab type sections');
             }
         },
@@ -417,9 +397,6 @@ export default {
                 this.labTypeTests = [];
                 // Reset lab type selection
                 this.form.lab_type_id = '';
-                this.$nextTick(() => {
-                    this.initializeSelect2();
-                });
                 return;
             }
 
@@ -432,23 +409,16 @@ export default {
                     }
                 });
                 const data = await response.json();
-                console.log('Lab types response:', data);
                 
                 if (data.success) {
-                    console.log('Setting labTypes to:', data.data);
                     this.labTypes = data.data;
                     // Reset lab type selection when section changes
                     this.form.lab_type_id = '';
                     this.labTypeTests = [];
-                    this.$nextTick(() => {
-                        this.initializeSelect2();
-                    });
-                    console.log('labTypes after setting:', this.labTypes);
                 } else {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error loading lab types:', error);
                 this.showError('Failed to load lab types');
             }
         },
@@ -475,7 +445,6 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error loading lab type tests:', error);
                 this.showError('Failed to load lab type tests');
             }
         },
@@ -497,7 +466,6 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error loading appointment labs:', error);
                 this.showError('Failed to load appointment labs');
             }
         },
@@ -560,7 +528,6 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error creating lab test:', error);
                 this.showError('Failed to create lab test');
             } finally {
                 this.loading = false;
@@ -622,7 +589,6 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error creating lab test:', error);
                 this.showError('Failed to create lab test');
             } finally {
                 this.loading = false;
@@ -647,7 +613,6 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error loading lab items:', error);
                 this.showError('Failed to load lab items');
             }
         },
@@ -693,24 +658,17 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                console.error('Error deleting lab test:', error);
                 this.showError('Failed to delete lab test');
             }
         },
 
         closeCreateModal() {
-            this.destroySelect2();
             this.showCreateModal = false;
             this.resetForm();
         },
 
         openCreateModal() {
-            console.log('Opening create modal');
             this.showCreateModal = true;
-            // Initialize Select2 after modal is shown
-            this.$nextTick(() => {
-                this.initializeSelect2();
-            });
         },
 
         closeLabItemsModal() {
@@ -719,11 +677,14 @@ export default {
         },
 
         resetForm() {
-            // Don't reset the form fields - keep them for adding more labs
-            // Only reset the selected tests and clear dependent dropdowns
+            // Reset all form fields
+            this.form.lab_type_section_id = '';
+            this.form.lab_type_id = '';
             this.form.selected_tests = [];
+            this.selectedLabTypeSection = null;
+            this.selectedLabType = null;
+            this.labTypes = [];
             this.labTypeTests = [];
-            // Keep lab_type_section_id and lab_type_id for convenience
         },
 
         formatDate(dateString) {
@@ -753,68 +714,29 @@ export default {
             });
         },
 
-        initializeSelect2() {
-            // Initialize Select2 for lab type section
-            if (document.getElementById('lab_type_section_select')) {
-                $('#lab_type_section_select').select2({
-                    placeholder: 'انتخاب بخش آزمایش',
-                    allowClear: true,
-                    dropdownParent: $('.modal-body'),
-                    language: {
-                        noResults: function() {
-                            return "نتیجه‌ای یافت نشد";
-                        },
-                        searching: function() {
-                            return "در حال جستجو...";
-                        }
-                    }
-                }).on('select2:open', function() {
-                    // Auto-focus on search input
-                    setTimeout(() => {
-                        $('.select2-search__field').focus();
-                    }, 100);
-                }).on('change', (e) => {
-                    // Handle change event
-                    this.form.lab_type_section_id = e.target.value;
-                    this.loadLabTypes();
-                });
-            }
 
-            // Initialize Select2 for lab type
-            if (document.getElementById('lab_type_id_select')) {
-                $('#lab_type_id_select').select2({
-                    placeholder: 'انتخاب نوع آزمایش',
-                    allowClear: true,
-                    dropdownParent: $('.modal-body'),
-                    language: {
-                        noResults: function() {
-                            return "نتیجه‌ای یافت نشد";
-                        },
-                        searching: function() {
-                            return "در حال جستجو...";
-                        }
-                    }
-                }).on('select2:open', function() {
-                    // Auto-focus on search input
-                    setTimeout(() => {
-                        $('.select2-search__field').focus();
-                    }, 100);
-                }).on('change', (e) => {
-                    // Handle change event
-                    this.form.lab_type_id = e.target.value;
-                    this.loadLabTypeTests();
-                });
-            }
+        // Vue Multiselect event handlers
+        onSectionSelect(selectedSection) {
+            this.form.lab_type_section_id = selectedSection.id;
+            this.loadLabTypes();
         },
 
-        destroySelect2() {
-            // Destroy existing Select2 instances
-            if ($('#lab_type_section_select').hasClass('select2-hidden-accessible')) {
-                $('#lab_type_section_select').select2('destroy');
-            }
-            if ($('#lab_type_id_select').hasClass('select2-hidden-accessible')) {
-                $('#lab_type_id_select').select2('destroy');
-            }
+        onSectionClear() {
+            this.form.lab_type_section_id = '';
+            this.selectedLabType = null;
+            this.form.lab_type_id = '';
+            this.labTypes = [];
+            this.labTypeTests = [];
+        },
+
+        onLabTypeSelect(selectedLabType) {
+            this.form.lab_type_id = selectedLabType.id;
+            this.loadLabTypeTests();
+        },
+
+        onLabTypeClear() {
+            this.form.lab_type_id = '';
+            this.labTypeTests = [];
         }
     }
 }
@@ -832,5 +754,55 @@ export default {
 .spinner-border-sm {
     width: 1rem;
     height: 1rem;
+}
+
+/* Vue Multiselect Styles */
+.multiselect {
+    min-height: 38px;
+}
+
+.multiselect__tags {
+    min-height: 38px;
+    border: 1px solid #d9dee3;
+    border-radius: 0.375rem;
+}
+
+.multiselect__tags:focus-within {
+    border-color: #696cff;
+    box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.25);
+}
+
+.multiselect__placeholder {
+    color: #a1acb8;
+    font-size: 0.875rem;
+}
+
+.multiselect__single {
+    font-size: 0.875rem;
+    color: #5f6e7f;
+}
+
+.multiselect__input {
+    font-size: 0.875rem;
+}
+
+.multiselect__option {
+    font-size: 0.875rem;
+    padding: 8px 12px;
+}
+
+.multiselect__option--highlight {
+    background: #696cff;
+}
+
+.multiselect__option--selected {
+    background: #f8f9fa;
+    color: #696cff;
+    font-weight: 600;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+    background: #696cff;
+    color: white;
 }
 </style>

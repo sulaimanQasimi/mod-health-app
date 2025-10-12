@@ -794,39 +794,38 @@
         <!-- End Create Diagnose Modal -->
 
 
-        <!-- Lab Section Vue Component -->
-        <div id="lab-section-container" 
-             data-appointment='@json($appointment)'
-             data-permissions='@json([
-                 "canAddLab" => auth()->user()->can("add-patient-labs"),
-                 "canEditLab" => auth()->user()->can("edit-patient-labs"),
-                 "canDeleteLab" => auth()->user()->can("delete-patient-labs")
-             ])'>
-            <!-- Fallback content while Vue loads -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
+        <!-- Lab Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="labAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="labHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#labCollapse" 
+                                aria-expanded="false" aria-controls="labCollapse">
                                 <i class="bx bx-hard-hat me-2 text-warning"></i>
                                 {{ localize('global.checkups') }}
-                            </h5>
-                            @if ($appointment->is_completed == 0)
-                                @can('add-patient-labs')
-                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#createLabModal{{ $appointment->id }}">
-                                        <i class="bx bx-plus me-1"></i>
-                                        {{ localize('global.add') }}
-                                    </button>
-                                @endcan
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                            </button>
+                        </h2>
+                        <div id="labCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="labHeading" data-bs-parent="#labAccordion">
+                            <div class="accordion-body">
+                                <!-- Lab Section Vue Component -->
+                                <div id="lab-section-container" 
+                                     data-appointment='@json($appointment)'
+                                     data-permissions='@json([
+                                         "canAddLab" => auth()->user()->can("add-patient-labs"),
+                                         "canEditLab" => auth()->user()->can("edit-patient-labs"),
+                                         "canDeleteLab" => auth()->user()->can("delete-patient-labs")
+                                     ])'>
+                                    <!-- Fallback content while Vue loads -->
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">{{ localize('global.loading_lab_section') }}</p>
+                                    </div>
                                 </div>
-                                <p class="mt-2">{{ localize('global.loading_lab_section') }}</p>
                             </div>
                         </div>
                     </div>

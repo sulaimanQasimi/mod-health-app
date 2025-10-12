@@ -1129,24 +1129,48 @@
             </div>
         </div>
 
-        <!-- Refer to Another Doctor Section -->
+        <!-- Refer to Another Doctor Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-transfer me-2 text-danger"></i>
-                            {{ localize('global.refer_to_another_doctor') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('refer-to-another-doctor')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.refer_patient') }}
-                                </button>
-                            @endcan
-                        @endif
+                <div class="accordion" id="referDoctorAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="referDoctorHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#referDoctorCollapse" 
+                                aria-expanded="false" aria-controls="referDoctorCollapse">
+                                <i class="bx bx-transfer me-2 text-danger"></i>
+                                {{ localize('global.refer_to_another_doctor') }}
+                            </button>
+                        </h2>
+                        <div id="referDoctorCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="referDoctorHeading" data-bs-parent="#referDoctorAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('refer-to-another-doctor')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createReferDoctorModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.refer_patient') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <!-- Referral Remarks Section -->
+                                @if ($appointment->is_completed == 1)
+                                    <div class="alert alert-success">
+                                        <i class="bx bx-check-circle me-2"></i>
+                                        <strong>{{ localize('global.referral_remarks') }}:</strong>
+                                        {{ $appointment->refferal_remarks }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1223,18 +1247,6 @@
             </div>
         </div>
 
-        <!-- Referral Remarks Section -->
-        @if ($appointment->is_completed == 1)
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="alert alert-success">
-                        <i class="bx bx-check-circle me-2"></i>
-                        <strong>{{ localize('global.referral_remarks') }}:</strong>
-                        {{ $appointment->refferal_remarks }}
-                    </div>
-                </div>
-            </div>
-        @endif
 
         <!-- Under Review Section Accordion -->
         <div class="row mb-4">

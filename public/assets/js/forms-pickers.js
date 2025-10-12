@@ -5,22 +5,8 @@
 'use strict';
 
 (function () {
-  // Check if flatpickr is available
-  if (typeof flatpickr === 'undefined') {
-    console.warn('flatpickr library is not loaded');
-    return;
-  }
-
-  // Wait for DOM to be ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFlatpickr);
-  } else {
-    initFlatpickr();
-  }
-
-  function initFlatpickr() {
-    // Flat Picker
-    // --------------------------------------------------------------------
+  // Flat Picker
+  // --------------------------------------------------------------------
   const flatpickrDate = document.querySelector('#flatpickr-date'),
     flatpickrTime = document.querySelector('#flatpickr-time'),
     flatpickrDateTime = document.querySelector('#flatpickr-datetime'),
@@ -64,7 +50,7 @@
   }
 
   // Range
-  if (flatpickrRange) {
+  if (typeof flatpickrRange != undefined) {
     flatpickrRange.flatpickr({
       mode: 'range'
     });
@@ -102,7 +88,6 @@
         }
       ]
     });
-  }
   }
 })();
 
@@ -190,17 +175,6 @@ $(function () {
 
   // Bootstrap Daterange Picker
   // --------------------------------------------------------------------
-  // Check if moment and daterangepicker are available
-  if (typeof moment === 'undefined') {
-    console.warn('moment.js is not loaded, skipping daterangepicker initialization');
-    return;
-  }
-  
-  if (typeof $.fn.daterangepicker === 'undefined') {
-    console.warn('bootstrap-daterangepicker is not loaded, skipping daterangepicker initialization');
-    return;
-  }
-  
   var bsRangePickerBasic = $('#bs-rangepicker-basic'),
     bsRangePickerSingle = $('#bs-rangepicker-single'),
     bsRangePickerTime = $('#bs-rangepicker-time'),

@@ -1,0 +1,15 @@
+.success-tag {
+    background: #3fad3f;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.secondary-tag {
+    background: rgb(107 107 107);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}

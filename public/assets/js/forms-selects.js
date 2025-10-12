@@ -18,16 +18,14 @@ $(function () {
   // Select2
   // --------------------------------------------------------------------
 
-  // Default - only initialize Select2 for elements not inside modals or Vue components
+  // Default
   if (select2.length) {
-    select2.not('.modal .select2, .vue-select2').each(function () {
+    select2.each(function () {
       var $this = $(this);
-      if (!$this.hasClass('select2-hidden-accessible')) {
-        $this.wrap('<div class="position-relative"></div>').select2({
-          placeholder: '--انتخاب--',
-          dropdownParent: $this.parent()
-        });
-      }
+      $this.wrap('<div class="position-relative"></div>').select2({
+        placeholder: '--انتخاب--',
+        dropdownParent: $this.parent()
+      });
     });
   }
 

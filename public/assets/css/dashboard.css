@@ -1,0 +1,8 @@
+/* extra stylesheets  */
+.cal-body-color{
+    background-color:#f4f4f4!important;
+}
+.cal-selected{
+    background-color: #696cff!important;
+    color: white!important;
+}

@@ -1,33 +1,12 @@
 {
-  "public/assets/js/vue/lab-app.js": {
-<<<<<<< HEAD
-    "file": "assets/lab-app-sPir-MD2.js",
-=======
-    "file": "assets/lab-app-CSEzGOEP.js",
->>>>>>> 13ff40e8f83ca7ec33a2854858efd42ba9a0164f
-    "name": "lab-app",
-    "src": "public/assets/js/vue/lab-app.js",
-    "isEntry": true,
-    "css": [
-<<<<<<< HEAD
-      "assets/lab-app-DTF0izEu.css"
-=======
-      "assets/lab-app--Qk2J8Y4.css"
->>>>>>> 13ff40e8f83ca7ec33a2854858efd42ba9a0164f
-    ]
-  },
   "resources/css/app.css": {
-    "file": "assets/app-tn0RQdqM.css",
-    "src": "resources/css/app.css",
+    "file": "assets/app-w40geAFS.js",
     "isEntry": true,
-    "names": [
-      "app.css"
-    ]
+    "src": "resources/css/app.css"
   },
   "resources/js/app.js": {
-    "file": "assets/app-B8HRxXIN.js",
-    "name": "app",
-    "src": "resources/js/app.js",
-    "isEntry": true
+    "file": "assets/app-gkggixxs.js",
+    "isEntry": true,
+    "src": "resources/js/app.js"
   }
 }

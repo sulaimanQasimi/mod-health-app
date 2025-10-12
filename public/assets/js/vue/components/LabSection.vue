@@ -461,23 +461,32 @@ export default {
                 return;
             }
 
+            // Check if at least one test is selected (main lab type or additional tests)
+            if (this.form.selected_tests.length === 0 && !this.form.lab_type_id) {
+                this.showError('Please select at least one lab test');
+                return;
+            }
+
             this.loading = true;
 
             try {
                 const formData = new FormData();
                 formData.append('lab_type_section_id', this.form.lab_type_section_id);
-                formData.append('lab_type_id', this.form.lab_type_id);
                 formData.append('appointment_id', this.appointment.id);
                 formData.append('patient_id', this.appointment.patient_id);
                 formData.append('doctor_id', this.appointment.doctor_id);
                 formData.append('branch_id', this.appointment.branch_id);
 
-                // Add selected tests if any
+                // Add the main lab type and selected tests as lab_type_id array
+                const labTypeIds = [this.form.lab_type_id];
                 if (this.form.selected_tests.length > 0) {
-                    this.form.selected_tests.forEach(testId => {
-                        formData.append('lab_type_id[]', testId);
-                    });
+                    labTypeIds.push(...this.form.selected_tests);
                 }
+                
+                // Send all lab type IDs as array
+                labTypeIds.forEach(labTypeId => {
+                    formData.append('lab_type_id[]', labTypeId);
+                });
 
                 const response = await fetch('/lab-ajax/store', {
                     method: 'POST',

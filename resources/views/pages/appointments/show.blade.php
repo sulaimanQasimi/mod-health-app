@@ -1236,28 +1236,38 @@
             </div>
         @endif
 
-        <!-- Under Review Section -->
+        <!-- Under Review Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-revision me-2 text-dark"></i>
-                            {{ localize('global.under_review') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('patient-under-review')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div class="accordion" id="underReviewAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="underReviewHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#underReviewCollapse" 
+                                aria-expanded="false" aria-controls="underReviewCollapse">
+                                <i class="bx bx-revision me-2 text-dark"></i>
+                                {{ localize('global.under_review') }}
+                            </button>
+                        </h2>
+                        <div id="underReviewCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="underReviewHeading" data-bs-parent="#underReviewAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('patient-under-review')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createUnderReviewModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
         <!-- Create  Lab Modal -->
         <div class="modal fade" id="createUnderReviewModal{{ $appointment->id }}" tabindex="-1"
             aria-labelledby="createUnderReviewModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1331,79 +1341,77 @@
             </div>
         </div>
 
-        <!-- Under Review Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        @if($appointment->under_reviews->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-body-secondary">
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.reason') }}</th>
-                                            <th>{{ localize('global.remarks') }}</th>
-                                            <th>{{ localize('global.room') }}</th>
-                                            <th>{{ localize('global.bed') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->under_reviews as $underReview)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-dark rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $underReview->reason }}</td>
-                                                <td>{{ $underReview->remarks }}</td>
-                                                <td>
-                                                    <span class="badge bg-secondary">{{ $underReview->room->name }}</span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-info">{{ $underReview->bed->number }}</span>
-                                                </td>
-                                                <td>
-                                                    @if ($underReview->is_discharged == '0')
-                                                        <span class="badge bg-danger">
-                                                            <i class="bx bx-x-circle me-1"></i> {{ localize('global.under_review') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="badge bg-success">
-                                                            <i class="bx bx-check-circle me-1"></i> {{ localize('global.discharged') }}
-                                                        </span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('edit-under-reviews')
-                                                            <a href="{{ route('under_reviews.edit', $underReview->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete-under-reviews')
-                                                            <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                <!-- Under Review Table -->
+                                @if($appointment->under_reviews->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
+                                                <tr>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th>{{ localize('global.reason') }}</th>
+                                                    <th>{{ localize('global.remarks') }}</th>
+                                                    <th>{{ localize('global.room') }}</th>
+                                                    <th>{{ localize('global.bed') }}</th>
+                                                    <th>{{ localize('global.status') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($appointment->under_reviews as $underReview)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-dark rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $underReview->reason }}</td>
+                                                        <td>{{ $underReview->remarks }}</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">{{ $underReview->room->name }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-info">{{ $underReview->bed->number }}</span>
+                                                        </td>
+                                                        <td>
+                                                            @if ($underReview->is_discharged == '0')
+                                                                <span class="badge bg-danger">
+                                                                    <i class="bx bx-x-circle me-1"></i> {{ localize('global.under_review') }}
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-success">
+                                                                    <i class="bx bx-check-circle me-1"></i> {{ localize('global.discharged') }}
+                                                                </span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('edit-under-reviews')
+                                                                    <a href="{{ route('under_reviews.edit', $underReview->id) }}"
+                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete-under-reviews')
+                                                                    <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
+                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </a>
+                                                                @endcan
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_previous_under_reviews') }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_previous_under_reviews') }}
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>

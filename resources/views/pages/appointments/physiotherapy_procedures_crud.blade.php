@@ -1,41 +1,58 @@
-<!-- Physiotherapy Procedures Section -->
+<!-- Physiotherapy Procedures Section Accordion -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="bx bx-health me-2 text-info"></i>
-                    {{ localize('global.physiotherapy_procedures') }}
-                </h5>
-                @if ($appointment->is_completed == 0)
-                    @can('create-physiotherapy-procedures')
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#createPhysiotherapyProcedureModal{{ $appointment->id }}">
-                            <i class="bx bx-plus me-1"></i>
-                            {{ localize('global.add') }}
-                        </button>
-                    @endcan
-                @endif
-            </div>
-            <div class="card-body" id="physio_procedures_table_container">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover" id="physio_procedures_table">
-                                                    <thead class="table-body-secondary">
-                            <tr>
-                                <th>{{ localize('global.number') }}</th>
-                                <th>{{ localize('global.physiotherapy_type') }}</th>
-                                <th>{{ localize('global.physiotherapist') }}</th>
-                                <th>{{ localize('global.type') }}</th>
-                                <th>{{ localize('global.duration') }}</th>
-                                <th>{{ localize('global.progress') }}</th>
-                                <th>{{ localize('global.status') }}</th>
-                                <th>{{ localize('global.start_date') }}</th>
-                                <th>{{ localize('global.reviews') }}</th>
-                                <th>{{ localize('global.actions') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody id="physio_procedures_tbody"></tbody>
-                    </table>
+        <div class="accordion" id="physiotherapyAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="physiotherapyHeading">
+                    <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                        data-bs-toggle="collapse" data-bs-target="#physiotherapyCollapse" 
+                        aria-expanded="false" aria-controls="physiotherapyCollapse">
+                        <i class="bx bx-health me-2 text-info"></i>
+                        {{ localize('global.physiotherapy_procedures') }}
+                    </button>
+                </h2>
+                <div id="physiotherapyCollapse" class="accordion-collapse collapse" 
+                    aria-labelledby="physiotherapyHeading" data-bs-parent="#physiotherapyAccordion">
+                    <div class="accordion-body">
+                        <!-- Add Button -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div></div> <!-- Empty div for spacing -->
+                            <div>
+                                @if ($appointment->is_completed == 0)
+                                    @can('create-physiotherapy-procedures')
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#createPhysiotherapyProcedureModal{{ $appointment->id }}">
+                                            <i class="bx bx-plus me-1"></i>
+                                            {{ localize('global.add') }}
+                                        </button>
+                                    @endcan
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <!-- Physiotherapy Procedures Table -->
+                        <div id="physio_procedures_table_container">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="physio_procedures_table">
+                                    <thead class="table-body-secondary">
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.physiotherapy_type') }}</th>
+                                            <th>{{ localize('global.physiotherapist') }}</th>
+                                            <th>{{ localize('global.type') }}</th>
+                                            <th>{{ localize('global.duration') }}</th>
+                                            <th>{{ localize('global.progress') }}</th>
+                                            <th>{{ localize('global.status') }}</th>
+                                            <th>{{ localize('global.start_date') }}</th>
+                                            <th>{{ localize('global.reviews') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="physio_procedures_tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

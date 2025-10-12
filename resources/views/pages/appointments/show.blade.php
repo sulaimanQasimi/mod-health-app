@@ -1470,28 +1470,38 @@
             </div>
         </div>
 
-        <!-- Hospitalize Section -->
+        <!-- Hospitalize Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-bed me-2 text-success"></i>
-                            {{ localize('global.hospitalize') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('patient-hospitalization')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div class="accordion" id="hospitalizeAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="hospitalizeHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#hospitalizeCollapse" 
+                                aria-expanded="false" aria-controls="hospitalizeCollapse">
+                                <i class="bx bx-bed me-2 text-success"></i>
+                                {{ localize('global.hospitalize') }}
+                            </button>
+                        </h2>
+                        <div id="hospitalizeCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="hospitalizeHeading" data-bs-parent="#hospitalizeAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('patient-hospitalization')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createHospitalizationModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
         <!-- Create  Lab Modal -->
         <div class="modal fade modal-xl" id="createHospitalizationModal{{ $appointment->id }}" tabindex="-1"
             aria-labelledby="createHospitalizationModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -1633,83 +1643,81 @@
         </div>
         <!-- End Create Lab Modal -->
 
-        <!-- Hospitalization Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        @if($appointment->hospitalization->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-body-secondary">
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th class="text-wrap">{{ localize('global.reason') }}</th>
-                                            <th>{{ localize('global.remarks') }}</th>
-                                            <th>{{ localize('global.room') }}</th>
-                                            <th>{{ localize('global.bed') }}</th>
-                                            <th>{{ localize('global.status') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->hospitalization as $hospitalization)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $hospitalization->reason }}</td>
-                                                <td>{{ $hospitalization->remarks }}</td>
-                                                <td>
-                                                    <span class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-info">{{ $hospitalization->bed->number }}</span>
-                                                </td>
-                                                <td>
-                                                    @if ($hospitalization->is_discharged == 0)
-                                                        <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.discharged') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('edit-hospitalizations')
-                                                            <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete-hospitalizations')
-                                                            <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
-                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                        <!-- Using a <form> element -->
-                                                        <form id="delete-form-{{$hospitalization->id}}"
-                                                            action="{{ route('hospitalizations.destroy', $hospitalization) }}"
-                                                            method="POST" style="display: none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                <!-- Hospitalization Table -->
+                                @if($appointment->hospitalization->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
+                                                <tr>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                                    <th>{{ localize('global.remarks') }}</th>
+                                                    <th>{{ localize('global.room') }}</th>
+                                                    <th>{{ localize('global.bed') }}</th>
+                                                    <th>{{ localize('global.status') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($appointment->hospitalization as $hospitalization)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $hospitalization->reason }}</td>
+                                                        <td>{{ $hospitalization->remarks }}</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-info">{{ $hospitalization->bed->number }}</span>
+                                                        </td>
+                                                        <td>
+                                                            @if ($hospitalization->is_discharged == 0)
+                                                                <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                                            @else
+                                                                <span class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('edit-hospitalizations')
+                                                                    <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
+                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete-hospitalizations')
+                                                                    <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
+                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                <!-- Using a <form> element -->
+                                                                <form id="delete-form-{{$hospitalization->id}}"
+                                                                    action="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                                    method="POST" style="display: none;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_previous_hospitalizations') }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_previous_hospitalizations') }}
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>

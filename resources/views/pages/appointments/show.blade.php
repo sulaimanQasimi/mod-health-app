@@ -833,70 +833,78 @@
             </div>
         </div>
 
-        <!-- Hospitalization Checkups Section -->
+        <!-- Hospitalization Checkups Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body">
-                        <h5 class="mb-0">
-                            <i class="bx bx-hard-hat me-2 text-secondary"></i>
-                            {{ localize('global.hospitalization_checkups') }}
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-body-secondary">
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.test_name') }}</th>
-                                        <th>{{ localize('global.test_status') }}</th>
-                                        <th>{{ localize('global.result') }}</th>
-                                        <th>{{ localize('global.result_file') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($appointment->hospitalization as $single_hospitalization)
-                                        @foreach ($single_hospitalization->labs as $lab)
+                <div class="accordion" id="hospitalizationAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="hospitalizationHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#hospitalizationCollapse" 
+                                aria-expanded="false" aria-controls="hospitalizationCollapse">
+                                <i class="bx bx-hard-hat me-2 text-secondary"></i>
+                                {{ localize('global.hospitalization_checkups') }}
+                            </button>
+                        </h2>
+                        <div id="hospitalizationCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="hospitalizationHeading" data-bs-parent="#hospitalizationAccordion">
+                            <div class="accordion-body">
+                                <!-- Hospitalization Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-body-secondary">
                                             <tr>
-                                                <td>
-                                                    <span class="badge bg-secondary rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $lab->labType->name }}</td>
-                                                <td>
-                                                    @if ($lab->status == '0')
-                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $lab->result }}</td>
-                                                <td>
-                                                    @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
-                                                            class="btn btn-outline-primary btn-sm">
-                                                            <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
-                                                        </a>
-                                                    @endisset
-                                                </td>
-                                                <td>
-                                                    <!-- Actions can be added here if needed -->
-                                                </td>
+                                                <th>{{ localize('global.number') }}</th>
+                                                <th>{{ localize('global.test_name') }}</th>
+                                                <th>{{ localize('global.test_status') }}</th>
+                                                <th>{{ localize('global.result') }}</th>
+                                                <th>{{ localize('global.result_file') }}</th>
+                                                <th>{{ localize('global.actions') }}</th>
                                             </tr>
-                                        @endforeach
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center">
-                                                <div class="alert alert-info">
-                                                    <i class="bx bx-info-circle me-2"></i>
-                                                    {{ localize('global.no_previous_labs') }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($appointment->hospitalization as $single_hospitalization)
+                                                @foreach ($single_hospitalization->labs as $lab)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-secondary rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $lab->labType->name }}</td>
+                                                        <td>
+                                                            @if ($lab->status == '0')
+                                                                <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                            @else
+                                                                <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $lab->result }}</td>
+                                                        <td>
+                                                            @isset($lab->result_file)
+                                                                <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
+                                                                    class="btn btn-outline-primary btn-sm">
+                                                                    <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
+                                                                </a>
+                                                            @endisset
+                                                        </td>
+                                                        <td>
+                                                            <!-- Actions can be added here if needed -->
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6" class="text-center">
+                                                        <div class="alert alert-info">
+                                                            <i class="bx bx-info-circle me-2"></i>
+                                                            {{ localize('global.no_previous_labs') }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

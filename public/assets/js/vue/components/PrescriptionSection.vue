@@ -158,7 +158,7 @@
                                             :placeholder="'تکرار'" 
                                             required>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <label class="form-label">مقدار</label>
                                         <input 
                                             v-model="item.amount" 
@@ -430,8 +430,6 @@ export default {
                  const data = await response.json();
                  if (data.success) {
                      this.selectedPrescription = data.data;
-                     console.log('Selected prescription:', this.selectedPrescription);
-                     console.log('Can edit prescription:', this.canEditPrescription);
                      this.showPrescriptionItemsModal = true;
                  }
              } catch (error) {

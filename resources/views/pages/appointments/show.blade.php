@@ -413,6 +413,9 @@
                                 aria-expanded="false" aria-controls="prescriptionCollapse">
                                 <i class="bx bx-notepad me-2 text-success"></i>
                                 {{ localize('global.prescription') }}
+                                @if($appointment->prescription->count() > 0)
+                                    <span class="badge bg-success ms-2">{{ $appointment->prescription->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="prescriptionCollapse" class="accordion-collapse collapse" 
@@ -674,6 +677,9 @@
                                 aria-expanded="false" aria-controls="adviceCollapse">
                                 <i class="bx bx-command me-2 text-info"></i>
                                 {{ localize('global.advice') }}
+                                @if($appointment->advices->count() > 0)
+                                    <span class="badge bg-info ms-2">{{ $appointment->advices->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="adviceCollapse" class="accordion-collapse collapse" 
@@ -805,6 +811,9 @@
                                 aria-expanded="false" aria-controls="labCollapse">
                                 <i class="bx bx-hard-hat me-2 text-warning"></i>
                                 {{ localize('global.checkups') }}
+                                @if($appointment->labs->count() > 0)
+                                    <span class="badge bg-warning text-dark ms-2">{{ $appointment->labs->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="labCollapse" class="accordion-collapse collapse" 
@@ -844,6 +853,9 @@
                                 aria-expanded="false" aria-controls="hospitalizationCollapse">
                                 <i class="bx bx-hard-hat me-2 text-secondary"></i>
                                 {{ localize('global.hospitalization_checkups') }}
+                                @if($appointment->hospitalization->count() > 0)
+                                    <span class="badge bg-secondary ms-2">{{ $appointment->hospitalization->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="hospitalizationCollapse" class="accordion-collapse collapse" 
@@ -925,6 +937,9 @@
                                 aria-expanded="false" aria-controls="consultationCollapse">
                                 <i class="bx bx-chat me-2 text-primary"></i>
                                 {{ localize('global.consultations') }}
+                                @if($appointment->consultations->count() > 0)
+                                    <span class="badge bg-primary ms-2">{{ $appointment->consultations->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="consultationCollapse" class="accordion-collapse collapse" 
@@ -1140,6 +1155,9 @@
                                 aria-expanded="false" aria-controls="referDoctorCollapse">
                                 <i class="bx bx-transfer me-2 text-danger"></i>
                                 {{ localize('global.refer_to_another_doctor') }}
+                                @if($appointment->is_completed == 1)
+                                    <span class="badge bg-danger ms-2">1</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="referDoctorCollapse" class="accordion-collapse collapse" 
@@ -1259,6 +1277,9 @@
                                 aria-expanded="false" aria-controls="underReviewCollapse">
                                 <i class="bx bx-revision me-2 text-dark"></i>
                                 {{ localize('global.under_review') }}
+                                @if($appointment->under_reviews->count() > 0)
+                                    <span class="badge bg-dark ms-2">{{ $appointment->under_reviews->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="underReviewCollapse" class="accordion-collapse collapse" 
@@ -1501,6 +1522,9 @@
                                 aria-expanded="false" aria-controls="hospitalizeCollapse">
                                 <i class="bx bx-bed me-2 text-success"></i>
                                 {{ localize('global.hospitalize') }}
+                                @if($appointment->hospitalization->count() > 0)
+                                    <span class="badge bg-success ms-2">{{ $appointment->hospitalization->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="hospitalizeCollapse" class="accordion-collapse collapse" 
@@ -1851,6 +1875,9 @@
                                 aria-expanded="false" aria-controls="anesthesiaCollapse">
                                 <i class="bx bx-first-aid me-2 text-danger"></i>
                                 {{ localize('global.refere_to_anasthesia') }}
+                                @if($appointment->anesthesias->count() > 0)
+                                    <span class="badge bg-danger ms-2">{{ $appointment->anesthesias->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="anesthesiaCollapse" class="accordion-collapse collapse" 
@@ -2109,6 +2136,9 @@
                                 aria-expanded="false" aria-controls="operationCollapse">
                                 <i class="bx bx-cut me-2 text-warning"></i>
                                 {{ localize('global.operations') }}
+                                @if($appointment->approved_anesthesias->count() > 0)
+                                    <span class="badge bg-warning text-dark ms-2">{{ $appointment->approved_anesthesias->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="operationCollapse" class="accordion-collapse collapse" 
@@ -2178,6 +2208,9 @@
                                 aria-expanded="false" aria-controls="icuCollapse">
                                 <i class="bx bx-tv me-2 text-info"></i>
                                 {{ localize('global.refere_to_icu') }}
+                                @if($appointment->icu->count() > 0)
+                                    <span class="badge bg-info ms-2">{{ $appointment->icu->count() }}</span>
+                                @endif
                             </button>
                         </h2>
                         <div id="icuCollapse" class="accordion-collapse collapse" 

@@ -9,7 +9,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/js/app.js',
-                'public/assets/js/vue/lab-app.js'
+                'public/assets/js/vue/lab-app.js',
+                'public/assets/js/vue/prescription-app.js'
             ],
             refresh: true,
         }),

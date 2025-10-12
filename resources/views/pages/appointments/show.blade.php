@@ -663,24 +663,91 @@
         </div>
 
 
-        <!-- Advice Section -->
+        <!-- Advice Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-command me-2 text-info"></i>
-                            {{ localize('global.advice') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('add-advice')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
+                <div class="accordion" id="adviceAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="adviceHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#adviceCollapse" 
+                                aria-expanded="false" aria-controls="adviceCollapse">
+                                <i class="bx bx-command me-2 text-info"></i>
+                                {{ localize('global.advice') }}
+                            </button>
+                        </h2>
+                        <div id="adviceCollapse" class="accordion-collapse collapse" 
+                            aria-labelledby="adviceHeading" data-bs-parent="#adviceAccordion">
+                            <div class="accordion-body">
+                                <!-- Add Button and Table Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div></div> <!-- Empty div for spacing -->
+                                    <div>
+                                        @if ($appointment->is_completed == 0)
+                                            @can('add-advice')
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
+                                                    <i class="bx bx-plus me-1"></i>
+                                                    {{ localize('global.add') }}
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <!-- Advice Table -->
+                                @if($appointment->advices->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
+                                                <tr>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th>{{ localize('global.description') }}</th>
+                                                    <th>{{ localize('global.by') }}</th>
+                                                    <th>{{ localize('global.created_at') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($appointment->advices as $advice)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $advice->description }}</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">{{ $advice->doctor->name }}</span>
+                                                        </td>
+                                                        <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($advice->created_at->format('Y-m-d')) }}</td>
+                                                        <td>
+                                                            @can('edit-advices')
+                                                                <a href="{{ route('advices.edit', $advice->id) }}"
+                                                                    class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                    <i class="bx bx-edit"></i>
+                                                                </a>
+                                                            @endcan
+                                                            @can('delete-advices')
+                                                                <a href="{{ route('advices.destroy', $advice->id) }}"
+                                                                    class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                    <i class="bx bx-trash"></i>
+                                                                </a>
+                                                            @endcan
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_previous_advices') }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -726,67 +793,6 @@
         </div>
         <!-- End Create Diagnose Modal -->
 
-        <!-- Advice Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        @if($appointment->advices->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-body-secondary">
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.description') }}</th>
-                                            <th>{{ localize('global.by') }}</th>
-                                            <th>{{ localize('global.created_at') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($appointment->advices as $advice)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $advice->description }}</td>
-                                                <td>
-                                                    <span class="badge bg-secondary">{{ $advice->doctor->name }}</span>
-                                                </td>
-                                                <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($advice->created_at->format('Y-m-d')) }}</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('edit-advices')
-                                                            <a href="{{ route('advices.edit', $advice->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete-advices')
-                                                            <a href="{{ route('advices.destroy', $advice->id) }}"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_previous_advices') }}
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Lab Section Vue Component -->
         <div id="lab-section-container" 

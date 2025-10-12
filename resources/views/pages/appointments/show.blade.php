@@ -231,28 +231,37 @@
         @endcan
 
 
-        <!-- Diagnose Section -->
+        <!-- Diagnose Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bx bx-popsicle me-2 text-warning"></i>
-                            {{ localize('global.diagnose') }}
-                        </h5>
-                        @if ($appointment->is_completed == 0)
-                            @can('add-diagnose')
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.add') }}
-                                </button>
-                            @endcan
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div class="accordion" id="diagnoseAccordion{{ $appointment->id }}">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="diagnoseHeading{{ $appointment->id }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#diagnoseCollapse{{ $appointment->id }}" aria-expanded="false"
+                                aria-controls="diagnoseCollapse{{ $appointment->id }}">
+                                <i class="bx bx-popsicle me-2 text-warning"></i>
+                                {{ localize('global.diagnose') }}
+                                @if($appointment->diagnose->count() > 0)
+                                    <span class="badge bg-primary ms-2">{{ $appointment->diagnose->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
+                        <div id="diagnoseCollapse{{ $appointment->id }}" class="accordion-collapse collapse"
+                            aria-labelledby="diagnoseHeading{{ $appointment->id }}" data-bs-parent="#diagnoseAccordion{{ $appointment->id }}">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">{{ localize('global.diagnose_list') }}</h6>
+                                    @if ($appointment->is_completed == 0)
+                                        @can('add-diagnose')
+                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
+                                                <i class="bx bx-plus me-1"></i>
+                                                {{ localize('global.add') }}
+                                            </button>
+                                        @endcan
+                                    @endif
+                                </div>
         <!-- Create Diagnose Modal -->
         <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1"
             aria-labelledby="createDiagnoseModalLabel{{ $appointment->id }}" aria-hidden="true">
@@ -330,67 +339,64 @@
         </div>
         <!-- End Create Diagnose Modal -->
 
-        <!-- Diagnose Table -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        @if($appointment->diagnose->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                                            <thead class="table-body-secondary">
-                            <tr>
-                                <th>{{ localize('global.number') }}</th>
-                                <th>{{ localize('global.description') }}</th>
-                                <th>{{ localize('global.type') }}</th>
-                                <th>{{ localize('global.created_at') }}</th>
-                                <th>{{ localize('global.actions') }}</th>
-                            </tr>
-                        </thead>
-                                    <tbody>
-                                        @foreach ($appointment->diagnose as $diagnose)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
-                                                </td>
-                                                <td>{{ $diagnose->description }}</td>
-                                                <td>
-                                                    @if ($diagnose->type == '0')
-                                                        <span class="badge bg-warning text-dark">{{ localize('global.primary') }}</span>
-                                                    @else
-                                                        <span class="badge bg-primary">{{ localize('global.final') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($diagnose->created_at->format('Y-m-d')) }}</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('edit-diagnoses')
-                                                            <a href="{{ route('diagnoses.edit', $diagnose->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete-diagnoses')
-                                                            <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                @if($appointment->diagnose->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="table-body-secondary">
+                                                <tr>
+                                                    <th>{{ localize('global.number') }}</th>
+                                                    <th>{{ localize('global.description') }}</th>
+                                                    <th>{{ localize('global.type') }}</th>
+                                                    <th>{{ localize('global.created_at') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($appointment->diagnose as $diagnose)
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
+                                                        </td>
+                                                        <td>{{ $diagnose->description }}</td>
+                                                        <td>
+                                                            @if ($diagnose->type == '0')
+                                                                <span class="badge bg-warning text-dark">{{ localize('global.primary') }}</span>
+                                                            @else
+                                                                <span class="badge bg-primary">{{ localize('global.final') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($diagnose->created_at->format('Y-m-d')) }}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                @can('edit-diagnoses')
+                                                                    <a href="{{ route('diagnoses.edit', $diagnose->id) }}"
+                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                        <i class="bx bx-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete-diagnoses')
+                                                                    <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"
+                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </a>
+                                                                @endcan
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_previous_diagnoses') }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_previous_diagnoses') }}
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>

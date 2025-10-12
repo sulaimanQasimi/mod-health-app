@@ -549,6 +549,7 @@ return [
     'all_diseases' => 'همه مریضی ها',
     'search_by_name' => 'جستجو بر اساس نام',
     'clear' => 'پاک کردن',
+    'diagnose_list' => 'لیست تشخیصات',
     'all_branches' => 'همه شعب',
     'all_sections' => 'همه بخش ها',
     'all_parents' => 'همه والدین',

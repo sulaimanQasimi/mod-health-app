@@ -29,8 +29,7 @@
         "spatie/laravel-backup": "^9.3",
         "spatie/laravel-html": "^3.2",
         "spatie/laravel-permission": "^5.10",
-        "sulaimanqasimi/router": "dev-main",
-        "maennchen/zipstream-php": "^3.1"
+        "sulaimanqasimi/router": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

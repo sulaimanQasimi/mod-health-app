@@ -549,6 +549,8 @@ return [
     'all_diseases' => 'همه مریضی ها',
     'search_by_name' => 'جستجو بر اساس نام',
     'clear' => 'پاک کردن',
+    'accept' => 'قبول',
+    'confirm_accept_appointment' => 'آیا می خواهید این ملاقات را قبول کنید؟',
     'diagnose_list' => 'لیست تشخیصات',
     'all_branches' => 'همه شعب',
     'all_sections' => 'همه بخش ها',

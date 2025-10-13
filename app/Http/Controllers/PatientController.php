@@ -111,7 +111,7 @@ class PatientController extends Controller
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
             'type' => 'nullable',
-            'id_card' => 'nullable|numeric',
+            'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             // Appointment validation
@@ -223,7 +223,7 @@ class PatientController extends Controller
             'referral_phone' => 'nullable',
             'referral_recipient' => 'nullable',
             'type' => 'nullable',
-            'id_card' => 'nullable',
+            'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             'relation_id' => 'nullable'

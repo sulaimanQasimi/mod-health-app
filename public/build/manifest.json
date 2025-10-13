@@ -4,7 +4,7 @@
     "name": "_plugin-vue_export-helper"
   },
   "public/assets/js/vue/lab-app.js": {
-    "file": "assets/lab-app-CwrM4aUg.js",
+    "file": "assets/lab-app-CCeEGCGu.js",
     "name": "lab-app",
     "src": "public/assets/js/vue/lab-app.js",
     "isEntry": true,
@@ -12,11 +12,11 @@
       "__plugin-vue_export-helper-89bC_fiu.js"
     ],
     "css": [
-      "assets/lab-app-Bzvlnko9.css"
+      "assets/lab-app-Dr_bOudg.css"
     ]
   },
   "public/assets/js/vue/prescription-app.js": {
-    "file": "assets/prescription-app-Dtjfccba.js",
+    "file": "assets/prescription-app-B0sfo3Em.js",
     "name": "prescription-app",
     "src": "public/assets/js/vue/prescription-app.js",
     "isEntry": true,
@@ -24,7 +24,7 @@
       "__plugin-vue_export-helper-89bC_fiu.js"
     ],
     "css": [
-      "assets/prescription-app-BmcpzMPF.css"
+      "assets/prescription-app-YvE-tUI4.css"
     ]
   },
   "resources/css/app.css": {

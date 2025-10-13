@@ -111,7 +111,11 @@
                                              :searchable="true"
                                              :close-on-select="true"
                                              :show-labels="false"
+                                             :class="{ 'is-invalid': getFieldError(index, 'medicine_type_id') }"
                                          ></multiselect>
+                                         <div v-if="getFieldError(index, 'medicine_type_id')" class="invalid-feedback d-block">
+                                             {{ getFieldError(index, 'medicine_type_id') }}
+                                         </div>
                                      </div>
                                      <div class="col-md-2">
                                          <label class="form-label">نام دارو</label>
@@ -125,7 +129,11 @@
                                              :close-on-select="true"
                                              :show-labels="false"
                                              :disabled="!item.medicine_type_id"
+                                             :class="{ 'is-invalid': getFieldError(index, 'medicine_id') }"
                                          ></multiselect>
+                                         <div v-if="getFieldError(index, 'medicine_id')" class="invalid-feedback d-block">
+                                             {{ getFieldError(index, 'medicine_id') }}
+                                         </div>
                                      </div>
                                      <div class="col-md-2">
                                          <label class="form-label">نوع مصرف</label>
@@ -138,7 +146,11 @@
                                              :searchable="true"
                                              :close-on-select="true"
                                              :show-labels="false"
+                                             :class="{ 'is-invalid': getFieldError(index, 'usage_type_id') }"
                                          ></multiselect>
+                                         <div v-if="getFieldError(index, 'usage_type_id')" class="invalid-feedback d-block">
+                                             {{ getFieldError(index, 'usage_type_id') }}
+                                         </div>
                                      </div>
                                     <div class="col-md-2">
                                         <label class="form-label">دوز</label>
@@ -146,8 +158,12 @@
                                             v-model="item.dosage" 
                                             type="number" 
                                             class="form-control" 
+                                            :class="{ 'is-invalid': getFieldError(index, 'dosage') }"
                                             :placeholder="'دوز'" 
                                             required>
+                                        <div v-if="getFieldError(index, 'dosage')" class="invalid-feedback">
+                                            {{ getFieldError(index, 'dosage') }}
+                                        </div>
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">تکرار</label>
@@ -155,8 +171,12 @@
                                             v-model="item.frequency" 
                                             type="number" 
                                             class="form-control" 
+                                            :class="{ 'is-invalid': getFieldError(index, 'frequency') }"
                                             :placeholder="'تکرار'" 
                                             required>
+                                        <div v-if="getFieldError(index, 'frequency')" class="invalid-feedback">
+                                            {{ getFieldError(index, 'frequency') }}
+                                        </div>
                                     </div>
                                     <div class="col-md-1">
                                         <label class="form-label">مقدار</label>
@@ -164,8 +184,12 @@
                                             v-model="item.amount" 
                                             type="number" 
                                             class="form-control" 
+                                            :class="{ 'is-invalid': getFieldError(index, 'amount') }"
                                             :placeholder="'مقدار'" 
                                             required>
+                                        <div v-if="getFieldError(index, 'amount')" class="invalid-feedback">
+                                            {{ getFieldError(index, 'amount') }}
+                                        </div>
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
                                         <button 
@@ -341,6 +365,7 @@ export default {
             medicineTypes: [],
             medicineUsageTypes: [],
             selectedPrescription: null,
+            validationErrors: {},
              form: {
                  prescription_items: [{
                      medicine_type_id: null,
@@ -441,13 +466,8 @@ export default {
              this.loading = true;
              try {
                  // Validate form before submission
-                 const hasEmptyFields = this.form.prescription_items.some(item => 
-                     !item.medicine_type_id || !item.medicine_id || !item.usage_type_id || 
-                     !item.dosage.trim() || !item.frequency.trim() || !item.amount.trim()
-                 );
-
-                 if (hasEmptyFields) {
-                     this.showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
+                 if (!this.validateForm()) {
+                     this.showNotification('لطفاً خطاهای فرم را برطرف کنید', 'error');
                      this.loading = false;
                      return;
                  }
@@ -624,6 +644,7 @@ export default {
 
         closeCreateModal() {
             this.showCreateModal = false;
+            this.clearValidationErrors();
         },
 
         closePrescriptionItemsModal() {
@@ -641,6 +662,7 @@ export default {
                  amount: '',
                  medicines: []
              }];
+             this.clearValidationErrors();
          },
 
         formatDate(dateString) {
@@ -655,6 +677,78 @@ export default {
             } else {
                 alert(message);
             }
+        },
+
+        getFieldError(index, fieldName) {
+            const errorKey = `prescription_items.${index}.${fieldName}`;
+            return this.validationErrors[errorKey] || null;
+        },
+
+        setFieldError(index, fieldName, error) {
+            const errorKey = `prescription_items.${index}.${fieldName}`;
+            if (error) {
+                this.$set(this.validationErrors, errorKey, error);
+            } else {
+                this.$delete(this.validationErrors, errorKey);
+            }
+        },
+
+        clearValidationErrors() {
+            this.validationErrors = {};
+        },
+
+        validateForm() {
+            this.clearValidationErrors();
+            let hasErrors = false;
+
+            this.form.prescription_items.forEach((item, index) => {
+                // Validate medicine type
+                if (!item.medicine_type_id) {
+                    this.setFieldError(index, 'medicine_type_id', 'نوع دارو الزامی است');
+                    hasErrors = true;
+                }
+
+                // Validate medicine
+                if (!item.medicine_id) {
+                    this.setFieldError(index, 'medicine_id', 'نام دارو الزامی است');
+                    hasErrors = true;
+                }
+
+                // Validate usage type
+                if (!item.usage_type_id) {
+                    this.setFieldError(index, 'usage_type_id', 'نوع مصرف الزامی است');
+                    hasErrors = true;
+                }
+
+                // Validate dosage
+                if (!item.dosage || item.dosage.trim() === '') {
+                    this.setFieldError(index, 'dosage', 'دوز الزامی است');
+                    hasErrors = true;
+                } else if (isNaN(item.dosage) || parseFloat(item.dosage) <= 0) {
+                    this.setFieldError(index, 'dosage', 'دوز باید عدد مثبت باشد');
+                    hasErrors = true;
+                }
+
+                // Validate frequency
+                if (!item.frequency || item.frequency.trim() === '') {
+                    this.setFieldError(index, 'frequency', 'تکرار الزامی است');
+                    hasErrors = true;
+                } else if (isNaN(item.frequency) || parseFloat(item.frequency) <= 0) {
+                    this.setFieldError(index, 'frequency', 'تکرار باید عدد مثبت باشد');
+                    hasErrors = true;
+                }
+
+                // Validate amount
+                if (!item.amount || item.amount.trim() === '') {
+                    this.setFieldError(index, 'amount', 'مقدار الزامی است');
+                    hasErrors = true;
+                } else if (isNaN(item.amount) || parseFloat(item.amount) <= 0) {
+                    this.setFieldError(index, 'amount', 'مقدار باید عدد مثبت باشد');
+                    hasErrors = true;
+                }
+            });
+
+            return !hasErrors;
         }
     }
 }
@@ -752,5 +846,34 @@ export default {
 
 .multiselect__input::placeholder {
     color: #6c757d;
+}
+
+/* Validation Error Styling */
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.invalid-feedback.d-block {
+    display: block !important;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Multiselect validation styling */
+.multiselect.is-invalid .multiselect__tags {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.multiselect.is-invalid .multiselect__tags:focus-within {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 </style>

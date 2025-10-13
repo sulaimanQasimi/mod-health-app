@@ -13,6 +13,7 @@ use App\Models\Province;
 use App\Models\Recipient;
 use App\Models\Relation;
 use App\Models\MiliteryType;
+use App\Models\User;
 use Carbon\Carbon;
 use HanifHefaz\Dcter\Dcter;
 use Illuminate\Http\Request;
@@ -362,20 +363,12 @@ class PatientController extends Controller
 
     public function getDoctorsByDepartment($departmentId)
     {
-        try {
-            $doctors = Doctor::where('department_id', $departmentId)->get();
+            $doctors = User::where('department_id', $departmentId)->get();
             
             return response()->json([
                 'success' => true,
                 'doctors' => $doctors
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-                'doctors' => []
-            ], 500);
-        }
     }
 
     public function report()

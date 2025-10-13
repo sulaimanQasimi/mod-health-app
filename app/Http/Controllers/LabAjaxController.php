@@ -82,7 +82,7 @@ class LabAjaxController extends Controller
                 'lab_type_id' => 'required|array|min:1',
                 'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:doctors,id',
+                'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'lab_type_section_id' => 'required|exists:lab_type_sections,id',
                 'status' => 'nullable|boolean',

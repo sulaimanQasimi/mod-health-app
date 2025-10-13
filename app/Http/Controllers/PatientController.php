@@ -115,7 +115,7 @@ class PatientController extends Controller
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             // Appointment validation
-            'appointment_doctor_id' => 'nullable|exists:doctors,id',
+            'appointment_doctor_id' => 'nullable|exists:users,id',
             'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
         ]);
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PrescriptionController extends Controller
 {
@@ -18,7 +19,7 @@ class PrescriptionController extends Controller
             $validator = Validator::make($request->all(), [
                 'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:doctors,id',
+                'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'prescription_items' => 'required|array|min:1',
                 'prescription_items.*.medicine_type_id' => 'required|exists:medicine_types,id',

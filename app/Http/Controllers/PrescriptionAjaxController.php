@@ -87,7 +87,7 @@ class PrescriptionAjaxController extends Controller
             $validator = Validator::make($request->all(), [
                 'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:doctors,id',
+                'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'prescription_items' => 'required|array|min:1',
                 'prescription_items.*.medicine_type_id' => 'required|exists:medicine_types,id',

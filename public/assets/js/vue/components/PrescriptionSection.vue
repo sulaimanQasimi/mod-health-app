@@ -721,7 +721,7 @@ export default {
                 }
 
                 // Validate dosage
-                if (!item.dosage || item.dosage.trim() === '') {
+                if (!item.dosage || item.dosage === '' || item.dosage === null || item.dosage === undefined) {
                     this.setFieldError(index, 'dosage', 'دوز الزامی است');
                     hasErrors = true;
                 } else if (isNaN(item.dosage) || parseFloat(item.dosage) <= 0) {
@@ -730,7 +730,7 @@ export default {
                 }
 
                 // Validate frequency
-                if (!item.frequency || item.frequency.trim() === '') {
+                if (!item.frequency || item.frequency === '' || item.frequency === null || item.frequency === undefined) {
                     this.setFieldError(index, 'frequency', 'تکرار الزامی است');
                     hasErrors = true;
                 } else if (isNaN(item.frequency) || parseFloat(item.frequency) <= 0) {
@@ -739,7 +739,7 @@ export default {
                 }
 
                 // Validate amount
-                if (!item.amount || item.amount.trim() === '') {
+                if (!item.amount || item.amount === '' || item.amount === null || item.amount === undefined) {
                     this.setFieldError(index, 'amount', 'مقدار الزامی است');
                     hasErrors = true;
                 } else if (isNaN(item.amount) || parseFloat(item.amount) <= 0) {

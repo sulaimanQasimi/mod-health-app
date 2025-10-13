@@ -472,14 +472,14 @@ export default {
                      return;
                  }
 
-                 // Transform prescription items to extract IDs from objects
+                 // Transform prescription items to extract IDs from objects and convert numbers to strings
                  const transformedItems = this.form.prescription_items.map(item => ({
                      medicine_type_id: item.medicine_type_id?.id || item.medicine_type_id,
                      medicine_id: item.medicine_id?.id || item.medicine_id,
                      usage_type_id: item.usage_type_id?.id || item.usage_type_id,
-                     dosage: item.dosage,
-                     frequency: item.frequency,
-                     amount: item.amount
+                     dosage: String(item.dosage || ''),
+                     frequency: String(item.frequency || ''),
+                     amount: String(item.amount || '')
                  }));
 
                  const formData = {

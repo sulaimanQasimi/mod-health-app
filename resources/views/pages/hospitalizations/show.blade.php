@@ -68,13 +68,23 @@
                                 </div>
                             </div>
 
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
-                            @if ($hospitalization->is_discharged == 0)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createVisitModal{{ $hospitalization->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endif
+                            <!-- Visits Accordion -->
+                            <div class="accordion" id="visitsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="visitsHeading">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#visitsCollapse" aria-expanded="true" aria-controls="visitsCollapse">
+                                            <i class="bx bx-glasses p-1 me-2"></i>{{ localize('global.visits') }}
+                                        </button>
+                                    </h2>
+                                    <div id="visitsCollapse" class="accordion-collapse collapse show" aria-labelledby="visitsHeading"
+                                        data-bs-parent="#visitsAccordion">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#createVisitModal{{ $hospitalization->id }}"><span><i
+                                                            class="bx bx-plus"></i></span></button>
+                                            @endif
                             <!-- Create visit Modal -->
                             <div class="modal fade" id="createVisitModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createVisitModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -266,20 +276,46 @@
                                     </tbody>
                                 </table>
 
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End Visits Accordion -->
 
+                            <!-- Vital Signs Accordion -->
+                            <div class="accordion mt-4" id="vitalSignsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="vitalSignsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#vitalSignsCollapse" aria-expanded="false" aria-controls="vitalSignsCollapse">
+                                            <i class="bx bx-heart p-1 me-2"></i>{{ localize('global.vital_signs') }}
+                                        </button>
+                                    </h2>
+                                    <div id="vitalSignsCollapse" class="accordion-collapse collapse" aria-labelledby="vitalSignsHeading"
+                                        data-bs-parent="#vitalSignsAccordion">
+                                        <div class="accordion-body">
+                                            <div id="vital-signs-section"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Vital Signs Accordion -->
 
-
-
-
-                            <div id="vital-signs-section"></div>
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
-
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#createPrescriptionModal{{ $hospitalization->id }}"><span><i
-                                        class="bx bx-plus"></i></span></button>
+                            <!-- Prescription Accordion -->
+                            <div class="accordion mt-4" id="prescriptionAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="prescriptionHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#prescriptionCollapse" aria-expanded="false" aria-controls="prescriptionCollapse">
+                                            <i class="bx bx-notepad p-1 me-2"></i>{{ localize('global.prescription') }}
+                                        </button>
+                                    </h2>
+                                    <div id="prescriptionCollapse" class="accordion-collapse collapse" aria-labelledby="prescriptionHeading"
+                                        data-bs-parent="#prescriptionAccordion">
+                                        <div class="accordion-body">
+                                            <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                data-bs-target="#createPrescriptionModal{{ $hospitalization->id }}"><span><i
+                                                        class="bx bx-plus"></i></span></button>
 
                             <!-- Create Diagnose Modal -->
                             <div class="modal fade modal-xl" id="createPrescriptionModal{{ $hospitalization->id }}"
@@ -508,24 +544,105 @@
                                         </div>
                                     </div>
                                 </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End Prescription Accordion -->
 
-                            <div id="diabetes-charts-section"></div>
+                            <!-- Diabetes Charts Accordion -->
+                            <div class="accordion mt-4" id="diabetesChartsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="diabetesChartsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#diabetesChartsCollapse" aria-expanded="false" aria-controls="diabetesChartsCollapse">
+                                            <i class="bx bx-line-chart p-1 me-2"></i>{{ localize('global.diabetes_charts') }}
+                                        </button>
+                                    </h2>
+                                    <div id="diabetesChartsCollapse" class="accordion-collapse collapse" aria-labelledby="diabetesChartsHeading"
+                                        data-bs-parent="#diabetesChartsAccordion">
+                                        <div class="accordion-body">
+                                            <div id="diabetes-charts-section"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Diabetes Charts Accordion -->
 
-                            <!-- Nurse Notes Section -->
-                            <div id="nursing-note-section"></div>
+                            <!-- Nursing Notes Accordion -->
+                            <div class="accordion mt-4" id="nursingNotesAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="nursingNotesHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#nursingNotesCollapse" aria-expanded="false" aria-controls="nursingNotesCollapse">
+                                            <i class="bx bx-note p-1 me-2"></i>{{ localize('global.nursing_notes') }}
+                                        </button>
+                                    </h2>
+                                    <div id="nursingNotesCollapse" class="accordion-collapse collapse" aria-labelledby="nursingNotesHeading"
+                                        data-bs-parent="#nursingNotesAccordion">
+                                        <div class="accordion-body">
+                                            <div id="nursing-note-section"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Nursing Notes Accordion -->
 
-                            <div id="medication-administration-records-section"></div>
+                            <!-- Medication Administration Records Accordion -->
+                            <div class="accordion mt-4" id="medicationRecordsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="medicationRecordsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#medicationRecordsCollapse" aria-expanded="false" aria-controls="medicationRecordsCollapse">
+                                            <i class="bx bx-pill p-1 me-2"></i>{{ localize('global.medication_administration_records') }}
+                                        </button>
+                                    </h2>
+                                    <div id="medicationRecordsCollapse" class="accordion-collapse collapse" aria-labelledby="medicationRecordsHeading"
+                                        data-bs-parent="#medicationRecordsAccordion">
+                                        <div class="accordion-body">
+                                            <div id="medication-administration-records-section"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Medication Administration Records Accordion -->
 
-                            <div id="nutrition-care-section"></div>
+                            <!-- Nutrition Care Accordion -->
+                            <div class="accordion mt-4" id="nutritionCareAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="nutritionCareHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#nutritionCareCollapse" aria-expanded="false" aria-controls="nutritionCareCollapse">
+                                            <i class="bx bx-food-menu p-1 me-2"></i>{{ localize('global.nutrition_care') }}
+                                        </button>
+                                    </h2>
+                                    <div id="nutritionCareCollapse" class="accordion-collapse collapse" aria-labelledby="nutritionCareHeading"
+                                        data-bs-parent="#nutritionCareAccordion">
+                                        <div class="accordion-body">
+                                            <div id="nutrition-care-section"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Nutrition Care Accordion -->
 
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-command p-1"></i>{{ localize('global.advice') }}</h5>
-                            @if ($hospitalization->is_discharged == 0)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createAdviceModal{{ $hospitalization->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endif
+                            <!-- Advice Accordion -->
+                            <div class="accordion mt-4" id="adviceAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="adviceHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#adviceCollapse" aria-expanded="false" aria-controls="adviceCollapse">
+                                            <i class="bx bx-command p-1 me-2"></i>{{ localize('global.advice') }}
+                                        </button>
+                                    </h2>
+                                    <div id="adviceCollapse" class="accordion-collapse collapse" aria-labelledby="adviceHeading"
+                                        data-bs-parent="#adviceAccordion">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#createAdviceModal{{ $hospitalization->id }}"><span><i
+                                                            class="bx bx-plus"></i></span></button>
+                                            @endif
                             <!-- Create Diagnose Modal -->
                             <div class="modal fade" id="createAdviceModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createAdviceModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -616,18 +733,31 @@
                                     </tbody>
                                 </table>
 
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
+                            <!-- End Advice Accordion -->
 
                             {{-- lab tests from hospitalization --}}
 
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-hard-hat p-1"></i>{{ localize('global.hospitalization_checkups') }}</h5>
-                            @if ($hospitalization->is_discharged == 0)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createLabModal{{ $hospitalization->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endif
+                            <!-- Lab Tests Accordion -->
+                            <div class="accordion mt-4" id="labTestsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="labTestsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#labTestsCollapse" aria-expanded="false" aria-controls="labTestsCollapse">
+                                            <i class="bx bx-hard-hat p-1 me-2"></i>{{ localize('global.hospitalization_checkups') }}
+                                        </button>
+                                    </h2>
+                                    <div id="labTestsCollapse" class="accordion-collapse collapse" aria-labelledby="labTestsHeading"
+                                        data-bs-parent="#labTestsAccordion">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#createLabModal{{ $hospitalization->id }}"><span><i
+                                                            class="bx bx-plus"></i></span></button>
+                                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createLabModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createLabModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -757,17 +887,31 @@
 
                                     </tbody>
                                 </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End Lab Tests Accordion -->
 
                             {{-- end lab tests from hospitalization --}}
                             {{-- icu starts here --}}
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
-                            @if ($hospitalization->is_discharged == 0)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createICUModal{{ $hospitalization->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endif
+                            <!-- ICU Accordion -->
+                            <div class="accordion mt-4" id="icuAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="icuHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#icuCollapse" aria-expanded="false" aria-controls="icuCollapse">
+                                            <i class="bx bx-tv p-1 me-2"></i>{{ localize('global.refere_to_icu') }}
+                                        </button>
+                                    </h2>
+                                    <div id="icuCollapse" class="accordion-collapse collapse" aria-labelledby="icuHeading"
+                                        data-bs-parent="#icuAccordion">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#createICUModal{{ $hospitalization->id }}"><span><i
+                                                            class="bx bx-plus"></i></span></button>
+                                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createICUModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createICUModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -863,16 +1007,29 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End ICU Accordion -->
 
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-first-aid p-1"></i>{{ localize('global.refere_to_anasthesia') }}</h5>
-                            @if ($hospitalization->is_discharged == 0)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createAnasthesiaModal{{ $hospitalization->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endif
+                            <!-- Anesthesia Accordion -->
+                            <div class="accordion mt-4" id="anesthesiaAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="anesthesiaHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#anesthesiaCollapse" aria-expanded="false" aria-controls="anesthesiaCollapse">
+                                            <i class="bx bx-first-aid p-1 me-2"></i>{{ localize('global.refere_to_anasthesia') }}
+                                        </button>
+                                    </h2>
+                                    <div id="anesthesiaCollapse" class="accordion-collapse collapse" aria-labelledby="anesthesiaHeading"
+                                        data-bs-parent="#anesthesiaAccordion">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#createAnasthesiaModal{{ $hospitalization->id }}"><span><i
+                                                            class="bx bx-plus"></i></span></button>
+                                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createAnasthesiaModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createAnasthesiaModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -1078,12 +1235,24 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End Anesthesia Accordion -->
 
-
-
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-walk p-1"></i>{{ localize('global.create_complaint') }}</h5>
+                            <!-- Complaint Accordion -->
+                            <div class="accordion mt-4" id="complaintAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="complaintHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#complaintCollapse" aria-expanded="false" aria-controls="complaintCollapse">
+                                            <i class="bx bx-walk p-1 me-2"></i>{{ localize('global.create_complaint') }}
+                                        </button>
+                                    </h2>
+                                    <div id="complaintCollapse" class="accordion-collapse collapse" aria-labelledby="complaintHeading"
+                                        data-bs-parent="#complaintAccordion">
+                                        <div class="accordion-body">
                             @if ($hospitalization->is_discharged == 0)
                                 <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                     data-bs-target="#createComplaintModal{{ $hospitalization->id }}"><span><i
@@ -1159,16 +1328,30 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End Complaint Accordion -->
 
                             {{-- discharge --}}
-                            <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                    class="bx bx-walk p-1"></i>{{ localize('global.discharge_patient') }}</h5>
-                            @if ($hospitalization->is_discharged == 0)
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createDischargeModal{{ $hospitalization->id }}"><span><i
-                                            class="bx bx-plus"></i></span></button>
-                            @endif
+                            <!-- Discharge Accordion -->
+                            <div class="accordion mt-4" id="dischargeAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="dischargeHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#dischargeCollapse" aria-expanded="false" aria-controls="dischargeCollapse">
+                                            <i class="bx bx-walk p-1 me-2"></i>{{ localize('global.discharge_patient') }}
+                                        </button>
+                                    </h2>
+                                    <div id="dischargeCollapse" class="accordion-collapse collapse" aria-labelledby="dischargeHeading"
+                                        data-bs-parent="#dischargeAccordion">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#createDischargeModal{{ $hospitalization->id }}"><span><i
+                                                            class="bx bx-plus"></i></span></button>
+                                            @endif
                             <!-- Create  Lab Modal -->
                             <div class="modal fade" id="createDischargeModal{{ $hospitalization->id }}" tabindex="-1"
                                 aria-labelledby="createDischargeModalLabel{{ $hospitalization->id }}" aria-hidden="true">
@@ -1262,9 +1445,14 @@
                             </div>
                             <!-- End Create Nursing Assessment Modal -->
 
-                            <div class="col-md-12 mt-4">
-                                {{ $hospitalization->discharge_remark }}
+                                            <div class="col-md-12 mt-4">
+                                                {{ $hospitalization->discharge_remark }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- End Discharge Accordion -->
                             {{-- end discharge --}}
                         </div>
 
@@ -1275,6 +1463,25 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('styles')
+    <style>
+        /* Simple borders for accordion sections */
+        #visitsAccordion .accordion-item { border: 2px solid #007bff; }
+        #vitalSignsAccordion .accordion-item { border: 2px solid #dc3545; }
+        #prescriptionAccordion .accordion-item { border: 2px solid #28a745; }
+        #diabetesChartsAccordion .accordion-item { border: 2px solid #fd7e14; }
+        #nursingNotesAccordion .accordion-item { border: 2px solid #6f42c1; }
+        #medicationRecordsAccordion .accordion-item { border: 2px solid #20c997; }
+        #nutritionCareAccordion .accordion-item { border: 2px solid #e83e8c; }
+        #adviceAccordion .accordion-item { border: 2px solid #6610f2; }
+        #labTestsAccordion .accordion-item { border: 2px solid #ffc107; }
+        #icuAccordion .accordion-item { border: 2px solid #0b5ed7; }
+        #anesthesiaAccordion .accordion-item { border: 2px solid #157347; }
+        #complaintAccordion .accordion-item { border: 2px solid #b02a37; }
+        #dischargeAccordion .accordion-item { border: 2px solid #6c757d; }
+    </style>
 @endsection
 
 @section('scripts')

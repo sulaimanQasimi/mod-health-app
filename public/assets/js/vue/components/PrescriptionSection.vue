@@ -144,7 +144,7 @@
                                         <label class="form-label">دوز</label>
                                         <input 
                                             v-model="item.dosage" 
-                                            type="text" 
+                                            type="number" 
                                             class="form-control" 
                                             :placeholder="'دوز'" 
                                             required>
@@ -153,7 +153,7 @@
                                         <label class="form-label">تکرار</label>
                                         <input 
                                             v-model="item.frequency" 
-                                            type="text" 
+                                            type="number" 
                                             class="form-control" 
                                             :placeholder="'تکرار'" 
                                             required>
@@ -162,7 +162,7 @@
                                         <label class="form-label">مقدار</label>
                                         <input 
                                             v-model="item.amount" 
-                                            type="text" 
+                                            type="number" 
                                             class="form-control" 
                                             :placeholder="'مقدار'" 
                                             required>

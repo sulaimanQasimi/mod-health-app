@@ -876,4 +876,99 @@ export default {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
+
+/* Dark Mode Styles for Vue Multiselect */
+.dark-style .multiselect__tags,
+body[data-theme="dark"] .multiselect__tags,
+html[data-theme="dark"] .multiselect__tags,
+.theme-dark .multiselect__tags {
+    background-color: #444564 !important;
+    border-color: #444564 !important;
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__tags:focus-within,
+body[data-theme="dark"] .multiselect__tags:focus-within,
+html[data-theme="dark"] .multiselect__tags:focus-within,
+.theme-dark .multiselect__tags:focus-within {
+    border-color: #696cff !important;
+    box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.25) !important;
+}
+
+.dark-style .multiselect__single,
+body[data-theme="dark"] .multiselect__single,
+html[data-theme="dark"] .multiselect__single,
+.theme-dark .multiselect__single {
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__placeholder,
+body[data-theme="dark"] .multiselect__placeholder,
+html[data-theme="dark"] .multiselect__placeholder,
+.theme-dark .multiselect__placeholder {
+    color: #7c7db6 !important;
+}
+
+.dark-style .multiselect__input,
+body[data-theme="dark"] .multiselect__input,
+html[data-theme="dark"] .multiselect__input,
+.theme-dark .multiselect__input {
+    background-color: transparent !important;
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__input::placeholder,
+body[data-theme="dark"] .multiselect__input::placeholder,
+html[data-theme="dark"] .multiselect__input::placeholder,
+.theme-dark .multiselect__input::placeholder {
+    color: #7c7db6 !important;
+}
+
+.dark-style .multiselect__content-wrapper,
+body[data-theme="dark"] .multiselect__content-wrapper,
+html[data-theme="dark"] .multiselect__content-wrapper,
+.theme-dark .multiselect__content-wrapper {
+    background-color: #444564 !important;
+    border-color: #444564 !important;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-style .multiselect__option,
+body[data-theme="dark"] .multiselect__option,
+html[data-theme="dark"] .multiselect__option,
+.theme-dark .multiselect__option {
+    color: #a3a4cc !important;
+    background-color: #444564 !important;
+}
+
+.dark-style .multiselect__option:hover,
+body[data-theme="dark"] .multiselect__option:hover,
+html[data-theme="dark"] .multiselect__option:hover,
+.theme-dark .multiselect__option:hover {
+    background-color: #4a4b6b !important;
+}
+
+.dark-style .multiselect__option--highlight,
+body[data-theme="dark"] .multiselect__option--highlight,
+html[data-theme="dark"] .multiselect__option--highlight,
+.theme-dark .multiselect__option--highlight {
+    background-color: #696cff !important;
+    color: white !important;
+}
+
+.dark-style .multiselect__option--selected,
+body[data-theme="dark"] .multiselect__option--selected,
+html[data-theme="dark"] .multiselect__option--selected,
+.theme-dark .multiselect__option--selected {
+    background-color: rgba(124, 125, 182, 0.16) !important;
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__option--selected.multiselect__option--highlight,
+body[data-theme="dark"] .multiselect__option--selected.multiselect__option--highlight,
+html[data-theme="dark"] .multiselect__option--selected.multiselect__option--highlight,
+.theme-dark .multiselect__option--selected.multiselect__option--highlight {
+    background-color: #696cff !important;
+    color: white !important;
+}
 </style>

@@ -71,6 +71,28 @@
             .label {
                 font-family: persian_font;
             }
+            .multiselect__input, .multiselect__placeholder {
+                color: black;
+            }
+            
+            /* Dark mode styles for multiselect */
+            .dark-style .multiselect__input,
+            .dark-style .multiselect__placeholder,
+            body[data-theme="dark"] .multiselect__input,
+            body[data-theme="dark"] .multiselect__placeholder,
+            html[data-theme="dark"] .multiselect__input,
+            html[data-theme="dark"] .multiselect__placeholder,
+            .theme-dark .multiselect__input,
+            .theme-dark .multiselect__placeholder {
+                color: #a3a4cc !important;
+            }
+            
+            .dark-style .multiselect__input::placeholder,
+            body[data-theme="dark"] .multiselect__input::placeholder,
+            html[data-theme="dark"] .multiselect__input::placeholder,
+            .theme-dark .multiselect__input::placeholder {
+                color: #7c7db6 !important;
+            }
         </style>
     @endif
 

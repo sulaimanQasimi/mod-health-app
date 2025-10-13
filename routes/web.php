@@ -784,6 +784,20 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'deleteLabTest']);
     });
 
+    // Prescription Ajax routes
+    Route::prefix('prescription-ajax')->name('prescription-ajax.')->group(function () {
+        Route::get('medicine-types', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicineTypes']);
+        Route::get('medicines-by-type/{typeId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicinesByType']);
+        Route::get('medicine-usage-types', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicineUsageTypes']);
+        Route::post('store', [\App\Http\Controllers\PrescriptionAjaxController::class, 'storePrescription']);
+        Route::get('appointment-prescriptions/{appointmentId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getAppointmentPrescriptions']);
+        Route::get('prescription-items/{prescriptionId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getPrescriptionItems']);
+        Route::put('update-status/{prescriptionId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'updatePrescriptionStatus']);
+        Route::post('update-item-status/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'updatePrescriptionItemStatus']);
+        Route::delete('delete/{prescriptionId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescription']);
+        Route::delete('delete-item/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescriptionItem']);
+    });
+
     // Nurse Notes routes
     Route::prefix('nurse-notes')->name('nurse-notes.')->group(function () {
         Route::get('/', [\App\Http\Controllers\NurseNoteController::class, 'index'])->name('index');

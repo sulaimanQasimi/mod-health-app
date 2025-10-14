@@ -44,7 +44,7 @@ class MedicineUsageTypeController extends Controller
         $medicineUsageType = MedicineUsageType::create($validatedData);
 
         return redirect()->route('medicine_usage_types.index')
-                         ->with('success', 'Medicine usage type created successfully.');
+                         ->with('success', localize('global.medicine_usage_type_created_successfully.'));
     }
 
     /**
@@ -86,7 +86,7 @@ class MedicineUsageTypeController extends Controller
         $medicineUsageType->update($validatedData);
 
         return redirect()->route('medicine_usage_types.index')
-                         ->with('success', 'Medicine usage type updated successfully.');
+                         ->with('success', localize('global.medicine_usage_type_updated_successfully.'));
     }
 
     /**
@@ -99,6 +99,6 @@ class MedicineUsageTypeController extends Controller
     {
         $medicineUsageType->delete();
         return redirect()->route('medicine_usage_types.index')
-                         ->with('success', 'Medicine usage type deleted successfully.');
+                         ->with('success', localize('global.medicine_usage_type_deleted_successfully.'));
     }
 }

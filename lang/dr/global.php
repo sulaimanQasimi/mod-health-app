@@ -548,6 +548,7 @@ return [
     'sort_order' => 'ترتیب مرتب سازی',
     'ascending' => 'صعودی',
     'showing' => 'نمایش',
+    'no_section'=>'بخش موجود نیست',
     'all_diseases' => 'همه مریضی ها',
     'search_by_name' => 'جستجو بر اساس نام',
     'clear' => 'پاک کردن',

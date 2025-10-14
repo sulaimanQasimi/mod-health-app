@@ -11,7 +11,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'public/assets/js/vue/lab-app.js',
                 'public/assets/js/vue/prescription-app.js',
-                'public/assets/js/vue/diagnosis-app.js'
+                'public/assets/js/vue/diagnosis-app.js',
+                'public/assets/js/vue/advice-app.js'
             ],
             refresh: true,
         }),

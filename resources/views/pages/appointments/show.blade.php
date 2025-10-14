@@ -335,119 +335,28 @@
                         <div id="adviceCollapse" class="accordion-collapse collapse" 
                             aria-labelledby="adviceHeading" data-bs-parent="#adviceAccordion">
                             <div class="accordion-body">
-                                <!-- Add Button and Table Header -->
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div></div> <!-- Empty div for spacing -->
-                                    <div>
-                                        @if ($appointment->is_completed == 0)
-                                            @can('add-advice')
-                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createAdviceModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
-                                            @endcan
-                                        @endif
+                                <!-- Advice Section Vue Component -->
+                                <div id="advice-section-container" 
+                                     data-appointment='@json($appointment)'
+                                     data-permissions='@json([
+                                         "canAddAdvice" => auth()->user()->can("add-advice"),
+                                         "canEditAdvice" => auth()->user()->can("edit-advices"),
+                                         "canDeleteAdvice" => auth()->user()->can("delete-advices")
+                                     ])'>
+                                    <!-- Fallback content while Vue loads -->
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">{{ localize('global.loading_advice_section') }}</p>
                                     </div>
                                 </div>
-                                
-                                <!-- Advice Table -->
-                                @if($appointment->advices->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead class="table-body-secondary">
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.description') }}</th>
-                                                    <th>{{ localize('global.by') }}</th>
-                                                    <th>{{ localize('global.created_at') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($appointment->advices as $advice)
-                                                    <tr>
-                                                        <td>
-                                                            <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
-                                                        </td>
-                                                        <td>{{ $advice->description }}</td>
-                                                        <td>
-                                                            <span class="badge bg-secondary">{{ $advice->doctor->name }}</span>
-                                                        </td>
-                                                        <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($advice->created_at->format('Y-m-d')) }}</td>
-                                                        <td>
-                                                            @can('edit-advices')
-                                                                <a href="{{ route('advices.edit', $advice->id) }}"
-                                                                    class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                    <i class="bx bx-edit"></i>
-                                                                </a>
-                                                            @endcan
-                                                            @can('delete-advices')
-                                                                <a href="{{ route('advices.destroy', $advice->id) }}"
-                                                                    class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                    <i class="bx bx-trash"></i>
-                                                                </a>
-                                                            @endcan
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <div class="text-center py-4">
-                                        <div class="alert alert-info">
-                                            <i class="bx bx-info-circle me-2"></i>
-                                            {{ localize('global.no_previous_advices') }}
-                                        </div>
-                                    </div>
-                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Create Diagnose Modal -->
-        <div class="modal fade" id="createAdviceModal{{ $appointment->id }}" tabindex="-1"
-            aria-labelledby="createAdviceModalLabel{{ $appointment->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createAdviceModalLabel{{ $appointment->id }}">
-                            {{ localize('global.add_advice') }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('advices.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id"
-                                value="{{ $appointment->patient_id }}">
-                            <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
-                                value="{{ $appointment->id }}">
-                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                value="{{ auth()->user()->id }}">
-
-                            <!-- Add other diagnosis form fields as needed -->
-                            <div class="form-group">
-
-                                <label for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
-                                <textarea class="form-control" id="description{{ $appointment->id }}" name="description"
-                                    rows="3"></textarea>
-
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- End Create Diagnose Modal -->
 
 
         <!-- Lab Section Accordion -->
@@ -2084,6 +1993,9 @@
     
     <!-- Vue.js Diagnosis Section -->
     @vite(['public/assets/js/vue/diagnosis-app.js'])
+    
+    <!-- Vue.js Advice Section -->
+    @vite(['public/assets/js/vue/advice-app.js'])
     <script>
         // Global Select2 fix for modal compatibility
         (function () {

@@ -807,6 +807,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete-item/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescriptionItem']);
     });
 
+    // Advice Ajax routes
+    Route::prefix('advice-ajax')->name('advice-ajax.')->group(function () {
+        Route::get('appointment-advices/{appointmentId}', [\App\Http\Controllers\AdviceAjaxController::class, 'getAppointmentAdvices']);
+        Route::post('store', [\App\Http\Controllers\AdviceAjaxController::class, 'store']);
+        Route::put('update/{advice}', [\App\Http\Controllers\AdviceAjaxController::class, 'update']);
+        Route::delete('delete/{advice}', [\App\Http\Controllers\AdviceAjaxController::class, 'delete']);
+    });
+
     // Nurse Notes routes
     Route::prefix('nurse-notes')->name('nurse-notes.')->group(function () {
         Route::get('/', [\App\Http\Controllers\NurseNoteController::class, 'index'])->name('index');

@@ -73,26 +73,35 @@ class AppointmentController extends Controller
             'patient_id' => 'required',
             'doctor_id' => 'required',
             'branch_id' => 'required',
+            'department_id' => 'required',
             'is_completed' => 'nullable',
-            'date' => 'required',
-            'time' => 'required',
+            'date' => 'nullable',
+            'time' => 'nullable',
             'status_remark' => 'nullable',
             'refferal_remarks' => 'nullable',
         ]);
 
-        $validatedData['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
+        // Convert date if it's provided and not already in Gregorian format
+        if (!empty($validatedData['date'])) {
+            $validatedData['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
+        }
 
         if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');
 
             $current_appointment = Appointment::findOrFail($current_appointmentId);
 
-            $current_appointment->update(['is_completed' => '1', 'refferal_remarks' => $request->refferal_remarks]);
-            $current_appointment->save();
+            // Mark the current appointment as completed with referral remarks
+            $current_appointment->update([
+                'is_completed' => '1', 
+                'refferal_remarks' => $request->refferal_remarks
+            ]);
+            
+            // Create the new appointment for the referred doctor
             $appointment = Appointment::create($validatedData);
 
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
-            return redirect()->route('appointments.completedAppointments')->with('success', localize('global.appointment_created_successfully'));
+            return redirect()->route('appointments.completedAppointments')->with('success', localize('global.patient_referred_successfully'));
         } else {
             // Create a new appointment
             $appointment = Appointment::create($validatedData);

@@ -504,198 +504,22 @@
                         <div id="consultationCollapse" class="accordion-collapse collapse" 
                             aria-labelledby="consultationHeading" data-bs-parent="#consultationAccordion">
                             <div class="accordion-body">
-                                <!-- Add Button -->
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div></div> <!-- Empty div for spacing -->
-                                    <div>
-                                        @if ($appointment->is_completed == 0)
-                                            @can('add-consultations')
-                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#createConsultationModal{{ $appointment->id }}">
-                                                    <i class="bx bx-plus me-1"></i>
-                                                    {{ localize('global.add') }}
-                                                </button>
-                                            @endcan
-                                        @endif
-                                    </div>
-                                </div>
-                                
-        <!-- Create  Lab Modal -->
-        <div class="modal fade" id="createConsultationModal{{ $appointment->id }}" tabindex="-1"
-            aria-labelledby="createConsultationModalLabel{{ $appointment->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createConsultationModalLabel{{ $appointment->id }}">
-                            {{ localize('global.add_consultation') }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('consultations.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id"
-                                value="{{ $appointment->patient_id }}">
-                            <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
-                                value="{{ $appointment->id }}">
-                            <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
-                                value="{{ auth()->user()->branch_id }}">
-
-                            <div class="form-group">
-
-                                <label for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
-                                <input type="text" class="form-control" name="title">
-
-                                <label for="branch{{ $appointment->id }}">{{ localize('global.branch') }}</label>
-                                <select class="form-control select2" name="branch" id="branch">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($branches as $value)
-                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}
-
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <label for="department{{ $appointment->id }}">{{ localize('global.department') }}</label>
-                                <select class="form-control select2" name="department_id[]" id="department" multiple>
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($departments as $value)
-                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}
-
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <label for="type{{ $appointment->id }}">{{ localize('global.type') }}</label>
-                                <select class="form-control select2" name="consultation_type" id="type">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    <option value="0">{{ localize('global.normal') }}</option>
-                                    <option value="1">{{ localize('global.emergency') }}</option>
-
-                                </select>
-
-                                {{-- <label for="doctor_id{{ $appointment->id }}">{{
-                                    localize('global.doctors') }}</label>
-                                <select class="form-control select2" name="doctor_id[]" id="doctor_id" multiple>
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($doctors as $value)
-                                    <option value="{{ $value->id }}" {{ old('name')==$value->id ? 'selected'
-                                        : '' }}>
-                                        {{ $value->name_en }}
-
-                                    </option>
-                                    @endforeach
-                                </select> --}}
-
-                                <div class="mb-3">
-                                    <label for="date">{{ localize('global.date') }}</label>
-                                    <input type="text" class="form-control form-control datepicker_dari pdp-el" name="date" id="date" />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="time">{{ localize('global.time') }}</label>
-                                    <input type="time" class="form-control" name="time" />
-                                </div>
-
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- End Create Lab Modal -->
-
-                                <!-- Consultations Table -->
-                                @if($appointment->consultations->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead class="table-body-secondary">
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.title') }}</th>
-                                                    <th>{{ localize('global.department') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($appointment->consultations as $consultation)
-                                                    <tr>
-                                                        <td>
-                                                            <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
-                                                        </td>
-                                                        <td>{{ $consultation->title }}</td>
-                                                        <td>
-                                                            @foreach ($consultation->associated_departments as $department)
-                                                                <span class="badge bg-primary me-1">{{ $department->name }}</span>
-                                                            @endforeach
-                                                        </td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                @can('edit-consultations')
-                                                                    <a href="{{ route('consultations.edit', $consultation->id) }}"
-                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                        <i class="bx bx-edit"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('delete-consultations')
-                                                                    <a href="{{ route('consultations.destroy', $consultation->id) }}"
-                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                        <i class="bx bx-trash"></i>
-                                                                    </a>
-                                                                @endcan
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    @if ($consultation->comments->isNotEmpty())
-                                                        <tr>
-                                                            <td colspan="4">
-                                                                <div class="alert alert-info mb-2">
-                                                                    <i class="bx bx-chat me-2"></i>
-                                                                    {{ localize('global.related_comments') }}
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="4">
-                                                                @foreach ($consultation->comments as $comment)
-                                                                    <div class="row mb-3 p-3 bg-body-secondary rounded">
-                                                                        <div class="col-md-3">
-                                                                            <span class="badge bg-primary">{{ $comment->department->name }}</span>
-                                                                        </div>
-                                                                        <div class="col-md-1 d-flex align-items-center justify-content-center">
-                                                                            <i class="bx bx-transfer text-success"></i>
-                                                                        </div>
-                                                                        <div class="col-md-2">
-                                                                            <span class="badge bg-secondary">{{ $comment->doctor->name }}</span>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="p-3 bg-body rounded border-start border-primary border-3">
-                                                                                {{ $comment->comment }}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                                            </td>
-                                                        </tr>
-                                                    @endif
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
+                                <!-- Consultation Section Vue Component -->
+                                <div id="consultation-section-container" 
+                                     data-appointment='@json($appointment)'
+                                     data-permissions='@json([
+                                         "canAddConsultation" => auth()->user()->can("add-consultations"),
+                                         "canEditConsultation" => auth()->user()->can("edit-consultations"),
+                                         "canDeleteConsultation" => auth()->user()->can("delete-consultations")
+                                     ])'>
+                                    <!-- Fallback content while Vue loads -->
                                     <div class="text-center py-4">
-                                        <div class="alert alert-info">
-                                            <i class="bx bx-info-circle me-2"></i>
-                                            {{ localize('global.no_previous_consultations') }}
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
                                         </div>
+                                        <p class="mt-2">{{ localize('global.loading_consultation_section') }}</p>
                                     </div>
-                                @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1986,7 +1810,6 @@
 @section('scripts')
     <!-- Vue.js Lab Section -->
     @vite(['public/assets/js/vue/lab-app.js'])
-    <script src="{{ asset('assets/js/vue/debug-lab.js') }}"></script>
     
     <!-- Vue.js Prescription Section -->
     @vite(['public/assets/js/vue/prescription-app.js'])
@@ -1996,6 +1819,12 @@
     
     <!-- Vue.js Advice Section -->
     @vite(['public/assets/js/vue/advice-app.js'])
+    
+    <!-- Persian Datepicker Library -->
+    <script src="{{ asset('assets/js/persian_datepicker.js') }}"></script>
+    
+    <!-- Vue.js Consultation Section -->
+    @vite(['public/assets/js/vue/consultation-app.js'])
     <script>
         // Global Select2 fix for modal compatibility
         (function () {

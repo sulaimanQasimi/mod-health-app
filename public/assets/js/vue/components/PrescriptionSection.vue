@@ -458,7 +458,13 @@ export default {
              try {
                  // Validate form before submission
                  if (!this.validateForm()) {
-                     this.showNotification('لطفاً خطاهای فرم را برطرف کنید', 'error');
+                     Swal.fire({
+                         title: 'خطا در اعتبارسنجی',
+                         text: 'لطفاً خطاهای فرم را برطرف کنید',
+                         icon: 'error',
+                         timer: 3000,
+                         showConfirmButton: false
+                     });
                      this.loading = false;
                      return;
                  }
@@ -494,13 +500,31 @@ export default {
                  if (data.success) {
                      this.showCreateModal = false;
                      this.loadAppointmentPrescriptions();
-                     this.showNotification('نسخه با موفقیت ایجاد شد', 'success');
+                     Swal.fire({
+                         title: 'موفق',
+                         text: 'نسخه با موفقیت ایجاد شد',
+                         icon: 'success',
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
                  } else {
-                     this.showNotification(data.message || 'خطا در ایجاد نسخه', 'error');
+                     Swal.fire({
+                         title: 'خطا',
+                         text: data.message || 'خطا در ایجاد نسخه',
+                         icon: 'error',
+                         timer: 3000,
+                         showConfirmButton: false
+                     });
                  }
              } catch (error) {
                  console.error('Error creating prescription:', error);
-                 this.showNotification('خطا در ایجاد نسخه', 'error');
+                 Swal.fire({
+                     title: 'خطا',
+                     text: 'خطا در ایجاد نسخه',
+                     icon: 'error',
+                     timer: 3000,
+                     showConfirmButton: false
+                 });
             } finally {
                 this.loading = false;
             }
@@ -525,7 +549,13 @@ export default {
                          const prescriptionId = this.selectedPrescription.id;
                          this.viewPrescriptionItems(prescriptionId);
                      }
-                     this.showNotification('آیتم به عنوان تحویل شده علامت‌گذاری شد', 'success');
+                     Swal.fire({
+                         title: 'موفق',
+                         text: 'آیتم به عنوان تحویل شده علامت‌گذاری شد',
+                         icon: 'success',
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
                  }
              } catch (error) {
                  console.error('Error updating item status:', error);
@@ -551,7 +581,13 @@ export default {
                          const prescriptionId = this.selectedPrescription.id;
                          this.viewPrescriptionItems(prescriptionId);
                      }
-                     this.showNotification('آیتم به عنوان تحویل نشده علامت‌گذاری شد', 'success');
+                     Swal.fire({
+                         title: 'موفق',
+                         text: 'آیتم به عنوان تحویل نشده علامت‌گذاری شد',
+                         icon: 'success',
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
                  }
              } catch (error) {
                  console.error('Error updating item status:', error);
@@ -559,7 +595,18 @@ export default {
          },
 
          async deletePrescription(prescriptionId) {
-             if (!confirm('آیا مطمئن هستید که می‌خواهید این نسخه را حذف کنید؟')) {
+             const result = await Swal.fire({
+                 title: 'حذف نسخه',
+                 text: 'آیا مطمئن هستید که می‌خواهید این نسخه را حذف کنید؟',
+                 icon: 'warning',
+                 showCancelButton: true,
+                 confirmButtonColor: '#d33',
+                 cancelButtonColor: '#3085d6',
+                 confirmButtonText: 'بله، حذف کن',
+                 cancelButtonText: 'لغو'
+             });
+
+             if (!result.isConfirmed) {
                  return;
              }
 
@@ -574,18 +621,47 @@ export default {
                  const data = await response.json();
                  if (data.success) {
                      this.loadAppointmentPrescriptions();
-                     this.showNotification('نسخه با موفقیت حذف شد', 'success');
+                     Swal.fire({
+                         title: 'موفق',
+                         text: 'نسخه با موفقیت حذف شد',
+                         icon: 'success',
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
                  } else {
-                     this.showNotification(data.message || 'خطا در حذف نسخه', 'error');
+                     Swal.fire({
+                         title: 'خطا',
+                         text: data.message || 'خطا در حذف نسخه',
+                         icon: 'error',
+                         timer: 3000,
+                         showConfirmButton: false
+                     });
                  }
              } catch (error) {
                  console.error('Error deleting prescription:', error);
-                 this.showNotification('خطا در حذف نسخه', 'error');
+                 Swal.fire({
+                     title: 'خطا',
+                     text: 'خطا در حذف نسخه',
+                     icon: 'error',
+                     timer: 3000,
+                     showConfirmButton: false
+                 });
              }
          },
 
          async deletePrescriptionItem(itemId) {
-             if (!confirm('آیا مطمئن هستید که می‌خواهید این آیتم نسخه را حذف کنید؟')) {
+             const result = await Swal.fire({
+                 title: 'حذف آیتم نسخه',
+                 text: 'آیا مطمئن هستید که می‌خواهید این آیتم نسخه را حذف کنید؟',
+                 icon: 'warning',
+                 showCancelButton: true,
+                 confirmButtonColor: '#d33',
+                 cancelButtonColor: '#3085d6',
+                 confirmButtonText: 'بله، حذف کن',
+                 cancelButtonText: 'لغو'
+             });
+
+             if (!result.isConfirmed) {
                  return;
              }
 
@@ -605,13 +681,31 @@ export default {
                          this.viewPrescriptionItems(prescriptionId);
                      }
                      this.loadAppointmentPrescriptions();
-                     this.showNotification('آیتم نسخه با موفقیت حذف شد', 'success');
+                     Swal.fire({
+                         title: 'موفق',
+                         text: 'آیتم نسخه با موفقیت حذف شد',
+                         icon: 'success',
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
                  } else {
-                     this.showNotification(data.message || 'خطا در حذف آیتم نسخه', 'error');
+                     Swal.fire({
+                         title: 'خطا',
+                         text: data.message || 'خطا در حذف آیتم نسخه',
+                         icon: 'error',
+                         timer: 3000,
+                         showConfirmButton: false
+                     });
                  }
              } catch (error) {
                  console.error('Error deleting prescription item:', error);
-                 this.showNotification('خطا در حذف آیتم نسخه', 'error');
+                 Swal.fire({
+                     title: 'خطا',
+                     text: 'خطا در حذف آیتم نسخه',
+                     icon: 'error',
+                     timer: 3000,
+                     showConfirmButton: false
+                 });
              }
          },
 
@@ -659,14 +753,6 @@ export default {
         },
 
 
-        showNotification(message, type) {
-            // This should be connected to your notification system
-            if (window.showNotification) {
-                window.showNotification(message, type);
-            } else {
-                alert(message);
-            }
-        },
 
         getFieldError(index, fieldName) {
             const errorKey = `prescription_items.${index}.${fieldName}`;
@@ -676,9 +762,9 @@ export default {
         setFieldError(index, fieldName, error) {
             const errorKey = `prescription_items.${index}.${fieldName}`;
             if (error) {
-                this.$set(this.validationErrors, errorKey, error);
+                this.validationErrors[errorKey] = error;
             } else {
-                this.$delete(this.validationErrors, errorKey);
+                delete this.validationErrors[errorKey];
             }
         },
 

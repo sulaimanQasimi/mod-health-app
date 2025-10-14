@@ -807,6 +807,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete-item/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescriptionItem']);
     });
 
+    // Consultation Ajax routes
+    Route::prefix('consultation-ajax')->name('consultation-ajax.')->group(function () {
+        Route::get('branches', [\App\Http\Controllers\ConsultationAjaxController::class, 'branches']);
+        Route::get('departments', [\App\Http\Controllers\ConsultationAjaxController::class, 'departments']);
+        Route::get('appointment-consultations/{appointmentId}', [\App\Http\Controllers\ConsultationAjaxController::class, 'appointmentConsultations']);
+        Route::post('store', [\App\Http\Controllers\ConsultationAjaxController::class, 'store']);
+        Route::put('update/{consultationId}', [\App\Http\Controllers\ConsultationAjaxController::class, 'update']);
+        Route::delete('delete/{consultationId}', [\App\Http\Controllers\ConsultationAjaxController::class, 'delete']);
+    });
+
     // Advice Ajax routes
     Route::prefix('advice-ajax')->name('advice-ajax.')->group(function () {
         Route::get('appointment-advices/{appointmentId}', [\App\Http\Controllers\AdviceAjaxController::class, 'getAppointmentAdvices']);

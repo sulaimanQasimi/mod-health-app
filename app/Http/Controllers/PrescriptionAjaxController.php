@@ -58,6 +58,27 @@ class PrescriptionAjaxController extends Controller
     }
 
     /**
+     * Get all medicines
+     */
+    public function getAllMedicines()
+    {
+        try {
+            $medicines = Medicine::all();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $medicines
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch all medicines',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get medicine usage types
      */
     public function getMedicineUsageTypes()

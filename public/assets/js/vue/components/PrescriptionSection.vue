@@ -85,7 +85,7 @@
             class="modal fade show d-block" 
             tabindex="-1" 
             style="background-color: rgba(0,0,0,0.5);">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header">
                          <h5 class="modal-title">اضافه کردن نسخه</h5>
@@ -106,7 +106,6 @@
                                              :options="medicineTypes"
                                              :custom-label="type => type.type"
                                              :placeholder="'انتخاب کنید'"
-                                             @select="(selectedOption) => loadMedicinesByType(selectedOption, index)"
                                              :allow-empty="false"
                                              :searchable="true"
                                              :close-on-select="true"
@@ -121,14 +120,13 @@
                                          <label class="form-label">نام دارو</label>
                                          <multiselect
                                              v-model="item.medicine_id"
-                                             :options="item.medicines"
+                                             :options="allMedicines"
                                              :custom-label="medicine => medicine.name"
                                              :placeholder="'انتخاب کنید'"
                                              :allow-empty="false"
                                              :searchable="true"
                                              :close-on-select="true"
                                              :show-labels="false"
-                                             :disabled="!item.medicine_type_id"
                                              :class="{ 'is-invalid': getFieldError(index, 'medicine_id') }"
                                          ></multiselect>
                                          <div v-if="getFieldError(index, 'medicine_id')" class="invalid-feedback d-block">
@@ -236,7 +234,7 @@
             class="modal fade show d-block" 
             tabindex="-1" 
             style="background-color: rgba(0,0,0,0.5);">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header">
                          <h5 class="modal-title">جزئیات نسخه</h5>
@@ -364,6 +362,7 @@ export default {
             prescriptions: [],
             medicineTypes: [],
             medicineUsageTypes: [],
+            allMedicines: [],
             selectedPrescription: null,
             validationErrors: {},
              form: {
@@ -373,8 +372,7 @@ export default {
                      usage_type_id: null,
                      dosage: '',
                      frequency: '',
-                     amount: '',
-                     medicines: []
+                     amount: ''
                  }]
              }
         }
@@ -382,6 +380,7 @@ export default {
     mounted() {
         this.loadMedicineTypes();
         this.loadMedicineUsageTypes();
+        this.loadAllMedicines();
         this.loadAppointmentPrescriptions();
     },
     watch: {
@@ -416,26 +415,18 @@ export default {
             }
         },
 
-         async loadMedicinesByType(selectedOption, index) {
-             const item = this.form.prescription_items[index];
-             if (!selectedOption || !selectedOption.id) {
-                 item.medicines = [];
-                 item.medicine_id = null;
-                 return;
-             }
+        async loadAllMedicines() {
+            try {
+                const response = await fetch('/prescription-ajax/all-medicines');
+                const data = await response.json();
+                if (data.success) {
+                    this.allMedicines = data.data;
+                }
+            } catch (error) {
+                console.error('Error loading all medicines:', error);
+            }
+        },
 
-             try {
-                 const response = await fetch(`/prescription-ajax/medicines-by-type/${selectedOption.id}`);
-                 const data = await response.json();
-                 if (data.success) {
-                     item.medicines = data.data;
-                     // Reset medicine selection when type changes
-                     item.medicine_id = null;
-                 }
-             } catch (error) {
-                 console.error('Error loading medicines:', error);
-             }
-         },
 
         async loadAppointmentPrescriptions() {
             try {
@@ -631,8 +622,7 @@ export default {
                  usage_type_id: null,
                  dosage: '',
                  frequency: '',
-                 amount: '',
-                 medicines: []
+                 amount: ''
              });
          },
 
@@ -659,8 +649,7 @@ export default {
                  usage_type_id: null,
                  dosage: '',
                  frequency: '',
-                 amount: '',
-                 medicines: []
+                 amount: ''
              }];
              this.clearValidationErrors();
          },

@@ -3036,4 +3036,12 @@ return [
     "operation_type_name."=>"نام نوع عملیات",
     "operation_type_created_successfully."=>"نوع عملیات با موفقیت ایجاد شد",
     "operation_type_updated_successfully."=>"نوع عملیات با موفقیت تصحیح شد",
+    "medicine_usage_type_created_successfully."=>"نوع استفاده از ادویه با موفقیت ایجاد شد",
+    "medicine_usage_type_updated_successfully."=>"نوع استفاده از ادویه با موفقیت تصحیح شد",
+    "medicine_usage_type_deleted_successfully."=>"نوع استفاده از ادویه با موفقیت حذف شد",
+    "medicine_usage_type_restored_successfully."=>"نوع استفاده از ادویه با موفقیت بازیابی شد",
+    "medicine_usage_type_type."=>"نوع نوع استفاده از ادویه",
+    "medicine_usage_type_name."=>"نام نوع استفاده از ادویه",
+    "medicine_usage_type_created_successfully."=>"نوع استفاده از ادویه با موفقیت ایجاد شد",
+    "medicine_usage_type_updated_successfully."=>"نوع استفاده از ادویه با موفقیت تصحیح شد",
 ];

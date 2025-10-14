@@ -35,42 +35,6 @@
                         </thead>
                     </table>
                 </div>
-                
-                <!-- Legend Section -->
-                <div class="card-footer bg-light">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="mb-2">{{ localize('global.legend') }}:</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-info">
-                                    <i class="bx bx-user me-1"></i>
-                                    {{ localize('global.introduced_by_doctor') }}
-                                </span>
-                                <span class="badge bg-secondary">
-                                    <i class="bx bx-plus me-1"></i>
-                                    {{ localize('global.direct_appointment') }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="mb-2">{{ localize('global.actions') }}:</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-sm btn-success" disabled>
-                                    <i class="bx bx-check me-1"></i>
-                                    {{ localize('global.accept') }}
-                                </button>
-                                <button class="btn btn-sm btn-info" disabled>
-                                    <i class="bx bx-info-circle me-1"></i>
-                                    {{ localize('global.referral_remarks') }}
-                                </button>
-                                <button class="btn btn-sm btn-outline-info" disabled>
-                                    <i class="bx bx-user me-1"></i>
-                                    {{ localize('global.referring_doctor') }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

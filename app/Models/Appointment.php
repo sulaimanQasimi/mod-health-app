@@ -123,4 +123,9 @@ class Appointment extends Model
     {
         return $this->hasMany(PhysiotherapyProcedure::class);
     }
+
+    public function referringDoctor()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

@@ -10,7 +10,13 @@
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.department_appointments') }}</h5>
+                    <div>
+                        <h5 class="mb-0">{{ localize('global.department_appointments') }}</h5>
+                        <small class="text-muted">
+                            <i class="bx bx-info-circle me-1"></i>
+                            {{ localize('global.appointments_referred_by_doctors') }}
+                        </small>
+                    </div>
                 </div>
                 <div class="card-datatable table-responsive">
                     <table class="datatables-basic table border-top">
@@ -21,6 +27,7 @@
                                 <th>{{localize('global.patient_name')}}</th>
                                 <th>{{localize('global.father_name')}}</th>
                                 <th>{{localize('global.department')}}</th>
+                                <th>{{localize('global.introduced_by_doctor')}}</th>
                                 <th>{{localize('global.date')}}</th>
                                 <th>{{localize('global.time')}}</th>
                                 <th>{{localize('global.status')}}</th>
@@ -28,6 +35,42 @@
                             </tr>
                         </thead>
                     </table>
+                </div>
+                
+                <!-- Legend Section -->
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-2">{{ localize('global.legend') }}:</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-info">
+                                    <i class="bx bx-user me-1"></i>
+                                    {{ localize('global.introduced_by_doctor') }}
+                                </span>
+                                <span class="badge bg-secondary">
+                                    <i class="bx bx-plus me-1"></i>
+                                    {{ localize('global.direct_appointment') }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-2">{{ localize('global.actions') }}:</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-success" disabled>
+                                    <i class="bx bx-check me-1"></i>
+                                    {{ localize('global.accept') }}
+                                </button>
+                                <button class="btn btn-sm btn-info" disabled>
+                                    <i class="bx bx-info-circle me-1"></i>
+                                    {{ localize('global.referral_remarks') }}
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" disabled>
+                                    <i class="bx bx-user me-1"></i>
+                                    {{ localize('global.referring_doctor') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,6 +136,22 @@
                             }
                         },
                         {
+                            data: 'referring_doctor',
+                            render: function(data, type, full) {
+                                if (full.referring_doctor && full.referring_doctor.name) {
+                                    return '<div class="d-flex flex-column">' +
+                                        '<span class="badge bg-info mb-1"><i class="bx bx-user me-1"></i>' + full.referring_doctor.name + '</span>' +
+                                        '<small class="text-muted">{{ localize("global.introduced_by_doctor") }}</small>' +
+                                        '</div>';
+                                } else {
+                                    return '<div class="d-flex flex-column">' +
+                                        '<span class="badge bg-secondary mb-1"><i class="bx bx-plus me-1"></i>{{ localize("global.direct_appointment") }}</span>' +
+                                        '<small class="text-muted">{{ localize("global.direct_booking") }}</small>' +
+                                        '</div>';
+                                }
+                            }
+                        },
+                        {
                             data: 'jalali_date',
                         },
                         {
@@ -143,7 +202,19 @@
                                     '</form>';
                                 }
                                 
-                                // Removed show and history buttons as requested
+                                // Show referral remarks if available
+                                if (full['refferal_remarks']) {
+                                    actions += '<button type="button" class="btn btn-sm btn-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="' + full['refferal_remarks'] + '">' +
+                                        '<i class="bx bx-info-circle"></i>' +
+                                    '</button>';
+                                }
+                                
+                                // Show referring doctor info if available
+                                if (full['referring_doctor'] && full['referring_doctor'].name) {
+                                    actions += '<button type="button" class="btn btn-sm btn-outline-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize("global.introduced_by") }}: ' + full['referring_doctor'].name + '">' +
+                                        '<i class="bx bx-user"></i>' +
+                                    '</button>';
+                                }
                                 
                                 return actions;
                             }

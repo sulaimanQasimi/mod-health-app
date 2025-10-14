@@ -972,14 +972,14 @@
                 </div>
             </div>
         </div>
-        <!-- Create  Lab Modal -->
+        <!-- Create Refer Doctor Modal -->
         <div class="modal fade" id="createReferDoctorModal{{ $appointment->id }}" tabindex="-1"
             aria-labelledby="createReferDoctorModalLabel{{ $appointment->id }}" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="createReferDoctorModalLabel{{ $appointment->id }}">
-                            {{ localize('global.refere_patient_to_another_doctor') }}
+                            {{ localize('global.refere_patient_to_department') }}
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -990,16 +990,15 @@
                                 <input type="hidden" name="patient_id" value="{{ $appointment->patient->id }}">
                                 <input type="hidden" name="is_completed" value="0">
                                 <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
-                                <input type="hidden" name="department_id" value="{{ $appointment->doctor->department_id }}">
                                 <input type="hidden" name="date" value="{{ $appointment->date }}">
                                 <input type="hidden" name="time" value="{{ $appointment->time }}">
                                 
-                                <label for="doctor_name">{{ localize('global.doctor_name') }}</label>
-                                <select class="form-control select2" name="doctor_id" id="appointment_doctor_id">
+                                <label for="department_id">{{ localize('global.department') }}</label>
+                                <select class="form-control select2" name="department_id" id="referral_department_id">
                                     <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($appointment->doctor->department->doctors as $doctor)
-                                        <option value="{{ $doctor->id }}" {{ old('doctor_id') == $doctor->id ? 'selected' : '' }}>
-                                            {{ $doctor->name }}
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                            {{ $department->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -1009,7 +1008,7 @@
                                 <label
                                     for="refferal_remarks{{ $appointment->id }}">{{ localize('global.refferal_remarks') }}</label>
                                 <textarea class="form-control" id="refferal_remarks{{ $appointment->id }}"
-                                    name="refferal_remarks" rows="3"></textarea>
+                                    name="refferal_remarks" rows="3" placeholder="{{ localize('global.enter_referral_remarks') }}"></textarea>
                             </div>
 
                             <input type="hidden" name="current_appointment_id" value="{{ $appointment->id }}">
@@ -1017,7 +1016,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                                <button type="submit" class="btn btn-primary">{{ localize('global.refer_patient') }}</button>
                             </div>
                         </form>
                     </div>

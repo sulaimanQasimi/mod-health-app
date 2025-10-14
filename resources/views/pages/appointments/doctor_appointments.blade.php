@@ -22,6 +22,7 @@
                                 <th>{{localize('global.patient_name')}}</th>
                                 <th>{{localize('global.father_name')}}</th>
                                 <th>{{localize('global.referred_to')}}</th>
+                                <th>{{localize('global.referred_by')}}</th>
                                 <th>{{localize('global.date')}}</th>
                                 <th>{{localize('global.time')}}</th>
                                 <th></th>
@@ -92,6 +93,16 @@
                             data: 'doctor',
                             render: function(data) {
                                 return data ? data.name : '';
+                            }
+                        },
+                        {
+                            data: 'referring_doctor',
+                            render: function(data, type, full) {
+                                if (full.referring_doctor && full.referring_doctor.name) {
+                                    return '<span class="badge bg-info"><i class="bx bx-user me-1"></i>' + full.referring_doctor.name + '</span>';
+                                } else {
+                                    return '<span class="badge bg-secondary">{{ localize("global.direct_appointment") }}</span>';
+                                }
                             }
                         },
                         {

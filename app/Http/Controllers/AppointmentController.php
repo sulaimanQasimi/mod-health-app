@@ -68,10 +68,10 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the input
+        // Validate the input - doctor_id is optional for department referrals
         $validatedData = $request->validate([
             'patient_id' => 'required',
-            'doctor_id' => 'required',
+            'doctor_id' => 'nullable',
             'branch_id' => 'required',
             'department_id' => 'required',
             'is_completed' => 'nullable',
@@ -97,7 +97,7 @@ class AppointmentController extends Controller
                 'refferal_remarks' => $request->refferal_remarks
             ]);
             
-            // Create the new appointment for the referred doctor
+            // Create the new appointment for the referred department (without doctor_id)
             $appointment = Appointment::create($validatedData);
 
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
@@ -202,7 +202,7 @@ class AppointmentController extends Controller
         if ($request->ajax()) {
             $appointments = Appointment::where('doctor_id', auth()->user()->id)
                 ->where('is_completed', '0')
-                ->with(['patient', 'doctor'])
+                ->with(['patient', 'doctor', 'referringDoctor'])
                 ->latest()
                 ->get()
                 ->map(function ($appointment) {
@@ -226,7 +226,7 @@ class AppointmentController extends Controller
 
         $appointments = Appointment::where('doctor_id', auth()->user()->id)
             ->where('is_completed', '0')
-            ->with(['patient', 'doctor'])
+            ->with(['patient', 'doctor', 'referringDoctor'])
             ->latest()
             ->get();
         return view('pages.appointments.doctor_appointments', compact('appointments'));
@@ -278,7 +278,7 @@ class AppointmentController extends Controller
         if ($request->ajax()) {
             $appointments = Appointment::where('department_id', $userDepartment)
                 ->whereNull('doctor_id') // Only appointments without assigned doctor
-                ->with(['patient', 'department'])
+                ->with(['patient', 'department', 'referringDoctor'])
                 ->latest()
                 ->get()
                 ->map(function ($appointment) {
@@ -301,7 +301,7 @@ class AppointmentController extends Controller
 
         $appointments = Appointment::where('department_id', $userDepartment)
             ->whereNull('doctor_id')
-            ->with(['patient', 'department'])
+            ->with(['patient', 'department', 'referringDoctor'])
             ->latest()
             ->get();
         return view('pages.appointments.department', compact('appointments'));

@@ -26,7 +26,7 @@
                                 <th>{{localize('global.id')}}</th>
                                 <th>{{localize('global.patient_name')}}</th>
                                 <th>{{localize('global.father_name')}}</th>
-                                <th>{{localize('global.introduced_by_doctor')}}</th>
+                                <th>{{localize('global.department')}}</th>
                                 <th>{{localize('global.date')}}</th>
                                 <th>{{localize('global.time')}}</th>
                                 <th>{{localize('global.status')}}</th>
@@ -129,19 +129,9 @@
                             }
                         },
                         {
-                            data: 'referring_doctor',
-                            render: function(data, type, full) {
-                                if (full.referring_doctor && full.referring_doctor.name) {
-                                    return '<div class="d-flex flex-column">' +
-                                        '<span class="badge bg-info mb-1"><i class="bx bx-user me-1"></i>' + full.referring_doctor.name + '</span>' +
-                                        '<small class="text-muted">{{ localize("global.introduced_by_doctor") }}</small>' +
-                                        '</div>';
-                                } else {
-                                    return '<div class="d-flex flex-column">' +
-                                        '<span class="badge bg-secondary mb-1"><i class="bx bx-plus me-1"></i>{{ localize("global.direct_appointment") }}</span>' +
-                                        '<small class="text-muted">{{ localize("global.direct_booking") }}</small>' +
-                                        '</div>';
-                                }
+                            data: 'department',
+                            render: function(data) {
+                                return data ? data.name : '';
                             }
                         },
                         {

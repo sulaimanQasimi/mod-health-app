@@ -22,7 +22,13 @@
                 </div>
 
                 <div class="card-body">
-
+                    <!-- Pagination Info -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="text-muted">
+                            {{ localize('global.showing') }} {{ $labTypeSections->firstItem() }} {{ localize('global.to') }} {{ $labTypeSections->lastItem() }} 
+                            {{ localize('global.of') }} {{ $labTypeSections->total() }} {{ localize('global.entries') }}
+                        </div>
+                    </div>
 
 <table class="table table-striped">
     <thead>
@@ -66,10 +72,10 @@
     </tbody>
 </table>
 
-<!-- Pagination -->
+<!-- Bootstrap Pagination -->
 @if($labTypeSections->hasPages())
-    <div class="d-flex justify-content-center mt-3">
-        {{ $labTypeSections->links() }}
+    <div class="d-flex justify-content-center mt-4">
+        {{ $labTypeSections->links('pagination.bootstrap-4') }}
     </div>
 @endif
 </div>
@@ -79,3 +85,41 @@
 </div>
 
 @endsection
+
+@push('custom-css')
+<style>
+    .pagination {
+        margin-bottom: 0;
+    }
+    
+    .pagination .page-link {
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        padding: 0.5rem 0.75rem;
+        margin-left: -1px;
+    }
+    
+    .pagination .page-link:hover {
+        color: #0056b3;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+</style>
+@endpush

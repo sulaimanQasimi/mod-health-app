@@ -10,7 +10,8 @@ export default defineConfig({
                 'resources/css/app.css', 
                 'resources/js/app.js',
                 'public/assets/js/vue/lab-app.js',
-                'public/assets/js/vue/prescription-app.js'
+                'public/assets/js/vue/prescription-app.js',
+                'public/assets/js/vue/diagnosis-app.js'
             ],
             refresh: true,
         }),

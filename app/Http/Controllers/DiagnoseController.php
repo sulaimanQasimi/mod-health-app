@@ -104,4 +104,128 @@ class DiagnoseController extends Controller
     {
         return view('pages.diagnoses.create',compact('appointment'));
     }
+
+    /**
+     * Get diagnoses for a specific appointment (AJAX)
+     */
+    public function getAppointmentDiagnoses(Appointment $appointment)
+    {
+        try {
+            $diagnoses = Diagnose::where('appointment_id', $appointment->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $diagnoses
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در بارگذاری تشخیص‌ها',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Store diagnosis via AJAX
+     */
+    public function ajaxStore(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'description' => 'required|string',
+                'patient_id' => 'required|exists:patients,id',
+                'appointment_id' => 'required|exists:appointments,id',
+                'type' => 'required|in:0,1',
+                'bp' => 'nullable|string',
+                'pr' => 'nullable|string',
+                'weight' => 'nullable|string',
+                't' => 'nullable|string',
+                'spo2' => 'nullable|string',
+                'pain' => 'nullable|string',
+            ]);
+
+            $diagnose = Diagnose::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تشخیص با موفقیت ایجاد شد',
+                'data' => $diagnose
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در اعتبارسنجی داده‌ها',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در ایجاد تشخیص',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update diagnosis via AJAX
+     */
+    public function ajaxUpdate(Request $request, Diagnose $diagnose)
+    {
+        try {
+            $data = $request->validate([
+                'description' => 'required|string',
+                'type' => 'required|in:0,1',
+                'bp' => 'nullable|string',
+                'pr' => 'nullable|string',
+                'weight' => 'nullable|string',
+                't' => 'nullable|string',
+                'spo2' => 'nullable|string',
+                'pain' => 'nullable|string',
+            ]);
+
+            $diagnose->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تشخیص با موفقیت ویرایش شد',
+                'data' => $diagnose
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در اعتبارسنجی داده‌ها',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در ویرایش تشخیص',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete diagnosis via AJAX
+     */
+    public function ajaxDelete(Diagnose $diagnose)
+    {
+        try {
+            $diagnose->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تشخیص با موفقیت حذف شد'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در حذف تشخیص',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -250,151 +250,22 @@
                         <div id="diagnoseCollapse{{ $appointment->id }}" class="accordion-collapse collapse"
                             aria-labelledby="diagnoseHeading{{ $appointment->id }}" data-bs-parent="#diagnoseAccordion{{ $appointment->id }}">
                             <div class="accordion-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="mb-0">{{ localize('global.diagnose_list') }}</h6>
-                                    @if ($appointment->is_completed == 0)
-                                        @can('add-diagnose')
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#createDiagnoseModal{{ $appointment->id }}">
-                                                <i class="bx bx-plus me-1"></i>
-                                                {{ localize('global.add') }}
-                                            </button>
-                                        @endcan
-                                    @endif
-                                </div>
-        <!-- Create Diagnose Modal -->
-        <div class="modal fade" id="createDiagnoseModal{{ $appointment->id }}" tabindex="-1"
-            aria-labelledby="createDiagnoseModalLabel{{ $appointment->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createDiagnoseModalLabel{{ $appointment->id }}">
-                            {{ localize('global.add_diagnose') }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('diagnoses.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" id="patient_id{{ $appointment->patient_id }}" name="patient_id"
-                                value="{{ $appointment->patient_id }}">
-                            <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
-                                value="{{ $appointment->id }}">
-                            <!-- Add other diagnosis form fields as needed -->
-                            <div class="form-group">
-                                <label for="type{{ $appointment->id }}">{{ localize('global.diagnose_type') }}</label>
-                                <select class="form-control select2" name="type">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    <option value="0">{{ localize('global.primary') }}</option>
-                                    <option value="1">{{ localize('global.final') }}</option>
-
-                                </select>
-                                <label
-                                    for="description{{ $appointment->id }}">{{ localize('global.description_with_diaseases') }}</label>
-                                <textarea class="form-control" id="description{{ $appointment->id }}" name="description"
-                                    rows="3"></textarea>
-                                <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label for="bp{{ $appointment->id }}">{{ localize('global.bp') }}</label>
-                                            <input type="text" class="form-control" name="bp" />
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="pr{{ $appointment->id }}">{{ localize('global.pr') }}</label>
-                                            <input type="text" class="form-control" name="pr" />
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label
-                                                for="weight{{ $appointment->id }}">{{ localize('global.weight') }}</label>
-                                            <input type="text" class="form-control" name="weight" />
-                                        </div>
-                                    </div>
-                                    <div class="row mt-1 mb-1">
-                                        <div class="col-md-4">
-                                            <label for="t{{ $appointment->id }}">{{ localize('global.t') }}</label>
-                                            <input type="text" class="form-control" name="t" />
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="spo2{{ $appointment->id }}">{{ localize('global.spo2') }}</label>
-                                            <input type="text" class="form-control" name="spo2" />
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="pain{{ $appointment->id }}">{{ localize('global.pain') }}</label>
-                                            <input type="text" class="form-control" name="pain" />
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- End Create Diagnose Modal -->
-
-                                @if($appointment->diagnose->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover">
-                                            <thead class="table-body-secondary">
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.description') }}</th>
-                                                    <th>{{ localize('global.type') }}</th>
-                                                    <th>{{ localize('global.created_at') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($appointment->diagnose as $diagnose)
-                                                    <tr>
-                                                        <td>
-                                                            <span class="badge bg-primary rounded-pill">{{ $loop->iteration }}</span>
-                                                        </td>
-                                                        <td>{{ $diagnose->description }}</td>
-                                                        <td>
-                                                            @if ($diagnose->type == '0')
-                                                                <span class="badge bg-warning text-dark">{{ localize('global.primary') }}</span>
-                                                            @else
-                                                                <span class="badge bg-primary">{{ localize('global.final') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td dir="ltr">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($diagnose->created_at->format('Y-m-d')) }}</td>
-                                                        <td>
-                                                            <div class="btn-group" role="group">
-                                                                @can('edit-diagnoses')
-                                                                    <a href="{{ route('diagnoses.edit', $diagnose->id) }}"
-                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                        <i class="bx bx-edit"></i>
-                                                                    </a>
-                                                                @endcan
-                                                                @can('delete-diagnoses')
-                                                                    <a href="{{ route('diagnoses.destroy', $diagnose->id) }}"
-                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                        <i class="bx bx-trash"></i>
-                                                                    </a>
-                                                                @endcan
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
+                                <!-- Diagnosis Section Vue Component -->
+                                <div id="diagnosis-section-container" 
+                                     data-appointment='@json($appointment)'
+                                     data-permissions='@json([
+                                         "canAddDiagnosis" => auth()->user()->can("add-diagnose"),
+                                         "canEditDiagnosis" => auth()->user()->can("edit-diagnoses"),
+                                         "canDeleteDiagnosis" => auth()->user()->can("delete-diagnoses")
+                                     ])'>
+                                    <!-- Fallback content while Vue loads -->
                                     <div class="text-center py-4">
-                                        <div class="alert alert-info">
-                                            <i class="bx bx-info-circle me-2"></i>
-                                            {{ localize('global.no_previous_diagnoses') }}
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
                                         </div>
+                                        <p class="mt-2">{{ localize('global.loading_diagnosis_section') }}</p>
                                     </div>
-                                @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2210,6 +2081,9 @@
     
     <!-- Vue.js Prescription Section -->
     @vite(['public/assets/js/vue/prescription-app.js'])
+    
+    <!-- Vue.js Diagnosis Section -->
+    @vite(['public/assets/js/vue/diagnosis-app.js'])
     <script>
         // Global Select2 fix for modal compatibility
         (function () {

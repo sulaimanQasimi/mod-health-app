@@ -293,6 +293,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{diagnose}', [DiagnoseController::class, 'destroy'])->name('destroy');
     });
 
+    // Diagnosis AJAX routes for Vue component
+    Route::prefix('diagnosis-ajax')->name('diagnosis-ajax.')->group(function () {
+        Route::get('appointment-diagnoses/{appointment}', [DiagnoseController::class, 'getAppointmentDiagnoses'])->name('appointment-diagnoses');
+        Route::post('store', [DiagnoseController::class, 'ajaxStore'])->name('store');
+        Route::put('update/{diagnose}', [DiagnoseController::class, 'ajaxUpdate'])->name('update');
+        Route::delete('delete/{diagnose}', [DiagnoseController::class, 'ajaxDelete'])->name('delete');
+    });
+
     // Prescriptions routes
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
         Route::get('index', [PrescriptionController::class, 'index'])->name('index');

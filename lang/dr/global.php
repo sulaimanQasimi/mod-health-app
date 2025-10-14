@@ -2988,4 +2988,12 @@ return [
     "department_updated_successfully."=>"دپارتمان با موفقیت تصحیح شد",
     "department_deleted_successfully."=>"دپارتمان با موفقیت حذف شد",
     "department_restored_successfully."=>"دپارتمان با موفقیت بازیابی شد",
+    "section_created_successfully"=>"بخش با موفقیت ایجاد شد",
+    "section_updated_successfully."=>"بخش با موفقیت تصحیح شد",
+    "section_deleted_successfully."=>"بخش با موفقیت حذف شد",
+    "section_restored_successfully."=>"بخش با موفقیت بازیابی شد",
+    "section_type."=>"نوع بخش",
+    "section_name."=>"نام بخش",
+    "section_created_successfully"=>"بخش با موفقیت ایجاد شد",
+    "section_updated_successfully."=>"بخش با موفقیت تصحیح شد",
 ];

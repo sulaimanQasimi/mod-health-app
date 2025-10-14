@@ -1,30 +1,77 @@
 {
-  "__plugin-vue_export-helper-89bC_fiu.js": {
-    "file": "assets/_plugin-vue_export-helper-89bC_fiu.js",
+  "__plugin-vue_export-helper-B-_TUCww.js": {
+    "file": "assets/_plugin-vue_export-helper-B-_TUCww.js",
     "name": "_plugin-vue_export-helper"
   },
+  "_vue-multiselect.esm-CuQKF3aQ.js": {
+    "file": "assets/vue-multiselect.esm-CuQKF3aQ.js",
+    "name": "vue-multiselect.esm",
+    "imports": [
+      "__plugin-vue_export-helper-B-_TUCww.js"
+    ]
+  },
+  "public/assets/js/vue/advice-app.js": {
+    "file": "assets/advice-app-n1P2xt_3.js",
+    "name": "advice-app",
+    "src": "public/assets/js/vue/advice-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-B-_TUCww.js"
+    ],
+    "css": [
+      "assets/advice-app-C31GnVPr.css"
+    ]
+  },
+  "public/assets/js/vue/consultation-app.js": {
+    "file": "assets/consultation-app-BGVESY9h.js",
+    "name": "consultation-app",
+    "src": "public/assets/js/vue/consultation-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-B-_TUCww.js",
+      "_vue-multiselect.esm-CuQKF3aQ.js"
+    ],
+    "css": [
+      "assets/consultation-app-CmC2glh3.css"
+    ]
+  },
+  "public/assets/js/vue/diagnosis-app.js": {
+    "file": "assets/diagnosis-app-CwtFzzOw.js",
+    "name": "diagnosis-app",
+    "src": "public/assets/js/vue/diagnosis-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-B-_TUCww.js",
+      "_vue-multiselect.esm-CuQKF3aQ.js"
+    ],
+    "css": [
+      "assets/diagnosis-app-CpCVl90C.css"
+    ]
+  },
   "public/assets/js/vue/lab-app.js": {
-    "file": "assets/lab-app-CCeEGCGu.js",
+    "file": "assets/lab-app-BZoEtQOR.js",
     "name": "lab-app",
     "src": "public/assets/js/vue/lab-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-89bC_fiu.js"
+      "__plugin-vue_export-helper-B-_TUCww.js",
+      "_vue-multiselect.esm-CuQKF3aQ.js"
     ],
     "css": [
       "assets/lab-app-Dr_bOudg.css"
     ]
   },
   "public/assets/js/vue/prescription-app.js": {
-    "file": "assets/prescription-app-mGi6SnMT.js",
+    "file": "assets/prescription-app-sq8d8tOX.js",
     "name": "prescription-app",
     "src": "public/assets/js/vue/prescription-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-89bC_fiu.js"
+      "__plugin-vue_export-helper-B-_TUCww.js",
+      "_vue-multiselect.esm-CuQKF3aQ.js"
     ],
     "css": [
-      "assets/prescription-app-Dliapmz0.css"
+      "assets/prescription-app-BcI8dUjl.css"
     ]
   },
   "resources/css/app.css": {

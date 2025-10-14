@@ -987,41 +987,22 @@
                         <form action="{{ route('appointments.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="branch">{{ localize('global.branch') }}</label>
-                                <select class="form-control select2" name="branch_id" id="referral_branch">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($branches as $value)
-                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <label for="department">{{ localize('global.department') }}</label>
-                                <select class="form-control select2" name="department_id" id="referral_department_id">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach ($departments as $value)
-                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                            {{ $value->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
                                 <input type="hidden" name="patient_id" value="{{ $appointment->patient->id }}">
                                 <input type="hidden" name="is_completed" value="0">
                                 <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
-                                <!-- Add other appointment form fields as needed -->
+                                <input type="hidden" name="department_id" value="{{ $appointment->doctor->department_id }}">
+                                <input type="hidden" name="date" value="{{ $appointment->date }}">
+                                <input type="hidden" name="time" value="{{ $appointment->time }}">
+                                
                                 <label for="doctor_name">{{ localize('global.doctor_name') }}</label>
                                 <select class="form-control select2" name="doctor_id" id="appointment_doctor_id">
                                     <option value="">{{ localize('global.select') }}</option>
+                                    @foreach ($appointment->doctor->department->doctors as $doctor)
+                                        <option value="{{ $doctor->id }}" {{ old('doctor_id') == $doctor->id ? 'selected' : '' }}>
+                                            {{ $doctor->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="date">{{ localize('global.date') }}</label>
-                                <x-tools.dariDatePicker name="date" dir="ltr" withID="date"
-                                    withPlaceHolder="{{ localize('global.date') }}" withSize="3" extraClasses="" />
-                            </div>
-                            <div class="mb-3">
-                                <label for="time">{{ localize('global.time') }}</label>
-                                <input type="time" class="form-control" name="time" />
                             </div>
 
                             <div class="form-group">
@@ -2508,103 +2489,6 @@
                 }
             })
 
-            $('#referral_branch').on('change', function () {
-                var branchId = $(this).val();
-                if (branchId !== '') {
-                    $.ajax({
-                        url: '/get_departments/' + branchId,
-                        type: 'GET',
-                        success: function (response) {
-                            $('#referral_department_id').html(response);
-                            // Re-initialize Select2 for the updated dropdown
-                            if (typeof $.fn.select2 !== 'undefined') {
-                                $('#referral_department_id').select2({
-                                    dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
-                                    placeholder: '--انتخاب--'
-                                });
-                                // Clear the doctor dropdown when branch changes
-                                $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                                $('#appointment_doctor_id').select2({
-                                    dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                                    placeholder: '--انتخاب--'
-                                });
-                            }
-                        }
-                    })
-                } else {
-                    // Clear both department and doctor dropdowns if no branch is selected
-                    $('#referral_department_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    if (typeof $.fn.select2 !== 'undefined') {
-                        $('#referral_department_id').select2({
-                            dropdownParent: $('#referral_department_id').closest('.modal').find('.modal-body'),
-                            placeholder: '--انتخاب--'
-                        });
-                        $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                        $('#appointment_doctor_id').select2({
-                            dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                            placeholder: '--انتخاب--'
-                        });
-                    }
-                }
-            })
-
-            $('#department').on('change', function () {
-                var departmentId = $(this).val();
-                if (departmentId !== '') {
-                    $.ajax({
-                        url: '/get_doctors/' + departmentId,
-                        type: 'GET',
-                        success: function (response) {
-                            $('#doctor_id').html(response);
-                            // Re-initialize Select2 for the updated dropdown
-                            if (typeof $.fn.select2 !== 'undefined') {
-                                $('#doctor_id').select2({
-                                    dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
-                                    placeholder: '--انتخاب--'
-                                });
-                            }
-                        }
-                    })
-                } else {
-                    // Clear the doctor dropdown if no department is selected
-                    $('#doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    if (typeof $.fn.select2 !== 'undefined') {
-                        $('#doctor_id').select2({
-                            dropdownParent: $('#doctor_id').closest('.modal').find('.modal-body'),
-                            placeholder: '--انتخاب--'
-                        });
-                    }
-                }
-            })
-
-            $('#referral_department_id').on('change', function () {
-                var departmentID = $(this).val();
-                if (departmentID !== '') {
-                    $.ajax({
-                        url: '/get_doctors/' + departmentID,
-                        type: 'GET',
-                        success: function (response) {
-                            $('#appointment_doctor_id').html(response);
-                            // Re-initialize Select2 for the updated dropdown
-                            if (typeof $.fn.select2 !== 'undefined') {
-                                $('#appointment_doctor_id').select2({
-                                    dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                                    placeholder: '--انتخاب--'
-                                });
-                            }
-                        }
-                    })
-                } else {
-                    // Clear the doctor dropdown if no department is selected
-                    $('#appointment_doctor_id').html('<option value="">{{ localize("global.select") }}</option>');
-                    if (typeof $.fn.select2 !== 'undefined') {
-                        $('#appointment_doctor_id').select2({
-                            dropdownParent: $('#appointment_doctor_id').closest('.modal').find('.modal-body'),
-                            placeholder: '--انتخاب--'
-                        });
-                    }
-                }
-            })
 
             $('#room_id').on('change', function () {
                 var roomId = $(this).val();

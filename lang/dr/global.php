@@ -3044,4 +3044,5 @@ return [
     "medicine_usage_type_name."=>"نام نوع استفاده از ادویه",
     "medicine_usage_type_created_successfully."=>"نوع استفاده از ادویه با موفقیت ایجاد شد",
     "medicine_usage_type_updated_successfully."=>"نوع استفاده از ادویه با موفقیت تصحیح شد",
+    "introduced_by"=>"معرف شده توسط دکتر",
 ];

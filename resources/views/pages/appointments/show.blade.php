@@ -537,7 +537,7 @@
                                 data-bs-toggle="collapse" data-bs-target="#referDoctorCollapse" 
                                 aria-expanded="false" aria-controls="referDoctorCollapse">
                                 <i class="bx bx-transfer me-2 text-danger"></i>
-                                {{ localize('global.refer_to_another_doctor') }}
+                                {{ localize('global.refer_to_another_department') }}
                                 @if($appointment->is_completed == 1)
                                     <span class="badge bg-danger ms-2">1</span>
                                 @endif

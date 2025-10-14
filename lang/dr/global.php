@@ -3045,4 +3045,5 @@ return [
     "medicine_usage_type_created_successfully."=>"نوع استفاده از ادویه با موفقیت ایجاد شد",
     "medicine_usage_type_updated_successfully."=>"نوع استفاده از ادویه با موفقیت تصحیح شد",
     "introduced_by"=>"معرف شده توسط دکتر",
+    "refer_to_another_department"=>"معرفی به بخش دیگر",
 ];

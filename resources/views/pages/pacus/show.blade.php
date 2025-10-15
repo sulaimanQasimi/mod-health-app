@@ -77,7 +77,7 @@
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->created_at }}
+                                                        {{ \Verta::instance($pacu->patient->created_at)->format('Y/m/d H:i') }}
                                                     </div>
                                                 </div>
                                             </div>

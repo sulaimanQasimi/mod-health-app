@@ -100,23 +100,6 @@
                                     :key="index" 
                                     class="row mb-3">
                                      <div class="col-md-2">
-                                         <label class="form-label">نوع دارو</label>
-                                         <multiselect
-                                             v-model="item.medicine_type_id"
-                                             :options="medicineTypes"
-                                             :custom-label="type => type.type"
-                                             :placeholder="'انتخاب کنید'"
-                                             :allow-empty="false"
-                                             :searchable="true"
-                                             :close-on-select="true"
-                                             :show-labels="false"
-                                             :class="{ 'is-invalid': getFieldError(index, 'medicine_type_id') }"
-                                         ></multiselect>
-                                         <div v-if="getFieldError(index, 'medicine_type_id')" class="invalid-feedback d-block">
-                                             {{ getFieldError(index, 'medicine_type_id') }}
-                                         </div>
-                                     </div>
-                                     <div class="col-md-2">
                                          <label class="form-label">نام دارو</label>
                                          <multiselect
                                              v-model="item.medicine_id"
@@ -128,10 +111,21 @@
                                              :close-on-select="true"
                                              :show-labels="false"
                                              :class="{ 'is-invalid': getFieldError(index, 'medicine_id') }"
+                                             @select="onMedicineChange(item, index)"
                                          ></multiselect>
                                          <div v-if="getFieldError(index, 'medicine_id')" class="invalid-feedback d-block">
                                              {{ getFieldError(index, 'medicine_id') }}
                                          </div>
+                                     </div>
+                                     <div class="col-md-2">
+                                         <label class="form-label">نوع دارو</label>
+                                         <input 
+                                             type="text" 
+                                             class="form-control" 
+                                             :value="item.medicine_type_id ? item.medicine_type_id.type : ''"
+                                             readonly
+                                             placeholder="نوع دارو انتخاب شده"
+                                         >
                                      </div>
                                      <div class="col-md-2">
                                          <label class="form-label">نوع مصرف</label>
@@ -388,6 +382,16 @@ export default {
             if (!newVal) {
                 this.resetForm();
             }
+        },
+        'form.prescription_items': {
+            handler(newItems) {
+                newItems.forEach((item, index) => {
+                    if (item.medicine_id && !item.medicine_type_id) {
+                        this.onMedicineChange(item, index);
+                    }
+                });
+            },
+            deep: true
         }
     },
     methods: {
@@ -770,6 +774,23 @@ export default {
 
         clearValidationErrors() {
             this.validationErrors = {};
+        },
+
+        onMedicineChange(item, index) {
+            // When medicine is selected, automatically set the medicine type
+            if (item.medicine_id) {
+                // Check if the medicine has a medicine_type_id property
+                if (item.medicine_id.medicine_type_id) {
+                    // Find the medicine type object from the medicineTypes array
+                    const medicineType = this.medicineTypes.find(type => type.id === item.medicine_id.medicine_type_id);
+                    if (medicineType) {
+                        item.medicine_type_id = medicineType;
+                    }
+                }
+            } else {
+                // If medicine is cleared, also clear the medicine type
+                item.medicine_type_id = null;
+            }
         },
 
         validateForm() {

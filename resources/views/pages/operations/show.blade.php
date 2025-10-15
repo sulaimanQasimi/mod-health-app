@@ -650,12 +650,22 @@
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-tv p-1"></i>{{ localize('global.refere_to_pacu') }}</h5>
-
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#referToPACUModal{{ $operation->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
+                                    <!-- PACU Accordion -->
+                                    <div class="accordion mt-4" id="pacuAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="pacuHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#pacuCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="pacuCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-tv p-1 me-2"></i>{{ localize('global.refere_to_pacu') }}
+                                                </button>
+                                            </h2>
+                                            <div id="pacuCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="pacuHeader{{ $operation->id }}" data-bs-parent="#pacuAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                        data-bs-target="#referToPACUModal{{ $operation->id }}"><span><i
+                                                                class="bx bx-plus"></i></span></button>
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="referToPACUModal{{ $operation->id }}" tabindex="-1"
@@ -803,6 +813,11 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End PACU Accordion -->
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)

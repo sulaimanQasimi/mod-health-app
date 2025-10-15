@@ -324,7 +324,7 @@ class AppointmentController extends Controller
             'doctor_id' => auth()->user()->id
         ]);
 
-        return redirect()->route('appointments.departmentAppointments')
+        return redirect()->route('appointments.show', $appointment->id)
             ->with('success', localize('global.appointment_accepted_successfully'));
     }
 

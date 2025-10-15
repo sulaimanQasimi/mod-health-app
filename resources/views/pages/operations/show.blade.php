@@ -821,19 +821,28 @@
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-chat p-1"></i>{{ localize('global.add_remarks') }}</h5>
-
-                                    @if (isset($operation->operation_expense_remarks))
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#editOperationRemarks{{ $operation->id }}"><span><i
-                                                    class="bx bx-edit"></i></span></button>
-                                    @else
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createOperationRemarks{{ $operation->id }}"><span><i
-                                                    class="bx bx-plus"></i></span></button>
-                                    @endif
-                                @endif
+                                    <!-- Operation Remarks Accordion -->
+                                    <div class="accordion mt-4" id="operationRemarksAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="operationRemarksHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#operationRemarksCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="operationRemarksCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-chat p-1 me-2"></i>{{ localize('global.add_remarks') }}
+                                                </button>
+                                            </h2>
+                                            <div id="operationRemarksCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="operationRemarksHeader{{ $operation->id }}" data-bs-parent="#operationRemarksAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    @if (isset($operation->operation_expense_remarks))
+                                                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                                                            data-bs-target="#editOperationRemarks{{ $operation->id }}"><span><i
+                                                                    class="bx bx-edit"></i></span></button>
+                                                    @else
+                                                        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                            data-bs-target="#createOperationRemarks{{ $operation->id }}"><span><i
+                                                                    class="bx bx-plus"></i></span></button>
+                                                    @endif
                                 <!-- Create  Lab Modal -->
                                 <div class="modal fade" id="createOperationRemarks{{ $operation->id }}" tabindex="-1"
                                     aria-labelledby="createOperationRemarksLabel{{ $operation->id }}" aria-hidden="true">
@@ -928,7 +937,12 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Operation Remarks Accordion -->
+                                @endif
 
                                 @if ($operation->is_operation_done == 1)
                                     <h5 class="mb-4 p-3 bg-label-primary mt-4"><i

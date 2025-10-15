@@ -80,202 +80,9 @@
                                     <div id="visitsCollapse" class="accordion-collapse collapse show" aria-labelledby="visitsHeading"
                                         data-bs-parent="#visitsAccordion">
                                         <div class="accordion-body">
-                                            @if ($hospitalization->is_discharged == 0)
-                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                    data-bs-target="#createVisitModal{{ $hospitalization->id }}"><span><i
-                                                            class="bx bx-plus"></i></span></button>
-                                            @endif
-                            <!-- Create visit Modal -->
-                            <div class="modal fade" id="createVisitModal{{ $hospitalization->id }}" tabindex="-1"
-                                aria-labelledby="createVisitModalLabel{{ $hospitalization->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createVisitModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_visit') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('visits.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="patient_id{{ $hospitalization->patient_id }}"
-                                                    name="patient_id" value="{{ $hospitalization->patient_id }}">
-                                                <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
-                                                    name="hospitalization_id" value="{{ $hospitalization->id }}">
-                                                <input type="hidden" id="doctor_id{{ $hospitalization->id }}"
-                                                    name="doctor_id" value="{{ $hospitalization->doctor->id }}">
-                                                <!-- Add other diagnosis form fields as needed -->
-                                                <div class="form-group">
-                                                    <label
-                                                        for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
-                                                    <textarea class="form-control"
-                                                        id="description{{ $hospitalization->id }}" name="description"
-                                                        rows="3"></textarea>
-                                                </div>
-                                                <h5 class="mt-2">{{ localize('global.vital_signs') }}</h5>
-                                                <div class="form-group">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="bp{{ $hospitalization->id }}">{{ localize('global.bp') }}</label>
-                                                            <input type="text" class="form-control" name="bp" />
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="pr{{ $hospitalization->id }}">{{ localize('global.pr') }}</label>
-                                                            <input type="text" class="form-control" name="pr" />
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="rr{{ $hospitalization->id }}">{{ localize('global.rr') }}</label>
-                                                            <input type="text" class="form-control" name="rr" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mt-1 mb-1">
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="t{{ $hospitalization->id }}">{{ localize('global.t') }}</label>
-                                                            <input type="text" class="form-control" name="t" />
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="spo2{{ $hospitalization->id }}">{{ localize('global.spo2') }}</label>
-                                                            <input type="text" class="form-control" name="spo2" />
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="pain{{ $hospitalization->id }}">{{ localize('global.pain') }}</label>
-                                                            <input type="text" class="form-control" name="pain" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mt-1 mb-1">
-                                                        <div class="col-md-6">
-                                                            <label
-                                                                for="antibiotic{{ $hospitalization->id }}">{{ localize('global.antibiotic') }}</label>
-                                                            <input type="text" class="form-control" name="antibiotic" />
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label
-                                                                for="food_type_id{{ $hospitalization->id }}">{{ localize('global.food_type') }}</label>
-                                                            <select class="form-control select2" name="food_type_id[]"
-                                                                id="food_type_id" multiple>
-                                                                <option value="">{{ localize('global.select') }}
-                                                                </option>
-                                                                @foreach ($foodTypes as $value)
-                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                        {{ $value->name }}
-
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="row mt-1 mb-1">
-                                                        <div class="col-md-6">
-                                                            <label
-                                                                for="intake{{ $hospitalization->id }}">{{ localize('global.intake') }}</label>
-                                                            <input type="text" class="form-control" name="intake" />
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label
-                                                                for="output{{ $hospitalization->id }}">{{ localize('global.output') }}</label>
-                                                            <input type="text" class="form-control" name="output" />
-
-                                                        </div>
-
-                                                    </div>
-
-                                                </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Create visit Modal -->
-                            <div class="col-md-12 mt-4">
-
-
-
-
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.description') }}</th>
-                                            <th>{{ localize('global.by') }}</th>
-                                            <th>{{ localize('global.created_at') }}</th>
-                                            <th>{{ localize('global.vital_signs') }}</th>
-                                            <th>{{ localize('global.antibiotic') }}</th>
-                                            <th>{{ localize('global.food_type') }}</th>
-                                            <th>{{ localize('global.intake') }}</th>
-                                            <th>{{ localize('global.output') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($hospitalization->visits as $visit)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $visit->description }}</td>
-                                                <td>{{ $visit->doctor->name }}</td>
-                                                <td>{{ verta($visit->created_at)->format('Y-m-d H:i') }}</td>
-                                                <td dir="ltr">
-                                                    <span class="badge bg-primary">{{ localize('global.bp') }}</span>
-                                                    {{ $visit->bp }}
-                                                    <br>
-                                                    <span class="badge bg-primary">{{ localize('global.pr') }}</span>
-                                                    {{ $visit->pr }}
-                                                    <br>
-                                                    <span class="badge bg-primary">{{ localize('global.rr') }}</span>
-                                                    {{ $visit->rr }}
-                                                    <br>
-                                                    <span class="badge bg-primary">{{ localize('global.t') }}</span>
-                                                    {{ $visit->t }}
-                                                    <br>
-                                                    <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
-                                                    {{ $visit->spo2 }}
-                                                    <br>
-                                                    <span class="badge bg-primary">{{ localize('global.pain') }}</span>
-                                                    {{ $visit->pain }}
-
-                                                </td>
-                                                <td>{{$visit->antibiotic}}</td>
-                                                <td>
-                                                    @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
-                                                        <span class="badge bg-primary">{{ $foodType->name }}</span>
-                                                    @endforeach
-                                                </td>
-                                                <td>{{$visit->intake}}</td>
-                                                <td>{{$visit->output}}</td>
-                                                <td>
-                                                    <a href="{{ route('visits.edit', $visit->id) }}"><span><i
-                                                                class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('visits.destroy', $visit->id) }}"><span><i
-                                                                class="bx bx-trash text-danger"></i></span></a>
-
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_visits') }}
-                                                    </div>
-                                                </div>
+                                            <div id="visit-section">
+                                                <p>Loading visit section...</p>
                                             </div>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-
                                         </div>
                                     </div>
                                 </div>
@@ -1485,6 +1292,7 @@
 @endsection
 
 @section('scripts')
+    @vite('public/assets/js/vue/visit-app.js')
     <script>
         function loadLabTypeTests() {
             var labTypeId = document.getElementById('lab_type_id').value;
@@ -1780,6 +1588,20 @@
             $('#medication-administration-records-section').load('{{ route('hospitalizations.medication-administration-records-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#vital-signs-section').load('{{ route('hospitalizations.vital-signs-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#nutrition-care-section').load('{{ route('hospitalizations.nutrition-care-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
+            
+            // Initialize Visit Vue component
+            // The visit-app.js will handle the Vue component mounting
+            // We just need to ensure the data is available
+            window.hospitalizationData = {
+                id: {{ $hospitalization->id }},
+                is_discharged: {{ $hospitalization->is_discharged ? 'true' : 'false' }},
+                patient_id: {{ $hospitalization->patient_id }},
+                doctor_id: {{ $hospitalization->doctor_id }},
+                branch_id: {{ $hospitalization->branch_id }}
+            };
+            
+            console.log('Hospitalization data set:', window.hospitalizationData);
+            console.log('Visit section element:', document.getElementById('visit-section'));
         });
 
 

@@ -807,6 +807,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete-item/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescriptionItem']);
     });
 
+    // Visit Ajax routes
+    Route::prefix('visit-ajax')->name('visit-ajax.')->group(function () {
+        Route::get('food-types', [\App\Http\Controllers\VisitAjaxController::class, 'getFoodTypes']);
+        Route::post('store', [\App\Http\Controllers\VisitAjaxController::class, 'storeVisit']);
+        Route::get('hospitalization-visits/{hospitalizationId}', [\App\Http\Controllers\VisitAjaxController::class, 'getHospitalizationVisits']);
+        Route::get('visit-details/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'getVisitDetails']);
+        Route::put('update/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'updateVisit']);
+        Route::delete('delete/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'deleteVisit']);
+    });
+
     // Consultation Ajax routes
     Route::prefix('consultation-ajax')->name('consultation-ajax.')->group(function () {
         Route::get('branches', [\App\Http\Controllers\ConsultationAjaxController::class, 'branches']);

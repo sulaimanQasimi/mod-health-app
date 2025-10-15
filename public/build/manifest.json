@@ -74,6 +74,19 @@
       "assets/prescription-app-CNr2oz8i.css"
     ]
   },
+  "public/assets/js/vue/visit-app.js": {
+    "file": "assets/visit-app-D0EEheud.js",
+    "name": "visit-app",
+    "src": "public/assets/js/vue/visit-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-B-_TUCww.js",
+      "_vue-multiselect.esm-CuQKF3aQ.js"
+    ],
+    "css": [
+      "assets/visit-app-CdXhVH9V.css"
+    ]
+  },
   "resources/css/app.css": {
     "file": "assets/app-tn0RQdqM.css",
     "src": "resources/css/app.css",

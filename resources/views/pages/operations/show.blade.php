@@ -383,12 +383,22 @@
                             </div>
                             @if($operation->patient_status == null)
                                 @if($operation->is_operation_approved == 1 || $operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-tv p-1"></i>{{ localize('global.request_blood') }}</h5>
-
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#requestBloodModal{{ $operation->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
+                                    <!-- Blood Request Accordion -->
+                                    <div class="accordion mt-4" id="bloodRequestAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="bloodRequestHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#bloodRequestCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="bloodRequestCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-tv p-1 me-2"></i>{{ localize('global.request_blood') }}
+                                                </button>
+                                            </h2>
+                                            <div id="bloodRequestCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="bloodRequestHeader{{ $operation->id }}" data-bs-parent="#bloodRequestAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                        data-bs-target="#requestBloodModal{{ $operation->id }}"><span><i
+                                                                class="bx bx-plus"></i></span></button>
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="requestBloodModal{{ $operation->id }}" tabindex="-1"
@@ -632,6 +642,11 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Blood Request Accordion -->
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)

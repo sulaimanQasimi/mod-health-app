@@ -1463,12 +1463,91 @@
                                 @endif
                                 {{-- icu starts here --}}
                                 @if ($operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-tv p-1"></i>{{ localize('global.refere_to_icu') }}</h5>
-
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createICUModal{{ $operation->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
+                                    <!-- ICU Accordion -->
+                                    <div class="accordion mt-4" id="icuAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="icuHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#icuCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="icuCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-tv p-1 me-2"></i>{{ localize('global.refere_to_icu') }}
+                                                </button>
+                                            </h2>
+                                            <div id="icuCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="icuHeader{{ $operation->id }}" data-bs-parent="#icuAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                        data-bs-target="#createICUModal{{ $operation->id }}"><span><i
+                                                                class="bx bx-plus"></i></span></button>
+                                                    
+                                                    <!-- ICU Table -->
+                                                    <div class="col-md-12 mt-4">
+                                                        <div class="card shadow-sm">
+                                                            <div class="card-body">
+                                                                @if($operation->icu->count() > 0)
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-striped table-hover">
+                                                                            <thead class="table-light">
+                                                                                <tr>
+                                                                                    <th>{{ localize('global.number') }}</th>
+                                                                                    <th>{{ localize('global.patient_name') }}</th>
+                                                                                    <th>{{ localize('global.description') }}</th>
+                                                                                    <th>{{ localize('global.date') }}</th>
+                                                                                    <th>{{ localize('global.actions') }}</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach ($operation->icu as $icu)
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {{ $icu->patient ? $icu->patient->name : 'No Patient' }}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {{ $icu->description }}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            {{ $icu->created_at }}
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div class="btn-group" role="group">
+                                                                                                <a href="{{ route('icus.edit', $icu->id) }}" class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                                    <i class="bx bx-edit"></i>
+                                                                                                </a>
+                                                                                                <a href="{{ route('icus.destroy', $icu->id) }}" 
+                                                                                                   onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-icu-form-{{$icu->id}}').submit(); }"
+                                                                                                   class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                                    <i class="bx bx-trash"></i>
+                                                                                                </a>
+                                                                                                <form id="delete-icu-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu->id) }}" method="POST" style="display: none;">
+                                                                                                    @csrf
+                                                                                                    @method('DELETE')
+                                                                                                </form>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-center py-4">
+                                                                        <div class="alert alert-info">
+                                                                            <i class="bx bx-info-circle me-2"></i>
+                                                                            {{ localize('global.not_referred_to_icu') }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End ICU Accordion -->
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="createICUModal{{ $operation->id }}" tabindex="-1"
@@ -1517,50 +1596,6 @@
                                         </div>
                                     </div>
                                     <!-- End Create Lab Modal -->
-                                    <div class="col-md-12 mt-4">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.patient_name') }}</th>
-                                                    <th>{{ localize('global.description') }}</th>
-                                                    <th>{{ localize('global.date') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($operation->icu as $icu)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>
-                                                            {{ $icu->patient ? $icu->patient->name : 'No Patient' }}
-                                                        </td>
-                                                        <td>
-                                                            {{ $icu->description }}
-                                                        </td>
-                                                        <td>
-                                                            {{ $icu->created_at }}
-                                                        </td>
-                                                        <td>
-                                                            <a href="{{ route('icus.edit', $icu->id) }}"><span><i
-                                                                        class="bx bx-edit"></i></span></a>
-                                                            <a href="{{ route('icus.destroy', $icu->id) }}"><span><i
-                                                                        class="bx bx-trash text-danger"></i></span></a>
-
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <div class="container">
-                                                        <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                            <div class=" badge bg-label-danger mt-4">
-                                                                {{ localize('global.not_referred_to_icu') }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)

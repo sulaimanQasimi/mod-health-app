@@ -945,12 +945,120 @@
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
-
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createHospitalizationModal{{ $operation->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
+                                    <!-- Hospitalization Accordion -->
+                                    <div class="accordion mt-4" id="hospitalizationAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="hospitalizationHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#hospitalizationCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="hospitalizationCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-bed p-1 me-2"></i>{{ localize('global.hospitalize') }}
+                                                </button>
+                                            </h2>
+                                            <div id="hospitalizationCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="hospitalizationHeader{{ $operation->id }}" data-bs-parent="#hospitalizationAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                        data-bs-target="#createHospitalizationModal{{ $operation->id }}"><span><i
+                                                                class="bx bx-plus"></i></span></button>
+                                                    
+                                                    <!-- Hospitalization Table -->
+                                                    <div class="col-md-12 mt-4">
+                                                        <div class="card shadow-sm">
+                                                            <div class="card-body">
+                                                                @if($operation->hospitalization->count() > 0)
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-striped table-hover">
+                                                                            <thead class="table-light">
+                                                                                <tr>
+                                                                                    <th>{{ localize('global.number') }}</th>
+                                                                                    <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                                                                    <th>{{ localize('global.remarks') }}</th>
+                                                                                    <th>{{ localize('global.room') }}</th>
+                                                                                    <th>{{ localize('global.bed') }}</th>
+                                                                                    <th>{{ localize('global.status') }}</th>
+                                                                                    <th>{{ localize('global.actions') }}</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach ($operation->hospitalization as $hospitalization)
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <span
+                                                                                                class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
+                                                                                        </td>
+                                                                                        <td>{{ $hospitalization->reason }}</td>
+                                                                                        <td>{{ $hospitalization->remarks }}</td>
+                                                                                        <td>
+                                                                                            @if($hospitalization->room)
+                                                                                            <span
+                                                                                                class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
+                                                                                            @else
+                                                                                            <span class="badge bg-secondary">No Room</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @if($hospitalization->bed)
+                                                                                            <span
+                                                                                                class="badge bg-info">{{ $hospitalization->bed->number }}</span>
+                                                                                            @else
+                                                                                            <span class="badge bg-info">No Bed</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @if ($hospitalization->is_discharged == 0)
+                                                                                                <span
+                                                                                                    class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                                                                            @else
+                                                                                                <span
+                                                                                                    class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div class="btn-group" role="group">
+                                                                                                @can('edit-hospitalizations')
+                                                                                                    <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
+                                                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                                        <i class="bx bx-edit"></i>
+                                                                                                    </a>
+                                                                                                @endcan
+                                                                                                @can('delete-hospitalizations')
+                                                                                                    <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
+                                                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                                        <i class="bx bx-trash"></i>
+                                                                                                    </a>
+                                                                                                @endcan
+                                                                                                <!-- Using a <form> element -->
+                                                                                                <form id="delete-form-{{$hospitalization->id}}"
+                                                                                                    action="{{ route('hospitalizations.destroy', $hospitalization) }}"
+                                                                                                    method="POST" style="display: none;">
+                                                                                                    @csrf
+                                                                                                    @method('DELETE')
+                                                                                                </form>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-center py-4">
+                                                                        <div class="alert alert-info">
+                                                                            <i class="bx bx-info-circle me-2"></i>
+                                                                            {{ localize('global.no_previous_hospitalizations') }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Hospitalization Accordion -->
 
                                     <!-- Hospitalization Modal -->
                                     <div class="modal fade modal-xl" id="createHospitalizationModal{{ $operation->id }}"
@@ -1110,101 +1218,7 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Hospitalization Table -->
-                                    <div class="col-md-12 mt-4">
-                                        <div class="card shadow-sm">
-                                            <div class="card-body">
-                                                @if($operation->hospitalization->count() > 0)
-                                                    <div class="table-responsive">
-                                                        <table class="table table-striped table-hover">
-                                                            <thead class="table-light">
-                                                                <tr>
-                                                                    <th>{{ localize('global.number') }}</th>
-                                                                    <th class="text-wrap">{{ localize('global.reason') }}</th>
-                                                                    <th>{{ localize('global.remarks') }}</th>
-                                                                    <th>{{ localize('global.room') }}</th>
-                                                                    <th>{{ localize('global.bed') }}</th>
-                                                                    <th>{{ localize('global.status') }}</th>
-                                                                    <th>{{ localize('global.actions') }}</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($operation->hospitalization as $hospitalization)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <span
-                                                                                class="badge bg-success rounded-pill">{{ $loop->iteration }}</span>
-                                                                        </td>
-                                                                        <td>{{ $hospitalization->reason }}</td>
-                                                                        <td>{{ $hospitalization->remarks }}</td>
-                                                                        <td>
-                                                                            @if($hospitalization->room)
-                                                                            <span
-                                                                                class="badge bg-secondary">{{ $hospitalization->room->name }}</span>
-                                                                            @else
-                                                                            <span class="badge bg-secondary">No Room</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            @if($hospitalization->bed)
-                                                                            <span
-                                                                                class="badge bg-info">{{ $hospitalization->bed->number }}</span>
-                                                                            @else
-                                                                            <span class="badge bg-info">No Bed</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            @if ($hospitalization->is_discharged == 0)
-                                                                                <span
-                                                                                    class="badge bg-danger">{{ localize('global.in_bed') }}</span>
-                                                                            @else
-                                                                                <span
-                                                                                    class="badge bg-success">{{ localize('global.discharged') }}</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="btn-group" role="group">
-                                                                                @can('edit-hospitalizations')
-                                                                                    <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
-                                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                                        <i class="bx bx-edit"></i>
-                                                                                    </a>
-                                                                                @endcan
-                                                                                @can('delete-hospitalizations')
-                                                                                    <a href="{{ route('hospitalizations.destroy', $hospitalization) }}"
-                                                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
-                                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                                        <i class="bx bx-trash"></i>
-                                                                                    </a>
-                                                                                @endcan
-                                                                                <!-- Using a <form> element -->
-                                                                                <form id="delete-form-{{$hospitalization->id}}"
-                                                                                    action="{{ route('hospitalizations.destroy', $hospitalization) }}"
-                                                                                    method="POST" style="display: none;">
-                                                                                    @csrf
-                                                                                    @method('DELETE')
-                                                                                </form>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                @else
-                                                    <div class="text-center py-4">
-                                                        <div class="alert alert-info">
-                                                            <i class="bx bx-info-circle me-2"></i>
-                                                            {{ localize('global.no_previous_hospitalizations') }}
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
                                 @endif
-
 
                                 <div class="modal fade" id="createReserveModal{{ $operation->id }}" tabindex="-1"
                                     aria-labelledby="createReserveModalLabel{{ $operation->id }}" aria-hidden="true">

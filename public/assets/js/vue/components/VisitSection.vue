@@ -361,6 +361,7 @@
 <script>
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+import Swal from 'sweetalert2'
 
 export default {
     name: 'VisitSection',
@@ -401,6 +402,12 @@ export default {
     mounted() {
         this.loadFoodTypes();
         this.loadHospitalizationVisits();
+        // Show a subtle success message when component loads
+        setTimeout(() => {
+            if (this.visits.length > 0) {
+                console.log('Visit section loaded successfully');
+            }
+        }, 1000);
     },
     watch: {
         showCreateModal(newVal) {
@@ -417,9 +424,24 @@ export default {
                 if (data.success) {
                     this.foodTypes = data.data;
                     console.log('Food types loaded:', this.foodTypes);
+                } else {
+                    Swal.fire({
+                        title: 'خطا',
+                        text: 'خطا در بارگذاری انواع غذا',
+                        icon: 'error',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
                 }
             } catch (error) {
                 console.error('Error loading food types:', error);
+                Swal.fire({
+                    title: 'خطا',
+                    text: 'خطا در بارگذاری انواع غذا',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
             }
         },
 
@@ -429,9 +451,24 @@ export default {
                 const data = await response.json();
                 if (data.success) {
                     this.visits = data.data;
+                } else {
+                    Swal.fire({
+                        title: 'خطا',
+                        text: 'خطا در بارگذاری ویزیت‌ها',
+                        icon: 'error',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
                 }
             } catch (error) {
                 console.error('Error loading visits:', error);
+                Swal.fire({
+                    title: 'خطا',
+                    text: 'خطا در بارگذاری ویزیت‌ها',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
             }
         },
 
@@ -442,9 +479,24 @@ export default {
                 if (data.success) {
                     this.selectedVisit = data.data;
                     this.showVisitDetailsModal = true;
+                } else {
+                    Swal.fire({
+                        title: 'خطا',
+                        text: data.message || 'خطا در بارگذاری جزئیات ویزیت',
+                        icon: 'error',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
                 }
             } catch (error) {
                 console.error('Error loading visit details:', error);
+                Swal.fire({
+                    title: 'خطا',
+                    text: 'خطا در بارگذاری جزئیات ویزیت',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
             }
         },
 
@@ -468,6 +520,22 @@ export default {
             };
             this.showCreateModal = true;
             this.showVisitDetailsModal = false;
+            
+            // Show edit confirmation
+            Swal.fire({
+                title: 'ویرایش ویزیت',
+                text: 'آیا می‌خواهید این ویزیت را ویرایش کنید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله، ویرایش کن',
+                cancelButtonText: 'لغو'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    this.closeCreateModal();
+                }
+            });
         },
 
         async submitVisit() {

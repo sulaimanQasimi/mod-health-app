@@ -1599,12 +1599,58 @@
                                 @endif
 
                                 @if ($operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-tv p-1"></i>{{ localize('global.discharge') }}</h5>
-
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createDischargeModal{{ $operation->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
+                                    <!-- Discharge Accordion -->
+                                    <div class="accordion mt-4" id="dischargeAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="dischargeHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#dischargeCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="dischargeCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-tv p-1 me-2"></i>{{ localize('global.discharge') }}
+                                                </button>
+                                            </h2>
+                                            <div id="dischargeCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="dischargeHeader{{ $operation->id }}" data-bs-parent="#dischargeAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                        data-bs-target="#createDischargeModal{{ $operation->id }}"><span><i
+                                                                class="bx bx-plus"></i></span></button>
+                                                    
+                                                    <!-- Discharge Status Display -->
+                                                    <div class="col-md-12 mt-4">
+                                                        <div class="card shadow-sm">
+                                                            <div class="card-body">
+                                                                @if($operation->patient_status)
+                                                                    <div class="alert alert-info">
+                                                                        <h5 class="mb-3">
+                                                                            <i class="bx bx-info-circle me-2"></i>
+                                                                            {{ localize('global.current_patient_status') }}
+                                                                        </h5>
+                                                                        <div class="d-flex align-items-center">
+                                                                            <span class="badge bg-{{ $operation->patient_status == 'discharge' ? 'success' : 'danger' }} fs-6 me-3">
+                                                                                {{ $operation->patient_status == 'discharge' ? localize('global.discharged') : localize('global.death') }}
+                                                                            </span>
+                                                                            <span class="text-muted">
+                                                                                {{ localize('global.updated_on') }}: {{ $operation->updated_at->format('Y-m-d H:i:s') }}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-center py-4">
+                                                                        <div class="alert alert-warning">
+                                                                            <i class="bx bx-info-circle me-2"></i>
+                                                                            {{ localize('global.patient_status_not_set') }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Discharge Accordion -->
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="createDischargeModal{{ $operation->id }}" tabindex="-1"

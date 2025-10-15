@@ -1,6 +1,20 @@
 {
-  "__plugin-vue_export-helper-B-_TUCww.js": {
-    "file": "assets/_plugin-vue_export-helper-B-_TUCww.js",
+  "_AdviceSection-C31GnVPr.css": {
+    "file": "assets/AdviceSection-C31GnVPr.css",
+    "src": "_AdviceSection-C31GnVPr.css"
+  },
+  "_AdviceSection-CpyfbO5Z.js": {
+    "file": "assets/AdviceSection-CpyfbO5Z.js",
+    "name": "AdviceSection",
+    "imports": [
+      "__plugin-vue_export-helper-D9ex2EgB.js"
+    ],
+    "css": [
+      "assets/AdviceSection-C31GnVPr.css"
+    ]
+  },
+  "__plugin-vue_export-helper-D9ex2EgB.js": {
+    "file": "assets/_plugin-vue_export-helper-D9ex2EgB.js",
     "name": "_plugin-vue_export-helper"
   },
   "_sweetalert2.esm.all-DzlfzZPw.js": {
@@ -11,73 +25,107 @@
     "file": "assets/vue-multiselect-Chsy-e4F.css",
     "src": "_vue-multiselect-Chsy-e4F.css"
   },
-  "_vue-multiselect.esm-CuQKF3aQ.js": {
-    "file": "assets/vue-multiselect.esm-CuQKF3aQ.js",
+  "_vue-multiselect.esm-DA6cZCgH.js": {
+    "file": "assets/vue-multiselect.esm-DA6cZCgH.js",
     "name": "vue-multiselect.esm",
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js"
+      "__plugin-vue_export-helper-D9ex2EgB.js"
     ]
   },
   "public/assets/js/vue/advice-app.js": {
-    "file": "assets/advice-app-n1P2xt_3.js",
+    "file": "assets/advice-app-DgK1nIJy.js",
     "name": "advice-app",
     "src": "public/assets/js/vue/advice-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js"
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_AdviceSection-CpyfbO5Z.js"
+    ]
+  },
+  "public/assets/js/vue/appointment-advice-app.js": {
+    "file": "assets/appointment-advice-app-BLFxt2WY.js",
+    "name": "appointment-advice-app",
+    "src": "public/assets/js/vue/appointment-advice-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_AdviceSection-CpyfbO5Z.js"
+    ]
+  },
+  "public/assets/js/vue/appointment-prescription-app.js": {
+    "file": "assets/appointment-prescription-app-Da3F-suc.js",
+    "name": "appointment-prescription-app",
+    "src": "public/assets/js/vue/appointment-prescription-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_vue-multiselect.esm-DA6cZCgH.js"
     ],
     "css": [
-      "assets/advice-app-C31GnVPr.css"
+      "assets/appointment-prescription-app-BMF6UrFf.css"
     ]
   },
   "public/assets/js/vue/consultation-app.js": {
-    "file": "assets/consultation-app-BGVESY9h.js",
+    "file": "assets/consultation-app-3B6IFag-.js",
     "name": "consultation-app",
     "src": "public/assets/js/vue/consultation-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js"
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_vue-multiselect.esm-DA6cZCgH.js"
     ],
     "css": [
       "assets/consultation-app-CmC2glh3.css"
     ]
   },
   "public/assets/js/vue/diagnosis-app.js": {
-    "file": "assets/diagnosis-app-CwtFzzOw.js",
+    "file": "assets/diagnosis-app-DGNQUFzH.js",
     "name": "diagnosis-app",
     "src": "public/assets/js/vue/diagnosis-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js"
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_vue-multiselect.esm-DA6cZCgH.js"
     ],
     "css": [
       "assets/diagnosis-app-CpCVl90C.css"
     ]
   },
   "public/assets/js/vue/lab-app.js": {
-    "file": "assets/lab-app-CALwjSVE.js",
+    "file": "assets/lab-app-CJKGJlvU.js",
     "name": "lab-app",
     "src": "public/assets/js/vue/lab-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js"
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_vue-multiselect.esm-DA6cZCgH.js"
     ],
     "css": [
       "assets/lab-app-DK37CsBu.css",
       "assets/vue-multiselect-Chsy-e4F.css"
     ]
   },
+  "public/assets/js/vue/nursing-note-app.js": {
+    "file": "assets/nursing-note-app-DLq--goE.js",
+    "name": "nursing-note-app",
+    "src": "public/assets/js/vue/nursing-note-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_sweetalert2.esm.all-DzlfzZPw.js"
+    ],
+    "css": [
+      "assets/nursing-note-app-pYCLMCHv.css"
+    ]
+  },
   "public/assets/js/vue/prescription-app.js": {
-    "file": "assets/prescription-app-BqWSaJRb.js",
+    "file": "assets/prescription-app-r9Qs6va_.js",
     "name": "prescription-app",
     "src": "public/assets/js/vue/prescription-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js",
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_vue-multiselect.esm-DA6cZCgH.js",
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
@@ -85,13 +133,13 @@
     ]
   },
   "public/assets/js/vue/visit-app.js": {
-    "file": "assets/visit-app-pxmxroiR.js",
+    "file": "assets/visit-app-BH8Gz6ky.js",
     "name": "visit-app",
     "src": "public/assets/js/vue/visit-app.js",
     "isEntry": true,
     "imports": [
-      "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js",
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_vue-multiselect.esm-DA6cZCgH.js",
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [

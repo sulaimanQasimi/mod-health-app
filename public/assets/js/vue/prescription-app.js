@@ -3,6 +3,9 @@ import HospitalizationPrescriptionSection from './components/HospitalizationPres
 
 console.log('Prescription app: Script loaded');
 
+let retryCount = 0;
+const maxRetries = 20; // Maximum 10 seconds of retries
+
 // Function to initialize the Vue app
 function initializePrescriptionApp() {
     console.log('Prescription app: Attempting to initialize');
@@ -28,8 +31,15 @@ function initializePrescriptionApp() {
         console.log('Prescription app: Vue app mounted');
     } else {
         console.log('Prescription app: Missing requirements - prescriptionSection:', !!prescriptionSection, 'hospitalizationData:', !!window.hospitalizationData);
-        // Retry after a short delay
-        setTimeout(initializePrescriptionApp, 100);
+        
+        if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`Prescription app: Retry ${retryCount}/${maxRetries}`);
+            // Retry after a longer delay to allow jQuery ready to complete
+            setTimeout(initializePrescriptionApp, 500);
+        } else {
+            console.error('Prescription app: Max retries reached. Failed to initialize.');
+        }
     }
 }
 

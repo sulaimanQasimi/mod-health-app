@@ -58,7 +58,6 @@ class PrescriptionController extends Controller
             'i_c_u_id' => 'nullable',
             'doctor_id' => 'required',
             'is_completed' => 'nullable',
-            'medicine_type_id' => 'required',
             'medicine_id' => 'required',
             'usage_type_id' => 'required',
             'dosage' => 'required',
@@ -68,7 +67,6 @@ class PrescriptionController extends Controller
 
 
         $medicineIds = $data['medicine_id'];
-        $medicineTypeIds = $data['medicine_type_id'];
         $medicineUsageTypes = $data['usage_type_id'];
         $dosages = $data['dosage'];
         $frequencies = $data['frequency'];
@@ -81,7 +79,6 @@ class PrescriptionController extends Controller
             $prescription_item_data = [
                 'prescription_id' => $prescription->id,
                 'medicine_id' => $medicineIds[$index],
-                'medicine_type_id' => $medicineTypeIds[$index],
                 'usage_type_id' => $medicineUsageTypes[$index],
                 'dosage' => $dosages[$index],
                 'frequency' => $frequencies[$index],

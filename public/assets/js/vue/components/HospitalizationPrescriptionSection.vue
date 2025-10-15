@@ -95,21 +95,10 @@
                                              :close-on-select="true"
                                              :show-labels="false"
                                              :class="{ 'is-invalid': getFieldError(index, 'medicine_id') }"
-                                             @select="onMedicineChange(item, index)"
                                          ></multiselect>
                                          <div v-if="getFieldError(index, 'medicine_id')" class="invalid-feedback d-block">
                                              {{ getFieldError(index, 'medicine_id') }}
                                          </div>
-                                     </div>
-                                     <div class="col-md-2">
-                                         <label class="form-label">نوع دارو</label>
-                                         <input 
-                                             type="text" 
-                                             class="form-control" 
-                                             :value="item.medicine_type_id ? item.medicine_type_id.type : ''"
-                                             readonly
-                                             placeholder="نوع دارو انتخاب شده"
-                                         >
                                      </div>
                                      <div class="col-md-2">
                                          <label class="form-label">نوع مصرف</label>
@@ -234,7 +223,6 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                             <th>نوع دارو</th>
                                              <th>نام دارو</th>
                                              <th>نوع مصرف</th>
                                              <th>دوز</th>
@@ -245,7 +233,6 @@
                                     </thead>
                                     <tbody>
                                         <tr v-if="selectedPrescription.prescription_items && selectedPrescription.prescription_items.length > 0" v-for="item in selectedPrescription.prescription_items" :key="item.id">
-                                            <td>{{ item.medicine_type?.type || item.medicineType?.type || 'N/A' }}</td>
                                             <td>{{ item.medicine?.name || 'N/A' }}</td>
                                             <td>{{ item.usage_type?.name || item.usageType?.name || 'N/A' }}</td>
                                             <td>{{ item.dosage }}</td>
@@ -312,14 +299,12 @@ export default {
             showCreateModal: false,
             showPrescriptionItemsModal: false,
             prescriptions: [],
-            medicineTypes: [],
             medicineUsageTypes: [],
             allMedicines: [],
             selectedPrescription: null,
             validationErrors: {},
              form: {
                  prescription_items: [{
-                     medicine_type_id: null,
                      medicine_id: null,
                      usage_type_id: null,
                      dosage: '',
@@ -330,7 +315,6 @@ export default {
         }
     },
     mounted() {
-        this.loadMedicineTypes();
         this.loadMedicineUsageTypes();
         this.loadAllMedicines();
         this.loadHospitalizationPrescriptions();
@@ -341,48 +325,12 @@ export default {
                 this.resetForm();
             }
         },
-        'form.prescription_items': {
-            handler(newItems) {
-                newItems.forEach((item, index) => {
-                    if (item.medicine_id && !item.medicine_type_id) {
-                        this.onMedicineChange(item, index);
-                    }
-                });
-            },
-            deep: true
-        }
     },
     methods: {
-        async loadMedicineTypes() {
-            try {
-                const response = await fetch('/prescription-ajax/medicine-types');
-                const data = await response.json();
-                if (data.success) {
-                    this.medicineTypes = data.data;
-                } else {
-                    Swal.fire({
-                        title: 'خطا',
-                        text: 'خطا در بارگذاری انواع دارو',
-                        icon: 'error',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading medicine types:', error);
-                Swal.fire({
-                    title: 'خطا',
-                    text: 'خطا در بارگذاری انواع دارو',
-                    icon: 'error',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            }
-        },
 
         async loadMedicineUsageTypes() {
             try {
-                const response = await fetch('/prescription-ajax/medicine-usage-types');
+                const response = await fetch('/hospitalization-prescription-ajax/medicine-usage-types');
                 const data = await response.json();
                 if (data.success) {
                     this.medicineUsageTypes = data.data;
@@ -409,7 +357,7 @@ export default {
 
         async loadAllMedicines() {
             try {
-                const response = await fetch('/prescription-ajax/all-medicines');
+                const response = await fetch('/hospitalization-prescription-ajax/all-medicines');
                 const data = await response.json();
                 if (data.success) {
                     this.allMedicines = data.data;
@@ -436,7 +384,7 @@ export default {
 
         async loadHospitalizationPrescriptions() {
             try {
-                const response = await fetch(`/prescription-ajax/hospitalization-prescriptions/${this.hospitalization.id}`);
+                const response = await fetch(`/hospitalization-prescription-ajax/hospitalization-prescriptions/${this.hospitalization.id}`);
                 const data = await response.json();
                 if (data.success) {
                     this.prescriptions = data.data;
@@ -463,7 +411,7 @@ export default {
 
          async viewPrescriptionItems(prescriptionId) {
              try {
-                 const response = await fetch(`/prescription-ajax/prescription-items/${prescriptionId}`);
+                 const response = await fetch(`/hospitalization-prescription-ajax/prescription-items/${prescriptionId}`);
                  const data = await response.json();
                  if (data.success) {
                      this.selectedPrescription = data.data;
@@ -507,7 +455,6 @@ export default {
 
                  // Transform prescription items to extract IDs from objects and convert numbers to strings
                  const transformedItems = this.form.prescription_items.map(item => ({
-                     medicine_type_id: item.medicine_type_id?.id || item.medicine_type_id,
                      medicine_id: item.medicine_id?.id || item.medicine_id,
                      usage_type_id: item.usage_type_id?.id || item.usage_type_id,
                      dosage: String(item.dosage || ''),
@@ -523,7 +470,7 @@ export default {
                      prescription_items: transformedItems
                  };
 
-                const response = await fetch('/prescription-ajax/store', {
+                const response = await fetch('/hospitalization-prescription-ajax/store', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -573,7 +520,6 @@ export default {
         // Form handling methods
         addPrescriptionItem() {
             this.form.prescription_items.push({
-                medicine_type_id: null,
                 medicine_id: null,
                 usage_type_id: null,
                 dosage: '',
@@ -588,11 +534,6 @@ export default {
             }
         },
 
-        onMedicineChange(item, index) {
-            if (item.medicine_id && item.medicine_id.medicine_type) {
-                item.medicine_type_id = item.medicine_id.medicine_type;
-            }
-        },
 
         validateForm() {
             this.validationErrors = {};
@@ -631,7 +572,6 @@ export default {
         resetForm() {
             this.form = {
                 prescription_items: [{
-                    medicine_type_id: null,
                     medicine_id: null,
                     usage_type_id: null,
                     dosage: '',

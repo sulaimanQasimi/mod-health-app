@@ -7,7 +7,6 @@ use App\Models\Appointment;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\Medicine;
-use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,47 +14,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PrescriptionAjaxController extends Controller
 {
-    /**
-     * Get medicine types for dropdown
-     */
-    public function getMedicineTypes()
-    {
-        try {
-            $medicineTypes = MedicineType::all();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $medicineTypes
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch medicine types',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Get medicines by type ID
-     */
-    public function getMedicinesByType($typeId)
-    {
-        try {
-            $medicines = Medicine::where('medicine_type_id', $typeId)->get();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $medicines
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch medicines',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
 
     /**
      * Get all medicines
@@ -111,7 +69,6 @@ class PrescriptionAjaxController extends Controller
                 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'prescription_items' => 'required|array|min:1',
-                'prescription_items.*.medicine_type_id' => 'required|exists:medicine_types,id',
                 'prescription_items.*.medicine_id' => 'required|exists:medicines,id',
                 'prescription_items.*.usage_type_id' => 'required|exists:medicine_usage_types,id',
                 'prescription_items.*.dosage' => 'required|string',
@@ -159,7 +116,6 @@ class PrescriptionAjaxController extends Controller
                         'hospitalization_id' => $request->hospitalization_id,
                         'under_review_id' => $request->under_review_id,
                         'i_c_u_id' => $request->i_c_u_id,
-                        'medicine_type_id' => $item['medicine_type_id'],
                         'medicine_id' => $item['medicine_id'],
                         'usage_type_id' => $item['usage_type_id'],
                         'dosage' => $item['dosage'],

@@ -1812,13 +1812,13 @@
     @vite(['public/assets/js/vue/lab-app.js'])
     
     <!-- Vue.js Prescription Section -->
-    @vite(['public/assets/js/vue/prescription-app.js'])
+    @vite(['public/assets/js/vue/appointment-prescription-app.js'])
     
     <!-- Vue.js Diagnosis Section -->
     @vite(['public/assets/js/vue/diagnosis-app.js'])
     
     <!-- Vue.js Advice Section -->
-    @vite(['public/assets/js/vue/advice-app.js'])
+    @vite(['public/assets/js/vue/appointment-advice-app.js'])
     
     <!-- Persian Datepicker Library -->
     <script src="{{ asset('assets/js/persian_datepicker.js') }}"></script>

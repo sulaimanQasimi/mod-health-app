@@ -111,21 +111,10 @@
                                              :close-on-select="true"
                                              :show-labels="false"
                                              :class="{ 'is-invalid': getFieldError(index, 'medicine_id') }"
-                                             @select="onMedicineChange(item, index)"
                                          ></multiselect>
                                          <div v-if="getFieldError(index, 'medicine_id')" class="invalid-feedback d-block">
                                              {{ getFieldError(index, 'medicine_id') }}
                                          </div>
-                                     </div>
-                                     <div class="col-md-2">
-                                         <label class="form-label">نوع دارو</label>
-                                         <input 
-                                             type="text" 
-                                             class="form-control" 
-                                             :value="item.medicine_type_id ? item.medicine_type_id.type : ''"
-                                             readonly
-                                             placeholder="نوع دارو انتخاب شده"
-                                         >
                                      </div>
                                      <div class="col-md-2">
                                          <label class="form-label">نوع مصرف</label>
@@ -249,7 +238,6 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                             <th>نوع دارو</th>
                                              <th>نام دارو</th>
                                              <th>نوع مصرف</th>
                                              <th>دوز</th>
@@ -261,7 +249,6 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="item in selectedPrescription.prescription_items" :key="item.id">
-                                            <td>{{ item.medicine_type?.type }}</td>
                                             <td>{{ item.medicine?.name }}</td>
                                             <td>{{ item.usage_type?.name }}</td>
                                             <td>{{ item.dosage }}</td>
@@ -354,14 +341,12 @@ export default {
             showCreateModal: false,
             showPrescriptionItemsModal: false,
             prescriptions: [],
-            medicineTypes: [],
             medicineUsageTypes: [],
             allMedicines: [],
             selectedPrescription: null,
             validationErrors: {},
              form: {
                  prescription_items: [{
-                     medicine_type_id: null,
                      medicine_id: null,
                      usage_type_id: null,
                      dosage: '',
@@ -372,7 +357,6 @@ export default {
         }
     },
     mounted() {
-        this.loadMedicineTypes();
         this.loadMedicineUsageTypes();
         this.loadAllMedicines();
         this.loadAppointmentPrescriptions();
@@ -383,29 +367,8 @@ export default {
                 this.resetForm();
             }
         },
-        'form.prescription_items': {
-            handler(newItems) {
-                newItems.forEach((item, index) => {
-                    if (item.medicine_id && !item.medicine_type_id) {
-                        this.onMedicineChange(item, index);
-                    }
-                });
-            },
-            deep: true
-        }
     },
     methods: {
-        async loadMedicineTypes() {
-            try {
-                const response = await fetch('/prescription-ajax/medicine-types');
-                const data = await response.json();
-                if (data.success) {
-                    this.medicineTypes = data.data;
-                }
-            } catch (error) {
-                console.error('Error loading medicine types:', error);
-            }
-        },
 
         async loadMedicineUsageTypes() {
             try {
@@ -475,7 +438,6 @@ export default {
 
                  // Transform prescription items to extract IDs from objects and convert numbers to strings
                  const transformedItems = this.form.prescription_items.map(item => ({
-                     medicine_type_id: item.medicine_type_id?.id || item.medicine_type_id,
                      medicine_id: item.medicine_id?.id || item.medicine_id,
                      usage_type_id: item.usage_type_id?.id || item.usage_type_id,
                      dosage: String(item.dosage || ''),
@@ -715,7 +677,6 @@ export default {
 
          addPrescriptionItem() {
              this.form.prescription_items.push({
-                 medicine_type_id: null,
                  medicine_id: null,
                  usage_type_id: null,
                  dosage: '',
@@ -742,7 +703,6 @@ export default {
 
          resetForm() {
              this.form.prescription_items = [{
-                 medicine_type_id: null,
                  medicine_id: null,
                  usage_type_id: null,
                  dosage: '',
@@ -776,34 +736,12 @@ export default {
             this.validationErrors = {};
         },
 
-        onMedicineChange(item, index) {
-            // When medicine is selected, automatically set the medicine type
-            if (item.medicine_id) {
-                // Check if the medicine has a medicine_type_id property
-                if (item.medicine_id.medicine_type_id) {
-                    // Find the medicine type object from the medicineTypes array
-                    const medicineType = this.medicineTypes.find(type => type.id === item.medicine_id.medicine_type_id);
-                    if (medicineType) {
-                        item.medicine_type_id = medicineType;
-                    }
-                }
-            } else {
-                // If medicine is cleared, also clear the medicine type
-                item.medicine_type_id = null;
-            }
-        },
 
         validateForm() {
             this.clearValidationErrors();
             let hasErrors = false;
 
             this.form.prescription_items.forEach((item, index) => {
-                // Validate medicine type
-                if (!item.medicine_type_id) {
-                    this.setFieldError(index, 'medicine_type_id', 'نوع دارو الزامی است');
-                    hasErrors = true;
-                }
-
                 // Validate medicine
                 if (!item.medicine_id) {
                     this.setFieldError(index, 'medicine_id', 'نام دارو الزامی است');

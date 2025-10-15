@@ -795,8 +795,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Prescription Ajax routes
     Route::prefix('prescription-ajax')->name('prescription-ajax.')->group(function () {
-        Route::get('medicine-types', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicineTypes']);
-        Route::get('medicines-by-type/{typeId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicinesByType']);
         Route::get('all-medicines', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getAllMedicines']);
         Route::get('medicine-usage-types', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicineUsageTypes']);
         Route::post('store', [\App\Http\Controllers\PrescriptionAjaxController::class, 'storePrescription']);
@@ -818,8 +816,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'deleteVisit']);
     });
 
-    // Prescription Ajax routes
-    Route::prefix('prescription-ajax')->name('prescription-ajax.')->group(function () {
+    // Hospitalization Prescription Ajax routes
+    Route::prefix('hospitalization-prescription-ajax')->name('hospitalization-prescription-ajax.')->group(function () {
         Route::get('medicine-types', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getMedicineTypes']);
         Route::get('medicine-usage-types', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getMedicineUsageTypes']);
         Route::get('all-medicines', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getAllMedicines']);

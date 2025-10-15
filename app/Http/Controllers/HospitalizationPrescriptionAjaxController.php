@@ -119,7 +119,6 @@ class HospitalizationPrescriptionAjaxController extends Controller
                 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'prescription_items' => 'required|array|min:1',
-                'prescription_items.*.medicine_type_id' => 'required|exists:medicine_types,id',
                 'prescription_items.*.medicine_id' => 'required|exists:medicines,id',
                 'prescription_items.*.usage_type_id' => 'required|exists:medicine_usage_types,id',
                 'prescription_items.*.dosage' => 'required|string|max:255',
@@ -154,7 +153,6 @@ class HospitalizationPrescriptionAjaxController extends Controller
             foreach ($request->prescription_items as $item) {
                 PrescriptionItem::create([
                     'prescription_id' => $prescription->id,
-                    'medicine_type_id' => $item['medicine_type_id'],
                     'medicine_id' => $item['medicine_id'],
                     'usage_type_id' => $item['usage_type_id'],
                     'dosage' => $item['dosage'],

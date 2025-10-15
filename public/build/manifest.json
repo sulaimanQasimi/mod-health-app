@@ -3,6 +3,10 @@
     "file": "assets/_plugin-vue_export-helper-B-_TUCww.js",
     "name": "_plugin-vue_export-helper"
   },
+  "_sweetalert2.esm.all-DzlfzZPw.js": {
+    "file": "assets/sweetalert2.esm.all-DzlfzZPw.js",
+    "name": "sweetalert2.esm.all"
+  },
   "_vue-multiselect-Chsy-e4F.css": {
     "file": "assets/vue-multiselect-Chsy-e4F.css",
     "src": "_vue-multiselect-Chsy-e4F.css"
@@ -67,26 +71,28 @@
     ]
   },
   "public/assets/js/vue/prescription-app.js": {
-    "file": "assets/prescription-app-CkTZXc7G.js",
+    "file": "assets/prescription-app-BqWSaJRb.js",
     "name": "prescription-app",
     "src": "public/assets/js/vue/prescription-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js"
+      "_vue-multiselect.esm-CuQKF3aQ.js",
+      "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/prescription-app-CNr2oz8i.css"
+      "assets/vue-multiselect-Chsy-e4F.css"
     ]
   },
   "public/assets/js/vue/visit-app.js": {
-    "file": "assets/visit-app-CQswUGTQ.js",
+    "file": "assets/visit-app-pxmxroiR.js",
     "name": "visit-app",
     "src": "public/assets/js/vue/visit-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-B-_TUCww.js",
-      "_vue-multiselect.esm-CuQKF3aQ.js"
+      "_vue-multiselect.esm-CuQKF3aQ.js",
+      "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
       "assets/visit-app-CMc4_0oJ.css",

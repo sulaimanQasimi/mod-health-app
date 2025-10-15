@@ -51,6 +51,7 @@ use App\Http\Controllers\PrescriptionAlternativeItemController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\UnderReviewController;
 use App\Http\Controllers\VisitController;
+use App\Http\Controllers\HospitalizationPrescriptionAjaxController;
 use App\Models\Prescription;
 use App\Http\Controllers\MiliteryTypeController;
 use App\Http\Controllers\PrescriptionStockController;
@@ -815,6 +816,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('visit-details/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'getVisitDetails']);
         Route::put('update/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'updateVisit']);
         Route::delete('delete/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'deleteVisit']);
+    });
+
+    // Prescription Ajax routes
+    Route::prefix('prescription-ajax')->name('prescription-ajax.')->group(function () {
+        Route::get('medicine-types', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getMedicineTypes']);
+        Route::get('medicine-usage-types', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getMedicineUsageTypes']);
+        Route::get('all-medicines', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getAllMedicines']);
+        Route::get('hospitalization-prescriptions/{hospitalizationId}', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getHospitalizationPrescriptions']);
+        Route::get('prescription-items/{prescriptionId}', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getPrescriptionItems']);
+        Route::post('store', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'storePrescription']);
     });
 
     // Consultation Ajax routes

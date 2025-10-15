@@ -397,8 +397,8 @@
                                                 aria-labelledby="bloodRequestHeader{{ $operation->id }}" data-bs-parent="#bloodRequestAccordion{{ $operation->id }}">
                                                 <div class="accordion-body">
                                                     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                        data-bs-target="#requestBloodModal{{ $operation->id }}"><span><i
-                                                                class="bx bx-plus"></i></span></button>
+                                        data-bs-target="#requestBloodModal{{ $operation->id }}"><span><i
+                                                class="bx bx-plus"></i></span></button>
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="requestBloodModal{{ $operation->id }}" tabindex="-1"
@@ -664,8 +664,8 @@
                                                 aria-labelledby="pacuHeader{{ $operation->id }}" data-bs-parent="#pacuAccordion{{ $operation->id }}">
                                                 <div class="accordion-body">
                                                     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                        data-bs-target="#referToPACUModal{{ $operation->id }}"><span><i
-                                                                class="bx bx-plus"></i></span></button>
+                                        data-bs-target="#referToPACUModal{{ $operation->id }}"><span><i
+                                                class="bx bx-plus"></i></span></button>
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="referToPACUModal{{ $operation->id }}" tabindex="-1"
@@ -834,15 +834,15 @@
                                             <div id="operationRemarksCollapse{{ $operation->id }}" class="accordion-collapse collapse"
                                                 aria-labelledby="operationRemarksHeader{{ $operation->id }}" data-bs-parent="#operationRemarksAccordion{{ $operation->id }}">
                                                 <div class="accordion-body">
-                                                    @if (isset($operation->operation_expense_remarks))
+                                    @if (isset($operation->operation_expense_remarks))
                                                         <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
-                                                            data-bs-target="#editOperationRemarks{{ $operation->id }}"><span><i
-                                                                    class="bx bx-edit"></i></span></button>
-                                                    @else
+                                            data-bs-target="#editOperationRemarks{{ $operation->id }}"><span><i
+                                                    class="bx bx-edit"></i></span></button>
+                                    @else
                                                         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                            data-bs-target="#createOperationRemarks{{ $operation->id }}"><span><i
-                                                                    class="bx bx-plus"></i></span></button>
-                                                    @endif
+                                            data-bs-target="#createOperationRemarks{{ $operation->id }}"><span><i
+                                                    class="bx bx-plus"></i></span></button>
+                                @endif
                                 <!-- Create  Lab Modal -->
                                 <div class="modal fade" id="createOperationRemarks{{ $operation->id }}" tabindex="-1"
                                     aria-labelledby="createOperationRemarksLabel{{ $operation->id }}" aria-hidden="true">
@@ -959,8 +959,8 @@
                                                 aria-labelledby="hospitalizationHeader{{ $operation->id }}" data-bs-parent="#hospitalizationAccordion{{ $operation->id }}">
                                                 <div class="accordion-body">
                                                     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                        data-bs-target="#createHospitalizationModal{{ $operation->id }}"><span><i
-                                                                class="bx bx-plus"></i></span></button>
+                                        data-bs-target="#createHospitalizationModal{{ $operation->id }}"><span><i
+                                                class="bx bx-plus"></i></span></button>
                                                     
                                                     <!-- Hospitalization Table -->
                                                     <div class="col-md-12 mt-4">
@@ -1265,12 +1265,115 @@
 
 
                                 @if ($operation->is_operation_done == 1)
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-revision p-1"></i>{{ localize('global.under_review') }}</h5>
-
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createUnderReviewModal{{ $operation->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
+                                    <!-- Under Review Accordion -->
+                                    <div class="accordion mt-4" id="underReviewAccordion{{ $operation->id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="underReviewHeader{{ $operation->id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#underReviewCollapse{{ $operation->id }}" aria-expanded="false"
+                                                    aria-controls="underReviewCollapse{{ $operation->id }}">
+                                                    <i class="bx bx-revision p-1 me-2"></i>{{ localize('global.under_review') }}
+                                                </button>
+                                            </h2>
+                                            <div id="underReviewCollapse{{ $operation->id }}" class="accordion-collapse collapse"
+                                                aria-labelledby="underReviewHeader{{ $operation->id }}" data-bs-parent="#underReviewAccordion{{ $operation->id }}">
+                                                <div class="accordion-body">
+                                                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                        data-bs-target="#createUnderReviewModal{{ $operation->id }}"><span><i
+                                                                class="bx bx-plus"></i></span></button>
+                                                    
+                                                    <!-- Under Review Table -->
+                                    <div class="col-md-12 mt-4">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                                @if($operation->under_reviews->count() > 0)
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped table-hover">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>{{ localize('global.number') }}</th>
+                                                                    <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                                                    <th>{{ localize('global.remarks') }}</th>
+                                                                    <th>{{ localize('global.room') }}</th>
+                                                                    <th>{{ localize('global.bed') }}</th>
+                                                                    <th>{{ localize('global.status') }}</th>
+                                                                    <th>{{ localize('global.actions') }}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                                @foreach ($operation->under_reviews as $underReview)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span
+                                                                                                class="badge bg-warning rounded-pill">{{ $loop->iteration }}</span>
+                                                                        </td>
+                                                                                        <td>{{ $underReview->reason }}</td>
+                                                                                        <td>{{ $underReview->remarks }}</td>
+                                                                        <td>
+                                                                                            @if($underReview->room)
+                                                                            <span
+                                                                                                class="badge bg-secondary">{{ $underReview->room->name }}</span>
+                                                                            @else
+                                                                            <span class="badge bg-secondary">No Room</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                                            @if($underReview->bed)
+                                                                            <span
+                                                                                                class="badge bg-info">{{ $underReview->bed->number }}</span>
+                                                                            @else
+                                                                            <span class="badge bg-info">No Bed</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                                            @if ($underReview->is_discharged == '0')
+                                                                                <span
+                                                                                                    class="badge bg-warning">{{ localize('global.under_review') }}</span>
+                                                                            @else
+                                                                                <span
+                                                                                    class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="btn-group" role="group">
+                                                                                                <a href="{{ route('under_reviews.edit', $underReview->id) }}"
+                                                                                        class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                        <i class="bx bx-edit"></i>
+                                                                                    </a>
+                                                                                                <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
+                                                                                                    onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-under-review-form-{{$underReview->id}}').submit(); }"
+                                                                                        class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                        <i class="bx bx-trash"></i>
+                                                                                    </a>
+                                                                                                <form id="delete-under-review-form-{{$underReview->id}}"
+                                                                                                    action="{{ route('under_reviews.destroy', $underReview->id) }}"
+                                                                                    method="POST" style="display: none;">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                </form>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                @else
+                                                    <div class="text-center py-4">
+                                                        <div class="alert alert-info">
+                                                            <i class="bx bx-info-circle me-2"></i>
+                                                                            {{ localize('global.no_previous_under_reviews') }}
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                    <!-- End Under Review Accordion -->
 
                                     <!-- Create  Lab Modal -->
                                     <div class="modal fade" id="createUnderReviewModal{{ $operation->id }}" tabindex="-1"
@@ -1354,93 +1457,6 @@
                                                         </div>
                                                     </form>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Under Review Table -->
-                                    <div class="col-md-12 mt-4">
-                                        <div class="card shadow-sm">
-                                            <div class="card-body">
-                                                @if($operation->under_reviews->count() > 0)
-                                                    <div class="table-responsive">
-                                                        <table class="table table-striped table-hover">
-                                                            <thead class="table-light">
-                                                                <tr>
-                                                                    <th>{{ localize('global.number') }}</th>
-                                                                    <th class="text-wrap">{{ localize('global.reason') }}</th>
-                                                                    <th>{{ localize('global.remarks') }}</th>
-                                                                    <th>{{ localize('global.room') }}</th>
-                                                                    <th>{{ localize('global.bed') }}</th>
-                                                                    <th>{{ localize('global.status') }}</th>
-                                                                    <th>{{ localize('global.actions') }}</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($operation->under_reviews as $underReview)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <span
-                                                                                class="badge bg-warning rounded-pill">{{ $loop->iteration }}</span>
-                                                                        </td>
-                                                                        <td>{{ $underReview->reason }}</td>
-                                                                        <td>{{ $underReview->remarks }}</td>
-                                                                        <td>
-                                                                            @if($underReview->room)
-                                                                            <span
-                                                                                class="badge bg-secondary">{{ $underReview->room->name }}</span>
-                                                                            @else
-                                                                            <span class="badge bg-secondary">No Room</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            @if($underReview->bed)
-                                                                            <span
-                                                                                class="badge bg-info">{{ $underReview->bed->number }}</span>
-                                                                            @else
-                                                                            <span class="badge bg-info">No Bed</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            @if ($underReview->is_discharged == '0')
-                                                                                <span
-                                                                                    class="badge bg-warning">{{ localize('global.under_review') }}</span>
-                                                                            @else
-                                                                                <span
-                                                                                    class="badge bg-success">{{ localize('global.discharged') }}</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="btn-group" role="group">
-                                                                                <a href="{{ route('under_reviews.edit', $underReview->id) }}"
-                                                                                    class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                                    <i class="bx bx-edit"></i>
-                                                                                </a>
-                                                                                <a href="{{ route('under_reviews.destroy', $underReview->id) }}"
-                                                                                    onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-under-review-form-{{$underReview->id}}').submit(); }"
-                                                                                    class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                                    <i class="bx bx-trash"></i>
-                                                                                </a>
-                                                                                <form id="delete-under-review-form-{{$underReview->id}}"
-                                                                                    action="{{ route('under_reviews.destroy', $underReview->id) }}"
-                                                                                    method="POST" style="display: none;">
-                                                                                    @csrf
-                                                                                    @method('DELETE')
-                                                                                </form>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                @else
-                                                    <div class="text-center py-4">
-                                                        <div class="alert alert-info">
-                                                            <i class="bx bx-info-circle me-2"></i>
-                                                            {{ localize('global.no_previous_under_reviews') }}
-                                                        </div>
-                                                    </div>
-                                                @endif
                                             </div>
                                         </div>
                                     </div>

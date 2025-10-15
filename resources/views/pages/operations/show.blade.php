@@ -31,7 +31,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
                                         <div>
-                                            {{ $operation->date ? verta($operation->date)->format('Y-m-d') : 'No Date' }}
+                                            {{ $operation->date ? verta($operation->date)->format('Y/m/d') : 'No Date' }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -285,7 +285,7 @@
                                                             <div class="col-md-6">
                                                                 <label for="date"
                                                                     class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                                <input type="date" class="form-control" name="date"
+                                                                <input type="text" class="form-control datepicker_dari" name="date"
                                                                     value="{{ old('date', $operation->date) }}" />
                                                             </div>
                                                             <div class="col-md-6">

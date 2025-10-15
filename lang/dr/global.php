@@ -3026,6 +3026,7 @@ return [
     "icu_procedure_type_restored_successfully."=>"روش ICU با موفقیت بازیابی شد",
     "icu_procedure_type_type."=>"نوع روش ICU",
     "icu_procedure_type_name."=>"نام روش ICU",
+    "patient_status_not_set"=>"وضعیت مریض ثبت نشده است",
     "icu_procedure_type_created_successfully."=>"روش ICU با موفقیت ایجاد شد",
     "icu_procedure_type_updated_successfully."=>"روش ICU با موفقیت تصحیح شد",
     "operation_type_created_successfully"=>"نوع عملیات با موفقیت ایجاد شد",

@@ -120,7 +120,7 @@
                                     
                                     <div class="col-md-3">
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
-                                        <div class="input-group input-daterange" id="bs-datepicker-daterange">
+                                        <div class="input-group input-daterange">
                                             <input type="text" name="from" id="from_date"
                                                 placeholder="{{ localize('global.from') }}"
                                                 class="form-control form-control datepicker_dari pdp-el" />

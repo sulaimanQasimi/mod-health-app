@@ -827,13 +827,31 @@
 
 
 
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-notepad p-1"></i>{{ localize('global.prescription') }}</h5>
-                                    @if ($icu->is_discharged == '0')
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#createPrescriptionModal{{ $icu->id }}"><span><i
-                                                    class="bx bx-plus"></i></span></button>
-                                    @endif
+                                    <!-- Prescription Accordion -->
+                                    <div class="accordion mt-4" id="prescriptionAccordion">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="prescriptionHeader">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#prescriptionCollapse" aria-expanded="false" 
+                                                        aria-controls="prescriptionCollapse">
+                                                    <i class="bx bx-notepad me-2"></i>
+                                                    {{ localize('global.prescription') }}
+                                                    <span class="badge bg-primary ms-2">{{ count($icu->prescription) }}</span>
+                                                </button>
+                                            </h2>
+                                            <div id="prescriptionCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="prescriptionHeader" data-bs-parent="#prescriptionAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <!-- Add Prescription Button -->
+                                                    @if ($icu->is_discharged == '0')
+                                                        <div class="p-3 border-bottom">
+                                                            <button type="button" class="btn btn-success btn-sm" 
+                                                                    data-bs-toggle="modal" data-bs-target="#createPrescriptionModal{{ $icu->id }}"
+                                                                    title="{{ localize('global.add_prescription') }}">
+                                                                <i class="bx bx-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                     <!-- Create Diagnose Modal -->
                                     <div class="modal fade modal-xl" id="createPrescriptionModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createPrescriptionModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -943,50 +961,46 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-12 mt-4">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.patient_name') }}</th>
-                                                    <th>{{ localize('global.status') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse($icu->prescription as $prescription)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $prescription->patient->name }}</td>
-                                                        <td>
-                                                            @if ($prescription->is_completed == '0')
-                                                                <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
-                                                            @else
-                                                                <span class="badge bg-success">{{ localize('global.delivered') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-
-
-                                                            <a href="#" data-bs-toggle="modal"
-                                                                onclick="getPrescriptionItems({{ $prescription->id }})"
-                                                                data-bs-target="#showPrescriptionItemModal"
-                                                                class="btn btn-outline-primary btn-sm" title="View Details">
-                                                                <i class="bx bx-expand"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="4" class="text-center">
-                                                            <div class="badge bg-label-danger mt-4">
-                                                                {{ localize('global.no_previous_prescriptions') }}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
+                                                    <table class="table mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>{{ localize('global.number') }}</th>
+                                                                <th>{{ localize('global.patient_name') }}</th>
+                                                                <th>{{ localize('global.status') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse($icu->prescription as $prescription)
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>{{ $prescription->patient->name }}</td>
+                                                                    <td>
+                                                                        @if ($prescription->is_completed == '0')
+                                                                            <span class="badge bg-danger">{{ localize('global.not_delivered') }}</span>
+                                                                        @else
+                                                                            <span class="badge bg-success">{{ localize('global.delivered') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="#" data-bs-toggle="modal"
+                                                                            onclick="getPrescriptionItems({{ $prescription->id }})"
+                                                                            data-bs-target="#showPrescriptionItemModal"
+                                                                            class="btn btn-outline-primary btn-sm" title="View Details">
+                                                                            <i class="bx bx-expand"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="4" class="text-center text-muted py-4">
+                                                                        <i class="bx bx-notepad me-2"></i>
+                                                                        {{ localize('global.no_previous_prescriptions') }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
                                         <div class="modal fade modal-xl" id="showPrescriptionItemModal" tabindex="-1"
                                             aria-labelledby="showPrescriptionItemModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
@@ -994,6 +1008,10 @@
 
 
 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                                 </div>
                                             </div>
                                         </div>

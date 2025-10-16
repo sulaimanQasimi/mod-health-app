@@ -603,13 +603,31 @@
 
 
 
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-glasses p-1"></i>{{ localize('global.visits') }}</h5>
-                                    @if ($icu->is_discharged == '0')
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#createVisitModal{{ $icu->id }}"><span><i
-                                                    class="bx bx-plus"></i></span></button>
-                                    @endif
+                                    <!-- Visits Accordion -->
+                                    <div class="accordion mt-4" id="visitsAccordion">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="visitsHeader">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#visitsCollapse" aria-expanded="false" 
+                                                        aria-controls="visitsCollapse">
+                                                    <i class="bx bx-glasses me-2"></i>
+                                                    {{ localize('global.visits') }}
+                                                    <span class="badge bg-primary ms-2">{{ count($icu->visits) }}</span>
+                                                </button>
+                                            </h2>
+                                            <div id="visitsCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="visitsHeader" data-bs-parent="#visitsAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <!-- Add Visit Button -->
+                                                    @if ($icu->is_discharged == '0')
+                                                        <div class="p-3 border-bottom">
+                                                            <button type="button" class="btn btn-success btn-sm" 
+                                                                    data-bs-toggle="modal" data-bs-target="#createVisitModal{{ $icu->id }}"
+                                                                    title="{{ localize('global.add_visit') }}">
+                                                                <i class="bx bx-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                     <!-- Create visit Modal -->
                                     <div class="modal fade" id="createVisitModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createVisitModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -724,94 +742,87 @@
                                         </div>
                                     </div>
                                     <!-- End Create visit Modal -->
-                                    <div class="col-md-12 mt-4">
-
-
-
-
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.description') }}</th>
-                                                    <th>{{ localize('global.by') }}</th>
-                                                    <th>{{ localize('global.created_at') }}</th>
-                                                    <th>{{ localize('global.vital_signs') }}</th>
-                                                    <th>{{ localize('global.antibiotic') }}</th>
-                                                    <th>{{ localize('global.food_type') }}</th>
-                                                    <th>{{ localize('global.intake') }}</th>
-                                                    <th>{{ localize('global.output') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($icu->visits as $visit)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $visit->description }}</td>
-                                                        <td>{{ $visit->doctor->name }}</td>
-                                                        <td>{{ verta($visit->created_at)->format('Y-m-d H:i') }}</td>
-                                                        <td dir="ltr">
-                                                            <span class="badge bg-primary">{{ localize('global.bp') }}</span>
-                                                            {{ $visit->bp }}
-                                                            <br>
-                                                            <span class="badge bg-primary">{{ localize('global.pr') }}</span>
-                                                            {{ $visit->pr }}
-                                                            <br>
-                                                            <span class="badge bg-primary">{{ localize('global.rr') }}</span>
-                                                            {{ $visit->rr }}
-                                                            <br>
-                                                            <span class="badge bg-primary">{{ localize('global.t') }}</span>
-                                                            {{ $visit->t }}
-                                                            <br>
-                                                            <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
-                                                            {{ $visit->spo2 }}
-                                                            <br>
-                                                            <span class="badge bg-primary">{{ localize('global.pain') }}</span>
-                                                            {{ $visit->pain }}
-
-                                                        </td>
-                                                        <td>{{ $visit->antibiotic }}</td>
-                                                        <td>
-                                                            @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
-                                                                <span class="badge bg-primary">{{ $foodType->name }}</span>
-                                                            @endforeach
-                                                        </td>
-                                                        <td>{{ $visit->intake }}</td>
-                                                        <td>{{ $visit->output }}</td>
-                                                        <td>
-                                                            <a href="{{ route('visits.edit', $visit->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-
-                                                            <form id="delete-form-{{$visit->id}}"
-                                                                action="{{ route('visits.destroy', $visit->id) }}" method="POST"
-                                                                style="display: none;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
-                                                            <a href="#"
-                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { 
-                                                                                document.getElementById('delete-form-{{$visit->id}}').submit(); }"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="10" class="text-center">
-                                                            <div class="badge bg-label-danger mt-4">
-                                                                {{ localize('global.no_previous_visits') }}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-
+                                                    <table class="table mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>{{ localize('global.number') }}</th>
+                                                                <th>{{ localize('global.description') }}</th>
+                                                                <th>{{ localize('global.by') }}</th>
+                                                                <th>{{ localize('global.created_at') }}</th>
+                                                                <th>{{ localize('global.vital_signs') }}</th>
+                                                                <th>{{ localize('global.antibiotic') }}</th>
+                                                                <th>{{ localize('global.food_type') }}</th>
+                                                                <th>{{ localize('global.intake') }}</th>
+                                                                <th>{{ localize('global.output') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse ($icu->visits as $visit)
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>{{ $visit->description }}</td>
+                                                                    <td>{{ $visit->doctor->name }}</td>
+                                                                    <td>{{ verta($visit->created_at)->format('Y-m-d H:i') }}</td>
+                                                                    <td dir="ltr">
+                                                                        <span class="badge bg-primary">{{ localize('global.bp') }}</span>
+                                                                        {{ $visit->bp }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary">{{ localize('global.pr') }}</span>
+                                                                        {{ $visit->pr }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary">{{ localize('global.rr') }}</span>
+                                                                        {{ $visit->rr }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary">{{ localize('global.t') }}</span>
+                                                                        {{ $visit->t }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary">{{ localize('global.spo2') }}</span>
+                                                                        {{ $visit->spo2 }}
+                                                                        <br>
+                                                                        <span class="badge bg-primary">{{ localize('global.pain') }}</span>
+                                                                        {{ $visit->pain }}
+                                                                    </td>
+                                                                    <td>{{ $visit->antibiotic }}</td>
+                                                                    <td>
+                                                                        @foreach ($visit->getAssociatedFoodTypesAttribute() as $foodType)
+                                                                            <span class="badge bg-primary">{{ $foodType->name }}</span>
+                                                                        @endforeach
+                                                                    </td>
+                                                                    <td>{{ $visit->intake }}</td>
+                                                                    <td>{{ $visit->output }}</td>
+                                                                    <td>
+                                                                        <a href="{{ route('visits.edit', $visit->id) }}"
+                                                                            class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                            <i class="bx bx-edit"></i>
+                                                                        </a>
+                                                                        <form id="delete-form-{{$visit->id}}"
+                                                                            action="{{ route('visits.destroy', $visit->id) }}" method="POST"
+                                                                            style="display: none;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                        </form>
+                                                                        <a href="#"
+                                                                            onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { 
+                                                                                            document.getElementById('delete-form-{{$visit->id}}').submit(); }"
+                                                                            class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                            <i class="bx bx-trash"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="10" class="text-center text-muted py-4">
+                                                                        <i class="bx bx-glasses me-2"></i>
+                                                                        {{ localize('global.no_previous_visits') }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
 

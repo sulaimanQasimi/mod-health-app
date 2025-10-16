@@ -1079,13 +1079,31 @@
 
 
 
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-command p-1"></i>{{ localize('global.advice') }}</h5>
-                                    @if ($icu->is_discharged == '0')
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#createAdviceModal{{ $icu->id }}"><span><i
-                                                    class="bx bx-plus"></i></span></button>
-                                    @endif
+                                    <!-- Advice Accordion -->
+                                    <div class="accordion mt-4" id="adviceAccordion">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="adviceHeader">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#adviceCollapse" aria-expanded="false" 
+                                                        aria-controls="adviceCollapse">
+                                                    <i class="bx bx-command me-2"></i>
+                                                    {{ localize('global.advice') }}
+                                                    <span class="badge bg-primary ms-2">{{ count($icu->advices) }}</span>
+                                                </button>
+                                            </h2>
+                                            <div id="adviceCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="adviceHeader" data-bs-parent="#adviceAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <!-- Add Advice Button -->
+                                                    @if ($icu->is_discharged == '0')
+                                                        <div class="p-3 border-bottom">
+                                                            <button type="button" class="btn btn-success btn-sm" 
+                                                                    data-bs-toggle="modal" data-bs-target="#createAdviceModal{{ $icu->id }}"
+                                                                    title="{{ localize('global.add_advice') }}">
+                                                                <i class="bx bx-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                     <!-- Create Diagnose Modal -->
                                     <div class="modal fade" id="createAdviceModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createAdviceModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1130,61 +1148,56 @@
                                         </div>
                                     </div>
                                     <!-- End Create Diagnose Modal -->
-                                    <div class="col-md-12 mt-4">
-
-
-
-
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.description') }}</th>
-                                                    <th>{{ localize('global.by') }}</th>
-                                                    <th>{{ localize('global.created_at') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($icu->advices as $advice)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $advice->description }}</td>
-                                                        <td>
-                                                            {{ $advice->doctor->name }}
-                                                        </td>
-                                                        <td dir="ltr">{{ verta($advice->created_at)->format('Y-m-d H:i') }}</td>
-                                                        <td>
-                                                            <a href="{{ route('advices.edit', $advice->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                            <a href="{{ route('advices.destroy', $advice->id) }}"
-                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$advice->id}}').submit(); }"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                            <form id="delete-form-{{$advice->id}}"
-                                                                action="{{ route('advices.destroy', $advice->id) }}" method="POST"
-                                                                style="display: none;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
-
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="5" class="text-center">
-                                                            <div class="badge bg-label-danger mt-4">
-                                                                {{ localize('global.no_previous_advices') }}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-
+                                                    <table class="table mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>{{ localize('global.number') }}</th>
+                                                                <th>{{ localize('global.description') }}</th>
+                                                                <th>{{ localize('global.by') }}</th>
+                                                                <th>{{ localize('global.created_at') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse ($icu->advices as $advice)
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>{{ $advice->description }}</td>
+                                                                    <td>
+                                                                        {{ $advice->doctor->name }}
+                                                                    </td>
+                                                                    <td dir="ltr">{{ verta($advice->created_at)->format('Y-m-d H:i') }}</td>
+                                                                    <td>
+                                                                        <a href="{{ route('advices.edit', $advice->id) }}"
+                                                                            class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                            <i class="bx bx-edit"></i>
+                                                                        </a>
+                                                                        <a href="{{ route('advices.destroy', $advice->id) }}"
+                                                                            onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$advice->id}}').submit(); }"
+                                                                            class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                            <i class="bx bx-trash"></i>
+                                                                        </a>
+                                                                        <form id="delete-form-{{$advice->id}}"
+                                                                            action="{{ route('advices.destroy', $advice->id) }}" method="POST"
+                                                                            style="display: none;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="5" class="text-center text-muted py-4">
+                                                                        <i class="bx bx-command me-2"></i>
+                                                                        {{ localize('global.no_previous_advices') }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <h5 class="mb-4 p-3 bg-label-primary mt-4"><i

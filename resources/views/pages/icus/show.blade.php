@@ -220,43 +220,69 @@
                                 </div>
                             </div>
 
-                            <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.previous_labs') }}</h5>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.test_name') }}</th>
-                                        <th>{{ localize('global.test_status') }}</th>
-                                        <th>{{ localize('global.result') }}</th>
-                                        <th>{{ localize('global.result_file') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($previousLabs as $lab)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $lab->labType->name }}</td>
-                                            <td>
-                                                @if ($lab->status == '0')
-                                                    <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                @else
-                                                    <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $lab->result }}</td>
-                                            <td>
-                                                @isset($lab->result_file)
-                                                    <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                        <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                    </a>
-                                                @endisset
-
-                                            </td>
-
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                            <!-- Previous Labs Accordion -->
+                            <div class="accordion" id="previousLabsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="previousLabsHeader">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#previousLabsCollapse" aria-expanded="false" 
+                                                aria-controls="previousLabsCollapse">
+                                            <i class="bx bx-test-tube me-2"></i>
+                                            {{ localize('global.previous_labs') }}
+                                            <span class="badge bg-primary ms-2">{{ count($previousLabs) }}</span>
+                                        </button>
+                                    </h2>
+                                    <div id="previousLabsCollapse" class="accordion-collapse collapse" 
+                                         aria-labelledby="previousLabsHeader" data-bs-parent="#previousLabsAccordion">
+                                        <div class="accordion-body p-0">
+                                            <table class="table mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.test_name') }}</th>
+                                                        <th>{{ localize('global.test_status') }}</th>
+                                                        <th>{{ localize('global.result') }}</th>
+                                                        <th>{{ localize('global.result_file') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($previousLabs as $lab)
+                                                        <tr>
+                                                            <td>{{ $loop->iteration }}</td>
+                                                            <td>{{ $lab->labType->name }}</td>
+                                                            <td>
+                                                                @if ($lab->status == '0')
+                                                                    <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                                @else
+                                                                    <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $lab->result }}</td>
+                                                            <td>
+                                                                @isset($lab->result_file)
+                                                                    <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank" 
+                                                                       class="btn btn-sm btn-outline-primary">
+                                                                        <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
+                                                                    </a>
+                                                                @else
+                                                                    <span class="text-muted">{{ localize('global.no_file') }}</span>
+                                                                @endisset
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-muted py-4">
+                                                                <i class="bx bx-test-tube me-2"></i>
+                                                                {{ localize('global.no_previous_labs') }}
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             @if ($icu->status == 'new')
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                         class="bx bx-glasses p-1"></i>{{ localize('global.approve_reject_icu') }}</h5>

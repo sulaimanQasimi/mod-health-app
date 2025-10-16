@@ -404,7 +404,7 @@
                                             <div id="consultationsCollapse" class="accordion-collapse collapse" 
                                                  aria-labelledby="consultationsHeader" data-bs-parent="#consultationsAccordion">
                                                 <div class="accordion-body p-0">
-                                                    <!-- Add Consultation Button -->
+                                                    <!-- Add Consultation Button -->    
                                                     @if ($icu->is_discharged == '0')
                                                         <div class="p-3 border-bottom">
                                                             <button type="button" class="btn btn-success btn-sm" 

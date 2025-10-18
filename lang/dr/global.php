@@ -3069,4 +3069,7 @@ return [
     "category_updated_successfully"=>"کتگوری با موفقیت تصحیح شد",
     "category_deleted_successfully"=>"کتگوری با موفقیت حذف شد",
     "category_restored_successfully"=>"کتگوری با موفقیت بازیابی شد",
+    "category"=>"کتگوری",
+    "all_categories"=>"همه کتگوری‌ها",
+    "select_category"=>"انتخاب کتگوری",
 ];

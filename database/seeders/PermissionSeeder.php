@@ -837,6 +837,52 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:12:13'
         ]);
 
+        // Categories Permissions
+        Permission::createOrFirst([
+            'name' => 'show-categories-menu',
+            'name_dr' => 'نمایش مینو کتګورۍ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'view-categories',
+            'name_dr' => 'نمایش کتګورۍ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create-categories',
+            'name_dr' => 'ایجاد کتګورۍ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit-categories',
+            'name_dr' => 'تصحیح کتګورۍ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete-categories',
+            'name_dr' => 'حذف کتګورۍ',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:12:13'
+        ]);
+
         Permission::createOrFirst([
             'name' => 'edit-patients',
             'name_dr' => 'تصحیح مریضان',

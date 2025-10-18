@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\NursingAssessmentController;
 use App\Http\Controllers\NutritionCareController;
 use Illuminate\Support\Facades\Route;
@@ -963,6 +965,18 @@ Route::get('nursing-assessments/section/{morphable_type}/{morphable_id}', [Nursi
 Route::resource('nursing-assessments', NursingAssessmentController::class);
 Route::get('nursing-assessments/{morphable_type}/{morphable_id}', [NursingAssessmentController::class, 'index'])
     ->name('nursing-assessments.by-morphable');
+
+// Categories Routes
+Route::get('categories', CategoryPageController::class)->middleware('auth')->name('categories.index');
+
+// Categories API Routes
+Route::middleware('auth')->prefix('api/categories')->name('api.categories.')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::post('/', [CategoryController::class, 'store'])->name('store');
+    Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
+    Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
+    Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+});
 
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);

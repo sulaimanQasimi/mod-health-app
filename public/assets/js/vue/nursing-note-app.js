@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import HospitalizationNursingNoteSection from './components/HospitalizationNursingNoteSection.vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
 
 console.log('Nursing Note app: Script loaded');
 

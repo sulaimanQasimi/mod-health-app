@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import HospitalizationPrescriptionSection from './components/HospitalizationPrescriptionSection.vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
 
 console.log('Prescription app: Script loaded');
 

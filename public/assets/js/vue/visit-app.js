@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import VisitSection from './components/VisitSection.vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
 
 console.log('Visit app: Script loaded');
 

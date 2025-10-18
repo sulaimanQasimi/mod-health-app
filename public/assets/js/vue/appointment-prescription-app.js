@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import PrescriptionSection from './components/PrescriptionSection.vue'
+import 'vue-multiselect/dist/vue-multiselect.css'
 
 // Initialize Vue app for prescription section
 document.addEventListener('DOMContentLoaded', function() {

@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import ConsultationSection from './components/ConsultationSection.vue'
 import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.css'
 import Swal from 'sweetalert2'
 
 // Make Swal available globally

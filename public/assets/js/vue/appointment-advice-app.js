@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import AdviceSection from './components/AdviceSection.vue'
+import 'vue-multiselect/dist/vue-multiselect.css'
 
 // Initialize Vue app for advice section
 document.addEventListener('DOMContentLoaded', function() {

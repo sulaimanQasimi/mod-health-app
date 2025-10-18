@@ -14,6 +14,7 @@ export default defineConfig({
                 'public/assets/js/vue/diagnosis-app.js',
                 'public/assets/js/vue/advice-app.js',
                 'public/assets/js/vue/consultation-app.js',
+                'public/assets/js/vue/icu-consultation-app.js',
                 'public/assets/js/vue/visit-app.js',
                 'public/assets/js/vue/appointment-prescription-app.js',
                 'public/assets/js/vue/appointment-advice-app.js',
@@ -25,6 +26,11 @@ export default defineConfig({
     resolve: {
         alias: {
             'vue': 'vue/dist/vue.esm-bundler.js'
+        }
+    },
+    build: {
+        rollupOptions: {
+            external: ['moment-jalaali']
         }
     }
 });

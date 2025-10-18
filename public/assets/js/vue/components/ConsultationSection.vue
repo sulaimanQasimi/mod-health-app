@@ -5,7 +5,7 @@
             <div></div> <!-- Empty div for spacing -->
             <div>
                 <button 
-                    v-if="!appointmentCompleted && canAddConsultation" 
+                    v-if="!entityCompleted && canAddConsultation" 
                     type="button" 
                     class="btn btn-primary btn-sm" 
                     @click="showCreateModalHandler">
@@ -336,9 +336,13 @@ export default {
         Multiselect
     },
     props: {
-        appointment: {
+        entity: {
             type: Object,
             required: true
+        },
+        entityType: {
+            type: String,
+            default: 'appointment'
         },
         canAddConsultation: {
             type: Boolean,
@@ -352,7 +356,7 @@ export default {
             type: Boolean,
             default: false
         },
-        appointmentCompleted: {
+        entityCompleted: {
             type: Boolean,
             default: false
         }
@@ -451,10 +455,18 @@ export default {
 
         async loadAppointmentConsultations() {
             try {
-                const response = await fetch(`/consultation-ajax/appointment-consultations/${this.appointment.id}`);
+                console.log('Loading consultations for entity:', this.entity.id, 'type:', this.entityType);
+                const url = this.entityType === 'icu' 
+                    ? `/consultation-ajax/appointment-consultations/${this.entity.id}/icu`
+                    : `/consultation-ajax/appointment-consultations/${this.entity.id}/appointment`;
+                const response = await fetch(url);
                 const data = await response.json();
+                console.log('Consultations response:', data);
                 if (data.success) {
                     this.consultations = data.data;
+                    console.log('Loaded consultations:', this.consultations);
+                } else {
+                    console.error('Failed to load consultations:', data.message);
                 }
             } catch (error) {
                 console.error('Error loading consultations:', error);
@@ -497,9 +509,8 @@ export default {
 
                 // Transform form data
                 const formData = {
-                    appointment_id: this.appointment.id,
-                    patient_id: this.appointment.patient_id,
-                    branch_id: this.appointment.branch_id,
+                    patient_id: this.entity.patient_id,
+                    branch_id: this.entity.branch_id,
                     title: this.form.title,
                     branch: this.form.branch?.id || this.form.branch,
                     department_id: Array.isArray(this.form.department_id) 
@@ -509,6 +520,13 @@ export default {
                     date: gregorianDate,
                     time: this.form.time
                 };
+
+                // Add either appointment_id or i_c_u_id based on entity type
+                if (this.entityType === 'appointment') {
+                    formData.appointment_id = this.entity.id;
+                } else if (this.entityType === 'icu') {
+                    formData.i_c_u_id = this.entity.id;
+                }
 
 
                 const response = await fetch('/consultation-ajax/store', {
@@ -523,7 +541,10 @@ export default {
                 const data = await response.json();
                 if (data.success) {
                     this.showCreateModal = false;
-                    this.loadAppointmentConsultations();
+                    // Add a small delay to ensure database transaction is committed
+                    setTimeout(() => {
+                        this.loadAppointmentConsultations();
+                    }, 100);
                     Swal.fire({
                         title: 'موفق',
                         text: 'مشاوره با موفقیت ایجاد شد',
@@ -1020,5 +1041,34 @@ export default {
 .multiselect.is-invalid .multiselect__tags:focus-within {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Ensure multiselect works properly in modals and accordions */
+.modal .multiselect {
+    z-index: 1055;
+}
+
+.modal .multiselect__content-wrapper {
+    z-index: 1056;
+}
+
+/* Fix for ICU consultation section */
+#icu-consultation-section-container .multiselect {
+    position: relative;
+    z-index: 1;
+}
+
+#icu-consultation-section-container .multiselect__content-wrapper {
+    position: absolute;
+    z-index: 1000;
+}
+
+/* Ensure proper display in collapsed accordion */
+.accordion-collapse .multiselect {
+    visibility: visible;
+}
+
+.accordion-collapse .multiselect__content-wrapper {
+    visibility: visible;
 }
 </style>

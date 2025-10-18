@@ -1,16 +1,31 @@
 {
-  "_AdviceSection-C31GnVPr.css": {
-    "file": "assets/AdviceSection-C31GnVPr.css",
-    "src": "_AdviceSection-C31GnVPr.css"
+  "_AdviceSection-Bj-tiCbx.css": {
+    "file": "assets/AdviceSection-Bj-tiCbx.css",
+    "src": "_AdviceSection-Bj-tiCbx.css"
   },
-  "_AdviceSection-CpyfbO5Z.js": {
-    "file": "assets/AdviceSection-CpyfbO5Z.js",
+  "_AdviceSection-CiiuA0tr.js": {
+    "file": "assets/AdviceSection-CiiuA0tr.js",
     "name": "AdviceSection",
     "imports": [
       "__plugin-vue_export-helper-D9ex2EgB.js"
     ],
     "css": [
-      "assets/AdviceSection-C31GnVPr.css"
+      "assets/AdviceSection-Bj-tiCbx.css"
+    ]
+  },
+  "_ConsultationSection-3NKmDSM7.css": {
+    "file": "assets/ConsultationSection-3NKmDSM7.css",
+    "src": "_ConsultationSection-3NKmDSM7.css"
+  },
+  "_ConsultationSection-DojwD4aU.js": {
+    "file": "assets/ConsultationSection-DojwD4aU.js",
+    "name": "ConsultationSection",
+    "imports": [
+      "_vue-multiselect.esm-DA6cZCgH.js",
+      "__plugin-vue_export-helper-D9ex2EgB.js"
+    ],
+    "css": [
+      "assets/ConsultationSection-3NKmDSM7.css"
     ]
   },
   "__plugin-vue_export-helper-D9ex2EgB.js": {
@@ -33,23 +48,23 @@
     ]
   },
   "public/assets/js/vue/advice-app.js": {
-    "file": "assets/advice-app-DgK1nIJy.js",
+    "file": "assets/advice-app-BotWwvdn.js",
     "name": "advice-app",
     "src": "public/assets/js/vue/advice-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-D9ex2EgB.js",
-      "_AdviceSection-CpyfbO5Z.js"
+      "_AdviceSection-CiiuA0tr.js"
     ]
   },
   "public/assets/js/vue/appointment-advice-app.js": {
-    "file": "assets/appointment-advice-app-BLFxt2WY.js",
+    "file": "assets/appointment-advice-app-ChETOj75.js",
     "name": "appointment-advice-app",
     "src": "public/assets/js/vue/appointment-advice-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-D9ex2EgB.js",
-      "_AdviceSection-CpyfbO5Z.js"
+      "_AdviceSection-CiiuA0tr.js"
     ]
   },
   "public/assets/js/vue/appointment-prescription-app.js": {
@@ -66,20 +81,19 @@
     ]
   },
   "public/assets/js/vue/consultation-app.js": {
-    "file": "assets/consultation-app-3B6IFag-.js",
+    "file": "assets/consultation-app-z7I0itvH.js",
     "name": "consultation-app",
     "src": "public/assets/js/vue/consultation-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-D9ex2EgB.js",
-      "_vue-multiselect.esm-DA6cZCgH.js"
-    ],
-    "css": [
-      "assets/consultation-app-CmC2glh3.css"
+      "_ConsultationSection-DojwD4aU.js",
+      "_vue-multiselect.esm-DA6cZCgH.js",
+      "_sweetalert2.esm.all-DzlfzZPw.js"
     ]
   },
   "public/assets/js/vue/diagnosis-app.js": {
-    "file": "assets/diagnosis-app-DGNQUFzH.js",
+    "file": "assets/diagnosis-app-Cf-cIS8y.js",
     "name": "diagnosis-app",
     "src": "public/assets/js/vue/diagnosis-app.js",
     "isEntry": true,
@@ -88,7 +102,19 @@
       "_vue-multiselect.esm-DA6cZCgH.js"
     ],
     "css": [
-      "assets/diagnosis-app-CpCVl90C.css"
+      "assets/diagnosis-app-4s0BMnig.css"
+    ]
+  },
+  "public/assets/js/vue/icu-consultation-app.js": {
+    "file": "assets/icu-consultation-app-BIobLCxH.js",
+    "name": "icu-consultation-app",
+    "src": "public/assets/js/vue/icu-consultation-app.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-D9ex2EgB.js",
+      "_ConsultationSection-DojwD4aU.js",
+      "_vue-multiselect.esm-DA6cZCgH.js",
+      "_sweetalert2.esm.all-DzlfzZPw.js"
     ]
   },
   "public/assets/js/vue/lab-app.js": {
@@ -133,7 +159,7 @@
     ]
   },
   "public/assets/js/vue/visit-app.js": {
-    "file": "assets/visit-app-BH8Gz6ky.js",
+    "file": "assets/visit-app-BEC5nvbI.js",
     "name": "visit-app",
     "src": "public/assets/js/vue/visit-app.js",
     "isEntry": true,
@@ -143,7 +169,7 @@
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/visit-app-CMc4_0oJ.css",
+      "assets/visit-app-G8iaVPKr.css",
       "assets/vue-multiselect-Chsy-e4F.css"
     ]
   },

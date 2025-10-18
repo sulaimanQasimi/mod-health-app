@@ -403,197 +403,23 @@
                                             </h2>
                                             <div id="consultationsCollapse" class="accordion-collapse collapse" 
                                                  aria-labelledby="consultationsHeader" data-bs-parent="#consultationsAccordion">
-                                                <div class="accordion-body p-0">
-                                                    <!-- Add Consultation Button -->    
-                                                    @if ($icu->is_discharged == '0')
-                                                        <div class="p-3 border-bottom">
-                                                            <button type="button" class="btn btn-success btn-sm" 
-                                                                    data-bs-toggle="modal" data-bs-target="#createConsultationModal{{ $icu->id }}"
-                                                                    title="{{ localize('global.add_consultation') }}">
-                                                                <i class="bx bx-plus"></i>
-                                                            </button>
-                                                        </div>
-                                                    @endif
-                                    <!-- Create Consultation Modal -->
-                                    <div class="modal fade" id="createConsultationModal{{ $icu->id }}" tabindex="-1"
-                                        aria-labelledby="createConsultationModalLabel{{ $icu->id }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="createConsultationModalLabel{{ $icu->id }}">
-                                                        {{ localize('global.add_consultation') }}
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="{{ route('consultations.store') }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
-                                                            value="{{ $icu->patient_id }}">
-                                                        <input type="hidden" id="appointment_id{{ $icu->id }}" name="appointment_id"
-                                                            value="{{ $icu->appointment->id ?? '' }}">
-                                                        <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
-                                                            value="{{ auth()->user()->branch_id }}">
-                                                        <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
-                                                            value="{{ $icu->id }}">
-                                                        <div class="form-group">
-
-                                                            <label
-                                                                for="description{{ $icu->id }}">{{ localize('global.description') }}</label>
-                                                            <input type="text" class="form-control" name="title" required>
-
-                                                            <label
-                                                                for="branch{{ $icu->id }}">{{ localize('global.branch') }}</label>
-                                                            <select class="form-control select2" name="branch" id="branch" required>
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                @foreach ($branches as $value)
-                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                        {{ $value->name }}
-
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-
-                                                            <label
-                                                                for="department{{ $icu->id }}">{{ localize('global.department') }}</label>
-                                                            <select class="form-control select2" name="department_id[]"
-                                                                id="department_id" multiple>
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                @foreach ($departments as $value)
-                                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                        {{ $value->name }}
-
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-
-                                                            <label for="type{{ $icu->id }}">{{ localize('global.type') }}</label>
-                                                            <select class="form-control select2" name="consultation_type" id="type">
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                <option value="0">{{ localize('global.normal') }}</option>
-                                                                <option value="1">{{ localize('global.emergency') }}
-                                                                </option>
-
-                                                            </select>
-
-                                                            {{-- <label for="doctor_id{{ $icu->id }}">{{ localize('global.doctors')
-                                                                }}</label>
-                                                            <select class="form-control select2" name="doctor_id[]" id="doctor_id"
-                                                                multiple>
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                @foreach ($doctors as $value)
-                                                                <option value="{{ $value->id }}" {{ old('name')==$value->id ?
-                                                                    'selected' : '' }}>
-                                                                    {{ $value->name }}
-
-                                                                </option>
-                                                                @endforeach
-                                                            </select> --}}
-
-                                                            <div class="mb-3">
-                                                                <label for="date">{{ localize('global.date') }}</label>
-                                                                <input type="text" class="form-control datepicker_dari" name="date" />
+                                                <div class="accordion-body">
+                                                    <!-- Consultation Section Vue Component -->
+                                                    <div id="icu-consultation-section-container" 
+                                                         data-icu='@json($icu)'
+                                                         data-permissions='@json([
+                                                             "canAddConsultation" => auth()->user()->can("add-consultations"),
+                                                             "canEditConsultation" => auth()->user()->can("edit-consultations"),
+                                                             "canDeleteConsultation" => auth()->user()->can("delete-consultations")
+                                                         ])'>
+                                                        <!-- Fallback content while Vue loads -->
+                                                        <div class="text-center py-4">
+                                                            <div class="spinner-border text-primary" role="status">
+                                                                <span class="visually-hidden">Loading...</span>
                                                             </div>
-                                                            <div class="mb-3">
-                                                                <label for="time">{{ localize('global.time') }}</label>
-                                                                <input type="time" class="form-control" name="time" />
-                                                            </div>
-
+                                                            <p class="mt-2">{{ localize('global.loading_consultation_section') }}</p>
                                                         </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                    <button type="submit"
-                                                        class="btn btn-primary">{{ localize('global.save') }}</button>
-                                                </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- End Create Lab Modal -->
-                                                    <table class="table mb-0">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th>{{ localize('global.number') }}</th>
-                                                                <th>{{ localize('global.title') }}</th>
-                                                                <th>{{ localize('global.departments') }}</th>
-                                                                <th>{{ localize('global.actions') }}</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @forelse ($icu->consultations as $consultation)
-                                                                <tr>
-                                                                    <td>
-                                                                        <div>
-                                                                            <span class="iteration-badge">{{ $loop->iteration }}</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>{{ $consultation->title }}</td>
-                                                                    <td>
-                                                                        @foreach ($consultation->associated_departments as $department)
-                                                                            <span class="badge bg-primary">
-                                                                                {{ $department->name }}
-                                                                            </span>
-                                                                        @endforeach
-                                                                    </td>
-                                                                    <td>
-                                                                        <a href="{{ route('consultations.edit', $consultation->id) }}"
-                                                                            class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                            <i class="bx bx-edit"></i>
-                                                                        </a>
-                                                                        <a href="{{ route('consultations.destroy', $consultation->id) }}"
-                                                                            onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$consultation->id}}').submit(); }"
-                                                                            class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                            <i class="bx bx-trash"></i>
-                                                                        </a>
-                                                                        <form id="delete-form-{{$consultation->id}}"
-                                                                            action="{{ route('consultations.destroy', $consultation->id) }}"
-                                                                            method="POST" style="display: none;">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                        </form>
-                                                                    </td>
-                                                                </tr>
-                                                                @if ($consultation->comments->isNotEmpty())
-                                                                    <tr>
-                                                                        <td colspan="4">
-                                                                            <div class="row">
-                                                                                <div class="col-md-12 d-flex justify-content-center">
-                                                                                    <h6 class="mb-2 p-2 bg-label-primary mt-2">
-                                                                                        <i class="bx bx-chat p-1"></i>{{ localize('global.related_comments') }}
-                                                                                    </h6>
-                                                                                </div>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td colspan="4">
-                                                                            @foreach ($consultation->comments as $comment)
-                                                                                <div class="row mb-2">
-                                                                                    <div class="col-md-2">
-                                                                                        <i class="bx bx-check-circle text-success"></i>
-                                                                                        <span class="bg-label-primary p-1 m-1">{{ $comment->doctor->name }}</span>
-                                                                                    </div>
-                                                                                    <div class="col-md-10 text-justify">
-                                                                                        {{ $comment->comment }}
-                                                                                    </div>
-                                                                                </div>
-                                                                            @endforeach
-                                                                        </td>
-                                                                    </tr>
-                                                                @endif
-                                                            @empty
-                                                                <tr>
-                                                                    <td colspan="4" class="text-center text-muted py-4">
-                                                                        <i class="bx bx-chat me-2"></i>
-                                                                        {{ localize('global.no_previous_consultations') }}
-                                                                    </td>
-                                                                </tr>
-                                                            @endforelse
-                                                        </tbody>
-                                                    </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1200,14 +1026,100 @@
                                         </div>
                                     </div>
 
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-hard-hat p-1"></i>{{ localize('global.checkups') }}</h5>
-                                    @if ($icu->is_discharged == '0')
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#createLabModal{{ $icu->id }}"><span><i
-                                                    class="bx bx-plus"></i></span></button>
-                                    @endif
-                                    <!-- Create  Lab Modal -->
+                                    <!-- Lab Tests Accordion -->
+                                    <div class="accordion mt-4" id="labTestsAccordion">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="labTestsHeader">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#labTestsCollapse" aria-expanded="false" 
+                                                        aria-controls="labTestsCollapse">
+                                                    <i class="bx bx-test-tube me-2"></i>
+                                                    {{ localize('global.checkups') }}
+                                                    <span class="badge bg-primary ms-2">{{ count($icu->labs) }}</span>
+                                                </button>
+                                            </h2>
+                                            <div id="labTestsCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="labTestsHeader" data-bs-parent="#labTestsAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <!-- Add Lab Test Button -->
+                                                    @if ($icu->is_discharged == '0')
+                                                        <div class="p-3 border-bottom">
+                                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                                                data-bs-target="#createLabModal{{ $icu->id }}">
+                                                                <i class="bx bx-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                    
+                                                    <!-- Lab Tests Table -->
+                                                    <div class="table-responsive">
+                                                        <table class="table mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>{{ localize('global.number') }}</th>
+                                                                    <th>{{ localize('global.test_name') }}</th>
+                                                                    <th>{{ localize('global.test_status') }}</th>
+                                                                    <th>{{ localize('global.result') }}</th>
+                                                                    <th>{{ localize('global.result_file') }}</th>
+                                                                    <th>{{ localize('global.actions') }}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @forelse ($icu->labs as $lab)
+                                                                    <tr>
+                                                                        <td>{{ $loop->iteration }}</td>
+                                                                        <td>{{ $lab->labType->name }}</td>
+                                                                        <td>
+                                                                            @if ($lab->status == '0')
+                                                                                <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
+                                                                            @else
+                                                                                <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>{{ $lab->result }}</td>
+                                                                        <td>
+                                                                            @isset($lab->result_file)
+                                                                                <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
+                                                                                    <i class="fa fa-file"></i> {{ localize('global.file') }}
+                                                                                </a>
+                                                                            @endisset
+                                                                        </td>
+                                                                        <td>
+                                                                            <a href="{{ route('lab_tests.edit', $lab->id) }}"
+                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                            <a href="{{ route('lab_tests.destroy', $lab->id) }}"
+                                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$lab->id}}').submit(); }"
+                                                                                class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                <i class="bx bx-trash"></i>
+                                                                            </a>
+                                                                            <form id="delete-form-{{$lab->id}}"
+                                                                                action="{{ route('lab_tests.destroy', $lab->id) }}" method="POST"
+                                                                                style="display: none;">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                @empty
+                                                                    <tr>
+                                                                        <td colspan="6" class="text-center py-4">
+                                                                            <div class="badge bg-label-danger">
+                                                                                {{ localize('global.no_previous_labs') }}
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforelse
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Create Lab Modal -->
                                     <div class="modal fade" id="createLabModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createLabModalLabel{{ $icu->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -1238,7 +1150,6 @@
                                                         <input type="hidden" id="status{{ $icu->id }}" name="status" value="0">
 
                                                         <div class="form-group">
-
                                                             <label
                                                                 for="lab_type_section{{ $icu->id }}">{{ localize('global.lab_type_section') }}</label>
                                                             <select class="form-control select2" name="lab_type_section"
@@ -1247,7 +1158,6 @@
                                                                 @foreach ($labTypeSections as $value)
                                                                     <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->section }}
-
                                                                     </option>
                                                                 @endforeach
                                                             </select>
@@ -1260,7 +1170,6 @@
                                                                 @foreach ($labTypes as $value)
                                                                     <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
                                                                         {{ $value->name }}
-
                                                                     </option>
                                                                 @endforeach
                                                             </select>
@@ -1279,83 +1188,96 @@
                                         </div>
                                     </div>
                                     <!-- End Create Lab Modal -->
-                                    <div class="col-md-12 mt-4">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.test_name') }}</th>
-                                                    <th>{{ localize('global.test_status') }}</th>
-                                                    <th>{{ localize('global.result') }}</th>
-                                                    <th>{{ localize('global.result_file') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($icu->labs as $lab)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $lab->labType->name }}</td>
-                                                        <td>
-                                                            @if ($lab->status == '0')
-                                                                <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                            @else
-                                                                <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $lab->result }}</td>
-                                                        <td>
-                                                            @isset($lab->result_file)
-                                                                <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                                    <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                                </a>
-                                                            @endisset
 
-                                                        </td>
-                                                        <td>
-                                                            <a href="{{ route('lab_tests.edit', $lab->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                            <a href="{{ route('lab_tests.destroy', $lab->id) }}"
-                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$lab->id}}').submit(); }"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                            <form id="delete-form-{{$lab->id}}"
-                                                                action="{{ route('lab_tests.destroy', $lab->id) }}" method="POST"
-                                                                style="display: none;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
 
-                                                        </td>
-
-                                                    </tr>
-
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="6" class="text-center">
-                                                            <div class="badge bg-label-danger mt-4">
-                                                                {{ localize('global.no_previous_labs') }}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforelse
-
-                                            </tbody>
-                                        </table>
+                                    <!-- Procedures Accordion -->
+                                    <div class="accordion mt-4" id="proceduresAccordion">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="proceduresHeader">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#proceduresCollapse" aria-expanded="false" 
+                                                        aria-controls="proceduresCollapse">
+                                                    <i class="bx bx-dna me-2"></i>
+                                                    {{ localize('global.procedures') }}
+                                                    <span class="badge bg-primary ms-2">{{ count($icu->procedures) }}</span>
+                                                </button>
+                                            </h2>
+                                            <div id="proceduresCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="proceduresHeader" data-bs-parent="#proceduresAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <!-- Add Procedure Button -->
+                                                    @if ($icu->is_discharged == '0')
+                                                        <div class="p-3 border-bottom">
+                                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                                                data-bs-target="#createProcedureModal{{ $icu->id }}">
+                                                                <i class="bx bx-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                    
+                                                    <!-- Procedures Table -->
+                                                    <div class="table-responsive">
+                                                        <table class="table mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>{{ localize('global.number') }}</th>
+                                                                    <th>{{ localize('global.type') }}</th>
+                                                                    <th>{{ localize('global.description') }}</th>
+                                                                    <th>{{ localize('global.created_by') }}</th>
+                                                                    <th>{{ localize('global.created_at') }}</th>
+                                                                    <th>{{ localize('global.actions') }}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @forelse ($icu->procedures as $procedure)
+                                                                    <tr>
+                                                                        <td>{{ $loop->iteration }}</td>
+                                                                        <td>{{ $procedure->procedure_type->name }}</td>
+                                                                        <td>{{ $procedure->description }}</td>
+                                                                        <td>
+                                                                            {{ $procedure->createdBy->name }}
+                                                                        </td>
+                                                                        <td>{{ verta($procedure->created_at)->format('Y-m-d H:i') }}</td>
+                                                                        <td>
+                                                                            @can('edit-icu-procedure')
+                                                                                <a href="{{ route('procedures.edit', $procedure->id) }}"
+                                                                                    class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                    <i class="bx bx-edit"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('delete-icu-procedure')
+                                                                                <a href="{{ route('procedures.destroy', $procedure) }}"
+                                                                                    onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$procedure->id}}').submit(); }"
+                                                                                    class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                                    <i class="bx bx-trash"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            <form id="delete-form-{{$procedure->id}}"
+                                                                                action="{{ route('procedures.destroy', $procedure) }}" method="POST"
+                                                                                style="display: none;">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                @empty
+                                                                    <tr>
+                                                                        <td colspan="6" class="text-center py-4">
+                                                                            <div class="badge bg-label-danger">
+                                                                                {{ localize('global.no_previous_procedures') }}
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforelse
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-
-                                    <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                            class="bx bx-dna p-1"></i>{{ localize('global.procedures') }}</h5>
-                                    @if ($icu->is_discharged == '0')
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#createProcedureModal{{ $icu->id }}"><span><i
-                                                    class="bx bx-plus"></i></span></button>
-                                    @endif
-                                    <!-- Create  Lab Modal -->
+                                    <!-- Create Procedure Modal -->
                                     <div class="modal fade" id="createProcedureModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createProcedureModalLabel{{ $icu->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -1410,84 +1332,90 @@
                                             </div>
                                         </div>
                                     </div>
-                                <!-- End Create Lab Modal -->
-                                <div class="col-md-12 mt-4">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ localize('global.number') }}</th>
-                                                <th>{{ localize('global.type') }}</th>
-                                                <th>{{ localize('global.description') }}</th>
-                                                <th>{{ localize('global.created_by') }}</th>
-                                                <th>{{ localize('global.created_at') }}</th>
-                                                <th>{{ localize('global.actions') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($icu->procedures as $procedure)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $procedure->procedure_type->name }}</td>
-                                                    <td>{{ $procedure->description }}</td>
-                                                    <td>
-                                                        {{ $procedure->createdBy->name }}
-                                                    </td>
-                                                    <td>{{ verta($procedure->created_at)->format('Y-m-d H:i') }}</td>
+                                    <!-- End Create Procedure Modal -->
 
-                                                    <td>
-                                                        @can('edit-icu-procedure')
-                                                            <a href="{{ route('procedures.edit', $procedure->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete-icu-procedure')
-                                                            <a href="{{ route('procedures.destroy', $procedure) }}"
-                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$procedure->id}}').submit(); }"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                        @endcan
-                                                        <!-- Using a <form> element -->
-                                                        <form id="delete-form-{{$procedure->id}}"
-                                                            action="{{ route('procedures.destroy', $procedure) }}" method="POST"
-                                                            style="display: none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
 
-                                                    </td>
 
-                                                </tr>
 
-                                            @empty
-                                                <tr>
-                                                    <td colspan="6" class="text-center">
-                                                        <div class="badge bg-label-danger mt-4">
-                                                            {{ localize('global.no_previous_procedures') }}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforelse
 
-                                        </tbody>
-                                    </table>
+
+
+
+                                <!-- Daily ICU Progress Accordion -->
+                                <div class="accordion mt-4" id="dailyProgressAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="dailyProgressHeader">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                    data-bs-target="#dailyProgressCollapse" aria-expanded="false" 
+                                                    aria-controls="dailyProgressCollapse">
+                                                <i class="bx bx-hourglass me-2"></i>
+                                                {{ localize('global.daily_icu_progress') }}
+                                                <span class="badge bg-primary ms-2">{{ count($icu->dailyProgress) }}</span>
+                                            </button>
+                                        </h2>
+                                        <div id="dailyProgressCollapse" class="accordion-collapse collapse" 
+                                             aria-labelledby="dailyProgressHeader" data-bs-parent="#dailyProgressAccordion">
+                                            <div class="accordion-body p-0">
+                                                <!-- Add Daily Progress Button -->
+                                                @if ($icu->is_discharged == '0')
+                                                    <div class="p-3 border-bottom">
+                                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#createDailyICUProgressModal{{ $icu->id }}">
+                                                            <i class="bx bx-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                                
+                                                <!-- Daily Progress Table -->
+                                                <div class="table-responsive">
+                                                    <table class="table mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>{{ localize('global.number') }}</th>
+                                                                <th>{{ localize('global.icu_day') }}</th>
+                                                                <th>{{ localize('global.created_by') }}</th>
+                                                                <th>{{ localize('global.created_at') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse ($icu->dailyProgress as $progress)
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>{{ $progress->icu_day }}</td>
+                                                                    <td>
+                                                                        {{ $progress->createdBy->name }}
+                                                                    </td>
+                                                                    <td>{{ verta($progress->created_at)->format('Y-m-d H:i') }}</td>
+                                                                    <td>
+                                                                        <a href="{{ route('daily_icu_progress.show', $progress->id) }}"
+                                                                            class="btn btn-outline-primary btn-sm" title="View Details">
+                                                                            <i class="bx bx-expand"></i>
+                                                                        </a>
+                                                                        @can('edit-daily-icu-progress')
+                                                                            <a href="{{ route('daily_icu_progress.edit', $progress->id) }}"
+                                                                                class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                                <i class="bx bx-message-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="5" class="text-center py-4">
+                                                                        <div class="badge bg-label-danger">
+                                                                            {{ localize('global.no_previous_progress') }}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-
-
-
-
-
-
-
-
-                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-hourglass p-1"></i>{{ localize('global.daily_icu_progress') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#createDailyICUProgressModal{{ $icu->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
-                                @endif
                                 <!-- Create Daily ICU Progress Modal -->
                                 <div class="modal fade modal-xl" id="createDailyICUProgressModal{{ $icu->id }}" tabindex="-1"
                                     aria-labelledby="createDailyICUProgressModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1699,55 +1627,6 @@
                                     </div>
                                 </div>
                                 <!-- End Create Lab Modal -->
-                                <div class="col-md-12 mt-4">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ localize('global.number') }}</th>
-                                                <th>{{ localize('global.icu_day') }}</th>
-                                                <th>{{ localize('global.created_by') }}</th>
-                                                <th>{{ localize('global.created_at') }}</th>
-                                                <th>{{ localize('global.actions') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($icu->dailyProgress as $progress)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $progress->icu_day }}</td>
-                                                    <td>
-                                                        {{ $progress->createdBy->name }}
-                                                    </td>
-                                                    <td>{{ verta($progress->created_at)->format('Y-m-d H:i') }}</td>
-
-                                                    <td>
-                                                        <a href="{{ route('daily_icu_progress.show', $progress->id) }}"
-                                                            class="btn btn-outline-primary btn-sm" title="View Details">
-                                                            <i class="bx bx-expand"></i>
-                                                        </a>
-                                                        @can('edit-daily-icu-progress')
-                                                            <a href="{{ route('daily_icu_progress.edit', $progress->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-message-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                    </td>
-
-                                                </tr>
-
-                                            @empty
-                                                <tr>
-                                                    <td colspan="5" class="text-center">
-                                                        <div class="badge bg-label-danger mt-4">
-                                                            {{ localize('global.no_previous_progress') }}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-
-                                        </tbody>
-                                    </table>
-                                </div>
 
                                 <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
                                         class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
@@ -2209,6 +2088,8 @@
 @endsection
 
 @section('scripts')
+
+@vite(['public/assets/js/vue/icu-consultation-app.js'])
     <script>
         function loadLabTypeTests() {
             var labTypeId = document.getElementById('lab_type_id').value;

@@ -66,7 +66,7 @@ class ICU extends Model
 
     public function consultations()
     {
-        return $this->hasMany(Consultation::class);
+        return $this->hasMany(Consultation::class, 'i_c_u_id');
     }
 
     public function dailyProgress()

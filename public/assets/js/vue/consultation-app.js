@@ -1,16 +1,10 @@
 import { createApp } from 'vue'
 import ConsultationSection from './components/ConsultationSection.vue'
 import Multiselect from 'vue-multiselect'
-import moment from 'moment-jalaali'
+import Swal from 'sweetalert2'
 
-// Make moment-jalaali available globally
-window.moment = moment
-
-// Register global components
-const app = createApp({})
-
-app.component('ConsultationSection', ConsultationSection)
-app.component('Multiselect', Multiselect)
+// Make Swal available globally
+window.Swal = Swal
 
 // Mount the consultation section
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,11 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const permissions = JSON.parse(consultationContainer.dataset.permissions || '{}')
         
         const consultationApp = createApp(ConsultationSection, {
-            appointment: appointment,
+            entity: appointment,
+            entityType: 'appointment',
             canAddConsultation: permissions.canAddConsultation || false,
             canEditConsultation: permissions.canEditConsultation || false,
             canDeleteConsultation: permissions.canDeleteConsultation || false,
-            appointmentCompleted: appointment.is_completed == 1
+            entityCompleted: appointment.is_completed == 1
         })
         
         consultationApp.component('Multiselect', Multiselect)

@@ -7,6 +7,8 @@ use App\Models\Consultation;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Appointment;
+use App\Models\ICU;
+use Illuminate\Support\Facades\Log;
 use HanifHefaz\Dcter\Dcter;
 
 class ConsultationAjaxController extends Controller
@@ -43,11 +45,18 @@ class ConsultationAjaxController extends Controller
         }
     }
 
-    public function appointmentConsultations($appointmentId)
+    public function appointmentConsultations($id, $type = 'appointment')
     {
         try {
-            $appointment = Appointment::findOrFail($appointmentId);
-            $consultations = $appointment->consultations()->get()->map(function ($consultation) {
+            if ($type == 'appointment') {
+                $appointment = Appointment::findOrFail($id);
+                $consultations = $appointment->consultations()->with(['comments.doctor'])->get();
+            } else {
+                $icu = ICU::findOrFail($id);
+                $consultations = $icu->consultations()->with(['comments.doctor'])->get();
+            }
+          
+            $consultations = $consultations->map(function ($consultation) {
                 // Load the associated departments using the accessor
                 $departments = $consultation->associated_departments;
                 $consultation->associated_departments = $departments;
@@ -81,8 +90,8 @@ class ConsultationAjaxController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validate required fields first
             $validatedData = $request->validate([
-                'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
                 'branch_id' => 'required|exists:branches,id',
                 'title' => 'required|string|max:255',
@@ -94,14 +103,40 @@ class ConsultationAjaxController extends Controller
                 'time' => 'required|string'
             ]);
 
+            // Handle appointment_id and i_c_u_id separately
+            $appointmentId = $request->input('appointment_id');
+            $icuId = $request->input('i_c_u_id');
+
+            // Ensure either appointment_id or i_c_u_id is provided
+            if (empty($appointmentId) && empty($icuId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Either appointment_id or i_c_u_id must be provided'
+                ], 422);
+            }
+
+            // Validate the specific ID if provided
+            if ($appointmentId && !Appointment::find($appointmentId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid appointment_id'
+                ], 422);
+            }
+
+            if ($icuId && !ICU::find($icuId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid i_c_u_id'
+                ], 422);
+            }
+
             // Convert Persian date to Gregorian format if needed
             $date = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
             $validatedData['date'] = $date;
 
 
             // Create consultation
-            $consultation = Consultation::create([
-                'appointment_id' => $validatedData['appointment_id'],
+            $consultationData = [
                 'patient_id' => $validatedData['patient_id'],
                 'branch_id' => $validatedData['branch_id'],
                 'title' => $validatedData['title'],
@@ -109,7 +144,21 @@ class ConsultationAjaxController extends Controller
                 'consultation_type' => $validatedData['consultation_type'],
                 'date' => $validatedData['date'],
                 'time' => $validatedData['time']
-            ]);
+            ];
+
+            // Add either appointment_id or i_c_u_id
+            if ($appointmentId) {
+                $consultationData['appointment_id'] = $appointmentId;
+                $consultationData['i_c_u_id'] = null;
+            }
+            if ($icuId) {
+                $consultationData['i_c_u_id'] = $icuId;
+                // For ICU consultations, we need to get the appointment_id from the ICU
+                $icu = ICU::find($icuId);
+                $consultationData['appointment_id'] = $icu ? $icu->appointment_id : null;
+            }
+
+            $consultation = Consultation::create($consultationData);
             
             // Store department IDs as JSON in the department_id field
             $consultation->department_id = json_encode($validatedData['department_id']);

@@ -211,7 +211,6 @@ class PatientController extends Controller
             'branch_id' => 'required',
             'job' => 'nullable',
             'rank' => 'nullable',
-            'age' => 'nullable',
             'job_type' => 'nullable',
             'gender' => 'required',
             'referral_name' => 'nullable',
@@ -226,11 +225,64 @@ class PatientController extends Controller
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
-            'relation_id' => 'nullable'
-
+            'appointment_doctor_id' => 'nullable',
+            'appointment_department_id' => 'nullable'
         ]);
 
         $patient->update($data);
+
+        // Handle appointment creation if appointment fields are filled
+        $appointment = null;
+        if ($request->filled('appointment_doctor_id')
+         || 
+        $request->filled('appointment_department_id')) {
+            $now = now();
+            $appointmentData = [
+                'patient_id' => $patient->id,
+                'doctor_id' => $request->appointment_doctor_id,
+                'department_id' => $request->appointment_department_id,
+                'branch_id' => $patient->branch_id,
+                'date' => $now->format('Y-m-d'),
+                'time' => $now->format('H:i:s'),
+                'is_completed' => 0
+            ];
+
+            $appointment = Appointment::create($appointmentData);
+            
+            // Send notification for new appointment
+            SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+        }
+
+        // Handle AJAX requests
+        if ($request->ajax() || $request->expectsJson()) {
+            $response = [
+                'success' => true,
+                'message' => localize('global.patient_updated_successfully.'),
+                'patient' => [
+                    'id' => $patient->id,
+                    'name' => $patient->name,
+                    'last_name' => $patient->last_name,
+                ]
+            ];
+
+            if ($appointment) {
+                $response['appointment'] = [
+                    'id' => $appointment->id,
+                    'department' => $appointment->department->name ?? '',
+                    'doctor' => $appointment->doctor->name ?? '',
+                    'date' => $appointment->date,
+                    'time' => $appointment->time,
+                    'token_url' => route('appointments.printToken', $appointment->id)
+                ];
+            }
+
+            return response()->json($response);
+        }
+
+        // Handle non-AJAX requests (backward compatibility)
+        if ($appointment) {
+            return redirect()->route('appointments.show', $appointment->id)->with('success', localize('global.patient_updated_successfully.'));
+        }
 
         return redirect()->route('patients.index')->with('success', localize('global.patient_updated_successfully.'));
     }

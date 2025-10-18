@@ -15,12 +15,17 @@
                     <form method="GET" action="{{ route('prescriptions.index') }}" class="row g-3">
                         <div class="col-md-3">
                             <label for="search" class="form-label">{{ localize('global.search') }}</label>
-                            <input type="text" class="form-control" id="search" name="search" 
-                                value="{{ request('search') }}" placeholder="{{ localize('global.search_by_patient_name') }}">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="search" name="search" 
+                                    value="{{ request('search') }}" placeholder="{{ localize('global.search_by_patient_name') }}">
+                                <button type="submit" class="btn btn-outline-secondary" title="{{ localize('global.search') }}">
+                                    <i class="bx bx-search"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-2">
                             <label for="status" class="form-label">{{ localize('global.status') }}</label>
-                            <select class="form-select" id="status" name="status">
+                            <select class="form-select select2" id="status" name="status">
                                 <option value="">{{ localize('global.all') }}</option>
                                 <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>{{ localize('global.not_delivered') }}</option>
                                 <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>{{ localize('global.delivered') }}</option>
@@ -126,6 +131,13 @@
 @push('custom-js')
 <script>
 $(document).ready(function() {
+    // Initialize Select2
+    $('.select2').select2({
+        placeholder: '{{ localize("global.select_status") }}',
+        allowClear: true,
+        width: '100%'
+    });
+    
     // Initialize Persian datepicker
     $('.datepicker_dari').persianDatepicker({
         format: 'YYYY/MM/DD',
@@ -143,21 +155,23 @@ $(document).ready(function() {
         $(this).closest('form').submit();
     });
     
-    // Date fields - no auto-submit, manual search required
-    
     // Clear all filters on refresh button click
-    $('.btn-secondary').click(function() {
+    $('.btn-secondary').click(function(e) {
+        e.preventDefault();
         $('input[name="search"]').val('');
-        $('select[name="status"]').val('');
+        $('select[name="status"]').val('').trigger('change');
         $('input[name="date_from"]').val('');
         $('input[name="date_to"]').val('');
         // Clear datepicker values
         $('.datepicker_dari').persianDatepicker('clear');
+        // Redirect to clean URL
+        window.location.href = '{{ route("prescriptions.index") }}';
     });
     
     // Add loading state to search button
-    $('form').submit(function() {
+    $('form').submit(function(e) {
         $('.btn-primary').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i>');
+        $('.btn-secondary').prop('disabled', true);
     });
     
     // Validate date range for Persian dates
@@ -185,9 +199,48 @@ $(document).ready(function() {
     // Search functionality - submit on enter or manual search
     $('input[name="search"]').on('keypress', function(e) {
         if (e.which === 13) { // Enter key
+            e.preventDefault();
             $(this).closest('form').submit();
         }
     });
+    
+    // Also submit on input change with debounce for better UX
+    var searchTimeout;
+    $('input[name="search"]').on('input', function() {
+        clearTimeout(searchTimeout);
+        var searchValue = $(this).val();
+        
+        // If search field is empty, submit immediately to show all results
+        if (searchValue === '') {
+            $(this).closest('form').submit();
+            return;
+        }
+        
+        // Debounce search - submit after 500ms of no typing
+        searchTimeout = setTimeout(function() {
+            $('input[name="search"]').closest('form').submit();
+        }, 500);
+    });
+    
+    // Show active filters count
+    function updateActiveFiltersCount() {
+        var activeFilters = 0;
+        if ($('input[name="search"]').val()) activeFilters++;
+        if ($('select[name="status"]').val()) activeFilters++;
+        if ($('input[name="date_from"]').val()) activeFilters++;
+        if ($('input[name="date_to"]').val()) activeFilters++;
+        
+        if (activeFilters > 0) {
+            $('.btn-secondary').html('<i class="bx bx-refresh"></i> (' + activeFilters + ')');
+        } else {
+            $('.btn-secondary').html('<i class="bx bx-refresh"></i>');
+        }
+    }
+    
+    // Update filter count on page load and changes
+    updateActiveFiltersCount();
+    $('input, select').on('change', updateActiveFiltersCount);
 });
 </script>
 @endpush
+

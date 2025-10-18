@@ -3072,4 +3072,5 @@ return [
     "category"=>"کتگوری",
     "all_categories"=>"همه کتگوری‌ها",
     "select_category"=>"انتخاب کتگوری",
+    "no_prescriptions_found"=>"هیچ فورم ادویه‌ای یافت نشد",
 ];

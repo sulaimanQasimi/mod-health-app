@@ -3047,4 +3047,5 @@ return [
     "search_by_patient_name"=>"جستجو بر اساس نام مریض",
     "alternatives_for"=>"جاگزینی برای",
     "no_file"=>"فایلی یافت نشد",
+    "appointments_referred_by_doctors"=>"معرفی شده توسط دکتر",
 ];

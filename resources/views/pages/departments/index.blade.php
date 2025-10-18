@@ -6,38 +6,50 @@
         @if (Session::has('success') || Session::has('error'))
                 @include('components.toast')
             @endif
-        <div class="col-xl">
+            <!-- Filters Card -->
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div class="row w-100">
-                        <div class="col-md-6">
-                            <h5 class="mb-0">{{ localize('global.list_departments') }}</h5>
+                <div class="card-header">
+                    <h5 class="mb-0">{{ localize('global.filters') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('departments.index') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="category_id" class="form-label">{{ localize('global.category') }}</label>
+                            <select class="form-select select2" id="category_id" name="category_id">
+                                <option value="">{{ localize('global.all_categories') }}</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="col-md-6">
-                            <form method="GET" action="{{ route('departments.index') }}" class="d-flex">
-                                <select name="category_id" class="form-control me-2">
-                                    <option value="">{{ localize('global.all_categories') }}</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <button type="submit" class="btn btn-primary me-2">{{ localize('global.filter') }}</button>
-                                @if(request('category_id'))
-                                    <a href="{{ route('departments.index') }}" class="btn btn-secondary me-2">{{ localize('global.clear') }}</a>
-                                @endif
-                                @can('create-departments')
-                                <a class="btn btn-secondary create-new btn-primary" href="{{ route('departments.create') }}"
-                                   type="button">
-                                    <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
-                                              class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
-                                </a>
-                                @endcan
-                            </form>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-search"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <a href="{{ route('departments.index') }}" class="btn btn-secondary">
+                                <i class="bx bx-refresh"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-xl">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ localize('global.list_departments') }}</h5>
+                        <div class="pt-3 pt-md-0 text-end">
+                            @can('create-departments')
+                            <a class="btn btn-primary btn-lg" href="{{ route('departments.create') }}">
+                                <i class="bx bx-plus me-2"></i>{{ localize('global.create') }}
+                            </a>
+                            @endcan
                         </div>
                     </div>
-                </div>
                 <div class="card-body">
 
 
@@ -89,4 +101,17 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Initialize Select2
+    $('.select2').select2({
+        placeholder: '{{ localize("global.select_category") }}',
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
 @endsection

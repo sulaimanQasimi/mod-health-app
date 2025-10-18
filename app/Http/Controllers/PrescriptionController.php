@@ -20,9 +20,40 @@ class PrescriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $prescriptions = Prescription::where('branch_id', auth()->user()->branch_id)->where('is_completed', false)->latest()->paginate(10);
+        $query = Prescription::where('branch_id', auth()->user()->branch_id)
+            ->with(['patient', 'doctor']);
+
+        // Search by patient name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%')
+                  ->orWhere('id_card', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('is_completed', $request->status);
+        } else {
+            // Default to show only not completed prescriptions
+            $query->where('is_completed', false);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $prescriptions = $query->latest()->paginate(10)->withQueryString();
+        
         return view('pages.prescriptions.index', compact('prescriptions'));
     }
 

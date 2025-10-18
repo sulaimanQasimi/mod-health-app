@@ -3046,4 +3046,5 @@ return [
     "refer_to_another_department"=>"معرفی به بخش دیگر",
     "search_by_patient_name"=>"جستجو بر اساس نام مریض",
     "alternatives_for"=>"جاگزینی برای",
+    "no_file"=>"فایلی یافت نشد",
 ];

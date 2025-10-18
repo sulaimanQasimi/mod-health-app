@@ -259,7 +259,7 @@
                 <!-- Previous Labs Accordion -->
                 <div class="accordion" id="previousLabsAccordion">
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="previousLabsHeader">
+                        <h2 class="accordion-header mt-2" id="previousLabsHeader">
                             <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
                                 data-bs-toggle="collapse" data-bs-target="#previousLabsCollapse" aria-expanded="false"
                                 aria-controls="previousLabsCollapse">

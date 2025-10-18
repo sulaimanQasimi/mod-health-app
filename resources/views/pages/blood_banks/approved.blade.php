@@ -18,7 +18,9 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.card_number') }}</th>
                                     <th>{{ localize('global.patient_name') }}</th>
+                                    <th>{{ localize('global.father_name') }}</th>
                                     <th>{{ localize('global.requested_department') }}</th>
                                     <th>{{ localize('global.blood_group') }}</th>
                                     <th>{{ localize('global.rh') }}</th>
@@ -32,7 +34,13 @@
                                 @foreach ($bloodRequests as $bloodRequest)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ $bloodRequest->patient->id_card ?? '-' }}</span>
+                                        </td>
                                         <td>{{ $bloodRequest->patient->name }}</td>
+                                        <td>
+                                            <span class="text-muted">{{ $bloodRequest->patient->father_name ?? '-' }}</span>
+                                        </td>
                                         <td>{{ $bloodRequest->department->name }}</td>
                                         <td>
                                             @if ($bloodRequest->group == 'A')

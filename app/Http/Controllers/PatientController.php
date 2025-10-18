@@ -81,7 +81,7 @@ class PatientController extends Controller
     {
         $relations = Relation::all();
         ;
-        return view('pages.patients.create', compact('relations', ));
+        return view('pages.patients.create', compact('relations'));
     }
 
     public function store(Request $request)
@@ -179,7 +179,7 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $departments = Department::all();
+        $departments = Department::where('category_id', auth()->user()->category_id)->get();
         $doctors = Doctor::all();
         $previousDiagnoses = $patient->diagnoses;
         return view('pages.patients.show', compact('patient', 'departments', 'doctors', 'previousDiagnoses'));
@@ -387,7 +387,7 @@ class PatientController extends Controller
         $districts = District::all();
         $relations = Relation::all();
         $doctors = Doctor::all();
-        $departments = Department::all();
+        $departments = Department::where('category_id', auth()->user()->category_id)->get();
 
         $tab_type = $request->tab_type;
         $patient_id = $request->patient_id;

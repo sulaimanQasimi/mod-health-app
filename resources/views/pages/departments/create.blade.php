@@ -22,6 +22,19 @@
                                         <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control">
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="category_id">{{ localize('global.category') }}</label>
+                                        <select name="category_id" id="category_id" class="form-control">
+                                            <option value="">{{ localize('global.select_category') }}</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <input type="hidden" name="branch_id" value="{{Auth::user()->branch_id}}">
                             </div>
                             <button type="submit" class="btn btn-primary">{{localize('global.add')}}</button>

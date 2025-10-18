@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Category;
 use App\Models\Department;
 use Illuminate\Http\Request;
 
@@ -11,10 +12,18 @@ class DepartmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $departments = Department::all();
-        return view('pages.departments.index',compact('departments'));
+        $query = Department::with(['category']);
+        
+        // Add category filter
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        
+        $departments = $query->get();
+        $categories = Category::all();
+        return view('pages.departments.index',compact('departments', 'categories'));
     }
 
     /**
@@ -23,7 +32,8 @@ class DepartmentController extends Controller
     public function create()
     {
         $branches = Branch::all();
-        return view('pages.departments.create', compact('branches'));
+        $categories = Category::all();
+        return view('pages.departments.create', compact('branches', 'categories'));
     }
 
     /**
@@ -34,6 +44,7 @@ class DepartmentController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'branch_id' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         Department::create($data);
@@ -55,7 +66,8 @@ class DepartmentController extends Controller
     public function edit(Department $department)
     {
         $branches = Branch::all();
-        return view('pages.departments.edit', compact('department', 'branches'));
+        $categories = Category::all();
+        return view('pages.departments.edit', compact('department', 'branches', 'categories'));
     }
 
     /**
@@ -66,6 +78,7 @@ class DepartmentController extends Controller
         $data = $request->validate([
             'name' => 'required',
             'branch_id' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         $department->update($data);

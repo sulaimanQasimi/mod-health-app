@@ -126,6 +126,19 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.category') }}</label>
+                                    <select name="category_id" class="form-control select2">
+                                        <option value="">{{ localize('global.select_category') }}</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
 
                         </div>
                             <div class="col-12 mb-3 mt-3">

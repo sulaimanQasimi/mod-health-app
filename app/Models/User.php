@@ -27,6 +27,7 @@ class User extends Authenticatable
         'branch_id',
         'department_id',
         'section_id',
+        'category_id',
     ];
 
     /**
@@ -161,5 +162,10 @@ class User extends Authenticatable
     public function nurse()
     {
         return $this->hasOne(Nurse::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

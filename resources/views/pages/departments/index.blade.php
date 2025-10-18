@@ -9,15 +9,33 @@
         <div class="col-xl">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.list_departments') }}</h5>
-                    <div class="pt-3 pt-md-0 text-end">
-                        @can('create-departments')
-                        <a class="btn btn-secondary create-new btn-primary" href="{{ route('departments.create') }}"
-                           type="button">
-                            <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
-                                      class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
-                        </a>
-                        @endcan
+                    <div class="row w-100">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">{{ localize('global.list_departments') }}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <form method="GET" action="{{ route('departments.index') }}" class="d-flex">
+                                <select name="category_id" class="form-control me-2">
+                                    <option value="">{{ localize('global.all_categories') }}</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn btn-primary me-2">{{ localize('global.filter') }}</button>
+                                @if(request('category_id'))
+                                    <a href="{{ route('departments.index') }}" class="btn btn-secondary me-2">{{ localize('global.clear') }}</a>
+                                @endif
+                                @can('create-departments')
+                                <a class="btn btn-secondary create-new btn-primary" href="{{ route('departments.create') }}"
+                                   type="button">
+                                    <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
+                                              class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
+                                </a>
+                                @endcan
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -28,6 +46,7 @@
         <tr>
             <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
+            <th>{{localize('global.category')}}</th>
             <th>{{localize('global.related_section')}}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
@@ -37,6 +56,7 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $department->name }}</td>
+                <td>{{ $department->category->name ?? '-' }}</td>
                 <td>
                     @foreach ($department->sections as $section )
                     <span class="badge bg-primary">{{ $section->name }}</span>

@@ -91,14 +91,36 @@
             <!-- Users List Table -->
             <div class="card">
                 <div class="card-header border-bottom">
-                    <div class="text-end">
-
-                        <a class="btn btn-secondary create-new btn-primary" href="{{ route('users.create') }}"
-                           type="button">
-                            <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
-                                      class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
-                        </a>
-
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form method="GET" action="{{ route('users.index') }}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select name="category_id" class="form-control">
+                                            <option value="">{{ localize('global.all_categories') }}</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary">{{ localize('global.filter') }}</button>
+                                        @if(request('category_id'))
+                                            <a href="{{ route('users.index') }}" class="btn btn-secondary">{{ localize('global.clear') }}</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a class="btn btn-secondary create-new btn-primary" href="{{ route('users.create') }}"
+                               type="button">
+                                <span class="text-white"><i class="bx bx-plus me-sm-1"></i> <span
+                                          class="d-none d-sm-inline-block  ">{{ localize('global.create') }}</span></span>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-datatable table-responsive p-2">
@@ -110,6 +132,7 @@
                                 <th>{{ localize('global.avatar') }}</th>
                                 <th>{{ localize('global.name') }}</th>
                                 <th>{{ localize('global.email') }}</th>
+                                <th>{{ localize('global.category') }}</th>
                                 {{-- @can('deactivate-users') --}}
                                 <th>{{ localize('global.status') }}</th>
                                 {{-- @endcan --}}
@@ -179,6 +202,12 @@
                         },
                         {
                             data: 'email'
+                        },
+                        {
+                            data: 'category',
+                            render: function(data, type, full, meta) {
+                                return data ? data.name : '-';
+                            }
                         },
                         {
                             data: 'status',

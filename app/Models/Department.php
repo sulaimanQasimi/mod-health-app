@@ -12,7 +12,7 @@ class Department extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','branch_id'];
+    protected $fillable = ['name','branch_id','category_id'];
 
     public static function boot()
     {
@@ -52,5 +52,10 @@ class Department extends Model
     public function nurses()
     {
         return $this->hasMany(Nurse::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

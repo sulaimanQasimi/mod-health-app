@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Branch;
+use App\Models\Category;
 use App\Models\Department;
 use App\Models\Permission;
 use App\Models\Role;
@@ -28,7 +29,7 @@ class UserController extends Controller
     public function index(Request $request)
 {
     if ($request->ajax()) {
-        $users = User::with(['roles'])->get();
+        $users = User::with(['roles', 'category'])->get();
 
             if ($users) {
                 return response()->json([
@@ -43,8 +44,16 @@ class UserController extends Controller
             }
     }
 
-    $users = User::all();
-    return view('pages.users.index', compact('users'));
+    $query = User::with(['category']);
+    
+    // Add category filter
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+    
+    $users = $query->get();
+    $categories = Category::all();
+    return view('pages.users.index', compact('users', 'categories'));
 }
 
 
@@ -57,7 +66,8 @@ class UserController extends Controller
         $branches = Branch::all();
         $departments = Department::all();
         $sections = Section::all();
-        return view('pages.users.create',compact('roles','branches','departments','sections'));
+        $categories = Category::all();
+        return view('pages.users.create',compact('roles','branches','departments','sections','categories'));
     }
 
     /**
@@ -73,6 +83,7 @@ class UserController extends Controller
         $user->branch_id = $request->branch_id;
         $user->department_id = $request->department_id;
         $user->section_id = $request->section_id;
+        $user->category_id = $request->category_id;
         $user->password = Hash::make($request->password);
 
         $user->save();
@@ -110,8 +121,9 @@ class UserController extends Controller
         $departments = Department::all();
         $sections = Section::all();
         $permissions = Permission::all();
+        $categories = Category::all();
 
-        return view('pages.users.edit',compact('user','roles','branches','departments','sections','permissions'));
+        return view('pages.users.edit',compact('user','roles','branches','departments','sections','permissions','categories'));
     }
 
     /**

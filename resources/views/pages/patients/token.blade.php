@@ -59,7 +59,13 @@
 <body>
     <div class="container">
         <div class="details">
-            <p>{{ $patient->name }} {{ $patient->last_name }}</p>
+            <p><strong>{{ $patient->name }} {{ $patient->last_name }}</strong></p>
+            @if($patient->father_name)
+                <p>{{ localize('global.father_name') }}: {{ $patient->father_name }}</p>
+            @endif
+            @if($patient->id_card)
+                <p>{{ localize('global.id_card') }}: {{ $patient->id_card }}</p>
+            @endif
             <h1 class="bigFont">{{ $printedNumber->number }}</h1>
             <p>{{ verta($printedNumber->date)->format('Y-m-d') }}</p>
             {{ $name  }}

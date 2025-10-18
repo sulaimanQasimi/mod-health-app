@@ -86,8 +86,10 @@
                         <thead>
                             <tr>
                                 <th>{{ localize('global.id') }}</th>
+                                <th>{{ localize('global.id_card') }}</th>
                                 <th>{{ localize('global.name') }}</th>
                                 <th>{{ localize('global.last_name') }}</th>
+                                <th>{{ localize('global.father_name') }}</th>
                                 <th>{{ localize('global.province') }}</th>
                                 <th>{{ localize('global.militery_type') }}</th>
                                 <th>{{ localize('global.phone') }}</th>
@@ -98,8 +100,10 @@
                             @foreach ($patients as $patient)
                                 <tr>
                                     <td>{{ $patient->id }}</td>
+                                    <td>{{ $patient->id_card ?? '-' }}</td>
                                     <td>{{ $patient->name }}</td>
                                     <td>{{ $patient->last_name }}</td>
+                                    <td>{{ $patient->father_name ?? '-' }}</td>
                                     <td>{{ $patient->province->name ?? '-' }}</td>
                                     <td>{{ $patient->militeryType?->name ?? '-' }}</td>
                                     <td>{{ $patient->phone }}</td>

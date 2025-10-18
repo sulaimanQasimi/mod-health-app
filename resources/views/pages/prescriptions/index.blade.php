@@ -135,12 +135,7 @@ $(document).ready(function() {
         $(this).closest('form').submit();
     });
     
-    // Auto-submit form when date values change (with delay for datepicker)
-    $('input[name="date_from"], input[name="date_to"]').on('changeDate', function() {
-        setTimeout(function() {
-            $('form').submit();
-        }, 100);
-    });
+    // Date fields - no auto-submit, manual search required
     
     // Clear all filters on refresh button click
     $('.btn-secondary').click(function() {
@@ -179,16 +174,11 @@ $(document).ready(function() {
         }
     });
     
-    // Search functionality with debounce
-    var searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        var $this = $(this);
-        searchTimeout = setTimeout(function() {
-            if ($this.val().length >= 2 || $this.val().length === 0) {
-                $this.closest('form').submit();
-            }
-        }, 500);
+    // Search functionality - submit on enter or manual search
+    $('input[name="search"]').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            $(this).closest('form').submit();
+        }
     });
 });
 </script>

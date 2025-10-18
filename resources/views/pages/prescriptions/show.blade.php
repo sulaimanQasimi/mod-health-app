@@ -93,7 +93,7 @@
                                 <!-- Original Prescription Item -->
                                 <tr class="{{ $item->selectedAlternative ? 'table-bg-secondary' : '' }}">
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->medicineType->type }}</td>
+                                    <td>{{ $item->medicineType?->type ?? '-' }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <i class="bx bx-pill me-2 text-primary"></i>

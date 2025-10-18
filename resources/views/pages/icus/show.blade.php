@@ -1628,13 +1628,100 @@
                                 </div>
                                 <!-- End Create Lab Modal -->
 
-                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-bed p-1"></i>{{ localize('global.hospitalize') }}</h5>
-                                @if ($icu->is_discharged == 0)
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#createHospitalizationModal{{ $icu->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
-                                @endif
+                                <!-- Hospitalization Accordion -->
+                                <div class="accordion mt-4" id="hospitalizationAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="hospitalizationHeader">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                    data-bs-target="#hospitalizationCollapse" aria-expanded="false" 
+                                                    aria-controls="hospitalizationCollapse">
+                                                <i class="bx bx-bed me-2"></i>
+                                                {{ localize('global.hospitalize') }}
+                                                <span class="badge bg-primary ms-2">{{ count($icu->hospitalizations) }}</span>
+                                            </button>
+                                        </h2>
+                                        <div id="hospitalizationCollapse" class="accordion-collapse collapse" 
+                                             aria-labelledby="hospitalizationHeader" data-bs-parent="#hospitalizationAccordion">
+                                            <div class="accordion-body p-0">
+                                                <!-- Add Hospitalization Button -->
+                                                @if ($icu->is_discharged == 0)
+                                                    <div class="p-3 border-bottom">
+                                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#createHospitalizationModal{{ $icu->id }}">
+                                                            <i class="bx bx-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                                
+                                                <!-- Hospitalization Table -->
+                                                <div class="table-responsive">
+                                                    <table class="table mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>{{ localize('global.number') }}</th>
+                                                                <th class="text-wrap">{{ localize('global.reason') }}</th>
+                                                                <th>{{ localize('global.remarks') }}</th>
+                                                                <th>{{ localize('global.room') }}</th>
+                                                                <th>{{ localize('global.bed') }}</th>
+                                                                <th>{{ localize('global.status') }}</th>
+                                                                <th>{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse ($icu->hospitalizations as $hospitalization)
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>{{ $hospitalization->reason }}</td>
+                                                                    <td>
+                                                                        {{ $hospitalization->remarks }}
+                                                                    </td>
+                                                                    <td>
+                                                                        {{ $hospitalization->room->name }}
+                                                                    </td>
+                                                                    <td>
+                                                                        {{ $hospitalization->bed->number }}
+                                                                    </td>
+                                                                    <td>
+                                                                        @if ($hospitalization->is_discharged == 0)
+                                                                            <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
+                                                                        @else
+                                                                            <span class="badge bg-success">{{ localize('global.discharged') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
+                                                                            class="btn btn-outline-primary btn-sm" title="Edit">
+                                                                            <i class="bx bx-edit"></i>
+                                                                        </a>
+                                                                        <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"
+                                                                            onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
+                                                                            class="btn btn-outline-danger btn-sm" title="Delete">
+                                                                            <i class="bx bx-trash"></i>
+                                                                        </a>
+                                                                        <form id="delete-form-{{$hospitalization->id}}"
+                                                                            action="{{ route('hospitalizations.destroy', $hospitalization->id) }}"
+                                                                            method="POST" style="display: none;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="7" class="text-center py-4">
+                                                                        <div class="badge bg-label-danger">
+                                                                            {{ localize('global.no_previous_hospitalizations') }}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- Create Hospitalization Modal -->
                                 <div class="modal fade modal-xl" id="createHospitalizationModal{{ $icu->id }}" tabindex="-1"
                                     aria-labelledby="createHospitalizationModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -1798,84 +1885,103 @@
                                     </div>
                                 </div>
                                 <!-- End Create Lab Modal -->
-                                <div class="col-md-12 mt-4">
-
-
-
-
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ localize('global.number') }}</th>
-                                                <th class="text-wrap">{{ localize('global.reason') }}</th>
-                                                <th>{{ localize('global.remarks') }}</th>
-                                                <th>{{ localize('global.room') }}</th>
-                                                <th>{{ localize('global.bed') }}</th>
-                                                <th>{{ localize('global.status') }}</th>
-                                                <th>{{ localize('global.actions') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($icu->hospitalizations as $hospitalization)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $hospitalization->reason }}</td>
-                                                    <td>
-                                                        {{ $hospitalization->remarks }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $hospitalization->room->name }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $hospitalization->bed->number }}
-                                                    </td>
-                                                    <td>
-                                                        @if ($hospitalization->is_discharged == 0)
-                                                            <span class="badge bg-danger">{{ localize('global.in_bed') }}</span>
-                                                        @else
-                                                            <span class="badge bg-success">{{ localize('global.discharged') }}</span>
-                                                        @endif
-
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ route('hospitalizations.edit', $hospitalization->id) }}"
-                                                            class="btn btn-outline-primary btn-sm" title="Edit">
-                                                            <i class="bx bx-edit"></i>
-                                                        </a>
-                                                        <a href="{{ route('hospitalizations.destroy', $hospitalization->id) }}"
-                                                            onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$hospitalization->id}}').submit(); }"
-                                                            class="btn btn-outline-danger btn-sm" title="Delete">
-                                                            <i class="bx bx-trash"></i>
-                                                        </a>
-                                                        <form id="delete-form-{{$hospitalization->id}}"
-                                                            action="{{ route('hospitalizations.destroy', $hospitalization->id) }}"
-                                                            method="POST" style="display: none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
-
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7" class="text-center">
-                                                        <div class="badge bg-label-danger mt-4">
-                                                            {{ localize('global.no_previous_hospitalizations') }}
+                                <!-- Discharge Accordion -->
+                                <div class="accordion mt-4" id="dischargeAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="dischargeHeader">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                    data-bs-target="#dischargeCollapse" aria-expanded="false" 
+                                                    aria-controls="dischargeCollapse">
+                                                <i class="bx bx-walk me-2"></i>
+                                                {{ localize('global.discharge_move_patient') }}
+                                                @if ($icu->is_discharged == '1')
+                                                    <span class="badge bg-success ms-2">{{ localize('global.discharged') }}</span>
+                                                @else
+                                                    <span class="badge bg-warning ms-2">{{ localize('global.active') }}</span>
+                                                @endif
+                                            </button>
+                                        </h2>
+                                        <div id="dischargeCollapse" class="accordion-collapse collapse" 
+                                             aria-labelledby="dischargeHeader" data-bs-parent="#dischargeAccordion">
+                                            <div class="accordion-body p-0">
+                                                <!-- Add Discharge Button -->
+                                                @if ($icu->is_discharged == '0')
+                                                    <div class="p-3 border-bottom">
+                                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#createDischargeModal{{ $icu->id }}">
+                                                            <i class="bx bx-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                                
+                                                <!-- Discharge Status Display -->
+                                                <div class="p-3">
+                                                    @if ($icu->discharge_status == 'recovered')
+                                                        <div class="row text-center">
+                                                            <div class="col-md-6">
+                                                                {{ localize('global.the_patient_has_been_recovered') }}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {{ $icu->discharge_remark }}
+                                                            </div>
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                                    @elseif($icu->discharge_status == 'died')
+                                                        <div class="row text-center">
+                                                            <div class="row mb-4">
+                                                                <div class="col-md-12">
+                                                                    {{ localize('global.the_patient_has_been_died') }}
+                                                                </div>
+                                                            </div>
 
+                                                            <div class="col-md-6">
+                                                                <h5 class="mb-2">{{ localize('global.cause_of_death') }}</h5>
+                                                                <div>
+                                                                    {{ $icu->cause_of_death }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <h5 class="mb-2">{{ localize('global.death_date') }}</h5>
+                                                                <div>
+                                                                    {{ $icu->death_date }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <h5 class="mb-2">{{ localize('global.death_time') }}</h5>
+                                                                <div>
+                                                                    {{ $icu->death_time }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-2 text-center">
+                                                                    <a href="{{ route('icus.print-death-card', $icu) }}" target="_blank"
+                                                                        class="btn btn-primary">{{ localize('global.death_summary') }}</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @elseif ($icu->discharge_status == 'moved')
+                                                        <div class="row text-center">
+                                                            <div class="row mb-4">
+                                                                <div class="col-md-12">
+                                                                    {{ localize('global.the_patient_has_been_moved') }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                {{ $icu->discharge_remark }}
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-2 text-center">
+                                                                    <a href="{{ route('icus.print-move-card', $icu) }}" target="_blank"
+                                                                        class="btn btn-primary">{{ localize('global.transfer_sheet') }}</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h5 class="mb-4 p-3 bg-label-primary mt-4"><i
-                                        class="bx bx-walk p-1"></i>{{ localize('global.discharge_move_patient') }}</h5>
-                                @if ($icu->is_discharged == '0')
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#createDischargeModal{{ $icu->id }}"><span><i
-                                                class="bx bx-plus"></i></span></button>
-                                @endif
                                 <!-- Create Discharge Modal -->
                                 <div class="modal fade" id="createDischargeModal{{ $icu->id }}" tabindex="-1"
                                     aria-labelledby="createDischargeModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -2012,69 +2118,6 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12 mt-2">
-                                    @if ($icu->discharge_status == 'recovered')
-                                        <div class="row text-center">
-                                            <div class="col-md-6">
-                                                {{ localize('global.the_patient_has_been_recovered') }}
-                                            </div>
-                                            <div class="col-md-6">
-                                                {{ $icu->discharge_remark }}
-                                            </div>
-                                        </div>
-                                    @elseif($icu->discharge_status == 'died')
-                                        <div class="row text-center">
-                                            <div class="row mb-4">
-                                                <div class="col-md-12">
-                                                    {{ localize('global.the_patient_has_been_died') }}
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <h5 class="mb-2">{{ localize('global.cause_of_death') }}</h5>
-                                                <div>
-                                                    {{ $icu->cause_of_death }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <h5 class="mb-2">{{ localize('global.death_date') }}</h5>
-                                                <div>
-                                                    {{ $icu->death_date }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <h5 class="mb-2">{{ localize('global.death_time') }}</h5>
-                                                <div>
-                                                    {{ $icu->death_time }}
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2 text-center">
-                                                    <a href="{{ route('icus.print-death-card', $icu) }}" target="_blank"
-                                                        class="btn btn-primary">{{ localize('global.death_summary') }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @elseif ($icu->discharge_status == 'moved')
-                                        <div class="row text-center">
-                                            <div class="row mb-4">
-                                                <div class="col-md-12">
-                                                    {{ localize('global.the_patient_has_been_moved') }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                {{ $icu->discharge_remark }}
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-2 text-center">
-                                                    <a href="{{ route('icus.print-move-card', $icu) }}" target="_blank"
-                                                        class="btn btn-primary">{{ localize('global.transfer_sheet') }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
 
                     </div>
 

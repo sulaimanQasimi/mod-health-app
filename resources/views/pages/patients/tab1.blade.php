@@ -7,6 +7,13 @@
     <div class="row">
         <div class="col-md-3">
             <div class="mb-3">
+                <label for="id_card">{{ localize('global.id_card') }}</label>
+                <input type="text" name="id_card" id="id_card"
+                    value="{{ old('id_card', isset($patient) ? $patient->id_card : '') }}" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
                 <label for="name">{{ localize('global.name') }}</label>
                 <input type="text" name="name" id="name" required value="{{ old('name', isset($patient) ? $patient->name : '') }}" class="form-control">
             </div>
@@ -30,13 +37,6 @@
                 <label for="nid">{{ localize('global.nid') }}</label>
                 <input type="text" name="nid" required id="nid" value="{{ old('nid', isset($patient) ? $patient->nid : '') }}"
                     class="form-control">
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="mb-3">
-                <label for="id_card">{{ localize('global.id_card') }}</label>
-                <input type="text" name="id_card" id="id_card"
-                    value="{{ old('id_card', isset($patient) ? $patient->id_card : '') }}" class="form-control">
             </div>
         </div>
 

@@ -18,7 +18,9 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
+                                    <th>{{ localize('global.card_number') }}</th>
                                     <th>{{ localize('global.patient_name') }}</th>
+                                    <th>{{ localize('global.father_name') }}</th>
                                     <th>{{ localize('global.description') }}</th>
                                     <th>{{ localize('global.status') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
@@ -28,7 +30,13 @@
                                 @foreach ($pacus as $pacu)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ $pacu->patient->id_card ?? '-' }}</span>
+                                        </td>
                                         <td>{{ $pacu->patient->name }}</td>
+                                        <td>
+                                            <span class="text-muted">{{ $pacu->patient->father_name ?? '-' }}</span>
+                                        </td>
                                         <td>{{ $pacu->description}}</td>
                                         <td>
                                             @if ($pacu->status == 'new')

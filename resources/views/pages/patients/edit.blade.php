@@ -171,6 +171,30 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Initialize Select2 with auto-focus for all dropdowns
+            $('.select2').select2({
+                placeholder: 'Select an option',
+                allowClear: true,
+                width: '100%',
+                minimumInputLength: 0,
+                language: {
+                    noResults: function() {
+                        return "No results found";
+                    },
+                    searching: function() {
+                        return "Searching...";
+                    },
+                    inputTooShort: function() {
+                        return "Type to search";
+                    }
+                }
+            }).on('select2:open', function() {
+                // Auto focus on search input when dropdown opens
+                setTimeout(function() {
+                    $('.select2-search__field').focus();
+                }, 100);
+            });
+
             $('#province_id').on('change', function() {
                 var provinceID = $(this).val();
                 if (provinceID !== '') {
@@ -178,10 +202,40 @@
                         url: '/get_districts/' + provinceID,
                         type: 'GET',
                         success: function(response) {
-
                             $('#district_id').html(response);
+                            
+                            // Reinitialize Select2 with auto-focus for district dropdown
+                            $('#district_id').select2({
+                                placeholder: 'Select a district',
+                                allowClear: true,
+                                width: '100%',
+                                minimumInputLength: 0,
+                                language: {
+                                    noResults: function() {
+                                        return "No districts found";
+                                    },
+                                    searching: function() {
+                                        return "Searching districts...";
+                                    },
+                                    inputTooShort: function() {
+                                        return "Type to search";
+                                    }
+                                }
+                            }).on('select2:open', function() {
+                                // Auto focus on search input when dropdown opens
+                                setTimeout(function() {
+                                    $('.select2-search__field').focus();
+                                }, 100);
+                            });
+                            
+                            // Auto-focus on the district dropdown after it's loaded
+                            setTimeout(function() {
+                                $('#district_id').select2('open');
+                            }, 200);
                         }
                     })
+                } else {
+                    $('#district_id').html('<option value="">{{ localize("global.select") }}</option>');
                 }
             })
         })

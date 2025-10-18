@@ -195,6 +195,7 @@
                                 <thead class="table-bg-none">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.card_number') }}</th>
                                         <th>{{ localize('global.patient_name') }}</th>
                                         <th>{{ localize('global.physiotherapy_type') }}</th>
                                         <th>{{ localize('global.physiotherapist') }}</th>
@@ -214,6 +215,9 @@
                                                 <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
                                             </td>
                                             <td>
+                                                <strong>{{ $procedure->appointment->patient->id_card ?? 'N/A' }}</strong>
+                                            </td>
+                                            <td></td>
                                                 <strong>{{ $procedure->appointment->patient->name ?? 'N/A' }}</strong>
                                                 <br>
                                                 <small

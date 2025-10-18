@@ -3045,4 +3045,5 @@ return [
     "introduced_by"=>"معرف شده توسط دکتر",
     "refer_to_another_department"=>"معرفی به بخش دیگر",
     "search_by_patient_name"=>"جستجو بر اساس نام مریض",
+    "alternatives_for"=>"جاگزینی برای",
 ];

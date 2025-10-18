@@ -75,16 +75,14 @@ class AppointmentController extends Controller
             'branch_id' => 'required',
             'department_id' => 'required',
             'is_completed' => 'nullable',
-            'date' => 'nullable',
-            'time' => 'nullable',
             'status_remark' => 'nullable',
             'refferal_remarks' => 'nullable',
         ]);
 
-        // Convert date if it's provided and not already in Gregorian format
-        if (!empty($validatedData['date'])) {
-            $validatedData['date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['date']));
-        }
+        // Set current date and time for the appointment
+        $now = now();
+        $validatedData['date'] = $now->format('Y-m-d');
+        $validatedData['time'] = $now->format('H:i:s');
 
         if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');
@@ -107,6 +105,31 @@ class AppointmentController extends Controller
             $appointment = Appointment::create($validatedData);
 
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
+        }
+
+        // Handle AJAX requests
+        if ($request->ajax() || $request->expectsJson()) {
+            $patient = Patient::find($appointment->patient_id);
+            $now = now();
+            
+            $response = [
+                'success' => true,
+                'message' => localize('global.appointment_created_successfully'),
+                'patient' => [
+                    'id' => $patient->id,
+                    'name' => $patient->name,
+                    'last_name' => $patient->last_name,
+                ],
+                'appointment' => [
+                    'id' => $appointment->id,
+                    'department' => $appointment->department->name ?? '',
+                    'doctor' => $appointment->doctor->name ?? '',
+                    'date' => $now->format('Y-m-d'),
+                    'time' => $now->format('H:i:s'),
+                    'token_url' => route('appointments.printToken', $appointment->id)
+                ]
+            ];
+            return response()->json($response);
         }
 
         // Redirect to the appointments index page with a success message

@@ -229,42 +229,28 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="createAppointmentForm" action="{{ route('appointments.store') }}" method="POST">
+                        <form id="createAppointmentForm">
                             @csrf
                             <div class="mb-3">
-                                <label for="department">{{localize('global.department')}}</label>
-                                <select class="form-control select2" name="department_id" id="department_id">
-                                    <option value="">{{ localize('global.select') }}</option>
-                                    @foreach($departments as $value)
-                                        <option value="{{ $value->id }}"
-                                            {{ old('name') == $value->id ? 'selected' : '' }}>
-                                        {{ $value->name }}</option>
+                                <label for="department_id">{{localize('global.department')}} <span class="text-danger">*</span></label>
+                                <select class="form-control select2" name="department_id" id="department_id" required onchange="loadDoctorsByDepartment(this.value)">
+                                    <option value="">{{ localize('global.select_department') }}</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{ $department->id }}">
+                                            {{ $department->name }}
+                                        </option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="doctor_id">{{localize('global.doctor')}} <small class="text-muted">({{ localize('global.optional') }})</small></label>
+                                <select class="form-control select2" name="doctor_id" id="doctor_id" disabled>
+                                    <option value="">{{ localize('global.select_doctor_first') }}</option>
+                                </select>
+                            </div>
                             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                             <input type="hidden" name="is_completed" value="0">
                             <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
-                            <!-- Add other appointment form fields as needed -->
-                            <label for="doctor_name">{{localize('global.doctor_name')}}</label>
-                            <select class="form-control select2" name="doctor_id" id="doctor_id">
-                                <option value="">{{ localize('global.select') }}</option>
-                                @foreach($doctors as $value)
-                                    <option value="{{ $value->id }}"
-                                        {{ old('name') == $value->id ? 'selected' : '' }}>
-                                    {{ $value->name }}</option>
-                                @endforeach
-                            </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="date">{{localize('global.date')}}</label>
-                                <x-tools.dariDatePicker name="date" dir="ltr"
-                                withID="date" withPlaceHolder="{{ localize('global.date') }}"
-                                withSize="3" extraClasses="" />
-                            </div>
-                            <div class="mb-3">
-                                <label for="time">{{localize('global.time')}}</label>
-                                <input type="time" class="form-control" name="time"/>
-                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -277,88 +263,285 @@
     </div>
 </div>
 
+<!-- Token Modal -->
+<div class="modal fade" id="tokenModal" tabindex="-1" aria-labelledby="tokenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tokenModalLabel">
+                    <i class="bx bx-printer me-2 text-success"></i>
+                    {{ localize('global.token_ready') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">{{ localize('global.patient_information') }}</h6>
+                        <p><strong>{{ localize('global.name') }}:</strong> <span id="modal-patient-name"></span></p>
+                        <p><strong>{{ localize('global.last_name') }}:</strong> <span id="modal-patient-lastname"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">{{ localize('global.appointment_information') }}</h6>
+                        <p><strong>{{ localize('global.department') }}:</strong> <span id="modal-appointment-department"></span></p>
+                        <p><strong>{{ localize('global.doctor') }}:</strong> <span id="modal-appointment-doctor"></span></p>
+                        <p><strong>{{ localize('global.date') }}:</strong> <span id="modal-appointment-date"></span></p>
+                        <p><strong>{{ localize('global.time') }}:</strong> <span id="modal-appointment-time"></span></p>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="bx bx-info-circle me-2"></i>
+                    {{ localize('global.token_ready_message') }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bx bx-x me-1"></i>
+                    {{ localize('global.close') }}
+                </button>
+                <button type="button" class="btn btn-success" id="printTokenBtn">
+                    <i class="bx bx-printer me-1"></i>
+                    {{ localize('global.print_token') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('styles')
+<style>
+    /* Ensure Select2 dropdown appears above modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 9999 !important;
+    }
+    
+    .select2-container {
+        z-index: 9999 !important;
+    }
+    
+    /* Ensure modal backdrop doesn't interfere */
+    .modal-backdrop {
+        z-index: 1040;
+    }
+    
+    .modal {
+        z-index: 1050;
+    }
+</style>
 @endsection
 
 @section('scripts')
 
 <script>
-    $(document).ready(function()
-{
-    // Initialize Select2 when modal is shown
-    $('#createAppointmentModal').on('shown.bs.modal', function () {
-        // Destroy existing Select2 instances if they exist
-        if ($('#department_id').hasClass('select2-hidden-accessible')) {
-            $('#department_id').select2('destroy');
-        }
-        if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
-            $('#doctor_id').select2('destroy');
-        }
-        
-        // Initialize Select2 for department dropdown
-        $('#department_id').select2({
-            placeholder: "{{ localize('global.select') }}",
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#createAppointmentModal')
+    $(document).ready(function() {
+        // Initialize Select2 when modal is shown
+        $('#createAppointmentModal').on('shown.bs.modal', function () {
+            initializeSelect2WithAutoFocus();
         });
 
-        // Initialize Select2 for doctor dropdown
-        $('#doctor_id').select2({
-            placeholder: "{{ localize('global.select') }}",
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#createAppointmentModal')
-        });
+        // Initialize appointment form functionality
+        initializeAppointmentForm();
     });
 
-    // Handle department change to load doctors
-    $(document).on('change', '#department_id', function()
-    {
-        var departmentID = $(this).val();
-        if(departmentID !== '')
-        {
-            $.ajax({
-                url: '/get_doctors/' + departmentID,
-                type: 'GET',
-                success: function(response)
-                {
-                    // Destroy existing Select2 instance
-                    if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
-                        $('#doctor_id').select2('destroy');
-                    }
-                    
-                    // Clear existing options and add new ones
-                    $('#doctor_id').empty();
-                    $('#doctor_id').append('<option value="">{{ localize("global.select") }}</option>');
-                    $('#doctor_id').append(response);
-                    
-                    // Reinitialize Select2 for doctor dropdown
-                    $('#doctor_id').select2({
-                        placeholder: "{{ localize('global.select') }}",
-                        allowClear: true,
-                        width: '100%',
-                        dropdownParent: $('#createAppointmentModal')
-                    });
+    // Initialize select2 with search functionality and auto focus
+    function initializeSelect2WithAutoFocus() {
+        $('.select2').select2({
+            placeholder: 'Select an option',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 0,
+            dropdownParent: $('#createAppointmentModal'),
+            language: {
+                noResults: function() {
+                    return "No results found";
+                },
+                searching: function() {
+                    return "Searching...";
+                },
+                inputTooShort: function() {
+                    return "Type to search";
                 }
-            })
-        } else {
-            // Destroy existing Select2 instance
-            if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
-                $('#doctor_id').select2('destroy');
             }
-            
-            // Clear doctor dropdown if no department selected
-            $('#doctor_id').empty();
-            $('#doctor_id').append('<option value="">{{ localize("global.select") }}</option>');
-            $('#doctor_id').select2({
-                placeholder: "{{ localize('global.select') }}",
-                allowClear: true,
-                width: '100%',
-                dropdownParent: $('#createAppointmentModal')
-            });
+        }).on('select2:open', function() {
+            // Auto focus on search input when dropdown opens
+            setTimeout(function() {
+                $('.select2-search__field').focus();
+            }, 100);
+        });
+    }
+
+    function initializeAppointmentForm() {
+        // Initialize select2 with search functionality and auto focus
+        initializeSelect2WithAutoFocus();
+    }
+
+    function loadDoctorsByDepartment(departmentId) {
+        const doctorSelect = document.getElementById('doctor_id');
+        
+        if (departmentId === '') {
+            doctorSelect.innerHTML = '<option value="">{{ localize("global.select_doctor_first") }}</option>';
+            doctorSelect.disabled = true;
+            return;
         }
+
+        // Show loading state
+        doctorSelect.innerHTML = '<option value="">{{ localize("global.loading") }}...</option>';
+        doctorSelect.disabled = true;
+
+        $.ajax({
+            url: '/patients/get-doctors-by-department/' + departmentId,
+            type: 'GET',
+            success: function (response) {
+                doctorSelect.innerHTML = '<option value="">{{ localize("global.select_doctor") }}</option>';
+                
+                if (response.success && response.doctors && response.doctors.length > 0) {
+                    response.doctors.forEach(function(doctor) {
+                        const option = document.createElement('option');
+                        option.value = doctor.id;
+                        option.textContent = doctor.name;
+                        doctorSelect.appendChild(option);
+                    });
+                    doctorSelect.disabled = false;
+                } else {
+                    doctorSelect.innerHTML = '<option value="">{{ localize("global.no_doctors_available") }}</option>';
+                }
+                
+                // Reinitialize select2 with search functionality and auto focus
+                $(doctorSelect).select2({
+                    placeholder: 'Select a doctor',
+                    allowClear: true,
+                    width: '100%',
+                    minimumInputLength: 0,
+                    dropdownParent: $('#createAppointmentModal'),
+                    language: {
+                        noResults: function() {
+                            return "No doctors found";
+                        },
+                        searching: function() {
+                            return "Searching doctors...";
+                        },
+                        inputTooShort: function() {
+                            return "Type to search";
+                        }
+                    }
+                }).on('select2:open', function() {
+                    // Auto focus on search input when dropdown opens
+                    setTimeout(function() {
+                        $('.select2-search__field').focus();
+                    }, 100);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading doctors:', error);
+                doctorSelect.innerHTML = '<option value="">{{ localize("global.error_loading_doctors") }}</option>';
+            }
+        });
+    }
+
+    // Global event listener for any select2 dropdowns that might be added dynamically
+    $(document).on('select2:open', '.select2', function() {
+        // Auto focus on search input when any select2 dropdown opens
+        setTimeout(function() {
+            $('.select2-search__field').focus();
+        }, 100);
     });
-})
+
+    // AJAX Appointment Form Submission
+    function submitAppointmentForm() {
+        const form = $('#createAppointmentForm');
+        const submitBtn = form.find('button[type="submit"]');
+        const originalBtnText = submitBtn.html();
+        
+        // Disable submit button and show loading
+        submitBtn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin me-1"></i>{{ localize("global.creating") }}...');
+        
+        // Clear previous error messages
+        $('.error-message').remove();
+        $('.is-invalid').removeClass('is-invalid');
+        
+        $.ajax({
+            url: '{{ route("appointments.store") }}',
+            type: 'POST',
+            data: form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Close the appointment modal
+                    $('#createAppointmentModal').modal('hide');
+                    
+                    // Show token modal with appointment data
+                    showTokenModal(response.patient, response.appointment);
+                } else {
+                    // Show validation errors
+                    if (response.errors) {
+                        displayValidationErrors(response.errors);
+                    } else {
+                        alert(response.message || 'Error creating appointment');
+                    }
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                if (xhr.status === 422) {
+                    // Validation errors
+                    const errors = xhr.responseJSON.errors;
+                    displayValidationErrors(errors);
+                } else {
+                    alert('Error creating appointment. Please try again.');
+                }
+            },
+            complete: function() {
+                // Re-enable submit button
+                submitBtn.prop('disabled', false).html(originalBtnText);
+            }
+        });
+    }
+
+    // Show token modal with appointment data
+    function showTokenModal(patient, appointment) {
+        // Populate modal with data
+        $('#modal-patient-name').text(patient.name);
+        $('#modal-patient-lastname').text(patient.last_name || '');
+        $('#modal-appointment-department').text(appointment.department);
+        $('#modal-appointment-doctor').text(appointment.doctor);
+        $('#modal-appointment-date').text(appointment.date);
+        $('#modal-appointment-time').text(appointment.time);
+        
+        // Set up print token button
+        $('#printTokenBtn').off('click').on('click', function() {
+            window.open(appointment.token_url, '_blank');
+        });
+        
+        // Show modal
+        $('#tokenModal').modal('show');
+    }
+
+    // Display validation errors
+    function displayValidationErrors(errors) {
+        // Clear previous error messages
+        $('.error-message').remove();
+        $('.is-invalid').removeClass('is-invalid');
+        
+        // Display new errors
+        $.each(errors, function(field, messages) {
+            const input = $('[name="' + field + '"]');
+            input.addClass('is-invalid');
+            
+            // Add error message below the field
+            const errorHtml = '<div class="error-message text-danger small mt-1">' + messages[0] + '</div>';
+            input.closest('.mb-3').append(errorHtml);
+        });
+    }
+
+    // Bind AJAX form submission to appointment form
+    $(document).on('submit', '#createAppointmentForm', function(e) {
+        e.preventDefault();
+        submitAppointmentForm();
+    });
 </script>
 
 @endsection

@@ -179,7 +179,9 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $departments = Department::where('category_id', auth()->user()->category_id)->get();
+        $departments = auth()->user()->category_id 
+            ? Department::where('category_id', auth()->user()->category_id)->get()
+            : Department::all();
         $doctors = Doctor::all();
         $previousDiagnoses = $patient->diagnoses;
         return view('pages.patients.show', compact('patient', 'departments', 'doctors', 'previousDiagnoses'));

@@ -59,13 +59,6 @@
                                         <td>{{ $category->name }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                @can('view-categories')
-                                                <button class="btn btn-sm btn-outline-info" 
-                                                        onclick="viewCategory({{ $category->id }})"
-                                                        title="{{ localize('global.view') }}">
-                                                    <i class="bx bx-show-alt"></i>
-                                                </button>
-                                                @endcan
                                                 @can('edit-categories')
                                                 <button class="btn btn-sm btn-outline-primary"
                                                         onclick="editCategory({{ $category->id }}, '{{ $category->name }}')"
@@ -122,7 +115,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('categoryModal').style.display='none'; document.querySelector('.modal-backdrop')?.remove();">{{ localize('global.cancel') }}</button>
                 <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveCategory()">
                     <span id="saveSpinner" class="spinner-border spinner-border-sm me-1 d-none"></span>
                     <span id="saveText">{{ localize('global.create') }}</span>
@@ -132,33 +125,6 @@
     </div>
 </div>
 
-<!-- View Modal -->
-<div class="modal fade" id="viewModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ localize('global.category_details') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">{{ localize('global.name') }}</label>
-                            <p class="form-control-plaintext" id="viewName"></p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">{{ localize('global.created_at') }}</label>
-                            <p class="form-control-plaintext" id="viewCreatedAt"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('scripts')
@@ -181,28 +147,6 @@ function editCategory(id, name) {
     document.getElementById('categoryName').value = name;
     document.getElementById('nameError').textContent = '';
     new bootstrap.Modal(document.getElementById('categoryModal')).show();
-}
-
-async function viewCategory(id) {
-    try {
-        const response = await fetch(`/api/categories/${id}`, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            },
-            credentials: 'same-origin'
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            document.getElementById('viewName').textContent = data.data.name;
-            document.getElementById('viewCreatedAt').textContent = new Date(data.data.created_at).toLocaleString();
-            new bootstrap.Modal(document.getElementById('viewModal')).show();
-        }
-    } catch (error) {
-        console.error('Error loading category:', error);
-    }
 }
 
 async function deleteCategory(id) {

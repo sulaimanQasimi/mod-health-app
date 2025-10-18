@@ -76,7 +76,7 @@ class PrescriptionAjaxController extends Controller
                 'prescription_items.*.amount' => 'required|string',
                 'hospitalization_id' => 'nullable|exists:hospitalizations,id',
                 'under_review_id' => 'nullable|exists:under_reviews,id',
-                'i_c_u_id' => 'nullable|exists:i_c_us,id',
+                'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
             ]);
 
             if ($validator->fails()) {
@@ -154,13 +154,20 @@ class PrescriptionAjaxController extends Controller
     }
 
     /**
-     * Get prescriptions for a specific appointment
+     * Get prescriptions for a specific appointment or ICU
      */
-    public function getAppointmentPrescriptions($appointmentId)
+    public function getAppointmentPrescriptions($id, $type = 'appointment')
     {
         try {
-            $prescriptions = Prescription::where('appointment_id', $appointmentId)
-                ->with(['patient', 'doctor', 'prescriptionItems.medicine', 'prescriptionItems.medicineType', 'prescriptionItems.usageType'])
+            $query = Prescription::query();
+            
+            if ($type === 'icu') {
+                $query->where('i_c_u_id', $id);
+            } else {
+                $query->where('appointment_id', $id);
+            }
+            
+            $prescriptions = $query->with(['patient', 'doctor', 'prescriptionItems.medicine', 'prescriptionItems.medicineType', 'prescriptionItems.usageType'])
                 ->latest()
                 ->get();
 
@@ -171,7 +178,7 @@ class PrescriptionAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch appointment prescriptions',
+                'message' => 'Failed to fetch prescriptions',
                 'error' => $e->getMessage()
             ], 500);
         }

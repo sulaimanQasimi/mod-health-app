@@ -667,17 +667,23 @@
                                             </h2>
                                             <div id="prescriptionCollapse" class="accordion-collapse collapse" 
                                                  aria-labelledby="prescriptionHeader" data-bs-parent="#prescriptionAccordion">
-                                                <div class="accordion-body p-0">
-                                                    <!-- Add Prescription Button -->
-                                                    @if ($icu->is_discharged == '0')
-                                                        <div class="p-3 border-bottom">
-                                                            <button type="button" class="btn btn-success btn-sm" 
-                                                                    data-bs-toggle="modal" data-bs-target="#createPrescriptionModal{{ $icu->id }}"
-                                                                    title="{{ localize('global.add_prescription') }}">
-                                                                <i class="bx bx-plus"></i>
-                                                            </button>
+                                                <div class="accordion-body">
+                                                    <!-- ICU Prescription Section Vue Component -->
+                                                    <div id="icu-prescription-section-container" 
+                                                         data-icu='@json($icu)'
+                                                         data-permissions='@json([
+                                                             "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                                             "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                                             "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                                         ])'>
+                                                        <!-- Fallback content while Vue loads -->
+                                                        <div class="text-center py-4">
+                                                            <div class="spinner-border text-primary" role="status">
+                                                                <span class="visually-hidden">Loading...</span>
+                                                            </div>
+                                                            <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
                                                         </div>
-                                                    @endif
+                                                    </div>
                                     <!-- Create Diagnose Modal -->
                                     <div class="modal fade modal-xl" id="createPrescriptionModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createPrescriptionModalLabel{{ $icu->id }}" aria-hidden="true">
@@ -2133,6 +2139,9 @@
 @section('scripts')
 
 @vite(['public/assets/js/vue/icu-consultation-app.js'])
+
+<!-- Vue.js Prescription Section -->
+@vite(['public/assets/js/vue/appointment-prescription-app.js'])
     <script>
         function loadLabTypeTests() {
             var labTypeId = document.getElementById('lab_type_id').value;

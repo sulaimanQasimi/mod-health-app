@@ -316,7 +316,11 @@ export default {
     props: {
         appointment: {
             type: Object,
-            required: true
+            required: false
+        },
+        icu: {
+            type: Object,
+            required: false
         },
         canAddPrescription: {
             type: Boolean,
@@ -354,6 +358,17 @@ export default {
                      amount: ''
                  }]
              }
+        }
+    },
+    computed: {
+        contextData() {
+            return this.icu || this.appointment;
+        },
+        contextType() {
+            return this.icu ? 'icu' : 'appointment';
+        },
+        contextId() {
+            return this.icu ? this.icu.id : this.appointment.id;
         }
     },
     mounted() {
@@ -397,7 +412,7 @@ export default {
 
         async loadAppointmentPrescriptions() {
             try {
-                const response = await fetch(`/prescription-ajax/appointment-prescriptions/${this.appointment.id}`);
+                const response = await fetch(`/prescription-ajax/appointment-prescriptions/${this.contextId}/${this.contextType}`);
                 const data = await response.json();
                 if (data.success) {
                     this.prescriptions = data.data;
@@ -446,10 +461,11 @@ export default {
                  }));
 
                  const formData = {
-                     appointment_id: this.appointment.id,
-                     patient_id: this.appointment.patient_id,
-                     doctor_id: this.appointment.doctor_id,
-                     branch_id: this.appointment.branch_id,
+                     appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id,
+                     patient_id: this.contextData.patient_id,
+                     doctor_id: this.contextData.doctor_id,
+                     branch_id: this.contextData.branch_id,
+                     i_c_u_id: this.icu ? this.icu.id : null,
                      prescription_items: transformedItems
                  };
 

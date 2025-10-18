@@ -798,7 +798,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('all-medicines', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getAllMedicines']);
         Route::get('medicine-usage-types', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getMedicineUsageTypes']);
         Route::post('store', [\App\Http\Controllers\PrescriptionAjaxController::class, 'storePrescription']);
-        Route::get('appointment-prescriptions/{appointmentId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getAppointmentPrescriptions']);
+        Route::get('appointment-prescriptions/{id}/{type?}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getAppointmentPrescriptions']);
         Route::get('prescription-items/{prescriptionId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getPrescriptionItems']);
         Route::put('update-status/{prescriptionId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'updatePrescriptionStatus']);
         Route::post('update-item-status/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'updatePrescriptionItemStatus']);

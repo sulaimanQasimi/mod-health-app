@@ -113,7 +113,9 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
+                                        <th>{{ localize('global.card_number') }}</th>
                                         <th>{{ localize('global.patient_name') }}</th>
+                                        <th>{{ localize('global.father_name') }}</th>
                                         <th>{{ localize('global.physiotherapy_type') }}</th>
                                         <th>{{ localize('global.type') }}</th>
                                         <th>{{ localize('global.duration') }}</th>
@@ -131,7 +133,13 @@
                                                 <span class="badge bg-info rounded-pill">{{ $loop->iteration }}</span>
                                             </td>
                                             <td>
+                                                <span class="badge bg-secondary">{{ $procedure->appointment->patient->id_card ?? 'N/A' }}</span>
+                                            </td>
+                                            <td>
                                                 <strong>{{ $procedure->appointment->patient->name ?? 'N/A' }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted">{{ $procedure->appointment->patient->father_name ?? 'N/A' }}</span>
                                             </td>
                                             <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
                                             <td>{{ $procedure->type }}</td>
@@ -197,7 +205,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="10" class="text-center text-muted py-4">
+                                            <td colspan="12" class="text-center text-muted py-4">
                                                 <i class="bx bx-inbox bx-lg mb-3"></i>
                                                 <p class="mb-0">{{ localize('global.no_procedures_found') }}</p>
                                             </td>

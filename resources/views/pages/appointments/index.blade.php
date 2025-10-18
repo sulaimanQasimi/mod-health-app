@@ -19,7 +19,9 @@
                             <tr>
                                 <th></th>
                                 <th>{{localize('global.id')}}</th>
+                                <th>{{localize('global.card_number')}}</th>
                                 <th>{{localize('global.patient_name')}}</th>
+                                <th>{{localize('global.father_name')}}</th>
                                 <th>{{localize('global.referred_to')}}</th>
                                 <th>{{localize('global.date')}}</th>
                                 <th>{{localize('global.time')}}</th>
@@ -77,9 +79,20 @@
                         {
                             data: 'patient',
                             render: function(data) {
+                                return data ? data.id_card : '';
+                            }
+                        },
+                        {
+                            data: 'patient',
+                            render: function(data) {
                                 return data ? data.name : '';
                             }
-
+                        },
+                        {
+                            data: 'patient',
+                            render: function(data) {
+                                return data ? data.father_name : '';
+                            }
                         },
                         {
                             data: 'doctor',

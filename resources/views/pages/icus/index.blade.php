@@ -18,7 +18,9 @@
                             <tr>
                                 <th></th>
                                 <th>{{ localize('global.id') }}</th>
+                                <th>{{ localize('global.card_number') }}</th>
                                 <th>{{ localize('global.patient_name') }}</th>
+                                <th>{{ localize('global.father_name') }}</th>
                                 <th>{{ localize('global.description') }}</th>
                                 <th>{{ localize('global.register_date') }}</th>
                                 <th></th>
@@ -75,7 +77,19 @@
                         {
                             data: 'patient',
                             render: function(data) {
+                                return data ? data.id_card : '';
+                            }
+                        },
+                        {
+                            data: 'patient',
+                            render: function(data) {
                                 return data ? data.name : '';
+                            }
+                        },
+                        {
+                            data: 'patient',
+                            render: function(data) {
+                                return data ? data.father_name : '';
                             }
                         },
                         {

@@ -18,7 +18,9 @@
     <thead>
         <tr>
             <th>{{localize('global.number')}}</th>
-            {{-- <th>{{localize('global.patient_name')}}</th> --}}
+            <th></th>{{localize('global.card_number')}}</th>
+            <th>{{localize('global.patient_name')}}</th>
+            <th>{{localize('global.father_name')}}</th>
             <th>{{localize('global.title')}}</th>
             <th>{{localize('global.date')}}</th>
             <th>{{localize('global.time')}}</th>

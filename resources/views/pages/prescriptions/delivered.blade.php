@@ -18,7 +18,9 @@
     <thead>
         <tr>
             <th>{{localize('global.number')}}</th>
+            <th>{{localize('global.card_number')}}</th>
             <th>{{localize('global.patient_name')}}</th>
+            <th>{{localize('global.father_name')}}</th>
             <th>{{localize('global.referred_to')}}</th>
             <th>{{localize('global.created_at')}}</th>
             <th>{{localize('global.status')}}</th>
@@ -29,7 +31,9 @@
         @foreach ($prescriptions as $prescription)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $prescription->patient->id_card }}</td>  
                 <td>{{ $prescription->patient->name }}</td>
+                <td>{{ $prescription->patient->father_name }}</td>
                 <td>{{ $prescription->doctor->name }}</td>
                 <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($prescription->created_at) }}</td>
                 <td>{{ $prescription->is_completed == 0 ? localize('global.not_delivered') : localize('global.delivered') }}</td>

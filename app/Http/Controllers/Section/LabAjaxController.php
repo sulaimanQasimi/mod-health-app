@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Section;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendNewLabNotification;
 use App\Models\Appointment;
+use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\Lab;
 use App\Models\LabItem;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
+use App\Models\UnderReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -87,15 +89,13 @@ class LabAjaxController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'lab_type_id' => 'required|array|min:1',
-                'appointment_id' => 'nullable|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
                 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'lab_type_section_id' => 'required|exists:lab_type_sections,id',
                 'status' => 'nullable|boolean',
-                'hospitalization_id' => 'nullable|exists:hospitalizations,id',
-                'under_review_id' => 'nullable|exists:under_reviews,id',
-                'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
+                'entity_id' => 'required',
+                'entity_type' => 'required|in:appointment,icu,hospitalization,under_review',
             ]);
 
             if ($validator->fails()) {
@@ -109,7 +109,7 @@ class LabAjaxController extends Controller
             DB::beginTransaction();
 
             try {
-                // Set the appropriate ID field based on type
+                // Set the appropriate ID field based on entity type from request
                 $labData = [
                     'branch_id' => $request->branch_id,
                     'appointment_id' => null,
@@ -124,8 +124,8 @@ class LabAjaxController extends Controller
                     'created_by' => auth()->id(),
                 ];
 
-                // Set entity-specific fields
-                $this->setEntityFields($labData, $type, $id);
+                // Set entity-specific fields based on request data
+                $this->setEntityFields($labData, $request->entity_type, $request->entity_id);
 
                 $lab = Lab::create($labData);
 
@@ -144,7 +144,7 @@ class LabAjaxController extends Controller
                     ];
 
                     // Set entity-specific fields for lab items
-                    $this->setEntityFields($labItemData, $type, $id);
+                    $this->setEntityFields($labItemData, $request->entity_type, $request->entity_id);
                     LabItem::create($labItemData);
                 }
 
@@ -335,9 +335,12 @@ class LabAjaxController extends Controller
                 break;
             case 'hospitalization':
                 $data['hospitalization_id'] = $id;
+                $data['appointment_id'] = Hospitalization::find($id)->appointment_id;
                 break;
             case 'under_review':
                 $data['under_review_id'] = $id;
+                
+                $data['appointment_id'] = UnderReview::find($id)->appointment_id;
                 break;
             default:
                 $data['appointment_id'] = $id;

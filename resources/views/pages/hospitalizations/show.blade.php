@@ -318,161 +318,19 @@
                             </div>
                             <!-- End Advice Accordion -->
 
-                            {{-- lab tests from hospitalization --}}
-
-                            <!-- Lab Tests Accordion -->
-                            <div class="accordion mt-4" id="labTestsAccordion">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="labTestsHeading">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#labTestsCollapse" aria-expanded="false" aria-controls="labTestsCollapse">
-                                            <i class="bx bx-hard-hat p-1 me-2"></i>{{ localize('global.hospitalization_checkups') }}
-                                        </button>
-                                    </h2>
-                                    <div id="labTestsCollapse" class="accordion-collapse collapse" aria-labelledby="labTestsHeading"
-                                        data-bs-parent="#labTestsAccordion">
-                                        <div class="accordion-body">
-                                            @if ($hospitalization->is_discharged == 0)
-                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-                                                    data-bs-target="#createLabModal{{ $hospitalization->id }}"><span><i
-                                                            class="bx bx-plus"></i></span></button>
-                                            @endif
-                            <!-- Create  Lab Modal -->
-                            <div class="modal fade" id="createLabModal{{ $hospitalization->id }}" tabindex="-1"
-                                aria-labelledby="createLabModalLabel{{ $hospitalization->id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="createLabModalLabel{{ $hospitalization->id }}">
-                                                {{ localize('global.add_lab_test') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('lab_tests.store') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="patient_id{{ $hospitalization->patient_id }}"
-                                                    name="patient_id" value="{{ $hospitalization->patient_id }}">
-                                                <input type="hidden"
-                                                    id="appointment_id{{ $hospitalization->appointment->id }}"
-                                                    name="appointment_id" value="{{ $hospitalization->id }}">
-                                                <input type="hidden" id="doctor_id{{ $hospitalization->id }}"
-                                                    name="doctor_id" value="{{ $hospitalization->doctor->id }}">
-                                                <input type="hidden" id="branch_id{{ $hospitalization->id }}"
-                                                    name="branch_id" value="{{ auth()->user()->branch_id }}">
-                                                <input type="hidden" id="status{{ $hospitalization->id }}" name="status"
-                                                    value="0">
-                                                <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
-                                                    name="hospitalization_id" value="{{ $hospitalization->id }}">
-                                                <div class="form-group">
-
-                                                    <label
-                                                        for="lab_type_section{{ $hospitalization->id }}">{{ localize('global.lab_type_section') }}</label>
-                                                    <select class="form-control select2" name="lab_type_section"
-                                                        id="lab_type_section">
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        @foreach ($labTypeSections as $value)
-                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->section }}
-
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-
-                                                    <label
-                                                        for="lab_type_id{{ $hospitalization->id }}">{{ localize('global.lab_type') }}</label>
-                                                    <select class="form-control select2" name="lab_type_id[]"
-                                                        id="lab_type_id" onchange="loadLabTypeTests()">
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        @foreach ($labTypes as $value)
-                                                            <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                {{ $value->name }}
-
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-
-                                                    <div id="labTypeTestsContainer"></div>
-                                                </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                            <button type="submit"
-                                                class="btn btn-primary">{{ localize('global.save') }}</button>
-                                        </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Create Lab Modal -->
-                            <div class="col-md-12 mt-4">
-
-
-
-
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ localize('global.number') }}</th>
-                                            <th>{{ localize('global.test_name') }}</th>
-                                            <th>{{ localize('global.test_status') }}</th>
-                                            <th>{{ localize('global.result') }}</th>
-                                            <th>{{ localize('global.result_file') }}</th>
-                                            <th>{{ localize('global.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($hospitalization->labs as $lab)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $lab->labType->name }}</td>
-                                                <td>
-                                                    @if ($lab->status == '0')
-                                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                    @else
-                                                        <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $lab->result }}</td>
-                                                <td>
-                                                    @isset($lab->result_file)
-                                                        <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                        </a>
-                                                    @endisset
-
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('lab_tests.edit', $lab->id) }}"><span><i
-                                                                class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('lab_tests.destroy', $lab->id) }}"><span><i
-                                                                class="bx bx-trash text-danger"></i></span></a>
-
-                                                </td>
-
-                                            </tr>
-
-                                        @empty
-                                            <div class="container">
-                                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                                    <div class=" badge bg-label-danger mt-4">
-                                                        {{ localize('global.no_previous_labs') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforelse
-
-                                    </tbody>
-                                </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Lab Tests Accordion -->
-
-                            {{-- end lab tests from hospitalization --}}
+                            <!-- Lab Section Component -->
+                            <x-lab-section 
+                                :entity="$hospitalization"
+                                entity-type="hospitalization"
+                                :entity-id="$hospitalization->id"
+                                :can-add-lab="auth()->user()->can('add-patient-labs')"
+                                :can-edit-lab="auth()->user()->can('edit-lab-items')"
+                                :can-delete-lab="auth()->user()->can('delete-lab-items')"
+                                :appointment-completed="$hospitalization->is_discharged == 1"
+                                accordion-id="hospitalizationLabAccordion"
+                                collapse-id="hospitalizationLabCollapse"
+                                header-id="hospitalizationLabHeader"
+                            />
                             {{-- icu starts here --}}
                             <!-- ICU Accordion -->
                             <div class="accordion mt-4" id="icuAccordion">

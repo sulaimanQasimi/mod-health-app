@@ -34,11 +34,10 @@
                     <div class="modal-body">
                         <form @submit.prevent="createLabTest">
                             <input type="hidden" name="patient_id" :value="appointment.patient_id">
-                            <input type="hidden" name="appointment_id" :value="isICUContext ? (appointment.appointment_id || '') : appointment.id">
-                            <input type="hidden" name="i_c_u_id" :value="isICUContext ? appointment.id : ''">
                             <input type="hidden" name="doctor_id" :value="appointment.doctor_id">
                             <input type="hidden" name="branch_id" :value="appointment.branch_id">
-                            <input type="hidden" name="context_type" :value="isICUContext ? 'icu' : 'appointment'">
+                            <input type="hidden" name="entity_id" :value="entityId">
+                            <input type="hidden" name="entity_type" :value="entityType">
 
                             <div class="form-group mb-3">
                                 <label for="lab_type_section">بخش آزمایش</label>
@@ -516,19 +515,9 @@ export default {
                 const formData = new FormData();
                 formData.append('lab_type_section_id', this.form.lab_type_section_id);
                 
-                // Set entity ID based on context
-                if (this.isICUContext) {
-                    // ICU context: set i_c_u_id and ICU's appointment_id
-                    formData.append('appointment_id', this.appointment.appointment_id || '');
-                    formData.append('i_c_u_id', this.appointment.id);
-                } else {
-                    // Appointment context: set appointment_id and null i_c_u_id
-                    formData.append('appointment_id', this.appointment.id);
-                    formData.append('i_c_u_id', '');
-                }
-                
-                // Add context type for the controller
-                formData.append('context_type', this.isICUContext ? 'icu' : 'appointment');
+                // Pass entity ID and type to controller - let controller handle the logic
+                formData.append('entity_id', this.entityId);
+                formData.append('entity_type', this.entityType);
                 
                 formData.append('patient_id', this.appointment.patient_id);
                 formData.append('doctor_id', this.appointment.doctor_id);
@@ -594,19 +583,9 @@ export default {
                 const formData = new FormData();
                 formData.append('lab_type_section_id', this.form.lab_type_section_id);
                 
-                // Set entity ID based on context
-                if (this.isICUContext) {
-                    // ICU context: set i_c_u_id and ICU's appointment_id
-                    formData.append('appointment_id', this.appointment.appointment_id || '');
-                    formData.append('i_c_u_id', this.appointment.id);
-                } else {
-                    // Appointment context: set appointment_id and null i_c_u_id
-                    formData.append('appointment_id', this.appointment.id);
-                    formData.append('i_c_u_id', '');
-                }
-                
-                // Add context type for the controller
-                formData.append('context_type', this.isICUContext ? 'icu' : 'appointment');
+                // Pass entity ID and type to controller - let controller handle the logic
+                formData.append('entity_id', this.entityId);
+                formData.append('entity_type', this.entityType);
                 
                 formData.append('patient_id', this.appointment.patient_id);
                 formData.append('doctor_id', this.appointment.doctor_id);

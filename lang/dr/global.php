@@ -2070,6 +2070,7 @@ return [
     'physiotherapy_procedure_item_status_updated_successfully' => 'حالت قلم روش فیزیوتراپی با موفقیت ابدیت شد',
     'physiotherapy_procedure_deleted_successfully' => 'روش فیزیوتراپی با موفقیت حذف شد',
     'refresh' => 'به روز رسانی',
+    'thermal_print'=>"چاپ",
     'add_review' => 'اضافه نمودن بازرسی',
     'edit_review' => 'ویرایش بازرسی',
     'no_nutrition_care_found'=>'هیچ مراقبت تغذیه‌ای یافت نشد',

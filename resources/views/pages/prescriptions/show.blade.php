@@ -212,7 +212,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="medicine_id_{{ $item->id }}" class="form-label">{{ localize('global.medicine') }}</label>
-                                            <select class="form-select" name="medicine_id" id="medicine_id_{{ $item->id }}" required>
+                                            <select class="form-select select2" name="medicine_id" id="medicine_id_{{ $item->id }}" required>
                                                 <option value="">{{ localize('global.select_medicine') }}</option>
                                                 @foreach(\App\Models\Medicine::all() as $medicine)
                                                     <option value="{{ $medicine->id }}">{{ $medicine->name }}</option>
@@ -223,7 +223,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="medicine_type_id_{{ $item->id }}" class="form-label">{{ localize('global.medicine_type') }}</label>
-                                            <select class="form-select" name="medicine_type_id" id="medicine_type_id_{{ $item->id }}" required>
+                                            <select class="form-select select2" name="medicine_type_id" id="medicine_type_id_{{ $item->id }}" required>
                                                 <option value="">{{ localize('global.select_type') }}</option>
                                                 @foreach(\App\Models\MedicineType::all() as $type)
                                                     <option value="{{ $type->id }}">{{ $type->type }}</option>
@@ -234,7 +234,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="usage_type_id_{{ $item->id }}" class="form-label">{{ localize('global.usage_type') }}</label>
-                                            <select class="form-select" name="usage_type_id" id="usage_type_id_{{ $item->id }}" required>
+                                            <select class="form-select select2" name="usage_type_id" id="usage_type_id_{{ $item->id }}" required>
                                                 <option value="">{{ localize('global.select_usage_type') }}</option>
                                                 @foreach(\App\Models\MedicineUsageType::all() as $usageType)
                                                     <option value="{{ $usageType->id }}">{{ $usageType->name }}</option>
@@ -354,4 +354,43 @@
     </div>
     @endforeach
 @endsection
+
+@push('custom-js')
+<script>
+$(document).ready(function() {
+    // Initialize Select2 for all select elements with select2 class
+    $('.select2').select2({
+        placeholder: function() {
+            return $(this).find('option:first').text();
+        },
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('.modal'), // Ensure dropdown appears above modal
+        focus: true, // Auto-focus the search field
+        selectOnClose: false, // Don't select first option on close
+        minimumResultsForSearch: 0 // Always show search field
+    });
+    
+    // Re-initialize Select2 when modal is shown
+    $('.modal').on('shown.bs.modal', function() {
+        $(this).find('.select2').select2({
+            placeholder: function() {
+                return $(this).find('option:first').text();
+            },
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $(this),
+            focus: true, // Auto-focus the search field
+            selectOnClose: false, // Don't select first option on close
+            minimumResultsForSearch: 0 // Always show search field
+        });
+    });
+    
+    // Destroy Select2 when modal is hidden to prevent conflicts
+    $('.modal').on('hidden.bs.modal', function() {
+        $(this).find('.select2').select2('destroy');
+    });
+});
+</script>
+@endpush
 

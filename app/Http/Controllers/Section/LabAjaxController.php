@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Section;
 
+use App\Http\Controllers\Controller;
 use App\Jobs\SendNewLabNotification;
 use App\Models\Appointment;
+use App\Models\ICU;
 use App\Models\Lab;
 use App\Models\LabItem;
 use App\Models\LabType;
@@ -40,16 +42,21 @@ class LabAjaxController extends Controller
      */
     public function getLabTypesBySection($sectionId)
     {
-            $labTypes = LabType::where('section_id', $sectionId)
-                ->get();
-            
-            \Log::info('Found ' . $labTypes->count() . ' lab types');
+        try {
+            $labTypes = LabType::where('section_id', $sectionId)->get();
             
             return response()->json([
                 'success' => true,
                 'data' => $labTypes
             ]);
-     }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch lab types',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Get lab type tests by lab type ID
@@ -75,12 +82,12 @@ class LabAjaxController extends Controller
     /**
      * Store a new lab test via Ajax
      */
-    public function storeLabTest(Request $request)
+    public function storeLabTest(Request $request, $type = 'appointment', $id)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'lab_type_id' => 'required|array|min:1',
-                'appointment_id' => 'required|exists:appointments,id',
+                'appointment_id' => 'nullable|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
                 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
@@ -88,7 +95,7 @@ class LabAjaxController extends Controller
                 'status' => 'nullable|boolean',
                 'hospitalization_id' => 'nullable|exists:hospitalizations,id',
                 'under_review_id' => 'nullable|exists:under_reviews,id',
-                'i_c_u_id' => 'nullable|exists:i_c_us,id',
+                'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
             ]);
 
             if ($validator->fails()) {
@@ -102,13 +109,13 @@ class LabAjaxController extends Controller
             DB::beginTransaction();
 
             try {
-                // Create main lab record
+                // Set the appropriate ID field based on type
                 $labData = [
                     'branch_id' => $request->branch_id,
-                    'appointment_id' => $request->appointment_id,
-                    'hospitalization_id' => $request->hospitalization_id,
-                    'under_review_id' => $request->under_review_id,
-                    'i_c_u_id' => $request->i_c_u_id,
+                    'appointment_id' => null,
+                    'hospitalization_id' => null,
+                    'under_review_id' => null,
+                    'i_c_u_id' => null,
                     'lab_type_id' => $request->lab_type_id[0],
                     'patient_id' => $request->patient_id,
                     'doctor_id' => $request->doctor_id,
@@ -117,21 +124,28 @@ class LabAjaxController extends Controller
                     'created_by' => auth()->id(),
                 ];
 
+                // Set entity-specific fields
+                $this->setEntityFields($labData, $type, $id);
+
                 $lab = Lab::create($labData);
 
                 // Create lab items for each selected lab type
                 foreach ($request->lab_type_id as $labTypeId) {
-                    LabItem::create([
+                    $labItemData = [
                         'lab_id' => $lab->id,
                         'lab_type_id' => $labTypeId,
-                        'appointment_id' => $request->appointment_id,
+                        'appointment_id' => null,
                         'patient_id' => $request->patient_id,
                         'doctor_id' => $request->doctor_id,
                         'branch_id' => $request->branch_id,
-                        'hospitalization_id' => $request->hospitalization_id,
-                        'under_review_id' => $request->under_review_id,
-                        'i_c_u_id' => $request->i_c_u_id,
-                    ]);
+                        'hospitalization_id' => null,
+                        'under_review_id' => null,
+                        'i_c_u_id' => null,
+                    ];
+
+                    // Set entity-specific fields for lab items
+                    $this->setEntityFields($labItemData, $type, $id);
+                    LabItem::create($labItemData);
                 }
 
                 // Send notification
@@ -162,17 +176,36 @@ class LabAjaxController extends Controller
         }
     }
 
+
     /**
-     * Get lab tests for a specific appointment
+     * Get lab tests for any entity type (unified method)
      */
-    public function getAppointmentLabs($appointmentId)
+    public function loadList(int $id, string $type = "appointment")
     {
         try {
-            $labs = Lab::where('appointment_id', $appointmentId)
-                ->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection', 'labItems.labType'])
+            $labs = Lab::query();
+            
+            switch($type) {
+                case 'appointment':
+                    $labs->where('appointment_id', $id);
+                    break;
+                case 'icu':
+                    $labs->where('i_c_u_id', $id);
+                    break;
+                case 'hospitalization':
+                    $labs->where('hospitalization_id', $id);
+                    break;
+                case 'under_review':
+                    $labs->where('under_review_id', $id);
+                    break;
+                default:
+                    $labs->where('appointment_id', $id);
+            }
+            
+            $labs = $labs->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection', 'labItems.labType'])
                 ->latest()
                 ->get();
-
+                
             return response()->json([
                 'success' => true,
                 'data' => $labs
@@ -180,12 +213,12 @@ class LabAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch appointment labs',
+                'message' => 'Failed to fetch labs',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
-
+    
     /**
      * Get lab items for a specific lab
      */
@@ -284,6 +317,30 @@ class LabAjaxController extends Controller
                 'message' => 'Failed to delete lab test',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Set entity-specific fields based on type
+     */
+    private function setEntityFields(array &$data, string $type, int $id): void
+    {
+        switch($type) {
+            case 'appointment':
+                $data['appointment_id'] = $id;
+                break;
+            case 'icu':
+                $data['i_c_u_id'] = $id;
+                $data['appointment_id'] = ICU::find($id)->appointment_id;
+                break;
+            case 'hospitalization':
+                $data['hospitalization_id'] = $id;
+                break;
+            case 'under_review':
+                $data['under_review_id'] = $id;
+                break;
+            default:
+                $data['appointment_id'] = $id;
         }
     }
 }

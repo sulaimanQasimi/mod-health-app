@@ -120,17 +120,18 @@
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ]
   },
-  "public/assets/js/vue/lab-app.js": {
-    "file": "assets/lab-app-D4T4AaYb.js",
-    "name": "lab-app",
-    "src": "public/assets/js/vue/lab-app.js",
+  "public/assets/js/vue/lab-section.js": {
+    "file": "assets/lab-section-CL-BK-wa.js",
+    "name": "lab-section",
+    "src": "public/assets/js/vue/lab-section.js",
     "isEntry": true,
     "imports": [
       "_vue-multiselect-DTBJ_oCK.js",
-      "_vue-multiselect.esm-DBrkO9dP.js"
+      "_vue-multiselect.esm-DBrkO9dP.js",
+      "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/lab-app-DK37CsBu.css"
+      "assets/lab-section-BtQNyd8O.css"
     ]
   },
   "public/assets/js/vue/nursing-note-app.js": {

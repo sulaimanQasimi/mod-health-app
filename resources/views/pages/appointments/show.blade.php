@@ -359,47 +359,16 @@
         </div>
 
 
-        <!-- Lab Section Accordion -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="accordion" id="labAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="labHeading">
-                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
-                                data-bs-toggle="collapse" data-bs-target="#labCollapse" 
-                                aria-expanded="false" aria-controls="labCollapse">
-                                <i class="bx bx-hard-hat me-2 text-warning"></i>
-                                {{ localize('global.checkups') }}
-                                @if($appointment->labs->count() > 0)
-                                    <span class="badge bg-warning text-dark ms-2">{{ $appointment->labs->count() }}</span>
-                                @endif
-                            </button>
-                        </h2>
-                        <div id="labCollapse" class="accordion-collapse collapse" 
-                            aria-labelledby="labHeading" data-bs-parent="#labAccordion">
-                            <div class="accordion-body">
-                                <!-- Lab Section Vue Component -->
-                                <div id="lab-section-container" 
-                                     data-appointment='@json($appointment)'
-                                     data-permissions='@json([
-                                         "canAddLab" => auth()->user()->can("add-patient-labs"),
-                                         "canEditLab" => auth()->user()->can("edit-patient-labs"),
-                                         "canDeleteLab" => auth()->user()->can("delete-patient-labs")
-                                     ])'>
-                                    <!-- Fallback content while Vue loads -->
-                                    <div class="text-center py-4">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                        <p class="mt-2">{{ localize('global.loading_lab_section') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Lab Section Component -->
+        <x-lab-section 
+            :entity="$appointment"
+            entity-type="appointment"
+            :entity-id="$appointment->id"
+            :can-add-lab="auth()->user()->can('add-patient-labs')"
+            :can-edit-lab="auth()->user()->can('edit-lab-items')"
+            :can-delete-lab="auth()->user()->can('delete-lab-items')"
+            :appointment-completed="$appointment->is_completed == 1"
+        />
 
         <!-- Hospitalization Checkups Section Accordion -->
         <div class="row mb-4">
@@ -1808,8 +1777,6 @@
 @endsection
 
 @section('scripts')
-    <!-- Vue.js Lab Section -->
-    @vite(['public/assets/js/vue/lab-app.js'])
     
     <!-- Vue.js Prescription Section -->
     @vite(['public/assets/js/vue/appointment-prescription-app.js'])

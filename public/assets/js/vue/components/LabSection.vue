@@ -34,9 +34,11 @@
                     <div class="modal-body">
                         <form @submit.prevent="createLabTest">
                             <input type="hidden" name="patient_id" :value="appointment.patient_id">
-                            <input type="hidden" name="appointment_id" :value="appointment.id">
+                            <input type="hidden" name="appointment_id" :value="isICUContext ? (appointment.appointment_id || '') : appointment.id">
+                            <input type="hidden" name="i_c_u_id" :value="isICUContext ? appointment.id : ''">
                             <input type="hidden" name="doctor_id" :value="appointment.doctor_id">
                             <input type="hidden" name="branch_id" :value="appointment.branch_id">
+                            <input type="hidden" name="context_type" :value="isICUContext ? 'icu' : 'appointment'">
 
                             <div class="form-group mb-3">
                                 <label for="lab_type_section">بخش آزمایش</label>
@@ -336,6 +338,14 @@ export default {
         appointmentCompleted: {
             type: Boolean,
             default: false
+        },
+        entityType: {
+            type: String,
+            default: 'appointment'
+        },
+        entityId: {
+            type: [String, Number],
+            default: null
         }
     },
     data() {
@@ -357,9 +367,15 @@ export default {
             }
         }
     },
+    computed: {
+        isICUContext() {
+            // Check if this is an ICU context (has ICU-specific properties)
+            return this.appointment.is_discharged !== undefined || this.appointment.icu_enterance_note !== undefined;
+        }
+    },
     mounted() {
         this.loadLabTypeSections();
-        this.loadAppointmentLabs();
+        this.loadEntityLabs();
     },
     watch: {
         showCreateModal(newVal) {
@@ -449,9 +465,16 @@ export default {
             }
         },
 
-        async loadAppointmentLabs() {
+        async loadEntityLabs() {
             try {
-                const response = await fetch(`/lab-ajax/appointment-labs/${this.appointment.id}`, {
+                // Use the provided entity type and ID
+                const entityType = this.entityType;
+                const entityId = this.entityId || this.appointment.id;
+
+                // Use the unified endpoint
+                const endpoint = `/lab-ajax/labs/${entityId}/${entityType}`;
+
+                const response = await fetch(endpoint, {
                     credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',
@@ -466,8 +489,13 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                this.showError('Failed to load appointment labs');
+                this.showError('Failed to load labs');
             }
+        },
+
+        // Keep the old method for backward compatibility
+        async loadAppointmentLabs() {
+            return this.loadEntityLabs();
         },
 
         async createLabTest() {
@@ -487,7 +515,21 @@ export default {
             try {
                 const formData = new FormData();
                 formData.append('lab_type_section_id', this.form.lab_type_section_id);
-                formData.append('appointment_id', this.appointment.id);
+                
+                // Set entity ID based on context
+                if (this.isICUContext) {
+                    // ICU context: set i_c_u_id and ICU's appointment_id
+                    formData.append('appointment_id', this.appointment.appointment_id || '');
+                    formData.append('i_c_u_id', this.appointment.id);
+                } else {
+                    // Appointment context: set appointment_id and null i_c_u_id
+                    formData.append('appointment_id', this.appointment.id);
+                    formData.append('i_c_u_id', '');
+                }
+                
+                // Add context type for the controller
+                formData.append('context_type', this.isICUContext ? 'icu' : 'appointment');
+                
                 formData.append('patient_id', this.appointment.patient_id);
                 formData.append('doctor_id', this.appointment.doctor_id);
                 formData.append('branch_id', this.appointment.branch_id);
@@ -503,7 +545,7 @@ export default {
                     formData.append('lab_type_id[]', labTypeId);
                 });
 
-                const response = await fetch('/lab-ajax/store', {
+                const response = await fetch(`/lab-ajax/store/${this.entityType}/${this.entityId}`, {
                     method: 'POST',
                     body: formData,
                     credentials: 'same-origin',
@@ -520,7 +562,7 @@ export default {
                     this.showSuccess(data.message + ' - Modal will stay open for adding more labs');
                     // Don't close the modal - keep it open for adding more labs
                     // this.closeCreateModal();
-                    this.loadAppointmentLabs();
+                    this.loadEntityLabs();
                     // Only reset selected tests, keep other fields
                     this.form.selected_tests = [];
                     this.labTypeTests = [];
@@ -551,7 +593,21 @@ export default {
             try {
                 const formData = new FormData();
                 formData.append('lab_type_section_id', this.form.lab_type_section_id);
-                formData.append('appointment_id', this.appointment.id);
+                
+                // Set entity ID based on context
+                if (this.isICUContext) {
+                    // ICU context: set i_c_u_id and ICU's appointment_id
+                    formData.append('appointment_id', this.appointment.appointment_id || '');
+                    formData.append('i_c_u_id', this.appointment.id);
+                } else {
+                    // Appointment context: set appointment_id and null i_c_u_id
+                    formData.append('appointment_id', this.appointment.id);
+                    formData.append('i_c_u_id', '');
+                }
+                
+                // Add context type for the controller
+                formData.append('context_type', this.isICUContext ? 'icu' : 'appointment');
+                
                 formData.append('patient_id', this.appointment.patient_id);
                 formData.append('doctor_id', this.appointment.doctor_id);
                 formData.append('branch_id', this.appointment.branch_id);
@@ -567,7 +623,7 @@ export default {
                     formData.append('lab_type_id[]', labTypeId);
                 });
 
-                const response = await fetch('/lab-ajax/store', {
+                const response = await fetch(`/lab-ajax/store/${this.entityType}/${this.entityId}`, {
                     method: 'POST',
                     body: formData,
                     credentials: 'same-origin',
@@ -583,7 +639,7 @@ export default {
                 if (data.success) {
                     this.showSuccess(data.message);
                     this.closeCreateModal();
-                    this.loadAppointmentLabs();
+                    this.loadEntityLabs();
                     this.resetForm();
                 } else {
                     this.showError(data.message);
@@ -653,7 +709,7 @@ export default {
 
                 if (data.success) {
                     this.showSuccess(data.message);
-                    this.loadAppointmentLabs();
+                    this.loadEntityLabs();
                 } else {
                     this.showError(data.message);
                 }

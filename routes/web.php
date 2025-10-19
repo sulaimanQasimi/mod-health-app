@@ -786,14 +786,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Lab Ajax routes
     Route::prefix('lab-ajax')->name('lab-ajax.')->group(function () {
-        Route::get('lab-type-sections', [\App\Http\Controllers\LabAjaxController::class, 'getLabTypeSections']);
-        Route::get('lab-types/{sectionId}', [\App\Http\Controllers\LabAjaxController::class, 'getLabTypesBySection']);
-        Route::get('lab-type-tests/{labTypeId}', [\App\Http\Controllers\LabAjaxController::class, 'getLabTypeTests']);
-        Route::post('store', [\App\Http\Controllers\LabAjaxController::class, 'storeLabTest']);
-        Route::get('appointment-labs/{appointmentId}', [\App\Http\Controllers\LabAjaxController::class, 'getAppointmentLabs']);
-        Route::get('lab-items/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'getLabItems']);
-        Route::put('update-status/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'updateLabStatus']);
-        Route::delete('delete/{labId}', [\App\Http\Controllers\LabAjaxController::class, 'deleteLabTest']);
+        Route::get('lab-type-sections', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabTypeSections']);
+        Route::get('lab-types/{sectionId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabTypesBySection']);
+        Route::get('lab-type-tests/{labTypeId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabTypeTests']);
+        Route::post('store/{type}/{id}', [\App\Http\Controllers\Section\LabAjaxController::class, 'storeLabTest']);
+        Route::get('labs/{id}/{type}', [\App\Http\Controllers\Section\LabAjaxController::class, 'loadList']);
+        Route::get('lab-items/{labId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabItems']);
+        Route::put('update-status/{labId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'updateLabStatus']);
+        Route::delete('delete/{labId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'deleteLabTest']);
     });
 
     // Prescription Ajax routes

@@ -843,163 +843,16 @@
                         </div>
                     </div>
 
-                    <!-- Lab Tests Accordion -->
-                    <div class="accordion mt-4" id="labTestsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="labTestsHeader">
-                                <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#labTestsCollapse" aria-expanded="false"
-                                    aria-controls="labTestsCollapse">
-                                    <i class="bx bx-test-tube me-2"></i>
-                                    {{ localize('global.checkups') }}
-                                    <span class="badge bg-primary ms-2">{{ count($icu->labs) }}</span>
-                                </button>
-                            </h2>
-                            <div id="labTestsCollapse" class="accordion-collapse collapse" aria-labelledby="labTestsHeader"
-                                data-bs-parent="#labTestsAccordion">
-                                <div class="accordion-body p-0">
-                                    <!-- Add Lab Test Button -->
-                                    @if ($icu->is_discharged == '0')
-                                        <div class="p-3 border-bottom">
-                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#createLabModal{{ $icu->id }}">
-                                                <i class="bx bx-plus"></i>
-                                            </button>
-                                        </div>
-                                    @endif
-
-                                    <!-- Lab Tests Table -->
-                                    <div class="table-responsive">
-                                        <table class="table mb-0">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>{{ localize('global.number') }}</th>
-                                                    <th>{{ localize('global.test_name') }}</th>
-                                                    <th>{{ localize('global.test_status') }}</th>
-                                                    <th>{{ localize('global.result') }}</th>
-                                                    <th>{{ localize('global.result_file') }}</th>
-                                                    <th>{{ localize('global.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($icu->labs as $lab)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $lab->labType->name }}</td>
-                                                        <td>
-                                                            @if ($lab->status == '0')
-                                                                <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                            @else
-                                                                <span class="badge bg-success">{{ localize('global.tested') }}</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $lab->result }}</td>
-                                                        <td>
-                                                            @isset($lab->result_file)
-                                                                <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank">
-                                                                    <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                                                </a>
-                                                            @endisset
-                                                        </td>
-                                                        <td>
-                                                            <a href="{{ route('lab_tests.edit', $lab->id) }}"
-                                                                class="btn btn-outline-primary btn-sm" title="Edit">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                            <a href="{{ route('lab_tests.destroy', $lab->id) }}"
-                                                                onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-form-{{$lab->id}}').submit(); }"
-                                                                class="btn btn-outline-danger btn-sm" title="Delete">
-                                                                <i class="bx bx-trash"></i>
-                                                            </a>
-                                                            <form id="delete-form-{{$lab->id}}"
-                                                                action="{{ route('lab_tests.destroy', $lab->id) }}" method="POST"
-                                                                style="display: none;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="6" class="text-center py-4">
-                                                            <div class="badge bg-label-danger">
-                                                                {{ localize('global.no_previous_labs') }}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Create Lab Modal -->
-                    <div class="modal fade" id="createLabModal{{ $icu->id }}" tabindex="-1"
-                        aria-labelledby="createLabModalLabel{{ $icu->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="createLabModalLabel{{ $icu->id }}">
-                                        {{ localize('global.add_lab_test') }}
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('lab_tests.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" id="patient_id{{ $icu->patient_id }}" name="patient_id"
-                                            value="{{ $icu->patient_id }}">
-                                        <input type="hidden" id="appointment_id{{ $icu->id }}" name="appointment_id"
-                                            value="{{ $icu->appointment->id ?? '' }}">
-                                        <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                            value="{{ $icu->doctor->id ?? '' }}">
-                                        <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
-                                            value="{{ auth()->user()->branch_id }}">
-                                        <input type="hidden" id="hospitalization_id{{ $icu->id }}" name="hospitalization_id"
-                                            value="">
-                                        <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id" value="{{ $icu->id }}">
-
-                                        <input type="hidden" id="status{{ $icu->id }}" name="status" value="0">
-
-                                        <div class="form-group">
-                                            <label
-                                                for="lab_type_section{{ $icu->id }}">{{ localize('global.lab_type_section') }}</label>
-                                            <select class="form-control select2" name="lab_type_section" id="lab_type_section">
-                                                <option value="">{{ localize('global.select') }}</option>
-                                                @foreach ($labTypeSections as $value)
-                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->section }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-
-                                            <label for="lab_type_id{{ $icu->id }}">{{ localize('global.lab_type') }}</label>
-                                            <select class="form-control select2" name="lab_type_id[]" id="lab_type_id"
-                                                onchange="loadLabTypeTests()">
-                                                <option value="">{{ localize('global.select') }}</option>
-                                                @foreach ($labTypes as $value)
-                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-
-                                            <div id="labTypeTestsContainer"></div>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                    <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                                </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Create Lab Modal -->
+                    <!-- Lab Section Component -->
+                    <x-lab-section 
+                        :entity="$icu"
+                        entity-type="icu"
+                        :entity-id="$icu->id"
+                        :can-add-lab="auth()->user()->can('add-patient-labs')"
+                        :can-edit-lab="auth()->user()->can('edit-lab-items')"
+                        :can-delete-lab="auth()->user()->can('delete-lab-items')"
+                        :appointment-completed="$icu->is_discharged == 1"
+                    />
 
 
                     <!-- Procedures Accordion -->
@@ -1922,6 +1775,7 @@
 @section('scripts')
 
     @vite(['public/assets/js/vue/icu-consultation-app.js'])
+
 
     <!-- Vue.js Prescription Section -->
     @vite(['public/assets/js/vue/appointment-prescription-app.js'])

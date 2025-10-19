@@ -2070,6 +2070,8 @@ return [
     'physiotherapy_procedure_item_status_updated_successfully' => 'حالت قلم روش فیزیوتراپی با موفقیت ابدیت شد',
     'physiotherapy_procedure_deleted_successfully' => 'روش فیزیوتراپی با موفقیت حذف شد',
     'refresh' => 'به روز رسانی',
+    'thermal_print'=>"چاپ",
+    'prescription_receipt' => 'نسخه',
     'add_review' => 'اضافه نمودن بازرسی',
     'edit_review' => 'ویرایش بازرسی',
     'no_nutrition_care_found'=>'هیچ مراقبت تغذیه‌ای یافت نشد',
@@ -3073,4 +3075,7 @@ return [
     "all_categories"=>"همه کتگوری‌ها",
     "select_category"=>"انتخاب کتگوری",
     "no_prescriptions_found"=>"هیچ فورم ادویه‌ای یافت نشد",
+    "no_categories_found"=>"هیچ کتگوری یافت نشد",
+    "no_lab_tests_found"=>"هیچ آزمایش آزمایشگاهی یافت نشد",
+    "edit_department"=>"ویرایش بخش",
 ];

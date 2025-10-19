@@ -148,6 +148,28 @@ class PrescriptionController extends Controller
         return view('pages.prescriptions.print_card', compact('appointment', 'prescription', 'patient', 'prescriptionItems'));
     }
 
+    public function printThermalReceipt(Prescription $prescription)
+    {
+        // Load prescription with all necessary relationships
+        $prescription->load([
+            'patient',
+            'doctor', 
+            'pharmacy',
+            'prescriptionItems.medicine',
+            'prescriptionItems.medicineType',
+            'prescriptionItems.usageType',
+            'prescriptionItems.selectedAlternative.medicine'
+        ]);
+
+        // Get pharmacy info (from prescription or user's active pharmacy)
+        $pharmacy = $prescription->pharmacy ?? auth()->user()->activePharmacies()->first();
+        
+        // Get user info
+        $user = auth()->user();
+
+        return view('pages.prescriptions.thermal_receipt', compact('prescription', 'pharmacy', 'user'));
+    }
+
     public function updateStatus($prescriptionId, $key)
     {
         // Find the prescription by ID

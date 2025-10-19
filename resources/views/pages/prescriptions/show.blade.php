@@ -11,10 +11,16 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.prescription_details') }}</h5>
                         <div class="pt-3 pt-md-0 text-end">
-                            <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
-                                <span class="text-white"> <span
-                                        class="d-none d-sm-inline-block  ">{{ localize('global.back') }}</span></span>
-                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="{{ route('prescriptions.thermal-receipt', $prescription) }}" 
+                                   class="btn btn-success" target="_blank">
+                                    <i class="bx bx-printer"></i> {{ localize('global.thermal_print') }}
+                                </a>
+                                <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
+                                    <span class="text-white"> <span
+                                            class="d-none d-sm-inline-block  ">{{ localize('global.back') }}</span></span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">

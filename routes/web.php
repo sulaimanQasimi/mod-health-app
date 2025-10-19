@@ -315,6 +315,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{prescription}', [PrescriptionController::class, 'update'])->name('update');
         Route::get('destroy/{prescription}', [PrescriptionController::class, 'destroy'])->name('destroy');
         Route::get('/print-card/{appointment}{prescriptionId}', [PrescriptionController::class, 'printCard'])->name('print-card');
+        Route::get('/thermal-receipt/{prescription}', [PrescriptionController::class, 'printThermalReceipt'])->name('thermal-receipt');
         Route::get('/issue/{prescription}', [PrescriptionController::class, 'issue'])->name('issue');
         Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);

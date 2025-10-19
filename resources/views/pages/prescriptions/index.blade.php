@@ -101,10 +101,16 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="{{ route('prescriptions.show', $prescription) }}" 
-                                                   class="btn btn-sm btn-outline-primary" title="{{ localize('global.view') }}">
-                                                    <i class="bx bx-show-alt"></i>
-                                                </a>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('prescriptions.show', $prescription) }}" 
+                                                       class="btn btn-sm btn-outline-primary" title="{{ localize('global.view') }}">
+                                                        <i class="bx bx-show-alt"></i>
+                                                    </a>
+                                                    <a href="{{ route('prescriptions.thermal-receipt', $prescription) }}" 
+                                                       class="btn btn-sm btn-outline-success" target="_blank" title="{{ localize('global.thermal_print') }}">
+                                                        <i class="bx bx-printer"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty

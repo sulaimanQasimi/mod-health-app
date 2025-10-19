@@ -12,7 +12,7 @@ class Prescription extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed','under_review_id','hospitalization_id','i_c_u_id'];
+    protected $fillable = ['branch_id', 'appointment_id', 'patient_id','doctor_id','is_completed','under_review_id','hospitalization_id','i_c_u_id','pharmacy_id'];
 
     public static function boot()
     {
@@ -52,6 +52,11 @@ class Prescription extends Model
     public function prescriptionItems()
     {
         return $this->hasMany(PrescriptionItem::class);
+    }
+
+    public function pharmacy()
+    {
+        return $this->belongsTo(Pharmacy::class);
     }
 
 }

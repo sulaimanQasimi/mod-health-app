@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,7 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Tahoma', 'Arial', sans-serif;
             width: 80mm;
             max-width: 80mm;
             margin: 0 auto;
@@ -34,6 +34,8 @@
             line-height: 1.2;
             color: #000;
             background: white;
+            direction: rtl;
+            text-align: right;
         }
 
         .receipt-container {
@@ -67,6 +69,7 @@
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 8px;
+            direction: rtl;
         }
 
         .patient-info {
@@ -78,6 +81,7 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 2px;
+            direction: rtl;
         }
 
         .doctor-info {
@@ -101,7 +105,7 @@
         }
 
         .medicine-table th {
-            text-align: left;
+            text-align: right;
             font-weight: bold;
             padding: 1px 0;
             border-bottom: 1px solid #000;
@@ -151,13 +155,17 @@
     <div class="receipt-container">
         <!-- Header -->
         <div class="header">
-            <div class="pharmacy-name">{{ $pharmacy->name ?? 'PHARMACY' }}</div>
+            <div class="pharmacy-name">{{ $pharmacy->name ?? 'داروخانه' }}</div>
             <div class="pharmacy-info">
                 @if($pharmacy)
-                    <div>Phone: {{ $pharmacy->phone ?? 'N/A' }}</div>
-                    <div>{{ $pharmacy->address ?? 'N/A' }}</div>
+                    <div>تلفن: {{ $pharmacy->phone ?? 'نامشخص' }}</div>
+                    <div>آدرس: {{ $pharmacy->address ?? 'نامشخص' }}</div>
+                    <div>شناسه داروخانه: {{ $pharmacy->id ?? 'نامشخص' }}</div>
+                    @if($pharmacy->created_at)
+                        <div>تاریخ تاسیس: {{ \Hekmatinasser\Verta\Verta::instance($pharmacy->created_at)->format('Y/n/j') }}</div>
+                    @endif
                 @else
-                    <div>Pharmacy Information Not Available</div>
+                    <div>اطلاعات داروخانه در دسترس نیست</div>
                 @endif
             </div>
         </div>
@@ -166,39 +174,39 @@
 
         <!-- Receipt Info -->
         <div class="receipt-info">
-            <span class="bold">Rx #: {{ $prescription->id }}</span>
-            <span>Date: {{ $prescription->created_at->format('Y-m-d') }}</span>
+            <span>تاریخ: {{ \Hekmatinasser\Verta\Verta::instance($prescription->created_at)->format('Y/n/j') }}</span>
+            <span class="bold">نسخه شماره: {{ $prescription->id }}</span>
         </div>
 
         <!-- Patient Info -->
         <div class="patient-info">
             <div class="patient-row">
-                <span class="bold">Patient: {{ $prescription->patient->name ?? 'N/A' }}</span>
+                <span class="bold">بیمار: {{ $prescription->patient->name ?? 'نامشخص' }}</span>
             </div>
             <div class="patient-row">
-                <span>ID: {{ $prescription->patient->id_card ?? 'N/A' }}</span>
-                <span>Age: {{ $prescription->patient->age ?? 'N/A' }}</span>
+                <span>سن: {{ $prescription->patient->age ?? 'نامشخص' }}</span>
+                <span>شناسه: {{ $prescription->patient->id_card ?? 'نامشخص' }}</span>
             </div>
         </div>
 
         <!-- Doctor Info -->
         <div class="doctor-info">
-            <span class="bold">Doctor: {{ $prescription->doctor->name ?? 'N/A' }}</span>
+            <span class="bold">داکتر: {{ $prescription->doctor->name ?? 'نامشخص' }}</span>
         </div>
 
         <div class="divider"></div>
 
         <!-- Medicines Section -->
         <div class="medicines-section">
-            <div class="medicines-header">MEDICINES:</div>
+            <div class="medicines-header">داروها:</div>
             <table class="medicine-table">
                 <thead>
                     <tr>
                         <th style="width: 8%;">#</th>
-                        <th style="width: 45%;">Medicine</th>
-                        <th style="width: 15%;">Dose</th>
-                        <th style="width: 12%;">Freq</th>
-                        <th style="width: 20%;">Amt</th>
+                        <th style="width: 45%;">دارو</th>
+                        <th style="width: 15%;">مقدار</th>
+                        <th style="width: 12%;">تکرار</th>
+                        <th style="width: 20%;">تعداد</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -207,30 +215,30 @@
                             <td>{{ $index + 1 }}</td>
                             <td>
                                 @if($item->selectedAlternative)
-                                    {{ $item->selectedAlternative->medicine->name ?? 'N/A' }}
+                                    {{ $item->selectedAlternative->medicine->name ?? 'نامشخص' }}
                                 @else
-                                    {{ $item->medicine->name ?? 'N/A' }}
+                                    {{ $item->medicine->name ?? 'نامشخص' }}
                                 @endif
                             </td>
                             <td>
                                 @if($item->selectedAlternative)
-                                    {{ $item->selectedAlternative->dosage ?? 'N/A' }}
+                                    {{ $item->selectedAlternative->dosage ?? 'نامشخص' }}
                                 @else
-                                    {{ $item->dosage ?? 'N/A' }}
+                                    {{ $item->dosage ?? 'نامشخص' }}
                                 @endif
                             </td>
                             <td>
                                 @if($item->selectedAlternative)
-                                    {{ $item->selectedAlternative->frequency ?? 'N/A' }}
+                                    {{ $item->selectedAlternative->frequency ?? 'نامشخص' }}
                                 @else
-                                    {{ $item->frequency ?? 'N/A' }}
+                                    {{ $item->frequency ?? 'نامشخص' }}
                                 @endif
                             </td>
                             <td>
                                 @if($item->selectedAlternative)
-                                    {{ $item->selectedAlternative->amount ?? 'N/A' }}
+                                    {{ $item->selectedAlternative->amount ?? 'نامشخص' }}
                                 @else
-                                    {{ $item->amount ?? 'N/A' }}
+                                    {{ $item->amount ?? 'نامشخص' }}
                                 @endif
                             </td>
                         </tr>
@@ -238,7 +246,7 @@
                             <tr>
                                 <td></td>
                                 <td colspan="4" class="replaced-info">
-                                    REPLACED: {{ $item->medicine->name ?? 'N/A' }} → {{ $item->selectedAlternative->medicine->name ?? 'N/A' }}
+                                    جایگزین: {{ $item->medicine->name ?? 'نامشخص' }} → {{ $item->selectedAlternative->medicine->name ?? 'نامشخص' }}
                                 </td>
                             </tr>
                         @endif
@@ -252,12 +260,17 @@
         <!-- Footer -->
         <div class="footer">
             <div class="footer-info">
-                <span class="bold">Dispensed by:</span> {{ $user->name ?? 'N/A' }}
+                <span class="bold">تحویل دهنده:</span> {{ $user->name ?? 'نامشخص' }}
             </div>
+            @if($pharmacy)
+                <div class="footer-info">
+                    <span class="bold">داروخانه:</span> {{ $pharmacy->name ?? 'نامشخص' }}
+                </div>
+            @endif
             <div class="footer-info">
-                <span class="bold">Date:</span> {{ now()->format('Y-m-d H:i') }}
+                <span class="bold">تاریخ:</span> {{ \Hekmatinasser\Verta\Verta::now()->format('Y/n/j H:i') }}
             </div>
-            <div class="thank-you">Thank you for your visit!</div>
+            <div class="thank-you">از مراجعه شما متشکریم!</div>
         </div>
     </div>
 

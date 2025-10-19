@@ -155,17 +155,17 @@
     <div class="receipt-container">
         <!-- Header -->
         <div class="header">
-            <div class="pharmacy-name">{{ $pharmacy->name ?? 'داروخانه' }}</div>
+            <div class="pharmacy-name">{{ $pharmacy->name ?? 'دواخانه' }}</div>
             <div class="pharmacy-info">
                 @if($pharmacy)
                     <div>تلفن: {{ $pharmacy->phone ?? 'نامشخص' }}</div>
                     <div>آدرس: {{ $pharmacy->address ?? 'نامشخص' }}</div>
-                    <div>شناسه داروخانه: {{ $pharmacy->id ?? 'نامشخص' }}</div>
+                    <div>شناسه دواخانه: {{ $pharmacy->id ?? 'نامشخص' }}</div>
                     @if($pharmacy->created_at)
                         <div>تاریخ تاسیس: {{ \Hekmatinasser\Verta\Verta::instance($pharmacy->created_at)->format('Y/n/j') }}</div>
                     @endif
                 @else
-                    <div>اطلاعات داروخانه در دسترس نیست</div>
+                    <div>اطلاعات دواخانه در دسترس نیست</div>
                 @endif
             </div>
         </div>
@@ -198,12 +198,12 @@
 
         <!-- Medicines Section -->
         <div class="medicines-section">
-            <div class="medicines-header">داروها:</div>
+            <div class="medicines-header">ادویه ها:</div>
             <table class="medicine-table">
                 <thead>
                     <tr>
                         <th style="width: 8%;">#</th>
-                        <th style="width: 45%;">دارو</th>
+                        <th style="width: 45%;">ادویه</th>
                         <th style="width: 15%;">مقدار</th>
                         <th style="width: 12%;">تکرار</th>
                         <th style="width: 20%;">تعداد</th>
@@ -264,7 +264,7 @@
             </div>
             @if($pharmacy)
                 <div class="footer-info">
-                    <span class="bold">داروخانه:</span> {{ $pharmacy->name ?? 'نامشخص' }}
+                    <span class="bold">دواخانه:</span> {{ $pharmacy->name ?? 'نامشخص' }}
                 </div>
             @endif
             <div class="footer-info">

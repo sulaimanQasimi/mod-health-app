@@ -6,6 +6,67 @@
         @if (Session::has('success') || Session::has('error'))
                 @include('components.toast')
             @endif
+
+        <!-- Filters Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">{{ localize('global.filters') }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ route('lab_tests.index') }}" class="row g-3" id="lab-filter-form">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">{{ localize('global.search') }}</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="search" name="search" 
+                                value="{{ request('search') }}" placeholder="{{ localize('global.search_by_patient_name') }}">
+                            @if(request('search'))
+                                <button type="button" class="btn btn-outline-danger" id="clearSearch" title="{{ localize('global.clear_search') }}">
+                                    <i class="bx bx-x"></i>
+                                </button>
+                            @endif
+                            <button type="submit" class="btn btn-outline-primary" title="{{ localize('global.search') }}">
+                                <i class="bx bx-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="lab_type_id" class="form-label">{{ localize('global.lab_type') }}</label>
+                        <select class="form-select select2" id="lab_type_id" name="lab_type_id">
+                            <option value="">{{ localize('global.all') }}</option>
+                            @foreach($labTypes as $labType)
+                                <option value="{{ $labType->id }}" {{ request('lab_type_id') == $labType->id ? 'selected' : '' }}>
+                                    {{ $labType->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="status" class="form-label">{{ localize('global.status') }}</label>
+                        <select class="form-select select2" id="status" name="status">
+                            <option value="">{{ localize('global.all') }}</option>
+                            <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>{{ localize('global.not_completed') }}</option>
+                            <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>{{ localize('global.completed') }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
+                        <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
+                            value="{{ request('date_from') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
+                        <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" 
+                            value="{{ request('date_to') }}">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bx bx-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="col-xl">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -89,6 +150,64 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Handle filter form submission with AJAX
+    $('#lab-filter-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        showLoadingOverlay();
+        
+        var formData = $(this).serialize();
+        var url = '{{ route("lab_tests.index") }}?' + formData;
+        
+        $.ajax({
+            url: url,
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                $('#lab-tests-container').html(response.html);
+                $('#lab-tests-container').addClass('fade-in');
+                
+                // Update URL
+                if (history.pushState) {
+                    history.pushState(null, null, url);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                alert('{{ localize("global.error_loading_data") }}');
+            },
+            complete: function() {
+                hideLoadingOverlay();
+            }
+        });
+    });
+
+    // Auto-submit on select change
+    $('select[name="lab_type_id"], select[name="status"]').change(function() {
+        $('#lab-filter-form').submit();
+    });
+
+    // Clear search functionality
+    $(document).on('click', '#clearSearch', function() {
+        $('input[name="search"]').val('');
+        $('#lab-filter-form').submit();
+    });
+
+    // Initialize Select2
+    $('.select2').select2({
+        placeholder: '{{ localize("global.select") }}',
+        allowClear: true,
+        width: '100%'
+    });
+
+    // Initialize Persian datepicker
+    $('.datepicker_dari').persianDatepicker({
+        format: 'YYYY/MM/DD',
+        observer: true,
+    });
+
     // Handle pagination clicks with AJAX
     $(document).on('click', '.pagination a', function(e) {
         e.preventDefault();

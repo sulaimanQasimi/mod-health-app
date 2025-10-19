@@ -27,13 +27,45 @@ class LabController extends Controller
             abort(403, 'User does not have an assigned section.');
         }
 
-        $labs = Lab::whereHas('labTypeSection', function($query) use ($user) {
-                $query->where('section_id', $user->section_id);
+        $query = Lab::whereHas('labTypeSection', function($q) use ($user) {
+                $q->where('section_id', $user->section_id);
             })
-            ->where('status', false)
-            ->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection'])
-            ->latest()
-            ->paginate(10);
+            ->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection']);
+
+        // Search by patient name, ID card, or father name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%')
+                  ->orWhere('id_card', 'like', '%' . $search . '%')
+                  ->orWhere('father_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter by lab type
+        if ($request->filled('lab_type_id')) {
+            $query->where('lab_type_id', $request->lab_type_id);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // Default: show only not completed
+            $query->where('status', false);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', \Hekmatinasser\Verta\Verta::parse($request->date_from)->datetime());
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
+        }
+
+        $labs = $query->latest()->paginate(10)->withQueryString();
 
         // Handle AJAX requests
         if ($request->ajax()) {
@@ -46,7 +78,10 @@ class LabController extends Controller
             ]);
         }
 
-        return view('pages.labs.index', compact('labs'));
+        // Get lab types for filter dropdown
+        $labTypes = \App\Models\LabType::orderBy('name')->get();
+
+        return view('pages.labs.index', compact('labs', 'labTypes'));
     }
 
     public function completed()

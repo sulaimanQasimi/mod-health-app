@@ -7,7 +7,6 @@ use App\Models\Appointment;
 use App\Models\Outcome;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
-use HanifHefaz\Dcter\Dcter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -46,12 +45,13 @@ class PrescriptionController extends Controller
 
         // Filter by date range
         if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=',Dcter::Carbonize( Dcter::jalaliToGregorian($request->date_from)));
+            $query->whereDate('created_at', '>=', $request->date_from);
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=',Dcter::Carbonize(Dcter::JalaliToGregorian($request->date_to))->format('Y-m-d'));
+            $query->whereDate('created_at', '<=', $request->date_to);
         }
+
         $prescriptions = $query->latest()->paginate(10)->withQueryString();
         
         return view('pages.prescriptions.index', compact('prescriptions'));

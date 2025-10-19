@@ -149,10 +149,6 @@ $(document).ready(function() {
         altField: '.observer-example',
         altFormat: 'YYYY/MM/DD',
         observer: true,
-        formatDate: function(unixDate) {
-            var d = new Date(unixDate);
-            return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
-        }
     });
     
     // Auto-submit form when select values change

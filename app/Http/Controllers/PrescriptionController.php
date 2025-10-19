@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
+use Hekmatinasser\Verta\Verta;
 
 class PrescriptionController extends Controller
 {
@@ -45,11 +46,13 @@ class PrescriptionController extends Controller
 
         // Filter by date range
         if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
+            // Convert Persian date to Gregorian
+            $query->whereDate('created_at', '>=',Verta::parse($request->date_from)->datetime());
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
+            // Convert Persian date to Gregorian
+            $query->whereDate('created_at', '<=', Verta::parse($request->date_to)->datetime());
         }
 
         $prescriptions = $query->latest()->paginate(10)->withQueryString();

@@ -3073,4 +3073,7 @@ return [
     "all_categories"=>"همه کتگوری‌ها",
     "select_category"=>"انتخاب کتگوری",
     "no_prescriptions_found"=>"هیچ فورم ادویه‌ای یافت نشد",
+    "no_categories_found"=>"هیچ کتگوری یافت نشد",
+    "no_lab_tests_found"=>"هیچ آزمایش آزمایشگاهی یافت نشد",
+    "edit_department"=>"ویرایش بخش",
 ];

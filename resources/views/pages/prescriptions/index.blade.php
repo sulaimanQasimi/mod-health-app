@@ -18,7 +18,12 @@
                             <div class="input-group">
                                 <input type="text" class="form-control" id="search" name="search" 
                                     value="{{ request('search') }}" placeholder="{{ localize('global.search_by_patient_name') }}">
-                                <button type="submit" class="btn btn-outline-secondary" title="{{ localize('global.search') }}">
+                                @if(request('search'))
+                                    <button type="button" class="btn btn-outline-danger" id="clearSearch" title="{{ localize('global.clear_search') }}">
+                                        <i class="bx bx-x"></i>
+                                    </button>
+                                @endif
+                                <button type="submit" class="btn btn-outline-primary" title="{{ localize('global.search') }}">
                                     <i class="bx bx-search"></i>
                                 </button>
                             </div>
@@ -204,22 +209,13 @@ $(document).ready(function() {
         }
     });
     
-    // Also submit on input change with debounce for better UX
-    var searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        var searchValue = $(this).val();
-        
-        // If search field is empty, submit immediately to show all results
-        if (searchValue === '') {
-            $(this).closest('form').submit();
-            return;
-        }
-        
-        // Debounce search - submit after 500ms of no typing
-        searchTimeout = setTimeout(function() {
-            $('input[name="search"]').closest('form').submit();
-        }, 500);
+    // Remove auto-submit on input change to prevent unwanted refreshes
+    // Search will only submit on Enter key or button click
+    
+    // Clear search functionality
+    $(document).on('click', '#clearSearch', function() {
+        $('input[name="search"]').val('');
+        $(this).closest('form').submit();
     });
     
     // Show active filters count

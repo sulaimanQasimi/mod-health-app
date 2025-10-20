@@ -801,6 +801,16 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete/{labId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'deleteLabTest']);
     });
 
+    // Lab Test Registration Ajax routes
+    Route::prefix('lab-test-registration-ajax')->name('lab-test-registration-ajax.')->group(function () {
+        Route::get('categories', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getTestCategories']);
+        Route::get('tests/{categoryId}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getTestsByCategory']);
+        Route::get('parameters/{testId}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getTestParameters']);
+        Route::post('store/{type}/{id}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'storeTestRegistration']);
+        Route::get('registrations/{id}/{type}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'loadList']);
+        Route::get('registration-parameters/{registrationId}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getRegistrationParameters']);
+    });
+
     // Prescription Ajax routes
     Route::prefix('prescription-ajax')->name('prescription-ajax.')->group(function () {
         Route::get('all-medicines', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getAllMedicines']);
@@ -934,12 +944,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('tests-by-category/{category}', [LabTestParameterController::class, 'getTestsByCategory'])->name('tests.by-category');
         
         // Patient Test Registration
-        Route::get('registrations/create', [PatientTestRegistrationController::class, 'create'])->name('registrations.create');
-        Route::post('registrations', [PatientTestRegistrationController::class, 'store'])->name('registrations.store');
         Route::get('registrations', [PatientTestRegistrationController::class, 'getTestList'])->name('registrations.index');
-        Route::get('search-patients', [PatientTestRegistrationController::class, 'searchPatients'])->name('search-patients');
-        Route::get('get-tests/{categoryId}', [PatientTestRegistrationController::class, 'getTests'])->name('get-tests');
-        Route::get('get-parameters/{testId}', [PatientTestRegistrationController::class, 'getParameters'])->name('get-parameters');
+        
+        // Status update routes
+        Route::post('registrations/{id}/mark-in-progress', [PatientTestRegistrationController::class, 'markInProgress'])->name('registrations.mark-in-progress');
+        Route::post('registrations/{id}/mark-completed', [PatientTestRegistrationController::class, 'markCompleted'])->name('registrations.mark-completed');
+        Route::post('registrations/{id}/cancel', [PatientTestRegistrationController::class, 'cancel'])->name('registrations.cancel');
         
         // Test Results
         Route::get('results/patients', [TestResultController::class, 'patientList'])->name('results.patients');

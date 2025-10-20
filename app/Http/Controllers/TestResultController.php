@@ -27,12 +27,16 @@ class TestResultController extends Controller
      */
     public function patientList()
     {
-        $patients = PatientTestRegistration::select('patient_id')
-            ->distinct()
-            ->with('patient')
-            ->get();
+        $tests = PatientTestRegistration::with([
+            'testable.patient',
+            'labTest',
+            'doctor',
+            'branch'
+        ])
+        ->latest()
+        ->get();
 
-        return view('pages.laboratory.registrations.index', compact('patients'));
+        return view('pages.laboratory.registrations.index', compact('tests'));
     }
 
     /**
@@ -91,12 +95,12 @@ class TestResultController extends Controller
         // Completed and Pending tests with lab test info
         $completedTests = PatientTestRegistration::where('patient_id', $patient_id)
             ->where('status', 'completed')
-            ->with('labTest')
+            ->with(['labTest', 'testable.patient'])
             ->get();
 
         $pendingTests = PatientTestRegistration::where('patient_id', $patient_id)
             ->where('status', 'pending')
-            ->with('labTest')
+            ->with(['labTest', 'testable.patient'])
             ->get();
 
         // For first test to show result initially
@@ -123,7 +127,7 @@ class TestResultController extends Controller
     public function ajaxLoadTestResult($test_registration_id)
     {
         try {
-            $test = PatientTestRegistration::with('labTest')->findOrFail($test_registration_id);
+            $test = PatientTestRegistration::with(['labTest', 'testable.patient'])->findOrFail($test_registration_id);
 
             $results = PatientTestResult::where('test_registration_id', $test_registration_id)
                 ->with('parameter')
@@ -163,7 +167,7 @@ class TestResultController extends Controller
 
         $patient = $results->first()->patient ?? null;
         $testRegistration = PatientTestRegistration::where('ref_no', $ref_no)
-            ->with('labTest')
+            ->with(['labTest', 'testable.patient'])
             ->first();
 
         $testName = $testRegistration->labTest->name ?? '—';

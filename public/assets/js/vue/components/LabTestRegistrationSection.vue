@@ -1,0 +1,880 @@
+<template>
+    <div class="lab-test-registration-section">
+        <!-- Lab Test Registration Section Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bx bx-test-tube me-2 text-warning"></i>
+                            {{ localize('global.lab_test_registrations') }}
+                        </h5>
+                        <button 
+                            v-if="canAddTestRegistration && !appointmentCompleted" 
+                            type="button" 
+                            class="btn btn-primary btn-sm" 
+                            @click="openCreateModal"
+                        >
+                            <i class="bx bx-plus me-1"></i>
+                            {{ localize('global.add_lab_test_registration') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Lab Test Registration Modal -->
+        <div v-if="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ localize('global.add_lab_test_registration') }}</h5>
+                        <button type="button" class="btn-close" @click="closeCreateModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="createTestRegistration">
+                            <input type="hidden" name="entity_id" :value="entityId">
+                            <input type="hidden" name="entity_type" :value="entityType">
+                            <input type="hidden" name="patient_id" :value="appointment.patient_id">
+                            <input type="hidden" name="doctor_id" :value="appointment.doctor_id">
+                            <input type="hidden" name="branch_id" :value="appointment.branch_id">
+
+                            <div class="form-group mb-3">
+                                <label for="test_category">{{ localize('global.test_category') }}</label>
+                                <multiselect
+                                    v-model="selectedCategory"
+                                    :options="categories"
+                                    :searchable="true"
+                                    :close-on-select="true"
+                                    :show-labels="false"
+                                    :placeholder="localize('global.select_category')"
+                                    label="name"
+                                    track-by="id"
+                                    @select="onCategorySelect"
+                                    @clear="onCategoryClear"
+                                >
+                                </multiselect>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="lab_test_id">{{ localize('global.test_name') }}</label>
+                                <multiselect
+                                    v-model="selectedTest"
+                                    :options="tests"
+                                    :searchable="true"
+                                    :close-on-select="true"
+                                    :show-labels="false"
+                                    :placeholder="localize('global.select_test')"
+                                    label="name"
+                                    track-by="id"
+                                    @select="onTestSelect"
+                                    @clear="onTestClear"
+                                >
+                                </multiselect>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="priority">{{ localize('global.priority') }}</label>
+                                <select v-model="form.priority" class="form-select" required>
+                                    <option value="normal">{{ localize('global.normal') }}</option>
+                                    <option value="urgent">{{ localize('global.urgent') }}</option>
+                                    <option value="stat">{{ localize('global.stat') }}</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="notes">{{ localize('global.notes') }}</label>
+                                <textarea 
+                                    v-model="form.notes" 
+                                    class="form-control" 
+                                    rows="3" 
+                                    :placeholder="localize('global.optional_notes')"
+                                ></textarea>
+                            </div>
+
+                            <!-- Info message about modal behavior -->
+                            <div class="alert alert-info mt-3">
+                                <i class="bx bx-info-circle me-2"></i>
+                                <strong>{{ localize('global.note') }}:</strong> {{ localize('global.registration_modal_info') }}
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeCreateModal">
+                            {{ localize('global.cancel') }}
+                        </button>
+                        <button 
+                            type="button" 
+                            class="btn btn-success" 
+                            @click="createTestRegistration"
+                            :disabled="loading"
+                        >
+                            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                            {{ localize('global.create_and_continue') }}
+                        </button>
+                        <button 
+                            type="button" 
+                            class="btn btn-primary" 
+                            @click="createTestRegistrationAndClose"
+                            :disabled="loading"
+                        >
+                            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                            {{ localize('global.create_and_close') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Test Registrations List -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div v-if="testRegistrations.length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-body-secondary">
+                                        <tr>
+                                            <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.patient') }}</th>
+                                            <th>{{ localize('global.test_name') }}</th>
+                                            <th>{{ localize('global.status') }}</th>
+                                            <th>{{ localize('global.priority') }}</th>
+                                            <th>{{ localize('global.doctor') }}</th>
+                                            <th>{{ localize('global.created_date') }}</th>
+                                            <th>{{ localize('global.actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="registration in testRegistrations" :key="registration.id">
+                                            <td>
+                                                <span class="badge bg-warning rounded-pill">{{ testRegistrations.indexOf(registration) + 1 }}</span>
+                                            </td>
+                                            <td>
+                                                <span v-if="registration.testable && registration.testable.patient">
+                                                    {{ registration.testable.patient.first_name }} {{ registration.testable.patient.last_name }}
+                                                </span>
+                                                <span v-else>—</span>
+                                            </td>
+                                            <td>{{ registration.lab_test ? registration.lab_test.name : '—' }}</td>
+                                            <td>
+                                                <span 
+                                                    :class="getStatusClass(registration.status)"
+                                                >
+                                                    {{ getStatusText(registration.status) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span 
+                                                    :class="getPriorityClass(registration.priority)"
+                                                >
+                                                    {{ getPriorityText(registration.priority) }}
+                                                </span>
+                                            </td>
+                                            <td>{{ registration.doctor ? registration.doctor.name : '—' }}</td>
+                                            <td dir="ltr">{{ formatDate(registration.created_at) }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button 
+                                                        class="btn btn-outline-primary btn-sm" 
+                                                        @click="viewParameters(registration.id)"
+                                                        :title="localize('global.view_test_parameters')"
+                                                    >
+                                                        <i class="bx bx-expand"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div v-else class="text-center py-4">
+                            <div class="alert alert-info">
+                                <i class="bx bx-info-circle me-2"></i>
+                                {{ localize('global.no_test_registrations_found') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Parameters Modal -->
+        <div v-if="showParametersModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ localize('global.test_parameters') }}</h5>
+                        <button type="button" class="btn-close" @click="closeParametersModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="selectedRegistration">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body small mb-1">{{ localize('global.patient') }}</div>
+                                        <div class="fw-bold">
+                                            <i class="bx bx-user me-1 text-primary"></i>
+                                            <span v-if="selectedRegistration.testable && selectedRegistration.testable.patient">
+                                                {{ selectedRegistration.testable.patient.first_name }} {{ selectedRegistration.testable.patient.last_name }}
+                                            </span>
+                                            <span v-else>—</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.doctor') }}</div>
+                                        <div class="fw-bold">
+                                            <i class="bx bx-user-check me-1 text-primary"></i>
+                                            {{ selectedRegistration.doctor ? selectedRegistration.doctor.name : '—' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.test_name') }}</div>
+                                        <div class="fw-bold">
+                                            <i class="bx bx-test-tube me-1 text-primary"></i>
+                                            {{ selectedRegistration.lab_test ? selectedRegistration.lab_test.name : '—' }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.status') }}</div>
+                                        <div class="fw-bold">
+                                            <span :class="getStatusClass(selectedRegistration.status)">
+                                                {{ getStatusText(selectedRegistration.status) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div v-if="selectedRegistration.parameters && selectedRegistration.parameters.length > 0">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-body-secondary text-body">
+                                        <h5 class="mb-0 text-center">
+                                            <i class="bx bx-list-ul me-2 text-info"></i>
+                                            {{ localize('global.test_parameters') }}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="table-body-secondary">
+                                                    <tr>
+                                                        <th>{{ localize('global.number') }}</th>
+                                                        <th>{{ localize('global.parameter_name') }}</th>
+                                                        <th>{{ localize('global.unit') }}</th>
+                                                        <th>{{ localize('global.normal_range') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="parameter in selectedRegistration.parameters" :key="parameter.id">
+                                                        <td>
+                                                            <span class="badge bg-info rounded-pill">{{ selectedRegistration.parameters.indexOf(parameter) + 1 }}</span>
+                                                        </td>
+                                                        <td>{{ parameter.parameter_name }}</td>
+                                                        <td>{{ parameter.unit || '—' }}</td>
+                                                        <td>{{ parameter.normal_range || '—' }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else class="text-center py-4">
+                                <div class="alert alert-info">
+                                    <i class="bx bx-info-circle me-2"></i>
+                                    {{ localize('global.no_parameters_found') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeParametersModal">
+                            {{ localize('global.close') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Multiselect from 'vue-multiselect'
+
+export default {
+    components: {
+        Multiselect
+    },
+    name: 'LabTestRegistrationSection',
+    props: {
+        appointment: {
+            type: Object,
+            required: true
+        },
+        entityType: {
+            type: String,
+            default: 'appointment'
+        },
+        entityId: {
+            type: [String, Number],
+            default: null
+        },
+        canAddTestRegistration: {
+            type: Boolean,
+            default: false
+        },
+        appointmentCompleted: {
+            type: Boolean,
+            default: false
+        }
+    },
+    data() {
+        return {
+            loading: false,
+            showCreateModal: false,
+            showParametersModal: false,
+            testRegistrations: [],
+            categories: [],
+            tests: [],
+            selectedCategory: null,
+            selectedTest: null,
+            selectedRegistration: null,
+            form: {
+                test_category_id: '',
+                lab_test_id: '',
+                priority: 'normal',
+                notes: ''
+            }
+        }
+    },
+    mounted() {
+        this.loadCategories();
+        this.loadTestRegistrations();
+    },
+    watch: {
+        showCreateModal(newVal) {
+            if (!newVal) {
+                this.resetForm();
+            }
+        }
+    },
+    methods: {
+        async loadCategories() {
+            try {
+                const response = await fetch('/lab-test-registration-ajax/categories', {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.categories = data.data;
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                this.showError('Failed to load test categories');
+            }
+        },
+
+        async loadTests() {
+            if (!this.form.test_category_id) {
+                this.tests = [];
+                this.form.lab_test_id = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/lab-test-registration-ajax/tests/${this.form.test_category_id}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.tests = data.data;
+                    this.form.lab_test_id = '';
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                this.showError('Failed to load tests');
+            }
+        },
+
+        async loadTestRegistrations() {
+            try {
+                const entityType = this.entityType;
+                const entityId = this.entityId || this.appointment.id;
+
+                const endpoint = `/lab-test-registration-ajax/registrations/${entityId}/${entityType}`;
+
+                const response = await fetch(endpoint, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.testRegistrations = data.data;
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                this.showError('Failed to load test registrations');
+            }
+        },
+
+        async createTestRegistration() {
+            if (!this.form.test_category_id || !this.form.lab_test_id) {
+                this.showError('Please select test category and test');
+                return;
+            }
+
+            this.loading = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('test_category_id', this.form.test_category_id);
+                formData.append('lab_test_id', this.form.lab_test_id);
+                formData.append('priority', this.form.priority);
+                formData.append('notes', this.form.notes);
+                formData.append('entity_id', this.entityId);
+                formData.append('entity_type', this.entityType);
+                formData.append('patient_id', this.appointment.patient_id);
+                formData.append('doctor_id', this.appointment.doctor_id);
+                formData.append('branch_id', this.appointment.branch_id);
+
+                const response = await fetch(`/lab-test-registration-ajax/store/${this.entityType}/${this.entityId}`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    this.showSuccess(data.message + ' - Modal will stay open for adding more registrations');
+                    this.loadTestRegistrations();
+                    this.resetForm();
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                this.showError('Failed to create test registration');
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async createTestRegistrationAndClose() {
+            if (!this.form.test_category_id || !this.form.lab_test_id) {
+                this.showError('Please select test category and test');
+                return;
+            }
+
+            this.loading = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('test_category_id', this.form.test_category_id);
+                formData.append('lab_test_id', this.form.lab_test_id);
+                formData.append('priority', this.form.priority);
+                formData.append('notes', this.form.notes);
+                formData.append('entity_id', this.entityId);
+                formData.append('entity_type', this.entityType);
+                formData.append('patient_id', this.appointment.patient_id);
+                formData.append('doctor_id', this.appointment.doctor_id);
+                formData.append('branch_id', this.appointment.branch_id);
+
+                const response = await fetch(`/lab-test-registration-ajax/store/${this.entityType}/${this.entityId}`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    this.showSuccess(data.message);
+                    this.closeCreateModal();
+                    this.loadTestRegistrations();
+                    this.resetForm();
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                this.showError('Failed to create test registration');
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async viewParameters(registrationId) {
+            try {
+                const response = await fetch(`/lab-test-registration-ajax/registration-parameters/${registrationId}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.selectedRegistration = data.data;
+                    this.showParametersModal = true;
+                } else {
+                    this.showError(data.message);
+                }
+            } catch (error) {
+                this.showError('Failed to load registration parameters');
+            }
+        },
+
+        closeCreateModal() {
+            this.showCreateModal = false;
+            this.resetForm();
+        },
+
+        openCreateModal() {
+            this.showCreateModal = true;
+        },
+
+        closeParametersModal() {
+            this.showParametersModal = false;
+            this.selectedRegistration = null;
+        },
+
+        resetForm() {
+            this.form.test_category_id = '';
+            this.form.lab_test_id = '';
+            this.form.priority = 'normal';
+            this.form.notes = '';
+            this.selectedCategory = null;
+            this.selectedTest = null;
+            this.tests = [];
+        },
+
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fa-IR') + ' ' + date.toLocaleTimeString('fa-IR');
+        },
+
+        getStatusClass(status) {
+            const classes = {
+                'pending': 'badge bg-warning',
+                'in_progress': 'badge bg-info',
+                'completed': 'badge bg-success',
+                'cancelled': 'badge bg-danger'
+            };
+            return classes[status] || 'badge bg-secondary';
+        },
+
+        getStatusText(status) {
+            const texts = {
+                'pending': this.localize('global.status_pending'),
+                'in_progress': this.localize('global.status_in_progress'),
+                'completed': this.localize('global.status_completed'),
+                'cancelled': this.localize('global.status_cancelled')
+            };
+            return texts[status] || status;
+        },
+
+        getPriorityClass(priority) {
+            const classes = {
+                'normal': 'badge bg-secondary',
+                'urgent': 'badge bg-warning',
+                'stat': 'badge bg-danger'
+            };
+            return classes[priority] || 'badge bg-secondary';
+        },
+
+        getPriorityText(priority) {
+            const texts = {
+                'normal': this.localize('global.normal'),
+                'urgent': this.localize('global.urgent'),
+                'stat': this.localize('global.stat')
+            };
+            return texts[priority] || priority;
+        },
+
+        showSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: this.localize('global.success'),
+                text: message,
+                customClass: { confirmButton: 'btn btn-success' },
+                buttonsStyling: false,
+                confirmButtonText: this.localize('global.confirm')
+            });
+        },
+
+        showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: this.localize('global.error'),
+                text: message,
+                customClass: { confirmButton: 'btn btn-danger' },
+                buttonsStyling: false,
+                confirmButtonText: this.localize('global.confirm')
+            });
+        },
+
+        localize(key) {
+            // Simple localization function - in real app this would use proper i18n
+            const translations = {
+                'global.lab_test_registrations': 'ثبت نام آزمایشات',
+                'global.add_lab_test_registration': 'اضافه کردن ثبت نام آزمایش',
+                'global.test_category': 'دسته بندی آزمایش',
+                'global.select_category': 'انتخاب دسته بندی',
+                'global.test_name': 'نام آزمایش',
+                'global.select_test': 'انتخاب آزمایش',
+                'global.priority': 'اولویت',
+                'global.normal': 'عادی',
+                'global.urgent': 'فوری',
+                'global.stat': 'فوری',
+                'global.notes': 'یادداشت‌ها',
+                'global.optional_notes': 'یادداشت‌های اختیاری...',
+                'global.cancel': 'لغو',
+                'global.create_and_continue': 'ایجاد و ادامه',
+                'global.create_and_close': 'ایجاد و بستن',
+                'global.number': 'شماره',
+                'global.patient': 'بیمار',
+                'global.status': 'وضعیت',
+                'global.doctor': 'دکتر',
+                'global.created_date': 'تاریخ ایجاد',
+                'global.actions': 'عملیات',
+                'global.view_test_parameters': 'مشاهده پارامترهای آزمایش',
+                'global.no_test_registrations_found': 'هیچ ثبت نام آزمایشی یافت نشد',
+                'global.test_parameters': 'پارامترهای آزمایش',
+                'global.parameter_name': 'نام پارامتر',
+                'global.unit': 'واحد',
+                'global.normal_range': 'محدوده طبیعی',
+                'global.no_parameters_found': 'هیچ پارامتری یافت نشد',
+                'global.close': 'بستن',
+                'global.success': 'موفقیت',
+                'global.error': 'خطا',
+                'global.confirm': 'تأیید',
+                'global.status_pending': 'در انتظار',
+                'global.status_in_progress': 'در حال انجام',
+                'global.status_completed': 'تکمیل شده',
+                'global.status_cancelled': 'لغو شده'
+            };
+            return translations[key] || key;
+        },
+
+        // Vue Multiselect event handlers
+        onCategorySelect(selectedCategory) {
+            this.form.test_category_id = selectedCategory.id;
+            this.loadTests();
+        },
+
+        onCategoryClear() {
+            this.form.test_category_id = '';
+            this.selectedTest = null;
+            this.form.lab_test_id = '';
+            this.tests = [];
+        },
+
+        onTestSelect(selectedTest) {
+            this.form.lab_test_id = selectedTest.id;
+        },
+
+        onTestClear() {
+            this.form.lab_test_id = '';
+        }
+    }
+}
+</script>
+
+<style scoped>
+.lab-test-registration-section .modal {
+    z-index: 1055;
+}
+
+.lab-test-registration-section .modal.show {
+    display: block !important;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Vue Multiselect Styles */
+.multiselect {
+    min-height: 38px;
+}
+
+.multiselect__tags {
+    min-height: 38px;
+    border: 1px solid #d9dee3;
+    border-radius: 0.375rem;
+}
+
+.multiselect__tags:focus-within {
+    border-color: #696cff;
+    box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.25);
+}
+
+.multiselect__placeholder {
+    color: #a1acb8;
+    font-size: 0.875rem;
+}
+
+.multiselect__single {
+    font-size: 0.875rem;
+    color: #5f6e7f;
+}
+
+.multiselect__input {
+    font-size: 0.875rem;
+}
+
+.multiselect__option {
+    font-size: 0.875rem;
+    padding: 8px 12px;
+}
+
+.multiselect__option--highlight {
+    background: #696cff;
+}
+
+.multiselect__option--selected {
+    background: #f8f9fa;
+    color: #696cff;
+    font-weight: 600;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+    background: #696cff;
+    color: white;
+}
+
+/* Dark Mode Styles for Vue Multiselect */
+.dark-style .multiselect__tags,
+body[data-theme="dark"] .multiselect__tags,
+html[data-theme="dark"] .multiselect__tags,
+.theme-dark .multiselect__tags {
+    background-color: #444564 !important;
+    border-color: #444564 !important;
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__tags:focus-within,
+body[data-theme="dark"] .multiselect__tags:focus-within,
+html[data-theme="dark"] .multiselect__tags:focus-within,
+.theme-dark .multiselect__tags:focus-within {
+    border-color: #696cff !important;
+    box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.25) !important;
+}
+
+.dark-style .multiselect__single,
+body[data-theme="dark"] .multiselect__single,
+html[data-theme="dark"] .multiselect__single,
+.theme-dark .multiselect__single {
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__placeholder,
+body[data-theme="dark"] .multiselect__placeholder,
+html[data-theme="dark"] .multiselect__placeholder,
+.theme-dark .multiselect__placeholder {
+    color: #7c7db6 !important;
+}
+
+.dark-style .multiselect__input,
+body[data-theme="dark"] .multiselect__input,
+html[data-theme="dark"] .multiselect__input,
+.theme-dark .multiselect__input {
+    background-color: transparent !important;
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__input::placeholder,
+body[data-theme="dark"] .multiselect__input::placeholder,
+html[data-theme="dark"] .multiselect__input::placeholder,
+.theme-dark .multiselect__input::placeholder {
+    color: #7c7db6 !important;
+}
+
+.dark-style .multiselect__content-wrapper,
+body[data-theme="dark"] .multiselect__content-wrapper,
+html[data-theme="dark"] .multiselect__content-wrapper,
+.theme-dark .multiselect__content-wrapper {
+    background-color: #444564 !important;
+    border-color: #444564 !important;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-style .multiselect__option,
+body[data-theme="dark"] .multiselect__option,
+html[data-theme="dark"] .multiselect__option,
+.theme-dark .multiselect__option {
+    color: #a3a4cc !important;
+    background-color: #444564 !important;
+}
+
+.dark-style .multiselect__option:hover,
+body[data-theme="dark"] .multiselect__option:hover,
+html[data-theme="dark"] .multiselect__option:hover,
+.theme-dark .multiselect__option:hover {
+    background-color: #4a4b6b !important;
+}
+
+.dark-style .multiselect__option--highlight,
+body[data-theme="dark"] .multiselect__option--highlight,
+html[data-theme="dark"] .multiselect__option--highlight,
+.theme-dark .multiselect__option--highlight {
+    background-color: #696cff !important;
+    color: white !important;
+}
+
+.dark-style .multiselect__option--selected,
+body[data-theme="dark"] .multiselect__option--selected,
+html[data-theme="dark"] .multiselect__option--selected,
+.theme-dark .multiselect__option--selected {
+    background-color: rgba(124, 125, 182, 0.16) !important;
+    color: #a3a4cc !important;
+}
+
+.dark-style .multiselect__option--selected.multiselect__option--highlight,
+body[data-theme="dark"] .multiselect__option--selected.multiselect__option--highlight,
+html[data-theme="dark"] .multiselect__option--selected.multiselect__option--highlight,
+.theme-dark .multiselect__option--selected.multiselect__option--highlight {
+    background-color: #696cff !important;
+    color: white !important;
+}
+</style>

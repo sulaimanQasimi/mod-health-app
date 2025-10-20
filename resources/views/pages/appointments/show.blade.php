@@ -370,6 +370,15 @@
             :appointment-completed="$appointment->is_completed == 1"
         />
 
+        <!-- Lab Test Registration Section Component -->
+        <x-lab-test-registration-section 
+            :entity="$appointment"
+            entity-type="appointment"
+            :entity-id="$appointment->id"
+            :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+            :appointment-completed="$appointment->is_completed == 1"
+        />
+
         <!-- Hospitalization Checkups Section Accordion -->
         <div class="row mb-4">
             <div class="col-12">

@@ -128,4 +128,12 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    /**
+     * Get the patient test registrations for this appointment
+     */
+    public function patientTestRegistrations()
+    {
+        return $this->morphMany(PatientTestRegistration::class, 'testable');
+    }
 }

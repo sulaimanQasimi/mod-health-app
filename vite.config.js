@@ -19,7 +19,9 @@ export default defineConfig({
                 'public/assets/js/vue/visit-app.js',
                 'public/assets/js/vue/appointment-prescription-app.js',
                 'public/assets/js/vue/appointment-advice-app.js',
-                'public/assets/js/vue/nursing-note-app.js'
+                'public/assets/js/vue/nursing-note-app.js',
+                'public/assets/js/qr-code-generator.js',
+                'public/assets/js/simple-qr-fallback.js'
             ],
             refresh: true,
         }),

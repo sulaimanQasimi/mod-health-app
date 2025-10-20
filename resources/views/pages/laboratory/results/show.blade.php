@@ -2,104 +2,101 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
+    <style>
+        .sticky-sidebar { position: sticky; top: 90px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .summary-item { border: 1px solid #e9ecef; border-radius: 8px; padding: 10px; background: #fff; }
+        .summary-item .label { font-size: 12px; color: #6c757d; }
+        .summary-item .value { font-weight: 600; }
+        .table-results thead th { position: sticky; top: 0; background: #fff; z-index: 1; }
+        .result-input { min-width: 140px; }
+    </style>
     <div class="content-wrapper">
         <div class="row g-4">
 
-            {{-- Patient Info --}}
-            <div class="col-md-4">
-                <div class="card p-0 shadow-sm">
-                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <h4 class="mb-0 fw-bold text-white">{{ localize('global.patient_information') }}</h4>
+            {{-- Left Sidebar: Patient + Test lists (sticky) --}}
+            <div class="col-lg-4 order-2 order-lg-1">
+                <div class="sticky-sidebar">
+                    <div class="card p-0 shadow-sm mb-3">
+                        <div class="card-header bg-dark">
+                            <h5 class="mb-0 fw-bold text-white">{{ localize('global.patient_information') }}</h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <div class="label">{{ localize('global.name') }}</div>
+                                    <div class="value">{{ $patient->name }} {{ $patient->last_name }}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="label">{{ localize('global.father_name') }}</div>
+                                    <div class="value">{{ $patient->father_name }}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="label">{{ localize('global.age') }}</div>
+                                    <div class="value">{{ $patient->age }}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="label">{{ localize('global.phone') }}</div>
+                                    <div class="value">{{ $patient->phone }}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body p-3">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>{{ localize('global.name') }}:</strong> {{ $patient->name }} {{ $patient->last_name }}</p>
-                                <p><strong>{{ localize('global.father_name') }}:</strong> {{ $patient->father_name }}</p>
-                                <p><strong>{{ localize('global.age') }}:</strong> {{ $patient->age }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>{{ localize('global.phone') }}:</strong> {{ $patient->phone }}</p>
-                                <p><strong>{{ localize('global.job') }}:</strong> {{ $patient->job ?? '—' }}</p>
-                            </div>
+
+                    <div class="card p-0 shadow-sm mb-3">
+                        <div class="card-header bg-warning">
+                            <h6 class="mb-0 fw-bold text-dark">{{ localize('global.pending_tests') }}</h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <ul id="pendingTests" class="list-group">
+                                @foreach ($pendingTests as $test)
+                                <li class="list-group-item test-item cursor-pointer d-flex justify-content-between align-items-center" data-id="{{ $test->id }}">
+                                    <span>
+                                        <strong>{{ $test->labTest->name ?? '—' }}</strong>
+                                        <small class="text-muted">({{ $test->ref_no }})</small>
+                                    </span>
+                                    <span class="badge bg-warning">{{ localize('global.pending') }}</span>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card p-0 shadow-sm">
+                        <div class="card-header bg-success">
+                            <h6 class="mb-0 fw-bold text-white">{{ localize('global.completed_tests') }}</h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <ul id="completedTests" class="list-group">
+                                @foreach($completedTests as $test)
+                                <li class="list-group-item d-flex justify-content-between align-items-center test-card cursor-pointer" data-id="{{ $test->id }}">
+                                    <span>
+                                        <strong>{{ $test->labTest->name ?? '—' }}</strong><br>
+                                        <small>{{ localize('global.reference_number') }}: {{ $test->ref_no }}</small>
+                                    </span>
+                                    <a href="{{ route('laboratory.reports.print', $test->ref_no) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                        <i class="bx bx-printer"></i>
+                                    </a>
+                                </li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Pending Tests --}}
-            <div class="col-md-4">
-                <div class="card p-0 shadow-sm">
-                    <div class="card-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <h5 class="mb-0 fw-bold text-white">{{ localize('global.pending_tests') }}</h5>
-                    </div>
-                    <div class="card-body p-3">
-                        <ul id="pendingTests" class="list-group">
-                            @foreach ($pendingTests as $test)
-                            <li class="list-group-item test-item cursor-pointer" data-id="{{ $test->id }}">
-                                <strong>{{ $test->labTest->name ?? '—' }}</strong>
-                                <small class="text-muted">({{ $test->ref_no }})</small>
-                                <span class="badge bg-warning float-end">{{ localize('global.pending') }}</span>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            
 
-            {{-- Completed Tests --}}
-            <div class="col-md-4">
-                <div class="card p-0 shadow-sm">
-                    <div class="card-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <h5 class="mb-0 fw-bold text-white">{{ localize('global.completed_tests') }}</h5>
-                    </div>
-                    <div class="card-body p-3">
-                        <ul id="completedTests" class="list-group">
-                            @foreach($completedTests as $test)
-                            <div class="card mb-2 test-card cursor-pointer" data-id="{{ $test->id }}">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{{ $test->labTest->name ?? 'Unknown Test' }}</strong><br>
-                                        <small>Ref No: {{ $test->ref_no }}</small>
-                                    </div>
-
-                                    <div>
-                                        <a href="{{ route('laboratory.reports.print', $test->ref_no) }}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           target="_blank">
-                                            <i class="bx bx-printer"></i> {{ localize('global.print_lab_report') }}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Debug Information --}}
-            @if(config('app.debug'))
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Debug Information</h6>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>First Test:</strong> {{ $firstTest ? $firstTest->labTest->name : 'None' }}</p>
-                        <p><strong>First Test Results Count:</strong> {{ $firstTestResults ? $firstTestResults->count() : 0 }}</p>
-                        <p><strong>Pending Tests Count:</strong> {{ $pendingTests->count() }}</p>
-                        <p><strong>Completed Tests Count:</strong> {{ $completedTests->count() }}</p>
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            {{-- Test Results Card (Full Width) --}}
-            <div class="col-md-12">
+            {{-- Main: Results --}}
+            <div class="col-lg-8 order-1 order-lg-2">
                 <div class="card p-0 shadow-sm" id="resultCard">
-                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <h5 class="mb-0 fw-bold text-white">Test Result</h5>
+                    <div class="card-header bg-dark text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">{{ $firstTest?->labTest?->name ?? localize('global.test_results') }}</h5>
+                            <div class="text-end">
+                                <div class="small">{{ localize('global.reference_number') }}: <strong id="headerRef">{{ $firstTest->ref_no ?? '—' }}</strong></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body p-3">
                         <form id="resultForm" action="{{ route('laboratory.results.update') }}" method="post">
@@ -107,29 +104,32 @@
                             <input type="hidden" id="test_registration_id" name="test_registration_id"
                             value="{{ $firstTest->id ?? '' }}">
                             <input type="hidden" id="ref_no" name="ref_no" value="{{ $firstTest->ref_no ?? '' }}">
+                            <input type="hidden" id="complete_flag" name="complete" value="0">
                             
-                            <table class="table table-bordered" id="resultTable">
+                            <table class="table table-bordered table-results" id="resultTable">
                                 <thead>
                                     <tr>
-                                        <th>Parameter</th>
-                                        <th>Result</th>
-                                        <th>Unit</th>
-                                        <th>Normal Range</th>
+                                        <th>{{ localize('global.parameter_name') }}</th>
+                                        <th>{{ localize('global.result') }}</th>
+                                        <th>{{ localize('global.unit') }}</th>
+                                        <th>{{ localize('global.normal_range') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @if($firstTestResults && $firstTestResults->count() > 0)
                                         @foreach($firstTestResults as $result)
                                         <tr>
-                                            <td>{{ $result->parameter->parameter_name ?? '—' }}</td>
+                                            <td>
+                                                <strong>{{ $result->parameter->parameter_name ?? '—' }}</strong>
+                                            </td>
                                             <td>
                                                 <input type="text" 
                                                        name="results[{{ $result->parameter->id ?? '' }}]" 
                                                        value="{{ $result->result ?? '' }}" 
                                                        class="form-control result-input">
                                             </td>
-                                            <td>{{ $result->unit ?? '—' }}</td>
-                                            <td>{{ $result->normal_range ?? '—' }}</td>
+                                            <td><span class="text-muted">{{ $result->unit ?? '—' }}</span></td>
+                                            <td><span class="text-muted">{{ $result->normal_range ?? '—' }}</span></td>
                                         </tr>
                                         @endforeach
                                     @else
@@ -146,7 +146,15 @@
                                 </tbody>
                             </table>
 
-                            <button type="submit" class="btn btn-primary" id="saveResults">Save Results</button>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary" id="saveResults">{{ localize('global.save') }}</button>
+                                <button type="button" class="btn btn-success" id="saveAndComplete">{{ localize('global.mark_completed') }}</button>
+                                @if($firstTest?->ref_no)
+                                <a href="{{ route('laboratory.reports.print', $firstTest->ref_no) }}" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="bx bx-printer"></i> {{ localize('global.print_report') }}
+                                </a>
+                                @endif
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -187,6 +195,8 @@
         // Update hidden inputs
         document.getElementById('test_registration_id').value = test.id;
         document.getElementById('ref_no').value = test.ref_no;
+        const headerRef = document.getElementById('headerRef');
+        if (headerRef) headerRef.textContent = test.ref_no || '—';
 
         // Update table body
         const tbody = document.querySelector('#resultTable tbody');
@@ -200,15 +210,15 @@
         results.forEach(result => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${result.parameter.parameter_name || '—'}</td>
+                <td><strong>${result.parameter.parameter_name || '—'}</strong></td>
                 <td>
                     <input type="text" 
                            name="results[${result.parameter.id}]" 
                            value="${result.result || ''}" 
                            class="form-control result-input">
                 </td>
-                <td>${result.unit || '—'}</td>
-                <td>${result.normal_range || '—'}</td>
+                <td><span class="text-muted">${result.unit || '—'}</span></td>
+                <td><span class="text-muted">${result.normal_range || '—'}</span></td>
             `;
             tbody.appendChild(row);
         });
@@ -230,18 +240,30 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                alert('Results updated successfully!');
+                toastr && toastr.success ? toastr.success('Results updated successfully!') : alert('Results updated successfully!');
                 if (data.completed) {
-                    alert('Test completed!');
+                    toastr && toastr.success ? toastr.success('Test completed!') : alert('Test completed!');
                 }
             } else {
-                alert('Error: ' + data.message);
+                toastr && toastr.error ? toastr.error('Error: ' + data.message) : alert('Error: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error updating results');
+            toastr && toastr.error ? toastr.error('Error updating results') : alert('Error updating results');
         });
     });
+
+    // Save & Complete button
+    const saveAndCompleteBtn = document.getElementById('saveAndComplete');
+    if (saveAndCompleteBtn) {
+        saveAndCompleteBtn.addEventListener('click', function() {
+            const completeField = document.getElementById('complete_flag');
+            if (completeField) completeField.value = '1';
+            document.getElementById('resultForm').requestSubmit();
+            setTimeout(() => { if (completeField) completeField.value = '0'; }, 1000);
+        });
+    }
 </script>
 @endsection
+

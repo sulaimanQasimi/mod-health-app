@@ -50,6 +50,18 @@
       "_vue-multiselect-DDsaHd_0.js"
     ]
   },
+  "public/assets/js/qr-code-generator.js": {
+    "file": "assets/qr-code-generator-yFo6ImzB.js",
+    "name": "qr-code-generator",
+    "src": "public/assets/js/qr-code-generator.js",
+    "isEntry": true
+  },
+  "public/assets/js/simple-qr-fallback.js": {
+    "file": "assets/simple-qr-fallback-BM3YweIr.js",
+    "name": "simple-qr-fallback",
+    "src": "public/assets/js/simple-qr-fallback.js",
+    "isEntry": true
+  },
   "public/assets/js/vue/advice-app.js": {
     "file": "assets/advice-app-zCMKZUKl.js",
     "name": "advice-app",

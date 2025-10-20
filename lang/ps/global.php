@@ -623,4 +623,33 @@ return [
     'not_updated' => 'تازه شوی نه دی',
     'system_information' => 'د سیستم معلومات',
     'are_you_sure_delete_nurse' => 'ایا تاسو ډاډه یاست چې دا نرس حذف کړئ؟',
+    
+    // Laboratory Categories
+    'add_category' => 'کتگوري اضافه کړئ',
+    'search_categories' => 'کتگوري پلټئ...',
+    'confirm_delete_category' => 'ایا تاسو ډاډه یاست چې دا کتگوري حذف کړئ',
+    'add_first_category' => 'لومړی کتگوري اضافه کړئ',
+    'no_categories_found' => 'هیڅ کتگوري و نه موندل شو',
+    'no_categories_message' => 'د خپل لومړي ازمایښت کتگوري د جوړولو سره پیل وکړئ',
+    'edit_category' => 'کتگوري سمون',
+    'test_categories_management' => 'د ازمایښت کتگوريو مدیریت',
+    
+    // Laboratory Tests
+    'add_test' => 'ازمایښت اضافه کړئ',
+    'search_tests' => 'ازمایښتونه پلټئ...',
+    'all_categories' => 'ټول کتگوري',
+    'no_tests_found' => 'هیڅ ازمایښت و نه موندل شو',
+    'no_tests_message' => 'د خپل لومړي ازمایښت د جوړولو سره پیل وکړئ',
+    'add_first_test' => 'لومړی ازمایښت اضافه کړئ',
+    'edit_test' => 'ازمایښت سمون',
+    'lab_tests_management' => 'د ازمایښت مدیریت',
+    'test_parameters' => 'د ازمایښت پارامترونه',
+    'add_parameter' => 'پارامتر اضافه کړئ',
+    'parameter_name' => 'د پارامتر نوم',
+    'unit' => 'واحد',
+    'normal_range' => 'عادي حد',
+    'view_parameters' => 'پارامترونه وګورئ',
+    'confirm_delete_test' => 'ایا تاسو ډاډه یاست چې دا ازمایښت حذف کړئ',
+    'no_parameters_found' => 'هیڅ پارامتر و نه موندل شو',
+    'parameters' => 'پارامترونه',
 ];

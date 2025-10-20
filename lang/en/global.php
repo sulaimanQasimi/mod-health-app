@@ -804,4 +804,33 @@ return [
     'no_nutrition_care_found' => 'No nutrition care records found',
     'add_first_nutrition_care' => 'Add your first nutrition care record',
     'create_nutrition_care' => 'Create Nutrition Care',
+    
+    // Laboratory Categories
+    'add_category' => 'Add Category',
+    'search_categories' => 'Search categories...',
+    'confirm_delete_category' => 'Are you sure you want to delete this category',
+    'add_first_category' => 'Add First Category',
+    'no_categories_found' => 'No categories found',
+    'no_categories_message' => 'Start by creating your first test category',
+    'edit_category' => 'Edit Category',
+    'test_categories_management' => 'Test Categories Management',
+    
+    // Laboratory Tests
+    'add_test' => 'Add Test',
+    'search_tests' => 'Search tests...',
+    'all_categories' => 'All Categories',
+    'no_tests_found' => 'No tests found',
+    'no_tests_message' => 'Start by creating your first lab test',
+    'add_first_test' => 'Add First Test',
+    'edit_test' => 'Edit Test',
+    'lab_tests_management' => 'Lab Tests Management',
+    'test_parameters' => 'Test Parameters',
+    'add_parameter' => 'Add Parameter',
+    'parameter_name' => 'Parameter Name',
+    'unit' => 'Unit',
+    'normal_range' => 'Normal Range',
+    'view_parameters' => 'View Parameters',
+    'confirm_delete_test' => 'Are you sure you want to delete this test',
+    'no_parameters_found' => 'No parameters found',
+    'parameters' => 'Parameters',
 ];

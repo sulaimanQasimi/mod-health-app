@@ -20,9 +20,23 @@ class TestCategoryController extends Controller
     /**
      * Display a listing of test categories
      */
-    public function index()
+    public function index(Request $request)
     {
-        $testCategories = TestCategory::all();
+        $query = TestCategory::query();
+        
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        
+        // Pagination
+        $testCategories = $query->orderBy('created_at', 'desc')->paginate(12);
+        
+        // AJAX request - return partial view
+        if ($request->ajax()) {
+            return view('pages.laboratory.categories._categories_list', compact('testCategories'))->render();
+        }
+        
         return view('pages.laboratory.categories.index', compact('testCategories'));
     }
 
@@ -35,16 +49,33 @@ class TestCategoryController extends Controller
             'name' => 'required|string|max:255'
         ]);
 
-        TestCategory::create($data);
+        $category = TestCategory::create($data);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category created successfully.',
+                'category' => $category
+            ], 201);
+        }
+        
         return redirect()->route('laboratory.categories.index')->with('success', 'Category created successfully.');
     }
 
     /**
      * Show the form for editing the specified test category
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        $editCategory = TestCategory::findOrFail($id);
+        $category = TestCategory::findOrFail($id);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'category' => $category
+            ]);
+        }
+        
         $testCategories = TestCategory::all();
         return view('pages.laboratory.categories.index', compact('testCategories', 'editCategory'));
     }
@@ -59,16 +90,32 @@ class TestCategoryController extends Controller
             'name' => 'required|string|max:255'
         ]);
         $category->update($data);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category updated successfully.',
+                'category' => $category->fresh()
+            ]);
+        }
+        
         return redirect()->route('laboratory.categories.index')->with('success', 'Category updated successfully.');
     }
 
     /**
      * Remove the specified test category
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $category = TestCategory::findOrFail($id);
         $category->delete();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category deleted successfully.'
+            ]);
+        }
 
         return redirect()->route('laboratory.categories.index')->with('success', 'Category deleted successfully.');
     }

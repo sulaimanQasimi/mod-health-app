@@ -915,12 +915,14 @@ Route::group(['middleware' => ['auth']], function () {
         // Test Categories
         Route::get('categories', [TestCategoryController::class, 'index'])->name('categories.index');
         Route::post('categories', [TestCategoryController::class, 'store'])->name('categories.store');
+        Route::get('categories/{id}/edit', [TestCategoryController::class, 'edit'])->name('categories.edit');
         Route::put('categories/{id}', [TestCategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{id}', [TestCategoryController::class, 'destroy'])->name('categories.destroy');
         
         // Lab Tests
         Route::get('tests', [LabTestController::class, 'index'])->name('tests.index');
         Route::post('tests', [LabTestController::class, 'store'])->name('tests.store');
+        Route::get('tests/{id}/edit', [LabTestController::class, 'edit'])->name('tests.edit');
         Route::put('tests/{id}', [LabTestController::class, 'update'])->name('tests.update');
         Route::delete('tests/{id}', [LabTestController::class, 'destroy'])->name('tests.destroy');
         

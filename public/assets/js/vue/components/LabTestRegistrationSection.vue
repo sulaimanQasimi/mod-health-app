@@ -24,7 +24,7 @@
         </div>
 
         <!-- Create Lab Test Registration Modal -->
-        <div v-if="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+        <div v-if="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -177,6 +177,7 @@
                                             <td dir="ltr">{{ formatDate(registration.created_at) }}</td>
                                             <td>
                                                 <div class="btn-group" role="group">
+                                                    <!-- View Parameters Button -->
                                                     <button 
                                                         class="btn btn-outline-primary btn-sm" 
                                                         @click="viewParameters(registration.id)"
@@ -184,6 +185,17 @@
                                                     >
                                                         <i class="bx bx-expand"></i>
                                                     </button>
+                                                    
+                                                    <!-- Print Report Button -->
+                                                    <a 
+                                                        v-if="registration.status === 'completed'"
+                                                        :href="`/laboratory/reports/print/${registration.ref_no}`"
+                                                        class="btn btn-outline-info btn-sm"
+                                                        :title="localize('global.print_report')"
+                                                        target="_blank"
+                                                    >
+                                                        <i class="bx bx-printer"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -203,7 +215,7 @@
         </div>
 
         <!-- Test Parameters Modal -->
-        <div v-if="showParametersModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div v-if="showParametersModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -270,20 +282,74 @@
                                             <table class="table table-striped table-hover">
                                                 <thead class="table-body-secondary">
                                                     <tr>
-                                                        <th>{{ localize('global.number') }}</th>
-                                                        <th>{{ localize('global.parameter_name') }}</th>
-                                                        <th>{{ localize('global.unit') }}</th>
-                                                        <th>{{ localize('global.normal_range') }}</th>
+                                                        <th width="5%">{{ localize('global.number') }}</th>
+                                                        <th width="15%">{{ localize('global.parameter_name') }}</th>
+                                                        <th width="8%">{{ localize('global.unit') }}</th>
+                                                        <th width="12%">{{ localize('global.normal_range') }}</th>
+                                                        <th width="10%">Critical Low</th>
+                                                        <th width="10%">Critical High</th>
+                                                        <th width="10%">Panic Low</th>
+                                                        <th width="10%">Panic High</th>
+                                                        <th width="10%">{{ localize('global.result') }}</th>
+                                                        <th width="10%">{{ localize('global.status') }}</th>
+                                                        <th width="2%">{{ localize('global.actions') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="parameter in selectedRegistration.parameters" :key="parameter.id">
+                                                    <tr v-for="(parameter, index) in selectedRegistration.parameters" :key="parameter.id">
                                                         <td>
-                                                            <span class="badge bg-info rounded-pill">{{ selectedRegistration.parameters.indexOf(parameter) + 1 }}</span>
+                                                            <span class="badge bg-info rounded-pill">{{ index + 1 }}</span>
                                                         </td>
-                                                        <td>{{ parameter.parameter_name }}</td>
+                                                        <td><strong>{{ parameter.parameter_name }}</strong></td>
                                                         <td>{{ parameter.unit || '—' }}</td>
                                                         <td>{{ parameter.normal_range || '—' }}</td>
+                                                        <td>
+                                                            <span v-if="parameter.critical_low" class="badge bg-warning">
+                                                                {{ parameter.critical_low }}
+                                                            </span>
+                                                            <span v-else>—</span>
+                                                        </td>
+                                                        <td>
+                                                            <span v-if="parameter.critical_high" class="badge bg-warning">
+                                                                {{ parameter.critical_high }}
+                                                            </span>
+                                                            <span v-else>—</span>
+                                                        </td>
+                                                        <td>
+                                                            <span v-if="parameter.panic_low" class="badge bg-danger">
+                                                                {{ parameter.panic_low }}
+                                                            </span>
+                                                            <span v-else>—</span>
+                                                        </td>
+                                                        <td>
+                                                            <span v-if="parameter.panic_high" class="badge bg-danger">
+                                                                {{ parameter.panic_high }}
+                                                            </span>
+                                                            <span v-else>—</span>
+                                                        </td>
+                                                        <td>
+                                                            <span v-if="parameter.result" class="fw-bold text-primary">
+                                                                {{ parameter.result }}
+                                                            </span>
+                                                            <span v-else class="text-muted">—</span>
+                                                        </td>
+                                                        <td>
+                                                            <span v-if="parameter.result" class="badge bg-success">
+                                                                {{ localize('global.completed') }}
+                                                            </span>
+                                                            <span v-else class="badge bg-secondary">
+                                                                {{ localize('global.pending') }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <button 
+                                                                class="btn btn-outline-info btn-sm" 
+                                                                @click="viewParameterDetails(parameter)"
+                                                                :title="localize('global.view_details')"
+                                                            >
+                                                                <i class="bx bx-info-circle"></i>
+                                                            </button>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -301,6 +367,152 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="closeParametersModal">
+                            {{ localize('global.close') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parameter Details Modal -->
+        <div v-if="showParameterDetailsModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ localize('global.parameter_details') }}</h5>
+                        <button type="button" class="btn-close" @click="closeParameterDetailsModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="selectedParameter">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">{{ localize('global.basic_information') }}</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong>{{ localize('global.parameter_name') }}:</strong>
+                                                    <p>{{ selectedParameter.parameter_name }}</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>{{ localize('global.unit') }}:</strong>
+                                                    <p>{{ selectedParameter.unit || '—' }}</p>
+                                                </div>
+                                                <div class="col-12">
+                                                    <strong>{{ localize('global.normal_range') }}:</strong>
+                                                    <p>{{ selectedParameter.normal_range || '—' }}</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>{{ localize('global.result') }}:</strong>
+                                                    <p v-if="selectedParameter.result" class="fw-bold text-primary fs-5">
+                                                        {{ selectedParameter.result }}
+                                                    </p>
+                                                    <p v-else class="text-muted">—</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>{{ localize('global.status') }}:</strong>
+                                                    <p>
+                                                        <span v-if="selectedParameter.result" class="badge bg-success fs-6">
+                                                            {{ localize('global.completed') }}
+                                                        </span>
+                                                        <span v-else class="badge bg-secondary fs-6">
+                                                            {{ localize('global.pending') }}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0">Critical Values</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong>Critical Low:</strong>
+                                                    <p>{{ selectedParameter.critical_low || '—' }}</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Critical High:</strong>
+                                                    <p>{{ selectedParameter.critical_high || '—' }}</p>
+                                                </div>
+                                                <div class="col-12">
+                                                    <strong>Critical Comment:</strong>
+                                                    <p>{{ selectedParameter.critical_comment || '—' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header bg-danger text-white">
+                                            <h6 class="mb-0">Panic Values</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong>Panic Low:</strong>
+                                                    <p>{{ selectedParameter.panic_low || '—' }}</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Panic High:</strong>
+                                                    <p>{{ selectedParameter.panic_high || '—' }}</p>
+                                                </div>
+                                                <div class="col-12">
+                                                    <strong>Panic Comment:</strong>
+                                                    <p>{{ selectedParameter.panic_comment || '—' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">Additional Settings</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong>Delta Check:</strong>
+                                                    <p>
+                                                        <span v-if="selectedParameter.delta_check_enabled" class="badge bg-success">Enabled</span>
+                                                        <span v-else class="badge bg-secondary">Disabled</span>
+                                                    </p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Delta Threshold:</strong>
+                                                    <p>{{ selectedParameter.delta_check_threshold || '—' }}</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Verification Required:</strong>
+                                                    <p>
+                                                        <span v-if="selectedParameter.requires_verification" class="badge bg-warning">Yes</span>
+                                                        <span v-else class="badge bg-secondary">No</span>
+                                                    </p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Verification Level:</strong>
+                                                    <p>{{ selectedParameter.verification_level || '—' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeParameterDetailsModal">
                             {{ localize('global.close') }}
                         </button>
                     </div>
@@ -345,12 +557,14 @@ export default {
             loading: false,
             showCreateModal: false,
             showParametersModal: false,
+            showParameterDetailsModal: false,
             testRegistrations: [],
             categories: [],
             tests: [],
             selectedCategory: null,
             selectedTest: null,
             selectedRegistration: null,
+            selectedParameter: null,
             form: {
                 test_category_id: '',
                 lab_test_id: '',
@@ -690,7 +904,14 @@ export default {
                 'global.status_pending': 'در انتظار',
                 'global.status_in_progress': 'در حال انجام',
                 'global.status_completed': 'تکمیل شده',
-                'global.status_cancelled': 'لغو شده'
+                'global.status_cancelled': 'لغو شده',
+                'global.print_report': 'چاپ گزارش',
+                'global.view_details': 'مشاهده جزئیات',
+                'global.parameter_details': 'جزئیات پارامتر',
+                'global.basic_information': 'اطلاعات پایه',
+                'global.result': 'نتیجه',
+                'global.completed': 'تکمیل شده',
+                'global.pending': 'در انتظار'
             };
             return translations[key] || key;
         },
@@ -714,6 +935,18 @@ export default {
 
         onTestClear() {
             this.form.lab_test_id = '';
+        },
+
+
+        // Parameter details modal methods
+        viewParameterDetails(parameter) {
+            this.selectedParameter = parameter;
+            this.showParameterDetailsModal = true;
+        },
+
+        closeParameterDetailsModal() {
+            this.showParameterDetailsModal = false;
+            this.selectedParameter = null;
         }
     }
 }
@@ -721,7 +954,7 @@ export default {
 
 <style scoped>
 .lab-test-registration-section .modal {
-    z-index: 1055;
+    z-index: 9999 !important;
 }
 
 .lab-test-registration-section .modal.show {

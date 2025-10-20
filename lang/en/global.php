@@ -611,6 +611,10 @@ return [
     'nurse' => 'Nurse',
     'created_by' => 'Created By',
     'note' => 'Note',
+    'view_results' => 'View Results',
+    'print_report' => 'Print Report',
+    'no_test_registrations_found' => 'No Test Registrations Found',
+    'no_test_registrations_message' => 'There are no test registrations available at the moment.',
     
     // Nurse Notes CRUD Page Translations
     'nurse_notes_list' => 'Nurse Notes List',
@@ -864,4 +868,5 @@ return [
     'create_and_close' => 'Create and Close',
     'registration_modal_info' => 'After creating a test registration, the modal will stay open and fields will be preserved so you can add similar registrations. Use "Cancel" or "Create and Close" to close the modal.',
     'note' => 'Note',
+    'enter_results' => 'Enter Results',
 ];

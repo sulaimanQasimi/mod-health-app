@@ -89,6 +89,9 @@
                                     @endif
                                     
                                     @if($test->status === 'in_progress')
+                                        <a href="{{ route('laboratory.results.show', $test->id) }}" class="btn btn-sm btn-primary" title="{{ localize('global.enter_results') }}">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
                                         <form action="{{ route('laboratory.registrations.mark-completed', $test->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-success" title="{{ localize('global.mark_completed') }}">

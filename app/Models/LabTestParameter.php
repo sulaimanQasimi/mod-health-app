@@ -20,6 +20,16 @@ class LabTestParameter extends Model
         'parameter_name',
         'unit',
         'normal_range',
+        'critical_low',
+        'critical_high',
+        'panic_low',
+        'panic_high',
+        'delta_check_enabled',
+        'delta_check_threshold',
+        'critical_comment',
+        'panic_comment',
+        'requires_verification',
+        'verification_level',
         'result',
     ];
 

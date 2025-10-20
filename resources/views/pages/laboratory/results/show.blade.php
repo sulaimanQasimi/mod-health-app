@@ -78,6 +78,23 @@
                 </div>
             </div>
 
+            {{-- Debug Information --}}
+            @if(config('app.debug'))
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Debug Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>First Test:</strong> {{ $firstTest ? $firstTest->labTest->name : 'None' }}</p>
+                        <p><strong>First Test Results Count:</strong> {{ $firstTestResults ? $firstTestResults->count() : 0 }}</p>
+                        <p><strong>Pending Tests Count:</strong> {{ $pendingTests->count() }}</p>
+                        <p><strong>Completed Tests Count:</strong> {{ $completedTests->count() }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Test Results Card (Full Width) --}}
             <div class="col-md-12">
                 <div class="card p-0 shadow-sm" id="resultCard">
@@ -101,7 +118,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if($firstTestResults)
+                                    @if($firstTestResults && $firstTestResults->count() > 0)
                                         @foreach($firstTestResults as $result)
                                         <tr>
                                             <td>{{ $result->parameter->parameter_name ?? '—' }}</td>
@@ -117,7 +134,13 @@
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="4" class="text-center">No test selected</td>
+                                            <td colspan="4" class="text-center">
+                                                @if($firstTest)
+                                                    No parameters found for this test
+                                                @else
+                                                    No test selected
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endif
                                 </tbody>

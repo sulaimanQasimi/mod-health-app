@@ -102,10 +102,14 @@
                             <table class="table table-bordered" id="createParametersTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th width="30%">{{ localize('global.parameter_name') }}</th>
-                                        <th width="25%">{{ localize('global.unit') }}</th>
-                                        <th width="30%">{{ localize('global.normal_range') }}</th>
-                                        <th width="15%">{{ localize('global.actions') }}</th>
+                                        <th width="20%">{{ localize('global.parameter_name') }}</th>
+                                        <th width="15%">{{ localize('global.unit') }}</th>
+                                        <th width="15%">{{ localize('global.normal_range') }}</th>
+                                        <th width="12%">Critical Low</th>
+                                        <th width="12%">Critical High</th>
+                                        <th width="12%">Panic Low</th>
+                                        <th width="12%">Panic High</th>
+                                        <th width="2%">{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="createParametersBody">
@@ -168,10 +172,14 @@
                             <table class="table table-bordered" id="editParametersTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th width="30%">{{ localize('global.parameter_name') }}</th>
-                                        <th width="25%">{{ localize('global.unit') }}</th>
-                                        <th width="30%">{{ localize('global.normal_range') }}</th>
-                                        <th width="15%">{{ localize('global.actions') }}</th>
+                                        <th width="20%">{{ localize('global.parameter_name') }}</th>
+                                        <th width="15%">{{ localize('global.unit') }}</th>
+                                        <th width="15%">{{ localize('global.normal_range') }}</th>
+                                        <th width="12%">Critical Low</th>
+                                        <th width="12%">Critical High</th>
+                                        <th width="12%">Panic Low</th>
+                                        <th width="12%">Panic High</th>
+                                        <th width="2%">{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="editParametersBody">
@@ -209,6 +217,10 @@
                                 <th>{{ localize('global.parameter_name') }}</th>
                                 <th>{{ localize('global.unit') }}</th>
                                 <th>{{ localize('global.normal_range') }}</th>
+                                <th>Critical Low</th>
+                                <th>Critical High</th>
+                                <th>Panic Low</th>
+                                <th>Panic High</th>
                             </tr>
                         </thead>
                         <tbody id="viewParametersBody">
@@ -579,6 +591,18 @@ $(document).ready(function() {
                     <input type="text" name="parameters[${index}][normal_range]" class="form-control">
                 </td>
                 <td>
+                    <input type="text" name="parameters[${index}][critical_low]" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="parameters[${index}][critical_high]" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="parameters[${index}][panic_low]" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="parameters[${index}][panic_high]" class="form-control">
+                </td>
+                <td>
                     <button type="button" class="btn btn-sm btn-outline-danger remove-parameter-btn">
                         <i class="bx bx-trash"></i>
                     </button>
@@ -632,6 +656,18 @@ $(document).ready(function() {
                         <input type="text" name="parameters[${index}][normal_range]" class="form-control" value="${parameter.normal_range || ''}">
                     </td>
                     <td>
+                        <input type="text" name="parameters[${index}][critical_low]" class="form-control" value="${parameter.critical_low || ''}">
+                    </td>
+                    <td>
+                        <input type="text" name="parameters[${index}][critical_high]" class="form-control" value="${parameter.critical_high || ''}">
+                    </td>
+                    <td>
+                        <input type="text" name="parameters[${index}][panic_low]" class="form-control" value="${parameter.panic_low || ''}">
+                    </td>
+                    <td>
+                        <input type="text" name="parameters[${index}][panic_high]" class="form-control" value="${parameter.panic_high || ''}">
+                    </td>
+                    <td>
                         <button type="button" class="btn btn-sm btn-outline-danger remove-parameter-btn" data-parameter-id="${parameter.id}">
                             <i class="bx bx-trash"></i>
                         </button>
@@ -649,7 +685,7 @@ $(document).ready(function() {
         tbody.empty();
         
         if (labTest.parameters.length === 0) {
-            tbody.append('<tr><td colspan="3" class="text-center text-muted">{{ localize("global.no_parameters_found") }}</td></tr>');
+            tbody.append('<tr><td colspan="7" class="text-center text-muted">{{ localize("global.no_parameters_found") }}</td></tr>');
             return;
         }
         
@@ -659,6 +695,10 @@ $(document).ready(function() {
                     <td><strong>${parameter.parameter_name}</strong></td>
                     <td>${parameter.unit || '-'}</td>
                     <td>${parameter.normal_range || '-'}</td>
+                    <td>${parameter.critical_low || '-'}</td>
+                    <td>${parameter.critical_high || '-'}</td>
+                    <td>${parameter.panic_low || '-'}</td>
+                    <td>${parameter.panic_high || '-'}</td>
                 </tr>
             `;
             tbody.append(row);

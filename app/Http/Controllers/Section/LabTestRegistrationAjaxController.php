@@ -249,6 +249,16 @@ class LabTestRegistrationAjaxController extends Controller
                     'parameter_name' => $result->parameter->parameter_name,
                     'unit' => $result->unit,
                     'normal_range' => $result->normal_range,
+                    'critical_low' => $result->parameter->critical_low,
+                    'critical_high' => $result->parameter->critical_high,
+                    'panic_low' => $result->parameter->panic_low,
+                    'panic_high' => $result->parameter->panic_high,
+                    'critical_comment' => $result->parameter->critical_comment,
+                    'panic_comment' => $result->parameter->panic_comment,
+                    'delta_check_enabled' => $result->parameter->delta_check_enabled,
+                    'delta_check_threshold' => $result->parameter->delta_check_threshold,
+                    'requires_verification' => $result->parameter->requires_verification,
+                    'verification_level' => $result->parameter->verification_level,
                     'result' => $result->result
                 ];
             });

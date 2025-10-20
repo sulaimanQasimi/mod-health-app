@@ -27,16 +27,20 @@ class TestResultController extends Controller
      */
     public function patientList()
     {
-        $tests = PatientTestRegistration::with([
+        // Get unique patients with their test registrations
+        $patients = PatientTestRegistration::with([
             'testable.patient',
             'labTest',
             'doctor',
             'branch'
         ])
         ->latest()
-        ->get();
+        ->get()
+        ->groupBy(function($registration) {
+            return $registration->testable->patient->id ?? 'unknown';
+        });
 
-        return view('pages.laboratory.registrations.index', compact('tests'));
+        return view('pages.laboratory.results.patients', compact('patients'));
     }
 
     /**
@@ -51,11 +55,25 @@ class TestResultController extends Controller
         ]);
 
         try {
-            // Update all results based on ref_no and lab_parameter_id
+            // Update or create results based on ref_no and lab_parameter_id
             foreach ($request->results as $parameterId => $resultValue) {
-                PatientTestResult::where('ref_no', $request->ref_no)
+                $existingResult = PatientTestResult::where('ref_no', $request->ref_no)
                     ->where('lab_parameter_id', $parameterId)
-                    ->update(['result' => $resultValue]);
+                    ->first();
+                
+                if ($existingResult) {
+                    // Update existing result
+                    $existingResult->update(['result' => $resultValue]);
+                } else {
+                    // Create new result entry
+                    PatientTestResult::create([
+                        'patient_id' => $request->patient_id ?? 1, // Fallback if not provided
+                        'ref_no' => $request->ref_no,
+                        'lab_parameter_id' => $parameterId,
+                        'result' => $resultValue,
+                        'test_registration_id' => $request->test_registration_id,
+                    ]);
+                }
             }
 
             // Check if all parameters for this ref_no have results
@@ -86,30 +104,57 @@ class TestResultController extends Controller
     }
 
     /**
-     * Show test results for a specific patient
+     * Show test results for a specific registration
      */
-    public function showTestResults($patient_id)
+    public function showTestResults($registration_id)
     {
-        $patient = Patient::findOrFail($patient_id);
+        $registration = PatientTestRegistration::with([
+            'testable.patient',
+            'labTest.parameters',
+            'doctor',
+            'branch'
+        ])->findOrFail($registration_id);
 
-        // Completed and Pending tests with lab test info
-        $completedTests = PatientTestRegistration::where('patient_id', $patient_id)
+        $patient = $registration->testable->patient ?? null;
+        
+        if (!$patient) {
+            abort(404, 'Patient not found for this registration');
+        }
+
+        // Get all registrations for this patient to show in the side panels
+        $patientId = $patient->id;
+        $completedTests = PatientTestRegistration::where('patient_id', $patientId)
             ->where('status', 'completed')
             ->with(['labTest', 'testable.patient'])
             ->get();
 
-        $pendingTests = PatientTestRegistration::where('patient_id', $patient_id)
+        $pendingTests = PatientTestRegistration::where('patient_id', $patientId)
             ->where('status', 'pending')
             ->with(['labTest', 'testable.patient'])
             ->get();
 
-        // For first test to show result initially
-        $firstTest = $completedTests->first() ?? $pendingTests->first();
-        $firstTestResults = [];
+        // Use the specific registration as the first test
+        $firstTest = $registration;
+        $firstTestResults = collect();
+        
         if($firstTest){
-           $firstTestResults = PatientTestResult::where('test_registration_id', $firstTest->id)
-        ->with('parameter')
-        ->get();
+            // Load existing results if any
+            $firstTestResults = PatientTestResult::where('test_registration_id', $firstTest->id)
+                ->with('parameter')
+                ->get();
+            
+            // If no results exist, create empty result entries for all parameters
+            if($firstTestResults->isEmpty() && $firstTest->labTest && $firstTest->labTest->parameters) {
+                foreach($firstTest->labTest->parameters as $parameter) {
+                    $firstTestResults->push(new \App\Models\PatientTestResult([
+                        'lab_parameter_id' => $parameter->id,
+                        'parameter' => $parameter,
+                        'unit' => $parameter->unit,
+                        'normal_range' => $parameter->normal_range,
+                        'result' => null
+                    ]));
+                }
+            }
         }
 
         return view('pages.laboratory.results.show', compact(
@@ -132,6 +177,20 @@ class TestResultController extends Controller
             $results = PatientTestResult::where('test_registration_id', $test_registration_id)
                 ->with('parameter')
                 ->get();
+
+            // If no results exist, create empty result entries for all parameters
+            if($results->isEmpty() && $test->labTest) {
+                $parameters = \App\Models\LabTestParameter::where('test_id', $test->labTest->id)->get();
+                foreach($parameters as $parameter) {
+                    $results->push(new \App\Models\PatientTestResult([
+                        'lab_parameter_id' => $parameter->id,
+                        'parameter' => $parameter,
+                        'unit' => $parameter->unit,
+                        'normal_range' => $parameter->normal_range,
+                        'result' => null
+                    ]));
+                }
+            }
 
             return response()->json([
                 'status' => 'success',

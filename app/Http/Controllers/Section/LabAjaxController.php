@@ -97,7 +97,7 @@ class LabAjaxController extends Controller
                 'entity_id' => 'required',
                 'entity_type' => 'required|in:appointment,icu,hospitalization,under_review',
             ]);
-
+            
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,

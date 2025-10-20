@@ -3073,9 +3073,9 @@ return [
     "edit_department"=>"ویرایش بخش",
 
     // Laboratory Test Management System Translations
-    "laboratory_tests" => "آزمایشات آزمایشگاهی",
+    "laboratory_tests" => "لابراتوار",
     "test_categories" => "کتگوری‌های آزمایش",
-    "lab_tests" => "آزمایشات آزمایشگاهی",
+    "lab_tests" => "لابراتوار",
     "test_parameters" => "پارامترهای آزمایش",
     "register_patient_test" => "ثبت آزمایش مریض",
     "test_results" => "نتایج آزمایش",

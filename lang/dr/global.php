@@ -3130,8 +3130,11 @@ return [
     "category_details"=>"جزئیات کتگوری",
     "category"=>"کتگوری",
     "all_categories"=>"همه کتگوری‌ها",
+    "test"=>"آزمایش",
+    "no_data_found"=>"هیچ داده ای یافت نشد",
     "select_category"=>"انتخاب کتگوری",
     "no_prescriptions_found"=>"هیچ فورم ادویه‌ای یافت نشد",
+    "patients_with_lab_tests"=>"مریضان با آزمایشات",
     "no_categories_found"=>"هیچ کتگوری یافت نشد",
     "no_lab_tests_found"=>"هیچ آزمایش آزمایشگاهی یافت نشد",
     "add_category"=>"افزودن کتگوری",
@@ -3160,17 +3163,13 @@ return [
     "no_parameters_found"=>"هیچ پارامتری یافت نشد",
     "parameters"=>"پارامترها",
     "edit_department"=>"ویرایش بخش",
-
-    // Laboratory Test Management System Translations
-    "laboratory_tests" => "آزمایشات آزمایشگاهی",
+    "laboratory_tests" => "لابراتوار",
     "test_categories" => "کتگوری‌های آزمایش",
-    "lab_tests" => "آزمایشات آزمایشگاهی",
+    "lab_tests" => "لابراتوار",
     "test_parameters" => "پارامترهای آزمایش",
     "register_patient_test" => "ثبت آزمایش مریض",
     "test_results" => "نتایج آزمایش",
     "lab_reports" => "گزارشات آزمایشگاهی",
-    
-    // Test Categories
     "test_category" => "کتگوری آزمایش",
     "test_category_name" => "نام کتگوری آزمایش",
     "create_test_category" => "ایجاد کتگوری آزمایش",
@@ -3180,8 +3179,6 @@ return [
     "test_category_updated_successfully" => "کتگوری آزمایش با موفقیت تصحیح شد",
     "test_category_deleted_successfully" => "کتگوری آزمایش با موفقیت حذف شد",
     "test_categories_management" => "مدیریت کتگوری‌های آزمایش",
-    
-    // Lab Tests
     "lab_test" => "آزمایش آزمایشگاهی",
     "lab_test_name" => "نام آزمایش",
     "create_lab_test" => "ایجاد آزمایش",
@@ -3193,8 +3190,6 @@ return [
     "lab_tests_management" => "مدیریت آزمایشات",
     "select_test" => "انتخاب آزمایش",
     "test_name" => "نام آزمایش",
-    
-    // Test Parameters
     "test_parameter" => "پارامتر آزمایش",
     "parameter_name" => "نام پارامتر",
     "parameter_unit" => "واحد پارامتر",
@@ -3214,8 +3209,6 @@ return [
     "loading" => "در حال بارگذاری...",
     "unit" => "واحد",
     "result" => "نتیجه",
-    
-    // Patient Test Registration
     "patient_test_registration" => "ثبت آزمایش مریض",
     "register_patient" => "ثبت مریض",
     "patient_test_registrations" => "ثبت‌های آزمایش مریض",
@@ -3233,8 +3226,6 @@ return [
     "no_parameters_found" => "هیچ پارامتری یافت نشد",
     "error_loading_parameters" => "خطا در بارگذاری پارامترها",
     "error_loading_tests" => "خطا در بارگذاری آزمایشات",
-    
-    // Test Results
     "test_result" => "نتیجه آزمایش",
     "test_results" => "نتایج آزمایش",
     "enter_result" => "وارد کردن نتیجه",
@@ -3252,8 +3243,6 @@ return [
     "load_test_result" => "بارگذاری نتیجه آزمایش",
     "test_not_found" => "آزمایش یافت نشد",
     "error_loading_test_results" => "خطا در بارگذاری نتایج آزمایش",
-    
-    // Lab Reports
     "lab_report" => "گزارش آزمایشگاهی",
     "print_lab_report" => "چاپ گزارش آزمایشگاهی",
     "patient_information" => "اطلاعات مریض",
@@ -3268,8 +3257,6 @@ return [
     "parameter_status" => "وضعیت پارامتر",
     "report_generated_on" => "گزارش در تاریخ تولید شده",
     "contact_laboratory_department" => "برای سوالات با بخش آزمایشگاه تماس بگیرید",
-    
-    // Common Laboratory Terms
     "hematology" => "هماتولوژی",
     "biochemistry" => "بیوشیمی",
     "microbiology" => "میکروبیولوژی",
@@ -3284,8 +3271,6 @@ return [
     "white_blood_cells" => "گلبول‌های سفید",
     "red_blood_cells" => "گلبول‌های قرمز",
     "platelets" => "پلاکت‌ها",
-    
-    // Laboratory Actions
     "add_new_test" => "اضافه کردن آزمایش جدید",
     "add_test_category" => "اضافه کردن کتگوری آزمایش",
     "manage_parameters" => "مدیریت پارامترها",
@@ -3294,15 +3279,11 @@ return [
     "print_all_reports" => "چاپ همه گزارشات",
     "export_results" => "صادرات نتایج",
     "import_tests" => "واردات آزمایشات",
-    
-    // Laboratory Status Messages
     "test_registered_successfully" => "آزمایش با موفقیت ثبت شد",
     "test_result_saved_successfully" => "نتیجه آزمایش با موفقیت ذخیره شد",
     "test_report_generated_successfully" => "گزارش آزمایش با موفقیت تولید شد",
     "test_deleted_successfully" => "آزمایش با موفقیت حذف شد",
     "parameter_added_successfully" => "پارامتر با موفقیت اضافه شد",
-    
-    // Laboratory Validation Messages
     "test_name_required" => "نام آزمایش الزامی است",
     "category_required" => "کتگوری الزامی است",
     "parameter_name_required" => "نام پارامتر الزامی است",
@@ -3311,8 +3292,6 @@ return [
     "result_required" => "نتیجه الزامی است",
     "invalid_result_format" => "فرمت نتیجه نامعتبر است",
     "result_out_of_range" => "نتیجه خارج از محدوده طبیعی است",
-    
-    // Laboratory Navigation
     "laboratory_dashboard" => "داشبورد آزمایشگاه",
     "laboratory_management" => "مدیریت آزمایشگاه",
     "laboratory_settings" => "تنظیمات آزمایشگاه",

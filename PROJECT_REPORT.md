@@ -72,7 +72,33 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ## Recent Major Changes & New Features
 
-### 1. Prescription Stock Management System (NEW)
+### 1. Language Translation Improvements (NEW)
+**Implementation Date**: January 2025
+**Contributor**: Development Team
+
+#### Dari Language Translation Standardization:
+- **Category Term Standardization**: Replaced all instances of "کتگوری" (English loanword) with "دسته‌بندی" (proper Dari term)
+- **Comprehensive Translation Updates**: Updated 25+ category-related translations across the application
+- **Test Category Translations**: Standardized laboratory test category terminology
+- **Job Category Translations**: Updated job category terminology for consistency
+- **Validation Messages**: Updated form validation messages to use proper Dari terms
+
+#### Files Modified:
+- **lang/dr/global.php**: Complete category terminology standardization
+- **Translation Keys Updated**:
+  - `categories` → "دسته‌بندی‌ها" (categories)
+  - `category` → "دسته‌بندی" (category) 
+  - `test_category` → "دسته‌بندی آزمایش" (test category)
+  - `job_category` → "دسته‌بندی وظیفوی" (job category)
+  - All related category management terms standardized
+
+#### Impact:
+- **Improved Localization**: Better Dari language support for Afghan users
+- **Consistent Terminology**: Standardized category-related terms across all modules
+- **Enhanced User Experience**: More natural language experience for Dari speakers
+- **Professional Presentation**: Proper Persian/Dari terminology instead of English loanwords
+
+### 2. Prescription Stock Management System (NEW)
 **Implementation Date**: August 2025
 
 #### New Models Created:
@@ -101,7 +127,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **New Tables**: `prescription_stocks`, `incomes`, `outcomes`
 - **Features**: Foreign key constraints, indexes, soft deletes, audit trails
 
-### 2. Nursing Management System (NEW)
+### 3. Nursing Management System (NEW)
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -118,7 +144,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **MedicationAdministrationRecordController** - Medication tracking
 - **NutritionCareController** - Nutrition management
 
-### 3. Physiotherapy Management System (NEW)
+### 4. Physiotherapy Management System (NEW)
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -130,7 +156,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **PhysiotherapyProcedureController** - Procedure management
 - **PhysiotherapyReportController** - Reporting system
 
-### 4. Vital Signs Management (NEW)
+### 5. Vital Signs Management (NEW)
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -143,7 +169,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **VitalSignTypeController** - Vital sign type management
 - **VitalSignScheduleController** - Scheduling system
 
-### 5. Enhanced Reporting System
+### 6. Enhanced Reporting System
 - **Operations Reports** - Comprehensive operation reporting
 - **Anesthesia Reports** - Anesthesia procedure reports
 - **ICU Reports** - Intensive care unit reporting
@@ -542,6 +568,8 @@ The medical database application has undergone significant development with the 
 ### Recent Achievements (December 2024 - January 2025):
 
 #### January 2025 Achievements:
+- **Language Translation Standardization**: Successfully standardized Dari language translations, replacing English loanwords with proper Persian/Dari terminology
+- **Category Terminology Improvement**: Updated 25+ category-related translations across all modules for better localization
 - **Modern Login Page Design**: Successfully implemented contemporary login page with Tailwind CSS, split-screen layout, and glassmorphism effects
 - **Enhanced User Experience**: Improved login interface with responsive design, dark mode support, and modern typography
 - **Appointment System Enhancement**: Successfully implemented dynamic department selection and doctor loading
@@ -570,6 +598,8 @@ The medical database application has undergone significant development with the 
 
 ### Current Status (January 2025):
 The application has significantly improved in terms of:
+- **Language Localization**: Standardized Dari language translations with proper Persian terminology
+- **Category Management**: Improved category-related terminology across all modules
 - **Modern User Interface**: Implemented contemporary login page design with Tailwind CSS and responsive layout
 - **Enhanced User Experience**: Added glassmorphism effects, dark mode support, and modern typography
 - **Appointment Management**: Enhanced with dynamic department selection and doctor loading
@@ -578,7 +608,7 @@ The application has significantly improved in terms of:
 - **Form Functionality**: Resolved critical form submission issues
 - **Print Documents**: Standardized date formats across all medical documents
 - **User Interface**: Enhanced date picker functionality and Select2 integration
-- **Internationalization**: Fixed i18n configuration issues
+- **Internationalization**: Fixed i18n configuration issues and improved language support
 
 ### Current Issues Requiring Attention:
 1. **Language File Duplicates**: 24 duplicate key warnings in language files (English and Pashto)
@@ -597,4 +627,4 @@ The application has significantly improved in terms of:
    - Additional UI improvements and user experience enhancements
    - Advanced reporting features
 
-The application is now more functional with improved appointment management, enhanced frontend stability, and better date handling, making it more suitable for production deployment with proper Persian/Dari calendar support and dynamic department-based workflows.
+The application is now more functional with improved appointment management, enhanced frontend stability, better date handling, and standardized Dari language translations, making it more suitable for production deployment with proper Persian/Dari calendar support, dynamic department-based workflows, and improved localization for Afghan users.

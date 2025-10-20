@@ -6,6 +6,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\NursingAssessmentController;
 use App\Http\Controllers\NutritionCareController;
+use App\Http\Controllers\TestCategoryController;
+use App\Http\Controllers\LabTestController;
+use App\Http\Controllers\LabTestParameterController;
+use App\Http\Controllers\PatientTestRegistrationController;
+use App\Http\Controllers\TestResultController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -903,6 +908,43 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{vitalSignSchedule}', [\App\Http\Controllers\VitalSignScheduleController::class, 'edit'])->name('edit');
         Route::put('update/{vitalSignSchedule}', [\App\Http\Controllers\VitalSignScheduleController::class, 'update'])->name('update');
         Route::delete('destroy/{vitalSignSchedule}', [\App\Http\Controllers\VitalSignScheduleController::class, 'destroy'])->name('destroy');
+    });
+
+    // Laboratory Test Management System routes
+    Route::prefix('laboratory')->name('laboratory.')->group(function() {
+        // Test Categories
+        Route::get('categories', [TestCategoryController::class, 'index'])->name('categories.index');
+        Route::post('categories', [TestCategoryController::class, 'store'])->name('categories.store');
+        Route::put('categories/{id}', [TestCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('categories/{id}', [TestCategoryController::class, 'destroy'])->name('categories.destroy');
+        
+        // Lab Tests
+        Route::get('tests', [LabTestController::class, 'index'])->name('tests.index');
+        Route::post('tests', [LabTestController::class, 'store'])->name('tests.store');
+        Route::put('tests/{id}', [LabTestController::class, 'update'])->name('tests.update');
+        Route::delete('tests/{id}', [LabTestController::class, 'destroy'])->name('tests.destroy');
+        
+        // Parameters
+        Route::get('parameters', [LabTestParameterController::class, 'index'])->name('parameters.index');
+        Route::post('parameters', [LabTestParameterController::class, 'store'])->name('parameters.store');
+        Route::get('parameters/{id}/edit', [LabTestParameterController::class, 'edit'])->name('parameters.edit');
+        Route::post('parameters/{id}', [LabTestParameterController::class, 'update'])->name('parameters.update');
+        Route::get('tests-by-category/{category}', [LabTestParameterController::class, 'getTestsByCategory'])->name('tests.by-category');
+        
+        // Patient Test Registration
+        Route::get('registrations/create', [PatientTestRegistrationController::class, 'create'])->name('registrations.create');
+        Route::post('registrations', [PatientTestRegistrationController::class, 'store'])->name('registrations.store');
+        Route::get('registrations', [PatientTestRegistrationController::class, 'getTestList'])->name('registrations.index');
+        Route::get('search-patients', [PatientTestRegistrationController::class, 'searchPatients'])->name('search-patients');
+        Route::get('get-tests/{categoryId}', [PatientTestRegistrationController::class, 'getTests'])->name('get-tests');
+        Route::get('get-parameters/{testId}', [PatientTestRegistrationController::class, 'getParameters'])->name('get-parameters');
+        
+        // Test Results
+        Route::get('results/patients', [TestResultController::class, 'patientList'])->name('results.patients');
+        Route::get('results/{patient_id}', [TestResultController::class, 'showTestResults'])->name('results.show');
+        Route::post('results/update', [TestResultController::class, 'ajaxUpdateTestResults'])->name('results.update');
+        Route::get('results/load/{test_registration_id}', [TestResultController::class, 'ajaxLoadTestResult'])->name('results.load');
+        Route::get('reports/print/{ref_no}', [TestResultController::class, 'printResultByRef'])->name('reports.print');
     });
 
 });

@@ -225,6 +225,43 @@
             </li>
         @endcan
 
+        <!-- Laboratory Test Management System -->
+        @can('show-laboratory-menu')
+            <li class="menu-item {{ Route::is('laboratory.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-test-tube"></i>
+                    <div>{{ localize('global.laboratory_tests') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('laboratory.categories.*') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.categories.index') }}" class="menu-link">
+                            <div>{{ localize('global.test_categories') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('laboratory.tests.*') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.tests.index') }}" class="menu-link">
+                            <div>{{ localize('global.lab_tests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('laboratory.parameters.*') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.parameters.index') }}" class="menu-link">
+                            <div>{{ localize('global.test_parameters') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('laboratory.registrations.*') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.registrations.create') }}" class="menu-link">
+                            <div>{{ localize('global.register_patient_test') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('laboratory.results.*') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.results.patients') }}" class="menu-link">
+                            <div>{{ localize('global.test_results') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
+
         @can('show-blood-bank-menu')
             <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -660,6 +697,7 @@
                             </a>
                         </li>
                     @endcan
+
 
                     @role('super_admin')
                     <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">

@@ -1543,6 +1543,57 @@ class PermissionSeeder extends Seeder
             'name_pa' => NULL,
             'guard_name' => 'web',
         ]);
+
+        // Laboratory Test Management System permissions
+        Permission::createOrFirst([
+            'name' => 'show-laboratory-menu',
+            'name_dr' => 'نمایش مینو آزمایشگاه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-test-categories',
+            'name_dr' => 'مدیریت دسته بندی آزمایشات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-lab-tests',
+            'name_dr' => 'مدیریت آزمایشات',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-test-parameters',
+            'name_dr' => 'مدیریت پارامترهای آزمایش',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'register-patient-tests',
+            'name_dr' => 'ثبت آزمایشات بیمار',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-test-results',
+            'name_dr' => 'مدیریت نتایج آزمایش',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'print-lab-reports',
+            'name_dr' => 'چاپ گزارشات آزمایش',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
         $this->call(PhysiotherapyPermissionSeeder::class);
         $this->call(PharmacyPermissionSeeder::class);
         $this->call(NursingAssessmentPermissionSeeder::class);

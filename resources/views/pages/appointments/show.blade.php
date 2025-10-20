@@ -375,7 +375,7 @@
             <div class="col-12">
                 <div class="accordion" id="hospitalizationAccordion">
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="hospitalizationHeading">
+                        <h2 class="accordion-header mt-4" id="hospitalizationHeading">
                             <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
                                 data-bs-toggle="collapse" data-bs-target="#hospitalizationCollapse" 
                                 aria-expanded="false" aria-controls="hospitalizationCollapse">

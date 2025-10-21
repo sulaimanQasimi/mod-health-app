@@ -83,7 +83,7 @@
     ]
   },
   "public/assets/js/vue/appointment-prescription-app.js": {
-    "file": "assets/appointment-prescription-app-DzMrop3m.js",
+    "file": "assets/appointment-prescription-app-BUB-V1Uz.js",
     "name": "appointment-prescription-app",
     "src": "public/assets/js/vue/appointment-prescription-app.js",
     "isEntry": true,
@@ -92,7 +92,7 @@
       "_vue-multiselect.esm-F4sVBr1D.js"
     ],
     "css": [
-      "assets/appointment-prescription-app-DqpI1uj9.css"
+      "assets/appointment-prescription-app-BKvJUSdh.css"
     ]
   },
   "public/assets/js/vue/consultation-app.js": {

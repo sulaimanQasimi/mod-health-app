@@ -2029,7 +2029,7 @@ return [
     'type' => 'نوع',
     'physiotherapist' => 'فیزیوتراپیست',
     'completed' => 'تکمیل شده',
-    'in_progress' => 'در حال پیشرفت',
+    'in_progress' => 'زیر کار',
     'pending' => 'در انتظار',
     'minutes' => 'دقیقه',
     'physiotherapy_types' => 'انواع فیزیوتراپی',
@@ -3309,8 +3309,6 @@ return [
     "ref_number" => "شماره مرجع",
     "test_not_found" => "تست یافت نشد",
     "registration_modal_info"=>"معلومات مدل ثبت نام آزمایش",
-    
-    // Backup Management
     "backup_management" => "مدیریت پشتیبان",
     "create_backup" => "ایجاد پشتیبان",
     "total_backups" => "کل پشتیبان‌ها",

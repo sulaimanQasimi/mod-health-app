@@ -28,7 +28,7 @@
                         <span class="badge bg-success">{{ $test->parameters->count() }} {{ localize('global.parameters') }}</span>
                     </td>
                     <td>
-                        <small class="text-muted">{{ $test->created_at->format('M d, Y') }}</small>
+                        <small class="text-muted">{{ \Verta($test->created_at)->formatJalaliDatetime() }}</small>
                     </td>
                     <td>
                         <div class="btn-group" role="group">

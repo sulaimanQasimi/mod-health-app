@@ -612,6 +612,10 @@
                         }
                     } else {
                         toastr && toastr.error ? toastr.error('Error: ' + data.message) : alert('Error: ' + data.message);
+                        // Handle redirect if provided
+                        if (data.redirect) {
+                            setTimeout(() => window.location.href = data.redirect, 1500);
+                        }
                     }
                 })
                 .catch(error => {

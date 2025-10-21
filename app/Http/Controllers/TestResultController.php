@@ -89,6 +89,15 @@ class TestResultController extends Controller
         ]);
 
         try {
+            // Check if test is already completed
+            $test = PatientTestRegistration::find($request->test_registration_id);
+            if ($test->status === 'completed') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot update results for a completed test.',
+                    'redirect' => route('laboratory.reports.print', $test->ref_no)
+                ], 403);
+            }
             // Update or create results based on ref_no and lab_parameter_id
             foreach ($request->results as $parameterId => $resultValue) {
                 $existingResult = PatientTestResult::where('ref_no', $request->ref_no)
@@ -148,6 +157,11 @@ class TestResultController extends Controller
             'doctor',
             'branch'
         ])->findOrFail($registration_id);
+
+        // Check if test is completed - redirect to print page
+        if ($registration->status === 'completed') {
+            return redirect()->route('laboratory.reports.print', $registration->ref_no);
+        }
 
         $patient = $registration->testable->patient ?? null;
         

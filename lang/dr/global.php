@@ -3076,6 +3076,7 @@ return [
     "lab_type_restored_successfully."=>"نوع آزمایش با موفقیت بازیابی شد",
     "lab_type_type."=>"نوع نوع آزمایش",
     "lab_type_name."=>"نام نوع آزمایش",
+    "patients"=>"مریضان",
     "lab_type_created_successfully."=>"نوع آزمایش با موفقیت ایجاد شد",
     "lab_type_updated_successfully."=>"نوع آزمایش با موفقیت تصحیح شد",
     "lab_type_created_successfully."=>"نوع آزمایش با موفقیت ایجاد شد",

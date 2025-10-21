@@ -18,34 +18,34 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #000;
             padding-bottom: 20px;
         }
         
         .header h1 {
-            color: #007bff;
+            color: #000;
             margin: 0;
             font-size: 24px;
         }
         
         .header h2 {
-            color: #666;
+            color: #333;
             margin: 5px 0 0 0;
             font-size: 16px;
             font-weight: normal;
         }
         
         .patient-info {
-            background: #f8f9fa;
+            background: #f5f5f5;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
-            border: 1px solid #dee2e6;
+            border: 1px solid #000;
         }
         
         .patient-info h3 {
             margin: 0 0 10px 0;
-            color: #007bff;
+            color: #000;
             font-size: 16px;
         }
         
@@ -63,7 +63,7 @@
         }
         
         .patient-details strong {
-            color: #495057;
+            color: #000;
         }
         
         .test-section {
@@ -75,8 +75,16 @@
             page-break-after: avoid;
         }
         
+        .page-header {
+            page-break-before: always;
+        }
+        
+        .page-header:first-child {
+            page-break-before: auto;
+        }
+        
         .test-header {
-            background: #007bff;
+            background: #000;
             color: white;
             padding: 10px 15px;
             margin: 0;
@@ -85,7 +93,7 @@
         }
         
         .test-details {
-            border: 1px solid #dee2e6;
+            border: 1px solid #000;
             border-top: none;
             padding: 15px;
         }
@@ -96,8 +104,9 @@
             gap: 10px;
             margin-bottom: 15px;
             padding: 10px;
-            background: #f8f9fa;
+            background: #f5f5f5;
             border-radius: 3px;
+            border: 1px solid #ccc;
         }
         
         .test-meta div {
@@ -106,7 +115,7 @@
         }
         
         .test-meta strong {
-            color: #495057;
+            color: #000;
         }
         
         .parameters-table {
@@ -117,48 +126,48 @@
         
         .parameters-table th,
         .parameters-table td {
-            border: 1px solid #dee2e6;
+            border: 1px solid #000;
             padding: 8px;
             text-align: right;
         }
         
         .parameters-table th {
-            background: #e9ecef;
+            background: #f0f0f0;
             font-weight: bold;
-            color: #495057;
+            color: #000;
         }
         
         .parameters-table tr:nth-child(even) {
-            background: #f8f9fa;
+            background: #f5f5f5;
         }
         
         .result-value {
             font-weight: bold;
-            color: #007bff;
+            color: #000;
         }
         
         .normal-range {
-            color: #28a745;
+            color: #000;
             font-size: 11px;
         }
         
         .unit {
-            color: #6c757d;
+            color: #333;
             font-size: 11px;
         }
         
         .footer {
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #dee2e6;
+            border-top: 1px solid #000;
             text-align: center;
-            color: #6c757d;
+            color: #000;
             font-size: 11px;
         }
         
         .group-info {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
+            background: #f5f5f5;
+            border: 1px solid #000;
             padding: 10px;
             border-radius: 3px;
             margin-bottom: 20px;
@@ -166,7 +175,7 @@
         
         .group-info h4 {
             margin: 0 0 5px 0;
-            color: #856404;
+            color: #000;
             font-size: 14px;
         }
         
@@ -177,7 +186,7 @@
         }
         
         .ref-number {
-            background: #007bff;
+            background: #000;
             color: white;
             padding: 2px 8px;
             border-radius: 3px;
@@ -197,54 +206,6 @@
     </style>
 </head>
 <body>
-    {{-- Header --}}
-    <div class="header">
-        <h1>{{ localize('global.laboratory_test_report') }}</h1>
-        <h2>{{ localize('global.grouped_test_results') }}</h2>
-    </div>
-
-    {{-- Group Information --}}
-    <div class="group-info">
-        <h4>{{ localize('global.test_group') }} #{{ $category_id }}</h4>
-        <div class="ref-numbers">
-            @foreach($testRegistrations as $test)
-                <span class="ref-number">{{ $test->ref_no }}</span>
-            @endforeach
-        </div>
-    </div>
-
-    {{-- Patient Information --}}
-    @if($patient)
-        <div class="patient-info">
-            <h3>{{ localize('global.patient_information') }}</h3>
-            <div class="patient-details">
-                <div>
-                    <strong>{{ localize('global.name') }}:</strong>
-                    <span>{{ $patient->name }} {{ $patient->last_name }}</span>
-                </div>
-                <div>
-                    <strong>{{ localize('global.father_name') }}:</strong>
-                    <span>{{ $patient->father_name ?? '—' }}</span>
-                </div>
-                <div>
-                    <strong>{{ localize('global.age') }}:</strong>
-                    <span>{{ $patient->age ?? '—' }}</span>
-                </div>
-                <div>
-                    <strong>{{ localize('global.phone') }}:</strong>
-                    <span>{{ $patient->phone ?? '—' }}</span>
-                </div>
-                <div>
-                    <strong>{{ localize('global.gender') }}:</strong>
-                    <span>{{ $patient->gender ?? '—' }}</span>
-                </div>
-                <div>
-                    <strong>{{ localize('global.address') }}:</strong>
-                    <span>{{ $patient->address ?? '—' }}</span>
-                </div>
-            </div>
-        </div>
-    @endif
 
     {{-- Test Results Grouped by Lab Test Category --}}
     @foreach($testsByLabCategory as $labCategoryId => $testsInCategory)
@@ -253,12 +214,46 @@
             $categoryName = $labCategory ? $labCategory->name : 'Uncategorized';
         @endphp
         
-        {{-- Category Header --}}
-        <div class="category-header" style="background: #007bff; color: white; padding: 15px; margin: 20px 0 10px 0; border-radius: 5px;">
-            <h3 style="margin: 0; font-size: 18px;">
-                <i class="bx bx-category" style="margin-left: 8px;"></i>
-                {{ $categoryName }}
-            </h3>
+        {{-- Page Header for each category --}}
+        <div class="page-header" style="page-break-before: always;">
+            {{-- Report Header --}}
+            <div class="header">
+                <h1>{{ localize('global.laboratory_test_report') }}</h1>
+                <h2>{{ localize('global.grouped_test_results') }} - {{ $categoryName }}</h2>
+            </div>
+
+            {{-- Patient Information --}}
+            @if($patient)
+                <div class="patient-info">
+                    <h3>{{ localize('global.patient_information') }}</h3>
+                    <div class="patient-details">
+                        <div>
+                            <strong>{{ localize('global.name') }}:</strong>
+                            <span>{{ $patient->name }} {{ $patient->last_name }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.father_name') }}:</strong>
+                            <span>{{ $patient->father_name ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.age') }}:</strong>
+                            <span>{{ $patient->age ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.phone') }}:</strong>
+                            <span>{{ $patient->phone ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.gender') }}:</strong>
+                            <span>{{ $patient->gender ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.address') }}:</strong>
+                            <span>{{ $patient->address ?? '—' }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         {{-- Tests in this category --}}
@@ -330,17 +325,13 @@
             </div>
         @endforeach
 
-        {{-- Page break after each category (except the last one) --}}
-        @if(!$loop->last)
-            <div style="page-break-after: always;"></div>
-        @endif
+        {{-- Footer for each category page --}}
+        <div class="footer">
+            <p>{{ localize('global.report_generated_on') }}: {{ now()->format('Y-m-d H:i:s') }}</p>
+            <p>{{ localize('global.laboratory_system') }}</p>
+        </div>
     @endforeach
 
-    {{-- Footer --}}
-    <div class="footer">
-        <p>{{ localize('global.report_generated_on') }}: {{ now()->format('Y-m-d H:i:s') }}</p>
-        <p>{{ localize('global.laboratory_system') }}</p>
-    </div>
 
     <script>
         // Auto print when page loads

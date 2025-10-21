@@ -299,10 +299,10 @@
                         <table class="parameters-table">
                             <thead>
                                 <tr>
-                                    <th>{{ localize('global.parameter') }}</th>
-                                    <th>{{ localize('global.result') }}</th>
-                                    <th>{{ localize('global.unit') }}</th>
-                                    <th>{{ localize('global.normal_range') }}</th>
+                                    <th>Investigation</th>
+                                    <th>Result</th>
+                                    <th>Unit</th>
+                                    <th>Reference Value</th>
                                 </tr>
                             </thead>
                             <tbody>

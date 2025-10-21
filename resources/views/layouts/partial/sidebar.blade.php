@@ -243,11 +243,6 @@
                             <div>{{ localize('global.lab_tests') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('laboratory.parameters.*') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.parameters.index') }}" class="menu-link">
-                            <div>{{ localize('global.test_parameters') }}</div>
-                        </a>
-                    </li>
                     <li class="menu-item {{ Route::is('laboratory.results.*') ? 'active' : '' }}">
                         <a href="{{ route('laboratory.results.patients') }}" class="menu-link">
                             <div>{{ localize('global.test_results') }}</div>

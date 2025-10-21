@@ -3254,7 +3254,7 @@ return [
     "reference_number" => "شماره مرجع",
     "report_date" => "تاریخ گزارش",
     "hospital_name" => "بیمارستان",
-    "laboratory_test_report" => "گزارش آزمایش آزمایشگاهی",
+    "laboratory_test_report" => "گزارش معاینات لابراتوار",
     "print_report" => "چاپ گزارش",
     "normal" => "طبیعی",
     "abnormal" => "غیرطبیعی",
@@ -3357,4 +3357,5 @@ return [
     "backup_queued" => "پشتیبان در صف قرار گرفت و به زودی پردازش خواهد شد!",
     "backup_deleted_successfully" => "پشتیبان با موفقیت حذف شد",
     "backup_not_found" => "پشتیبان یافت نشد",
+    "grouped_test_results" => "کتگوری",
 ];

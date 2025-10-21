@@ -63,6 +63,7 @@
              .table-results tbody tr {
                  border-bottom: 1px solid #dee2e6;
                  background-color: #fff;
+                 text-align: black;
              }
 
              .table-results tbody tr:nth-child(even) {
@@ -71,6 +72,7 @@
 
              .table-results tbody td {
                  padding: 12px;
+                 background-color:rgba(37, 19, 70, 0.53);
                  vertical-align: middle;
                  border: 1px solid #dee2e6;
                  border-top: none;

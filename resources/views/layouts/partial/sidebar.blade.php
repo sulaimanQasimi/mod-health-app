@@ -82,7 +82,7 @@
                 </a>
 
                 <ul class="menu-sub">
-                    
+
                     <li class="menu-item {{ Route::is('appointments.departmentAppointments') ? 'active' : '' }}">
                         <a href="{{ route('appointments.departmentAppointments') }}" class="menu-link">
                             <div>{{ localize('global.department_appointments') }}</div>
@@ -233,16 +233,6 @@
                     <div>{{ localize('global.laboratory_tests') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    <li class="menu-item {{ Route::is('laboratory.categories.*') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.categories.index') }}" class="menu-link">
-                            <div>{{ localize('global.test_categories') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('laboratory.tests.*') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.tests.index') }}" class="menu-link">
-                            <div>{{ localize('global.lab_tests') }}</div>
-                        </a>
-                    </li>
                     <li class="menu-item {{ Route::is('laboratory.results.*') ? 'active' : '' }}">
                         <a href="{{ route('laboratory.results.patients') }}" class="menu-link">
                             <div>{{ localize('global.test_results') }}</div>
@@ -303,7 +293,8 @@
         @endcan
 
         @can('show-hospitalizations-menu')
-            <li class="menu-item {{ Route::is('hospitalizations.*') || Route::is('vital-sign-types.*') || Route::is('vital-signs.*') ? 'active open' : '' }}">
+            <li
+                class="menu-item {{ Route::is('hospitalizations.*') || Route::is('vital-sign-types.*') || Route::is('vital-signs.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-bed"></i>
                     <div>{{ localize('global.hospitalizations') }}</div>
@@ -325,7 +316,7 @@
                             <div>{{ localize('global.reports') }}</div>
                         </a>
                     </li>
-                    
+
                     <!-- Vital Signs Management -->
                     @can('show-vital-sign-types-menu')
                         <li class="menu-item {{ Route::is('vital-sign-types.*') ? 'active' : '' }}">
@@ -612,6 +603,18 @@
                             </a>
                         </li>
                     @endcan
+                    @can('show-laboratory-menu')
+                        <li class="menu-item {{ Route::is('laboratory.categories.*') ? 'active' : '' }}">
+                            <a href="{{ route('laboratory.categories.index') }}" class="menu-link">
+                                <div>{{ localize('global.test_categories') }}</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {{ Route::is('laboratory.tests.*') ? 'active' : '' }}">
+                            <a href="{{ route('laboratory.tests.index') }}" class="menu-link">
+                                <div>{{ localize('global.lab_tests') }}</div>
+                            </a>
+                        </li>
+                    @endcan
                     @can('show-add-icu-procedures-menu')
                         <li class="menu-item {{ Route::is('procedure_types.*') ? 'active' : '' }}">
                             <a href="{{ route('procedure_types.index') }}" class="menu-link">
@@ -675,8 +678,8 @@
                             </a>
                         </li>
                     @endcan
-                    
-                    
+
+
                     <!-- Vital Signs Management -->
                     @can('show-vital-sign-types-menu')
                         <li class="menu-item {{ Route::is('vital-sign-types.*') ? 'active' : '' }}">

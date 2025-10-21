@@ -23,7 +23,7 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
                             <div class="flex-shrink-0">
                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                                     <i class="bx bx-user"></i>
@@ -36,7 +36,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
                             <div class="flex-shrink-0">
                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                                     <i class="bx bx-male"></i>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
                             <div class="flex-shrink-0">
                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                                     <i class="bx bx-calendar"></i>
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
                             <div class="flex-shrink-0">
                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                                     <i class="bx bx-phone"></i>

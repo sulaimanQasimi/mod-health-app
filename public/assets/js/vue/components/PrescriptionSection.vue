@@ -461,13 +461,26 @@ export default {
                  }));
 
                  const formData = {
-                     appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id,
+                     appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id || this.contextData.id,
                      patient_id: this.contextData.patient_id,
                      doctor_id: this.contextData.doctor_id,
                      branch_id: this.contextData.branch_id,
                      i_c_u_id: this.icu ? this.icu.id : null,
                      prescription_items: transformedItems
                  };
+
+                 // Validate appointment_id is present
+                 if (!formData.appointment_id) {
+                     Swal.fire({
+                         title: 'خطا',
+                         text: 'شناسه نوبت یافت نشد. لطفاً صفحه را مجدداً بارگذاری کنید.',
+                         icon: 'error',
+                         timer: 3000,
+                         showConfirmButton: false
+                     });
+                     this.loading = false;
+                     return;
+                 }
 
                 const response = await fetch('/prescription-ajax/store', {
                     method: 'POST',

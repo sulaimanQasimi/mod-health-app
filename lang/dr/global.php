@@ -857,12 +857,12 @@ return [
     'status_cancelled' => 'لغو شده',
     
     // Lab Test Registration Section
-    'lab_test_registrations' => 'ثبت نام آزمایشات',
+    'lab_test_registrations' => 'لابراتوار',
     'add_lab_test_registration' => 'اضافه کردن ثبت نام آزمایش',
     'view_test_parameters' => 'مشاهده پارامترهای آزمایش',
     'test_registration_details' => 'جزئیات ثبت نام آزمایش',
-    'loading_lab_test_registration_section' => 'در حال بارگذاری بخش ثبت نام آزمایشات...',
-    'lab_test_registration_section_load_error' => 'خطا در بارگذاری بخش ثبت نام آزمایشات',
+    'loading_lab_test_registration_section' => 'در حال بارگذاری بخش لابراتوار...',
+    'lab_test_registration_section_load_error' => 'خطا در بارگذاری بخش لابراتوار',
     'no_test_registrations_found' => 'هیچ ثبت نام آزمایشی یافت نشد',
     'create_and_continue' => 'ایجاد و ادامه',
     'create_and_close' => 'ایجاد و بستن',

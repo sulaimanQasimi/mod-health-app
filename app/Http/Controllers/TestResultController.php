@@ -234,4 +234,41 @@ class TestResultController extends Controller
         // Return view with results and auto print
         return view('pages.laboratory.reports.lab_report', compact('patient', 'results', 'testRegistration', 'testName'));
     }
+
+    /**
+     * Show scan page for laboratory tests
+     */
+    public function scanCode()
+    {
+        return view('pages.laboratory.scan');
+    }
+
+    /**
+     * Handle scanned reference number
+     */
+    public function scanRefCode(Request $request)
+    {
+        // Get the scanned reference number
+        $ref_no = $request->input('ref_no');
+
+        // Find the test registration based on the reference number
+        $registration = PatientTestRegistration::where('ref_no', $ref_no)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->with(['labTest', 'testable.patient'])
+            ->first();
+
+        if (!$registration) {
+            // Handle the case when the test is not found
+            return redirect()->back()->with('error', localize('global.test_not_found'));
+        }
+
+        // Check the status of the test
+        if ($registration->status === 'completed') {
+            // If completed, redirect to print page
+            return redirect()->route('laboratory.reports.print', $ref_no);
+        } else {
+            // If not completed, redirect to results entry page
+            return redirect()->route('laboratory.results.show', $registration->id);
+        }
+    }
 }

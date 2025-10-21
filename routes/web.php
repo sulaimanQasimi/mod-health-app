@@ -957,6 +957,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('results/update', [TestResultController::class, 'ajaxUpdateTestResults'])->name('results.update');
         Route::get('results/load/{test_registration_id}', [TestResultController::class, 'ajaxLoadTestResult'])->name('results.load');
         Route::get('reports/print/{ref_no}', [TestResultController::class, 'printResultByRef'])->name('reports.print');
+        
+        // Scan routes
+        Route::get('scan', [TestResultController::class, 'scanCode'])->name('scan');
+        Route::get('scan/ref', [TestResultController::class, 'scanRefCode'])->name('scan.ref');
     });
 
 });

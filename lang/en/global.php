@@ -898,4 +898,10 @@ return [
     'registration_modal_info' => 'After creating a test registration, the modal will stay open and fields will be preserved so you can add similar registrations. Use "Cancel" or "Create and Close" to close the modal.',
     'note' => 'Note',
     'enter_results' => 'Enter Results',
+    
+    // Laboratory Scan
+    'scan_test' => 'Scan Test',
+    'please_scan_test' => 'Please Scan Test Reference',
+    'ref_number' => 'Reference Number',
+    'test_not_found' => 'Test not found',
 ];

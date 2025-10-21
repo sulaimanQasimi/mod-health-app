@@ -25,20 +25,54 @@ class TestResultController extends Controller
     /**
      * Display patient list for test results
      */
-    public function patientList()
+    public function patientList(Request $request)
     {
-        // Get unique patients with their test registrations
-        $patients = PatientTestRegistration::with([
+        // Start query builder
+        $query = PatientTestRegistration::with([
             'testable.patient',
             'labTest',
             'doctor',
             'branch'
-        ])
-        ->latest()
-        ->get()
-        ->groupBy(function($registration) {
-            return $registration->testable->patient->id ?? 'unknown';
-        });
+        ]);
+
+        // Apply search filter (patient name)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('testable.patient', function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Apply status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Apply priority filter
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        // Apply date range filter
+        if ($request->filled('date_from')) {
+            $query->whereHas('testable', function($q) use ($request) {
+                $q->whereDate('date', '>=', $request->date_from);
+            });
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereHas('testable', function($q) use ($request) {
+                $q->whereDate('date', '<=', $request->date_to);
+            });
+        }
+
+        // Get filtered results and group by patient
+        $patients = $query->latest()
+            ->get()
+            ->groupBy(function($registration) {
+                return $registration->testable->patient->id ?? 'unknown';
+            });
 
         return view('pages.laboratory.results.patients', compact('patients'));
     }

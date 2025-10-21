@@ -238,6 +238,11 @@
                             <div>{{ localize('global.test_results') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('laboratory.results.grouped') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.results.grouped') }}" class="menu-link">
+                            <div>{{ localize('global.grouped_test_results') }}</div>
+                        </a>
+                    </li>
                     <li class="menu-item {{ Route::is('laboratory.scan') ? 'active' : '' }}">
                         <a href="{{ route('laboratory.scan') }}" class="menu-link">
                             <div>{{ localize('global.scan_test') }}</div>

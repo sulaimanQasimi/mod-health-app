@@ -957,7 +957,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('results/registration/{registration_id}', [TestResultController::class, 'showTestResults'])->name('results.show');
         Route::post('results/update', [TestResultController::class, 'ajaxUpdateTestResults'])->name('results.update');
         Route::get('results/load/{test_registration_id}', [TestResultController::class, 'ajaxLoadTestResult'])->name('results.load');
+        Route::get('results/grouped', [TestResultController::class, 'groupedTests'])->name('results.grouped');
         Route::get('reports/print/{ref_no}', [TestResultController::class, 'printResultByRef'])->name('reports.print');
+        Route::get('reports/print-group/{category_id}', [TestResultController::class, 'printGroupedTests'])->name('reports.print-group');
         
         // Scan routes
         Route::get('scan', [TestResultController::class, 'scanCode'])->name('scan');

@@ -804,6 +804,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Lab Test Registration Ajax routes
     Route::prefix('lab-test-registration-ajax')->name('lab-test-registration-ajax.')->group(function () {
         Route::get('categories', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getTestCategories']);
+        Route::get('all-tests', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getAllTests']);
         Route::get('tests/{categoryId}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getTestsByCategory']);
         Route::get('parameters/{testId}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'getTestParameters']);
         Route::post('store/{type}/{id}', [\App\Http\Controllers\Section\LabTestRegistrationAjaxController::class, 'storeTestRegistration']);

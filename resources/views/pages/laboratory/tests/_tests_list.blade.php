@@ -1,7 +1,7 @@
 {{-- Tests Table --}}
 <div class="table-responsive">
-    <table class="table table-hover table-striped">
-        <thead class="table-dark">
+    <table class="table table-striped">
+        <thead class="table-primary-dark">
             <tr>
                 <th width="5%">#</th>
                 <th width="25%">{{ localize('global.test_name') }}</th>

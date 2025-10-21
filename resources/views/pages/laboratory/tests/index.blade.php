@@ -100,7 +100,7 @@
                         </div>
                         <div class="table-responsive">
                             <table class="table table-bordered" id="createParametersTable">
-                                <thead class="table-light">
+                                <thead class="table-bg-none">
                                     <tr>
                                         <th width="20%">{{ localize('global.parameter_name') }}</th>
                                         <th width="15%">{{ localize('global.unit') }}</th>
@@ -285,8 +285,16 @@
         to { opacity: 1; transform: translateY(0); }
     }
     
-    .test-row:hover {
-        background-color: #f8f9fa;
+    .table-primary-dark {
+        background-color: #7b57ff !important;
+        color: white !important;
+    }
+    
+    .table-primary-dark th {
+        background-color: #7b57ff !important;
+        color: white !important;
+        border-color: #6b46c1 !important;
+        font-weight: 600;
     }
     
     .parameter-row {

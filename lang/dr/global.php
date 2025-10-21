@@ -3169,6 +3169,7 @@ return [
     "lab_tests" => "تست های لابراتوار",
     "ref_no"=>"شماره مرجع",
     "laboratory_category"=>"کتگوری لابراتوار",
+    "search_and_filters"=>"جستجو و فیلترها",
     "test_parameters" => "پارامترهای آزمایش",
     "register_patient_test" => "ثبت آزمایش مریض",
     "test_results" => "نتایج آزمایش",

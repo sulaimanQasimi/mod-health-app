@@ -173,7 +173,7 @@
                                                 <td class="text-center">
                                                     @if($registration->testable && $registration->testable->date)
                                                         <span class="text-muted">
-                                                            {{ \Carbon\Carbon::parse($registration->testable->date)->format('M d, Y') }}
+                                                            {{ \Verta(\Carbon\Carbon::parse($registration->testable->date))->formatJalaliDate() }}
                                                         </span>
                                                     @else
                                                         <span class="text-muted">—</span>

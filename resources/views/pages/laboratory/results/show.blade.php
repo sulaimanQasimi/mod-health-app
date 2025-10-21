@@ -3,49 +3,74 @@
 @section('content')
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
+        {{-- Breadcrumb --}}
+        <nav aria-label="breadcrumb" class="mb-4">
+            {{-- <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ localize('global.dashboard') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('laboratory.registrations.index') }}">{{ localize('global.lab_test_registrations') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ localize('global.test_results') }}</li>
+            </ol> --}}
+        </nav>
+
         {{-- Patient Information Header --}}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bx bx-user"></i>
-                    {{ localize('global.patient_information') }}
-                </h5>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <i class="bx bx-user me-2"></i>
+                    <h5 class="mb-0">{{ localize('global.patient_information') }}</h5>
+                </div>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <i class="bx bx-user me-2 text-primary"></i>
-                            <div>
-                                <small class="text-muted">{{ localize('global.name') }}</small>
-                                <div class="fw-bold">{{ $patient->name }} {{ $patient->last_name }}</div>
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="bx bx-user"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted d-block">{{ localize('global.name') }}</small>
+                                <div class="fw-semibold">{{ $patient->name }} {{ $patient->last_name }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <i class="bx bx-male me-2 text-primary"></i>
-                            <div>
-                                <small class="text-muted">{{ localize('global.father_name') }}</small>
-                                <div class="fw-bold">{{ $patient->father_name }}</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="bx bx-male"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted d-block">{{ localize('global.father_name') }}</small>
+                                <div class="fw-semibold">{{ $patient->father_name }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <i class="bx bx-calendar me-2 text-primary"></i>
-                            <div>
-                                <small class="text-muted">{{ localize('global.age') }}</small>
-                                <div class="fw-bold">{{ $patient->age }}</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="bx bx-calendar"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted d-block">{{ localize('global.age') }}</small>
+                                <div class="fw-semibold">{{ $patient->age }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <i class="bx bx-phone me-2 text-primary"></i>
-                            <div>
-                                <small class="text-muted">{{ localize('global.phone') }}</small>
-                                <div class="fw-bold">{{ $patient->phone }}</div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="bx bx-phone"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted d-block">{{ localize('global.phone') }}</small>
+                                <div class="fw-semibold">{{ $patient->phone }}</div>
                             </div>
                         </div>
                     </div>

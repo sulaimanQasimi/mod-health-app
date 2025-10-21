@@ -869,6 +869,7 @@ export default {
         localize(key) {
             // Simple localization function - in real app this would use proper i18n
             const translations = {
+                "global.registration_modal_info":"معلومات مدل ثبت نام آزمایش",
                 'global.lab_test_registrations': 'لابراتوار',
                 'global.add_lab_test_registration': 'اضافه کردن ثبت نام آزمایش',
                 'global.test_category': 'دسته بندی آزمایش',

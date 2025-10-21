@@ -3304,10 +3304,9 @@ return [
     "laboratory_reports" => "گزارشات آزمایشگاه",
     "laboratory_statistics" => "آمار آزمایشگاه",
     "laboratory_analytics" => "تحلیل‌های آزمایشگاه",
-    
-    // Laboratory Scan
     "scan_test" => "اسکن تست",
     "please_scan_test" => "لطفا شماره مرجع را اسکن کنید",
     "ref_number" => "شماره مرجع",
     "test_not_found" => "تست یافت نشد",
+    "registration_modal_info"=>"معلومات مدل ثبت نام آزمایش",
 ];

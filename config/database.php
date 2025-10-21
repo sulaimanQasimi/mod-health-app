@@ -63,7 +63,7 @@ return [
             ]) : [],
             'dump' => [
                 'useSingleTransaction' => true,
-                'addExtraOption' => '--no-data', // Only backup schema, no data
+                // Removed --no-data to include data in backups
             ],
         ],
 

@@ -109,7 +109,7 @@
                              class="accordion-collapse collapse" 
                              aria-labelledby="heading{{ $categoryId }}" 
                              data-bs-parent="#groupedTestsAccordion">
-                            <div class="accordion-body">
+                            <div class="accordion-body bg-none">
                                 {{-- Patient Information --}}
                                 @if($tests->first()->testable->patient)
                                     <div class="row mb-3">
@@ -139,9 +139,9 @@
                                 @endif
 
                                 {{-- Tests in Group --}}
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
-                                        <thead class="table-light">
+                                 <div class="table-responsive">
+                                     <table class="table table-hover">
+                                         <thead>
                                             <tr>
                                                 <th>{{ localize('global.test_name') }}</th>
                                                 <th>{{ localize('global.reference_number') }}</th>
@@ -254,7 +254,7 @@
     }
     
     .accordion-body {
-        background-color: #ffffff;
+        background-color: transparent;
     }
     
     /* Print button styling in accordion header */

@@ -3362,4 +3362,11 @@ return [
     "no_grouped_tests_found"=>"هیچ کتگوری یافت نشد",
     "no_grouped_tests_description"=>"هیچ آزمایشی در این کتگوری یافت نشد",
     "all_priorities"=>"همه رده ها",
+    "print_group"=>"چاپ کتگوری",
+    "test_group"=>"گروه آزمایش",
+    "tests"=>"آزمایشات",
+    "patient_name"=>"نام مریض",
+    "patient_last_name"=>"نام خانوادگی مریض",
+    "patient_name_last_name"=>"نام و نام خانوادگی مریض",
+    "patient_name_last_name"=>"نام و نام خانوادگی مریض",
 ];

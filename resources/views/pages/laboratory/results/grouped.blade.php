@@ -47,19 +47,21 @@
                     </div>
                     <div class="col-md-2">
                         <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-                        <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request('date_from') }}">
+                        <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
+                            value="{{ request('date_from') }}">
                     </div>
                     <div class="col-md-2">
                         <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-                        <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request('date_to') }}">
+                        <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" 
+                            value="{{ request('date_to') }}">
                     </div>
                     <div class="col-md-1">
                         <label class="form-label">&nbsp;</label>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="bx bx-search"></i>
                             </button>
-                            <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-secondary btn-sm">
                                 <i class="bx bx-x"></i>
                             </a>
                         </div>
@@ -261,4 +263,17 @@
         position: relative;
     }
 </style>
+@endpush
+
+@push('custom-js')
+<script src="{{ asset('ShamsiCalender/js/persianDatepicker.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Persian datepicker
+    $('.datepicker_dari').persianDatepicker({
+        format: 'YYYY/MM/DD',
+        observer: true,
+    });
+});
+</script>
 @endpush

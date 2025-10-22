@@ -3359,4 +3359,7 @@ return [
     "backup_deleted_successfully" => "پشتیبان با موفقیت حذف شد",
     "backup_not_found" => "پشتیبان یافت نشد",
     "grouped_test_results" => "کتگوری",
+    "no_grouped_tests_found"=>"هیچ کتگوری یافت نشد",
+    "no_grouped_tests_description"=>"هیچ آزمایشی در این کتگوری یافت نشد",
+    "all_priorities"=>"همه رده ها",
 ];

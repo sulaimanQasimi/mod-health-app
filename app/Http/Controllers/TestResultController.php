@@ -54,17 +54,47 @@ class TestResultController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        // Apply date range filter
-        if ($request->filled('date_from')) {
-            $query->whereHas('testable', function($q) use ($request) {
-                $q->whereDate('date', '>=', $request->date_from);
+        // Apply date range filter with Persian date support
+        if ($request->filled('date_from_gregorian')) {
+            $dateFrom = $request->date_from_gregorian;
+            $query->whereHas('testable', function($q) use ($dateFrom) {
+                $q->whereDate('date', '>=', $dateFrom);
             });
+        } elseif ($request->filled('date_from')) {
+            // Convert Persian date to Gregorian
+            try {
+                $persianDate = $request->date_from;
+                $dateFrom = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)->toCarbon()->format('Y-m-d');
+                $query->whereHas('testable', function($q) use ($dateFrom) {
+                    $q->whereDate('date', '>=', $dateFrom);
+                });
+            } catch (\Exception $e) {
+                // If conversion fails, try as Gregorian date
+                $query->whereHas('testable', function($q) use ($request) {
+                    $q->whereDate('date', '>=', $request->date_from);
+                });
+            }
         }
 
-        if ($request->filled('date_to')) {
-            $query->whereHas('testable', function($q) use ($request) {
-                $q->whereDate('date', '<=', $request->date_to);
+        if ($request->filled('date_to_gregorian')) {
+            $dateTo = $request->date_to_gregorian;
+            $query->whereHas('testable', function($q) use ($dateTo) {
+                $q->whereDate('date', '<=', $dateTo);
             });
+        } elseif ($request->filled('date_to')) {
+            // Convert Persian date to Gregorian
+            try {
+                $persianDate = $request->date_to;
+                $dateTo = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)->toCarbon()->format('Y-m-d');
+                $query->whereHas('testable', function($q) use ($dateTo) {
+                    $q->whereDate('date', '<=', $dateTo);
+                });
+            } catch (\Exception $e) {
+                // If conversion fails, try as Gregorian date
+                $query->whereHas('testable', function($q) use ($request) {
+                    $q->whereDate('date', '<=', $request->date_to);
+                });
+            }
         }
 
         // Get filtered results and group by patient
@@ -294,8 +324,8 @@ class TestResultController extends Controller
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
             'priority' => 'nullable|in:normal,urgent,stat',
             'doctor' => 'nullable|exists:users,id',
-            'date_from' => 'nullable|string',
-            'date_to' => 'nullable|string',
+            'date_from' => 'nullable|string|regex:/^\d{4}\/\d{2}\/\d{2}$/',
+            'date_to' => 'nullable|string|regex:/^\d{4}\/\d{2}\/\d{2}$/',
             'date_from_gregorian' => 'nullable|date',
             'date_to_gregorian' => 'nullable|date|after_or_equal:date_from_gregorian',
         ]);
@@ -341,37 +371,68 @@ class TestResultController extends Controller
             $dateFrom = $request->date_from_gregorian;
             $query->whereDate('registration_date', '>=', $dateFrom);
         } elseif ($request->filled('date_from')) {
-            // Fallback to direct date input if Persian conversion not available
-            $dateFrom = $request->date_from;
-            $query->whereDate('registration_date', '>=', $dateFrom);
+            // Convert Persian date to Gregorian
+            try {
+                $persianDate = $request->date_from;
+                $dateFrom = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)->toCarbon()->format('Y-m-d');
+                $query->whereDate('registration_date', '>=', $dateFrom);
+            } catch (\Exception $e) {
+                // If conversion fails, try as Gregorian date
+                $query->whereDate('registration_date', '>=', $request->date_from);
+            }
         }
 
         if ($request->filled('date_to_gregorian')) {
             $dateTo = $request->date_to_gregorian;
             $query->whereDate('registration_date', '<=', $dateTo);
         } elseif ($request->filled('date_to')) {
-            // Fallback to direct date input if Persian conversion not available
-            $dateTo = $request->date_to;
-            $query->whereDate('registration_date', '<=', $dateTo);
+            // Convert Persian date to Gregorian
+            try {
+                $persianDate = $request->date_to;
+                $dateTo = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)->toCarbon()->format('Y-m-d');
+                $query->whereDate('registration_date', '<=', $dateTo);
+            } catch (\Exception $e) {
+                // If conversion fails, try as Gregorian date
+                $query->whereDate('registration_date', '<=', $request->date_to);
+            }
         }
 
-        // Get results and group by category_id
-        $groupedTests = $query->latest('registration_date')
-            ->get()
-            ->groupBy('category_id');
+        // Get paginated results
+        $perPage = $request->get('per_page', 15); // Default 15 items per page
+        $paginatedTests = $query->latest('registration_date')->paginate($perPage);
+        
+        // Group the paginated results by category_id
+        $groupedTests = collect($paginatedTests->items())->groupBy('category_id');
+        
+        // Create a new paginator with grouped results
+        $groupedTestsPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $groupedTests,
+            $paginatedTests->total(),
+            $paginatedTests->perPage(),
+            $paginatedTests->currentPage(),
+            [
+                'path' => $paginatedTests->path(),
+                'pageName' => 'page',
+            ]
+        );
+        
+        // Preserve query parameters for pagination links
+        $groupedTestsPaginated->appends($request->query());
 
         // Add some statistics for the view
-        $totalTests = $groupedTests->flatten()->count();
+        $totalTests = $paginatedTests->total();
         $totalGroups = $groupedTests->count();
         
-        // Additional statistics
-        $completedTests = $groupedTests->flatten()->where('status', 'completed')->count();
-        $pendingTests = $groupedTests->flatten()->where('status', 'pending')->count();
-        $inProgressTests = $groupedTests->flatten()->where('status', 'in_progress')->count();
-        $cancelledTests = $groupedTests->flatten()->where('status', 'cancelled')->count();
+        // Additional statistics (calculated from all results, not just current page)
+        $allTests = $query->get();
+        $completedTests = $allTests->where('status', 'completed')->count();
+        $pendingTests = $allTests->where('status', 'pending')->count();
+        $inProgressTests = $allTests->where('status', 'in_progress')->count();
+        $cancelledTests = $allTests->where('status', 'cancelled')->count();
 
         return view('pages.laboratory.results.grouped', compact(
             'groupedTests', 
+            'groupedTestsPaginated',
             'totalTests', 
             'totalGroups',
             'completedTests',

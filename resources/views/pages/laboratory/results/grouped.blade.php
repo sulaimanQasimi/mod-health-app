@@ -46,12 +46,20 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-                        <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request('date_from') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-                        <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request('date_to') }}">
+                        <label for="doctor" class="form-label">{{ localize('global.doctor') }}</label>
+                        <select class="form-select" id="doctor" name="doctor">
+                            <option value="">{{ localize('global.all_doctors') }}</option>
+                            @php
+                                $doctors = \App\Models\User::whereHas('roles', function($q) {
+                                    $q->where('name', 'doctor');
+                                })->get();
+                            @endphp
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->id }}" {{ request('doctor') == $doctor->id ? 'selected' : '' }}>
+                                    {{ $doctor->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-1">
                         <label class="form-label">&nbsp;</label>
@@ -65,8 +73,164 @@
                         </div>
                     </div>
                 </form>
+                
+                {{-- Date Range Filters --}}
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
+                        <input type="text" class="form-control persian-datepicker" id="date_from" name="date_from" 
+                               value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
+                        <input type="hidden" id="date_from_gregorian" name="date_from_gregorian" value="{{ request('date_from_gregorian') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
+                        <input type="text" class="form-control persian-datepicker" id="date_to" name="date_to" 
+                               value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
+                        <input type="hidden" id="date_to_gregorian" name="date_to_gregorian" value="{{ request('date_to_gregorian') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-info" onclick="setDateRange('today')">
+                                <i class="bx bx-calendar"></i> {{ localize('global.today') }}
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="setDateRange('week')">
+                                <i class="bx bx-calendar-week"></i> {{ localize('global.this_week') }}
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="setDateRange('month')">
+                                <i class="bx bx-calendar-check"></i> {{ localize('global.this_month') }}
+                            </button>
+                            <button type="button" class="btn btn-outline-warning" onclick="clearAllFilters()">
+                                <i class="bx bx-x-circle"></i> {{ localize('global.clear_filters') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        {{-- Active Filters Display --}}
+        @if(request()->hasAny(['search', 'status', 'priority', 'doctor', 'date_from', 'date_to']))
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1">{{ localize('global.active_filters') }}:</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @if(request('search'))
+                                    <span class="badge bg-primary">{{ localize('global.search') }}: {{ request('search') }}</span>
+                                @endif
+                                @if(request('status'))
+                                    <span class="badge bg-info">{{ localize('global.status') }}: {{ ucfirst(request('status')) }}</span>
+                                @endif
+                                @if(request('priority'))
+                                    <span class="badge bg-warning">{{ localize('global.priority') }}: {{ ucfirst(request('priority')) }}</span>
+                                @endif
+                                @if(request('doctor'))
+                                    @php
+                                        $doctor = \App\Models\User::find(request('doctor'));
+                                    @endphp
+                                    <span class="badge bg-success">{{ localize('global.doctor') }}: {{ $doctor ? $doctor->name : 'Unknown' }}</span>
+                                @endif
+                                @if(request('date_from') || request('date_to'))
+                                    <span class="badge bg-secondary">
+                                        {{ localize('global.date_range') }}: 
+                                        {{ request('date_from') ?: localize('global.start') }} - {{ request('date_to') ?: localize('global.end') }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-danger btn-sm">
+                            <i class="bx bx-x"></i> {{ localize('global.clear_all') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Statistics --}}
+        @if(isset($totalTests) && isset($totalGroups))
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-collection me-2" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ localize('global.total_groups') }}</h6>
+                                    <h4 class="mb-0">{{ $totalGroups }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-test-tube me-2" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ localize('global.total_tests') }}</h6>
+                                    <h4 class="mb-0">{{ $totalTests }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-check-circle me-2" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ localize('global.completed_tests') }}</h6>
+                                    <h4 class="mb-0">{{ $completedTests }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-time me-2" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ localize('global.pending_tests') }}</h6>
+                                    <h4 class="mb-0">{{ $pendingTests }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-loader me-2" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ localize('global.in_progress_tests') }}</h6>
+                                    <h4 class="mb-0">{{ $inProgressTests }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bx-x-circle me-2" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ localize('global.cancelled_tests') }}</h6>
+                                    <h4 class="mb-0">{{ $cancelledTests }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         {{-- Grouped Test Results Accordion --}}
         @if($groupedTests->count() > 0)
@@ -88,7 +252,11 @@
                                             </h6>
                                             <small class="text-muted">
                                                 {{ $tests->count() }} {{ localize('global.tests') }} | 
-                                                {{ $tests->first()->testable->patient->name ?? '—' }} {{ $tests->first()->testable->patient->last_name ?? '' }}
+                                                @php
+                                                    $firstTest = $tests->first();
+                                                    $patient = $firstTest && $firstTest->testable ? $firstTest->testable->patient : null;
+                                                @endphp
+                                                {{ $patient ? $patient->name : '—' }} {{ $patient ? $patient->last_name : '' }}
                                             </small>
                                         </div>
                                     </div>
@@ -109,26 +277,30 @@
                              data-bs-parent="#groupedTestsAccordion">
                             <div class="accordion-body">
                                 {{-- Patient Information --}}
-                                @if($tests->first()->testable->patient)
+                                @php
+                                    $firstTest = $tests->first();
+                                    $patient = $firstTest && $firstTest->testable ? $firstTest->testable->patient : null;
+                                @endphp
+                                @if($patient)
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <div class="alert alert-info">
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <strong>{{ localize('global.patient') }}:</strong> 
-                                                        {{ $tests->first()->testable->patient->name }} {{ $tests->first()->testable->patient->last_name }}
+                                                        {{ $patient->name }} {{ $patient->last_name }}
                                                     </div>
                                                     <div class="col-md-3">
                                                         <strong>{{ localize('global.phone') }}:</strong> 
-                                                        {{ $tests->first()->testable->patient->phone ?? '—' }}
+                                                        {{ $patient->phone ?? '—' }}
                                                     </div>
                                                     <div class="col-md-3">
                                                         <strong>{{ localize('global.age') }}:</strong> 
-                                                        {{ $tests->first()->testable->patient->age ?? '—' }}
+                                                        {{ $patient->age ?? '—' }}
                                                     </div>
                                                     <div class="col-md-3">
                                                         <strong>{{ localize('global.registration_date') }}:</strong> 
-                                                        {{ $tests->first()->registration_date->format('Y-m-d H:i') }}
+                                                        {{ $firstTest->registration_date->format('Y-m-d H:i') }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -215,6 +387,8 @@
 @endsection
 
 @push('custom-css')
+<!-- Persian Date Picker CSS -->
+<link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}">
 <style>
     .table th,
     .table td {
@@ -260,5 +434,214 @@
         z-index: 10;
         position: relative;
     }
+    
+    /* Persian Date Picker Styles */
+    .persian-datepicker {
+        direction: rtl;
+        text-align: right;
+    }
+    
+    .pwt-datepicker-input {
+        direction: rtl !important;
+        text-align: right !important;
+    }
 </style>
+@endpush
+
+@push('custom-js')
+<!-- Persian Date Picker JS -->
+<script src="{{ asset('assets/persian date2/js/persianDatepicker.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Persian date pickers
+    $("#date_from").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        altField: '#date_from_gregorian',
+        altFormat: 'YYYY-MM-DD',
+        observer: true,
+        timePicker: {
+            enabled: false
+        },
+        autoClose: true,
+        initialValue: false,
+        initialValueType: 'persian'
+    });
+    
+    $("#date_to").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        altField: '#date_to_gregorian',
+        altFormat: 'YYYY-MM-DD',
+        observer: true,
+        timePicker: {
+            enabled: false
+        },
+        autoClose: true,
+        initialValue: false,
+        initialValueType: 'persian'
+    });
+    
+    // Convert existing Gregorian dates to Persian if they exist
+    @if(request('date_from_gregorian'))
+        var gregorianFrom = '{{ request('date_from_gregorian') }}';
+        if (gregorianFrom) {
+            var persianFrom = convertGregorianToPersian(gregorianFrom);
+            $('#date_from').val(persianFrom);
+        }
+    @endif
+    
+    @if(request('date_to_gregorian'))
+        var gregorianTo = '{{ request('date_to_gregorian') }}';
+        if (gregorianTo) {
+            var persianTo = convertGregorianToPersian(gregorianTo);
+            $('#date_to').val(persianTo);
+        }
+    @endif
+});
+
+// Function to convert Gregorian date to Persian date
+function convertGregorianToPersian(gregorianDate) {
+    var date = new Date(gregorianDate);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    
+    // Persian calendar constants
+    var persianEpoch = 1948320.5;
+    var gregorianEpoch = 1721425.5;
+    
+    // Convert to Julian Day Number
+    var jd = gregorianToJulianDay(year, month, day);
+    
+    // Convert to Persian date
+    var persianDate = julianDayToPersian(jd);
+    
+    // Format as Persian date (YYYY/MM/DD)
+    return persianDate.year + '/' + 
+           persianDate.month.toString().padStart(2, '0') + '/' + 
+           persianDate.day.toString().padStart(2, '0');
+}
+
+// Convert Gregorian date to Julian Day Number
+function gregorianToJulianDay(year, month, day) {
+    var jd = gregorianEpoch - 1;
+    
+    jd += 365 * (year - 1);
+    jd += Math.floor((year - 1) / 4);
+    jd -= Math.floor((year - 1) / 100);
+    jd += Math.floor((year - 1) / 400);
+    jd += Math.floor((367 * month - 362) / 12);
+    
+    if (month > 2) {
+        jd -= isLeapYear(year) ? 1 : 2;
+    }
+    
+    jd += day;
+    return jd;
+}
+
+// Convert Julian Day Number to Persian date
+function julianDayToPersian(jd) {
+    jd = Math.floor(jd) + 0.5;
+    
+    var depoch = jd - 1948320.5;
+    var cycle = Math.floor(depoch / 1029983);
+    var cyear = depoch % 1029983;
+    
+    if (cyear < 0) {
+        cyear += 1029983;
+    }
+    
+    var ycycle;
+    if (cyear == 1029982) {
+        ycycle = 2820;
+    } else {
+        var aux1 = Math.floor(cyear / 366);
+        var aux2 = cyear % 366;
+        ycycle = Math.floor(((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) + aux1 + 1;
+    }
+    
+    var year = ycycle + (2820 * cycle) + 474;
+    if (year <= 0) {
+        year--;
+    }
+    
+    var yday = (jd - persianToJulianDay(year, 1, 1)) + 1;
+    var month = (yday <= 186) ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
+    var day = (jd - persianToJulianDay(year, month, 1)) + 1;
+    
+    return { year: year, month: month, day: day };
+}
+
+// Convert Persian date to Julian Day Number
+function persianToJulianDay(year, month, day) {
+    var epbase = year - (year >= 0 ? 474 : 473);
+    var epyear = 474 + (epbase % 2820);
+    
+    var mdays = (month <= 7) ? ((month - 1) * 31) : ((month - 1) * 30 + 6);
+    
+    return day + mdays + Math.floor(((epyear * 682) - 110) / 2816) + (epyear - 1) * 365 + Math.floor(epbase / 2820) * 1029983 + (1948320.5 - 1);
+}
+
+// Check if year is leap year
+function isLeapYear(year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+// Set date range functions
+function setDateRange(range) {
+    var today = new Date();
+    var persianToday = convertGregorianToPersian(today.toISOString().split('T')[0]);
+    
+    switch(range) {
+        case 'today':
+            $('#date_from').val(persianToday);
+            $('#date_to').val(persianToday);
+            // Set Gregorian dates
+            var gregorianToday = today.toISOString().split('T')[0];
+            $('#date_from_gregorian').val(gregorianToday);
+            $('#date_to_gregorian').val(gregorianToday);
+            break;
+            
+        case 'week':
+            var weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            var weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            
+            var persianWeekStart = convertGregorianToPersian(weekStart.toISOString().split('T')[0]);
+            var persianWeekEnd = convertGregorianToPersian(weekEnd.toISOString().split('T')[0]);
+            
+            $('#date_from').val(persianWeekStart);
+            $('#date_to').val(persianWeekEnd);
+            $('#date_from_gregorian').val(weekStart.toISOString().split('T')[0]);
+            $('#date_to_gregorian').val(weekEnd.toISOString().split('T')[0]);
+            break;
+            
+        case 'month':
+            var monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            var monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            var persianMonthStart = convertGregorianToPersian(monthStart.toISOString().split('T')[0]);
+            var persianMonthEnd = convertGregorianToPersian(monthEnd.toISOString().split('T')[0]);
+            
+            $('#date_from').val(persianMonthStart);
+            $('#date_to').val(persianMonthEnd);
+            $('#date_from_gregorian').val(monthStart.toISOString().split('T')[0]);
+            $('#date_to_gregorian').val(monthEnd.toISOString().split('T')[0]);
+            break;
+    }
+}
+
+// Clear all filters function
+function clearAllFilters() {
+    $('#search').val('');
+    $('#status').val('');
+    $('#priority').val('');
+    $('#doctor').val('');
+    $('#date_from').val('');
+    $('#date_to').val('');
+    $('#date_from_gregorian').val('');
+    $('#date_to_gregorian').val('');
+}
+</script>
 @endpush

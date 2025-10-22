@@ -208,9 +208,11 @@
 <body>
 
     {{-- Test Results Grouped by Lab Test Category --}}
-    @foreach($testsByLabCategory as $labCategoryId => $testsInCategory)
+    @if($testsByLabCategory->count() > 0)
+        @foreach($testsByLabCategory as $labCategoryId => $testsInCategory)
         @php
-            $labCategory = $testsInCategory->first()->labTest->category ?? null;
+            $firstTest = $testsInCategory->first();
+            $labCategory = $firstTest && $firstTest->labTest ? $firstTest->labTest->category : null;
             $categoryName = $labCategory ? $labCategory->name : 'Uncategorized';
         @endphp
         
@@ -260,7 +262,7 @@
         @foreach($testsInCategory as $testRegistration)
             <div class="test-section">
                 <h3 class="test-header">
-                    {{ $testRegistration->labTest->name ?? localize('global.test_name') }}
+                    {{ $testRegistration->labTest ? $testRegistration->labTest->name : localize('global.test_name') }}
                 </h3>
                 
                 <div class="test-details">
@@ -330,8 +332,13 @@
             <p>{{ localize('global.report_generated_on') }}: {{ now()->format('Y-m-d H:i:s') }}</p>
             <p>{{ localize('global.laboratory_system') }}</p>
         </div>
-    @endforeach
-
+        @endforeach
+    @else
+        <div style="text-align: center; padding: 50px; color: #6c757d;">
+            <h3>{{ localize('global.no_tests_found') }}</h3>
+            <p>{{ localize('global.no_tests_found_description') }}</p>
+        </div>
+    @endif
 
     <script>
         // Auto print when page loads

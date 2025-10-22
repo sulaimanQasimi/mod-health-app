@@ -288,20 +288,36 @@ class TestResultController extends Controller
      */
     public function groupedTests(Request $request)
     {
+        // Validate request parameters
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'priority' => 'nullable|in:normal,urgent,stat',
+            'doctor' => 'nullable|exists:users,id',
+            'date_from' => 'nullable|string',
+            'date_to' => 'nullable|string',
+            'date_from_gregorian' => 'nullable|date',
+            'date_to_gregorian' => 'nullable|date|after_or_equal:date_from_gregorian',
+        ]);
+
         // Query test registrations with category_id
         $query = PatientTestRegistration::with([
             'testable.patient',
-            'labTest',
+            'labTest.category',
             'doctor',
             'branch'
         ])->whereNotNull('category_id');
 
-        // Apply search filter (patient name)
+        // Apply search filter (patient name, phone, or reference number)
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('testable.patient', function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            $search = trim($request->search);
+            $query->where(function($q) use ($search) {
+                $q->whereHas('testable.patient', function($patientQuery) use ($search) {
+                    $patientQuery->where('name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%')
+                                ->orWhere('phone', 'like', '%' . $search . '%');
+                })
+                ->orWhere('ref_no', 'like', '%' . $search . '%');
             });
         }
 
@@ -315,13 +331,28 @@ class TestResultController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        // Apply date range filter
-        if ($request->filled('date_from')) {
-            $query->whereDate('registration_date', '>=', $request->date_from);
+        // Apply doctor filter
+        if ($request->filled('doctor')) {
+            $query->where('doctor_id', $request->doctor);
         }
 
-        if ($request->filled('date_to')) {
-            $query->whereDate('registration_date', '<=', $request->date_to);
+        // Apply date range filter with Persian date support
+        if ($request->filled('date_from_gregorian')) {
+            $dateFrom = $request->date_from_gregorian;
+            $query->whereDate('registration_date', '>=', $dateFrom);
+        } elseif ($request->filled('date_from')) {
+            // Fallback to direct date input if Persian conversion not available
+            $dateFrom = $request->date_from;
+            $query->whereDate('registration_date', '>=', $dateFrom);
+        }
+
+        if ($request->filled('date_to_gregorian')) {
+            $dateTo = $request->date_to_gregorian;
+            $query->whereDate('registration_date', '<=', $dateTo);
+        } elseif ($request->filled('date_to')) {
+            // Fallback to direct date input if Persian conversion not available
+            $dateTo = $request->date_to;
+            $query->whereDate('registration_date', '<=', $dateTo);
         }
 
         // Get results and group by category_id
@@ -329,7 +360,25 @@ class TestResultController extends Controller
             ->get()
             ->groupBy('category_id');
 
-        return view('pages.laboratory.results.grouped', compact('groupedTests'));
+        // Add some statistics for the view
+        $totalTests = $groupedTests->flatten()->count();
+        $totalGroups = $groupedTests->count();
+        
+        // Additional statistics
+        $completedTests = $groupedTests->flatten()->where('status', 'completed')->count();
+        $pendingTests = $groupedTests->flatten()->where('status', 'pending')->count();
+        $inProgressTests = $groupedTests->flatten()->where('status', 'in_progress')->count();
+        $cancelledTests = $groupedTests->flatten()->where('status', 'cancelled')->count();
+
+        return view('pages.laboratory.results.grouped', compact(
+            'groupedTests', 
+            'totalTests', 
+            'totalGroups',
+            'completedTests',
+            'pendingTests', 
+            'inProgressTests',
+            'cancelledTests'
+        ));
     }
 
     /**
@@ -340,7 +389,7 @@ class TestResultController extends Controller
         // Load all test registrations with matching category_id
         $testRegistrations = PatientTestRegistration::with([
             'testable.patient',
-            'labTest',
+            'labTest.category',
             'doctor',
             'branch'
         ])->where('category_id', $category_id)->get();
@@ -350,20 +399,26 @@ class TestResultController extends Controller
         }
 
         // Get patient from first registration
-        $patient = $testRegistrations->first()->testable->patient ?? null;
+        $firstRegistration = $testRegistrations->first();
+        $patient = $firstRegistration && $firstRegistration->testable ? $firstRegistration->testable->patient : null;
         
         // Group tests by their lab test category (different from category_id)
         $testsByLabCategory = $testRegistrations->groupBy(function($test) {
-            return $test->labTest->category_id ?? 'uncategorized';
+            return $test->labTest ? $test->labTest->category_id : 'uncategorized';
         });
 
         // Load all results for all tests in this group
         $allResults = collect();
         foreach ($testRegistrations as $registration) {
-            $results = PatientTestResult::with('parameter')
-                ->where('test_registration_id', $registration->id)
-                ->get();
-            $allResults = $allResults->merge($results);
+            try {
+                $results = PatientTestResult::with('parameter')
+                    ->where('test_registration_id', $registration->id)
+                    ->get();
+                $allResults = $allResults->merge($results);
+            } catch (\Exception $e) {
+                // Log error but continue processing
+                \Log::warning("Failed to load results for registration {$registration->id}: " . $e->getMessage());
+            }
         }
 
         // Group results by test registration for display

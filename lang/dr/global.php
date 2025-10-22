@@ -2146,6 +2146,7 @@ return [
     'review_updated_successfully' => 'بازرسی با موفقیت ابدیت شد',
     'review_deleted_successfully' => 'بازرسی با موفقیت حذف شد',
     'review_not_found' => 'بازرسی یافت نشد',
+    "years"=>"سال",
     'all_physiotherapy_procedures' => ' فیزیوتراپی',
     'all_registered_physiotherapy_procedures' => 'همه فیزیوتراپی ثبت شده',
     "error_loading_data" => "خطا در بارگیری داده",

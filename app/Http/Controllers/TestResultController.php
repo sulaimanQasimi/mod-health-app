@@ -284,6 +284,101 @@ class TestResultController extends Controller
     }
 
     /**
+     * Display grouped test results by category_id
+     */
+    public function groupedTests(Request $request)
+    {
+        // Query test registrations with category_id
+        $query = PatientTestRegistration::with([
+            'testable.patient',
+            'labTest',
+            'doctor',
+            'branch'
+        ])->whereNotNull('category_id');
+
+        // Apply search filter (patient name)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('testable.patient', function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Apply status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Apply priority filter
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        // Apply date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('registration_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('registration_date', '<=', $request->date_to);
+        }
+
+        // Get results and group by category_id
+        $groupedTests = $query->latest('registration_date')
+            ->get()
+            ->groupBy('category_id');
+
+        return view('pages.laboratory.results.grouped', compact('groupedTests'));
+    }
+
+    /**
+     * Print grouped test results by category_id
+     */
+    public function printGroupedTests($category_id)
+    {
+        // Load all test registrations with matching category_id
+        $testRegistrations = PatientTestRegistration::with([
+            'testable.patient',
+            'labTest',
+            'doctor',
+            'branch'
+        ])->where('category_id', $category_id)->get();
+
+        if ($testRegistrations->isEmpty()) {
+            abort(404, 'No test registrations found for this category.');
+        }
+
+        // Get patient from first registration
+        $patient = $testRegistrations->first()->testable->patient ?? null;
+        
+        // Group tests by their lab test category (different from category_id)
+        $testsByLabCategory = $testRegistrations->groupBy(function($test) {
+            return $test->labTest->category_id ?? 'uncategorized';
+        });
+
+        // Load all results for all tests in this group
+        $allResults = collect();
+        foreach ($testRegistrations as $registration) {
+            $results = PatientTestResult::with('parameter')
+                ->where('test_registration_id', $registration->id)
+                ->get();
+            $allResults = $allResults->merge($results);
+        }
+
+        // Group results by test registration for display
+        $groupedResults = $allResults->groupBy('test_registration_id');
+
+        return view('pages.laboratory.reports.grouped_report', compact(
+            'patient', 
+            'testRegistrations', 
+            'groupedResults',
+            'category_id',
+            'testsByLabCategory'
+        ));
+    }
+
+    /**
      * Show scan page for laboratory tests
      */
     public function scanCode()

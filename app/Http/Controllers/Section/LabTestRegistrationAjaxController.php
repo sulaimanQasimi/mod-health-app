@@ -60,6 +60,27 @@ class LabTestRegistrationAjaxController extends Controller
     }
 
     /**
+     * Get all tests
+     */
+    public function getAllTests()
+    {
+        try {
+            $tests = LabTest::with('category')->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $tests
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch tests',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get test parameters by test ID
      */
     public function getTestParameters($testId)
@@ -87,8 +108,7 @@ class LabTestRegistrationAjaxController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'test_category_id' => 'required|exists:test_categories,id',
-                'lab_test_id' => 'required|exists:lab_tests,id',
+                'lab_test_ids' => 'required|string', // JSON string of test IDs
                 'priority' => 'required|in:normal,urgent,stat',
                 'notes' => 'nullable|string|max:1000',
                 'doctor_id' => 'required|exists:users,id',
@@ -105,6 +125,24 @@ class LabTestRegistrationAjaxController extends Controller
                 ], 422);
             }
 
+            // Parse lab test IDs from JSON string
+            $labTestIds = json_decode($request->lab_test_ids, true);
+            if (!is_array($labTestIds) || empty($labTestIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid lab test IDs provided'
+                ], 422);
+            }
+
+            // Validate that all test IDs exist
+            $validTests = LabTest::whereIn('id', $labTestIds)->pluck('id')->toArray();
+            if (count($validTests) !== count($labTestIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'One or more test IDs are invalid'
+                ], 422);
+            }
+
             DB::beginTransaction();
 
             try {
@@ -114,51 +152,66 @@ class LabTestRegistrationAjaxController extends Controller
                     throw new \Exception('Entity not found');
                 }
 
-                // Lock ref_numbers row and increment ref_no
-                $ref = DB::table('ref_numbers')->lockForUpdate()->first();
-                $newRefNo = $ref->last_ref_no + 1;
-                DB::table('ref_numbers')->update(['last_ref_no' => $newRefNo]);
-
                 // Get patient_id from the related entity
                 $patientId = $this->getPatientIdFromEntity($entity);
 
-                // Create test registration with polymorphic relationship
-                $registration = PatientTestRegistration::create([
-                    'patient_id'        => $patientId,
-                    'testable_type'     => $this->getEntityClass($request->entity_type),
-                    'testable_id'       => $request->entity_id,
-                    'registration_date' => now(),
-                    'ref_no'            => $newRefNo,
-                    'lab_test_id'       => $request->lab_test_id,
-                    'status'            => 'pending',
-                    'doctor_id'         => $request->doctor_id,
-                    'branch_id'         => $request->branch_id,
-                    'priority'          => $request->priority,
-                    'notes'             => $request->notes,
-                ]);
+                // Generate new category_id for this batch
+                $maxCategoryId = PatientTestRegistration::max('category_id') ?? 0;
+                $newCategoryId = $maxCategoryId + 1;
 
-                // Create test results for each parameter
-                $parameters = LabTestParameter::where('test_id', $request->lab_test_id)->get();
-                foreach ($parameters as $parameter) {
-                    \App\Models\PatientTestResult::create([
-                        'patient_id'          => $patientId,
-                        'ref_no'              => $newRefNo,
-                        'lab_parameter_id'    => $parameter->id,
-                        'unit'                => $parameter->unit ?? null,
-                        'normal_range'        => $parameter->normal_range ?? null,
-                        'result'              => null,
-                        'test_registration_id'=> $registration->id,
+                $createdRegistrations = [];
+                $refNumbers = [];
+
+                // Create registrations for each selected test
+                foreach ($labTestIds as $labTestId) {
+                    // Lock ref_numbers row and increment ref_no for each test
+                    $ref = DB::table('ref_numbers')->lockForUpdate()->first();
+                    $newRefNo = $ref->last_ref_no + 1;
+                    DB::table('ref_numbers')->update(['last_ref_no' => $newRefNo]);
+                    $refNumbers[] = $newRefNo;
+
+                    // Create test registration with polymorphic relationship
+                    $registration = PatientTestRegistration::create([
+                        'patient_id'        => $patientId,
+                        'testable_type'     => $this->getEntityClass($request->entity_type),
+                        'testable_id'       => $request->entity_id,
+                        'registration_date' => now(),
+                        'ref_no'            => $newRefNo,
+                        'lab_test_id'       => $labTestId,
+                        'status'            => 'pending',
+                        'doctor_id'         => $request->doctor_id,
+                        'branch_id'         => $request->branch_id,
+                        'priority'          => $request->priority,
+                        'notes'             => $request->notes,
+                        'category_id'       => $newCategoryId,
                     ]);
+
+                    $createdRegistrations[] = $registration;
+
+                    // Create test results for each parameter
+                    $parameters = LabTestParameter::where('test_id', $labTestId)->get();
+                    foreach ($parameters as $parameter) {
+                        \App\Models\PatientTestResult::create([
+                            'patient_id'          => $patientId,
+                            'ref_no'              => $newRefNo,
+                            'lab_parameter_id'    => $parameter->id,
+                            'unit'                => $parameter->unit ?? null,
+                            'normal_range'        => $parameter->normal_range ?? null,
+                            'result'              => null,
+                            'test_registration_id'=> $registration->id,
+                        ]);
+                    }
                 }
 
                 DB::commit();
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Lab test registration created successfully',
+                    'message' => 'Lab test registrations created successfully (grouped with category_id: ' . $newCategoryId . ')',
                     'data' => [
-                        'registration_id' => $registration->id,
-                        'ref_no' => $newRefNo
+                        'registration_ids' => array_column($createdRegistrations, 'id'),
+                        'ref_numbers' => $refNumbers,
+                        'category_id' => $newCategoryId
                     ]
                 ]);
 

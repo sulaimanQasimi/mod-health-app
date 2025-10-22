@@ -40,34 +40,19 @@
                             <input type="hidden" name="branch_id" :value="appointment.branch_id">
 
                             <div class="form-group mb-3">
-                                <label for="test_category">{{ localize('global.test_category') }}</label>
+                                <label for="lab_test_ids">{{ localize('global.test_name') }} ({{ localize('global.select_multiple') }})</label>
                                 <multiselect
-                                    v-model="selectedCategory"
-                                    :options="categories"
+                                    v-model="selectedTests"
+                                    :options="allTests"
                                     :searchable="true"
-                                    :close-on-select="true"
+                                    :close-on-select="false"
+                                    :multiple="true"
                                     :show-labels="false"
-                                    :placeholder="localize('global.select_category')"
-                                    label="name"
-                                    track-by="id"
-                                    @select="onCategorySelect"
-                                    @clear="onCategoryClear"
-                                >
-                                </multiselect>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="lab_test_id">{{ localize('global.test_name') }}</label>
-                                <multiselect
-                                    v-model="selectedTest"
-                                    :options="tests"
-                                    :searchable="true"
-                                    :close-on-select="true"
-                                    :show-labels="false"
-                                    :placeholder="localize('global.select_test')"
+                                    :placeholder="localize('global.select_tests')"
                                     label="name"
                                     track-by="id"
                                     @select="onTestSelect"
+                                    @remove="onTestRemove"
                                     @clear="onTestClear"
                                 >
                                 </multiselect>
@@ -559,22 +544,19 @@ export default {
             showParametersModal: false,
             showParameterDetailsModal: false,
             testRegistrations: [],
-            categories: [],
-            tests: [],
-            selectedCategory: null,
-            selectedTest: null,
+            allTests: [],
+            selectedTests: [],
             selectedRegistration: null,
             selectedParameter: null,
             form: {
-                test_category_id: '',
-                lab_test_id: '',
+                lab_test_ids: [],
                 priority: 'normal',
                 notes: ''
             }
         }
     },
     mounted() {
-        this.loadCategories();
+        this.loadAllTests();
         this.loadTestRegistrations();
     },
     watch: {
@@ -585,9 +567,9 @@ export default {
         }
     },
     methods: {
-        async loadCategories() {
+        async loadAllTests() {
             try {
-                const response = await fetch('/lab-test-registration-ajax/categories', {
+                const response = await fetch('/lab-test-registration-ajax/all-tests', {
                     credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',
@@ -597,35 +579,7 @@ export default {
                 const data = await response.json();
                 
                 if (data.success) {
-                    this.categories = data.data;
-                } else {
-                    this.showError(data.message);
-                }
-            } catch (error) {
-                this.showError('Failed to load test categories');
-            }
-        },
-
-        async loadTests() {
-            if (!this.form.test_category_id) {
-                this.tests = [];
-                this.form.lab_test_id = '';
-                return;
-            }
-
-            try {
-                const response = await fetch(`/lab-test-registration-ajax/tests/${this.form.test_category_id}`, {
-                    credentials: 'same-origin',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    this.tests = data.data;
-                    this.form.lab_test_id = '';
+                    this.allTests = data.data;
                 } else {
                     this.showError(data.message);
                 }
@@ -661,8 +615,8 @@ export default {
         },
 
         async createTestRegistration() {
-            if (!this.form.test_category_id || !this.form.lab_test_id) {
-                this.showError('Please select test category and test');
+            if (!this.form.lab_test_ids.length) {
+                this.showError('Please select at least one test');
                 return;
             }
 
@@ -670,8 +624,7 @@ export default {
 
             try {
                 const formData = new FormData();
-                formData.append('test_category_id', this.form.test_category_id);
-                formData.append('lab_test_id', this.form.lab_test_id);
+                formData.append('lab_test_ids', JSON.stringify(this.form.lab_test_ids));
                 formData.append('priority', this.form.priority);
                 formData.append('notes', this.form.notes);
                 formData.append('entity_id', this.entityId);
@@ -708,8 +661,8 @@ export default {
         },
 
         async createTestRegistrationAndClose() {
-            if (!this.form.test_category_id || !this.form.lab_test_id) {
-                this.showError('Please select test category and test');
+            if (!this.form.lab_test_ids.length) {
+                this.showError('Please select at least one test');
                 return;
             }
 
@@ -717,8 +670,7 @@ export default {
 
             try {
                 const formData = new FormData();
-                formData.append('test_category_id', this.form.test_category_id);
-                formData.append('lab_test_id', this.form.lab_test_id);
+                formData.append('lab_test_ids', JSON.stringify(this.form.lab_test_ids));
                 formData.append('priority', this.form.priority);
                 formData.append('notes', this.form.notes);
                 formData.append('entity_id', this.entityId);
@@ -792,13 +744,10 @@ export default {
         },
 
         resetForm() {
-            this.form.test_category_id = '';
-            this.form.lab_test_id = '';
+            this.form.lab_test_ids = [];
             this.form.priority = 'normal';
             this.form.notes = '';
-            this.selectedCategory = null;
-            this.selectedTest = null;
-            this.tests = [];
+            this.selectedTests = [];
         },
 
         formatDate(dateString) {
@@ -918,24 +867,21 @@ export default {
         },
 
         // Vue Multiselect event handlers
-        onCategorySelect(selectedCategory) {
-            this.form.test_category_id = selectedCategory.id;
-            this.loadTests();
-        },
-
-        onCategoryClear() {
-            this.form.test_category_id = '';
-            this.selectedTest = null;
-            this.form.lab_test_id = '';
-            this.tests = [];
-        },
-
         onTestSelect(selectedTest) {
-            this.form.lab_test_id = selectedTest.id;
+            if (!this.selectedTests.find(test => test.id === selectedTest.id)) {
+                this.selectedTests.push(selectedTest);
+            }
+            this.form.lab_test_ids = this.selectedTests.map(test => test.id);
+        },
+
+        onTestRemove(removedTest) {
+            this.selectedTests = this.selectedTests.filter(test => test.id !== removedTest.id);
+            this.form.lab_test_ids = this.selectedTests.map(test => test.id);
         },
 
         onTestClear() {
-            this.form.lab_test_id = '';
+            this.selectedTests = [];
+            this.form.lab_test_ids = [];
         },
 
 

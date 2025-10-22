@@ -30,6 +30,7 @@ class PatientTestRegistration extends Model
         'completed_by',
         'created_by',
         'updated_by',
+        'category_id',
     ];
 
     protected $casts = [

@@ -3262,6 +3262,7 @@ return [
     "print_report" => "چاپ گزارش",
     "normal" => "طبیعی",
     "abnormal" => "غیرطبیعی",
+    "advanced_filters"=>"فلتر", 
     "parameter_status" => "وضعیت پارامتر",
     "report_generated_on" => "تاریخ",
     "contact_laboratory_department" => "برای سوالات با بخش آزمایشگاه تماس بگیرید",

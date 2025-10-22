@@ -3394,4 +3394,7 @@ return [
     "this_week"=>"هفته جاری",
     "this_month"=>"ماه جاری",
     "this_year"=>"سال جاری",
+    "search_patient_placeholder"=>"نام مریض را جستجو کنید...",
+    "start_typing_to_search"=>"برای جستجو با نام مریض شروع کنید...",
+    "recent_searches"=>"جستجوهای اخیر",
 ];

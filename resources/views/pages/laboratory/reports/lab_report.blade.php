@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Report - {{ $patient->name ?? 'Unknown' }}</title>
+    <title>{{ localize('global.laboratory_test_report') }} - {{ $patient->name ?? 'Unknown' }}</title>
     <style>
         @font-face {
             font-family: 'ModFont';
@@ -12,6 +12,7 @@
             font-style: normal;
             font-display: swap;
         }
+        
         * {
             margin: 0;
             padding: 0;
@@ -19,11 +20,13 @@
         }
         
         body {
-            font-family: 'ModFont', 'Tahoma', 'Arial', sans-serif;
+            font-family: 'ModFont', 'Arial', sans-serif;
+            font-size: 12px;
             line-height: 1.4;
-            color: #000;
+            color: #333;
+            margin: 0;
+            padding: 20px;
             background: white;
-            padding: 15mm;
             direction: rtl;
             text-align: right;
         }
@@ -41,122 +44,140 @@
         
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             border-bottom: 2px solid #000;
-            padding-bottom: 15px;
+            padding-bottom: 20px;
         }
         
-        .hospital-name {
+        .header h1 {
+            color: #000;
+            margin: 0;
             font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
         }
         
-        .report-title {
-            font-size: 18px;
-            margin-bottom: 10px;
+        .header h2 {
+            color: #333;
+            margin: 5px 0 0 0;
+            font-size: 16px;
+            font-weight: normal;
         }
         
-        .report-meta {
+        .patient-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #000;
+        }
+        
+        .patient-info h3 {
+            margin: 0 0 10px 0;
+            color: #000;
+            font-size: 16px;
+        }
+        
+        .patient-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .patient-details div {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            font-size: 12px;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ccc;
         }
         
-        .qr-code {
-            width: 60px;
-            height: 60px;
+        .patient-details strong {
+            color: #000;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .test-header {
+            background: #000;
+            color: white;
+            padding: 10px 15px;
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .test-details {
             border: 1px solid #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            text-align: center;
+            border-top: none;
+            padding: 15px;
         }
         
-        .main-table {
+        .test-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        
+        .test-meta div {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .test-meta strong {
+            color: #000;
+        }
+        
+        .parameters-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 15px;
         }
         
-        .main-table th,
-        .main-table td {
+        .parameters-table th,
+        .parameters-table td {
             border: 1px solid #000;
             padding: 8px;
             text-align: right;
-            vertical-align: top;
         }
         
-        .main-table th {
+        .parameters-table th {
             background: #f0f0f0;
             font-weight: bold;
-            font-size: 12px;
+            color: #000;
         }
         
-        .main-table td {
-            font-size: 11px;
-        }
-        
-        .section-header {
-            background: #000;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .results-table th,
-        .results-table td {
-            border: 1px solid #000;
-            padding: 6px;
-            text-align: right;
-            font-size: 10px;
-        }
-        
-        .results-table th {
-            background: #f0f0f0;
-            font-weight: bold;
+        .parameters-table tr:nth-child(even) {
+            background: #f5f5f5;
         }
         
         .result-value {
             font-weight: bold;
+            color: #000;
         }
         
-        .status-normal {
-            font-weight: bold;
+        .normal-range {
+            color: #000;
+            font-size: 11px;
         }
         
-        .status-abnormal {
-            font-weight: bold;
-        }
-        
-        .status-pending {
-            font-weight: bold;
+        .unit {
+            color: #333;
+            font-size: 11px;
         }
         
         .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
             border-top: 1px solid #000;
-            padding-top: 10px;
-        }
-        
-        .disclaimer {
-            background: #f0f0f0;
-            border: 1px solid #000;
-            padding: 8px;
-            margin-top: 10px;
-            font-size: 9px;
+            text-align: center;
+            color: #000;
+            font-size: 11px;
         }
         
         .print-button {
@@ -169,239 +190,110 @@
             margin-top: 10px;
         }
         
-        .header-section {
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .hospital-header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
-        .hospital-logo {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .report-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            margin-top: 10px;
-        }
-        
-        .user-info {
-            background: #f8f8f8;
-            border: 1px solid #000;
-            padding: 8px;
-            margin-bottom: 10px;
-            font-size: 10px;
+        .no-print {
+            display: block;
         }
         
         @media print {
-            @page {
-                margin: 15mm;
-                size: A4;
+            body {
+                margin: 0;
+                padding: 15px;
             }
-            body { 
-                margin: 0; 
-                padding: 15mm;
-                background: white;
-                direction: rtl;
-                text-align: right;
-            }
-            .no-print { 
-                display: none; 
-            }
-            .print-button {
-                display: none;
-            }
-            .main-table, .results-table {
+            
+            .test-section {
                 page-break-inside: avoid;
             }
-            .section-header {
-                page-break-after: avoid;
+            
+            .no-print {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="report-container">
-        <!-- Header Section -->
-        <div class="header-section">
-            <div class="hospital-header">
-                <div class="hospital-logo">{{ config('app.name', 'Medical Center') }}</div>
-                <div class="report-title">{{ localize('global.laboratory_test_report') }}</div>
-            </div>
-            
-            <div class="header-info">
-                <div>
-                    <strong>{{ localize('global.report_date') }}:</strong> 
-                    {{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d H:i') }}
-                </div>
-                <div>
-                    <strong>{{ localize('global.reference_number') }}:</strong> {{ $results->first()->ref_no ?? 'N/A' }}
-                </div>
-                <div class="qr-code" id="qr-code-container" data-qr="{{ $results->first()->ref_no ?? 'N/A' }}">
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50px; font-size: 8px; text-align: center;">
-                        <div style="margin-bottom: 2px;">QR</div>
-                        <div style="font-size: 6px; word-break: break-all;">{{ $results->first()->ref_no ?? 'N/A' }}</div>
+        <!-- Report Header -->
+        <div class="header">
+            <h1>{{ localize('global.laboratory_test_report') }}</h1>
+            <h2>{{ $testName ?? localize('global.test_name') }}</h2>
+        </div>
+
+        <!-- Patient Information -->
+        @if($patient)
+            <div class="patient-info">
+                <h3>{{ localize('global.patient_information') }}</h3>
+                <div class="patient-details">
+                    <div>
+                        <strong>{{ localize('global.name') }}:</strong>
+                        <span>{{ $patient->name }} {{ $patient->last_name }}</span>
+                    </div>
+                    <div>
+                        <strong>{{ localize('global.father_name') }}:</strong>
+                        <span>{{ $patient->father_name ?? '—' }}</span>
+                    </div>
+                    <div>
+                        <strong>{{ localize('global.age') }}:</strong>
+                        <span>{{ $patient->age ?? '—' }}</span>
+                    </div>
+                    <div>
+                        <strong>{{ localize('global.phone') }}:</strong>
+                        <span>{{ $patient->phone ?? '—' }}</span>
+                    </div>
+                    <div>
+                        <strong>{{ localize('global.gender') }}:</strong>
+                        <span>{{ $patient->gender ?? '—' }}</span>
+                    </div>
+                    <div>
+                        <strong>{{ localize('global.address') }}:</strong>
+                        <span>{{ $patient->address ?? '—' }}</span>
                     </div>
                 </div>
             </div>
+        @endif
+
+        <!-- Test Section -->
+        <div class="test-section">
+            <h3 class="test-header">
+                {{ $testName ?? localize('global.test_name') }}
+            </h3>
+            
+            <div class="test-details">
+
+                <!-- Test Parameters and Results -->
+                @if($results->count() > 0)
+                    <table class="parameters-table">
+                        <thead>
+                            <tr>
+                                <th>Investigation</th>
+                                <th>Result</th>
+                                <th>Unit</th>
+                                <th>Reference Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($results as $result)
+                                <tr>
+                                    <td>{{ $result->parameter->parameter_name ?? '—' }}</td>
+                                    <td class="result-value">{{ $result->result ?? '—' }}</td>
+                                    <td class="unit">{{ $result->unit ?? '—' }}</td>
+                                    <td class="normal-range">{{ $result->normal_range ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div style="text-align: center; padding: 20px; color: #6c757d;">
+                        {{ localize('global.no_results_available') }}
+                    </div>
+                @endif
+            </div>
         </div>
 
-        <!-- User Information -->
-        <div class="user-info">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <td style="border: 1px solid #000; padding: 4px; width: 25%;"><strong>{{ localize('global.generated_by') }}:</strong></td>
-                    <td style="border: 1px solid #000; padding: 4px; width: 25%;">{{ auth()->user()->name ?? 'N/A' }}</td>
-                    <td style="border: 1px solid #000; padding: 4px; width: 25%;"><strong>{{ localize('global.user_role') }}:</strong></td>
-                    <td style="border: 1px solid #000; padding: 4px; width: 25%;">{{ auth()->user()->roles->first()->name ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #000; padding: 4px;"><strong>{{ localize('global.generated_at') }}:</strong></td>
-                    <td style="border: 1px solid #000; padding: 4px;">{{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d H:i:s') }}</td>
-                    <td style="border: 1px solid #000; padding: 4px;"><strong>{{ localize('global.ip_address') }}:</strong></td>
-                    <td style="border: 1px solid #000; padding: 4px;">{{ request()->ip() }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Main Information Table -->
-        <table class="main-table">
-            <tr class="section-header">
-                <th colspan="4">{{ localize('global.patient_information') }}</th>
-            </tr>
-            <tr>
-                <th style="width: 25%;">{{ localize('global.name') }}</th>
-                <td style="width: 25%;">{{ $patient->name ?? 'N/A' }} {{ $patient->last_name ?? '' }}</td>
-                <th style="width: 25%;">{{ localize('global.father_name') }}</th>
-                <td style="width: 25%;">{{ $patient->father_name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th>{{ localize('global.age') }}</th>
-                <td>{{ $patient->age ?? 'N/A' }} {{ localize('global.years') }}</td>
-                <th>{{ localize('global.gender') }}</th>
-                <td>{{ $patient->gender ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th>{{ localize('global.phone') }}</th>
-                <td>{{ $patient->phone ?? 'N/A' }}</td>
-                <th>{{ localize('global.address') }}</th>
-                <td>{{ $patient->address ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th>{{ localize('global.id_number') }}</th>
-                <td>{{ $patient->id_number ?? 'N/A' }}</td>
-                <th>{{ localize('global.blood_type') }}</th>
-                <td>{{ $patient->blood_type ?? 'N/A' }}</td>
-            </tr>
-        </table>
-
-        
-
-        <!-- Test Results Table -->
-        <table class="results-table">
-            <tr class="section-header">
-                <th colspan="5">{{ localize('global.test_results') }}</th>
-            </tr>
-            <tr>
-                <th style="width: 30%;">{{ localize('global.parameter_name') }}</th>
-                <th style="width: 20%;">{{ localize('global.result') }}</th>
-                <th style="width: 15%;">{{ localize('global.unit') }}</th>
-                <th style="width: 20%;">{{ localize('global.normal_range') }}</th>
-                <th style="width: 15%;">{{ localize('global.status') }}</th>
-            </tr>
-            @foreach($results as $result)
-            <tr>
-                <td><strong>{{ $result->parameter->parameter_name ?? 'N/A' }}</strong></td>
-                <td>
-                    <span class="result-value">
-                        {{ $result->result ?? localize('global.pending') }}
-                    </span>
-                </td>
-                <td>{{ $result->unit ?? 'N/A' }}</td>
-                <td>{{ $result->normal_range ?? 'N/A' }}</td>
-                <td>
-                    @if($result->result)
-                        @php
-                            $isNormal = true; // You can add logic here to check if result is within normal range
-                        @endphp
-                        @if($isNormal)
-                            <span class="status-normal">{{ localize('global.normal') }}</span>
-                        @else
-                            <span class="status-abnormal">{{ localize('global.abnormal') }}</span>
-                        @endif
-                    @else
-                        <span class="status-pending">{{ localize('global.pending') }}</span>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
-        </table>
-
-        <!-- Laboratory Information Table -->
-        <table class="main-table">
-            <tr class="section-header">
-                <th colspan="4">{{ localize('global.laboratory_info') }}</th>
-            </tr>
-            <tr>
-                <th style="width: 25%;">{{ localize('global.laboratory_name') }}</th>
-                <td style="width: 25%;">{{ config('app.name', 'Medical Center') }}</td>
-                <th style="width: 25%;">{{ localize('global.department') }}</th>
-                <td style="width: 25%;">{{ localize('global.laboratory_department') }}</td>
-            </tr>
-            <tr>
-                <th>{{ localize('global.contact_phone') }}</th>
-                <td>+93 XX XXX XXXX</td>
-                <th>{{ localize('global.email') }}</th>
-                <td>lab@medicalcenter.com</td>
-            </tr>
-            <tr>
-                <th>{{ localize('global.generated_on') }}</th>
-                <td>{{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d H:i') }}</td>
-                <th>{{ localize('global.valid_for') }}</th>
-                <td>30 {{ localize('global.days') }}</td>
-            </tr>
-        </table>
-
-        <!-- Verification Table -->
-        <table class="main-table">
-            <tr class="section-header">
-                <th colspan="4">{{ localize('global.verification') }}</th>
-            </tr>
-            <tr>
-                <th style="width: 25%;">{{ localize('global.verified_by') }}</th>
-                <td style="width: 25%;">{{ $testRegistration->doctor->name ?? 'N/A' }}</td>
-                <th style="width: 25%;">{{ localize('global.verified_on') }}</th>
-                <td style="width: 25%;">{{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d') }}</td>
-            </tr>
-            <tr>
-                <th>{{ localize('global.digital_signature') }}</th>
-                <td>_________________</td>
-                <th>{{ localize('global.report_id') }}</th>
-                <td>{{ $results->first()->ref_no ?? 'N/A' }}</td>
-            </tr>
-        </table>
 
         <!-- Footer -->
         <div class="footer">
-            <div class="disclaimer">
-                <strong>{{ localize('global.disclaimer') }}:</strong> 
-                {{ localize('global.report_disclaimer') }}
-            </div>
+            <p>{{ localize('global.report_generated_on') }}: {{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d H:i:s') }}</p>
+            <p>{{ localize('global.laboratory_system') }}</p>
             
             <div class="no-print">
                 <button class="print-button" onclick="window.print()">
@@ -411,28 +303,11 @@
         </div>
     </div>
 
-    <!-- Include QR Code Generator -->
-    @vite('public/assets/js/qr-code-generator.js')
-    @vite('public/assets/js/simple-qr-fallback.js')
-    
     <script>
         // Auto print when page loads
         window.onload = function() {
-            const refNo = '{{ $results->first()->ref_no ?? "N/A" }}';
-            
-            // Try to generate QR code with npm package first
-            if (window.QRCodeGenerator) {
-                window.QRCodeGenerator.generateForReport(refNo, 'qr-code-container');
-            } else if (window.SimpleQRGenerator) {
-                // Fallback to simple QR generator
-                window.SimpleQRGenerator.generateSimpleQR(refNo, 'qr-code-container');
-            }
-            
-            // Wait for QR code to generate before printing
-            setTimeout(function() {
-                window.print();
-            }, 3000);
-        };
+            window.print();
+        }
     </script>
 </body>
 </html>

@@ -253,7 +253,7 @@
 
         <!-- Test Section -->
         <div class="test-section">
-            <h3 class="test-header">
+            <h3 class="test-header" style="text-align: center;">
                 {{ $testName ?? localize('global.test_name') }}
             </h3>
             
@@ -264,25 +264,25 @@
                     <table class="parameters-table">
                         <thead>
                             <tr>
-                                <th>Investigation</th>
-                                <th>Result</th>
-                                <th>Unit</th>
-                                <th>Reference Value</th>
+                                <th style="text-align: center;">Investigation</th>
+                                <th style="text-align: center;">Result</th>
+                                <th style="text-align: center;">Unit</th>
+                                <th style="text-align: center;">Reference Value</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($results as $result)
                                 <tr>
-                                    <td>{{ $result->parameter->parameter_name ?? '—' }}</td>
-                                    <td class="result-value">{{ $result->result ?? '—' }}</td>
-                                    <td class="unit">{{ $result->unit ?? '—' }}</td>
-                                    <td class="normal-range">{{ $result->normal_range ?? '—' }}</td>
+                                    <td style="text-align: center;">{{ $result->parameter->parameter_name ?? '—' }}</td>
+                                    <td class="result-value" style="text-align: center;">{{ $result->result ?? '—' }}</td>
+                                    <td class="unit" style="text-align: center;">{{ $result->unit ?? '—' }}</td>
+                                    <td class="normal-range" style="text-align: center;">{{ $result->normal_range ?? '—' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 @else
-                    <div style="text-align: center; padding: 20px; color: #6c757d;">
+                    <div style="text-align: center; padding: 20px; color: #6c757d; direction: rtl;">
                         {{ localize('global.no_results_available') }}
                     </div>
                 @endif

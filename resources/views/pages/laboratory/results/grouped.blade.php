@@ -19,15 +19,12 @@
 
         {{-- Advanced Search and Filters --}}
         <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-none border-0">
+            <div class="card-header bg-none border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse"">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <i class="bx bx-filter-alt text-primary me-2" style="font-size: 1.2rem;"></i>
                         <h6 class="mb-0 fw-semibold">{{ localize('global.advanced_filters') }}</h6>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-                        <i class="bx bx-chevron-down" id="filterToggleIcon"></i>
-                    </button>
                 </div>
             </div>
             <div class="collapse" id="filterCollapse">
@@ -360,6 +357,23 @@
         border-radius: 0.75rem 0.75rem 0 0;
     }
     
+    /* Clickable header styles */
+    .card-header[data-bs-toggle="collapse"] {
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+    
+    
+    .card-header.collapsed {
+        background-color: transparent;
+    }
+    
+    
+    .card-header .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
     .form-control-lg {
         border-radius: 0.5rem;
         border: 2px solid #e9ecef;
@@ -545,10 +559,6 @@
         color: #6c757d;
     }
     
-    .input-group:hover {
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
-        border-radius: 0.5rem;
-    }
     
     .input-group:focus-within {
         box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
@@ -607,6 +617,30 @@ $(document).ready(function() {
     $('#filterCollapse').on('hide.bs.collapse', function () {
         $('#filterToggleIcon').removeClass('bx-chevron-up').addClass('bx-chevron-down');
     });
+    
+    // Update filter count
+    function updateFilterCount() {
+        var activeFilters = 0;
+        if ($('#search').val()) activeFilters++;
+        if ($('#date_from').val()) activeFilters++;
+        if ($('#date_to').val()) activeFilters++;
+        
+        $('#filterCount').text(activeFilters);
+        
+        if (activeFilters > 0) {
+            $('#filterCount').removeClass('bg-primary').addClass('bg-success');
+        } else {
+            $('#filterCount').removeClass('bg-success').addClass('bg-primary');
+        }
+    }
+    
+    // Update filter count on input changes
+    $('#search, #date_from, #date_to').on('input change', function() {
+        updateFilterCount();
+    });
+    
+    // Initial filter count update
+    updateFilterCount();
     
     // Handle search dropdown functionality
     $('#search').on('focus', function() {

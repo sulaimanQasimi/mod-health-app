@@ -150,81 +150,105 @@
 
         {{-- Statistics --}}
         @if(isset($totalTests) && isset($totalGroups))
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card bg-primary text-white">
+            <div class="row g-4 mb-4">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card bg-label-primary">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-collection me-2" style="font-size: 2rem;"></i>
-                                <div>
-                                    <h6 class="mb-0">{{ localize('global.total_groups') }}</h6>
-                                    <h4 class="mb-0">{{ $totalGroups }}</h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.total_groups') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">{{ $totalGroups }}</h4>
+                                    </div>
                                 </div>
+                                <span class="badge bg-primary rounded p-2">
+                                    <i class="bx bx-collection bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-success text-white">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card bg-label-success">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-test-tube me-2" style="font-size: 2rem;"></i>
-                                <div>
-                                    <h6 class="mb-0">{{ localize('global.total_tests') }}</h6>
-                                    <h4 class="mb-0">{{ $totalTests }}</h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.total_tests') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">{{ $totalTests }}</h4>
+                                    </div>
                                 </div>
+                                <span class="badge bg-success rounded p-2">
+                                    <i class="bx bx-test-tube bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="card bg-info text-white">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card bg-label-info">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-check-circle me-2" style="font-size: 2rem;"></i>
-                                <div>
-                                    <h6 class="mb-0">{{ localize('global.completed_tests') }}</h6>
-                                    <h4 class="mb-0">{{ $completedTests }}</h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.completed_tests') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">{{ $completedTests }}</h4>
+                                    </div>
                                 </div>
+                                <span class="badge bg-info rounded p-2">
+                                    <i class="bx bx-check-circle bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="card bg-warning text-white">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card bg-label-warning">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-time me-2" style="font-size: 2rem;"></i>
-                                <div>
-                                    <h6 class="mb-0">{{ localize('global.pending_tests') }}</h6>
-                                    <h4 class="mb-0">{{ $pendingTests }}</h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.pending_tests') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-warning" style="font-size: xx-large;">{{ $pendingTests }}</h4>
+                                    </div>
                                 </div>
+                                <span class="badge bg-warning rounded p-2">
+                                    <i class="bx bx-time bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="card bg-secondary text-white">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card bg-label-secondary">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-loader me-2" style="font-size: 2rem;"></i>
-                                <div>
-                                    <h6 class="mb-0">{{ localize('global.in_progress_tests') }}</h6>
-                                    <h4 class="mb-0">{{ $inProgressTests }}</h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.in_progress_tests') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-secondary" style="font-size: xx-large;">{{ $inProgressTests }}</h4>
+                                    </div>
                                 </div>
+                                <span class="badge bg-secondary rounded p-2">
+                                    <i class="bx bx-loader bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="card bg-danger text-white">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card bg-label-danger">
                         <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="bx bx-x-circle me-2" style="font-size: 2rem;"></i>
-                                <div>
-                                    <h6 class="mb-0">{{ localize('global.cancelled_tests') }}</h6>
-                                    <h4 class="mb-0">{{ $cancelledTests }}</h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.cancelled_tests') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-danger" style="font-size: xx-large;">{{ $cancelledTests }}</h4>
+                                    </div>
                                 </div>
+                                <span class="badge bg-danger rounded p-2">
+                                    <i class="bx bx-x-circle bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>

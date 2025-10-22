@@ -228,7 +228,7 @@
             @if($patient)
                 <div class="patient-info">
                     <h3>{{ localize('global.patient_information') }}</h3>
-                    <div class="patient-details">
+                    <div class="patient-details"></div></div>
                         <div>
                             <strong>{{ localize('global.name') }}:</strong>
                             <span>{{ $patient->name }} {{ $patient->last_name }}</span>
@@ -286,12 +286,12 @@
                         </div>
                         <div>
                             <strong>{{ localize('global.registration_date') }}:</strong>
-                            <span>{{ $testRegistration->registration_date->format('Y-m-d H:i') }}</span>
+                            <span>{{ verta($testRegistration->registration_date)->format('Y-m-d H:i') }}</span>
                         </div>
                         @if($testRegistration->completed_at)
                             <div>
                                 <strong>{{ localize('global.completed_date') }}:</strong>
-                                <span>{{ $testRegistration->completed_at->format('Y-m-d H:i') }}</span>
+                                <span>{{ verta($testRegistration->completed_at)->format('Y-m-d H:i') }}</span>
                             </div>
                         @endif
                     </div>
@@ -329,7 +329,7 @@
 
         {{-- Footer for each category page --}}
         <div class="footer">
-            <p>{{ localize('global.report_generated_on') }}: {{ now()->format('Y-m-d H:i:s') }}</p>
+            <p>{{ localize('global.report_generated_on') }}: {{ verta(now())->format('Y-m-d H:i:s') }}</p>
             <p>{{ localize('global.laboratory_system') }}</p>
         </div>
         @endforeach

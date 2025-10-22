@@ -3369,4 +3369,5 @@ return [
     "patient_last_name"=>"نام خانوادگی مریض",
     "patient_name_last_name"=>"نام و نام خانوادگی مریض",
     "patient_name_last_name"=>"نام و نام خانوادگی مریض",
+    "laboratory_system"=>"سیستم لابراتوار",
 ];

@@ -72,7 +72,37 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ## Recent Major Changes & New Features
 
-### 1. Language Translation Improvements (NEW)
+### 1. Laboratory Results Interface Enhancements (NEW)
+**Implementation Date**: January 2025
+**Contributors**: Mohammad Rafi 10 & Sulaiman Qasimi
+
+#### Dari Date Picker Integration:
+- **Laboratory Results Grouped Page** (`resources/views/pages/laboratory/results/grouped.blade.php`):
+  - **Date Input Standardization**: Converted HTML5 date inputs to Persian date picker format
+  - **Dari Calendar Integration**: Implemented `datepicker_dari` class with `pdp-el` styling
+  - **JavaScript Initialization**: Added Persian date picker script with proper configuration
+  - **Form Layout Optimization**: Fixed button layout issues with `btn-sm` and `gap-1` classes
+  - **Background Color Removal**: Eliminated accordion table background colors for cleaner interface
+
+#### Technical Implementation:
+- **Date Input Conversion**: Changed from `type="date"` to `type="text"` with Persian date picker classes
+- **Script Integration**: Added `ShamsiCalender/js/persianDatepicker.js` with proper initialization
+- **CSS Enhancements**: Updated accordion body background to transparent
+- **Table Styling**: Removed striped rows and header backgrounds for cleaner appearance
+- **Button Layout**: Optimized filter buttons to fit properly within container constraints
+
+#### Files Modified:
+- **resources/views/pages/laboratory/results/grouped.blade.php**: Complete date picker integration and UI improvements
+- **Enhanced User Experience**: Improved date selection with localized Dari calendar interface
+- **Consistent Styling**: Aligned with other pages using Persian date picker implementation
+
+#### Impact:
+- **Localized Date Selection**: Users can now select dates using Dari calendar interface
+- **Improved Interface**: Cleaner accordion tables without distracting background colors
+- **Better User Experience**: Consistent date picker implementation across laboratory modules
+- **Professional Appearance**: Optimized button layout and form styling
+
+### 2. Language Translation Improvements (NEW)
 **Implementation Date**: January 2025
 **Contributor**: Development Team
 
@@ -460,19 +490,24 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ### Recent Git Commits & Changes (January 2025):
 
-#### Latest Commits (Recent 10):
-1. **Latest**: Modern login page design implementation with Tailwind CSS and responsive layout
-2. **9551bfc**: Refactor appointment token printing logic to use department_id directly from appointment
-3. **deff62a**: Update appointment and patient views to use null-safe operator for doctor access
-4. **54a8319**: Update appointment creation logic in PatientController and enhance appointment view
-5. **cfdd504**: Refactor Select2 initialization for improved maintainability in patient creation view
-6. **e93ebd6**: Add checks for moment.js and bootstrap-daterangepicker availability in forms-pickers.js
-7. **983bfcf**: Enhance flatpickr initialization and error handling in forms-pickers.js
-8. **0f8439b**: Fix loadPath in i18n configuration to include leading slash for correct JSON file path
-9. **4c84296**: Enhance Select2 integration for dropdowns in patient creation view
-10. **a78b5e2**: Implement department selection and dynamic doctor loading in PatientController
+#### Latest Commits (Recent 12):
+1. **Latest**: Laboratory results interface enhancements with Dari date picker integration and UI improvements
+2. **Previous**: Modern login page design implementation with Tailwind CSS and responsive layout
+3. **9551bfc**: Refactor appointment token printing logic to use department_id directly from appointment
+4. **deff62a**: Update appointment and patient views to use null-safe operator for doctor access
+5. **54a8319**: Update appointment creation logic in PatientController and enhance appointment view
+6. **cfdd504**: Refactor Select2 initialization for improved maintainability in patient creation view
+7. **e93ebd6**: Add checks for moment.js and bootstrap-daterangepicker availability in forms-pickers.js
+8. **983bfcf**: Enhance flatpickr initialization and error handling in forms-pickers.js
+9. **0f8439b**: Fix loadPath in i18n configuration to include leading slash for correct JSON file path
+10. **4c84296**: Enhance Select2 integration for dropdowns in patient creation view
+11. **a78b5e2**: Implement department selection and dynamic doctor loading in PatientController
+12. **Previous**: Language translation standardization with Dari terminology improvements
 
 #### Key Changes Implemented:
+- **Laboratory Results Interface**: Enhanced grouped results page with Dari date picker integration and improved UI
+- **Date Picker Standardization**: Converted HTML5 date inputs to Persian calendar interface for better localization
+- **Interface Optimization**: Removed background colors from accordion tables and optimized button layouts
 - **Modern Login Design**: Complete redesign of login page with Tailwind CSS, split-screen layout, and glassmorphism effects
 - **Enhanced User Experience**: Improved login interface with responsive design, dark mode support, and modern typography
 - **Appointment System**: Complete refactoring of appointment creation and management
@@ -568,6 +603,9 @@ The medical database application has undergone significant development with the 
 ### Recent Achievements (December 2024 - January 2025):
 
 #### January 2025 Achievements:
+- **Laboratory Results Interface Enhancement**: Successfully implemented Dari date picker integration in grouped results page
+- **Date Picker Standardization**: Converted HTML5 date inputs to Persian calendar interface for better localization
+- **Interface Optimization**: Removed background colors from accordion tables and optimized button layouts
 - **Language Translation Standardization**: Successfully standardized Dari language translations, replacing English loanwords with proper Persian/Dari terminology
 - **Category Terminology Improvement**: Updated 25+ category-related translations across all modules for better localization
 - **Modern Login Page Design**: Successfully implemented contemporary login page with Tailwind CSS, split-screen layout, and glassmorphism effects
@@ -598,6 +636,10 @@ The medical database application has undergone significant development with the 
 
 ### Current Status (January 2025):
 The application has significantly improved in terms of:
+- **Laboratory Interface**: Enhanced grouped results page with Dari date picker integration and optimized UI
+- **Date Picker Consistency**: Standardized Persian calendar implementation across laboratory modules
+- **Interface Cleanliness**: Removed distracting background colors from accordion tables for better user experience
+- **Button Layout Optimization**: Fixed filter button layout issues for proper container fitting
 - **Language Localization**: Standardized Dari language translations with proper Persian terminology
 - **Category Management**: Improved category-related terminology across all modules
 - **Modern User Interface**: Implemented contemporary login page design with Tailwind CSS and responsive layout

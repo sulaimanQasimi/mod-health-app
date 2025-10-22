@@ -63,11 +63,11 @@
                     </div>
                     <div class="col-md-1">
                         <label class="form-label">&nbsp;</label>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="bx bx-search"></i>
                             </button>
-                            <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-secondary btn-sm">
                                 <i class="bx bx-x"></i>
                             </a>
                         </div>
@@ -275,7 +275,7 @@
                              class="accordion-collapse collapse" 
                              aria-labelledby="heading{{ $categoryId }}" 
                              data-bs-parent="#groupedTestsAccordion">
-                            <div class="accordion-body">
+                            <div class="accordion-body bg-none">
                                 {{-- Patient Information --}}
                                 @php
                                     $firstTest = $tests->first();
@@ -309,9 +309,9 @@
                                 @endif
 
                                 {{-- Tests in Group --}}
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
-                                        <thead class="table-light">
+                                 <div class="table-responsive">
+                                     <table class="table table-hover">
+                                         <thead>
                                             <tr>
                                                 <th>{{ localize('global.test_name') }}</th>
                                                 <th>{{ localize('global.reference_number') }}</th>
@@ -426,7 +426,7 @@
     }
     
     .accordion-body {
-        background-color: #ffffff;
+        background-color: transparent;
     }
     
     /* Print button styling in accordion header */
@@ -643,5 +643,14 @@ function clearAllFilters() {
     $('#date_from_gregorian').val('');
     $('#date_to_gregorian').val('');
 }
+<script src="{{ asset('ShamsiCalender/js/persianDatepicker.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Persian datepicker
+    $('.datepicker_dari').persianDatepicker({
+        format: 'YYYY/MM/DD',
+        observer: true,
+    });
+});
 </script>
 @endpush

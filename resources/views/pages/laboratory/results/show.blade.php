@@ -21,56 +21,79 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
-                            <div class="flex-shrink-0">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                    <i class="bx bx-user"></i>
+                <div class="row g-4">
+                    {{-- Patient Name Card --}}
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card bg-label-primary">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <span>{{ localize('global.name') }}</span>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <p class="mb-0 me-2 badge badge-center bg-primary" style="font-size: 20px; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->name }} {{ $patient->last_name }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-primary rounded p-2">
+                                        <i class="bx bx-user bx-lg"></i>
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <small class="text-muted d-block">{{ localize('global.name') }}</small>
-                                <div class="fw-semibold">{{ $patient->name }} {{ $patient->last_name }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
-                            <div class="flex-shrink-0">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                    <i class="bx bx-male"></i>
+                    
+                    {{-- Father Name Card --}}
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card bg-label-info">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <span>{{ localize('global.father_name') }}</span>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <p class="mb-0 me-2 badge badge-center bg-info" style="font-size: 0.9rem; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->father_name }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-info rounded p-2">
+                                        <i class="bx bx-male-sign bx-lg"></i>
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <small class="text-muted d-block">{{ localize('global.father_name') }}</small>
-                                <div class="fw-semibold">{{ $patient->father_name }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
-                            <div class="flex-shrink-0">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                    <i class="bx bx-calendar"></i>
+                    
+                    {{-- Age Card --}}
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card bg-label-success">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <span>{{ localize('global.age') }}</span>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <p class="mb-0 me-2 badge badge-center bg-success" style="font-size: 0.9rem; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->age }} {{ localize('global.years') }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-success rounded p-2">
+                                        <i class="bx bx-cake bx-lg"></i>
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <small class="text-muted d-block">{{ localize('global.age') }}</small>
-                                <div class="fw-semibold">{{ $patient->age }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="d-flex align-items-center p-3 bg-none border mt-2 rounded">
-                            <div class="flex-shrink-0">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                    <i class="bx bx-phone"></i>
+                    
+                    {{-- Phone Card --}}
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card bg-label-warning">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <span>{{ localize('global.phone') }}</span>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <p class="mb-0 me-2 badge badge-center bg-warning" style="font-size: 0.9rem; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->phone }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-warning rounded p-2">
+                                        <i class="bx bx-phone-call bx-lg"></i>
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <small class="text-muted d-block">{{ localize('global.phone') }}</small>
-                                <div class="fw-semibold">{{ $patient->phone }}</div>
                             </div>
                         </div>
                     </div>

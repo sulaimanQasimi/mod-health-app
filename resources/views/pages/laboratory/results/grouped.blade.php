@@ -213,7 +213,7 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <strong>{{ localize('global.registration_date') }}:</strong> 
-                                                        {{ $firstTest->registration_date->format('Y-m-d H:i') }}
+                                                        {{ \Hekmatinasser\Verta\Verta::instance($firstTest->registration_date)->format('Y/n/j H:i') }}
                                                     </div>
                                                 </div>
                                             </div>

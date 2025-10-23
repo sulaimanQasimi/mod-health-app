@@ -81,7 +81,7 @@
                                     <div class="col-md-3 mt-2 mb-2">
                                         <h5 class="mb-4 bg-label-primary p-1">{{ localize('global.created_at') }}</h5>
                                         <div dir="ltr">
-                                            {{$bloodBank->created_at->format('Y-m-d H:m:s')}}
+                                            {{ \Hekmatinasser\Verta\Verta::instance($bloodBank->created_at)->format('Y/n/j H:i:s') }}
                                         </div>
                                     </div>
                                 </div>

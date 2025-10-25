@@ -409,20 +409,37 @@
                                                         </td>
                                                         <td>{{ $lab->labType->name }}</td>
                                                         <td>
-                                                            @if ($lab->status == '0')
-                                                                <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                                            @else
+                                                            @if ($lab->status == 'completed')
                                                                 <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                                            @elseif ($lab->status == 'in_progress')
+                                                                <span class="badge bg-warning">{{ localize('global.in_progress') }}</span>
+                                                            @elseif ($lab->status == 'cancelled')
+                                                                <span class="badge bg-danger">{{ localize('global.cancelled') }}</span>
+                                                            @else
+                                                                <span class="badge bg-secondary">{{ localize('global.pending') }}</span>
                                                             @endif
                                                         </td>
-                                                        <td>{{ $lab->result }}</td>
                                                         <td>
-                                                            @isset($lab->result_file)
-                                                                <a href="{{ asset('storage/' . $lab->result_file) }}" target="_blank"
-                                                                    class="btn btn-outline-primary btn-sm">
-                                                                    <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
-                                                                </a>
-                                                            @endisset
+                                                            @if($lab->results && $lab->results->count() > 0)
+                                                                @foreach($lab->results as $result)
+                                                                    {{ $result->result ?? $result->text_result ?? '—' }}
+                                                                    @if(!$loop->last), @endif
+                                                                @endforeach
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($lab->results && $lab->results->count() > 0)
+                                                                @foreach($lab->results as $result)
+                                                                    @if($result->result_file)
+                                                                        <a href="{{ asset('storage/' . $result->result_file) }}" target="_blank"
+                                                                            class="btn btn-outline-primary btn-sm">
+                                                                            <i class="fa fa-file me-1"></i> {{ localize('global.file') }}
+                                                                        </a>
+                                                                    @endif
+                                                                @endforeach
+                                                            @endif
                                                         </td>
                                                         <td>
                                                             <!-- Actions can be added here if needed -->

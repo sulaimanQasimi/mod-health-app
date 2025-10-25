@@ -187,6 +187,12 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
+        // Load appointment with necessary relationships
+        $appointment->load([
+            'hospitalization.labs.labType',
+            'hospitalization.labs.results'
+        ]);
+        
         $labTypes = LabType::all();
         $doctors = User::all();
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();

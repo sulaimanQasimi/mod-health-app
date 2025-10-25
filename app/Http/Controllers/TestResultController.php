@@ -158,7 +158,7 @@ class TestResultController extends Controller
             if ($test->status === 'completed') {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Cannot update results for a completed test.',
+                    'message' => localize('global.cannot_update_completed_test'),
                     'redirect' => route('laboratory.reports.print', $test->ref_no)
                 ], 403);
             }
@@ -171,7 +171,7 @@ class TestResultController extends Controller
                     if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
                         return response()->json([
                             'status' => 'error',
-                            'message' => 'You do not have access to update this test registration.'
+                            'message' => localize('global.no_access_to_update_test')
                         ], 403);
                     }
                 }
@@ -245,13 +245,13 @@ class TestResultController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Results updated successfully.',
+                'message' => localize('global.results_updated_successfully'),
                 'completed' => $allFilled
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error updating results: ' . $e->getMessage(),
+                'message' => localize('global.error_updating_results') . ': ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -353,7 +353,7 @@ class TestResultController extends Controller
                     if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
                         return response()->json([
                             'status' => 'error',
-                            'message' => 'You do not have access to this test registration.'
+                            'message' => localize('global.no_access_to_test_registration')
                         ], 403);
                     }
                 }
@@ -384,12 +384,12 @@ class TestResultController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Test registration not found.'
+                'message' => localize('global.test_registration_not_found')
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to load test results: ' . $e->getMessage()
+                'message' => localize('global.failed_to_load_test_results') . ': ' . $e->getMessage()
             ], 500);
         }
     }

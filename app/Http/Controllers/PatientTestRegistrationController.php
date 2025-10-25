@@ -46,7 +46,7 @@ class PatientTestRegistrationController extends Controller
         $registration = PatientTestRegistration::findOrFail($id);
         $registration->markInProgress();
         
-        return redirect()->back()->with('success', 'Test registration marked as in progress.');
+        return redirect()->back()->with('success', localize('global.test_registration_marked_in_progress'));
     }
 
     /**
@@ -57,7 +57,7 @@ class PatientTestRegistrationController extends Controller
         $registration = PatientTestRegistration::findOrFail($id);
         $registration->markCompleted();
         
-        return redirect()->back()->with('success', 'Test registration marked as completed.');
+        return redirect()->back()->with('success', localize('global.test_registration_marked_completed'));
     }
 
     /**
@@ -68,6 +68,6 @@ class PatientTestRegistrationController extends Controller
         $registration = PatientTestRegistration::findOrFail($id);
         $registration->cancel();
         
-        return redirect()->back()->with('success', 'Test registration cancelled.');
+        return redirect()->back()->with('success', localize('global.test_registration_cancelled'));
     }
 }

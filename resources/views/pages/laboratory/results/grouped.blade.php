@@ -17,6 +17,86 @@
             </div>
         </div>
 
+        {{-- Statistics Cards --}}
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.pending_tests') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-warning" style="font-size: xx-large;">
+                                        {{ $groupedTests->flatten()->where('status', 'pending')->count() }}
+                                    </h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning rounded p-2">
+                                <i class="bx bx-hourglass bx-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-success">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.completed_tests') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">
+                                        {{ $groupedTests->flatten()->where('status', 'completed')->count() }}
+                                    </h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-success rounded p-2">
+                                <i class="bx bx-check-double bx-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-info">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.in_progress_tests') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">
+                                        {{ $groupedTests->flatten()->where('status', 'in_progress')->count() }}
+                                    </h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-info rounded p-2">
+                                <i class="bx bx-time-five bx-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-primary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.total_tests') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">
+                                        {{ $groupedTests->flatten()->count() }}
+                                    </h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-primary rounded p-2">
+                                <i class="bx bx-clipboard bx-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Advanced Search and Filters --}}
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-none border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse"">

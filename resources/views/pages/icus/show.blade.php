@@ -656,7 +656,7 @@
                                                         </form>
                                                         <a href="#"
                                                             onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { 
-                                                                                                                    document.getElementById('delete-form-{{$visit->id}}').submit(); }"
+                                                                                                                                            document.getElementById('delete-form-{{$visit->id}}').submit(); }"
                                                             class="btn btn-outline-danger btn-sm" title="Delete">
                                                             <i class="bx bx-trash"></i>
                                                         </a>
@@ -844,8 +844,6 @@
                         :can-edit-lab="auth()->user()->can('edit-lab-items')"
                         :can-delete-lab="auth()->user()->can('delete-lab-items')"
                         :appointment-completed="$icu->is_discharged == 1" />
-
-
                     <!-- Procedures Accordion -->
                     <div class="accordion mt-4" id="proceduresAccordion">
                         <div class="accordion-item">
@@ -1948,8 +1946,8 @@
                 typeDropdown.appendChild(typeOption);
             @endforeach
 
-                            // Create the medicine dropdown
-                            const medicineDropdown = document.createElement('select');
+                                    // Create the medicine dropdown
+                                    const medicineDropdown = document.createElement('select');
             medicineDropdown.className = 'form-control select2 mt-2';
             medicineDropdown.name = 'medicine_id[]';
             medicineDropdown.required = true;
@@ -1963,8 +1961,8 @@
                 medicineDropdown.appendChild(medicineOption);
             @endforeach
 
-                            // Create the medicine dropdown
-                            const medicineUsageDropdown = document.createElement('select');
+                                    // Create the medicine dropdown
+                                    const medicineUsageDropdown = document.createElement('select');
             medicineUsageDropdown.className = 'form-control select2 mt-2';
             medicineUsageDropdown.name = 'usage_type_id[]';
             medicineUsageDropdown.required = true;
@@ -1978,8 +1976,8 @@
                 medicineUsageDropdown.appendChild(medicineUsageOption);
             @endforeach
 
-                            // Create the dosage input field
-                            const dosageInput = document.createElement('input');
+                                    // Create the dosage input field
+                                    const dosageInput = document.createElement('input');
             dosageInput.type = 'text';
             dosageInput.className = 'form-control mt-2';
             dosageInput.name = 'dosage[]';

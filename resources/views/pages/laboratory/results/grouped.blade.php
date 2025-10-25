@@ -237,7 +237,7 @@
                                         <tbody>
                                             @foreach($tests as $test)
                                                 <tr>
-                                                    <td>{{ $test->labTest->name ?? '—' }}</td>
+                                                    <td>{{ $test->labType->name ?? '—' }}</td>
                                                     <td>
                                                         <span class="badge bg-warning">{{ $test->ref_no }}</span>
                                                     </td>

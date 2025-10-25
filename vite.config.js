@@ -9,6 +9,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/js/app.js',
+                'resources/js/ckeditor.js',
                 'public/assets/js/vue/lab-section.js',
                 'public/assets/js/vue/lab-test-registration-section.js',
                 'public/assets/js/vue/prescription-app.js',

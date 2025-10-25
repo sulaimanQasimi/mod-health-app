@@ -642,6 +642,11 @@ return [
     'laboratory_info' => 'Laboratory Information',
     'report_info' => 'Report Information',
     'test_results' => 'Test Results',
+    'patient_test_registrations' => 'Patient Test Registrations',
+    'all_registrations' => 'All Registrations',
+    'pending_tests' => 'Pending Tests',
+    'in_progress_tests' => 'In Progress Tests',
+    'completed_tests' => 'Completed Tests',
     'gender' => 'Gender',
     'abnormal' => 'Abnormal',
     

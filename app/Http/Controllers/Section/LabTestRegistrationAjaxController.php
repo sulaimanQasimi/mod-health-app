@@ -116,7 +116,7 @@ class LabTestRegistrationAjaxController extends Controller
                 // Get patient_id from the related entity
                 $patientId = $this->getPatientIdFromEntity($entity);
 
-                // Generate new category_id for this batch
+                // Generate new category_id for this batch to group all selected tests together
                 $maxCategoryId = PatientTestRegistration::max('category_id') ?? 0;
                 $newCategoryId = $maxCategoryId + 1;
 
@@ -137,6 +137,9 @@ class LabTestRegistrationAjaxController extends Controller
                         $metadata = json_decode($request->metadata, true);
                     }
 
+                    // Get lab type for creating test results
+                    $labType = \App\Models\LabType::find($labTypeId);
+                    
                     // Create test registration with polymorphic relationship
                     $registration = PatientTestRegistration::create([
                         'patient_id'        => $patientId,
@@ -145,6 +148,7 @@ class LabTestRegistrationAjaxController extends Controller
                         'registration_date' => now(),
                         'ref_no'            => $newRefNo,
                         'lab_type_id'       => $labTypeId,
+                        'category_id'       => $newCategoryId, // Use the generated category_id to group all tests
                         'status'            => 'pending',
                         'doctor_id'         => $request->doctor_id,
                         'branch_id'         => $request->branch_id,
@@ -157,7 +161,6 @@ class LabTestRegistrationAjaxController extends Controller
                     $createdRegistrations[] = $registration;
 
                     // Create test results - handle both parametered and non-parametered lab types
-                    $labType = \App\Models\LabType::find($labTypeId);
                     
                     if ($labType->directLabTestParameters && $labType->directLabTestParameters->count() > 0) {
                         // Create results for each parameter
@@ -195,7 +198,8 @@ class LabTestRegistrationAjaxController extends Controller
                     'data' => [
                         'registration_ids' => array_column($createdRegistrations, 'id'),
                         'ref_numbers' => $refNumbers,
-                        'category_id' => $newCategoryId
+                        'category_id' => $newCategoryId,
+                        'registrations_count' => count($createdRegistrations)
                     ]
                 ]);
 

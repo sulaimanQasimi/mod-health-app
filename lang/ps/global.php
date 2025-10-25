@@ -714,6 +714,11 @@ return [
     'laboratory_info' => 'د ازمایښت معلومات',
     'report_info' => 'د راپور معلومات',
     'test_results' => 'د ازمایښت پایلې',
+    'patient_test_registrations' => 'د ناروغانو د ازمایښتونو ثبت',
+    'all_registrations' => 'ټول ثبتونه',
+    'pending_tests' => 'پاتې ازمایښتونه',
+    'in_progress_tests' => 'پرمختللي ازمایښتونه',
+    'completed_tests' => 'بشپړ شوي ازمایښتونه',
     'gender' => 'جنس',
     'abnormal' => 'غیر طبیعي',
     

@@ -143,11 +143,11 @@
                                                 <td class="text-center">
                                                     <div class="d-flex align-items-center justify-content-center">
                                                         <i class="bx bx-test-tube me-2 text-primary"></i>
-                                                        <strong>{{ $registration->labTest->name ?? '—' }}</strong>
+                                                        <strong>{{ $registration->labType->name ?? '—' }}</strong>
                                                     </div>
                                                 </td>
                                                 <td class="text-center">
-                                                    @if($registration->labTest && $registration->labTest->has_parameters)
+                                                    @if($registration->labType && $registration->labType->directLabTestParameters && $registration->labType->directLabTestParameters->count() > 0)
                                                         <span class="badge bg-info">{{ localize('global.parametered') }}</span>
                                                     @else
                                                         <span class="badge bg-secondary">{{ localize('global.text_based') }}</span>

@@ -212,7 +212,7 @@
         @foreach($testsByLabCategory as $labCategoryId => $testsInCategory)
         @php
             $firstTest = $testsInCategory->first();
-            $labCategory = $firstTest && $firstTest->labTest ? $firstTest->labTest->category : null;
+            $labCategory = $firstTest && $firstTest->labType ? $firstTest->labType->category : null;
             $categoryName = $labCategory ? $labCategory->name : 'Uncategorized';
         @endphp
         
@@ -262,7 +262,7 @@
         @foreach($testsInCategory as $testRegistration)
             <div class="test-section">
                 <h3 class="test-header">
-                    {{ $testRegistration->labTest ? $testRegistration->labTest->name : localize('global.test_name') }}
+                    {{ $testRegistration->labType ? $testRegistration->labType->name : localize('global.test_name') }}
                 </h3>
                 
                 <div class="test-details">
@@ -297,7 +297,15 @@
                     </div>
 
                     {{-- Test Parameters and Results --}}
-                    @if(isset($groupedResults[$testRegistration->id]) && $groupedResults[$testRegistration->id]->count() > 0)
+                    @php
+                        $testResults = $groupedResults[$testRegistration->id] ?? collect();
+                        $hasParameters = $testRegistration->labType && $testRegistration->labType->directLabTestParameters && $testRegistration->labType->directLabTestParameters->count() > 0;
+                        $hasTextResult = $testResults->where('text_result', '!=', null)->count() > 0;
+                        $hasParameterResults = $testResults->where('parameter', '!=', null)->count() > 0;
+                    @endphp
+                    
+                    @if($hasParameters && $hasParameterResults)
+                        {{-- Parametered test - show parameter table --}}
                         <table class="parameters-table">
                             <thead>
                                 <tr>
@@ -308,17 +316,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($groupedResults[$testRegistration->id] as $result)
-                                    <tr>
-                                        <td>{{ $result->parameter->parameter_name ?? '—' }}</td>
-                                        <td class="result-value">{{ $result->result ?? '—' }}</td>
-                                        <td class="unit">{{ $result->unit ?? '—' }}</td>
-                                        <td class="normal-range">{{ $result->normal_range ?? '—' }}</td>
-                                    </tr>
+                                @foreach($testResults as $result)
+                                    @if($result->parameter)
+                                        <tr>
+                                            <td>{{ $result->parameter->parameter_name ?? '—' }}</td>
+                                            <td class="result-value">{{ $result->result ?? '—' }}</td>
+                                            <td class="unit">{{ $result->unit ?? '—' }}</td>
+                                            <td class="normal-range">{{ $result->normal_range ?? '—' }}</td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
+                    @elseif($hasTextResult)
+                        {{-- Non-parametered test - show text result --}}
+                        <div class="text-result-section" style="background: #f8f9fa; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; margin: 20px 0;">
+                            <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
+                            <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap;">
+                                {!! $testResults->where('text_result', '!=', null)->first()->text_result ?? localize('global.no_result_available') !!}
+                            </div>
+                        </div>
                     @else
+                        {{-- No results available --}}
                         <div style="text-align: center; padding: 20px; color: #6c757d;">
                             {{ localize('global.no_results_available') }}
                         </div>
@@ -329,7 +348,7 @@
 
         {{-- Footer for each category page --}}
         <div class="footer">
-            <p>{{ localize('global.report_generated_on') }}: {{ verta(now())->format('Y-m-d H:i:s') }}</p>
+            <p>{{ localize('global.report_generated_on') }}: {{ verta()->format('Y-m-d H:i:s') }}</p>
             <p>{{ localize('global.laboratory_system') }}</p>
         </div>
         @endforeach

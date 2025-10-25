@@ -21,6 +21,7 @@ class PatientTestRegistration extends Model
         'registration_date',
         'ref_no',
         'lab_type_id',
+        'category_id',
         'status',
         'doctor_id',
         'branch_id',

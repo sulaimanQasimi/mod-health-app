@@ -260,43 +260,46 @@
             <div class="test-details">
 
                 <!-- Test Parameters and Results -->
-                @if($results->count() > 0)
-                    @php
-                        $hasParameters = $results->first()->parameter !== null;
-                    @endphp
-                    
-                    @if($hasParameters)
-                        {{-- Parametered test - show parameter table --}}
-                        <table class="parameters-table">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: center;">Investigation</th>
-                                    <th style="text-align: center;">Result</th>
-                                    <th style="text-align: center;">Unit</th>
-                                    <th style="text-align: center;">Reference Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($results as $result)
+                @php
+                    // Check if this is a parametered test by looking at the lab type
+                    $hasParameters = $testRegistration && $testRegistration->labType && $testRegistration->labType->directLabTestParameters && $testRegistration->labType->directLabTestParameters->count() > 0;
+                    $hasTextResult = $results->where('text_result', '!=', null)->count() > 0;
+                @endphp
+                
+                @if($hasParameters)
+                    {{-- Parametered test - show parameter table --}}
+                    <table class="parameters-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Investigation</th>
+                                <th style="text-align: center;">Result</th>
+                                <th style="text-align: center;">Unit</th>
+                                <th style="text-align: center;">Reference Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($results as $result)
+                                @if($result->parameter)
                                     <tr>
                                         <td style="text-align: center;">{{ $result->parameter->parameter_name ?? '—' }}</td>
                                         <td class="result-value" style="text-align: center;">{{ $result->result ?? '—' }}</td>
                                         <td class="unit" style="text-align: center;">{{ $result->unit ?? '—' }}</td>
                                         <td class="normal-range" style="text-align: center;">{{ $result->normal_range ?? '—' }}</td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @else
-                        {{-- Non-parametered test - show text result --}}
-                        <div class="text-result-section" style="background: #f8f9fa; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; margin: 20px 0;">
-                            <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
-                            <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap;">
-                                {{ $results->first()->text_result ?? localize('global.no_result_available') }}
-                            </div>
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                @elseif($hasTextResult)
+                    {{-- Non-parametered test - show text result --}}
+                    <div class="text-result-section" style="background: #f8f9fa; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
+                        <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap;">
+                            {!! $results->where('text_result', '!=', null)->first()->text_result ?? localize('global.no_result_available') !!}
                         </div>
-                    @endif
+                    </div>
                 @else
+                    {{-- No results available --}}
                     <div style="text-align: center; padding: 20px; color: #6c757d; direction: rtl;">
                         {{ localize('global.no_results_available') }}
                     </div>

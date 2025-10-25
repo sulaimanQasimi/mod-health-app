@@ -225,32 +225,6 @@
             </li>
         @endcan
 
-        <!-- Laboratory Test Management System -->
-        @can('show-laboratory-menu')
-            <li class="menu-item {{ Route::is('laboratory.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-test-tube"></i>
-                    <div>{{ localize('global.laboratory_tests') }}</div>
-                </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ Route::is('laboratory.results.*') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.results.patients') }}" class="menu-link">
-                            <div>{{ localize('global.test_results') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('laboratory.results.grouped') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.results.grouped') }}" class="menu-link">
-                            <div>{{ localize('global.grouped_test_results') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('laboratory.scan') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.scan') }}" class="menu-link">
-                            <div>{{ localize('global.scan_test') }}</div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        @endcan
 
         @can('show-blood-bank-menu')
             <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
@@ -342,28 +316,48 @@
         @endcan
 
         @can('show-labs-menu')
-            <li class="menu-item {{ Route::is('lab_tests.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::is('lab_tests.completed') || Route::is('lab_tests.report') || Route::is('laboratory.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-hard-hat"></i>
                     <div>{{ localize('global.checkups') }}</div>
                 </a>
 
                 <ul class="menu-sub">
-                    <li class="menu-item {{ Route::is('lab_tests.index') ? 'active' : '' }}">
-                        <a href="{{ route('lab_tests.index') }}" class="menu-link">
-                            <div>{{ localize('global.under_lab_tests') }}</div>
+                    <!-- Patient Test Registrations -->
+                    <li class="menu-item {{ Route::is('laboratory.results.patients') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.results.patients') }}" class="menu-link">
+                            <div>{{ localize('global.patient_test_registrations') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('lab_tests.completed') ? 'active' : '' }}">
-                        <a href="{{ route('lab_tests.completed') }}" class="menu-link">
-                            <div>{{ localize('global.completed_lab_tests') }}</div>
+                    <li class="menu-item {{ Route::is('laboratory.results.pending') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.results.pending') }}" class="menu-link">
+                            <div>{{ localize('global.pending_tests') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('lab_tests.report') ? 'active' : '' }}">
-                        <a href="{{ route('lab_tests.report') }}" class="menu-link">
-                            <div>{{ localize('global.reports') }}</div>
+                    <li class="menu-item {{ Route::is('laboratory.results.in-progress') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.results.in-progress') }}" class="menu-link">
+                            <div>{{ localize('global.in_progress_tests') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('laboratory.results.completed') ? 'active' : '' }}">
+                        <a href="{{ route('laboratory.results.completed') }}" class="menu-link">
+                            <div>{{ localize('global.completed_tests') }}</div>
+                        </a>
+                    </li>
+                    
+                    <!-- Laboratory Tests Section -->
+                    @can('show-laboratory-menu')
+                        <li class="menu-item {{ Route::is('laboratory.results.grouped') ? 'active' : '' }}">
+                            <a href="{{ route('laboratory.results.grouped') }}" class="menu-link">
+                                <div>{{ localize('global.grouped_test_results') }}</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {{ Route::is('laboratory.scan') ? 'active' : '' }}">
+                            <a href="{{ route('laboratory.scan') }}" class="menu-link">
+                                <div>{{ localize('global.scan_test') }}</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endcan

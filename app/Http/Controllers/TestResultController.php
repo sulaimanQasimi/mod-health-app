@@ -30,7 +30,9 @@ class TestResultController extends Controller
         // Start query builder
         $query = PatientTestRegistration::with([
             'testable.patient',
-            'labTest',
+            'labType.section',
+            'labType.category',
+            'labType.directLabTestParameters',
             'doctor',
             'branch'
         ]);
@@ -44,9 +46,20 @@ class TestResultController extends Controller
             });
         }
 
-        // Apply status filter
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        // Apply status filter based on route or request parameter
+        $statusFilter = null;
+        if ($request->route()->getName() === 'laboratory.results.pending') {
+            $statusFilter = 'pending';
+        } elseif ($request->route()->getName() === 'laboratory.results.in-progress') {
+            $statusFilter = 'in_progress';
+        } elseif ($request->route()->getName() === 'laboratory.results.completed') {
+            $statusFilter = 'completed';
+        } elseif ($request->filled('status')) {
+            $statusFilter = $request->status;
+        }
+
+        if ($statusFilter) {
+            $query->where('status', $statusFilter);
         }
 
         // Apply priority filter
@@ -56,8 +69,8 @@ class TestResultController extends Controller
 
         // Apply lab type section filter
         if ($request->filled('lab_type_section_id')) {
-            $query->whereHas('labTest', function($q) use ($request) {
-                $q->where('lab_type_section_id', $request->lab_type_section_id);
+            $query->whereHas('labType', function($q) use ($request) {
+                $q->where('section_id', $request->lab_type_section_id);
             });
         }
 
@@ -122,13 +135,13 @@ class TestResultController extends Controller
         $request->validate([
             'ref_no' => 'required|string',
             'test_registration_id' => 'required|exists:patient_test_registrations,id',
-            'results' => 'required|array',
+            'results' => 'nullable|array',
             'text_result' => 'nullable|string',
         ]);
 
         try {
             // Check if test is already completed
-            $test = PatientTestRegistration::find($request->test_registration_id);
+            $test = PatientTestRegistration::with('labType.directLabTestParameters')->find($request->test_registration_id);
             if ($test->status === 'completed') {
                 return response()->json([
                     'status' => 'error',
@@ -137,9 +150,9 @@ class TestResultController extends Controller
                 ], 403);
             }
             // Check if this is a non-parametered test
-            $labTest = $test->labTest;
+            $labType = $test->labType;
             
-            if (!$labTest->has_parameters && $request->has('text_result')) {
+            if ((!$labType || ($labType->directLabTestParameters && $labType->directLabTestParameters->count() == 0)) && $request->has('text_result')) {
                 // Handle non-parametered test with text_result
                 $existingResult = PatientTestResult::where('ref_no', $request->ref_no)
                     ->where('test_registration_id', $request->test_registration_id)
@@ -157,7 +170,7 @@ class TestResultController extends Controller
                         'test_registration_id' => $request->test_registration_id,
                     ]);
                 }
-            } else {
+            } else if ($request->has('results') && $request->results) {
                 // Handle parametered test with individual results
                 foreach ($request->results as $parameterId => $resultValue) {
                     $existingResult = PatientTestResult::where('ref_no', $request->ref_no)
@@ -180,12 +193,20 @@ class TestResultController extends Controller
                 }
             }
 
-            // Check if all parameters for this ref_no have results
+            // Check if test should be marked as completed
             $allResults = PatientTestResult::where('ref_no', $request->ref_no)
                 ->where('test_registration_id', $request->test_registration_id)
                 ->get();
 
-            $allFilled = $allResults->every(fn($r) => $r->result !== null && $r->result !== '');
+            $allFilled = false;
+            
+            if ($request->has('text_result') && $request->text_result) {
+                // For text-based tests, mark as completed if text_result is provided
+                $allFilled = true;
+            } else if ($request->has('results') && $request->results) {
+                // For parametered tests, check if all parameters have results
+                $allFilled = $allResults->every(fn($r) => $r->result !== null && $r->result !== '');
+            }
 
             if ($allFilled) {
                 // Update test registration status to completed
@@ -214,7 +235,9 @@ class TestResultController extends Controller
     {
         $registration = PatientTestRegistration::with([
             'testable.patient',
-            'labTest.parameters',
+            'labType.section',
+            'labType.category',
+            'labType.directLabTestParameters',
             'doctor',
             'branch'
         ])->findOrFail($registration_id);
@@ -234,12 +257,12 @@ class TestResultController extends Controller
         $patientId = $patient->id;
         $completedTests = PatientTestRegistration::where('patient_id', $patientId)
             ->where('status', 'completed')
-            ->with(['labTest', 'testable.patient'])
+            ->with(['labType', 'testable.patient'])
             ->get();
 
         $pendingTests = PatientTestRegistration::where('patient_id', $patientId)
             ->where('status', 'pending')
-            ->with(['labTest', 'testable.patient'])
+            ->with(['labType', 'testable.patient'])
             ->get();
 
         // Use the specific registration as the first test
@@ -253,8 +276,8 @@ class TestResultController extends Controller
                 ->get();
             
             // If no results exist, create empty result entries for all parameters
-            if($firstTestResults->isEmpty() && $firstTest->labTest && $firstTest->labTest->parameters) {
-                foreach($firstTest->labTest->parameters as $parameter) {
+            if($firstTestResults->isEmpty() && $firstTest->labType && $firstTest->labType->directLabTestParameters) {
+                foreach($firstTest->labType->directLabTestParameters as $parameter) {
                     $firstTestResults->push(new \App\Models\PatientTestResult([
                         'lab_parameter_id' => $parameter->id,
                         'parameter' => $parameter,
@@ -281,16 +304,15 @@ class TestResultController extends Controller
     public function ajaxLoadTestResult($test_registration_id)
     {
         try {
-            $test = PatientTestRegistration::with(['labTest', 'testable.patient'])->findOrFail($test_registration_id);
+            $test = PatientTestRegistration::with(['labType.directLabTestParameters', 'testable.patient'])->findOrFail($test_registration_id);
 
             $results = PatientTestResult::where('test_registration_id', $test_registration_id)
                 ->with('parameter')
                 ->get();
 
             // If no results exist, create empty result entries for all parameters
-            if($results->isEmpty() && $test->labTest) {
-                $parameters = \App\Models\LabTestParameter::where('test_id', $test->labTest->id)->get();
-                foreach($parameters as $parameter) {
+            if($results->isEmpty() && $test->labType && $test->labType->directLabTestParameters) {
+                foreach($test->labType->directLabTestParameters as $parameter) {
                     $results->push(new \App\Models\PatientTestResult([
                         'lab_parameter_id' => $parameter->id,
                         'parameter' => $parameter,
@@ -324,21 +346,35 @@ class TestResultController extends Controller
      */
     public function printResultByRef($ref_no)
     {
+        // Load test registration with all necessary relationships
+        $testRegistration = PatientTestRegistration::where('ref_no', $ref_no)
+            ->with(['labType.directLabTestParameters', 'testable.patient'])
+            ->first();
+
+        if (!$testRegistration) {
+            abort(404, 'No test registration found for this reference number.');
+        }
+
+        $patient = $testRegistration->testable->patient ?? null;
+        $testName = $testRegistration->labType->name ?? '—';
+
         // Load all results for this ref_no
         $results = PatientTestResult::with('parameter', 'patient')
             ->where('ref_no', $ref_no)
             ->get();
 
-        if ($results->isEmpty()) {
-            abort(404, 'No results found for this reference number.');
+        // If no results exist but we have parameters, create empty result entries
+        if ($results->isEmpty() && $testRegistration->labType && $testRegistration->labType->directLabTestParameters) {
+            foreach ($testRegistration->labType->directLabTestParameters as $parameter) {
+                $results->push(new \App\Models\PatientTestResult([
+                    'lab_parameter_id' => $parameter->id,
+                    'parameter' => $parameter,
+                    'unit' => $parameter->unit,
+                    'normal_range' => $parameter->normal_range,
+                    'result' => null
+                ]));
+            }
         }
-
-        $patient = $results->first()->patient ?? null;
-        $testRegistration = PatientTestRegistration::where('ref_no', $ref_no)
-            ->with(['labTest', 'testable.patient'])
-            ->first();
-
-        $testName = $testRegistration->labTest->name ?? '—';
 
         // Return view with results and auto print
         return view('pages.laboratory.reports.lab_report', compact('patient', 'results', 'testRegistration', 'testName'));
@@ -364,7 +400,8 @@ class TestResultController extends Controller
         // Query test registrations with category_id
         $query = PatientTestRegistration::with([
             'testable.patient',
-            'labTest.category',
+            'labType.section',
+            'labType.category',
             'doctor',
             'branch'
         ])->whereNotNull('category_id');
@@ -481,7 +518,9 @@ class TestResultController extends Controller
         // Load all test registrations with matching category_id
         $testRegistrations = PatientTestRegistration::with([
             'testable.patient',
-            'labTest.category',
+            'labType.section',
+            'labType.category',
+            'labType.directLabTestParameters',
             'doctor',
             'branch'
         ])->where('category_id', $category_id)->get();
@@ -494,9 +533,9 @@ class TestResultController extends Controller
         $firstRegistration = $testRegistrations->first();
         $patient = $firstRegistration && $firstRegistration->testable ? $firstRegistration->testable->patient : null;
         
-        // Group tests by their lab test category (different from category_id)
+        // Group tests by their lab type category (different from category_id)
         $testsByLabCategory = $testRegistrations->groupBy(function($test) {
-            return $test->labTest ? $test->labTest->category_id : 'uncategorized';
+            return $test->labType ? $test->labType->category_id : 'uncategorized';
         });
 
         // Load all results for all tests in this group
@@ -506,6 +545,21 @@ class TestResultController extends Controller
                 $results = PatientTestResult::with('parameter')
                     ->where('test_registration_id', $registration->id)
                     ->get();
+                
+                // If no results exist but we have parameters, create empty result entries
+                if ($results->isEmpty() && $registration->labType && $registration->labType->directLabTestParameters) {
+                    foreach ($registration->labType->directLabTestParameters as $parameter) {
+                        $results->push(new \App\Models\PatientTestResult([
+                            'lab_parameter_id' => $parameter->id,
+                            'parameter' => $parameter,
+                            'unit' => $parameter->unit,
+                            'normal_range' => $parameter->normal_range,
+                            'result' => null,
+                            'test_registration_id' => $registration->id
+                        ]));
+                    }
+                }
+                
                 $allResults = $allResults->merge($results);
             } catch (\Exception $e) {
                 // Log error but continue processing
@@ -544,7 +598,7 @@ class TestResultController extends Controller
         // Find the test registration based on the reference number
         $registration = PatientTestRegistration::where('ref_no', $ref_no)
             ->where('branch_id', auth()->user()->branch_id)
-            ->with(['labTest', 'testable.patient'])
+            ->with(['labType', 'testable.patient'])
             ->first();
 
         if (!$registration) {

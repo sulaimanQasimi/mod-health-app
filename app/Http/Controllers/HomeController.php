@@ -11,7 +11,7 @@ use App\Models\Department;
 use App\Models\Diagnose;
 use App\Models\Hospitalization;
 use App\Models\ICU;
-use App\Models\Lab;
+use App\Models\PatientTestRegistration;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use App\Models\Operation;
@@ -45,7 +45,7 @@ class HomeController extends Controller
     public function index()
     {
         $totalPatients = Patient::where('branch_id',auth()->user()->branch_id)->count();
-        $totalCheckups = Lab::where('branch_id',auth()->user()->branch_id)->count();
+        $totalCheckups = PatientTestRegistration::where('branch_id',auth()->user()->branch_id)->count();
         $totalAppointments = Appointment::where('branch_id',auth()->user()->branch_id)->count();
         $totalPrescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->count();
         $totalConsultations = Consultation::where('branch_id',auth()->user()->branch_id)->count();
@@ -74,7 +74,7 @@ class HomeController extends Controller
 
         // Retrieve models percentage changes
         $patientPercentageChange = $this->getPercentageChange(Patient::class);
-        $checkupPercentageChange = $this->getPercentageChange(Lab::class);
+        $checkupPercentageChange = $this->getPercentageChange(PatientTestRegistration::class);
         $appointmentPercentageChange = $this->getPercentageChange(Appointment::class);
         $prescriptionPercentageChange = $this->getPercentageChange(Prescription::class);
         $consultationPercentageChange = $this->getPercentageChange(Consultation::class);
@@ -89,7 +89,6 @@ class HomeController extends Controller
             'consultation_comments',
             'hospitalizations',
             'i_c_u_s',
-            'labs',
             'prescriptions',
             'visits'
         ])
@@ -111,7 +110,7 @@ class HomeController extends Controller
 
                 return [
                     'name' => $user->name,
-                    'weight' => $user->appointments_count + $anesthesiasCount + $user->consultation_comments_count + $user->hospitalizations_count + $user->i_c_u_s_count + $user->labs_count + $user->prescriptions_count + $user->visits_count,
+                    'weight' => $user->appointments_count + $anesthesiasCount + $user->consultation_comments_count + $user->hospitalizations_count + $user->i_c_u_s_count + $user->prescriptions_count + $user->visits_count,
                 ];
             })
             ->values()
@@ -227,8 +226,8 @@ class HomeController extends Controller
                              ->count();
 
         // Get the model count for the previous month
-        $previousMonth = Carbon::now()->subMonth(1)->format('m');
-        $previousYear = Carbon::now()->subMonth(1)->format('Y');
+        $previousMonth = Carbon::now()->subMonth()->format('m');
+        $previousYear = Carbon::now()->subMonth()->format('Y');
         $previousMonthCount = $model::whereMonth('created_at', $previousMonth)
                              ->whereYear('created_at', $previousYear)
                              ->count();

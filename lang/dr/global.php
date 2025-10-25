@@ -3463,4 +3463,5 @@ return [
     "test_registration_marked_completed"=>"ثبت نام آزمایش به عنوان تکمیل شده علامت‌گذاری شد",
     "test_registration_cancelled"=>"ثبت نام آزمایش لغو شد",
     "clear_search"=>"پاک کردن جستجو",
+    "no_results_available"=>"هیچ نتیجه ای یافت نشد",
 ];

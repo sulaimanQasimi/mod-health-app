@@ -54,6 +54,13 @@ class TestResultController extends Controller
             $query->where('priority', $request->priority);
         }
 
+        // Apply lab type section filter
+        if ($request->filled('lab_type_section_id')) {
+            $query->whereHas('labTest', function($q) use ($request) {
+                $q->where('lab_type_section_id', $request->lab_type_section_id);
+            });
+        }
+
         // Apply date range filter with Persian date support
         if ($request->filled('date_from_gregorian')) {
             $dateFrom = $request->date_from_gregorian;
@@ -116,6 +123,7 @@ class TestResultController extends Controller
             'ref_no' => 'required|string',
             'test_registration_id' => 'required|exists:patient_test_registrations,id',
             'results' => 'required|array',
+            'text_result' => 'nullable|string',
         ]);
 
         try {
@@ -128,24 +136,47 @@ class TestResultController extends Controller
                     'redirect' => route('laboratory.reports.print', $test->ref_no)
                 ], 403);
             }
-            // Update or create results based on ref_no and lab_parameter_id
-            foreach ($request->results as $parameterId => $resultValue) {
+            // Check if this is a non-parametered test
+            $labTest = $test->labTest;
+            
+            if (!$labTest->has_parameters && $request->has('text_result')) {
+                // Handle non-parametered test with text_result
                 $existingResult = PatientTestResult::where('ref_no', $request->ref_no)
-                    ->where('lab_parameter_id', $parameterId)
+                    ->where('test_registration_id', $request->test_registration_id)
+                    ->whereNull('lab_parameter_id')
                     ->first();
                 
                 if ($existingResult) {
-                    // Update existing result
-                    $existingResult->update(['result' => $resultValue]);
+                    $existingResult->update(['text_result' => $request->text_result]);
                 } else {
-                    // Create new result entry
                     PatientTestResult::create([
-                        'patient_id' => $request->patient_id ?? 1, // Fallback if not provided
+                        'patient_id' => $request->patient_id ?? 1,
                         'ref_no' => $request->ref_no,
-                        'lab_parameter_id' => $parameterId,
-                        'result' => $resultValue,
+                        'lab_parameter_id' => null,
+                        'text_result' => $request->text_result,
                         'test_registration_id' => $request->test_registration_id,
                     ]);
+                }
+            } else {
+                // Handle parametered test with individual results
+                foreach ($request->results as $parameterId => $resultValue) {
+                    $existingResult = PatientTestResult::where('ref_no', $request->ref_no)
+                        ->where('lab_parameter_id', $parameterId)
+                        ->first();
+                    
+                    if ($existingResult) {
+                        // Update existing result
+                        $existingResult->update(['result' => $resultValue]);
+                    } else {
+                        // Create new result entry
+                        PatientTestResult::create([
+                            'patient_id' => $request->patient_id ?? 1, // Fallback if not provided
+                            'ref_no' => $request->ref_no,
+                            'lab_parameter_id' => $parameterId,
+                            'result' => $resultValue,
+                            'test_registration_id' => $request->test_registration_id,
+                        ]);
+                    }
                 }
             }
 

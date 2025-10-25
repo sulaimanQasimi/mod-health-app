@@ -125,6 +125,9 @@
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.patient') }}</th>
                                             <th>{{ localize('global.test_name') }}</th>
+                                            <th>{{ localize('global.lab_type') }}</th>
+                                            <th>{{ localize('global.lab_type_section') }}</th>
+                                            <th>{{ localize('global.test_type') }}</th>
                                             <th>{{ localize('global.status') }}</th>
                                             <th>{{ localize('global.priority') }}</th>
                                             <th>{{ localize('global.doctor') }}</th>
@@ -144,6 +147,12 @@
                                                 <span v-else>—</span>
                                             </td>
                                             <td>{{ registration.lab_test ? registration.lab_test.name : '—' }}</td>
+                                            <td>{{ registration.lab_test?.lab_type?.name ?? '—' }}</td>
+                                            <td>{{ registration.lab_test?.lab_type_section?.section ?? '—' }}</td>
+                                            <td>
+                                                <span v-if="registration.lab_test?.has_parameters" class="badge bg-info">{{ localize('global.parametered') }}</span>
+                                                <span v-else class="badge bg-secondary">{{ localize('global.text_based') }}</span>
+                                            </td>
                                             <td>
                                                 <span 
                                                     :class="getStatusClass(registration.status)"
@@ -861,7 +870,12 @@ export default {
                 'global.basic_information': 'اطلاعات پایه',
                 'global.result': 'نتیجه',
                 'global.completed': 'تکمیل شده',
-                'global.pending': 'در انتظار'
+                'global.pending': 'در انتظار',
+                'global.lab_type': 'نوع آزمایش',
+                'global.lab_type_section': 'بخش آزمایش',
+                'global.test_type': 'نوع تست',
+                'global.parametered': 'پارامتری',
+                'global.text_based': 'متنی'
             };
             return translations[key] || key;
         },

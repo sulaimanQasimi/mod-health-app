@@ -15,8 +15,8 @@ class LabTestParameter extends Model
     use HasFactory;
 
     protected $fillable = [
-        'testcategory_id',
         'test_id',
+        'lab_type_id',
         'parameter_name',
         'unit',
         'normal_range',
@@ -42,11 +42,24 @@ class LabTestParameter extends Model
     }
 
     /**
-     * Get the test category that owns this parameter
+     * Get the lab type for this parameter through the lab test
+     * 
+     * Usage examples:
+     * $parameter = LabTestParameter::find(1);
+     * $labType = $parameter->labType; // Get the lab type for this parameter
+     * $labTypeName = $parameter->labType->name;
      */
-    public function testCategory()
+    public function labType()
     {
-        return $this->belongsTo(TestCategory::class, 'testcategory_id');
+        return $this->hasOneThrough(LabType::class, LabTest::class, 'id', 'id', 'test_id', 'lab_type_id');
+    }
+
+    /**
+     * Get the lab type directly linked to this parameter
+     */
+    public function directLabType()
+    {
+        return $this->belongsTo(LabType::class, 'lab_type_id');
     }
 
     /**

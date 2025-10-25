@@ -14,6 +14,12 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
+
+/**
+ * @deprecated This controller is deprecated and will be removed in a future version.
+ * Use LabTestController and LabTestRegistrationAjaxController instead.
+ * This controller is kept for historical reference only.
+ */
 class LabController extends Controller
 {
     /**

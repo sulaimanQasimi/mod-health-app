@@ -121,43 +121,49 @@
                     <input type="hidden" id="ref_no" name="ref_no" value="{{ $firstTest->ref_no ?? '' }}">
                     <input type="hidden" id="complete_flag" name="complete" value="0">
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="resultTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>{{ localize('global.parameter_name') }}</th>
-                                    <th>{{ localize('global.result') }}</th>
-                                    <th>{{ localize('global.unit') }}</th>
-                                    <th>{{ localize('global.normal_range') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if($firstTestResults && $firstTestResults->count() > 0)
-                                    @foreach($firstTestResults as $result)
-                                        <tr>
-                                            <td><strong>{{ $result->parameter->parameter_name ?? '—' }}</strong></td>
-                                            <td>
-                                                <input type="text" name="results[{{ $result->parameter->id ?? '' }}]"
-                                                    value="{{ $result->result ?? '' }}" class="form-control">
-                                            </td>
-                                            <td><span class="text-muted">{{ $result->unit ?? '—' }}</span></td>
-                                            <td><span class="text-muted">{{ $result->normal_range ?? '—' }}</span></td>
-                                        </tr>
-                                    @endforeach
-                                @else
+                    @if($firstTest && $firstTest->labTest && $firstTest->labTest->has_parameters)
+                        {{-- Parametered test - show parameter table --}}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="resultTable">
+                                <thead class="table-light">
                                     <tr>
-                                        <td colspan="4" class="text-center">
-                                            @if($firstTest)
-                                                No parameters found for this test
-                                            @else
-                                                No test selected
-                                            @endif
-                                        </td>
+                                        <th>{{ localize('global.parameter_name') }}</th>
+                                        <th>{{ localize('global.result') }}</th>
+                                        <th>{{ localize('global.unit') }}</th>
+                                        <th>{{ localize('global.normal_range') }}</th>
                                     </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    @if($firstTestResults && $firstTestResults->count() > 0)
+                                        @foreach($firstTestResults as $result)
+                                            <tr>
+                                                <td><strong>{{ $result->parameter->parameter_name ?? '—' }}</strong></td>
+                                                <td>
+                                                    <input type="text" name="results[{{ $result->parameter->id ?? '' }}]"
+                                                        value="{{ $result->result ?? '' }}" class="form-control">
+                                                </td>
+                                                <td><span class="text-muted">{{ $result->unit ?? '—' }}</span></td>
+                                                <td><span class="text-muted">{{ $result->normal_range ?? '—' }}</span></td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4" class="text-center">
+                                                No parameters found for this test
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        {{-- Non-parametered test - show text area --}}
+                        <div class="mb-3">
+                            <label for="text_result" class="form-label">{{ localize('global.test_result') }}</label>
+                            <textarea name="text_result" id="text_result" class="form-control" rows="5" 
+                                placeholder="{{ localize('global.enter_test_result') }}">{{ $firstTestResults->first()->text_result ?? '' }}</textarea>
+                        </div>
+                    @endif
 
                     <div class="d-flex gap-3 justify-content-center mt-4">
                         <button type="submit" class="btn btn-primary" id="saveResults">

@@ -608,15 +608,10 @@
                             </a>
                         </li>
                     @endcan
-                    @can('show-laboratory-menu')
-                        <li class="menu-item {{ Route::is('laboratory.categories.*') ? 'active' : '' }}">
-                            <a href="{{ route('laboratory.categories.index') }}" class="menu-link">
-                                <div>{{ localize('global.test_categories') }}</div>
-                            </a>
-                        </li>
-                        <li class="menu-item {{ Route::is('laboratory.tests.*') ? 'active' : '' }}">
-                            <a href="{{ route('laboratory.tests.index') }}" class="menu-link">
-                                <div>{{ localize('global.lab_tests') }}</div>
+                    @can('manage-lab-tests')
+                        <li class="menu-item {{ Route::is('lab_types.tests') ? 'active' : '' }}">
+                            <a href="{{ route('lab_types.tests') }}" class="menu-link">
+                                <div>{{ localize('global.lab_tests_management') }}</div>
                             </a>
                         </li>
                     @endcan

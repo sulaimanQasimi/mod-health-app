@@ -9,7 +9,6 @@ use App\Models\ICU;
 use App\Models\LabTest;
 use App\Models\LabTestParameter;
 use App\Models\PatientTestRegistration;
-use App\Models\TestCategory;
 use App\Models\UnderReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,47 +16,6 @@ use Illuminate\Support\Facades\Validator;
 
 class LabTestRegistrationAjaxController extends Controller
 {
-    /**
-     * Get test categories for dropdown
-     */
-    public function getTestCategories()
-    {
-        try {
-            $categories = TestCategory::all();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $categories
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch test categories',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Get tests by category ID
-     */
-    public function getTestsByCategory($categoryId)
-    {
-        try {
-            $tests = LabTest::where('category_id', $categoryId)->get();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $tests
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch tests',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
 
     /**
      * Get all tests
@@ -65,7 +23,7 @@ class LabTestRegistrationAjaxController extends Controller
     public function getAllTests()
     {
         try {
-            $tests = LabTest::with('category')->get();
+            $tests = LabTest::with(['labType', 'labTypeSection'])->get();
             
             return response()->json([
                 'success' => true,
@@ -188,16 +146,33 @@ class LabTestRegistrationAjaxController extends Controller
 
                     $createdRegistrations[] = $registration;
 
-                    // Create test results for each parameter
-                    $parameters = LabTestParameter::where('test_id', $labTestId)->get();
-                    foreach ($parameters as $parameter) {
+                    // Create test results - handle both parametered and non-parametered tests
+                    $labTest = LabTest::find($labTestId);
+                    
+                    if ($labTest->has_parameters) {
+                        // Create results for each parameter
+                        $parameters = LabTestParameter::where('test_id', $labTestId)->get();
+                        foreach ($parameters as $parameter) {
+                            \App\Models\PatientTestResult::create([
+                                'patient_id'          => $patientId,
+                                'ref_no'              => $newRefNo,
+                                'lab_parameter_id'    => $parameter->id,
+                                'unit'                => $parameter->unit ?? null,
+                                'normal_range'        => $parameter->normal_range ?? null,
+                                'result'              => null,
+                                'test_registration_id'=> $registration->id,
+                            ]);
+                        }
+                    } else {
+                        // Create single result entry for non-parametered test
                         \App\Models\PatientTestResult::create([
                             'patient_id'          => $patientId,
                             'ref_no'              => $newRefNo,
-                            'lab_parameter_id'    => $parameter->id,
-                            'unit'                => $parameter->unit ?? null,
-                            'normal_range'        => $parameter->normal_range ?? null,
+                            'lab_parameter_id'    => null,
+                            'unit'                => null,
+                            'normal_range'        => null,
                             'result'              => null,
+                            'text_result'         => null,
                             'test_registration_id'=> $registration->id,
                         ]);
                     }
@@ -261,7 +236,9 @@ class LabTestRegistrationAjaxController extends Controller
             
             $registrations = $registrations->with([
                 'testable.patient', 
-                'labTest', 
+                'labTest.labType',
+                'labTest.labTypeSection',
+                'labTest.category',
                 'doctor', 
                 'branch'
             ])
@@ -289,7 +266,9 @@ class LabTestRegistrationAjaxController extends Controller
         try {
             $registration = PatientTestRegistration::with([
                 'testable.patient',
-                'labTest',
+                'labTest.labType',
+                'labTest.labTypeSection',
+                'labTest.category',
                 'doctor',
                 'branch',
                 'results.parameter'

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Category;
 use App\Models\LabType;
 use App\Models\LabTypeSection;
 use Illuminate\Http\Request;
@@ -14,63 +15,35 @@ class LabTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = LabType::with(['branch', 'section', 'parent']);
-
+        $query = LabType::with(['branch', 'section', 'category', 'directLabTestParameters']);
+        
         // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhereHas('branch', function($branchQuery) use ($search) {
-                      $branchQuery->where('name', 'like', '%' . $search . '%');
-                  })
-                  ->orWhereHas('section', function($sectionQuery) use ($search) {
-                      $sectionQuery->where('section', 'like', '%' . $search . '%');
-                  });
-            });
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
-
-        // Filter by branch
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
-        }
-
-        // Filter by section
-        if ($request->filled('section_id')) {
+        
+        // Section filter
+        if ($request->has('section_id') && !empty($request->section_id)) {
             $query->where('section_id', $request->section_id);
         }
-
-        // Filter by parent
-        if ($request->filled('parent_id')) {
-            if ($request->parent_id === 'null') {
-                $query->whereNull('parent_id');
-            } else {
-                $query->where('parent_id', $request->parent_id);
-            }
-        }
-
-        // Sort functionality
-        $sortBy = $request->get('sort_by', 'name');
-        $sortOrder = $request->get('sort_order', 'asc');
         
-        if (in_array($sortBy, ['name', 'created_at'])) {
-            $query->orderBy($sortBy, $sortOrder);
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->where('branch_id', $request->branch_id);
         }
-
-        $perPage = $request->get('per_page', 15);
-        $labTypes = $query->paginate($perPage)->withQueryString();
-
-        // Get filter options for the view
-        $branches = Branch::orderBy('name')->get();
-        $labTypeSections = LabTypeSection::orderBy('section')->get();
-        $parentLabTypes = LabType::whereNull('parent_id')->orderBy('name')->get();
-
-        return view('pages.lab_types.index', compact(
-            'labTypes', 
-            'branches', 
-            'labTypeSections', 
-            'parentLabTypes'
-        ));
+        
+        // Category filter
+        if ($request->has('category_id') && !empty($request->category_id)) {
+            $query->where('category_id', $request->category_id);
+        }
+        
+        // Pagination
+        $labTypes = $query->orderBy('name')->paginate(15);
+        $branches = Branch::all();
+        $labTypeSections = LabTypeSection::all();
+        $categories = Category::all();
+        
+        return view('pages.lab_types.index', compact('labTypes', 'branches', 'labTypeSections', 'categories'));
     }
 
     /**
@@ -81,7 +54,8 @@ class LabTypeController extends Controller
         $branches = Branch::all();
         $labTypes = LabType::all();
         $labTypeSections = LabTypeSection::all();
-        return view('pages.lab_types.create',compact('branches','labTypes','labTypeSections'));
+        $categories = Category::all();
+        return view('pages.lab_types.create',compact('branches','labTypes','labTypeSections','categories'));
     }
 
     /**
@@ -93,7 +67,6 @@ class LabTypeController extends Controller
             'name' => 'required',
             'branch_id' => 'required',
             'section_id' => 'required',
-            'parent_id' => 'nullable',
         ]);
 
         LabType::create($data);
@@ -129,7 +102,6 @@ class LabTypeController extends Controller
             'name' => 'required',
             'branch_id' => 'required',
             'section_id' => 'required',
-            'parent_id' => 'nullable',
         ]);
 
         $labType->update($data);
@@ -145,6 +117,210 @@ class LabTypeController extends Controller
         $labType->delete();
 
         return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_deleted_successfully.'));
+    }
+
+    // API Methods
+    /**
+     * API: Display a listing of lab types
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $query = LabType::with(['branch', 'section', 'category', 'directLabTestParameters']);
+
+            // Search functionality
+            if ($request->has('search') && !empty($request->search)) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            }
+
+            // Section filter
+            if ($request->has('section_id') && !empty($request->section_id)) {
+                $query->where('section_id', $request->section_id);
+            }
+
+            // Branch filter
+            if ($request->has('branch_id') && !empty($request->branch_id)) {
+                $query->where('branch_id', $request->branch_id);
+            }
+
+            $labTypes = $query->orderBy('name')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $labTypes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading lab types: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Store a newly created lab type
+     */
+    public function apiStore(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'branch_id' => 'required|exists:branches,id',
+            'section_id' => 'required|exists:lab_type_sections,id',
+            'category_id' => 'nullable|exists:categories,id',
+        ]);
+
+        $labType = LabType::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lab type created successfully',
+            'data' => $labType->load(['branch', 'section'])
+        ], 201);
+    }
+
+    /**
+     * API: Display the specified lab type
+     */
+    public function apiShow($id)
+    {
+        try {
+            // First try to find the lab type without relationships
+            $labType = LabType::find($id);
+            
+            if (!$labType) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lab type not found',
+                    'data' => null
+                ], 404);
+            }
+            
+            // Load relationships
+            $labType->load(['branch', 'section', 'category', 'directLabTestParameters']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $labType
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in apiShow: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading lab type: ' . $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Update the specified lab type
+     */
+    public function apiUpdate(Request $request, $id)
+    {
+        try {
+            $labType = LabType::findOrFail($id);
+            
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'branch_id' => 'required|exists:branches,id',
+                'section_id' => 'required|exists:lab_type_sections,id',
+                'parameters' => 'nullable|string', // JSON string from frontend
+                'deleted_parameter_ids' => 'nullable|string', // JSON string from frontend
+            ]);
+
+            \DB::beginTransaction();
+            
+            // Update lab type basic information
+            $labType->update([
+                'name' => $data['name'],
+                'branch_id' => $data['branch_id'],
+                'section_id' => $data['section_id'],
+            ]);
+
+            // Handle parameters if provided
+            if ($request->has('parameters') && !empty($request->parameters)) {
+                $parameters = json_decode($request->parameters, true);
+                
+                if (is_array($parameters)) {
+                    foreach ($parameters as $parameterData) {
+                        if (isset($parameterData['id']) && !empty($parameterData['id'])) {
+                            // Update existing parameter
+                            $parameter = \App\Models\LabTestParameter::find($parameterData['id']);
+                            if ($parameter) {
+                                $parameter->update([
+                                    'parameter_name' => $parameterData['parameter_name'],
+                                    'unit' => $parameterData['unit'] ?? null,
+                                    'normal_range' => $parameterData['normal_range'] ?? null,
+                                ]);
+                            }
+                        } else {
+                            // Create new parameter
+                            \App\Models\LabTestParameter::create([
+                                'test_id' => null, // Set to null since we're creating for lab type directly
+                                'lab_type_id' => $labType->id,
+                                'parameter_name' => $parameterData['parameter_name'],
+                                'unit' => $parameterData['unit'] ?? null,
+                                'normal_range' => $parameterData['normal_range'] ?? null,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // Handle deleted parameters
+            if ($request->has('deleted_parameter_ids') && !empty($request->deleted_parameter_ids)) {
+                $deletedIds = json_decode($request->deleted_parameter_ids, true);
+                
+                if (is_array($deletedIds)) {
+                    \App\Models\LabTestParameter::whereIn('id', $deletedIds)->delete();
+                }
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lab type updated successfully',
+                'data' => $labType->load(['branch', 'section', 'directLabTestParameters'])
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating lab type: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Remove the specified lab type
+     */
+    public function apiDestroy($id)
+    {
+        try {
+            $labType = LabType::findOrFail($id);
+            $labType->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lab type deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting lab type: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get lab types for select dropdown
+     */
+    public function getLabTypesForSelect()
+    {
+        $labTypes = LabType::select('id', 'name')->orderBy('name')->get();
+        return response()->json($labTypes);
     }
 
 }

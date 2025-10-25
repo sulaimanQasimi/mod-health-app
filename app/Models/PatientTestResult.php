@@ -21,6 +21,7 @@ class PatientTestResult extends Model
         'unit',
         'normal_range',
         'result',
+        'text_result',
         'test_registration_id',
     ];
 
@@ -46,5 +47,13 @@ class PatientTestResult extends Model
     public function testRegistration()
     {
         return $this->belongsTo(PatientTestRegistration::class, 'test_registration_id');
+    }
+
+    /**
+     * Get the result value (text_result if set, otherwise result)
+     */
+    public function getResultValueAttribute()
+    {
+        return $this->text_result ?? $this->result;
     }
 }

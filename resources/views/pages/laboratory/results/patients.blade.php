@@ -49,6 +49,17 @@
                         </select>
                     </div>
                     <div class="col-md-2">
+                        <label for="lab_type_section_id" class="form-label">{{ localize('global.lab_type_section') }}</label>
+                        <select class="form-select" id="lab_type_section_id" name="lab_type_section_id">
+                            <option value="">{{ localize('global.all_sections') }}</option>
+                            @foreach(\App\Models\LabTypeSection::all() as $section)
+                                <option value="{{ $section->id }}" {{ request('lab_type_section_id') == $section->id ? 'selected' : '' }}>
+                                    {{ $section->section }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
                         <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
                         <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
                             value="{{ request('date_from') }}">
@@ -98,6 +109,7 @@
                                     <tr>
                                         <th class="text-center">{{ localize('global.patient') }}</th>
                                         <th class="text-center">{{ localize('global.test_name') }}</th>
+                                        <th class="text-center">{{ localize('global.test_type') }}</th>
                                         <th class="text-center">{{ localize('global.ref_no') }}</th>
                                         <th class="text-center">{{ localize('global.status') }}</th>
                                         <th class="text-center">{{ localize('global.priority') }}</th>
@@ -133,6 +145,13 @@
                                                         <i class="bx bx-test-tube me-2 text-primary"></i>
                                                         <strong>{{ $registration->labTest->name ?? '—' }}</strong>
                                                     </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if($registration->labTest && $registration->labTest->has_parameters)
+                                                        <span class="badge bg-info">{{ localize('global.parametered') }}</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">{{ localize('global.text_based') }}</span>
+                                                    @endif
                                                 </td>
                                                 <td class="text-center">
                                                     <code class="bg-light px-2 py-1 rounded">{{ $registration->ref_no }}</code>

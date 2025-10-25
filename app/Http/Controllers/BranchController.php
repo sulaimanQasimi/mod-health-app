@@ -60,6 +60,14 @@ class BranchController extends Controller
     {
         $branch->delete();
         return redirect()->route('branches.index')->with('success', localize('global.branch_deleted_successfully.'));
+    }
 
+    /**
+     * Get branches for select dropdown
+     */
+    public function getBranchesForSelect()
+    {
+        $branches = Branch::select('id', 'name')->orderBy('name')->get();
+        return response()->json($branches);
     }
 }

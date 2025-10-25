@@ -82,4 +82,13 @@ class LabTypeSectionController extends Controller
 
         return redirect()->route('lab_type_sections.index')->with('success', localize('global.lab_type_section_deleted_successfully.'));
     }
+
+    /**
+     * Get lab type sections for select dropdown
+     */
+    public function getSectionsForSelect()
+    {
+        $sections = LabTypeSection::select('id', 'section')->orderBy('section')->get();
+        return response()->json($sections);
+    }
 }

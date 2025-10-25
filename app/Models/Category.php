@@ -20,4 +20,12 @@ class Category extends Model
     {
         return $this->hasMany(Department::class);
     }
+
+    /**
+     * Get the lab types for this category
+     */
+    public function labTypes()
+    {
+        return $this->hasMany(LabType::class);
+    }
 }

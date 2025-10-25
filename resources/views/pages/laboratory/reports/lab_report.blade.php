@@ -261,26 +261,41 @@
 
                 <!-- Test Parameters and Results -->
                 @if($results->count() > 0)
-                    <table class="parameters-table">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center;">Investigation</th>
-                                <th style="text-align: center;">Result</th>
-                                <th style="text-align: center;">Unit</th>
-                                <th style="text-align: center;">Reference Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($results as $result)
+                    @php
+                        $hasParameters = $results->first()->parameter !== null;
+                    @endphp
+                    
+                    @if($hasParameters)
+                        {{-- Parametered test - show parameter table --}}
+                        <table class="parameters-table">
+                            <thead>
                                 <tr>
-                                    <td style="text-align: center;">{{ $result->parameter->parameter_name ?? '—' }}</td>
-                                    <td class="result-value" style="text-align: center;">{{ $result->result ?? '—' }}</td>
-                                    <td class="unit" style="text-align: center;">{{ $result->unit ?? '—' }}</td>
-                                    <td class="normal-range" style="text-align: center;">{{ $result->normal_range ?? '—' }}</td>
+                                    <th style="text-align: center;">Investigation</th>
+                                    <th style="text-align: center;">Result</th>
+                                    <th style="text-align: center;">Unit</th>
+                                    <th style="text-align: center;">Reference Value</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach($results as $result)
+                                    <tr>
+                                        <td style="text-align: center;">{{ $result->parameter->parameter_name ?? '—' }}</td>
+                                        <td class="result-value" style="text-align: center;">{{ $result->result ?? '—' }}</td>
+                                        <td class="unit" style="text-align: center;">{{ $result->unit ?? '—' }}</td>
+                                        <td class="normal-range" style="text-align: center;">{{ $result->normal_range ?? '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        {{-- Non-parametered test - show text result --}}
+                        <div class="text-result-section" style="background: #f8f9fa; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; margin: 20px 0;">
+                            <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
+                            <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap;">
+                                {{ $results->first()->text_result ?? localize('global.no_result_available') }}
+                            </div>
+                        </div>
+                    @endif
                 @else
                     <div style="text-align: center; padding: 20px; color: #6c757d; direction: rtl;">
                         {{ localize('global.no_results_available') }}

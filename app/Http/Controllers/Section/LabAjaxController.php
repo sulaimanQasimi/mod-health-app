@@ -61,16 +61,27 @@ class LabAjaxController extends Controller
     }
 
     /**
-     * Get lab type tests by lab type ID
+     * Get lab tests for a specific lab type
      */
     public function getLabTypeTests($labTypeId)
     {
         try {
-            $tests = LabType::where('parent_id', $labTypeId)->get();
+            $tests = \App\Models\LabTest::where('lab_type_id', $labTypeId)
+                ->with('parameters')
+                ->get()
+                ->map(function($test) {
+                    return [
+                        'id' => $test->id,
+                        'name' => $test->name,
+                        'has_parameters' => $test->has_parameters,
+                        'parameters_count' => $test->parameters->count(),
+                        'lab_type_section' => $test->labTypeSection->section ?? null
+                    ];
+                });
             
             return response()->json([
                 'success' => true,
-                'data' => $tests
+                'tests' => $tests
             ]);
         } catch (\Exception $e) {
             return response()->json([

@@ -359,17 +359,6 @@
         </div>
 
 
-        <!-- Lab Section Component -->
-        <x-lab-section 
-            :entity="$appointment"
-            entity-type="appointment"
-            :entity-id="$appointment->id"
-            :can-add-lab="auth()->user()->can('add-patient-labs')"
-            :can-edit-lab="auth()->user()->can('edit-lab-items')"
-            :can-delete-lab="auth()->user()->can('delete-lab-items')"
-            :appointment-completed="$appointment->is_completed == 1"
-        />
-
         <!-- Lab Test Registration Section Component -->
         <x-lab-test-registration-section 
             :entity="$appointment"

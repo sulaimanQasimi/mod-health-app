@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @deprecated This model is deprecated and will be removed in a future version.
+ * Use LabTest and PatientTestRegistration models instead.
+ * This model is kept for historical reference only.
+ */
+
 class Lab extends Model
 {
     use HasFactory;

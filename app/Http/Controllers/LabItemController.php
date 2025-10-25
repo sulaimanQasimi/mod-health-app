@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+/**
+ * @deprecated This controller is deprecated and will be removed in a future version.
+ * Use LabTestController and LabTestRegistrationAjaxController instead.
+ * This controller is kept for historical reference only.
+ */
+
 use App\Models\Lab;
 use App\Models\LabItem;
 use App\Models\LabType;

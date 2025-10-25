@@ -20,7 +20,7 @@ class PatientTestRegistration extends Model
         'testable_id',
         'registration_date',
         'ref_no',
-        'lab_test_id',
+        'lab_type_id',
         'status',
         'doctor_id',
         'branch_id',
@@ -30,7 +30,6 @@ class PatientTestRegistration extends Model
         'completed_by',
         'created_by',
         'updated_by',
-        'category_id',
     ];
 
     protected $casts = [
@@ -77,11 +76,11 @@ class PatientTestRegistration extends Model
     }
 
     /**
-     * Get the lab test for this registration
+     * Get the lab type for this registration
      */
-    public function labTest()
+    public function labType()
     {
-        return $this->belongsTo(LabTest::class, 'lab_test_id');
+        return $this->belongsTo(LabType::class);
     }
 
     /**

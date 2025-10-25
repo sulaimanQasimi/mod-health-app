@@ -389,6 +389,37 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::delete('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+        Route::get('tests', [LabTestController::class, 'index'])->name('tests');
+        Route::post('tests', [LabTestController::class, 'store'])->name('tests.store');
+        Route::get('tests/{id}/edit', [LabTestController::class, 'edit'])->name('tests.edit');
+        Route::put('tests/{id}', [LabTestController::class, 'update'])->name('tests.update');
+        Route::delete('tests/{id}', [LabTestController::class, 'destroy'])->name('tests.destroy');
+    });
+
+    // Test route
+    Route::get('/test-api', function() {
+        return response()->json(['success' => true, 'message' => 'API is working']);
+    });
+
+    // Lab Types API routes for full CRUD with parameters
+    Route::prefix('api/lab-types')->name('api.lab-types.')->group(function () {
+        // Lab Types
+        Route::get('/', [LabTypeController::class, 'apiIndex'])->name('index');
+        Route::post('/', [LabTypeController::class, 'apiStore'])->name('store');
+        
+        // Lab Test Parameters - Direct routes (more specific routes first)
+        Route::get('/parameters/{parameter}', [LabTestParameterController::class, 'apiShow'])->name('parameters.show');
+        Route::put('/parameters/{parameter}', [LabTestParameterController::class, 'apiUpdate'])->name('parameters.update');
+        Route::delete('/parameters/{parameter}', [LabTestParameterController::class, 'apiDestroy'])->name('parameters.destroy');
+        
+        // Lab Types with ID (less specific routes after)
+        Route::get('/{id}', [LabTypeController::class, 'apiShow'])->name('show');
+        Route::put('/{id}', [LabTypeController::class, 'apiUpdate'])->name('update');
+        Route::delete('/{id}', [LabTypeController::class, 'apiDestroy'])->name('destroy');
+        
+        // Lab Type Parameters (most specific routes)
+        Route::get('/{id}/parameters', [LabTestParameterController::class, 'apiIndexByLabType'])->name('parameters.index');
+        Route::post('/{id}/parameters', [LabTestParameterController::class, 'apiStoreByLabType'])->name('parameters.store');
     });
 
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
@@ -761,6 +792,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
         Route::get('nurses', [NurseController::class, 'getNursesForSelect'])->name('api.select.nurses');
         Route::get('diabetes-charts', [DiabetesChartController::class, 'getDiabetesChartsForSelect'])->name('api.select.diabetes-charts');
+        Route::get('branches', [BranchController::class, 'getBranchesForSelect'])->name('api.select.branches');
+        Route::get('lab-type-sections', [LabTypeSectionController::class, 'getSectionsForSelect'])->name('api.select.lab-type-sections');
+        Route::get('lab-types', [LabTypeController::class, 'getLabTypesForSelect'])->name('api.select.lab-types');
     });
 
     // Physiotherapy Reports routes
@@ -923,19 +957,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Laboratory Test Management System routes
     Route::prefix('laboratory')->name('laboratory.')->group(function() {
-        // Test Categories
-        Route::get('categories', [TestCategoryController::class, 'index'])->name('categories.index');
-        Route::post('categories', [TestCategoryController::class, 'store'])->name('categories.store');
-        Route::get('categories/{id}/edit', [TestCategoryController::class, 'edit'])->name('categories.edit');
-        Route::put('categories/{id}', [TestCategoryController::class, 'update'])->name('categories.update');
-        Route::delete('categories/{id}', [TestCategoryController::class, 'destroy'])->name('categories.destroy');
-        
-        // Lab Tests
-        Route::get('tests', [LabTestController::class, 'index'])->name('tests.index');
-        Route::post('tests', [LabTestController::class, 'store'])->name('tests.store');
-        Route::get('tests/{id}/edit', [LabTestController::class, 'edit'])->name('tests.edit');
-        Route::put('tests/{id}', [LabTestController::class, 'update'])->name('tests.update');
-        Route::delete('tests/{id}', [LabTestController::class, 'destroy'])->name('tests.destroy');
         
         // Parameters
         Route::get('parameters', [LabTestParameterController::class, 'index'])->name('parameters.index');

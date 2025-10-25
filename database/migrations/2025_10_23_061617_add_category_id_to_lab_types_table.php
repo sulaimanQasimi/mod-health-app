@@ -25,8 +25,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('lab_types', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
-            $table->dropColumn('category_id');
+            // Drop category_id column only if it exists
+            if (Schema::hasColumn('lab_types', 'category_id')) {
+                $table->dropForeign(['category_id']);
+                $table->dropColumn('category_id');
+            }
         });
     }
 };

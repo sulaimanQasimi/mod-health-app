@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lab_types', function (Blueprint $table) {
-            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
+            // Add category_id column only if it doesn't exist
+            if (!Schema::hasColumn('lab_types', 'category_id')) {
+                $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
+            }
         });
     }
 

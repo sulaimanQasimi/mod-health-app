@@ -53,7 +53,7 @@
                                                     <i class="bx bx-calendar me-1"></i>{{ localize('global.date') }}
                                                 </h6>
                                                 <div class="fw-bold text-dark">
-                                                    {{$underReview->created_at->format('Y-m-d')}}
+                                                    {{ \Hekmatinasser\Verta\Verta::instance($underReview->created_at)->format('Y/n/j') }}
                                                 </div>
                                             </div>
                                         </div>

@@ -3262,6 +3262,7 @@ return [
     "print_report" => "چاپ گزارش",
     "normal" => "طبیعی",
     "abnormal" => "غیرطبیعی",
+    "advanced_filters"=>"فلتر", 
     "parameter_status" => "وضعیت پارامتر",
     "report_generated_on" => "تاریخ",
     "contact_laboratory_department" => "برای سوالات با بخش آزمایشگاه تماس بگیرید",
@@ -3393,4 +3394,7 @@ return [
     "this_week"=>"هفته جاری",
     "this_month"=>"ماه جاری",
     "this_year"=>"سال جاری",
+    "search_patient_placeholder"=>"نام مریض را جستجو کنید...",
+    "start_typing_to_search"=>"برای جستجو با نام مریض شروع کنید...",
+    "recent_searches"=>"جستجوهای اخیر",
 ];

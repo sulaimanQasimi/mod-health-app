@@ -19,147 +19,84 @@
 
         {{-- Advanced Search and Filters --}}
         <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-light border-0">
+            <div class="card-header bg-none border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse"">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <i class="bx bx-filter-alt text-primary me-2" style="font-size: 1.2rem;"></i>
                         <h6 class="mb-0 fw-semibold">{{ localize('global.advanced_filters') }}</h6>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-                        <i class="bx bx-chevron-down" id="filterToggleIcon"></i>
-                    </button>
                 </div>
             </div>
             <div class="collapse" id="filterCollapse">
                 <div class="card-body">
                     <form method="GET" action="{{ route('laboratory.results.grouped') }}">
-                        {{-- Search Section --}}
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="input-group">
+                        {{-- Combined Search and Filter Container --}}
+                        <div class="row g-3">
+                            {{-- Search Input --}}
+                            <div class="col-md-4">
+                                <label for="search" class="form-label fw-semibold">
+                                    <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search_patient') }}
+                                </label>
+                                <div class="input-group" onclick="document.getElementById('search').focus()" style="cursor: pointer;">
                                     <span class="input-group-text bg-primary text-white">
                                         <i class="bx bx-search"></i>
                                     </span>
-                                    <input type="text" class="form-control form-control-lg" id="search" name="search" 
-                                           value="{{ request('search') }}" placeholder="{{ localize('global.search_patient_placeholder') }}">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
-                                    </button>
+                                    <input type="text" class="form-control" id="search" name="search" 
+                                           value="{{ request('search') }}" placeholder="{{ localize('global.search_patient_placeholder') }}"
+                                           autocomplete="off" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                                </div>
+                                {{-- Search Dropdown --}}
+                                <div class="dropdown-menu w-100" id="searchDropdown" style="max-height: 300px; overflow-y: auto;">
+                                    <div class="dropdown-header">
+                                        <i class="bx bx-history me-2"></i>{{ localize('global.recent_searches') ?: 'Recent Searches' }}
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                    <div class="dropdown-item-text">
+                                        <small class="text-muted">{{ localize('global.start_typing_to_search') ?: 'Start typing to search for patients...' }}</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- Filter Controls --}}
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-3">
-                                <label for="status" class="form-label fw-semibold">
-                                    <i class="bx bx-check-circle me-1 text-info"></i>{{ localize('global.status') }}
+                            {{-- Date From --}}
+                            <div class="col-md-2">
+                                <label for="date_from" class="form-label fw-semibold">
+                                    <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_from') }}
                                 </label>
-                                <select class="form-select" id="status" name="status">
-                                    <option value="">{{ localize('global.all_statuses') }}</option>
-                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
-                                        <i class="bx bx-time"></i> {{ localize('global.pending') }}
-                                    </option>
-                                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>
-                                        <i class="bx bx-loader"></i> {{ localize('global.in_progress') }}
-                                    </option>
-                                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>
-                                        <i class="bx bx-check"></i> {{ localize('global.completed') }}
-                                    </option>
-                                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                                        <i class="bx bx-x"></i> {{ localize('global.cancelled') }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="priority" class="form-label fw-semibold">
-                                    <i class="bx bx-flag me-1 text-warning"></i>{{ localize('global.priority') }}
-                                </label>
-                                <select class="form-select" id="priority" name="priority">
-                                    <option value="">{{ localize('global.all_priorities') }}</option>
-                                    <option value="normal" {{ request('priority') == 'normal' ? 'selected' : '' }}>{{ localize('global.normal') }}</option>
-                                    <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>{{ localize('global.urgent') }}</option>
-                                    <option value="stat" {{ request('priority') == 'stat' ? 'selected' : '' }}>{{ localize('global.stat') }}</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="doctor" class="form-label fw-semibold">
-                                    <i class="bx bx-user me-1 text-success"></i>{{ localize('global.doctor') }}
-                                </label>
-                                <select class="form-select" id="doctor" name="doctor">
-                                    <option value="">{{ localize('global.all_doctors') }}</option>
-                                    @php
-                                        $doctors = \App\Models\User::whereHas('roles', function($q) {
-                                            $q->where('name', 'doctor');
-                                        })->get();
-                                    @endphp
-                                    @foreach($doctors as $doctor)
-                                        <option value="{{ $doctor->id }}" {{ request('doctor') == $doctor->id ? 'selected' : '' }}>
-                                            {{ $doctor->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">
-                                    <i class="bx bx-cog me-1 text-secondary"></i>{{ localize('global.actions') }}
-                                </label>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary flex-fill">
-                                        <i class="bx bx-search me-1"></i>{{ localize('global.filter') }}
-                                    </button>
-                                    <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-secondary">
-                                        <i class="bx bx-refresh"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Date Range Section --}}
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="bx bx-calendar text-primary me-2"></i>
-                                    <h6 class="mb-0 fw-semibold">{{ localize('global.date_range') }}</h6>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="date_from" class="form-label fw-semibold">{{ localize('global.date_from') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="bx bx-calendar"></i>
                                     </span>
                                     <input type="text" class="form-control persian-datepicker" id="date_from" name="date_from" 
                                            value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
-                                    <input type="hidden" id="date_from_gregorian" name="date_from_gregorian" value="{{ request('date_from_gregorian') }}">
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <label for="date_to" class="form-label fw-semibold">{{ localize('global.date_to') }}</label>
+
+                            {{-- Date To --}}
+                            <div class="col-md-2">
+                                <label for="date_to" class="form-label fw-semibold">
+                                    <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_to') }}
+                                </label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="bx bx-calendar"></i>
                                     </span>
                                     <input type="text" class="form-control persian-datepicker" id="date_to" name="date_to" 
                                            value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
-                                    <input type="hidden" id="date_to_gregorian" name="date_to_gregorian" value="{{ request('date_to_gregorian') }}">
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">{{ localize('global.quick_actions') ?: 'Quick Actions' }}</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="setDateRange('today')">
-                                        <i class="bx bx-calendar"></i> {{ localize('global.today') }}
+
+                            {{-- Action Buttons --}}
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="bx bx-cog me-1 text-secondary"></i>{{ localize('global.actions') }}
+                                </label>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bx bx-search me-1"></i>{{ localize('global.filter') }}
                                     </button>
-                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="setDateRange('week')">
-                                        <i class="bx bx-calendar-week"></i> {{ localize('global.this_week') }}
-                                    </button>
-                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="setDateRange('month')">
-                                        <i class="bx bx-calendar-check"></i> {{ localize('global.this_month') }}
-                                    </button>
-                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="clearAllFilters()">
-                                        <i class="bx bx-x-circle"></i> {{ localize('global.clear_filters') }}
-                                    </button>
+                                    <a href="{{ route('laboratory.results.grouped') }}" class="btn btn-outline-secondary">
+                                        <i class="bx bx-refresh"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -276,7 +213,7 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <strong>{{ localize('global.registration_date') }}:</strong> 
-                                                        {{ $firstTest->registration_date->format('Y-m-d H:i') }}
+                                                        {{ \Hekmatinasser\Verta\Verta::instance($firstTest->registration_date)->format('Y/n/j H:i') }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -418,6 +355,23 @@
     .card-header.bg-light {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
         border-radius: 0.75rem 0.75rem 0 0;
+    }
+    
+    /* Clickable header styles */
+    .card-header[data-bs-toggle="collapse"] {
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+    
+    
+    .card-header.collapsed {
+        background-color: transparent;
+    }
+    
+    
+    .card-header .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
     }
     
     .form-control-lg {
@@ -585,6 +539,32 @@
         font-size: 0.875rem;
     }
     
+    /* Search Dropdown Styles */
+    .dropdown-menu {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        margin-top: 0.25rem;
+    }
+    
+    .dropdown-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .dropdown-item-text {
+        padding: 0.75rem 1rem;
+        color: #6c757d;
+    }
+    
+    
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        border-radius: 0.5rem;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .d-flex.flex-wrap {
@@ -610,34 +590,23 @@
 
 @push('custom-js')
 <!-- Persian Date Picker JS -->
-<script src="{{ asset('assets/persian date2/js/persianDatepicker.min.js') }}"></script>
+<script src="{{ asset('ShamsiCalender/js/persianDatepicker.js') }}"></script>
 <script>
 $(document).ready(function() {
     // Initialize Persian date pickers
-    $("#date_from").persianDatepicker({
+    $('.persian-datepicker').persianDatepicker({
         format: 'YYYY/MM/DD',
-        altField: '#date_from_gregorian',
-        altFormat: 'YYYY-MM-DD',
         observer: true,
-        timePicker: {
-            enabled: false
+        calendar: {
+            persian: {
+                locale: 'en',
+                showHint: true,
+                leapYearMode: 'algorithmic'
+            }
         },
-        autoClose: true,
-        initialValue: false,
-        initialValueType: 'persian'
-    });
-    
-    $("#date_to").persianDatepicker({
-        format: 'YYYY/MM/DD',
-        altField: '#date_to_gregorian',
-        altFormat: 'YYYY-MM-DD',
-        observer: true,
-        timePicker: {
-            enabled: false
-        },
-        autoClose: true,
-        initialValue: false,
-        initialValueType: 'persian'
+        checkDate: function(unix) {
+            return true;
+        }
     });
     
     // Handle filter collapse icon rotation
@@ -649,181 +618,68 @@ $(document).ready(function() {
         $('#filterToggleIcon').removeClass('bx-chevron-up').addClass('bx-chevron-down');
     });
     
-    // Convert existing Gregorian dates to Persian if they exist
-    @if(request('date_from_gregorian'))
-        var gregorianFrom = '{{ request('date_from_gregorian') }}';
-        if (gregorianFrom) {
-            var persianFrom = convertGregorianToPersian(gregorianFrom);
-            $('#date_from').val(persianFrom);
+    // Update filter count
+    function updateFilterCount() {
+        var activeFilters = 0;
+        if ($('#search').val()) activeFilters++;
+        if ($('#date_from').val()) activeFilters++;
+        if ($('#date_to').val()) activeFilters++;
+        
+        $('#filterCount').text(activeFilters);
+        
+        if (activeFilters > 0) {
+            $('#filterCount').removeClass('bg-primary').addClass('bg-success');
+        } else {
+            $('#filterCount').removeClass('bg-success').addClass('bg-primary');
         }
-    @endif
+    }
     
-    @if(request('date_to_gregorian'))
-        var gregorianTo = '{{ request('date_to_gregorian') }}';
-        if (gregorianTo) {
-            var persianTo = convertGregorianToPersian(gregorianTo);
-            $('#date_to').val(persianTo);
+    // Update filter count on input changes
+    $('#search, #date_from, #date_to').on('input change', function() {
+        updateFilterCount();
+    });
+    
+    // Initial filter count update
+    updateFilterCount();
+    
+    // Handle search dropdown functionality
+    $('#search').on('focus', function() {
+        $('#searchDropdown').addClass('show');
+    });
+    
+    $('#search').on('blur', function() {
+        // Delay hiding to allow clicking on dropdown items
+        setTimeout(function() {
+            if (!$('#searchDropdown:hover').length && !$('#search:hover').length) {
+                $('#searchDropdown').removeClass('show');
+            }
+        }, 200);
+    });
+    
+    // Keep dropdown open when hovering over it
+    $('#searchDropdown').on('mouseenter', function() {
+        $(this).addClass('show');
+    });
+    
+    $('#searchDropdown').on('mouseleave', function() {
+        if (!$('#search:focus').length) {
+            $(this).removeClass('show');
         }
-    @endif
+    });
+    
+    // Handle search input changes
+    $('#search').on('input', function() {
+        var searchTerm = $(this).val();
+        if (searchTerm.length > 0) {
+            // Show dropdown with search suggestions
+            $('#searchDropdown').addClass('show');
+            // You can add AJAX call here to fetch search suggestions
+        } else {
+            $('#searchDropdown').removeClass('show');
+        }
+    });
+    
 });
-
-// Function to convert Gregorian date to Persian date
-function convertGregorianToPersian(gregorianDate) {
-    var date = new Date(gregorianDate);
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
-    
-    // Persian calendar constants
-    var persianEpoch = 1948320.5;
-    var gregorianEpoch = 1721425.5;
-    
-    // Convert to Julian Day Number
-    var jd = gregorianToJulianDay(year, month, day);
-    
-    // Convert to Persian date
-    var persianDate = julianDayToPersian(jd);
-    
-    // Format as Persian date (YYYY/MM/DD)
-    return persianDate.year + '/' + 
-           persianDate.month.toString().padStart(2, '0') + '/' + 
-           persianDate.day.toString().padStart(2, '0');
-}
-
-// Convert Gregorian date to Julian Day Number
-function gregorianToJulianDay(year, month, day) {
-    var jd = gregorianEpoch - 1;
-    
-    jd += 365 * (year - 1);
-    jd += Math.floor((year - 1) / 4);
-    jd -= Math.floor((year - 1) / 100);
-    jd += Math.floor((year - 1) / 400);
-    jd += Math.floor((367 * month - 362) / 12);
-    
-    if (month > 2) {
-        jd -= isLeapYear(year) ? 1 : 2;
-    }
-    
-    jd += day;
-    return jd;
-}
-
-// Convert Julian Day Number to Persian date
-function julianDayToPersian(jd) {
-    jd = Math.floor(jd) + 0.5;
-    
-    var depoch = jd - 1948320.5;
-    var cycle = Math.floor(depoch / 1029983);
-    var cyear = depoch % 1029983;
-    
-    if (cyear < 0) {
-        cyear += 1029983;
-    }
-    
-    var ycycle;
-    if (cyear == 1029982) {
-        ycycle = 2820;
-    } else {
-        var aux1 = Math.floor(cyear / 366);
-        var aux2 = cyear % 366;
-        ycycle = Math.floor(((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) + aux1 + 1;
-    }
-    
-    var year = ycycle + (2820 * cycle) + 474;
-    if (year <= 0) {
-        year--;
-    }
-    
-    var yday = (jd - persianToJulianDay(year, 1, 1)) + 1;
-    var month = (yday <= 186) ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
-    var day = (jd - persianToJulianDay(year, month, 1)) + 1;
-    
-    return { year: year, month: month, day: day };
-}
-
-// Convert Persian date to Julian Day Number
-function persianToJulianDay(year, month, day) {
-    var epbase = year - (year >= 0 ? 474 : 473);
-    var epyear = 474 + (epbase % 2820);
-    
-    var mdays = (month <= 7) ? ((month - 1) * 31) : ((month - 1) * 30 + 6);
-    
-    return day + mdays + Math.floor(((epyear * 682) - 110) / 2816) + (epyear - 1) * 365 + Math.floor(epbase / 2820) * 1029983 + (1948320.5 - 1);
-}
-
-// Check if year is leap year
-function isLeapYear(year) {
-    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-}
-
-// Set date range functions
-function setDateRange(range) {
-    console.log('Setting date range:', range);
-    var today = new Date();
-    var persianToday = convertGregorianToPersian(today.toISOString().split('T')[0]);
-    
-    switch(range) {
-        case 'today':
-            $('#date_from').val(persianToday);
-            $('#date_to').val(persianToday);
-            // Set Gregorian dates
-            var gregorianToday = today.toISOString().split('T')[0];
-            $('#date_from_gregorian').val(gregorianToday);
-            $('#date_to_gregorian').val(gregorianToday);
-            break;
-            
-        case 'week':
-            var weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay());
-            var weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekStart.getDate() + 6);
-            
-            var persianWeekStart = convertGregorianToPersian(weekStart.toISOString().split('T')[0]);
-            var persianWeekEnd = convertGregorianToPersian(weekEnd.toISOString().split('T')[0]);
-            
-            $('#date_from').val(persianWeekStart);
-            $('#date_to').val(persianWeekEnd);
-            $('#date_from_gregorian').val(weekStart.toISOString().split('T')[0]);
-            $('#date_to_gregorian').val(weekEnd.toISOString().split('T')[0]);
-            break;
-            
-        case 'month':
-            var monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-            var monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            
-            var persianMonthStart = convertGregorianToPersian(monthStart.toISOString().split('T')[0]);
-            var persianMonthEnd = convertGregorianToPersian(monthEnd.toISOString().split('T')[0]);
-            
-            $('#date_from').val(persianMonthStart);
-            $('#date_to').val(persianMonthEnd);
-            $('#date_from_gregorian').val(monthStart.toISOString().split('T')[0]);
-            $('#date_to_gregorian').val(monthEnd.toISOString().split('T')[0]);
-            break;
-    }
-    
-    // Auto-submit the form after setting dates
-    setTimeout(function() {
-        $('form').submit();
-    }, 100);
-}
-
-// Clear all filters function
-function clearAllFilters() {
-    console.log('Clearing all filters');
-    $('#search').val('');
-    $('#status').val('');
-    $('#priority').val('');
-    $('#doctor').val('');
-    $('#date_from').val('');
-    $('#date_to').val('');
-    $('#date_from_gregorian').val('');
-    $('#date_to_gregorian').val('');
-    
-    // Auto-submit the form after clearing filters
-    setTimeout(function() {
-        $('form').submit();
-    }, 100);
-}
 
 // Change per page function
 function changePerPage(perPage) {

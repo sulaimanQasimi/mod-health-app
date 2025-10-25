@@ -101,7 +101,8 @@
                                     <th width="12%">{{ localize('global.category') }}</th>
                                     <th width="8%">{{ localize('global.tests_count') }}</th>
                                     <th width="8%">{{ localize('global.parameters_count') }}</th>
-                                    <th width="25%">{{ localize('global.actions') }}</th>
+                                    <th width="10%">{{ localize('global.created_date') }}</th>
+                                    <th width="15%">{{ localize('global.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="labTypesTableBody">
@@ -120,19 +121,22 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $labType->branch->name ?? 'N/A' }}</span>
+                                            <span class="badge bg-info">{{ $labType->section->section ?? 'N/A' }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-warning">{{ $labType->category->name ?? 'N/A' }}</span>
+                                            <span class="badge bg-warning">{{ $labType->branch->name ?? 'N/A' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ $labType->category->name ?? 'N/A' }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-primary">{{ $labType->directLabTestParameters->count() }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">0</span>
+                                            <span class="badge bg-info">{{ $labType->directLabTestParameters->count() }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-success">{{ $labType->created_at->format('Y-m-d') }}</span>
+                                            <span class="badge bg-success">{{ verta($labType->created_at)->format('Y-m-d') }}</span>
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
@@ -150,7 +154,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center">
+                                        <td colspan="9" class="text-center">
                                             <div class="py-4">
                                                 <i class="bx bx-test-tube text-muted" style="font-size: 2rem;"></i>
                                                 <h6 class="mt-2 text-muted">{{ localize('global.no_lab_types_found') }}</h6>

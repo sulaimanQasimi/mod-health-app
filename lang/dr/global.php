@@ -3422,4 +3422,6 @@ return [
     "search_placeholder"=>"جستجوی نوع آزمایش",
     "search_placeholder"=>"جستجوی نوع آزمایش",
     "parameters_count"=>"تعداد پارامترها",
+    "created_date"=>"تاریخ ایجاد",
+    "lab_test_parameters"=>"پارامترهای آزمایش",
 ];

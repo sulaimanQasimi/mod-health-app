@@ -324,11 +324,6 @@
 
                 <ul class="menu-sub">
                     <!-- Patient Test Registrations -->
-                    <li class="menu-item {{ Route::is('laboratory.results.patients') ? 'active' : '' }}">
-                        <a href="{{ route('laboratory.results.patients') }}" class="menu-link">
-                            <div>{{ localize('global.patient_test_registrations') }}</div>
-                        </a>
-                    </li>
                     <li class="menu-item {{ Route::is('laboratory.results.pending') ? 'active' : '' }}">
                         <a href="{{ route('laboratory.results.pending') }}" class="menu-link">
                             <div>{{ localize('global.pending_tests') }}</div>

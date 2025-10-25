@@ -12,7 +12,7 @@
 ])
 
 <!-- Lab Tests Accordion -->
-<div class="accordion mt-4" id="{{ $accordionId }}">
+<div class="accordion mt-4 border border-warning shadow-sm rounded" id="{{ $accordionId }}">
     <div class="accordion-item">
         <h2 class="accordion-header" id="{{ $headerId }}">
             <button class="accordion-button collapsed bg-body-secondary text-body" type="button"

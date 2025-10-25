@@ -18,33 +18,33 @@ class LabTestRegistrationAjaxController extends Controller
 {
 
     /**
-     * Get all tests
+     * Get all lab types
      */
-    public function getAllTests()
+    public function getAllLabTypes()
     {
         try {
-            $tests = LabTest::with(['labType', 'labTypeSection'])->get();
+            $labTypes = \App\Models\LabType::with(['section', 'category', 'directLabTestParameters'])->get();
             
             return response()->json([
                 'success' => true,
-                'data' => $tests
+                'data' => $labTypes
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch tests',
+                'message' => 'Failed to fetch lab types',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Get test parameters by test ID
+     * Get lab type parameters by lab type ID
      */
-    public function getTestParameters($testId)
+    public function getLabTypeParameters($labTypeId)
     {
         try {
-            $parameters = LabTestParameter::where('test_id', $testId)->get();
+            $parameters = LabTestParameter::where('lab_type_id', $labTypeId)->get();
             
             return response()->json([
                 'success' => true,
@@ -53,11 +53,12 @@ class LabTestRegistrationAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch test parameters',
+                'message' => 'Failed to fetch lab type parameters',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
 
     /**
      * Store a new lab test registration via Ajax
@@ -66,9 +67,11 @@ class LabTestRegistrationAjaxController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'lab_test_ids' => 'required|string', // JSON string of test IDs
+                'lab_type_ids' => 'required|string', // JSON string of lab type IDs
                 'priority' => 'required|in:normal,urgent,stat',
                 'notes' => 'nullable|string|max:1000',
+                'detailed_notes' => 'nullable|string',
+                'metadata' => 'nullable|string', // JSON string
                 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'entity_id' => 'required',
@@ -83,21 +86,21 @@ class LabTestRegistrationAjaxController extends Controller
                 ], 422);
             }
 
-            // Parse lab test IDs from JSON string
-            $labTestIds = json_decode($request->lab_test_ids, true);
-            if (!is_array($labTestIds) || empty($labTestIds)) {
+            // Parse lab type IDs from JSON string
+            $labTypeIds = json_decode($request->lab_type_ids, true);
+            if (!is_array($labTypeIds) || empty($labTypeIds)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid lab test IDs provided'
+                    'message' => 'Invalid lab type IDs provided'
                 ], 422);
             }
 
-            // Validate that all test IDs exist
-            $validTests = LabTest::whereIn('id', $labTestIds)->pluck('id')->toArray();
-            if (count($validTests) !== count($labTestIds)) {
+            // Validate that all lab type IDs exist
+            $validLabTypes = \App\Models\LabType::whereIn('id', $labTypeIds)->pluck('id')->toArray();
+            if (count($validLabTypes) !== count($labTypeIds)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'One or more test IDs are invalid'
+                    'message' => 'One or more lab type IDs are invalid'
                 ], 422);
             }
 
@@ -120,13 +123,19 @@ class LabTestRegistrationAjaxController extends Controller
                 $createdRegistrations = [];
                 $refNumbers = [];
 
-                // Create registrations for each selected test
-                foreach ($labTestIds as $labTestId) {
+                // Create registrations for each selected lab type
+                foreach ($labTypeIds as $labTypeId) {
                     // Lock ref_numbers row and increment ref_no for each test
                     $ref = DB::table('ref_numbers')->lockForUpdate()->first();
                     $newRefNo = $ref->last_ref_no + 1;
                     DB::table('ref_numbers')->update(['last_ref_no' => $newRefNo]);
                     $refNumbers[] = $newRefNo;
+
+                    // Parse metadata if provided
+                    $metadata = null;
+                    if ($request->has('metadata') && !empty($request->metadata)) {
+                        $metadata = json_decode($request->metadata, true);
+                    }
 
                     // Create test registration with polymorphic relationship
                     $registration = PatientTestRegistration::create([
@@ -135,24 +144,24 @@ class LabTestRegistrationAjaxController extends Controller
                         'testable_id'       => $request->entity_id,
                         'registration_date' => now(),
                         'ref_no'            => $newRefNo,
-                        'lab_test_id'       => $labTestId,
+                        'lab_type_id'       => $labTypeId,
                         'status'            => 'pending',
                         'doctor_id'         => $request->doctor_id,
                         'branch_id'         => $request->branch_id,
                         'priority'          => $request->priority,
                         'notes'             => $request->notes,
-                        'category_id'       => $newCategoryId,
+                        'detailed_notes'    => $request->detailed_notes,
+                        'metadata'          => $metadata,
                     ]);
 
                     $createdRegistrations[] = $registration;
 
-                    // Create test results - handle both parametered and non-parametered tests
-                    $labTest = LabTest::find($labTestId);
+                    // Create test results - handle both parametered and non-parametered lab types
+                    $labType = \App\Models\LabType::find($labTypeId);
                     
-                    if ($labTest->has_parameters) {
+                    if ($labType->directLabTestParameters && $labType->directLabTestParameters->count() > 0) {
                         // Create results for each parameter
-                        $parameters = LabTestParameter::where('test_id', $labTestId)->get();
-                        foreach ($parameters as $parameter) {
+                        foreach ($labType->directLabTestParameters as $parameter) {
                             \App\Models\PatientTestResult::create([
                                 'patient_id'          => $patientId,
                                 'ref_no'              => $newRefNo,
@@ -164,7 +173,7 @@ class LabTestRegistrationAjaxController extends Controller
                             ]);
                         }
                     } else {
-                        // Create single result entry for non-parametered test
+                        // Create single result entry for non-parametered lab type
                         \App\Models\PatientTestResult::create([
                             'patient_id'          => $patientId,
                             'ref_no'              => $newRefNo,
@@ -236,9 +245,9 @@ class LabTestRegistrationAjaxController extends Controller
             
             $registrations = $registrations->with([
                 'testable.patient', 
-                'labTest.labType',
-                'labTest.labTypeSection',
-                'labTest.category',
+                'labType.section',
+                'labType.category',
+                'labType.directLabTestParameters',
                 'doctor', 
                 'branch'
             ])
@@ -266,34 +275,57 @@ class LabTestRegistrationAjaxController extends Controller
         try {
             $registration = PatientTestRegistration::with([
                 'testable.patient',
-                'labTest.labType',
-                'labTest.labTypeSection',
-                'labTest.category',
+                'labType.section',
+                'labType.category',
+                'labType.directLabTestParameters',
                 'doctor',
                 'branch',
                 'results.parameter'
             ])->findOrFail($registrationId);
 
-            // Transform results to parameters format for display
-            $parameters = $registration->results->map(function($result) {
-                return [
-                    'id' => $result->parameter->id,
-                    'parameter_name' => $result->parameter->parameter_name,
-                    'unit' => $result->unit,
-                    'normal_range' => $result->normal_range,
-                    'critical_low' => $result->parameter->critical_low,
-                    'critical_high' => $result->parameter->critical_high,
-                    'panic_low' => $result->parameter->panic_low,
-                    'panic_high' => $result->parameter->panic_high,
-                    'critical_comment' => $result->parameter->critical_comment,
-                    'panic_comment' => $result->parameter->panic_comment,
-                    'delta_check_enabled' => $result->parameter->delta_check_enabled,
-                    'delta_check_threshold' => $result->parameter->delta_check_threshold,
-                    'requires_verification' => $result->parameter->requires_verification,
-                    'verification_level' => $result->parameter->verification_level,
-                    'result' => $result->result
+            // Ensure labType exists and has directLabTestParameters
+            if (!$registration->labType) {
+                $registration->labType = (object) [
+                    'id' => null,
+                    'name' => '—',
+                    'section' => null,
+                    'category' => null,
+                    'direct_lab_test_parameters' => []
                 ];
-            });
+            } else {
+                // Ensure directLabTestParameters is an array
+                if (!$registration->labType->directLabTestParameters) {
+                    $registration->labType->direct_lab_test_parameters = [];
+                }
+            }
+
+            // Transform results to parameters format for display (only if results exist)
+            $parameters = collect();
+            if ($registration->results && $registration->results->count() > 0) {
+                $parameters = $registration->results->map(function($result) {
+                    // Check if parameter exists before accessing its properties
+                    if ($result->parameter) {
+                        return [
+                            'id' => $result->parameter->id,
+                            'parameter_name' => $result->parameter->parameter_name,
+                            'unit' => $result->unit,
+                            'normal_range' => $result->normal_range,
+                            'critical_low' => $result->parameter->critical_low,
+                            'critical_high' => $result->parameter->critical_high,
+                            'panic_low' => $result->parameter->panic_low,
+                            'panic_high' => $result->parameter->panic_high,
+                            'critical_comment' => $result->parameter->critical_comment,
+                            'panic_comment' => $result->parameter->panic_comment,
+                            'delta_check_enabled' => $result->parameter->delta_check_enabled,
+                            'delta_check_threshold' => $result->parameter->delta_check_threshold,
+                            'requires_verification' => $result->parameter->requires_verification,
+                            'verification_level' => $result->parameter->verification_level,
+                            'result' => $result->result
+                        ];
+                    }
+                    return null;
+                })->filter(); // Remove null entries
+            }
 
             $registration->parameters = $parameters;
 

@@ -26,6 +26,8 @@ class PatientTestRegistration extends Model
         'branch_id',
         'priority',
         'notes',
+        'detailed_notes',
+        'metadata',
         'completed_at',
         'completed_by',
         'created_by',
@@ -35,6 +37,7 @@ class PatientTestRegistration extends Model
     protected $casts = [
         'registration_date' => 'datetime',
         'completed_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     /**
@@ -173,5 +176,63 @@ class PatientTestRegistration extends Model
     public function cancel()
     {
         $this->update(['status' => 'cancelled']);
+    }
+
+    /**
+     * Get all parameters for this lab type
+     */
+    public function getParameters()
+    {
+        return $this->labType->directLabTestParameters;
+    }
+
+    /**
+     * Create test results for all parameters of this lab type
+     */
+    public function createResultsForAllParameters()
+    {
+        $parameters = $this->getParameters();
+        
+        foreach ($parameters as $parameter) {
+            PatientTestResult::create([
+                'patient_id' => $this->testable?->patient_id,
+                'ref_no' => $this->ref_no,
+                'lab_parameter_id' => $parameter->id,
+                'unit' => $parameter->unit,
+                'normal_range' => $parameter->normal_range,
+                'test_registration_id' => $this->id,
+            ]);
+        }
+    }
+
+    /**
+     * Get all test results for this registration
+     */
+    public function getTestResults()
+    {
+        return $this->results()->with(['parameter.directLabType'])->get();
+    }
+
+    /**
+     * Check if all parameters have results
+     */
+    public function hasAllResults()
+    {
+        $parameterCount = $this->getParameters()->count();
+        $resultCount = $this->results()->count();
+        
+        return $parameterCount > 0 && $parameterCount === $resultCount;
+    }
+
+    /**
+     * Get completion percentage
+     */
+    public function getCompletionPercentage()
+    {
+        $parameterCount = $this->getParameters()->count();
+        if ($parameterCount === 0) return 100;
+        
+        $resultCount = $this->results()->count();
+        return round(($resultCount / $parameterCount) * 100, 2);
     }
 }

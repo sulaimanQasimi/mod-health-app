@@ -40,20 +40,20 @@
                             <input type="hidden" name="branch_id" :value="appointment.branch_id">
 
                             <div class="form-group mb-3">
-                                <label for="lab_test_ids">{{ localize('global.test_name') }} ({{ localize('global.select_multiple') }})</label>
+                                <label for="lab_type_ids">{{ localize('global.lab_type') }} ({{ localize('global.select_multiple') }})</label>
                                 <multiselect
-                                    v-model="selectedTests"
-                                    :options="allTests"
+                                    v-model="selectedLabTypes"
+                                    :options="allLabTypes"
                                     :searchable="true"
                                     :close-on-select="false"
                                     :multiple="true"
                                     :show-labels="false"
-                                    :placeholder="localize('global.select_tests')"
+                                    :placeholder="localize('global.select_lab_types')"
                                     label="name"
                                     track-by="id"
-                                    @select="onTestSelect"
-                                    @remove="onTestRemove"
-                                    @clear="onTestClear"
+                                    @select="onLabTypeSelect"
+                                    @remove="onLabTypeRemove"
+                                    @clear="onLabTypeClear"
                                 >
                                 </multiselect>
                             </div>
@@ -76,6 +76,7 @@
                                     :placeholder="localize('global.optional_notes')"
                                 ></textarea>
                             </div>
+
 
                             <!-- Info message about modal behavior -->
                             <div class="alert alert-info mt-3">
@@ -124,10 +125,10 @@
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.patient') }}</th>
-                                            <th>{{ localize('global.test_name') }}</th>
                                             <th>{{ localize('global.lab_type') }}</th>
                                             <th>{{ localize('global.lab_type_section') }}</th>
-                                            <th>{{ localize('global.test_type') }}</th>
+                                            <th>{{ localize('global.category') }}</th>
+                                            <th>{{ localize('global.parameters_count') }}</th>
                                             <th>{{ localize('global.status') }}</th>
                                             <th>{{ localize('global.priority') }}</th>
                                             <th>{{ localize('global.doctor') }}</th>
@@ -146,12 +147,13 @@
                                                 </span>
                                                 <span v-else>—</span>
                                             </td>
-                                            <td>{{ registration.lab_test ? registration.lab_test.name : '—' }}</td>
-                                            <td>{{ registration.lab_test?.lab_type?.name ?? '—' }}</td>
-                                            <td>{{ registration.lab_test?.lab_type_section?.section ?? '—' }}</td>
+                                            <td>{{ registration.lab_type ? registration.lab_type.name : '—' }}</td>
+                                            <td>{{ registration.lab_type?.section?.section ?? '—' }}</td>
+                                            <td>{{ registration.lab_type?.category?.name ?? '—' }}</td>
                                             <td>
-                                                <span v-if="registration.lab_test?.has_parameters" class="badge bg-info">{{ localize('global.parametered') }}</span>
-                                                <span v-else class="badge bg-secondary">{{ localize('global.text_based') }}</span>
+                                                <span class="badge bg-info">
+                                                    {{ registration.lab_type?.direct_lab_test_parameters?.length || 0 }} {{ localize('global.parameters') }}
+                                                </span>
                                             </td>
                                             <td>
                                                 <span 
@@ -243,11 +245,11 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <div class="text-center p-3 border rounded bg-body-secondary">
-                                        <div class="text-body-secondary small mb-1">{{ localize('global.test_name') }}</div>
+                                        <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.lab_type') }}</div>
                                         <div class="fw-bold">
                                             <i class="bx bx-test-tube me-1 text-primary"></i>
-                                            {{ selectedRegistration.lab_test ? selectedRegistration.lab_test.name : '—' }}
+                                            {{ selectedRegistration.lab_type ? selectedRegistration.lab_type.name : '—' }}
                                         </div>
                                     </div>
                                 </div>
@@ -262,16 +264,57 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div v-if="selectedRegistration.parameters && selectedRegistration.parameters.length > 0">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-body-secondary text-body">
-                                        <h5 class="mb-0 text-center">
-                                            <i class="bx bx-list-ul me-2 text-info"></i>
-                                            {{ localize('global.test_parameters') }}
-                                        </h5>
+
+                            <!-- Detailed Notes Section -->
+                            <div v-if="selectedRegistration.detailed_notes" class="row mb-3">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bx bx-note me-2"></i>
+                                                {{ localize('global.detailed_notes') }}
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="mb-0">{{ selectedRegistration.detailed_notes }}</p>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
+                                </div>
+                            </div>
+
+                            <!-- Metadata Section -->
+                            <div v-if="selectedRegistration.metadata && Object.keys(selectedRegistration.metadata).length > 0" class="row mb-3">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header bg-secondary text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bx bx-data me-2"></i>
+                                                {{ localize('global.metadata') }}
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div v-for="(value, key) in selectedRegistration.metadata" :key="key" class="col-md-6 mb-2">
+                                                    <strong>{{ key }}:</strong>
+                                                    <p class="mb-0">{{ value }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Parameters Section -->
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-body-secondary text-body">
+                                    <h5 class="mb-0 text-center">
+                                        <i class="bx bx-list-ul me-2 text-info"></i>
+                                        {{ localize('global.test_parameters') }}
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Show parameters table if parameters exist -->
+                                    <div v-if="selectedRegistration.lab_type && selectedRegistration.lab_type.direct_lab_test_parameters && selectedRegistration.lab_type.direct_lab_test_parameters.length > 0">
                                         <div class="table-responsive">
                                             <table class="table table-striped table-hover">
                                                 <thead class="table-body-secondary">
@@ -290,11 +333,11 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(parameter, index) in selectedRegistration.parameters" :key="parameter.id">
+                                                    <tr v-for="(parameter, index) in selectedRegistration.lab_type.direct_lab_test_parameters" :key="parameter.id || index">
                                                         <td>
                                                             <span class="badge bg-info rounded-pill">{{ index + 1 }}</span>
                                                         </td>
-                                                        <td><strong>{{ parameter.parameter_name }}</strong></td>
+                                                        <td><strong>{{ parameter.parameter_name || '—' }}</strong></td>
                                                         <td>{{ parameter.unit || '—' }}</td>
                                                         <td>{{ parameter.normal_range || '—' }}</td>
                                                         <td>
@@ -349,12 +392,13 @@
                                             </table>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div v-else class="text-center py-4">
-                                <div class="alert alert-info">
-                                    <i class="bx bx-info-circle me-2"></i>
-                                    {{ localize('global.no_parameters_found') }}
+                                    <!-- Show message if no parameters -->
+                                    <div v-else class="text-center py-4">
+                                        <div class="alert alert-info">
+                                            <i class="bx bx-info-circle me-2"></i>
+                                            {{ localize('global.no_parameters_found') }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -553,19 +597,19 @@ export default {
             showParametersModal: false,
             showParameterDetailsModal: false,
             testRegistrations: [],
-            allTests: [],
-            selectedTests: [],
+            allLabTypes: [],
+            selectedLabTypes: [],
             selectedRegistration: null,
             selectedParameter: null,
             form: {
-                lab_test_ids: [],
+                lab_type_ids: [],
                 priority: 'normal',
                 notes: ''
             }
         }
     },
     mounted() {
-        this.loadAllTests();
+        this.loadAllLabTypes();
         this.loadTestRegistrations();
     },
     watch: {
@@ -576,9 +620,9 @@ export default {
         }
     },
     methods: {
-        async loadAllTests() {
+        async loadAllLabTypes() {
             try {
-                const response = await fetch('/lab-test-registration-ajax/all-tests', {
+                const response = await fetch('/lab-test-registration-ajax/all-lab-types', {
                     credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',
@@ -588,12 +632,12 @@ export default {
                 const data = await response.json();
                 
                 if (data.success) {
-                    this.allTests = data.data;
+                    this.allLabTypes = data.data;
                 } else {
                     this.showError(data.message);
                 }
             } catch (error) {
-                this.showError('Failed to load tests');
+                this.showError('Failed to load lab types');
             }
         },
 
@@ -624,8 +668,8 @@ export default {
         },
 
         async createTestRegistration() {
-            if (!this.form.lab_test_ids.length) {
-                this.showError('Please select at least one test');
+            if (!this.form.lab_type_ids.length) {
+                this.showError('Please select at least one lab type');
                 return;
             }
 
@@ -633,7 +677,7 @@ export default {
 
             try {
                 const formData = new FormData();
-                formData.append('lab_test_ids', JSON.stringify(this.form.lab_test_ids));
+                formData.append('lab_type_ids', JSON.stringify(this.form.lab_type_ids));
                 formData.append('priority', this.form.priority);
                 formData.append('notes', this.form.notes);
                 formData.append('entity_id', this.entityId);
@@ -670,8 +714,8 @@ export default {
         },
 
         async createTestRegistrationAndClose() {
-            if (!this.form.lab_test_ids.length) {
-                this.showError('Please select at least one test');
+            if (!this.form.lab_type_ids.length) {
+                this.showError('Please select at least one lab type');
                 return;
             }
 
@@ -679,7 +723,7 @@ export default {
 
             try {
                 const formData = new FormData();
-                formData.append('lab_test_ids', JSON.stringify(this.form.lab_test_ids));
+                formData.append('lab_type_ids', JSON.stringify(this.form.lab_type_ids));
                 formData.append('priority', this.form.priority);
                 formData.append('notes', this.form.notes);
                 formData.append('entity_id', this.entityId);
@@ -728,12 +772,29 @@ export default {
                 const data = await response.json();
                 
                 if (data.success) {
-                    this.selectedRegistration = data.data;
-                    this.showParametersModal = true;
+                    // Ensure the registration data is properly structured
+                    if (data.data) {
+                        // Initialize lab_type if it doesn't exist
+                        if (!data.data.lab_type) {
+                            data.data.lab_type = {
+                                name: '—',
+                                direct_lab_test_parameters: []
+                            };
+                        }
+                        // Initialize direct_lab_test_parameters if it doesn't exist
+                        if (!data.data.lab_type.direct_lab_test_parameters) {
+                            data.data.lab_type.direct_lab_test_parameters = [];
+                        }
+                        this.selectedRegistration = data.data;
+                        this.showParametersModal = true;
+                    } else {
+                        this.showError('Registration data not found');
+                    }
                 } else {
-                    this.showError(data.message);
+                    this.showError(data.message || 'Failed to load registration parameters');
                 }
             } catch (error) {
+                console.error('Error loading registration parameters:', error);
                 this.showError('Failed to load registration parameters');
             }
         },
@@ -753,10 +814,10 @@ export default {
         },
 
         resetForm() {
-            this.form.lab_test_ids = [];
+            this.form.lab_type_ids = [];
             this.form.priority = 'normal';
             this.form.notes = '';
-            this.selectedTests = [];
+            this.selectedLabTypes = [];
         },
 
         formatDate(dateString) {
@@ -875,27 +936,33 @@ export default {
                 'global.lab_type_section': 'بخش آزمایش',
                 'global.test_type': 'نوع تست',
                 'global.parametered': 'پارامتری',
-                'global.text_based': 'متنی'
+                'global.text_based': 'متنی',
+                'global.select_lab_types': 'انتخاب نوع آزمایش',
+                'global.category': 'دسته بندی',
+                'global.parameters_count': 'تعداد پارامترها',
+                'global.parameters': 'پارامترها',
+                'global.detailed_notes': 'یادداشت‌های تفصیلی',
+                'global.metadata': 'اطلاعات اضافی'
             };
             return translations[key] || key;
         },
 
         // Vue Multiselect event handlers
-        onTestSelect(selectedTest) {
-            if (!this.selectedTests.find(test => test.id === selectedTest.id)) {
-                this.selectedTests.push(selectedTest);
+        onLabTypeSelect(selectedLabType) {
+            if (!this.selectedLabTypes.find(labType => labType.id === selectedLabType.id)) {
+                this.selectedLabTypes.push(selectedLabType);
             }
-            this.form.lab_test_ids = this.selectedTests.map(test => test.id);
+            this.form.lab_type_ids = this.selectedLabTypes.map(labType => labType.id);
         },
 
-        onTestRemove(removedTest) {
-            this.selectedTests = this.selectedTests.filter(test => test.id !== removedTest.id);
-            this.form.lab_test_ids = this.selectedTests.map(test => test.id);
+        onLabTypeRemove(removedLabType) {
+            this.selectedLabTypes = this.selectedLabTypes.filter(labType => labType.id !== removedLabType.id);
+            this.form.lab_type_ids = this.selectedLabTypes.map(labType => labType.id);
         },
 
-        onTestClear() {
-            this.selectedTests = [];
-            this.form.lab_test_ids = [];
+        onLabTypeClear() {
+            this.selectedLabTypes = [];
+            this.form.lab_type_ids = [];
         },
 
 

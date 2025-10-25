@@ -3386,6 +3386,7 @@ return [
     "today"=>"امروز",
     "yesterday"=>"دیروز",
     "last_week"=>"هفته گذشته",
+    "select_multiple"=>"انتخاب چندین",
     "last_month"=>"ماه گذشته",
     "last_year"=>"سال گذشته",
     "all_time"=>"همه زمان",

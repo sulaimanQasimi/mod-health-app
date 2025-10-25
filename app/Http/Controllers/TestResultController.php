@@ -37,6 +37,19 @@ class TestResultController extends Controller
             'branch'
         ]);
 
+        // Apply section-based access control
+        $user = auth()->user();
+
+        // Check if user has admin role or permission to see all sections
+        if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+            // Filter by user's section_id
+            if ($user->section_id) {
+                $query->whereHas('labType.section', function($q) use ($user) {
+                    $q->where('section_id', $user->section_id);
+                });
+            }
+        }
+
         // Apply search filter (patient name)
         if ($request->filled('search')) {
             $search = $request->search;
@@ -149,6 +162,21 @@ class TestResultController extends Controller
                     'redirect' => route('laboratory.reports.print', $test->ref_no)
                 ], 403);
             }
+
+            // Check section access
+            $user = auth()->user();
+            if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+                if ($user->section_id && $test->labType) {
+                    $labTypeSection = $test->labType->section;
+                    if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'You do not have access to update this test registration.'
+                        ], 403);
+                    }
+                }
+            }
+
             // Check if this is a non-parametered test
             $labType = $test->labType;
             
@@ -242,6 +270,17 @@ class TestResultController extends Controller
             'branch'
         ])->findOrFail($registration_id);
 
+        // Check section access
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+            if ($user->section_id && $registration->labType) {
+                $labTypeSection = $registration->labType->section;
+                if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
+                    abort(403, 'You do not have access to this test registration.');
+                }
+            }
+        }
+
         // Check if test is completed - redirect to print page
         if ($registration->status === 'completed') {
             return redirect()->route('laboratory.reports.print', $registration->ref_no);
@@ -306,6 +345,20 @@ class TestResultController extends Controller
         try {
             $test = PatientTestRegistration::with(['labType.directLabTestParameters', 'testable.patient'])->findOrFail($test_registration_id);
 
+            // Check section access
+            $user = auth()->user();
+            if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+                if ($user->section_id && $test->labType) {
+                    $labTypeSection = $test->labType->section;
+                    if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'You do not have access to this test registration.'
+                        ], 403);
+                    }
+                }
+            }
+
             $results = PatientTestResult::where('test_registration_id', $test_registration_id)
                 ->with('parameter')
                 ->get();
@@ -353,6 +406,17 @@ class TestResultController extends Controller
 
         if (!$testRegistration) {
             abort(404, 'No test registration found for this reference number.');
+        }
+
+        // Check section access
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+            if ($user->section_id && $testRegistration->labType) {
+                $labTypeSection = $testRegistration->labType->section;
+                if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
+                    abort(403, 'You do not have access to print this test report.');
+                }
+            }
         }
 
         $patient = $testRegistration->testable->patient ?? null;
@@ -405,6 +469,16 @@ class TestResultController extends Controller
             'doctor',
             'branch'
         ])->whereNotNull('category_id');
+
+        // Apply section-based access control
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+            if ($user->section_id) {
+                $query->whereHas('labType.section', function($q) use ($user) {
+                    $q->where('section_id', $user->section_id);
+                });
+            }
+        }
 
         // Apply search filter (patient name, phone, or reference number)
         if ($request->filled('search')) {
@@ -527,6 +601,24 @@ class TestResultController extends Controller
 
         if ($testRegistrations->isEmpty()) {
             abort(404, 'No test registrations found for this category.');
+        }
+
+        // Apply section-based access control
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
+            if ($user->section_id) {
+                $testRegistrations = $testRegistrations->filter(function($registration) use ($user) {
+                    if ($registration->labType && $registration->labType->section) {
+                        return $registration->labType->section->section_id == $user->section_id;
+                    }
+                    return false;
+                });
+            }
+        }
+
+        // After the filter, check if any registrations remain
+        if ($testRegistrations->isEmpty()) {
+            abort(403, 'You do not have access to this test group or no tests found.');
         }
 
         // Get patient from first registration

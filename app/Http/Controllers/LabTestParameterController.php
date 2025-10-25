@@ -154,7 +154,7 @@ class LabTestParameterController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Lab test parameter created successfully',
+            'message' => localize('global.lab_test_parameter_created_successfully'),
             'data' => $parameter
         ], 201);
     }
@@ -197,7 +197,7 @@ class LabTestParameterController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Lab test parameter updated successfully',
+            'message' => localize('global.lab_test_parameter_updated_successfully'),
             'data' => $parameter->fresh()
         ]);
     }
@@ -211,7 +211,7 @@ class LabTestParameterController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Lab test parameter deleted successfully'
+            'message' => localize('global.lab_test_parameter_deleted_successfully')
         ]);
     }
 
@@ -274,7 +274,7 @@ class LabTestParameterController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lab test parameter created successfully',
+                'message' => localize('global.lab_test_parameter_created_successfully'),
                 'data' => $parameter
             ], 201);
         } catch (\Exception $e) {

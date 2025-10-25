@@ -514,8 +514,8 @@ window.deleteLabType = function(labTypeId) {
             method: 'DELETE',
             success: function(response) {
                 if (response.success) {
-                    location.reload(); // Reload page to show updated data
                     showToast('success', response.message);
+                    setTimeout(() => location.reload(), 1000); // Reload page to show updated data
                 }
             },
             error: function(xhr) {
@@ -530,13 +530,13 @@ window.deleteLabType = function(labTypeId) {
 window.viewParameter = function(parameterId) {
     console.log('View parameter:', parameterId);
     // Implementation for viewing parameter details
-    showToast('info', 'View parameter functionality coming soon');
+    showToast('info', '{{ localize("global.view_parameter_functionality_coming_soon") }}');
 };
 
 window.editParameter = function(parameterId) {
     console.log('Edit parameter:', parameterId);
     // Implementation for editing parameter
-    showToast('info', 'Edit parameter functionality coming soon');
+    showToast('info', '{{ localize("global.edit_parameter_functionality_coming_soon") }}');
 };
 
 window.deleteParameter = function(parameterId) {
@@ -546,8 +546,8 @@ window.deleteParameter = function(parameterId) {
             method: 'DELETE',
             success: function(response) {
                 if (response.success) {
-                    location.reload(); // Reload page to show updated data
                     showToast('success', response.message);
+                    setTimeout(() => location.reload(), 1000); // Reload page to show updated data
                 }
             },
             error: function(xhr) {
@@ -559,10 +559,28 @@ window.deleteParameter = function(parameterId) {
 
 // Utility functions
 window.showToast = function(type, message) {
-    // Implementation for showing toast notifications
-    console.log(`${type}: ${message}`);
-    // You can implement actual toast notifications here
-    alert(`${type.toUpperCase()}: ${message}`);
+    // Use toastr for notifications
+    if (typeof toastr !== 'undefined') {
+        switch(type) {
+            case 'success':
+                toastr.success(message);
+                break;
+            case 'error':
+                toastr.error(message);
+                break;
+            case 'warning':
+                toastr.warning(message);
+                break;
+            case 'info':
+                toastr.info(message);
+                break;
+            default:
+                toastr.info(message);
+        }
+    } else {
+        // Fallback to alert if toastr is not available
+        alert(`${type.toUpperCase()}: ${message}`);
+    }
 };
 
 window.showError = function(message) {
@@ -575,16 +593,16 @@ window.showSuccess = function(message) {
 
 window.handleAjaxError = function(xhr) {
     console.error('AJAX Error:', xhr);
-    let message = 'An error occurred';
+    let message = '{{ localize("global.an_error_occurred") }}';
     
     if (xhr.responseJSON && xhr.responseJSON.message) {
         message = xhr.responseJSON.message;
     } else if (xhr.status === 404) {
-        message = 'Resource not found';
+        message = '{{ localize("global.resource_not_found") }}';
     } else if (xhr.status === 500) {
-        message = 'Server error occurred';
+        message = '{{ localize("global.server_error_occurred") }}';
     } else if (xhr.status === 0) {
-        message = 'Network error - please check your connection';
+        message = '{{ localize("global.network_error_check_connection") }}';
     }
     
     showError(message);
@@ -683,7 +701,7 @@ window.validateParameters = function() {
     });
     
     if (!isValid) {
-        showError('Please fill in all required parameter names');
+        showError('{{ localize("global.please_fill_required_parameter_names") }}');
     }
     
     return isValid;
@@ -812,8 +830,8 @@ window.createLabType = function() {
             if (response.success) {
                 $('#createLabTypeModal').modal('hide');
                 $('#createLabTypeForm')[0].reset();
-                location.reload(); // Reload page to show updated data
                 showToast('success', response.message);
+                setTimeout(() => location.reload(), 1000); // Reload page to show updated data
             }
         },
         error: function(xhr) {
@@ -872,8 +890,8 @@ window.updateLabType = function() {
         success: function(response) {
             if (response.success) {
                 $('#editLabTypeModal').modal('hide');
-                location.reload(); // Reload page to show updated data
                 showToast('success', response.message);
+                setTimeout(() => location.reload(), 1000); // Reload page to show updated data
             }
         },
         error: function(xhr) {
@@ -900,7 +918,7 @@ window.createParameter = function() {
     const labTypeId = $('#parameter_lab_type_id').val();
     
     if (!labTypeId) {
-        showError('Please select a lab type');
+        showError('{{ localize("global.please_select_lab_type") }}');
         return;
     }
     
@@ -914,8 +932,8 @@ window.createParameter = function() {
             if (response.success) {
                 $('#createParameterModal').modal('hide');
                 $('#createParameterForm')[0].reset();
-                location.reload(); // Reload page to show updated data
                 showToast('success', response.message);
+                setTimeout(() => location.reload(), 1000); // Reload page to show updated data
             }
         },
         error: function(xhr) {

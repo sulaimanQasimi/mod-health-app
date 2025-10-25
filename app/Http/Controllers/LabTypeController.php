@@ -174,7 +174,7 @@ class LabTypeController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Lab type created successfully',
+            'message' => localize('global.lab_type_created_successfully'),
             'data' => $labType->load(['branch', 'section'])
         ], 201);
     }
@@ -281,7 +281,7 @@ class LabTypeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lab type updated successfully',
+                'message' => localize('global.lab_type_updated_successfully'),
                 'data' => $labType->load(['branch', 'section', 'directLabTestParameters'])
             ]);
         } catch (\Exception $e) {
@@ -304,7 +304,7 @@ class LabTypeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lab type deleted successfully'
+                'message' => localize('global.lab_type_deleted_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([

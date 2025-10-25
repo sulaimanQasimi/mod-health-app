@@ -194,7 +194,7 @@ class LabTestRegistrationAjaxController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Lab test registrations created successfully (grouped with category_id: ' . $newCategoryId . ')',
+                    'message' => localize('global.lab_test_registrations_created_successfully'),
                     'data' => [
                         'registration_ids' => array_column($createdRegistrations, 'id'),
                         'ref_numbers' => $refNumbers,

@@ -3442,4 +3442,9 @@ return [
     "lab_test_parameter_created_successfully"=>"پارامتر آزمایش با موفقیت ایجاد شد",
     "lab_test_parameter_updated_successfully"=>"پارامتر آزمایش با موفقیت به‌روزرسانی شد",
     "lab_test_parameter_deleted_successfully"=>"پارامتر آزمایش با موفقیت حذف شد",
+    "lab_test_registrations_created_successfully"=>"ثبت نام‌های آزمایش با موفقیت ایجاد شد",
+    "failed_to_load_lab_types"=>"بارگذاری انواع آزمایش ناموفق بود",
+    "failed_to_load_test_registrations"=>"بارگذاری ثبت نام‌های آزمایش ناموفق بود",
+    "please_select_at_least_one_lab_type"=>"لطفاً حداقل یک نوع آزمایش انتخاب کنید",
+    "failed_to_create_test_registration"=>"ایجاد ثبت نام آزمایش ناموفق بود",
 ];

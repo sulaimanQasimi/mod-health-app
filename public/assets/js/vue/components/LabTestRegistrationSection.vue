@@ -637,7 +637,7 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                this.showError('Failed to load lab types');
+                this.showError(this.localize('global.failed_to_load_lab_types'));
             }
         },
 
@@ -663,13 +663,13 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                this.showError('Failed to load test registrations');
+                this.showError(this.localize('global.failed_to_load_test_registrations'));
             }
         },
 
         async createTestRegistration() {
             if (!this.form.lab_type_ids.length) {
-                this.showError('Please select at least one lab type');
+                this.showError(this.localize('global.please_select_at_least_one_lab_type'));
                 return;
             }
 
@@ -700,14 +700,14 @@ export default {
                 const data = await response.json();
 
                 if (data.success) {
-                    this.showSuccess(data.message + ' - Modal will stay open for adding more registrations');
+                    this.showSuccess(data.message);
                     this.loadTestRegistrations();
                     this.resetForm();
                 } else {
                     this.showError(data.message);
                 }
             } catch (error) {
-                this.showError('Failed to create test registration');
+                this.showError(this.localize('global.failed_to_create_test_registration'));
             } finally {
                 this.loading = false;
             }
@@ -715,7 +715,7 @@ export default {
 
         async createTestRegistrationAndClose() {
             if (!this.form.lab_type_ids.length) {
-                this.showError('Please select at least one lab type');
+                this.showError(this.localize('global.please_select_at_least_one_lab_type'));
                 return;
             }
 
@@ -754,7 +754,7 @@ export default {
                     this.showError(data.message);
                 }
             } catch (error) {
-                this.showError('Failed to create test registration');
+                this.showError(this.localize('global.failed_to_create_test_registration'));
             } finally {
                 this.loading = false;
             }
@@ -864,32 +864,28 @@ export default {
         },
 
         showSuccess(message) {
-            Swal.fire({
-                icon: 'success',
-                title: this.localize('global.success'),
-                text: message,
-                customClass: { confirmButton: 'btn btn-success' },
-                buttonsStyling: false,
-                confirmButtonText: this.localize('global.confirm')
-            });
+            if (typeof toastr !== 'undefined') {
+                toastr.success(message);
+            } else {
+                // Fallback to alert if toastr is not available
+                alert(message);
+            }
         },
 
         showError(message) {
-            Swal.fire({
-                icon: 'error',
-                title: this.localize('global.error'),
-                text: message,
-                customClass: { confirmButton: 'btn btn-danger' },
-                buttonsStyling: false,
-                confirmButtonText: this.localize('global.confirm')
-            });
+            if (typeof toastr !== 'undefined') {
+                toastr.error(message);
+            } else {
+                // Fallback to alert if toastr is not available
+                alert(message);
+            }
         },
 
         localize(key) {
             // Simple localization function - in real app this would use proper i18n
             const translations = {
                 "global.registration_modal_info":"معلومات مدل ثبت نام آزمایش",
-                'global.lab_test_registrations': 'لابراتوار',
+                'global.lab_test_registrations': 'معاینات',
                 'global.add_lab_test_registration': 'اضافه کردن ثبت نام آزمایش',
                 'global.test_category': 'دسته بندی آزمایش',
                 'global.select_category': 'انتخاب دسته بندی',
@@ -942,7 +938,13 @@ export default {
                 'global.parameters_count': 'تعداد پارامترها',
                 'global.parameters': 'پارامترها',
                 'global.detailed_notes': 'یادداشت‌های تفصیلی',
-                'global.metadata': 'اطلاعات اضافی'
+                'global.metadata': 'اطلاعات اضافی',
+                'global.select_multiple': 'انتخاب چندین',
+                'global.note': 'یادداشت',
+                'global.failed_to_load_lab_types': 'بارگذاری انواع آزمایش ناموفق بود',
+                'global.failed_to_load_test_registrations': 'بارگذاری ثبت نام‌های آزمایش ناموفق بود',
+                'global.please_select_at_least_one_lab_type': 'لطفاً حداقل یک نوع آزمایش انتخاب کنید',
+                'global.failed_to_create_test_registration': 'ایجاد ثبت نام آزمایش ناموفق بود'
             };
             return translations[key] || key;
         },

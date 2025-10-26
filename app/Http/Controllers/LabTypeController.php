@@ -5,7 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\LabType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
+/**
+ * LabTypeController
+ * 
+ * Handles both web and API requests for lab types management.
+ * 
+ * API Endpoints:
+ * GET    /api/lab-types              - List all lab types
+ * POST   /api/lab-types              - Create new lab type
+ * GET    /api/lab-types/{id}         - Show specific lab type
+ * PUT    /api/lab-types/{id}         - Update lab type
+ * DELETE /api/lab-types/{id}         - Delete lab type
+ * GET    /api/lab-types/select/dropdown - Get lab types for select dropdown
+ * GET    /api/categories             - Get categories for select dropdown
+ */
 class LabTypeController extends Controller
 {
     /**
@@ -13,21 +28,44 @@ class LabTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = LabType::with(['category', 'directLabTestParameters']);
+        // Build query with only necessary relationships
+        $query = LabType::with(['category']);
         
-        // Search functionality
-        if ($request->has('search') && !empty($request->search)) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+        // Optimized search - search in name and category name
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhereHas('category', function($categoryQuery) use ($search) {
+                      $categoryQuery->where('name', 'like', '%' . $search . '%');
+                  });
+            });
         }
         
         // Category filter
-        if ($request->has('category_id') && !empty($request->category_id)) {
+        if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
         
-        // Pagination
-        $labTypes = $query->orderBy('name')->paginate(15);
-        $categories = Category::all();
+        // Order by name for consistent results
+        $query->orderBy('name');
+        
+        // Check if this is an API request
+        if ($request->wantsJson() || $request->is('api/*')) {
+            $labTypes = $query->get();
+            return response()->json([
+                'success' => true,
+                'data' => $labTypes
+            ]);
+        }
+        
+        // Paginate with optimized page size for web requests
+        $labTypes = $query->paginate(20);
+        
+        // Cache categories for better performance
+        $categories = Cache::remember('lab_types_categories', 300, function () {
+            return Category::select('id', 'name')->orderBy('name')->get();
+        });
         
         return view('pages.lab_types.index', compact('labTypes', 'categories'));
     }
@@ -37,9 +75,11 @@ class LabTypeController extends Controller
      */
     public function create()
     {
-        $labTypes = LabType::all();
-        $categories = Category::all();
-        return view('pages.lab_types.create',compact('labTypes','categories'));
+        // Only load necessary data for the create form
+        $categories = Cache::remember('lab_types_categories', 300, function () {
+            return Category::select('id', 'name')->orderBy('name')->get();
+        });
+        return view('pages.lab_types.create', compact('categories'));
     }
 
     /**
@@ -52,17 +92,36 @@ class LabTypeController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        LabType::create($data);
+        $labType = LabType::create($data);
+        $labType->load(['category']);
+
+        // Clear categories cache when new lab type is created
+        Cache::forget('lab_types_categories');
+
+        // Check if this is an API request
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.lab_type_created_successfully'),
+                'data' => $labType
+            ], 201);
+        }
 
         return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_created_successfully.'));
     }
 
-   /**
-     * Display the specified resource.
+    /**
+     * Display the specified resource (API).
      */
     public function show(LabType $labType)
     {
-        return view('pages.lab_types.show', compact('labType'));
+        // Load relationships for API response
+        $labType->load(['category', 'directLabTestParameters']);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $labType
+        ]);
     }
 
     /**
@@ -70,8 +129,11 @@ class LabTypeController extends Controller
      */
     public function edit(LabType $labType)
     {
-        $labTypes = LabType::all();
-        return view('pages.lab_types.edit', compact('labType', 'labTypes'));
+        // Load categories for the edit form
+        $categories = Cache::remember('lab_types_categories', 300, function () {
+            return Category::select('id', 'name')->orderBy('name')->get();
+        });
+        return view('pages.lab_types.edit', compact('labType', 'categories'));
     }
 
     /**
@@ -85,6 +147,19 @@ class LabTypeController extends Controller
         ]);
 
         $labType->update($data);
+        $labType->load(['category']);
+
+        // Clear categories cache when lab type is updated
+        Cache::forget('lab_types_categories');
+
+        // Check if this is an API request
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.lab_type_updated_successfully'),
+                'data' => $labType
+            ]);
+        }
 
         return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_updated_successfully.'));
     }
@@ -92,198 +167,33 @@ class LabTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(LabType $labType)
+    public function destroy(Request $request, LabType $labType)
     {
         $labType->delete();
 
-        return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_deleted_successfully.'));
-    }
+        // Clear categories cache when lab type is deleted
+        Cache::forget('lab_types_categories');
 
-    // API Methods
-    /**
-     * API: Display a listing of lab types
-     */
-    public function apiIndex(Request $request)
-    {
-        try {
-        $query = LabType::with(['category', 'directLabTestParameters']);
-
-        // Search functionality
-        if ($request->has('search') && !empty($request->search)) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
-
-            $labTypes = $query->orderBy('name')->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => $labTypes
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error loading lab types: ' . $e->getMessage(),
-                'data' => []
-            ], 500);
-        }
-    }
-
-    /**
-     * API: Store a newly created lab type
-     */
-    public function apiStore(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
-        ]);
-
-        $labType = LabType::create($data);
-
-        return response()->json([
-            'success' => true,
-            'message' => localize('global.lab_type_created_successfully'),
-            'data' => $labType->load(['category'])
-        ], 201);
-    }
-
-    /**
-     * API: Display the specified lab type
-     */
-    public function apiShow($id)
-    {
-        try {
-            // First try to find the lab type without relationships
-            $labType = LabType::find($id);
-            
-            if (!$labType) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Lab type not found',
-                    'data' => null
-                ], 404);
-            }
-            
-            // Load relationships
-            $labType->load(['category', 'directLabTestParameters']);
-
-            return response()->json([
-                'success' => true,
-                'data' => $labType
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Error in apiShow: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error loading lab type: ' . $e->getMessage(),
-                'data' => null
-            ], 500);
-        }
-    }
-
-    /**
-     * API: Update the specified lab type
-     */
-    public function apiUpdate(Request $request, $id)
-    {
-        try {
-            $labType = LabType::findOrFail($id);
-            
-            $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'parameters' => 'nullable|string', // JSON string from frontend
-                'deleted_parameter_ids' => 'nullable|string', // JSON string from frontend
-            ]);
-
-            \DB::beginTransaction();
-            
-            // Update lab type basic information
-            $labType->update([
-                'name' => $data['name'],
-            ]);
-
-            // Handle parameters if provided
-            if ($request->has('parameters') && !empty($request->parameters)) {
-                $parameters = json_decode($request->parameters, true);
-                
-                if (is_array($parameters)) {
-                    foreach ($parameters as $parameterData) {
-                        if (isset($parameterData['id']) && !empty($parameterData['id'])) {
-                            // Update existing parameter
-                            $parameter = \App\Models\LabTestParameter::find($parameterData['id']);
-                            if ($parameter) {
-                                $parameter->update([
-                                    'parameter_name' => $parameterData['parameter_name'],
-                                    'unit' => $parameterData['unit'] ?? null,
-                                    'normal_range' => $parameterData['normal_range'] ?? null,
-                                ]);
-                            }
-                        } else {
-                            // Create new parameter
-                            \App\Models\LabTestParameter::create([
-                                'test_id' => null, // Set to null since we're creating for lab type directly
-                                'lab_type_id' => $labType->id,
-                                'parameter_name' => $parameterData['parameter_name'],
-                                'unit' => $parameterData['unit'] ?? null,
-                                'normal_range' => $parameterData['normal_range'] ?? null,
-                            ]);
-                        }
-                    }
-                }
-            }
-
-            // Handle deleted parameters
-            if ($request->has('deleted_parameter_ids') && !empty($request->deleted_parameter_ids)) {
-                $deletedIds = json_decode($request->deleted_parameter_ids, true);
-                
-                if (is_array($deletedIds)) {
-                    \App\Models\LabTestParameter::whereIn('id', $deletedIds)->delete();
-                }
-            }
-
-            \DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => localize('global.lab_type_updated_successfully'),
-                'data' => $labType->load(['directLabTestParameters'])
-            ]);
-        } catch (\Exception $e) {
-            \DB::rollback();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error updating lab type: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * API: Remove the specified lab type
-     */
-    public function apiDestroy($id)
-    {
-        try {
-            $labType = LabType::findOrFail($id);
-            $labType->delete();
-
+        // Check if this is an API request
+        if ($request->wantsJson() || $request->is('api/*')) {
             return response()->json([
                 'success' => true,
                 'message' => localize('global.lab_type_deleted_successfully')
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error deleting lab type: ' . $e->getMessage()
-            ], 500);
         }
+
+        return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_deleted_successfully.'));
     }
 
     /**
-     * Get lab types for select dropdown
+     * Get lab types for select dropdown (API)
      */
     public function getLabTypesForSelect()
     {
-        $labTypes = LabType::select('id', 'name')->orderBy('name')->get();
+        $labTypes = Cache::remember('lab_types_select', 300, function () {
+            return LabType::select('id', 'name')->orderBy('name')->get();
+        });
+        
         return response()->json($labTypes);
     }
 

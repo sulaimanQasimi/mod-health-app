@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
 use App\Http\Controllers\CategoryController;
@@ -370,13 +371,35 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Laboratory test types routes
     Route::prefix('lab_types')->name('lab_types.')->group(function () {
-        Route::get('index', [LabTypeController::class, 'index'])->name('index');
+        Route::get('/', [LabTypeController::class, 'index'])->name('index');
         Route::get('create', [LabTypeController::class, 'create'])->name('create');
-        Route::get('show/{labType}', [LabTypeController::class, 'show'])->name('show');
         Route::post('store', [LabTypeController::class, 'store'])->name('store');
-        Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
-        Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
-        Route::delete('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+        Route::get('{labType}/edit', [LabTypeController::class, 'edit'])->name('edit');
+        Route::put('{labType}', [LabTypeController::class, 'update'])->name('update');
+        Route::delete('{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Lab Types API routes
+    Route::prefix('api/lab-types')->name('api.lab-types.')->group(function () {
+        Route::get('/', [LabTypeController::class, 'index'])->name('index');
+        Route::post('/', [LabTypeController::class, 'store'])->name('store');
+        Route::get('{labType}', [LabTypeController::class, 'show'])->name('show');
+        Route::put('{labType}', [LabTypeController::class, 'update'])->name('update');
+        Route::delete('{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+        Route::get('select/dropdown', [LabTypeController::class, 'getLabTypesForSelect'])->name('select');
+    });
+
+    // Categories API routes
+    Route::prefix('api/categories')->name('api.categories.')->group(function () {
+        Route::get('/', function() {
+            $categories = Cache::remember('lab_types_categories', 300, function () {
+                return \App\Models\Category::select('id', 'name')->orderBy('name')->get();
+            });
+            return response()->json([
+                'success' => true,
+                'data' => $categories
+            ]);
+        })->name('index');
     });
 
     // Test route
@@ -384,26 +407,6 @@ Route::group(['middleware' => ['auth']], function () {
         return response()->json(['success' => true, 'message' => 'API is working']);
     });
 
-    // Lab Types API routes for full CRUD with parameters
-    Route::prefix('api/lab-types')->name('api.lab-types.')->group(function () {
-        // Lab Types
-        Route::get('/', [LabTypeController::class, 'apiIndex'])->name('index');
-        Route::post('/', [LabTypeController::class, 'apiStore'])->name('store');
-        
-        // Lab Test Parameters - Direct routes (more specific routes first)
-        Route::get('/parameters/{parameter}', [LabTestParameterController::class, 'apiShow'])->name('parameters.show');
-        Route::put('/parameters/{parameter}', [LabTestParameterController::class, 'apiUpdate'])->name('parameters.update');
-        Route::delete('/parameters/{parameter}', [LabTestParameterController::class, 'apiDestroy'])->name('parameters.destroy');
-        
-        // Lab Types with ID (less specific routes after)
-        Route::get('/{id}', [LabTypeController::class, 'apiShow'])->name('show');
-        Route::put('/{id}', [LabTypeController::class, 'apiUpdate'])->name('update');
-        Route::delete('/{id}', [LabTypeController::class, 'apiDestroy'])->name('destroy');
-        
-        // Lab Type Parameters (most specific routes)
-        Route::get('/{id}/parameters', [LabTestParameterController::class, 'apiIndexByLabType'])->name('parameters.index');
-        Route::post('/{id}/parameters', [LabTestParameterController::class, 'apiStoreByLabType'])->name('parameters.store');
-    });
 
     Route::prefix('lab_items')->name('lab_items.')->group(function () {
         Route::get('getItems/{id}', [LabItemController::class, 'getItems'])->name('getItems');

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\LabType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LabTypeController extends Controller
 {
@@ -26,7 +28,8 @@ class LabTypeController extends Controller
         }
         
         // Pagination
-        $labTypes = $query->orderBy('name')->paginate(15);
+        $perPage = $request->get('per_page', 15);
+        $labTypes = $query->orderBy('name')->paginate($perPage);
         $categories = Category::all();
         
         return view('pages.lab_types.index', compact('labTypes', 'categories'));
@@ -172,7 +175,7 @@ class LabTypeController extends Controller
                 'data' => $labType
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error in apiShow: ' . $e->getMessage());
+            Log::error('Error in apiShow: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error loading lab type: ' . $e->getMessage(),
@@ -195,7 +198,7 @@ class LabTypeController extends Controller
                 'deleted_parameter_ids' => 'nullable|string', // JSON string from frontend
             ]);
 
-            \DB::beginTransaction();
+            DB::beginTransaction();
             
             // Update lab type basic information
             $labType->update([
@@ -241,7 +244,7 @@ class LabTypeController extends Controller
                 }
             }
 
-            \DB::commit();
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -249,7 +252,7 @@ class LabTypeController extends Controller
                 'data' => $labType->load(['directLabTestParameters'])
             ]);
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => 'Error updating lab type: ' . $e->getMessage()

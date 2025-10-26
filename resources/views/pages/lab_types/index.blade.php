@@ -136,8 +136,44 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div id="paginationContainer" class="d-flex justify-content-center mt-4">
-                        {{ $labTypes->links() }}
+                    <!-- Enhanced Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-3">
+                        <div class="d-flex align-items-center flex-wrap gap-3">
+                            <div class="text-muted">
+                                @if($labTypes->hasPages())
+                                    {{ localize('global.showing') }} 
+                                    <strong>{{ $labTypes->firstItem() ?? 0 }}</strong> 
+                                    {{ localize('global.to') }} 
+                                    <strong>{{ $labTypes->lastItem() ?? 0 }}</strong> 
+                                    {{ localize('global.of') }} 
+                                    <strong>{{ $labTypes->total() }}</strong> 
+                                    {{ localize('global.results') }}
+                                @else
+                                    {{ localize('global.showing') }} 
+                                    <strong>{{ $labTypes->count() }}</strong> 
+                                    {{ localize('global.results') }}
+                                @endif
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <label for="pagination_per_page" class="form-label me-2 mb-0">
+                                    {{ localize('global.per_page') }}:
+                                </label>
+                                <select class="form-select form-select-sm" id="pagination_per_page" name="per_page" style="width: auto;" onchange="changePerPage(this.value)">
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        @if($labTypes->hasPages())
+                            <div class="d-flex align-items-center">
+                                {{ $labTypes->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -319,6 +355,14 @@
 <script>
 let parameterIndex = 1;
 let currentLabTypeId = null;
+
+// Handle per-page change
+window.changePerPage = function(perPage) {
+    const url = new URL(window.location);
+    url.searchParams.set('per_page', perPage);
+    url.searchParams.delete('page'); // Reset to first page when changing per_page
+    window.location.href = url.toString();
+};
 
 // Define all functions globally first
 window.viewLabType = function(labTypeId) {

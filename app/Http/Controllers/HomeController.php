@@ -13,7 +13,6 @@ use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\PatientTestRegistration;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\Prescription;
@@ -313,8 +312,8 @@ class HomeController extends Controller
 
     public function getRelatedLabTypes($labTypeId)
     {
-        $labTypeSection = LabTypeSection::findOrFail($labTypeId);
-        $labTypes = $labTypeSection->labTypes;
+        // Since we removed LabTypeSection, return all lab types
+        $labTypes = LabType::all();
         $options = '<option value = "">Select Department</option>';
 
         foreach ($labTypes as $labType) {

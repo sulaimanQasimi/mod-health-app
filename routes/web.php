@@ -46,7 +46,6 @@ use App\Http\Controllers\ICUController;
 use App\Http\Controllers\ICUProcedureController;
 use App\Http\Controllers\ICUProcedureTypeController;
 use App\Http\Controllers\LabItemController;
-use App\Http\Controllers\LabTypeSectionController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MedicineTypeController;
 use App\Http\Controllers\MedicineUsageTypeController;
@@ -369,16 +368,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{complaint}', [PatientComplaintController::class, 'destroy'])->name('destroy');
     });
 
-    // Laboratory test type sections routes
-    Route::prefix('lab_type_sections')->name('lab_type_sections.')->group(function () {
-        Route::get('index', [LabTypeSectionController::class, 'index'])->name('index');
-        Route::get('create', [LabTypeSectionController::class, 'create'])->name('create');
-        Route::get('show/{labTypeSection}', [LabTypeSectionController::class, 'show'])->name('show');
-        Route::post('store', [LabTypeSectionController::class, 'store'])->name('store');
-        Route::get('edit/{labTypeSection}', [LabTypeSectionController::class, 'edit'])->name('edit');
-        Route::put('update/{labTypeSection}', [LabTypeSectionController::class, 'update'])->name('update');
-        Route::delete('destroy/{labTypeSection}', [LabTypeSectionController::class, 'destroy'])->name('destroy');
-    });
 
     // Laboratory test types routes
     Route::prefix('lab_types')->name('lab_types.')->group(function () {

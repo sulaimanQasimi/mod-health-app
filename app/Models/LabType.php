@@ -12,7 +12,7 @@ class LabType extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','branch_id','section_id','category_id'];
+    protected $fillable = ['name','category_id'];
 
     public static function boot()
     {
@@ -34,15 +34,6 @@ class LabType extends Model
         });
     }
 
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
-
-    public function section()
-    {
-        return $this->belongsTo(LabTypeSection::class, 'section_id');
-    }
 
     /**
      * Get the lab tests for this lab type

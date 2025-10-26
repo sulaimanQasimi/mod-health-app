@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             DoctorSeeder::class,
             RecipientSeeder::class,
-            LabTypeSectionSeeder::class,
             LabTypeSeeder::class,
             FloorSeeder::class,
             RoomSeeder::class,

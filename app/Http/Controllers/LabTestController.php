@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\LabTest;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use Illuminate\Http\Request;
 
 /**
@@ -52,7 +51,6 @@ class LabTestController extends Controller
         // Pagination
         $labTests = $query->orderBy('created_at', 'desc')->paginate(15);
         $labTypes = LabType::all();
-        $labTypeSections = LabTypeSection::all();
         
         // AJAX request - return partial view
         if ($request->ajax()) {
@@ -136,7 +134,6 @@ class LabTestController extends Controller
         }
         
         $labTypes = LabType::all();
-        $labTypeSections = LabTypeSection::all();
         return view('pages.lab_types.tests', compact('labTest', 'labTypes', 'labTypeSections'));
     }
 

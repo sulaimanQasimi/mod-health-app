@@ -6,7 +6,6 @@ use App\Jobs\SendNewLabNotification;
 use App\Models\Appointment;
 use App\Models\Lab;
 use App\Models\LabItem;
-use App\Models\LabTypeSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -224,8 +223,7 @@ class LabController extends Controller
 
     public function report()
     {
-        $labTypeSections = LabTypeSection::all();
-        return view('pages.labs.reports.index', compact('labTypeSections'));
+        return view('pages.labs.reports.index');
     }
     public function reportSearch(Request $request)
     {

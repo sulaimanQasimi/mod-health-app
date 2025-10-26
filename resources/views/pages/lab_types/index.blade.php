@@ -36,28 +36,6 @@
                                        value="{{ request('search') }}">
                             </div>
                             <div class="col-md-3">
-                                <label for="section_filter" class="form-label">{{ localize('global.lab_type_section') }}</label>
-                                <select class="form-select" id="section_filter" name="section_id">
-                                    <option value="">{{ localize('global.all_sections') }}</option>
-                                    @foreach($labTypeSections as $section)
-                                        <option value="{{ $section->id }}" {{ request('section_id') == $section->id ? 'selected' : '' }}>
-                                            {{ $section->section }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="branch_filter" class="form-label">{{ localize('global.branch') }}</label>
-                                <select class="form-select" id="branch_filter" name="branch_id">
-                                    <option value="">{{ localize('global.all_branches') }}</option>
-                                    @foreach($branches as $branch)
-                                        <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
-                                            {{ $branch->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
                                 <label for="category_filter" class="form-label">{{ localize('global.category') }}</label>
                                 <select class="form-select" id="category_filter" name="category_id">
                                     <option value="">{{ localize('global.all_categories') }}</option>
@@ -96,8 +74,6 @@
                                 <tr>
                                     <th width="5%">#</th>
                                     <th width="18%">{{ localize('global.lab_type') }}</th>
-                                    <th width="12%">{{ localize('global.section') }}</th>
-                                    <th width="12%">{{ localize('global.branch') }}</th>
                                     <th width="12%">{{ localize('global.category') }}</th>
                                     <th width="8%">{{ localize('global.tests_count') }}</th>
                                     <th width="8%">{{ localize('global.parameters_count') }}</th>
@@ -116,15 +92,8 @@
                                                 </div>
                                                 <div class="ms-2">
                                                     <h6 class="mb-0">{{ $labType->name }}</h6>
-                                                    <small class="text-muted">{{ $labType->section->section ?? 'N/A' }}</small>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info">{{ $labType->section->section ?? 'N/A' }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-warning">{{ $labType->branch->name ?? 'N/A' }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-secondary">{{ $labType->category->name ?? 'N/A' }}</span>
@@ -154,7 +123,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">
+                                        <td colspan="7" class="text-center">
                                             <div class="py-4">
                                                 <i class="bx bx-test-tube text-muted" style="font-size: 2rem;"></i>
                                                 <h6 class="mt-2 text-muted">{{ localize('global.no_lab_types_found') }}</h6>
@@ -190,24 +159,6 @@
                         <div class="col-md-12">
                             <label for="lab_type_name" class="form-label">{{ localize('global.name') }} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="lab_type_name" name="name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="lab_type_branch_id" class="form-label">{{ localize('global.branch') }} <span class="text-danger">*</span></label>
-                            <select class="form-select select2" id="lab_type_branch_id" name="branch_id" required>
-                                <option value="">{{ localize('global.select_branch') }}</option>
-                                @foreach($branches as $branch)
-                                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="lab_type_section_id" class="form-label">{{ localize('global.section') }} <span class="text-danger">*</span></label>
-                            <select class="form-select select2" id="lab_type_section_id" name="section_id" required>
-                                <option value="">{{ localize('global.select_section') }}</option>
-                                @foreach($labTypeSections as $section)
-                                    <option value="{{ $section->id }}">{{ $section->section }}</option>
-                                @endforeach
-                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="lab_type_category_id" class="form-label">{{ localize('global.category') }}</label>
@@ -287,18 +238,6 @@
                         <div class="col-md-12">
                             <label for="edit_lab_type_name" class="form-label">{{ localize('global.name') }} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="edit_lab_type_name" name="name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="edit_lab_type_branch_id" class="form-label">{{ localize('global.branch') }} <span class="text-danger">*</span></label>
-                            <select class="form-select select2" id="edit_lab_type_branch_id" name="branch_id" required>
-                                <option value="">{{ localize('global.select_branch') }}</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="edit_lab_type_section_id" class="form-label">{{ localize('global.section') }} <span class="text-danger">*</span></label>
-                            <select class="form-select select2" id="edit_lab_type_section_id" name="section_id" required>
-                                <option value="">{{ localize('global.select_section') }}</option>
-                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="edit_lab_type_category_id" class="form-label">{{ localize('global.category') }}</label>
@@ -395,8 +334,6 @@ window.viewLabType = function(labTypeId) {
                     '<h6>{{ localize("global.basic_information") }}</h6>' +
                     '<table class="table table-sm">' +
                         '<tr><td><strong>{{ localize("global.name") }}:</strong></td><td>' + labType.name + '</td></tr>' +
-                        '<tr><td><strong>{{ localize("global.branch") }}:</strong></td><td>' + (labType.branch ? labType.branch.name : '—') + '</td></tr>' +
-                        '<tr><td><strong>{{ localize("global.section") }}:</strong></td><td>' + (labType.section ? labType.section.section : '—') + '</td></tr>' +
                         '<tr><td><strong>{{ localize("global.category") }}:</strong></td><td>' + (labType.category ? labType.category.name : '—') + '</td></tr>' +
                         '<tr><td><strong>{{ localize("global.parent") }}:</strong></td><td>' + (labType.parent ? labType.parent.name : '—') + '</td></tr>' +
                     '</table>' +
@@ -465,38 +402,6 @@ window.editLabType = function(labTypeId) {
 
 // Function to populate edit modal dropdowns with data
 function populateEditDropdowns(labType) {
-    // Populate branches dropdown
-    $.get('/api/select/branches', function(branches) {
-        const branchSelect = $('#edit_lab_type_branch_id');
-        branchSelect.empty().append('<option value="">{{ localize("global.select_branch") }}</option>');
-        branches.forEach(branch => {
-            branchSelect.append(`<option value="${branch.id}">${branch.name}</option>`);
-        });
-        branchSelect.val(labType.branch_id);
-        branchSelect.select2({
-            placeholder: '{{ localize("global.select_branch") }}',
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#editLabTypeModal')
-        });
-    });
-    
-    // Populate sections dropdown
-    $.get('/api/select/lab-type-sections', function(sections) {
-        const sectionSelect = $('#edit_lab_type_section_id');
-        sectionSelect.empty().append('<option value="">{{ localize("global.select_section") }}</option>');
-        sections.forEach(section => {
-            sectionSelect.append(`<option value="${section.id}">${section.section}</option>`);
-        });
-        sectionSelect.val(labType.section_id);
-        sectionSelect.select2({
-            placeholder: '{{ localize("global.select_section") }}',
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#editLabTypeModal')
-        });
-    });
-    
     // Initialize category dropdown (already populated from server)
     $('#edit_lab_type_category_id').val(labType.category_id);
     $('#edit_lab_type_category_id').select2({
@@ -726,7 +631,7 @@ $(document).ready(function() {
 // Initialize Select2 for dropdowns
 function initializeSelect2() {
     // Initialize Select2 for create modal dropdowns
-    $('#create_lab_type_branch_id, #create_lab_type_section_id, #create_lab_type_category_id').select2({
+    $('#create_lab_type_category_id').select2({
         placeholder: function() {
             return $(this).find('option:first').text();
         },
@@ -747,12 +652,12 @@ function initializeSelect2() {
     // Handle modal events for Select2 cleanup
     $('#editLabTypeModal').on('hidden.bs.modal', function() {
         // Destroy Select2 instances to prevent conflicts
-        $('#edit_lab_type_branch_id, #edit_lab_type_section_id, #edit_lab_type_category_id').select2('destroy');
+        $('#edit_lab_type_category_id').select2('destroy');
     });
     
     $('#editLabTypeModal').on('shown.bs.modal', function() {
         // Reinitialize Select2 when modal is shown with proper z-index
-        $('#edit_lab_type_branch_id, #edit_lab_type_section_id, #edit_lab_type_category_id').select2({
+        $('#edit_lab_type_category_id').select2({
             placeholder: function() {
                 return $(this).find('option:first').text();
             },
@@ -765,7 +670,7 @@ function initializeSelect2() {
     // Also handle create modal
     $('#createLabTypeModal').on('shown.bs.modal', function() {
         // Reinitialize Select2 for create modal with proper z-index
-        $('#create_lab_type_branch_id, #create_lab_type_section_id, #create_lab_type_category_id').select2({
+        $('#create_lab_type_category_id').select2({
             placeholder: function() {
                 return $(this).find('option:first').text();
             },

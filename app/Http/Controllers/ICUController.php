@@ -10,7 +10,6 @@ use App\Models\FoodType;
 use App\Models\ICU;
 use App\Models\ICUProcedureType;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
@@ -115,7 +114,6 @@ class ICUController extends Controller
     public function show(ICU $icu)
     {
         $labTypes = LabType::all();
-        $labTypeSections = LabTypeSection::all();
         $previousDiagnoses = $icu->patient->diagnoses;
         $previousLabs = $icu->patient->labs;
         $branches = Branch::all();

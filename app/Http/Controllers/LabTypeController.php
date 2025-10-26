@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Branch;
 use App\Models\Category;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use Illuminate\Http\Request;
 
 class LabTypeController extends Controller
@@ -15,21 +13,11 @@ class LabTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = LabType::with(['branch', 'section', 'category', 'directLabTestParameters']);
+        $query = LabType::with(['category', 'directLabTestParameters']);
         
         // Search functionality
         if ($request->has('search') && !empty($request->search)) {
             $query->where('name', 'like', '%' . $request->search . '%');
-        }
-        
-        // Section filter
-        if ($request->has('section_id') && !empty($request->section_id)) {
-            $query->where('section_id', $request->section_id);
-        }
-        
-        // Branch filter
-        if ($request->has('branch_id') && !empty($request->branch_id)) {
-            $query->where('branch_id', $request->branch_id);
         }
         
         // Category filter
@@ -39,11 +27,9 @@ class LabTypeController extends Controller
         
         // Pagination
         $labTypes = $query->orderBy('name')->paginate(15);
-        $branches = Branch::all();
-        $labTypeSections = LabTypeSection::all();
         $categories = Category::all();
         
-        return view('pages.lab_types.index', compact('labTypes', 'branches', 'labTypeSections', 'categories'));
+        return view('pages.lab_types.index', compact('labTypes', 'categories'));
     }
 
     /**
@@ -51,11 +37,9 @@ class LabTypeController extends Controller
      */
     public function create()
     {
-        $branches = Branch::all();
         $labTypes = LabType::all();
-        $labTypeSections = LabTypeSection::all();
         $categories = Category::all();
-        return view('pages.lab_types.create',compact('branches','labTypes','labTypeSections','categories'));
+        return view('pages.lab_types.create',compact('labTypes','categories'));
     }
 
     /**
@@ -65,8 +49,6 @@ class LabTypeController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'branch_id' => 'required',
-            'section_id' => 'required',
         ]);
 
         LabType::create($data);
@@ -87,10 +69,8 @@ class LabTypeController extends Controller
      */
     public function edit(LabType $labType)
     {
-        $branches = Branch::all();
         $labTypes = LabType::all();
-        $labTypeSections = LabTypeSection::all();
-        return view('pages.lab_types.edit', compact('labType', 'branches', 'labTypes', 'labTypeSections'));
+        return view('pages.lab_types.edit', compact('labType', 'labTypes'));
     }
 
     /**
@@ -100,8 +80,6 @@ class LabTypeController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'branch_id' => 'required',
-            'section_id' => 'required',
         ]);
 
         $labType->update($data);
@@ -126,22 +104,12 @@ class LabTypeController extends Controller
     public function apiIndex(Request $request)
     {
         try {
-            $query = LabType::with(['branch', 'section', 'category', 'directLabTestParameters']);
+        $query = LabType::with(['category', 'directLabTestParameters']);
 
-            // Search functionality
-            if ($request->has('search') && !empty($request->search)) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            }
-
-            // Section filter
-            if ($request->has('section_id') && !empty($request->section_id)) {
-                $query->where('section_id', $request->section_id);
-            }
-
-            // Branch filter
-            if ($request->has('branch_id') && !empty($request->branch_id)) {
-                $query->where('branch_id', $request->branch_id);
-            }
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
 
             $labTypes = $query->orderBy('name')->get();
 
@@ -165,8 +133,6 @@ class LabTypeController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'branch_id' => 'required|exists:branches,id',
-            'section_id' => 'required|exists:lab_type_sections,id',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
@@ -175,7 +141,7 @@ class LabTypeController extends Controller
         return response()->json([
             'success' => true,
             'message' => localize('global.lab_type_created_successfully'),
-            'data' => $labType->load(['branch', 'section'])
+            'data' => $labType->load(['category'])
         ], 201);
     }
 
@@ -197,7 +163,7 @@ class LabTypeController extends Controller
             }
             
             // Load relationships
-            $labType->load(['branch', 'section', 'category', 'directLabTestParameters']);
+            $labType->load(['category', 'directLabTestParameters']);
 
             return response()->json([
                 'success' => true,
@@ -223,8 +189,6 @@ class LabTypeController extends Controller
             
             $data = $request->validate([
                 'name' => 'required|string|max:255',
-                'branch_id' => 'required|exists:branches,id',
-                'section_id' => 'required|exists:lab_type_sections,id',
                 'parameters' => 'nullable|string', // JSON string from frontend
                 'deleted_parameter_ids' => 'nullable|string', // JSON string from frontend
             ]);
@@ -234,8 +198,6 @@ class LabTypeController extends Controller
             // Update lab type basic information
             $labType->update([
                 'name' => $data['name'],
-                'branch_id' => $data['branch_id'],
-                'section_id' => $data['section_id'],
             ]);
 
             // Handle parameters if provided
@@ -282,7 +244,7 @@ class LabTypeController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => localize('global.lab_type_updated_successfully'),
-                'data' => $labType->load(['branch', 'section', 'directLabTestParameters'])
+                'data' => $labType->load(['directLabTestParameters'])
             ]);
         } catch (\Exception $e) {
             \DB::rollback();

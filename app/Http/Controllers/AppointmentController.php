@@ -12,7 +12,6 @@ use App\Models\Patient;
 use App\Models\PrintedNumber;
 use App\Models\FoodType;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
@@ -198,7 +197,6 @@ class AppointmentController extends Controller
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
         $rooms = Room::all();
         $beds = Bed::all();
-        $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $branches = Branch::all();
         $departments = Department::all();

@@ -10,7 +10,6 @@ use App\Models\ICU;
 use App\Models\Lab;
 use App\Models\LabItem;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use App\Models\UnderReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,47 +17,6 @@ use Illuminate\Support\Facades\Validator;
 
 class LabAjaxController extends Controller
 {
-    /**
-     * Get lab type sections for dropdown
-     */
-    public function getLabTypeSections()
-    {
-        try {
-            $sections = LabTypeSection::with('relatedSection')->get();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $sections
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch lab type sections',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Get lab types by section ID
-     */
-    public function getLabTypesBySection($sectionId)
-    {
-        try {
-            $labTypes = LabType::where('section_id', $sectionId)->get();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $labTypes
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch lab types',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
 
     /**
      * Get lab tests for a specific lab type
@@ -103,7 +61,6 @@ class LabAjaxController extends Controller
                 'patient_id' => 'required|exists:patients,id',
                 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
-                'lab_type_section_id' => 'required|exists:lab_type_sections,id',
                 'status' => 'nullable|boolean',
                 'entity_id' => 'required',
                 'entity_type' => 'required|in:appointment,icu,hospitalization,under_review',
@@ -130,7 +87,6 @@ class LabAjaxController extends Controller
                     'lab_type_id' => $request->lab_type_id[0],
                     'patient_id' => $request->patient_id,
                     'doctor_id' => $request->doctor_id,
-                    'lab_type_section_id' => $request->lab_type_section_id,
                     'status' => $request->status ?? false,
                     'created_by' => auth()->id(),
                 ];

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Bed;
 use App\Models\FoodType;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
@@ -91,7 +90,6 @@ class UnderReviewController extends Controller
      */
     public function show(UnderReview $underReview, Request $request)
     {
-        $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
         $medicineTypes = MedicineType::all();

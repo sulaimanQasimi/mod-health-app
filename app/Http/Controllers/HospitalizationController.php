@@ -7,7 +7,6 @@ use App\Models\Bed;
 use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\LabType;
-use App\Models\LabTypeSection;
 use App\Models\Medicine;
 use App\Models\MedicineType;
 use App\Models\MedicineUsageType;
@@ -170,7 +169,6 @@ class HospitalizationController extends Controller
     public function show(Hospitalization $hospitalization, Request $request)
     {
         // Load only essential data for the main page - heavy data is now loaded via AJAX
-        $labTypeSections = LabTypeSection::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
         $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();

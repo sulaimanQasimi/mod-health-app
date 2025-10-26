@@ -17,7 +17,6 @@ class LabTest extends Model
     protected $fillable = [
         'name',
         'lab_type_id',
-        'lab_type_section_id',
         'has_parameters',
     ];
 
@@ -46,13 +45,6 @@ class LabTest extends Model
         return $this->belongsTo(LabType::class);
     }
 
-    /**
-     * Get the lab type section that owns this lab test
-     */
-    public function labTypeSection()
-    {
-        return $this->belongsTo(LabTypeSection::class);
-    }
 
     /**
      * Scope for tests with parameters

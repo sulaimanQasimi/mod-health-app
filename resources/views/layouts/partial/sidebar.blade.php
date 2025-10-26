@@ -583,13 +583,6 @@
                         </a>
                     </li>
 
-                    @can('show-labs-types-menu')
-                        <li class="menu-item {{ Route::is('lab_type_sections.*') ? 'active' : '' }}">
-                            <a href="{{ route('lab_type_sections.index') }}" class="menu-link">
-                                <div>{{ localize('global.lab_type_sections') }}</div>
-                            </a>
-                        </li>
-                    @endcan
                     @can('show-test-types-menu')
                         <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
                             <a href="{{ route('lab_types.index') }}" class="menu-link">

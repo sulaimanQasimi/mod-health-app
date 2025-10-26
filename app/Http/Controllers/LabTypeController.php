@@ -48,7 +48,8 @@ class LabTypeController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:lab_types,name',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         LabType::create($data);
@@ -79,7 +80,8 @@ class LabTypeController extends Controller
     public function update(Request $request, LabType $labType)
     {
         $data = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:lab_types,name,' . $labType->id,
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $labType->update($data);

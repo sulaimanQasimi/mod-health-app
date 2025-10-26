@@ -148,7 +148,6 @@
                                                 <span v-else>—</span>
                                             </td>
                                             <td>{{ registration.lab_type ? registration.lab_type.name : '—' }}</td>
-                                            <td>—</td>
                                             <td>{{ registration.lab_type?.category?.name ?? '—' }}</td>
                                             <td>
                                                 <span class="badge bg-info">
@@ -1010,7 +1009,7 @@ export default {
                 'global.failed_to_load_test_registrations': 'بارگذاری ثبت نام‌های آزمایش ناموفق بود',
                 'global.please_select_at_least_one_lab_type': 'لطفاً حداقل یک نوع آزمایش انتخاب کنید',
                 'global.failed_to_create_test_registration': 'ایجاد ثبت نام آزمایش ناموفق بود',
-                'global.assigned_to': 'واگذار شده به',
+                'global.assigned_to': 'مسول',
                 'global.assigned_section': 'بخش واگذار شده',
                 'global.assigned_date': 'تاریخ واگذاری'
             };

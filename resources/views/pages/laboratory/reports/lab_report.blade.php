@@ -247,6 +247,30 @@
                         <strong>{{ localize('global.address') }}:</strong>
                         <span>{{ $patient->address ?? '—' }}</span>
                     </div>
+                    @if($patient->id_number)
+                        <div>
+                            <strong>{{ localize('global.id_number') }}:</strong>
+                            <span>{{ $patient->id_number }}</span>
+                        </div>
+                    @endif
+                    @if($patient->date_of_birth)
+                        <div>
+                            <strong>{{ localize('global.date_of_birth') }}:</strong>
+                            <span>{{ \Verta($patient->date_of_birth)->formatJalaliDate() }}</span>
+                        </div>
+                    @endif
+                    @if($patient->email)
+                        <div>
+                            <strong>{{ localize('global.email') }}:</strong>
+                            <span>{{ $patient->email }}</span>
+                        </div>
+                    @endif
+                    @if($patient->emergency_contact)
+                        <div>
+                            <strong>{{ localize('global.emergency_contact') }}:</strong>
+                            <span>{{ $patient->emergency_contact }}</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
@@ -258,6 +282,77 @@
             </h3>
             
             <div class="test-details">
+                <!-- Test Meta Information -->
+                @if($testRegistration)
+                    <div class="test-meta">
+                        <div>
+                            <strong>{{ localize('global.reference_number') }}:</strong>
+                            <span>{{ $testRegistration->ref_no ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.status') }}:</strong>
+                            <span>{{ ucfirst($testRegistration->status ?? '—') }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.priority') }}:</strong>
+                            <span>{{ ucfirst($testRegistration->priority ?? '—') }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.doctor') }}:</strong>
+                            <span>{{ $testRegistration->doctor->name ?? '—' }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ localize('global.registration_date') }}:</strong>
+                            <span>{{ $testRegistration->registration_date ? \Verta($testRegistration->registration_date)->formatJalaliDate() : '—' }}</span>
+                        </div>
+                        @if($testRegistration->completed_at)
+                            <div>
+                                <strong>{{ localize('global.completed_date') }}:</strong>
+                                <span>{{ \Verta($testRegistration->completed_at)->formatJalaliDate() }}</span>
+                            </div>
+                        @endif
+                        @if($testRegistration->assigned_to)
+                            <div>
+                                <strong>{{ localize('global.assigned_to') }}:</strong>
+                                <span>{{ $testRegistration->assignedTo->name ?? '—' }}</span>
+                            </div>
+                        @endif
+                        @if($testRegistration->assigned_section_id)
+                            <div>
+                                <strong>{{ localize('global.assigned_section') }}:</strong>
+                                <span>{{ $testRegistration->assignedSection->name ?? '—' }}</span>
+                            </div>
+                        @endif
+                        @if($testRegistration->notes)
+                            <div style="grid-column: 1 / -1; margin-top: 10px;">
+                                <strong>{{ localize('global.notes') }}:</strong>
+                                <div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 3px; margin-top: 5px; direction: ltr; text-align: left;">
+                                    {!! $testRegistration->notes !!}
+                                </div>
+                            </div>
+                        @endif
+                        @if($testRegistration->detailed_notes)
+                            <div style="grid-column: 1 / -1; margin-top: 10px;">
+                                <strong>{{ localize('global.detailed_notes') }}:</strong>
+                                <div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 3px; margin-top: 5px; direction: ltr; text-align: left;">
+                                    {!! $testRegistration->detailed_notes !!}
+                                </div>
+                            </div>
+                        @endif
+                        @if($testRegistration->labType && $testRegistration->labType->category)
+                            <div>
+                                <strong>{{ localize('global.test_category') }}:</strong>
+                                <span>{{ $testRegistration->labType->category->name ?? '—' }}</span>
+                            </div>
+                        @endif
+                        @if($testRegistration->branch)
+                            <div>
+                                <strong>{{ localize('global.branch') }}:</strong>
+                                <span>{{ $testRegistration->branch->name ?? '—' }}</span>
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 <!-- Test Parameters and Results -->
                 @php
@@ -271,10 +366,10 @@
                     <table class="parameters-table">
                         <thead>
                             <tr>
-                                <th style="text-align: center;">Investigation</th>
-                                <th style="text-align: center;">Result</th>
-                                <th style="text-align: center;">Unit</th>
-                                <th style="text-align: center;">Reference Value</th>
+                                <th style="text-align: center; direction: ltr;">Investigation</th>
+                                <th style="text-align: center; direction: ltr;">Result</th>
+                                <th style="text-align: center; direction: ltr;">Unit</th>
+                                <th style="text-align: center; direction: ltr;">Reference Value</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -290,11 +385,36 @@
                             @endforeach
                         </tbody>
                     </table>
+                    
+                    {{-- Show lab type parameters if no results yet --}}
+                    @if($testRegistration && $testRegistration->labType && $testRegistration->labType->directLabTestParameters && $testRegistration->labType->directLabTestParameters->count() > 0 && $results->count() == 0)
+                        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
+                            <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.expected_parameters') }}</h4>
+                            <table class="parameters-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center; direction: ltr;">Investigation</th>
+                                        <th style="text-align: center; direction: ltr;">Unit</th>
+                                        <th style="text-align: center; direction: ltr;">Reference Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($testRegistration->labType->directLabTestParameters as $parameter)
+                                        <tr>
+                                            <td style="text-align: center;">{{ $parameter->parameter_name ?? '—' }}</td>
+                                            <td class="unit" style="text-align: center;">{{ $parameter->unit ?? '—' }}</td>
+                                            <td class="normal-range" style="text-align: center;">{{ $parameter->normal_range ?? '—' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 @elseif($hasTextResult)
                     {{-- Non-parametered test - show text result --}}
                     <div class="text-result-section" style="background: #f8f9fa; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; margin: 20px 0;">
                         <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
-                        <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap;">
+                        <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap; direction: ltr; text-align: left;">
                             {!! $results->where('text_result', '!=', null)->first()->text_result ?? localize('global.no_result_available') !!}
                         </div>
                     </div>

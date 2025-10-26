@@ -323,7 +323,7 @@
                 </a>
 
                 <ul class="menu-sub">
-                    <!-- Patient Test Registrations -->
+                    <!-- Test Operations - Daily Workflow -->
                     <li class="menu-item {{ Route::is('laboratory.results.pending') ? 'active' : '' }}">
                         <a href="{{ route('laboratory.results.pending') }}" class="menu-link">
                             <div>{{ localize('global.pending_tests') }}</div>
@@ -340,34 +340,32 @@
                         </a>
                     </li>
                     
-                    <!-- Laboratory Tests Section -->
+                    <!-- Test Tools and Reports -->
                     @can('show-laboratory-menu')
-                        <li class="menu-item {{ Route::is('laboratory.results.grouped') ? 'active' : '' }}">
-                            <a href="{{ route('laboratory.results.grouped') }}" class="menu-link">
-                                <div>{{ localize('global.grouped_test_results') }}</div>
-                            </a>
-                        </li>
                         <li class="menu-item {{ Route::is('laboratory.scan') ? 'active' : '' }}">
                             <a href="{{ route('laboratory.scan') }}" class="menu-link">
                                 <div>{{ localize('global.scan_test') }}</div>
                             </a>
                         </li>
-                    @endcan
-                    
-                    <!-- Lab Types Management -->
-                    @can('show-test-types-menu')
-                        <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
-                            <a href="{{ route('lab_types.index') }}" class="menu-link">
-                                <div>{{ localize('global.lab_types') }}</div>
+                        <li class="menu-item {{ Route::is('laboratory.results.grouped') ? 'active' : '' }}">
+                            <a href="{{ route('laboratory.results.grouped') }}" class="menu-link">
+                                <div>{{ localize('global.grouped_test_results') }}</div>
                             </a>
                         </li>
                     @endcan
                     
-                    <!-- Categories Management -->
+                    <!-- System Management -->
                     @can('show-categories-menu')
                         <li class="menu-item {{ Route::is('categories.index') ? 'active' : '' }}">
                             <a href="{{ route('categories.index') }}" class="menu-link">
                                 <div>{{ localize('global.categories') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('show-test-types-menu')
+                        <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
+                            <a href="{{ route('lab_types.index') }}" class="menu-link">
+                                <div>{{ localize('global.lab_types') }}</div>
                             </a>
                         </li>
                     @endcan

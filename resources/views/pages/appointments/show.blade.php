@@ -1350,8 +1350,8 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="date" class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                        <x-tools.dariDatePicker name="date" dir="ltr" withID="date"
-                                            withPlaceHolder="{{ localize('global.date') }}" withSize="3" extraClasses="" />
+                                        <input type="text" class="form-control datepicker_dari pdp-el" name="date" id="anesthesia_date" 
+                                            placeholder="{{ localize('global.date') }}" />
                                     </div>
                                     <div class="col-md-4">
                                         <label for="time" class="mt-2 mb-2">{{ localize('global.time') }}</label>
@@ -2375,6 +2375,12 @@
                 if (action.includes('icus.store')) return 'icuCollapse';
                 return null;
             }
+            
+            // Initialize Persian datepicker
+            $('.datepicker_dari').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                observer: true,
+            });
         });
     </script>
         </div>

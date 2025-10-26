@@ -3329,6 +3329,7 @@ return [
     "backup_files" => "فایل‌های پشتیبان",
     "filename" => "نام فایل",
     "date_created" => "تاریخ ایجاد",
+    "assigned_date" => "تاریخ اختصاص داده شده",
     "size" => "حجم",
     "actions" => "عملیات",
     "view_details" => "مشاهده جزئیات",

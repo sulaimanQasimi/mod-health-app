@@ -959,4 +959,10 @@ return [
     'backup_queued' => 'Backup has been queued and will be processed shortly!',
     'backup_deleted_successfully' => 'Backup deleted successfully',
     'backup_not_found' => 'Backup not found',
+    
+    // Test acceptance notifications
+    'error_accepting_test' => 'Error accepting test',
+    'test_already_assigned' => 'This test is already assigned to another user.',
+    'only_pending_tests_can_be_accepted' => 'Only pending tests can be accepted.',
+    'test_accepted_successfully' => 'Test accepted successfully.',
 ];

@@ -3471,4 +3471,10 @@ return [
     "error_loading_test_results_with_message"=>"خطا در بارگذاری نتایج آزمایش",
     "you_do_not_have_access_to_this_test_registration"=>"شما دسترسی به این ثبت نام آزمایش را ندارید",
     "patient_not_found_for_this_registration"=>"مریض برای این ثبت نام یافت نشد",
+    "accept_test"=>"قبول آزمایش",
+    "assigned_to"=>"اختصاص داده شده به",
+    "error_accepting_test"=>"خطا در قبول آزمایش",
+    "test_already_assigned"=>"این آزمایش قبلاً به کاربر دیگری اختصاص داده شده است.",
+    "only_pending_tests_can_be_accepted"=>"فقط آزمایشات در انتظار قابل قبول هستند.",
+    "test_accepted_successfully"=>"آزمایش با موفقیت قبول شد.",
 ];

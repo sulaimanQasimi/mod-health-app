@@ -128,7 +128,7 @@ class ICUController extends Controller
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
-        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','labTypeSections','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));
+        return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));
     }
 
     /**

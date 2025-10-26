@@ -49,17 +49,6 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="lab_type_section_id" class="form-label">{{ localize('global.lab_type_section') }}</label>
-                        <select class="form-select" id="lab_type_section_id" name="lab_type_section_id">
-                            <option value="">{{ localize('global.all_sections') }}</option>
-                            @foreach(\App\Models\LabTypeSection::all() as $section)
-                                <option value="{{ $section->id }}" {{ request('lab_type_section_id') == $section->id ? 'selected' : '' }}>
-                                    {{ $section->section }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
                         <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
                         <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
                             value="{{ request('date_from') }}">
@@ -169,6 +158,14 @@
                                                     <span class="badge {{ $statusClass }} rounded-pill">
                                                         {{ localize('global.' . $registration->status) }}
                                                     </span>
+                                                    
+                                                    @if($registration->assigned_to)
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            <i class="bx bx-user me-1"></i>
+                                                            {{ $registration->assignedTo->name ?? 'Unknown' }}
+                                                        </small>
+                                                    @endif
                                                 </td>
                                                 <td class="text-center">
                                                     @php
@@ -201,12 +198,15 @@
                                                 <td class="text-center">
                                                     <div class="btn-group btn-group-sm" role="group">
                                                         @if($registration->status === 'pending')
-                                                            <form action="{{ route('laboratory.registrations.mark-in-progress', $registration->id) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-info btn-sm" title="{{ localize('global.mark_in_progress') }}">
-                                                                    <i class="bx bx-play"></i>
+                                                            @if(!$registration->assigned_to)
+                                                                <button type="button" class="btn btn-success btn-sm accept-test-btn" 
+                                                                        data-registration-id="{{ $registration->id }}" 
+                                                                        title="{{ localize('global.accept_test') }}">
+                                                                    <i class="bx bx-check"></i>
                                                                 </button>
-                                                            </form>
+                                                            @else
+                                                                <span class="badge bg-info">{{ localize('global.assigned') }}</span>
+                                                            @endif
                                                         @endif
                                                         
                                                         @if($registration->status === 'in_progress')
@@ -351,7 +351,7 @@
 </style>
 @endpush
 
-@push('scripts')
+@section('scripts')
 <script>
 $(document).ready(function() {
     // Initialize tooltips
@@ -438,6 +438,49 @@ $(document).ready(function() {
             location.reload();
         }
     });
+    
+    // Handle accept test functionality
+    $(document).on('click', '.accept-test-btn', function() {
+        var registrationId = $(this).data('registration-id');
+        var btn = $(this);
+        var originalHtml = btn.html();
+        
+        // Show loading state
+        btn.prop('disabled', true);
+        btn.html('<span class="spinner-border spinner-border-sm"></span>');
+        
+        $.ajax({
+            url: '/laboratory/results/' + registrationId + '/accept',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Show success message
+                    toastr.success(response.message);
+                    
+                    // Reload the page to show updated data
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message);
+                    btn.prop('disabled', false);
+                    btn.html(originalHtml);
+                }
+            },
+            error: function(xhr) {
+                var message = 'Error accepting test';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                toastr.error(message);
+                btn.prop('disabled', false);
+                btn.html(originalHtml);
+            }
+        });
+    });
 });
 </script>
-@endpush
+@endsection

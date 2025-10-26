@@ -111,6 +111,16 @@
                     </h5>
                     <div class="text-end">
                         <small class="text-muted">{{ localize('global.reference_number') }}: <strong id="headerRef">{{ $firstTest->ref_no ?? '—' }}</strong></small>
+                        @if($firstTest && $firstTest->assigned_to)
+                            <br>
+                            <small class="text-info">
+                                <i class="bx bx-user me-1"></i>
+                                {{ localize('global.assigned_to') }}: {{ $firstTest->assignedTo->name ?? 'Unknown' }}
+                                @if($firstTest->assigned_at)
+                                    ({{ \Verta($firstTest->assigned_at)->formatJalaliDate() }})
+                                @endif
+                            </small>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -120,6 +130,22 @@
                     <input type="hidden" id="test_registration_id" name="test_registration_id" value="{{ $firstTest->id ?? '' }}">
                     <input type="hidden" id="ref_no" name="ref_no" value="{{ $firstTest->ref_no ?? '' }}">
                     <input type="hidden" id="complete_flag" name="complete" value="0">
+
+                    {{-- Assignment Check --}}
+                    @if($firstTest && !$firstTest->assigned_to && $firstTest->status === 'pending')
+                        <div class="alert alert-warning d-flex align-items-center mb-4">
+                            <i class="bx bx-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>{{ localize('global.test_not_assigned') }}</strong>
+                                <p class="mb-0">{{ localize('global.accept_test_to_continue') }}</p>
+                            </div>
+                            <button type="button" class="btn btn-success accept-test-btn" 
+                                    data-registration-id="{{ $firstTest->id }}">
+                                <i class="bx bx-check me-1"></i>
+                                {{ localize('global.accept_test') }}
+                            </button>
+                        </div>
+                    @endif
 
                     @if($firstTest && $firstTest->labType && $firstTest->labType->directLabTestParameters && $firstTest->labType->directLabTestParameters->count() > 0)
                         {{-- Parametered test - show parameter table --}}
@@ -383,6 +409,47 @@
                     console.error('Error:', error);
                     toastr && toastr.error ? toastr.error('Error updating results') : alert('Error updating results');
                 });
+        });
+
+        // Handle accept test functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('accept-test-btn') || e.target.closest('.accept-test-btn')) {
+                const btn = e.target.classList.contains('accept-test-btn') ? e.target : e.target.closest('.accept-test-btn');
+                const registrationId = btn.getAttribute('data-registration-id');
+                const originalHtml = btn.innerHTML;
+                
+                // Show loading state
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Accepting...';
+                
+                fetch('/laboratory/results/' + registrationId + '/accept', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr && toastr.success ? toastr.success(data.message) : alert(data.message);
+                        // Reload the page to show updated data
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        toastr && toastr.error ? toastr.error(data.message) : alert(data.message);
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toastr && toastr.error ? toastr.error('Error accepting test') : alert('Error accepting test');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                });
+            }
         });
     </script>
 @endsection

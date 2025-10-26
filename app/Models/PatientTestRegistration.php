@@ -33,11 +33,15 @@ class PatientTestRegistration extends Model
         'completed_by',
         'created_by',
         'updated_by',
+        'assigned_to',
+        'assigned_at',
+        'assigned_section_id',
     ];
 
     protected $casts = [
         'registration_date' => 'datetime',
         'completed_at' => 'datetime',
+        'assigned_at' => 'datetime',
         'metadata' => 'array',
     ];
 
@@ -136,6 +140,22 @@ class PatientTestRegistration extends Model
     }
 
     /**
+     * Get the user assigned to this registration
+     */
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    /**
+     * Get the section assigned to this registration
+     */
+    public function assignedSection()
+    {
+        return $this->belongsTo(Section::class, 'assigned_section_id');
+    }
+
+    /**
      * Scope for filtering by status
      */
     public function scopeByStatus($query, $status)
@@ -152,11 +172,41 @@ class PatientTestRegistration extends Model
     }
 
     /**
+     * Scope for filtering by assigned user
+     */
+    public function scopeAssignedTo($query, $userId)
+    {
+        return $query->where('assigned_to', $userId);
+    }
+
+    /**
+     * Scope for filtering unassigned tests
+     */
+    public function scopeUnassigned($query)
+    {
+        return $query->whereNull('assigned_to');
+    }
+
+    /**
      * Mark registration as in progress
      */
     public function markInProgress()
     {
         $this->update(['status' => 'in_progress']);
+    }
+
+    /**
+     * Assign test to a user
+     */
+    public function assignToUser($userId)
+    {
+        $user = User::find($userId);
+        $this->update([
+            'assigned_to' => $userId,
+            'assigned_section_id' => $user->section_id,
+            'assigned_at' => now(),
+            'status' => 'in_progress'
+        ]);
     }
 
     /**

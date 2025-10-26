@@ -40,7 +40,7 @@
                 <td>{{ $section->name }}</td>
                 <td>{{ $section->department->name ?? 'NULL' }}</td>
                 <td>
-                    <span class="badge bg-info">{{ $section->labTypeSections->count() }} {{ localize('global.sections') }}</span>
+                    <span class="badge bg-info">—</span>
                 </td>
                 <td>
                     {{-- <a href="{{ route('sections.show', $section) }}"><i class="bx bx-show-alt"></i></a> --}}

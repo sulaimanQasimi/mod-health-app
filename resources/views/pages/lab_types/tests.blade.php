@@ -31,17 +31,6 @@
                                        value="{{ request('search') }}" placeholder="{{ localize('global.search_placeholder') }}">
                             </div>
                             <div class="col-md-3">
-                                <label for="lab_type_section_id" class="form-label">{{ localize('global.lab_type_section') }}</label>
-                                <select class="form-select" id="lab_type_section_id" name="lab_type_section_id">
-                                    <option value="">{{ localize('global.all_sections') }}</option>
-                                    @foreach($labTypeSections as $section)
-                                        <option value="{{ $section->id }}" {{ request('lab_type_section_id') == $section->id ? 'selected' : '' }}>
-                                            {{ $section->section }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
                                 <label for="lab_type_id" class="form-label">{{ localize('global.lab_type') }}</label>
                                 <select class="form-select" id="lab_type_id" name="lab_type_id">
                                     <option value="">{{ localize('global.all_types') }}</option>
@@ -154,15 +143,6 @@
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="create_lab_type_section_id" class="form-label">{{ localize('global.lab_type_section') }} <span class="text-danger">*</span></label>
-                            <select class="form-select" id="create_lab_type_section_id" name="lab_type_section_id" required>
-                                <option value="">{{ localize('global.select_section') }}</option>
-                                @foreach($labTypeSections as $section)
-                                    <option value="{{ $section->id }}">{{ $section->section }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
                             <label for="create_lab_type_id" class="form-label">{{ localize('global.lab_type') }} <span class="text-danger">*</span></label>
                             <select class="form-select" id="create_lab_type_id" name="lab_type_id" required>
                                 <option value="">{{ localize('global.select_type') }}</option>
@@ -231,15 +211,6 @@
                 <input type="hidden" id="edit_test_id" name="test_id">
                 <div class="modal-body">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="edit_lab_type_section_id" class="form-label">{{ localize('global.lab_type_section') }} <span class="text-danger">*</span></label>
-                            <select class="form-select" id="edit_lab_type_section_id" name="lab_type_section_id" required>
-                                <option value="">{{ localize('global.select_section') }}</option>
-                                @foreach($labTypeSections as $section)
-                                    <option value="{{ $section->id }}">{{ $section->section }}</option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="col-md-6">
                             <label for="edit_lab_type_id" class="form-label">{{ localize('global.lab_type') }} <span class="text-danger">*</span></label>
                             <select class="form-select" id="edit_lab_type_id" name="lab_type_id" required>

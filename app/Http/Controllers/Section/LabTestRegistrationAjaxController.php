@@ -23,7 +23,7 @@ class LabTestRegistrationAjaxController extends Controller
     public function getAllLabTypes()
     {
         try {
-            $labTypes = \App\Models\LabType::with(['section', 'category', 'directLabTestParameters'])->get();
+            $labTypes = \App\Models\LabType::with(['category', 'directLabTestParameters'])->get();
             
             return response()->json([
                 'success' => true,
@@ -249,11 +249,12 @@ class LabTestRegistrationAjaxController extends Controller
             
             $registrations = $registrations->with([
                 'testable.patient', 
-                'labType.section',
                 'labType.category',
                 'labType.directLabTestParameters',
                 'doctor', 
-                'branch'
+                'branch',
+                'assignedTo',
+                'assignedSection'
             ])
             ->latest()
             ->get();
@@ -279,11 +280,12 @@ class LabTestRegistrationAjaxController extends Controller
         try {
             $registration = PatientTestRegistration::with([
                 'testable.patient',
-                'labType.section',
                 'labType.category',
                 'labType.directLabTestParameters',
                 'doctor',
                 'branch',
+                'assignedTo',
+                'assignedSection',
                 'results.parameter'
             ])->findOrFail($registrationId);
 
@@ -292,7 +294,6 @@ class LabTestRegistrationAjaxController extends Controller
                 $registration->labType = (object) [
                     'id' => null,
                     'name' => '—',
-                    'section' => null,
                     'category' => null,
                     'direct_lab_test_parameters' => []
                 ];

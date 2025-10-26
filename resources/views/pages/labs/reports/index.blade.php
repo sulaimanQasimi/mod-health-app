@@ -40,18 +40,6 @@
                                         </select>
 
                                     </div>
-                                    <div class="col-md-4">
-                                    <label for="section">{{localize('global.lab_type_sections')}}</label>
-                                        <select class="form-control select2" name="lab_type_section" id="lab_type_section">
-                                            <option value="">{{ localize('global.select') }}</option>
-                                            @foreach($labTypeSections as $value)
-                                                <option value="{{ $value->id }}"
-                                                    {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->section }}</option>
-                                            @endforeach
-
-                                        </select>
-                                    </div>
                                     <div class="col-md-6">
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                         <div class="input-group input-daterange">

@@ -30,22 +30,33 @@ class TestResultController extends Controller
         // Start query builder
         $query = PatientTestRegistration::with([
             'testable.patient',
-            'labType.section',
             'labType.category',
             'labType.directLabTestParameters',
             'doctor',
-            'branch'
+            'branch',
+            'assignedTo',
+            'assignedSection'
         ]);
 
-        // Apply section-based access control
+        // Apply assignment-based access control
         $user = auth()->user();
 
         // Check if user has admin role or permission to see all sections
         if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
-            // Filter by user's section_id
-            if ($user->section_id) {
-                $query->whereHas('labType.section', function($q) use ($user) {
-                    $q->where('section_id', $user->section_id);
+            // For pending tests: show all unassigned tests
+            // For in-progress tests: show only tests assigned to current user
+            // For completed tests: show only tests completed by current user or assigned to current user
+            if ($request->route()->getName() === 'laboratory.results.pending') {
+                // Show all unassigned pending tests
+                $query->whereNull('assigned_to');
+            } elseif ($request->route()->getName() === 'laboratory.results.in-progress') {
+                // Show only tests assigned to current user
+                $query->where('assigned_to', $user->id);
+            } elseif ($request->route()->getName() === 'laboratory.results.completed') {
+                // Show only tests completed by current user or assigned to current user
+                $query->where(function($q) use ($user) {
+                    $q->where('completed_by', $user->id)
+                      ->orWhere('assigned_to', $user->id);
                 });
             }
         }
@@ -263,21 +274,27 @@ class TestResultController extends Controller
     {
         $registration = PatientTestRegistration::with([
             'testable.patient',
-            'labType.section',
             'labType.category',
             'labType.directLabTestParameters',
             'doctor',
-            'branch'
+            'branch',
+            'assignedTo',
+            'assignedSection'
         ])->findOrFail($registration_id);
 
-        // Check section access
+        // Check assignment access
         $user = auth()->user();
         if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
-            if ($user->section_id && $registration->labType) {
-                $labTypeSection = $registration->labType->section;
-                if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
-                    abort(403, 'You do not have access to this test registration.');
-                }
+            // If test is assigned to someone else, deny access
+            if ($registration->assigned_to && $registration->assigned_to != $user->id) {
+                abort(403, 'This test is assigned to another user.');
+            }
+            
+            // If test is completed by someone else and not assigned to current user, deny access
+            if ($registration->status === 'completed' && 
+                $registration->completed_by != $user->id && 
+                $registration->assigned_to != $user->id) {
+                abort(403, 'You do not have access to this completed test.');
             }
         }
 
@@ -705,6 +722,47 @@ class TestResultController extends Controller
         } else {
             // If not completed, redirect to results entry page
             return redirect()->route('laboratory.results.show', $registration->id);
+        }
+    }
+
+    /**
+     * Accept and assign a test to the current user
+     */
+    public function acceptTest($registration_id)
+    {
+        try {
+            $registration = PatientTestRegistration::findOrFail($registration_id);
+            
+            // Check if test is already assigned
+            if ($registration->assigned_to) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This test is already assigned to another user.'
+                ], 400);
+            }
+
+            // Check if test is pending
+            if ($registration->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending tests can be accepted.'
+                ], 400);
+            }
+
+            // Assign test to current user
+            $registration->assignToUser(auth()->id());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test accepted successfully.',
+                'data' => $registration->load(['assignedTo', 'assignedSection'])
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error accepting test: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

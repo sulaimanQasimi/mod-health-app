@@ -229,7 +229,7 @@ class UnderReviewController extends Controller
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
 
-        return view('pages.under_reviews.show',compact('underReview','labTypeSections','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts','nurseNotes','medicationAdministrationRecords','currentUser'));
+        return view('pages.under_reviews.show',compact('underReview','operationTypes','labTypes','medicineTypes','medicines','rooms','beds','foodTypes','relations','medicineUsageTypes','diabetesCharts','nurseNotes','medicationAdministrationRecords','currentUser'));
     }
 
     /**

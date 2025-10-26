@@ -185,7 +185,6 @@ class HospitalizationController extends Controller
 
         return view('pages.hospitalizations.show', compact(
             'hospitalization', 
-            'labTypeSections', 
             'operationTypes', 
             'labTypes', 
             'operation_doctors', 

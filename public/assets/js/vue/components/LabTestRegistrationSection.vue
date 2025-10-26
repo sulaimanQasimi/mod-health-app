@@ -126,12 +126,12 @@
                                             <th>{{ localize('global.number') }}</th>
                                             <th>{{ localize('global.patient') }}</th>
                                             <th>{{ localize('global.lab_type') }}</th>
-                                            <th>{{ localize('global.lab_type_section') }}</th>
                                             <th>{{ localize('global.category') }}</th>
                                             <th>{{ localize('global.parameters_count') }}</th>
                                             <th>{{ localize('global.status') }}</th>
                                             <th>{{ localize('global.priority') }}</th>
                                             <th>{{ localize('global.doctor') }}</th>
+                                            <th>{{ localize('global.assigned_to') }}</th>
                                             <th>{{ localize('global.created_date') }}</th>
                                             <th>{{ localize('global.actions') }}</th>
                                         </tr>
@@ -148,7 +148,7 @@
                                                 <span v-else>—</span>
                                             </td>
                                             <td>{{ registration.lab_type ? registration.lab_type.name : '—' }}</td>
-                                            <td>{{ registration.lab_type?.section?.section ?? '—' }}</td>
+                                            <td>—</td>
                                             <td>{{ registration.lab_type?.category?.name ?? '—' }}</td>
                                             <td>
                                                 <span class="badge bg-info">
@@ -170,6 +170,13 @@
                                                 </span>
                                             </td>
                                             <td>{{ registration.doctor ? registration.doctor.name : '—' }}</td>
+                                            <td>
+                                                <span v-if="registration.assigned_to" class="badge bg-success">
+                                                    <i class="bx bx-user me-1"></i>
+                                                    {{ registration.assigned_to.name }}
+                                                </span>
+                                                <span v-else class="text-muted">—</span>
+                                            </td>
                                             <td dir="ltr">{{ formatDate(registration.created_at) }}</td>
                                             <td>
                                                 <div class="btn-group" role="group">
@@ -265,18 +272,76 @@
                                 </div>
                             </div>
 
+                            <!-- Assigned User and Section Information -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.assigned_to') }}</div>
+                                        <div class="fw-bold">
+                                            <i class="bx bx-user-plus me-1 text-success"></i>
+                                            <span v-if="selectedRegistration.assigned_to">
+                                                {{ selectedRegistration.assigned_to.name || '—' }}
+                                            </span>
+                                            <span v-else class="text-muted">—</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.assigned_section') }}</div>
+                                        <div class="fw-bold">
+                                            <i class="bx bx-building me-1 text-info"></i>
+                                            <span v-if="selectedRegistration.assigned_section">
+                                                {{ selectedRegistration.assigned_section.name || '—' }}
+                                            </span>
+                                            <span v-else class="text-muted">—</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Assignment Date Information -->
+                            <div v-if="selectedRegistration.assigned_at" class="row mb-3">
+                                <div class="col-12">
+                                    <div class="text-center p-3 border rounded bg-body-secondary">
+                                        <div class="text-body-secondary small mb-1">{{ localize('global.assigned_date') }}</div>
+                                        <div class="fw-bold">
+                                            <i class="bx bx-calendar me-1 text-warning"></i>
+                                            {{ formatDate(selectedRegistration.assigned_at) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notes Section -->
+                            <div v-if="selectedRegistration.notes" class="row mb-3">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bx bx-note me-2"></i>
+                                                {{ localize('global.notes') }}
+                                            </h6>
+                                        </div>
+                                        <div class="card-body" dir="ltr" style="text-align: left;">
+                                            <div v-html="selectedRegistration.notes" class="mb-0"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Detailed Notes Section -->
                             <div v-if="selectedRegistration.detailed_notes" class="row mb-3">
                                 <div class="col-12">
                                     <div class="card">
-                                        <div class="card-header bg-info text-white">
+                                        <div class="card-header bg-success text-white">
                                             <h6 class="mb-0">
                                                 <i class="bx bx-note me-2"></i>
                                                 {{ localize('global.detailed_notes') }}
                                             </h6>
                                         </div>
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ selectedRegistration.detailed_notes }}</p>
+                                        <div class="card-body" dir="ltr" style="text-align: left;">
+                                            <div v-html="selectedRegistration.detailed_notes" class="mb-0"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -944,7 +1009,10 @@ export default {
                 'global.failed_to_load_lab_types': 'بارگذاری انواع آزمایش ناموفق بود',
                 'global.failed_to_load_test_registrations': 'بارگذاری ثبت نام‌های آزمایش ناموفق بود',
                 'global.please_select_at_least_one_lab_type': 'لطفاً حداقل یک نوع آزمایش انتخاب کنید',
-                'global.failed_to_create_test_registration': 'ایجاد ثبت نام آزمایش ناموفق بود'
+                'global.failed_to_create_test_registration': 'ایجاد ثبت نام آزمایش ناموفق بود',
+                'global.assigned_to': 'واگذار شده به',
+                'global.assigned_section': 'بخش واگذار شده',
+                'global.assigned_date': 'تاریخ واگذاری'
             };
             return translations[key] || key;
         },
@@ -1139,5 +1207,49 @@ html[data-theme="dark"] .multiselect__option--selected.multiselect__option--high
 .theme-dark .multiselect__option--selected.multiselect__option--highlight {
     background-color: #696cff !important;
     color: white !important;
+}
+
+/* HTML Content Styling */
+.lab-test-registration-section .card-body div[v-html] {
+    line-height: 1.6;
+    direction: ltr;
+    text-align: left;
+}
+
+.lab-test-registration-section .card-body div[v-html] p {
+    margin-bottom: 0.5rem;
+    direction: ltr;
+    text-align: left;
+}
+
+.lab-test-registration-section .card-body div[v-html] p:last-child {
+    margin-bottom: 0;
+}
+
+.lab-test-registration-section .card-body div[v-html] ul,
+.lab-test-registration-section .card-body div[v-html] ol {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    direction: ltr;
+    text-align: left;
+}
+
+.lab-test-registration-section .card-body div[v-html] strong {
+    font-weight: 600;
+}
+
+.lab-test-registration-section .card-body div[v-html] em {
+    font-style: italic;
+}
+
+/* LTR Notes Styling */
+.lab-test-registration-section .card-body[dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+}
+
+.lab-test-registration-section .card-body[dir="ltr"] div[v-html] {
+    direction: ltr;
+    text-align: left;
 }
 </style>

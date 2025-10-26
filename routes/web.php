@@ -782,7 +782,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('nurses', [NurseController::class, 'getNursesForSelect'])->name('api.select.nurses');
         Route::get('diabetes-charts', [DiabetesChartController::class, 'getDiabetesChartsForSelect'])->name('api.select.diabetes-charts');
         Route::get('branches', [BranchController::class, 'getBranchesForSelect'])->name('api.select.branches');
-        Route::get('lab-type-sections', [LabTypeSectionController::class, 'getSectionsForSelect'])->name('api.select.lab-type-sections');
         Route::get('lab-types', [LabTypeController::class, 'getLabTypesForSelect'])->name('api.select.lab-types');
     });
 
@@ -814,7 +813,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Lab Ajax routes
     Route::prefix('lab-ajax')->name('lab-ajax.')->group(function () {
-        Route::get('lab-type-sections', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabTypeSections']);
         Route::get('lab-types/{sectionId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabTypesBySection']);
         Route::get('lab-type-tests/{labTypeId}', [\App\Http\Controllers\Section\LabAjaxController::class, 'getLabTypeTests']);
         Route::post('store/{type}/{id}', [\App\Http\Controllers\Section\LabAjaxController::class, 'storeLabTest']);
@@ -970,6 +968,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('results/registration/{registration_id}', [TestResultController::class, 'showTestResults'])->name('results.show');
         Route::post('results/update', [TestResultController::class, 'ajaxUpdateTestResults'])->name('results.update');
         Route::get('results/load/{test_registration_id}', [TestResultController::class, 'ajaxLoadTestResult'])->name('results.load');
+        Route::post('results/{registration_id}/accept', [TestResultController::class, 'acceptTest'])->name('results.accept');
         Route::get('results/grouped', [TestResultController::class, 'groupedTests'])->name('results.grouped');
         Route::get('reports/print/{ref_no}', [TestResultController::class, 'printResultByRef'])->name('reports.print');
         Route::get('reports/print-group/{category_id}', [TestResultController::class, 'printGroupedTests'])->name('reports.print-group');

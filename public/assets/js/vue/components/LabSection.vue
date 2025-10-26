@@ -39,22 +39,6 @@
                             <input type="hidden" name="entity_id" :value="entityId">
                             <input type="hidden" name="entity_type" :value="entityType">
 
-                            <div class="form-group mb-3">
-                                <label for="lab_type_section">بخش آزمایش</label>
-                                <multiselect
-                                    v-model="selectedLabTypeSection"
-                                    :options="labTypeSections"
-                                    :searchable="true"
-                                    :close-on-select="true"
-                                    :show-labels="false"
-                                    placeholder="انتخاب بخش آزمایش"
-                                    label="section"
-                                    track-by="id"
-                                    @select="onSectionSelect"
-                                    @clear="onSectionClear"
-                                >
-                                </multiselect>
-                            </div>
 
                             <div class="form-group mb-3">
                                 <label for="lab_type_id">نوع آزمایش</label>
@@ -353,14 +337,11 @@ export default {
             showCreateModal: false,
             showLabItemsModal: false,
             labs: [],
-            labTypeSections: [],
             labTypes: [],
             labTypeTests: [],
             selectedLab: null,
-            selectedLabTypeSection: null,
             selectedLabType: null,
             form: {
-                lab_type_section_id: '',
                 lab_type_id: '',
                 selected_tests: []
             }
@@ -373,7 +354,7 @@ export default {
         }
     },
     mounted() {
-        this.loadLabTypeSections();
+        this.loadLabTypes();
         this.loadEntityLabs();
     },
     watch: {
@@ -385,38 +366,10 @@ export default {
         }
     },
     methods: {
-        async loadLabTypeSections() {
-            try {
-                const response = await fetch('/lab-ajax/lab-type-sections', {
-                    credentials: 'same-origin',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    this.labTypeSections = data.data;
-                } else {
-                    this.showError(data.message);
-                }
-            } catch (error) {
-                this.showError('Failed to load lab type sections');
-            }
-        },
 
         async loadLabTypes() {
-            if (!this.form.lab_type_section_id) {
-                this.labTypes = [];
-                this.labTypeTests = [];
-                // Reset lab type selection
-                this.form.lab_type_id = '';
-                return;
-            }
-
             try {
-                const response = await fetch(`/lab-ajax/lab-types/${this.form.lab_type_section_id}`, {
+                const response = await fetch('/api/select/lab-types', {
                     credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',
@@ -427,9 +380,6 @@ export default {
                 
                 if (data.success) {
                     this.labTypes = data.data;
-                    // Reset lab type selection when section changes
-                    this.form.lab_type_id = '';
-                    this.labTypeTests = [];
                 } else {
                     this.showError(data.message);
                 }
@@ -713,10 +663,8 @@ export default {
 
         resetForm() {
             // Reset all form fields
-            this.form.lab_type_section_id = '';
             this.form.lab_type_id = '';
             this.form.selected_tests = [];
-            this.selectedLabTypeSection = null;
             this.selectedLabType = null;
             this.labTypes = [];
             this.labTypeTests = [];

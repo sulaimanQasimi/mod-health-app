@@ -54,10 +54,10 @@ class LabTestController extends Controller
         
         // AJAX request - return partial view
         if ($request->ajax()) {
-            return view('pages.lab_types._tests_list', compact('labTests', 'labTypes', 'labTypeSections'))->render();
+            return view('pages.lab_types._tests_list', compact('labTests', 'labTypes'))->render();
         }
         
-        return view('pages.lab_types.tests', compact('labTests', 'labTypes', 'labTypeSections'));
+        return view('pages.lab_types.tests', compact('labTests', 'labTypes'));
     }
 
     /**
@@ -134,7 +134,7 @@ class LabTestController extends Controller
         }
         
         $labTypes = LabType::all();
-        return view('pages.lab_types.tests', compact('labTest', 'labTypes', 'labTypeSections'));
+        return view('pages.lab_types.tests', compact('labTest', 'labTypes'));
     }
 
     /**

@@ -3265,7 +3265,7 @@ return [
     "grouped_test_report"=>"گزارش آزمایش گروه بندی شده",
     "laboratory_test_report" => "گزارش معاینات لابراتوار",
     "print_report" => "چاپ گزارش",
-    "normal" => "طبیعی",
+    "normal" => "عادی",
     "abnormal" => "غیرطبیعی",
     "advanced_filters"=>"فلتر", 
     "parameter_status" => "وضعیت پارامتر",

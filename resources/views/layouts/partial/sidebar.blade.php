@@ -353,6 +353,24 @@
                             </a>
                         </li>
                     @endcan
+                    
+                    <!-- Lab Types Management -->
+                    @can('show-test-types-menu')
+                        <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
+                            <a href="{{ route('lab_types.index') }}" class="menu-link">
+                                <div>{{ localize('global.lab_types') }}</div>
+                            </a>
+                        </li>
+                    @endcan
+                    
+                    <!-- Categories Management -->
+                    @can('show-categories-menu')
+                        <li class="menu-item {{ Route::is('categories.index') ? 'active' : '' }}">
+                            <a href="{{ route('categories.index') }}" class="menu-link">
+                                <div>{{ localize('global.categories') }}</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endcan
@@ -535,13 +553,6 @@
                             </a>
                         </li>
                     @endcan
-                    @can('show-categories-menu')
-                        <li class="menu-item {{ Route::is('categories.index') ? 'active' : '' }}">
-                            <a href="{{ route('categories.index') }}" class="menu-link">
-                                <div>{{ localize('global.categories') }}</div>
-                            </a>
-                        </li>
-                    @endcan
                     @can('show-departments-menu')
                         <li class="menu-item {{ Route::is('departments.index') ? 'active' : '' }}">
                             <a href="{{ route('departments.index') }}" class="menu-link">
@@ -583,20 +594,6 @@
                         </a>
                     </li>
 
-                    @can('show-test-types-menu')
-                        <li class="menu-item {{ Route::is('lab_types.*') ? 'active' : '' }}">
-                            <a href="{{ route('lab_types.index') }}" class="menu-link">
-                                <div>{{ localize('global.lab_types') }}</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('manage-lab-tests')
-                        <li class="menu-item {{ Route::is('lab_types.tests') ? 'active' : '' }}">
-                            <a href="{{ route('lab_types.tests') }}" class="menu-link">
-                                <div>{{ localize('global.lab_tests_management') }}</div>
-                            </a>
-                        </li>
-                    @endcan
                     @can('show-add-icu-procedures-menu')
                         <li class="menu-item {{ Route::is('procedure_types.*') ? 'active' : '' }}">
                             <a href="{{ route('procedure_types.index') }}" class="menu-link">

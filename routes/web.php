@@ -7,7 +7,6 @@ use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\NursingAssessmentController;
 use App\Http\Controllers\NutritionCareController;
 use App\Http\Controllers\TestCategoryController;
-use App\Http\Controllers\LabTestController;
 use App\Http\Controllers\LabTestParameterController;
 use App\Http\Controllers\PatientTestRegistrationController;
 use App\Http\Controllers\TestResultController;
@@ -378,11 +377,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{labType}', [LabTypeController::class, 'edit'])->name('edit');
         Route::put('update/{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::delete('destroy/{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
-        Route::get('tests', [LabTestController::class, 'index'])->name('tests');
-        Route::post('tests', [LabTestController::class, 'store'])->name('tests.store');
-        Route::get('tests/{id}/edit', [LabTestController::class, 'edit'])->name('tests.edit');
-        Route::put('tests/{id}', [LabTestController::class, 'update'])->name('tests.update');
-        Route::delete('tests/{id}', [LabTestController::class, 'destroy'])->name('tests.destroy');
     });
 
     // Test route

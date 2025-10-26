@@ -319,12 +319,12 @@
                     if (data.status === 'success') {
                         updateResultTable(data.test, data.results);
                     } else {
-                        alert('Error loading test results: ' + data.message);
+                        alert('{{ localize("global.error_loading_test_results_with_message") }}: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error loading test results');
+                    alert('{{ localize("global.error_loading_test_results_alert") }}');
                 });
         }
 
@@ -393,9 +393,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        toastr && toastr.success ? toastr.success('Results updated successfully!') : alert('Results updated successfully!');
+                        toastr && toastr.success ? toastr.success('{{ localize("global.results_updated_successfully_alert") }}') : alert('{{ localize("global.results_updated_successfully_alert") }}');
                         if (data.completed) {
-                            toastr && toastr.success ? toastr.success('Test completed!') : alert('Test completed!');
+                            toastr && toastr.success ? toastr.success('{{ localize("global.test_completed_alert") }}') : alert('{{ localize("global.test_completed_alert") }}');
                         }
                     } else {
                         toastr && toastr.error ? toastr.error('Error: ' + data.message) : alert('Error: ' + data.message);
@@ -407,7 +407,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    toastr && toastr.error ? toastr.error('Error updating results') : alert('Error updating results');
+                    toastr && toastr.error ? toastr.error('{{ localize("global.error_updating_results_alert") }}') : alert('{{ localize("global.error_updating_results_alert") }}');
                 });
         });
 

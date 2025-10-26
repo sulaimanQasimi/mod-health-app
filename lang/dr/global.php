@@ -3464,4 +3464,11 @@ return [
     "test_registration_cancelled"=>"ثبت نام آزمایش لغو شد",
     "clear_search"=>"پاک کردن جستجو",
     "no_results_available"=>"هیچ نتیجه ای یافت نشد",
+    "error_loading_test_results_alert"=>"خطا در بارگذاری نتایج آزمایش",
+    "results_updated_successfully_alert"=>"نتایج با موفقیت به‌روزرسانی شد",
+    "test_completed_alert"=>"آزمایش تکمیل شد",
+    "error_updating_results_alert"=>"خطا در به‌روزرسانی نتایج",
+    "error_loading_test_results_with_message"=>"خطا در بارگذاری نتایج آزمایش",
+    "you_do_not_have_access_to_this_test_registration"=>"شما دسترسی به این ثبت نام آزمایش را ندارید",
+    "patient_not_found_for_this_registration"=>"مریض برای این ثبت نام یافت نشد",
 ];

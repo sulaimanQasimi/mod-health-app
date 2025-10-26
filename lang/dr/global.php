@@ -3473,8 +3473,6 @@ return [
     "patient_not_found_for_this_registration"=>"مریض برای این ثبت نام یافت نشد",
     "accept_test"=>"قبول آزمایش",
     "assigned_to"=>"اختصاص داده شده به",
-    
-    // Test acceptance notifications
     "error_accepting_test"=>"خطا در قبول آزمایش",
     "test_already_assigned"=>"این آزمایش قبلاً به کاربر دیگری اختصاص داده شده است.",
     "only_pending_tests_can_be_accepted"=>"فقط آزمایشات در انتظار قابل قبول هستند.",

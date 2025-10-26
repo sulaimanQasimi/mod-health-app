@@ -276,7 +276,7 @@ class TestResultController extends Controller
             if ($user->section_id && $registration->labType) {
                 $labTypeSection = $registration->labType->section;
                 if ($labTypeSection && $labTypeSection->section_id != $user->section_id) {
-                    abort(403, 'You do not have access to this test registration.');
+                    abort(403, localize('global.you_do_not_have_access_to_this_test_registration'));
                 }
             }
         }
@@ -289,7 +289,7 @@ class TestResultController extends Controller
         $patient = $registration->testable->patient ?? null;
         
         if (!$patient) {
-            abort(404, 'Patient not found for this registration');
+            abort(404, localize('global.patient_not_found_for_this_registration'));
         }
 
         // Get all registrations for this patient to show in the side panels

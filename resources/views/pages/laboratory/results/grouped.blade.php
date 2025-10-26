@@ -367,33 +367,99 @@
                 @endforeach
             </div>
             
-            {{-- Pagination Controls --}}
+            {{-- Simple Pagination with Per Page --}}
             @if(isset($groupedTestsPaginated) && $groupedTestsPaginated->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-4">
+                    {{-- Per Page Selector --}}
                     <div class="d-flex align-items-center">
-                        <span class="text-muted me-3">
-                            {{ localize('global.showing') ?: 'Showing' }} {{ $groupedTestsPaginated->firstItem() ?? 0 }} 
-                            {{ localize('global.to') ?: 'to' }} {{ $groupedTestsPaginated->lastItem() ?? 0 }} 
-                            {{ localize('global.of') ?: 'of' }} {{ $groupedTestsPaginated->total() }} 
-                            {{ localize('global.results') ?: 'results' }}
-                        </span>
-                        
-                        {{-- Per Page Selector --}}
-                        <div class="d-flex align-items-center">
-                            <label for="per_page" class="form-label me-2 mb-0">{{ localize('global.per_page') ?: 'Per page' }}:</label>
-                            <select class="form-select form-select-sm" id="per_page" name="per_page" style="width: auto;" onchange="changePerPage(this.value)">
-                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                                <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
-                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                            </select>
-                        </div>
+                        <label for="per_page" class="form-label me-2 mb-0">
+                            {{ localize('global.per_page') ?: 'Per page' }}:
+                        </label>
+                        <select class="form-select form-select-sm" id="per_page" name="per_page" style="width: auto;" onchange="changePerPage(this.value)">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
                     </div>
                     
-                    {{-- Pagination Links --}}
+                    {{-- Pagination Navigation --}}
                     <nav aria-label="{{ localize('global.pagination') ?: 'Pagination' }}">
-                        {{ $groupedTestsPaginated->links() }}
+                        <ul class="pagination pagination-simple mb-0">
+                            {{-- Previous Page --}}
+                            @if($groupedTestsPaginated->onFirstPage())
+                                <li class="page-item disabled">
+                                    <span class="page-link">
+                                        <i class="bx bx-chevron-left"></i>
+                                    </span>
+                                </li>
+                            @else
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $groupedTestsPaginated->previousPageUrl() }}">
+                                        <i class="bx bx-chevron-left"></i>
+                                    </a>
+                                </li>
+                            @endif
+                            
+                            {{-- Page Numbers --}}
+                            @php
+                                $currentPage = $groupedTestsPaginated->currentPage();
+                                $lastPage = $groupedTestsPaginated->lastPage();
+                                $startPage = max(1, $currentPage - 1);
+                                $endPage = min($lastPage, $currentPage + 1);
+                            @endphp
+                            
+                            {{-- Show first page if not in range --}}
+                            @if($startPage > 1)
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $groupedTestsPaginated->url(1) }}">1</a>
+                                </li>
+                                @if($startPage > 2)
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                @endif
+                            @endif
+                            
+                            {{-- Page numbers in range --}}
+                            @for($i = $startPage; $i <= $endPage; $i++)
+                                <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
+                                    @if($i == $currentPage)
+                                        <span class="page-link">{{ $i }}</span>
+                                    @else
+                                        <a class="page-link" href="{{ $groupedTestsPaginated->url($i) }}">{{ $i }}</a>
+                                    @endif
+                                </li>
+                            @endfor
+                            
+                            {{-- Show last page if not in range --}}
+                            @if($endPage < $lastPage)
+                                @if($endPage < $lastPage - 1)
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                @endif
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $groupedTestsPaginated->url($lastPage) }}">{{ $lastPage }}</a>
+                                </li>
+                            @endif
+                            
+                            {{-- Next Page --}}
+                            @if($groupedTestsPaginated->hasMorePages())
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ $groupedTestsPaginated->nextPageUrl() }}">
+                                        <i class="bx bx-chevron-right"></i>
+                                    </a>
+                                </li>
+                            @else
+                                <li class="page-item disabled">
+                                    <span class="page-link">
+                                        <i class="bx bx-chevron-right"></i>
+                                    </span>
+                                </li>
+                            @endif
+                        </ul>
                     </nav>
                 </div>
             @endif
@@ -571,35 +637,42 @@
         transform: scale(1.1);
     }
     
-    /* Pagination Styles */
-    .pagination {
+    /* Simple Pagination Styles */
+    .pagination-simple {
         margin-bottom: 0;
+        gap: 0.25rem;
     }
     
-    .pagination .page-link {
+    .pagination-simple .page-link {
         border-radius: 0.375rem;
         margin: 0 2px;
         border: 1px solid #dee2e6;
-        color: #0d6efd;
-        transition: all 0.3s ease;
+        color: #6c757d;
+        background-color: #fff;
+        transition: all 0.2s ease;
+        min-width: 38px;
+        text-align: center;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
     }
     
-    .pagination .page-link:hover {
+    .pagination-simple .page-link:hover {
         background-color: #e9ecef;
         border-color: #adb5bd;
-        transform: translateY(-1px);
+        color: #495057;
     }
     
-    .pagination .page-item.active .page-link {
+    .pagination-simple .page-item.active .page-link {
         background-color: #0d6efd;
         border-color: #0d6efd;
         color: white;
     }
     
-    .pagination .page-item.disabled .page-link {
+    .pagination-simple .page-item.disabled .page-link {
         color: #6c757d;
         background-color: #fff;
         border-color: #dee2e6;
+        cursor: not-allowed;
     }
     
     /* Per page selector */
@@ -663,6 +736,41 @@
         .d-flex.justify-content-between > div {
             width: 100%;
             justify-content: center;
+        }
+        
+        /* Mobile pagination adjustments */
+        .pagination-simple {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .pagination-simple .page-link {
+            min-width: 35px;
+            padding: 0.375rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Mobile per page selector */
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .d-flex.justify-content-between > div:first-child {
+            order: 2;
+        }
+        
+        .d-flex.justify-content-between > nav {
+            order: 1;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .pagination-simple .page-link {
+            min-width: 30px;
+            padding: 0.25rem 0.375rem;
+            font-size: 0.75rem;
         }
     }
 </style>
@@ -768,5 +876,6 @@ function changePerPage(perPage) {
     url.searchParams.delete('page'); // Reset to first page
     window.location.href = url.toString();
 }
+
 </script>
 @endpush

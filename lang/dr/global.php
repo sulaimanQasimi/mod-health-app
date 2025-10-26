@@ -3477,4 +3477,5 @@ return [
     "test_already_assigned"=>"این آزمایش قبلاً به کاربر دیگری اختصاص داده شده است.",
     "only_pending_tests_can_be_accepted"=>"فقط آزمایشات در انتظار قابل قبول هستند.",
     "test_accepted_successfully"=>"آزمایش با موفقیت قبول شد.",
+    "assigned_section"=>"اختصاص داده شده به بخش",
 ];

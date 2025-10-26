@@ -471,7 +471,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                var message = 'Error accepting test';
+                var message = '{{ localize("global.error_accepting_test") }}';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     message = xhr.responseJSON.message;
                 }

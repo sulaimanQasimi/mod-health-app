@@ -777,4 +777,10 @@ return [
     'backup_queued' => 'پشتیبان په لړ کې واچول شو او به ژر پروسس شي!',
     'backup_deleted_successfully' => 'پشتیبان په بریالیتوب سره ړنګ شو',
     'backup_not_found' => 'پشتیبان ونه موندل شو',
+    
+    // Test acceptance notifications
+    'error_accepting_test' => 'د ازمایښت د منلو کې تیروتنه',
+    'test_already_assigned' => 'دا ازمایښت دمخه بل کارونکي ته ورکړل شوی.',
+    'only_pending_tests_can_be_accepted' => 'یوازې د انتظار په حال کې ازمایښتونه منل کیدی شي.',
+    'test_accepted_successfully' => 'ازمایښت په بریالیتوب سره ومنل شو.',
 ];

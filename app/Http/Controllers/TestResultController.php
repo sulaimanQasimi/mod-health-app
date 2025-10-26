@@ -737,7 +737,7 @@ class TestResultController extends Controller
             if ($registration->assigned_to) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'This test is already assigned to another user.'
+                    'message' => localize('global.test_already_assigned')
                 ], 400);
             }
 
@@ -745,7 +745,7 @@ class TestResultController extends Controller
             if ($registration->status !== 'pending') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Only pending tests can be accepted.'
+                    'message' => localize('global.only_pending_tests_can_be_accepted')
                 ], 400);
             }
 
@@ -754,14 +754,14 @@ class TestResultController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Test accepted successfully.',
+                'message' => localize('global.test_accepted_successfully'),
                 'data' => $registration->load(['assignedTo', 'assignedSection'])
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error accepting test: ' . $e->getMessage()
+                'message' => localize('global.error_accepting_test') . ': ' . $e->getMessage()
             ], 500);
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+use Dom\XPath;
+
 return [
     'export_report' => 'گزارش خروجی',
     'select_export_format' => 'انتخاب فرمت خروجی',
@@ -3331,6 +3333,8 @@ return [
     "date_created" => "تاریخ ایجاد",
     "assigned_date" => "تاریخ اختصاص داده شده",
     "size" => "حجم",
+    "confirm_select_alternative:"=>"تأیید انتخاب گزینه",
+    "alternative_deselected_successfully"=> "گزینه با موفقیت لغو انتخاب شد",
     "actions" => "عملیات",
     "view_details" => "مشاهده جزئیات",
     "download" => "دانلود",

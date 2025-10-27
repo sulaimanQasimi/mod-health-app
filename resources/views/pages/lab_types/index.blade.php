@@ -533,7 +533,8 @@ window.loadParametersForEdit = function(labTypeId) {
                 addParameterRow();
             }
         }
-    }).fail(function() {
+    }).fail(function(xhr, status, error) {
+        console.error('Failed to load parameters:', xhr, status, error);
         // Add one empty row if API fails
         addParameterRow();
     });
@@ -782,6 +783,9 @@ window.updateLabType = function() {
     // Add parameter data to form
     formData.append('parameters', JSON.stringify(parameters));
     formData.append('deleted_parameter_ids', JSON.stringify(deletedParameterIds));
+    
+    console.log('Sending parameters:', parameters);
+    console.log('Sending deleted parameter IDs:', deletedParameterIds);
     
     $.ajax({
         url: `/api/lab-types/${labTypeId}`,

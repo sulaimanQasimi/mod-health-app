@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\LabType;
+use App\Models\LabTestParameter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -147,7 +148,42 @@ class LabTypeController extends Controller
         ]);
 
         $labType->update($data);
-        $labType->load(['category']);
+        
+        // Handle parameters if provided (for API requests)
+        if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->has('parameters')) {
+                $parameters = json_decode($request->parameters, true);
+                $deletedParameterIds = json_decode($request->deleted_parameter_ids ?? '[]', true);
+                
+                // Delete removed parameters
+                if (!empty($deletedParameterIds)) {
+                    LabTestParameter::whereIn('id', $deletedParameterIds)->delete();
+                }
+                
+                // Update or create parameters
+                foreach ($parameters as $parameterData) {
+                    if (isset($parameterData['id'])) {
+                        // Update existing parameter
+                        LabTestParameter::where('id', $parameterData['id'])
+                            ->update([
+                                'parameter_name' => $parameterData['parameter_name'],
+                                'unit' => $parameterData['unit'] ?? null,
+                                'normal_range' => $parameterData['normal_range'] ?? null,
+                            ]);
+                    } else {
+                        // Create new parameter
+                        LabTestParameter::create([
+                            'lab_type_id' => $labType->id,
+                            'parameter_name' => $parameterData['parameter_name'],
+                            'unit' => $parameterData['unit'] ?? null,
+                            'normal_range' => $parameterData['normal_range'] ?? null,
+                        ]);
+                    }
+                }
+            }
+        }
+        
+        $labType->load(['category', 'directLabTestParameters']);
 
         // Clear categories cache when lab type is updated
         Cache::forget('lab_types_categories');

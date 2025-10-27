@@ -218,11 +218,11 @@ class LabTestParameterController extends Controller
     /**
      * API: Display parameters for a specific lab type
      */
-    public function apiIndexByLabType(Request $request, $id)
+    public function apiIndexByLabType(Request $request, $labType)
     {
         try {
-            $labType = LabType::findOrFail($id);
-            $query = $labType->directLabTestParameters();
+            $labTypeModel = LabType::findOrFail($labType);
+            $query = $labTypeModel->directLabTestParameters();
 
             // Search functionality
             if ($request->has('search') && !empty($request->search)) {
@@ -247,10 +247,10 @@ class LabTestParameterController extends Controller
     /**
      * API: Store a parameter directly for a lab type
      */
-    public function apiStoreByLabType(Request $request, $id)
+    public function apiStoreByLabType(Request $request, $labType)
     {
         try {
-            $labType = LabType::findOrFail($id);
+            $labTypeModel = LabType::findOrFail($labType);
             
             $request->validate([
                 'parameter_name' => 'required|string|max:255',
@@ -269,7 +269,7 @@ class LabTestParameterController extends Controller
             ]);
 
             $data = $request->all();
-            $data['lab_type_id'] = $labType->id;
+            $data['lab_type_id'] = $labTypeModel->id;
             $parameter = LabTestParameter::create($data);
 
             return response()->json([

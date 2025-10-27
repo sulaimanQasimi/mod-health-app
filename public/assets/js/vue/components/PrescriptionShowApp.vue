@@ -98,8 +98,8 @@
 
             
             <div class="table-responsive">
-              <table class="table table-hover">
-                <thead class="table-light">
+              <table class="table table-hover bg-none">
+                <thead class="table-none">
                   <tr>
                     <th width="50" class="d-none d-md-table-cell">
                       <div class="form-check">
@@ -124,11 +124,7 @@
               <tbody>
                 <template v-for="(item, index) in prescription.prescription_items" :key="item.id">
                   <!-- Original Prescription Item -->
-                  <tr :class="{ 
-                    'table-warning': item.selected_alternative,
-                    'table-success': !item.selected_alternative && item.is_delivered == '1',
-                    'table-danger': !item.selected_alternative && item.is_delivered == '0'
-                  }">
+                  <tr>
                     <td class="d-none d-md-table-cell">
                       <div v-if="!item.selected_alternative" class="form-check">
                         <input class="form-check-input" 
@@ -234,11 +230,7 @@
                   </tr>
 
                   <!-- Selected Alternative Item (if exists) -->
-                  <tr v-if="item.selected_alternative" 
-                      :class="{
-                        'table-success': item.selected_alternative.is_delivered == '1',
-                        'table-danger': item.selected_alternative.is_delivered == '0'
-                      }">
+                  <tr v-if="item.selected_alternative">
                     <td class="d-none d-md-table-cell">
                       <div class="form-check">
                         <input class="form-check-input" 
@@ -497,8 +489,8 @@
               <div class="tab-pane fade" id="existing-pane" role="tabpanel">
                 <div class="p-4">
                   <div v-if="currentItem?.alternative_items?.length > 0" class="table-responsive">
-                    <table class="table table-hover">
-                      <thead class="table-light">
+                    <table class="table bg-none">
+                      <thead class="table-none">
                         <tr>
                           <th width="30%">{{ localize('global.medicine') }}</th>
                           <th width="15%">{{ localize('global.dosage') }}</th>
@@ -509,11 +501,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="alternative in currentItem?.alternative_items" :key="alternative.id"
-                            :class="{ 
-                              'table-success': alternative.is_selected,
-                              'table-light': !alternative.is_selected 
-                            }">
+                        <tr v-for="alternative in currentItem?.alternative_items" :key="alternative.id">
                           <td>
                             <div class="d-flex align-items-center">
                               <i class="bx bx-pill me-2 text-primary"></i>
@@ -1324,14 +1312,6 @@ export default {
 
 <style scoped>
 @import 'vue-multiselect/dist/vue-multiselect.css';
-
-.table-bg-secondary {
-  background-color: #f8f9fa;
-}
-
-.table-bg-none {
-  background-color: transparent;
-}
 
 .toast {
   z-index: 1055;

@@ -353,15 +353,27 @@
             <!-- Tab Navigation -->
             <ul class="nav nav-tabs nav-fill" id="alternativeTabs" role="tablist">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="add-tab" data-bs-toggle="tab" 
-                        data-bs-target="#add-pane" type="button" role="tab">
+                <button class="nav-link" 
+                        :class="{ 'active': activeTab === 'add' }"
+                        id="add-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#add-pane" 
+                        type="button" 
+                        role="tab"
+                        @click="setActiveTab('add')">
                   <i class="bx bx-plus me-1"></i>
                   {{ localize('global.add_alternative') }}
                 </button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="existing-tab" data-bs-toggle="tab" 
-                        data-bs-target="#existing-pane" type="button" role="tab">
+                <button class="nav-link" 
+                        :class="{ 'active': activeTab === 'existing' }"
+                        id="existing-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#existing-pane" 
+                        type="button" 
+                        role="tab"
+                        @click="setActiveTab('existing')">
                   <i class="bx bx-list-ul me-1"></i>
                   {{ localize('global.existing_alternatives') }}
                   <span v-if="currentItem?.alternative_items?.length > 0" 
@@ -373,7 +385,10 @@
             <!-- Tab Content -->
             <div class="tab-content" id="alternativeTabContent">
               <!-- Add Alternative Tab -->
-              <div class="tab-pane fade show active" id="add-pane" role="tabpanel">
+              <div class="tab-pane fade" 
+                   :class="{ 'show active': activeTab === 'add' }" 
+                   id="add-pane" 
+                   role="tabpanel">
                 <div class="p-4">
                   <form @submit.prevent="addAlternative">
                     <div class="row g-3">
@@ -486,7 +501,10 @@
               </div>
 
               <!-- Existing Alternatives Tab -->
-              <div class="tab-pane fade" id="existing-pane" role="tabpanel">
+              <div class="tab-pane fade" 
+                   :class="{ 'show active': activeTab === 'existing' }" 
+                   id="existing-pane" 
+                   role="tabpanel">
                 <div class="p-4">
                   <div v-if="currentItem?.alternative_items?.length > 0" class="table-responsive">
                     <table class="table bg-none">
@@ -628,6 +646,9 @@ export default {
     // Bulk operations
     const selectedItems = ref(new Set())
     const selectAll = ref(false)
+    
+    // Tab navigation
+    const activeTab = ref('add')
 
 
     // Localization function
@@ -1045,7 +1066,12 @@ export default {
       }
     }
 
+    const setActiveTab = (tabName) => {
+      activeTab.value = tabName
+    }
+
     const switchToAddTab = () => {
+      activeTab.value = 'add'
       const addTab = document.getElementById('add-tab')
       if (addTab) {
         addTab.click()
@@ -1284,6 +1310,7 @@ export default {
       newAlternative,
       selectedItems,
       selectAll,
+      activeTab,
       localize,
       showToast,
       loadPrescriptionDetails,
@@ -1297,6 +1324,7 @@ export default {
       deleteAlternative,
       copyFromOriginal,
       onMedicineSelect,
+      setActiveTab,
       switchToAddTab,
       quickAddAlternative,
       toggleItemSelection,
@@ -1390,5 +1418,42 @@ export default {
 
 .multiselect__loading-arrow {
   border-color: #0d6efd transparent transparent;
+}
+
+/* Tab Navigation Styles */
+.nav-tabs .nav-link {
+  border: 1px solid transparent;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+  color: #6c757d;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: #e9ecef #e9ecef #dee2e6;
+  color: #495057;
+  background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link.active {
+  color: #fff;
+  background-color: #6f42c1;
+  border-color: #6f42c1 #6f42c1 #fff;
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link.active:hover {
+  color: #fff;
+  background-color: #7724dd;
+}
+
+.nav-tabs .nav-link.active i {
+  color: #fff;
+}
+
+.nav-tabs .nav-link.active .badge {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
 }
 </style>

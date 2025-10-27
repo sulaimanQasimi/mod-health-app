@@ -103,54 +103,6 @@
               </div>
             </div>
 
-            <!-- Search and Filter Controls -->
-            <div class="row mb-3">
-              <div class="col-md-4">
-                <div class="input-group">
-                  <span class="input-group-text">
-                    <i class="bx bx-search"></i>
-                  </span>
-                  <input v-model="searchQuery" 
-                         type="text" 
-                         class="form-control" 
-                         :placeholder="localize('global.search_medicine')"
-                         :title="localize('global.search_medicine')">
-                </div>
-              </div>
-              <div class="col-md-3">
-                <select v-model="statusFilter" class="form-select">
-                  <option value="all">{{ localize('global.all_statuses') }}</option>
-                  <option value="delivered">{{ localize('global.delivered') }}</option>
-                  <option value="not_delivered">{{ localize('global.not_delivered') }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <select v-model="typeFilter" class="form-select">
-                  <option value="all">{{ localize('global.all_types') }}</option>
-                  <option value="original">{{ localize('global.original') }}</option>
-                  <option value="alternative">{{ localize('global.alternative') }}</option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <button @click="clearFilters" 
-                        class="btn btn-outline-secondary w-100"
-                        :disabled="!searchQuery && statusFilter === 'all' && typeFilter === 'all'">
-                  <i class="bx bx-x me-1"></i>
-                  {{ localize('global.clear_filters') }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Results Summary -->
-            <div v-if="searchQuery || statusFilter !== 'all' || typeFilter !== 'all'" 
-                 class="alert alert-info d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <i class="bx bx-info-circle me-2"></i>
-                {{ localize('global.showing') }} {{ filteredPrescriptionItems.length }} 
-                {{ localize('global.of') }} {{ prescription.prescription_items?.length || 0 }} 
-                {{ localize('global.items') }}
-              </div>
-            </div>
             
             <div class="table-responsive">
               <table class="table table-hover">
@@ -177,7 +129,7 @@
                   </tr>
                 </thead>
               <tbody>
-                <template v-for="(item, index) in filteredPrescriptionItems" :key="item.id">
+                <template v-for="(item, index) in prescription.prescription_items" :key="item.id">
                   <!-- Original Prescription Item -->
                   <tr :class="{ 
                     'table-warning': item.selected_alternative,
@@ -445,36 +397,48 @@
                           <i class="bx bx-pill me-1 text-primary"></i>
                           {{ localize('global.medicine') }}
                         </label>
-                        <select v-model="newAlternative.medicine_id" class="form-select select2-search" required>
-                          <option value="">{{ localize('global.select_medicine') }}</option>
-                          <option v-for="medicine in medicines" :key="medicine.id" :value="medicine.id">
-                            {{ medicine.name }}
-                          </option>
-                        </select>
+                        <Multiselect
+                          v-model="newAlternative.medicine"
+                          :options="medicines"
+                          :placeholder="localize('global.select_medicine')"
+                          :searchable="true"
+                          :allow-empty="false"
+                          :show-labels="false"
+                          label="name"
+                          track-by="id"
+                          :required="true"
+                          :loading="loading"
+                          @select="onMedicineSelect"
+                        >
+                          <template #noOptions>
+                            {{ localize('global.no_medicines_found') }}
+                          </template>
+                          <template #noResult>
+                            {{ localize('global.no_medicines_found') }}
+                          </template>
+                        </Multiselect>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-semibold">
                           <i class="bx bx-category me-1 text-info"></i>
                           {{ localize('global.medicine_type') }}
                         </label>
-                        <select v-model="newAlternative.medicine_type_id" class="form-select" required>
-                          <option value="">{{ localize('global.select_type') }}</option>
-                          <option v-for="type in medicineTypes" :key="type.id" :value="type.id">
-                            {{ type.type }}
-                          </option>
-                        </select>
+                        <input :value="newAlternative.medicine_type?.type || ''" 
+                               type="text" 
+                               class="form-control" 
+                               readonly
+                               :placeholder="localize('global.auto_filled')">
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-semibold">
                           <i class="bx bx-edit me-1 text-warning"></i>
                           {{ localize('global.usage_type') }}
                         </label>
-                        <select v-model="newAlternative.usage_type_id" class="form-select" required>
-                          <option value="">{{ localize('global.select_usage_type') }}</option>
-                          <option v-for="usageType in medicineUsageTypes" :key="usageType.id" :value="usageType.id">
-                            {{ usageType.name }}
-                          </option>
-                        </select>
+                        <input :value="newAlternative.usage_type?.name || ''" 
+                               type="text" 
+                               class="form-control" 
+                               readonly
+                               :placeholder="localize('global.auto_filled')">
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-semibold">
@@ -482,7 +446,8 @@
                           {{ localize('global.dosage') }}
                         </label>
                         <input v-model="newAlternative.dosage" type="text" class="form-control" 
-                               :placeholder="currentItem?.dosage || localize('global.dosage')" required>
+                               readonly
+                               :placeholder="localize('global.auto_filled')">
                         <small class="text-muted">{{ localize('global.original') }}: {{ currentItem?.dosage }}</small>
                       </div>
                       <div class="col-md-6">
@@ -491,7 +456,8 @@
                           {{ localize('global.frequency') }}
                         </label>
                         <input v-model="newAlternative.frequency" type="text" class="form-control" 
-                               :placeholder="currentItem?.frequency || localize('global.frequency')" required>
+                               readonly
+                               :placeholder="localize('global.auto_filled')">
                         <small class="text-muted">{{ localize('global.original') }}: {{ currentItem?.frequency }}</small>
                       </div>
                       <div class="col-md-6">
@@ -500,7 +466,8 @@
                           {{ localize('global.amount') }}
                         </label>
                         <input v-model="newAlternative.amount" type="text" class="form-control" 
-                               :placeholder="currentItem?.amount || localize('global.amount')" required>
+                               readonly
+                               :placeholder="localize('global.auto_filled')">
                         <small class="text-muted">{{ localize('global.original') }}: {{ currentItem?.amount }}</small>
                       </div>
                       <div class="col-12">
@@ -512,16 +479,22 @@
                                   :placeholder="localize('global.notes')"></textarea>
                       </div>
                     </div>
-                    <div class="d-flex justify-content-end mt-4">
-                      <button type="button" class="btn btn-outline-secondary me-2" @click="copyFromOriginal">
-                        <i class="bx bx-copy me-1"></i>
-                        {{ localize('global.copy_from_original') }}
-                      </button>
-                      <button type="submit" class="btn btn-primary" :disabled="loading">
-                        <i class="bx bx-plus me-1" v-if="!loading"></i>
-                        <span class="spinner-border spinner-border-sm me-1" v-if="loading"></span>
-                        {{ localize('global.add_alternative') }}
-                      </button>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                      <div class="alert alert-info mb-0 flex-grow-1 me-3">
+                        <i class="bx bx-info-circle me-2"></i>
+                        {{ localize('global.select_medicine_to_auto_fill') }}
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary" @click="copyFromOriginal">
+                          <i class="bx bx-copy me-1"></i>
+                          {{ localize('global.copy_from_original') }}
+                        </button>
+                        <button type="button" class="btn btn-primary" @click="addAlternative" :disabled="loading">
+                          <i class="bx bx-plus me-1" v-if="!loading"></i>
+                          <span class="spinner-border spinner-border-sm me-1" v-if="loading"></span>
+                          {{ localize('global.add_alternative') }}
+                        </button>
+                      </div>
                     </div>
                   </form>
                 </div>
@@ -633,9 +606,13 @@
 <script>
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
+import Multiselect from 'vue-multiselect'
 
 export default {
   name: 'PrescriptionShowApp',
+  components: {
+    Multiselect
+  },
   props: {
     prescriptionId: {
       type: [String, Number],
@@ -658,9 +635,9 @@ export default {
 
     // New alternative form data
     const newAlternative = reactive({
-      medicine_id: '',
-      medicine_type_id: '',
-      usage_type_id: '',
+      medicine: null,
+      medicine_type: null,
+      usage_type: null,
       dosage: '',
       frequency: '',
       amount: '',
@@ -671,10 +648,6 @@ export default {
     const selectedItems = ref(new Set())
     const selectAll = ref(false)
 
-    // Search and filter
-    const searchQuery = ref('')
-    const statusFilter = ref('all') // all, delivered, not_delivered
-    const typeFilter = ref('all') // all, original, alternative
 
     // Localization function
     const localize = (key) => {
@@ -684,58 +657,6 @@ export default {
       return key
     }
 
-    // Computed property for filtered prescription items
-    const filteredPrescriptionItems = computed(() => {
-      if (!prescription.value.prescription_items) return []
-      
-      let items = prescription.value.prescription_items
-      
-      // Apply search filter
-      if (searchQuery.value.trim()) {
-        const query = searchQuery.value.toLowerCase()
-        items = items.filter(item => {
-          const medicineName = item.medicine?.name?.toLowerCase() || ''
-          const medicineType = item.medicine_type?.type?.toLowerCase() || ''
-          const usageType = item.usage_type?.name?.toLowerCase() || ''
-          const dosage = item.dosage?.toLowerCase() || ''
-          const frequency = item.frequency?.toLowerCase() || ''
-          const amount = item.amount?.toLowerCase() || ''
-          
-          return medicineName.includes(query) || 
-                 medicineType.includes(query) || 
-                 usageType.includes(query) || 
-                 dosage.includes(query) || 
-                 frequency.includes(query) || 
-                 amount.includes(query)
-        })
-      }
-      
-      // Apply status filter
-      if (statusFilter.value !== 'all') {
-        items = items.filter(item => {
-          if (statusFilter.value === 'delivered') {
-            return item.is_delivered == '1'
-          } else if (statusFilter.value === 'not_delivered') {
-            return item.is_delivered == '0'
-          }
-          return true
-        })
-      }
-      
-      // Apply type filter
-      if (typeFilter.value !== 'all') {
-        items = items.filter(item => {
-          if (typeFilter.value === 'original') {
-            return !item.selected_alternative
-          } else if (typeFilter.value === 'alternative') {
-            return item.selected_alternative
-          }
-          return true
-        })
-      }
-      
-      return items
-    })
 
     // Methods
     const showToast = (message, type = 'success') => {
@@ -829,9 +750,9 @@ export default {
       currentItem.value = item
       // Pre-fill form with main medicine data (excluding dosage, frequency, amount)
       Object.assign(newAlternative, {
-        medicine_id: item.medicine?.id || '',
-        medicine_type_id: item.medicine_type?.id || '',
-        usage_type_id: item.usage_type?.id || '',
+        medicine: item.medicine || null,
+        medicine_type: item.medicine_type || null,
+        usage_type: item.usage_type || null,
         dosage: '',
         frequency: '',
         amount: '',
@@ -885,11 +806,50 @@ export default {
     const addAlternative = async () => {
       loading.value = true
       try {
-        const response = await axios.post('/prescription-show-ajax/add-alternative', {
+        const requestData = {
           prescription_id: props.prescriptionId,
           prescription_item_id: currentItem.value.id,
-          ...newAlternative
-        })
+          medicine_id: newAlternative.medicine?.id || '',
+          medicine_type_id: newAlternative.medicine_type?.id || '',
+          usage_type_id: newAlternative.usage_type?.id || '',
+          dosage: newAlternative.dosage,
+          frequency: newAlternative.frequency,
+          amount: newAlternative.amount,
+          notes: newAlternative.notes
+        }
+        
+        console.log('Sending alternative data:', requestData)
+        console.log('Selected medicine:', newAlternative.medicine)
+        console.log('Selected medicine type:', newAlternative.medicine_type)
+        console.log('Selected usage type:', newAlternative.usage_type)
+        
+        // Validate required fields
+        if (!requestData.medicine_id) {
+          showToast('Please select a medicine', 'error')
+          return
+        }
+        if (!requestData.medicine_type_id) {
+          showToast('Medicine type is required', 'error')
+          return
+        }
+        if (!requestData.usage_type_id) {
+          showToast('Usage type is required', 'error')
+          return
+        }
+        if (!requestData.dosage) {
+          showToast('Dosage is required', 'error')
+          return
+        }
+        if (!requestData.frequency) {
+          showToast('Frequency is required', 'error')
+          return
+        }
+        if (!requestData.amount) {
+          showToast('Amount is required', 'error')
+          return
+        }
+        
+        const response = await axios.post('/prescription-show-ajax/add-alternative', requestData)
         if (response.data.success) {
           // Add to current item's alternatives
           if (!currentItem.value.alternative_items) {
@@ -899,9 +859,9 @@ export default {
           showToast('Alternative added successfully')
           // Reset form
           Object.assign(newAlternative, {
-            medicine_id: '',
-            medicine_type_id: '',
-            usage_type_id: '',
+            medicine: null,
+            medicine_type: null,
+            usage_type: null,
             dosage: '',
             frequency: '',
             amount: '',
@@ -911,8 +871,20 @@ export default {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to add alternative', 'error')
         console.error('Error adding alternative:', error)
+        if (error.response && error.response.data) {
+          console.error('Server response:', error.response.data)
+          if (error.response.data.errors) {
+            const errorMessages = Object.values(error.response.data.errors).flat().join(', ')
+            showToast(`Validation errors: ${errorMessages}`, 'error')
+          } else if (error.response.data.message) {
+            showToast(error.response.data.message, 'error')
+          } else {
+            showToast('Failed to add alternative', 'error')
+          }
+        } else {
+          showToast('Failed to add alternative', 'error')
+        }
       } finally {
         loading.value = false
       }
@@ -1050,7 +1022,45 @@ export default {
         newAlternative.dosage = currentItem.value.dosage || ''
         newAlternative.frequency = currentItem.value.frequency || ''
         newAlternative.amount = currentItem.value.amount || ''
-        showToast('Original data copied to form')
+        showToast(localize('global.original_data_copied'))
+      }
+    }
+
+    const onMedicineSelect = (selectedMedicine) => {
+      // Auto-fill medicine type and usage type based on selected medicine
+      if (selectedMedicine) {
+        // Find matching medicine type - try different possible property names
+        const medicineTypeId = selectedMedicine.medicine_type_id || selectedMedicine.medicine_type?.id
+        const matchingType = medicineTypes.value.find(type => 
+          type.id === medicineTypeId
+        )
+        if (matchingType) {
+          newAlternative.medicine_type = matchingType
+        } else {
+          // If no matching type found, use the first available type as fallback
+          newAlternative.medicine_type = medicineTypes.value[0] || null
+        }
+
+        // Find matching usage type - try different possible property names
+        const usageTypeId = selectedMedicine.usage_type_id || selectedMedicine.usage_type?.id
+        const matchingUsageType = medicineUsageTypes.value.find(usageType => 
+          usageType.id === usageTypeId
+        )
+        if (matchingUsageType) {
+          newAlternative.usage_type = matchingUsageType
+        } else {
+          // If no matching usage type found, use the first available type as fallback
+          newAlternative.usage_type = medicineUsageTypes.value[0] || null
+        }
+
+        // Auto-fill dosage, frequency, and amount from original item
+        if (currentItem.value) {
+          newAlternative.dosage = currentItem.value.dosage || ''
+          newAlternative.frequency = currentItem.value.frequency || ''
+          newAlternative.amount = currentItem.value.amount || ''
+        }
+
+        // Don't automatically submit - let user click Add button
       }
     }
 
@@ -1065,9 +1075,9 @@ export default {
       currentItem.value = item
       // Pre-fill form with main medicine data
       Object.assign(newAlternative, {
-        medicine_id: item.medicine?.id || '',
-        medicine_type_id: item.medicine_type?.id || '',
-        usage_type_id: item.usage_type?.id || '',
+        medicine: item.medicine || null,
+        medicine_type: item.medicine_type || null,
+        usage_type: item.usage_type || null,
         dosage: item.dosage || '',
         frequency: item.frequency || '',
         amount: item.amount || '',
@@ -1220,11 +1230,6 @@ export default {
       }
     }
 
-    const clearFilters = () => {
-      searchQuery.value = ''
-      statusFilter.value = 'all'
-      typeFilter.value = 'all'
-    }
 
     const refreshPrescriptionData = async () => {
       try {
@@ -1298,10 +1303,6 @@ export default {
       newAlternative,
       selectedItems,
       selectAll,
-      searchQuery,
-      statusFilter,
-      typeFilter,
-      filteredPrescriptionItems,
       localize,
       showToast,
       loadPrescriptionDetails,
@@ -1314,13 +1315,13 @@ export default {
       toggleAlternativeStatus,
       deleteAlternative,
       copyFromOriginal,
+      onMedicineSelect,
       switchToAddTab,
       quickAddAlternative,
       toggleItemSelection,
       toggleSelectAll,
       bulkMarkDelivered,
       bulkMarkNotDelivered,
-      clearFilters,
       refreshPrescriptionData,
       closeModal
     }
@@ -1329,6 +1330,8 @@ export default {
 </script>
 
 <style scoped>
+@import 'vue-multiselect/dist/vue-multiselect.css';
+
 .table-bg-secondary {
   background-color: #f8f9fa;
 }
@@ -1348,5 +1351,71 @@ export default {
 
 .modal.show {
   display: block !important;
+}
+
+/* Vue Multiselect styles */
+.multiselect {
+  min-height: 38px;
+}
+
+.multiselect__tags {
+  min-height: 38px;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.multiselect__tags:focus-within {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.multiselect__placeholder {
+  color: #6c757d;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.multiselect__single {
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.5;
+}
+
+.multiselect__input {
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.5;
+}
+
+.multiselect__option--highlight {
+  background: #0d6efd;
+}
+
+.multiselect__option--highlight::after {
+  background: #0d6efd;
+}
+
+.multiselect__option--selected {
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+  background: #0d6efd;
+  color: white;
+}
+
+.multiselect__spinner {
+  background: #0d6efd;
+}
+
+.multiselect__loading-arrow {
+  border-color: #0d6efd transparent transparent;
 }
 </style>

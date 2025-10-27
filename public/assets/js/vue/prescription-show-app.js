@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import PrescriptionShowApp from './components/PrescriptionShowApp.vue'
+import 'vue-multiselect/dist/vue-multiselect.css'
 
 // Get prescription ID from data attribute
 const prescriptionId = document.getElementById('prescription-show-app').dataset.prescriptionId

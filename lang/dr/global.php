@@ -3558,4 +3558,10 @@ return [
     'showing' => 'نمایش',
     'of' => 'از',
     'items' => 'آیتم',
+    'no_medicines_found' => 'هیچ دارویی یافت نشد',
+    'no_types_found' => 'هیچ نوعی یافت نشد',
+    'no_usage_types_found' => 'هیچ نوع استفاده‌ای یافت نشد',
+    'original_data_copied' => 'داده‌های اصلی کپی شد',
+    'auto_filled' => 'خودکار پر می‌شود',
+    'select_medicine_to_auto_fill' => 'دارو را انتخاب کنید تا فیلدها به طور خودکار پر شوند',
 ];

@@ -16,21 +16,11 @@ class MedicineController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Medicine::with(['medicineType']);
+        $query = Medicine::query();
 
         // Search by medicine name
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
-        }
-
-        // Filter by medicine type
-        if ($request->filled('medicine_type_id')) {
-            $query->where('medicine_type_id', $request->medicine_type_id);
-        }
-
-        // Filter by disease
-        if ($request->filled('disease_id')) {
-            $query->where('disease_id', 'like', '%' . $request->disease_id . '%');
         }
 
         // Sort options
@@ -38,7 +28,7 @@ class MedicineController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         
         // Validate sort fields
-        $allowedSortFields = ['id', 'name', 'medicine_type_id', 'created_at'];
+        $allowedSortFields = ['id', 'name', 'created_at'];
         if (!in_array($sortBy, $allowedSortFields)) {
             $sortBy = 'id';
         }
@@ -59,11 +49,7 @@ class MedicineController extends Controller
 
         $medicines = $query->paginate($perPage)->withQueryString();
 
-        // Get data for filters
-        $medicineTypes = MedicineType::all();
-        $diseases = Disease::all();
-
-        return view('pages.medicines.index', compact('medicines', 'medicineTypes', 'diseases'));
+        return view('pages.medicines.index', compact('medicines'));
     }
 
     /**
@@ -73,9 +59,7 @@ class MedicineController extends Controller
      */
     public function create()
     {
-        $medicineTypes = MedicineType::all();
-        $diseases = Disease::all();
-        return view('pages.medicines.create', compact('medicineTypes','diseases'));
+        return view('pages.medicines.create');
     }
 
     /**
@@ -87,15 +71,8 @@ class MedicineController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:192',
-            'medicine_type_id' => 'required|exists:medicine_types,id',
-            'disease_id' => 'required'
+            'name' => 'required|string|max:192'
         ]);
-
-        if(isset($data['disease_id']) && $data['disease_id'] != ''){
-
-            $data['disease_id']  = json_encode($data['disease_id']);
-        }
 
         Medicine::create($data);
 
@@ -121,9 +98,7 @@ class MedicineController extends Controller
      */
     public function edit(Medicine $medicine)
     {
-        $medicineTypes = MedicineType::all();
-        $diseases = Disease::all();
-        return view('pages.medicines.edit', compact('medicine', 'medicineTypes','diseases'));
+        return view('pages.medicines.edit', compact('medicine'));
     }
 
     /**
@@ -136,10 +111,7 @@ class MedicineController extends Controller
     public function update(Request $request, Medicine $medicine)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:192',
-            'medicine_type_id' => 'required|exists:medicine_types,id',
-            'disease_id' => 'required'
-
+            'name' => 'required|string|max:192'
         ]);
 
         $medicine->update($data);

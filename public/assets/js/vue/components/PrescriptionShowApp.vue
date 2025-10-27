@@ -14,13 +14,6 @@
             <h5 class="mb-0">{{ localize('global.prescription_details') }}</h5>
             <div class="pt-3 pt-md-0 text-end">
               <div class="btn-group" role="group">
-                <button class="btn btn-outline-info" 
-                        :title="localize('global.keyboard_shortcuts')"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="bottom">
-                  <i class="bx bx-keyboard"></i>
-                  <span class="d-none d-sm-inline ms-1">{{ localize('global.shortcuts') }}</span>
-                </button>
                 <a :href="`/prescriptions/thermal-receipt/${prescriptionId}`" 
                    class="btn btn-success" target="_blank">
                   <i class="bx bx-printer"></i> {{ localize('global.thermal_print') }}

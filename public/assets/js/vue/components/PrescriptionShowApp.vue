@@ -347,7 +347,7 @@
               <i class="bx bx-list-ul me-2"></i>
               {{ localize('global.alternatives_for') }}: {{ currentItem?.medicine?.name }}
             </h5>
-            <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeModal" :aria-label="localize('global.close')"></button>
           </div>
           <div class="modal-body p-0">
             <!-- Tab Navigation -->
@@ -684,7 +684,7 @@ export default {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to load prescription details', 'error')
+        showToast(localize('global.failed_to_load_prescription_details'), 'error')
         console.error('Error loading prescription details:', error)
       } finally {
         loading.value = false
@@ -715,12 +715,12 @@ export default {
         })
         if (response.data.success) {
           prescription.value.is_completed = '1'
-          showToast('Prescription completed successfully')
+          showToast(localize('global.prescription_completed_successfully'))
         } else {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to complete prescription', 'error')
+        showToast(localize('global.failed_to_complete_prescription'), 'error')
         console.error('Error completing prescription:', error)
       } finally {
         loading.value = false
@@ -736,12 +736,12 @@ export default {
         })
         if (response.data.success) {
           item.is_delivered = newStatus
-          showToast('Item status updated successfully')
+          showToast(localize('global.item_status_updated_successfully'))
         } else {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to update item status', 'error')
+        showToast(localize('global.failed_to_update_item_status'), 'error')
         console.error('Error updating item status:', error)
       } finally {
         loading.value = false
@@ -827,27 +827,27 @@ export default {
         
         // Validate required fields
         if (!requestData.medicine_id) {
-          showToast('Please select a medicine', 'error')
+          showToast(localize('global.please_select_medicine'), 'error')
           return
         }
         if (!requestData.medicine_type_id) {
-          showToast('Medicine type is required', 'error')
+          showToast(localize('global.medicine_type_required'), 'error')
           return
         }
         if (!requestData.usage_type_id) {
-          showToast('Usage type is required', 'error')
+          showToast(localize('global.usage_type_required'), 'error')
           return
         }
         if (!requestData.dosage) {
-          showToast('Dosage is required', 'error')
+          showToast(localize('global.dosage_required'), 'error')
           return
         }
         if (!requestData.frequency) {
-          showToast('Frequency is required', 'error')
+          showToast(localize('global.frequency_required'), 'error')
           return
         }
         if (!requestData.amount) {
-          showToast('Amount is required', 'error')
+          showToast(localize('global.amount_required'), 'error')
           return
         }
         
@@ -858,7 +858,7 @@ export default {
             currentItem.value.alternative_items = []
           }
           currentItem.value.alternative_items.push(response.data.data)
-          showToast('Alternative added successfully')
+          showToast(localize('global.alternative_added_successfully'))
           // Reset form
           Object.assign(newAlternative, {
             medicine: null,
@@ -878,14 +878,14 @@ export default {
           console.error('Server response:', error.response.data)
           if (error.response.data.errors) {
             const errorMessages = Object.values(error.response.data.errors).flat().join(', ')
-            showToast(`Validation errors: ${errorMessages}`, 'error')
+            showToast(`${localize('global.validation_errors')}: ${errorMessages}`, 'error')
           } else if (error.response.data.message) {
             showToast(error.response.data.message, 'error')
           } else {
-            showToast('Failed to add alternative', 'error')
+            showToast(localize('global.failed_to_add_alternative'), 'error')
           }
         } else {
-          showToast('Failed to add alternative', 'error')
+          showToast(localize('global.failed_to_add_alternative'), 'error')
         }
       } finally {
         loading.value = false
@@ -929,7 +929,7 @@ export default {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to select alternative', 'error')
+        showToast(localize('global.failed_to_select_alternative'), 'error')
         console.error('Error selecting alternative:', error)
       } finally {
         loading.value = false
@@ -967,7 +967,7 @@ export default {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to deselect alternative', 'error')
+        showToast(localize('global.failed_to_deselect_alternative'), 'error')
         console.error('Error deselecting alternative:', error)
       } finally {
         loading.value = false
@@ -983,12 +983,12 @@ export default {
         })
         if (response.data.success) {
           alternative.is_delivered = newStatus
-          showToast('Alternative status updated successfully')
+          showToast(localize('global.alternative_status_updated_successfully'))
         } else {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to update alternative status', 'error')
+        showToast(localize('global.failed_to_update_alternative_status'), 'error')
         console.error('Error updating alternative status:', error)
       } finally {
         loading.value = false
@@ -1007,12 +1007,12 @@ export default {
           if (index > -1) {
             currentItem.value.alternative_items.splice(index, 1)
           }
-          showToast('Alternative deleted successfully')
+          showToast(localize('global.alternative_deleted_successfully'))
         } else {
           showToast(response.data.message, 'error')
         }
       } catch (error) {
-        showToast('Failed to delete alternative', 'error')
+        showToast(localize('global.failed_to_delete_alternative'), 'error')
         console.error('Error deleting alternative:', error)
       } finally {
         loading.value = false
@@ -1153,9 +1153,9 @@ export default {
 
         selectedItems.value.clear()
         selectAll.value = false
-        showToast(`${selectedItems.value.size} items marked as delivered`)
+        showToast(localize('global.items_marked_as_delivered', { count: selectedItems.value.size }))
       } catch (error) {
-        showToast('Failed to update items', 'error')
+        showToast(localize('global.failed_to_update_items'), 'error')
         console.error('Error updating items:', error)
       } finally {
         loading.value = false
@@ -1188,9 +1188,9 @@ export default {
 
         selectedItems.value.clear()
         selectAll.value = false
-        showToast(`${selectedItems.value.size} items marked as not delivered`)
+        showToast(localize('global.items_marked_as_not_delivered', { count: selectedItems.value.size }))
       } catch (error) {
-        showToast('Failed to update items', 'error')
+        showToast(localize('global.failed_to_update_items'), 'error')
         console.error('Error updating items:', error)
       } finally {
         loading.value = false

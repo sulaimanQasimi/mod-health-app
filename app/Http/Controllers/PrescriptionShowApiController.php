@@ -42,13 +42,13 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $prescription,
-                'message' => 'Prescription details retrieved successfully'
+                'message' => localize('global.prescription_details_retrieved_successfully')
             ]);
         } catch (\Exception $e) {
             \Log::error('PrescriptionShowApiController: Error getting prescription details: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve prescription details',
+                'message' => localize('global.failed_to_retrieve_prescription_details'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -84,12 +84,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $prescription,
-                'message' => 'Prescription status updated successfully'
+                'message' => localize('global.prescription_status_updated_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update prescription status',
+                'message' => localize('global.failed_to_update_prescription_status'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -121,12 +121,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $item,
-                'message' => 'Item status updated successfully'
+                'message' => localize('global.item_status_updated_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update item status',
+                'message' => localize('global.failed_to_update_item_status'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -147,12 +147,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $item->alternativeItems,
-                'message' => 'Alternatives retrieved successfully'
+                'message' => localize('global.alternatives_retrieved_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve alternatives',
+                'message' => localize('global.failed_to_retrieve_alternatives'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -207,12 +207,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $alternative,
-                'message' => 'Alternative added successfully'
+                'message' => localize('global.alternative_added_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add alternative',
+                'message' => localize('global.failed_to_add_alternative'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -240,12 +240,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $alternative,
-                'message' => 'Alternative selection updated successfully'
+                'message' => localize('global.alternative_selection_updated_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update alternative selection',
+                'message' => localize('global.failed_to_update_alternative_selection'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -277,12 +277,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $alternative,
-                'message' => 'Alternative status updated successfully'
+                'message' => localize('global.alternative_status_updated_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update alternative status',
+                'message' => localize('global.failed_to_update_alternative_status'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -299,12 +299,12 @@ class PrescriptionShowApiController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Alternative deleted successfully'
+                'message' => localize('global.alternative_deleted_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete alternative',
+                'message' => localize('global.failed_to_delete_alternative'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -321,12 +321,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $medicines,
-                'message' => 'Medicines retrieved successfully'
+                'message' => localize('global.medicines_retrieved_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve medicines',
+                'message' => localize('global.failed_to_retrieve_medicines'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -343,12 +343,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $types,
-                'message' => 'Medicine types retrieved successfully'
+                'message' => localize('global.medicine_types_retrieved_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve medicine types',
+                'message' => localize('global.failed_to_retrieve_medicine_types'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -365,12 +365,12 @@ class PrescriptionShowApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $usageTypes,
-                'message' => 'Usage types retrieved successfully'
+                'message' => localize('global.usage_types_retrieved_successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve usage types',
+                'message' => localize('global.failed_to_retrieve_usage_types'),
                 'error' => $e->getMessage()
             ], 500);
         }

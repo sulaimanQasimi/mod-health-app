@@ -1,5 +1,12 @@
 <template>
     <div class="prescription-section">
+        <!-- Toast notifications -->
+        <div v-if="toast.show" :class="['toast', 'show', 'position-fixed', 'top-0', 'end-0', 'p-3', toast.type === 'success' ? 'bg-success' : 'bg-danger']" style="z-index: 1055;">
+            <div class="toast-body text-white">
+                {{ toast.message }}
+            </div>
+        </div>
+
         <!-- Add Button and Table Header -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div></div> <!-- Empty div for spacing -->
@@ -349,6 +356,11 @@ export default {
             allMedicines: [],
             selectedPrescription: null,
             validationErrors: {},
+            toast: {
+                show: false,
+                message: '',
+                type: 'success'
+            },
              form: {
                  prescription_items: [{
                      medicine_id: null,
@@ -384,6 +396,14 @@ export default {
         },
     },
     methods: {
+        showToast(message, type = 'success') {
+            this.toast.message = message;
+            this.toast.type = type;
+            this.toast.show = true;
+            setTimeout(() => {
+                this.toast.show = false;
+            }, 3000);
+        },
 
         async loadMedicineUsageTypes() {
             try {
@@ -440,13 +460,7 @@ export default {
              try {
                  // Validate form before submission
                  if (!this.validateForm()) {
-                     Swal.fire({
-                         title: 'خطا در اعتبارسنجی',
-                         text: 'لطفاً خطاهای فرم را برطرف کنید',
-                         icon: 'error',
-                         timer: 3000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('لطفاً خطاهای فرم را برطرف کنید', 'error');
                      this.loading = false;
                      return;
                  }
@@ -471,13 +485,7 @@ export default {
 
                  // Validate appointment_id is present
                  if (!formData.appointment_id) {
-                     Swal.fire({
-                         title: 'خطا',
-                         text: 'شناسه نوبت یافت نشد. لطفاً صفحه را مجدداً بارگذاری کنید.',
-                         icon: 'error',
-                         timer: 3000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('شناسه نوبت یافت نشد. لطفاً صفحه را مجدداً بارگذاری کنید.', 'error');
                      this.loading = false;
                      return;
                  }
@@ -495,31 +503,13 @@ export default {
                  if (data.success) {
                      this.showCreateModal = false;
                      this.loadAppointmentPrescriptions();
-                     Swal.fire({
-                         title: 'موفق',
-                         text: 'نسخه با موفقیت ایجاد شد',
-                         icon: 'success',
-                         timer: 2000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('نسخه با موفقیت ایجاد شد', 'success');
                  } else {
-                     Swal.fire({
-                         title: 'خطا',
-                         text: data.message || 'خطا در ایجاد نسخه',
-                         icon: 'error',
-                         timer: 3000,
-                         showConfirmButton: false
-                     });
+                     this.showToast(data.message || 'خطا در ایجاد نسخه', 'error');
                  }
              } catch (error) {
                  console.error('Error creating prescription:', error);
-                 Swal.fire({
-                     title: 'خطا',
-                     text: 'خطا در ایجاد نسخه',
-                     icon: 'error',
-                     timer: 3000,
-                     showConfirmButton: false
-                 });
+                 this.showToast('خطا در ایجاد نسخه', 'error');
             } finally {
                 this.loading = false;
             }
@@ -544,13 +534,7 @@ export default {
                          const prescriptionId = this.selectedPrescription.id;
                          this.viewPrescriptionItems(prescriptionId);
                      }
-                     Swal.fire({
-                         title: 'موفق',
-                         text: 'آیتم به عنوان تحویل شده علامت‌گذاری شد',
-                         icon: 'success',
-                         timer: 2000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('آیتم به عنوان تحویل شده علامت‌گذاری شد', 'success');
                  }
              } catch (error) {
                  console.error('Error updating item status:', error);
@@ -576,13 +560,7 @@ export default {
                          const prescriptionId = this.selectedPrescription.id;
                          this.viewPrescriptionItems(prescriptionId);
                      }
-                     Swal.fire({
-                         title: 'موفق',
-                         text: 'آیتم به عنوان تحویل نشده علامت‌گذاری شد',
-                         icon: 'success',
-                         timer: 2000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('آیتم به عنوان تحویل نشده علامت‌گذاری شد', 'success');
                  }
              } catch (error) {
                  console.error('Error updating item status:', error);
@@ -616,31 +594,13 @@ export default {
                  const data = await response.json();
                  if (data.success) {
                      this.loadAppointmentPrescriptions();
-                     Swal.fire({
-                         title: 'موفق',
-                         text: 'نسخه با موفقیت حذف شد',
-                         icon: 'success',
-                         timer: 2000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('نسخه با موفقیت حذف شد', 'success');
                  } else {
-                     Swal.fire({
-                         title: 'خطا',
-                         text: data.message || 'خطا در حذف نسخه',
-                         icon: 'error',
-                         timer: 3000,
-                         showConfirmButton: false
-                     });
+                     this.showToast(data.message || 'خطا در حذف نسخه', 'error');
                  }
              } catch (error) {
                  console.error('Error deleting prescription:', error);
-                 Swal.fire({
-                     title: 'خطا',
-                     text: 'خطا در حذف نسخه',
-                     icon: 'error',
-                     timer: 3000,
-                     showConfirmButton: false
-                 });
+                 this.showToast('خطا در حذف نسخه', 'error');
              }
          },
 
@@ -676,31 +636,13 @@ export default {
                          this.viewPrescriptionItems(prescriptionId);
                      }
                      this.loadAppointmentPrescriptions();
-                     Swal.fire({
-                         title: 'موفق',
-                         text: 'آیتم نسخه با موفقیت حذف شد',
-                         icon: 'success',
-                         timer: 2000,
-                         showConfirmButton: false
-                     });
+                     this.showToast('آیتم نسخه با موفقیت حذف شد', 'success');
                  } else {
-                     Swal.fire({
-                         title: 'خطا',
-                         text: data.message || 'خطا در حذف آیتم نسخه',
-                         icon: 'error',
-                         timer: 3000,
-                         showConfirmButton: false
-                     });
+                     this.showToast(data.message || 'خطا در حذف آیتم نسخه', 'error');
                  }
              } catch (error) {
                  console.error('Error deleting prescription item:', error);
-                 Swal.fire({
-                     title: 'خطا',
-                     text: 'خطا در حذف آیتم نسخه',
-                     icon: 'error',
-                     timer: 3000,
-                     showConfirmButton: false
-                 });
+                 this.showToast('خطا در حذف آیتم نسخه', 'error');
              }
          },
 
@@ -818,6 +760,10 @@ export default {
 </script>
 
 <style scoped>
+.toast {
+    z-index: 1055;
+}
+
 .modal.show {
     display: block !important;
 }

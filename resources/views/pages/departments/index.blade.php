@@ -58,6 +58,7 @@
         <tr>
             <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
+            <th>{{localize('global.room_number')}}</th>
             <th>{{localize('global.category')}}</th>
             <th>{{localize('global.related_section')}}</th>
             <th>{{localize('global.actions')}}</th>
@@ -68,6 +69,7 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $department->name }}</td>
+                <td>{{ $department->room_number ?? '-' }}</td>
                 <td>{{ $department->category->name ?? '-' }}</td>
                 <td>
                     @foreach ($department->sections as $section )

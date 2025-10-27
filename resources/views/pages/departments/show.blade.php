@@ -31,6 +31,14 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
+                                <label class="form-label fw-semibold">{{ localize('global.room_number') }}</label>
+                                <p class="form-control-plaintext">{{ $department->room_number ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
                                 <label class="form-label fw-semibold">{{ localize('global.category') }}</label>
                                 <p class="form-control-plaintext">{{ $department->category->name ?? '-' }}</p>
                             </div>

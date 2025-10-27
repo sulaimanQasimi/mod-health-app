@@ -24,6 +24,12 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
+                                        <label for="room_number">{{ localize('global.room_number') }}</label>
+                                        <input type="text" name="room_number" id="room_number" value="{{ old('room_number') }}" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
                                         <label for="category_id">{{ localize('global.category') }}</label>
                                         <select name="category_id" id="category_id" class="form-control">
                                             <option value="">{{ localize('global.select_category') }}</option>

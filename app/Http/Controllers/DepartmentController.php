@@ -43,6 +43,7 @@ class DepartmentController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'room_number' => 'nullable|string|max:255',
             'branch_id' => 'required',
             'category_id' => 'nullable|exists:categories,id',
         ]);
@@ -77,6 +78,7 @@ class DepartmentController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'room_number' => 'nullable|string|max:255',
             'branch_id' => 'required',
             'category_id' => 'nullable|exists:categories,id',
         ]);

@@ -160,6 +160,7 @@ return [
     'actions' => 'عملیات',
     'document_type_columns' => 'د اسنادو ډولونه',
     'name' => 'نوم',
+    'room_number' => 'د کوټې شمیره',
     'create' => 'اضافه کول',
     'submit' => 'ذخیره',
     'reset' => 'پاکول',

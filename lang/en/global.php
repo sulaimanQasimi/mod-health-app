@@ -147,6 +147,7 @@ return [
     ],
     'notices' => 'Notices',
     'name' => 'Name',
+    'room_number' => 'Room Number',
     'create' => 'Create',
     'submit' => 'Submit',
     'reset' => 'reset',

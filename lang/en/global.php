@@ -1034,4 +1034,6 @@ return [
     'no_types_found' => 'No types found',
     'no_usage_types_found' => 'No usage types found',
     'original_data_copied' => 'Original data copied',
+    'auto_filled' => 'Auto-filled',
+    'select_medicine_to_auto_fill' => 'Select a medicine to auto-fill the form fields',
 ];

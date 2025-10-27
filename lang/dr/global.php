@@ -3612,4 +3612,19 @@ return [
     "failed_to_retrieve_medicine_types"=>"بازیابی انواع دارو ناموفق بود",
     "usage_types_retrieved_successfully"=>"انواع استفاده با موفقیت بازیابی شدند",
     "failed_to_retrieve_usage_types"=>"بازیابی انواع استفاده ناموفق بود",
+    
+    // PrescriptionAjaxController Translations
+    "failed_to_fetch_all_medicines"=>"بازیابی همه داروها ناموفق بود",
+    "failed_to_fetch_medicine_usage_types"=>"بازیابی انواع مصرف دارو ناموفق بود",
+    "failed_to_create_prescription"=>"ایجاد نسخه ناموفق بود",
+    "failed_to_fetch_prescriptions"=>"بازیابی نسخه‌ها ناموفق بود",
+    "failed_to_fetch_prescription_items"=>"بازیابی اقلام نسخه ناموفق بود",
+    "prescription_status_updated_successfully"=>"وضعیت نسخه با موفقیت به‌روزرسانی شد",
+    "failed_to_update_prescription_status"=>"به‌روزرسانی وضعیت نسخه ناموفق بود",
+    "prescription_item_status_updated_successfully"=>"وضعیت قلم نسخه با موفقیت به‌روزرسانی شد",
+    "failed_to_update_prescription_item_status"=>"به‌روزرسانی وضعیت قلم نسخه ناموفق بود",
+    "prescription_deleted_successfully"=>"نسخه با موفقیت حذف شد",
+    "failed_to_delete_prescription"=>"حذف نسخه ناموفق بود",
+    "prescription_item_deleted_successfully"=>"قلم نسخه با موفقیت حذف شد",
+    "failed_to_delete_prescription_item"=>"حذف قلم نسخه ناموفق بود",
 ];

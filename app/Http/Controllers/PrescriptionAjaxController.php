@@ -30,7 +30,7 @@ class PrescriptionAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch all medicines',
+                'message' => localize('global.failed_to_fetch_all_medicines'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -51,7 +51,7 @@ class PrescriptionAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch medicine usage types',
+                'message' => localize('global.failed_to_fetch_medicine_usage_types'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -82,7 +82,7 @@ class PrescriptionAjaxController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validation failed',
+                    'message' => localize('global.validation_failed'),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -132,7 +132,7 @@ class PrescriptionAjaxController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Prescription created successfully',
+                    'message' => localize('global.prescription_created_successfully'),
                     'data' => [
                         'prescription_id' => $prescription->id,
                         'items_count' => count($request->prescription_items)
@@ -147,7 +147,7 @@ class PrescriptionAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create prescription',
+                'message' => localize('global.failed_to_create_prescription'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -178,7 +178,7 @@ class PrescriptionAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch prescriptions',
+                'message' => localize('global.failed_to_fetch_prescriptions'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -205,7 +205,7 @@ class PrescriptionAjaxController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch prescription items',
+                'message' => localize('global.failed_to_fetch_prescription_items'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -224,7 +224,7 @@ class PrescriptionAjaxController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validation failed',
+                    'message' => localize('global.validation_failed'),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -236,14 +236,14 @@ class PrescriptionAjaxController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Prescription status updated successfully',
+                'message' => localize('global.prescription_status_updated_successfully'),
                 'data' => $prescription
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update prescription status',
+                'message' => localize('global.failed_to_update_prescription_status'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -262,7 +262,7 @@ class PrescriptionAjaxController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validation failed',
+                    'message' => localize('global.validation_failed'),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -274,14 +274,14 @@ class PrescriptionAjaxController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Prescription item status updated successfully',
+                'message' => localize('global.prescription_item_status_updated_successfully'),
                 'data' => $item
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update prescription item status',
+                'message' => localize('global.failed_to_update_prescription_item_status'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -298,13 +298,13 @@ class PrescriptionAjaxController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Prescription deleted successfully'
+                'message' => localize('global.prescription_deleted_successfully')
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete prescription',
+                'message' => localize('global.failed_to_delete_prescription'),
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -321,13 +321,13 @@ class PrescriptionAjaxController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Prescription item deleted successfully'
+                'message' => localize('global.prescription_item_deleted_successfully')
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete prescription item',
+                'message' => localize('global.failed_to_delete_prescription_item'),
                 'error' => $e->getMessage()
             ], 500);
         }

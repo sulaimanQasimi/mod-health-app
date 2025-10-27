@@ -843,6 +843,21 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete-item/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescriptionItem']);
     });
 
+    // Prescription Show API routes
+    Route::prefix('prescription-show-ajax')->name('prescription-show-ajax.')->group(function () {
+        Route::get('prescription-details/{id}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getPrescriptionDetails']);
+        Route::put('update-prescription-status/{id}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'updatePrescriptionStatus']);
+        Route::put('update-item-status/{itemId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'updateItemStatus']);
+        Route::get('alternatives/{itemId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getAlternatives']);
+        Route::post('add-alternative', [\App\Http\Controllers\PrescriptionShowApiController::class, 'addAlternative']);
+        Route::put('select-alternative/{alternativeId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'selectAlternative']);
+        Route::put('update-alternative-status/{alternativeId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'updateAlternativeStatus']);
+        Route::delete('delete-alternative/{alternativeId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'deleteAlternative']);
+        Route::get('all-medicines', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getAllMedicines']);
+        Route::get('medicine-types', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getMedicineTypes']);
+        Route::get('medicine-usage-types', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getMedicineUsageTypes']);
+    });
+
     // Visit Ajax routes
     Route::prefix('visit-ajax')->name('visit-ajax.')->group(function () {
         Route::get('food-types', [\App\Http\Controllers\VisitAjaxController::class, 'getFoodTypes']);

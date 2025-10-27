@@ -445,36 +445,75 @@
                           <i class="bx bx-pill me-1 text-primary"></i>
                           {{ localize('global.medicine') }}
                         </label>
-                        <select v-model="newAlternative.medicine_id" class="form-select select2-search" required>
-                          <option value="">{{ localize('global.select_medicine') }}</option>
-                          <option v-for="medicine in medicines" :key="medicine.id" :value="medicine.id">
-                            {{ medicine.name }}
-                          </option>
-                        </select>
+                        <Multiselect
+                          v-model="newAlternative.medicine"
+                          :options="medicines"
+                          :placeholder="localize('global.select_medicine')"
+                          :searchable="true"
+                          :allow-empty="false"
+                          :show-labels="false"
+                          label="name"
+                          track-by="id"
+                          :required="true"
+                          :loading="loading"
+                        >
+                          <template #noOptions>
+                            {{ localize('global.no_medicines_found') }}
+                          </template>
+                          <template #noResult>
+                            {{ localize('global.no_medicines_found') }}
+                          </template>
+                        </Multiselect>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-semibold">
                           <i class="bx bx-category me-1 text-info"></i>
                           {{ localize('global.medicine_type') }}
                         </label>
-                        <select v-model="newAlternative.medicine_type_id" class="form-select" required>
-                          <option value="">{{ localize('global.select_type') }}</option>
-                          <option v-for="type in medicineTypes" :key="type.id" :value="type.id">
-                            {{ type.type }}
-                          </option>
-                        </select>
+                        <Multiselect
+                          v-model="newAlternative.medicine_type"
+                          :options="medicineTypes"
+                          :placeholder="localize('global.select_type')"
+                          :searchable="true"
+                          :allow-empty="false"
+                          :show-labels="false"
+                          label="type"
+                          track-by="id"
+                          :required="true"
+                          :loading="loading"
+                        >
+                          <template #noOptions>
+                            {{ localize('global.no_types_found') }}
+                          </template>
+                          <template #noResult>
+                            {{ localize('global.no_types_found') }}
+                          </template>
+                        </Multiselect>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-semibold">
                           <i class="bx bx-edit me-1 text-warning"></i>
                           {{ localize('global.usage_type') }}
                         </label>
-                        <select v-model="newAlternative.usage_type_id" class="form-select" required>
-                          <option value="">{{ localize('global.select_usage_type') }}</option>
-                          <option v-for="usageType in medicineUsageTypes" :key="usageType.id" :value="usageType.id">
-                            {{ usageType.name }}
-                          </option>
-                        </select>
+                        <Multiselect
+                          v-model="newAlternative.usage_type"
+                          :options="medicineUsageTypes"
+                          :placeholder="localize('global.select_usage_type')"
+                          :searchable="true"
+                          :allow-empty="false"
+                          :show-labels="false"
+                          label="name"
+                          track-by="id"
+                          :required="true"
+                          :loading="loading"
+                        >
+                          <template #noOptions>
+                            {{ localize('global.no_usage_types_found') }}
+                          </template>
+                          <template #noResult>
+                            {{ localize('global.no_usage_types_found') }}
+                          </template>
+                        </Multiselect>
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-semibold">
@@ -633,9 +672,13 @@
 <script>
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
+import Multiselect from 'vue-multiselect'
 
 export default {
   name: 'PrescriptionShowApp',
+  components: {
+    Multiselect
+  },
   props: {
     prescriptionId: {
       type: [String, Number],
@@ -658,9 +701,9 @@ export default {
 
     // New alternative form data
     const newAlternative = reactive({
-      medicine_id: '',
-      medicine_type_id: '',
-      usage_type_id: '',
+      medicine: null,
+      medicine_type: null,
+      usage_type: null,
       dosage: '',
       frequency: '',
       amount: '',
@@ -829,9 +872,9 @@ export default {
       currentItem.value = item
       // Pre-fill form with main medicine data (excluding dosage, frequency, amount)
       Object.assign(newAlternative, {
-        medicine_id: item.medicine?.id || '',
-        medicine_type_id: item.medicine_type?.id || '',
-        usage_type_id: item.usage_type?.id || '',
+        medicine: item.medicine || null,
+        medicine_type: item.medicine_type || null,
+        usage_type: item.usage_type || null,
         dosage: '',
         frequency: '',
         amount: '',
@@ -888,7 +931,13 @@ export default {
         const response = await axios.post('/prescription-show-ajax/add-alternative', {
           prescription_id: props.prescriptionId,
           prescription_item_id: currentItem.value.id,
-          ...newAlternative
+          medicine_id: newAlternative.medicine?.id || '',
+          medicine_type_id: newAlternative.medicine_type?.id || '',
+          usage_type_id: newAlternative.usage_type?.id || '',
+          dosage: newAlternative.dosage,
+          frequency: newAlternative.frequency,
+          amount: newAlternative.amount,
+          notes: newAlternative.notes
         })
         if (response.data.success) {
           // Add to current item's alternatives
@@ -899,9 +948,9 @@ export default {
           showToast('Alternative added successfully')
           // Reset form
           Object.assign(newAlternative, {
-            medicine_id: '',
-            medicine_type_id: '',
-            usage_type_id: '',
+            medicine: null,
+            medicine_type: null,
+            usage_type: null,
             dosage: '',
             frequency: '',
             amount: '',
@@ -1050,7 +1099,7 @@ export default {
         newAlternative.dosage = currentItem.value.dosage || ''
         newAlternative.frequency = currentItem.value.frequency || ''
         newAlternative.amount = currentItem.value.amount || ''
-        showToast('Original data copied to form')
+        showToast(localize('global.original_data_copied'))
       }
     }
 
@@ -1065,9 +1114,9 @@ export default {
       currentItem.value = item
       // Pre-fill form with main medicine data
       Object.assign(newAlternative, {
-        medicine_id: item.medicine?.id || '',
-        medicine_type_id: item.medicine_type?.id || '',
-        usage_type_id: item.usage_type?.id || '',
+        medicine: item.medicine || null,
+        medicine_type: item.medicine_type || null,
+        usage_type: item.usage_type || null,
         dosage: item.dosage || '',
         frequency: item.frequency || '',
         amount: item.amount || '',
@@ -1329,6 +1378,8 @@ export default {
 </script>
 
 <style scoped>
+@import 'vue-multiselect/dist/vue-multiselect.css';
+
 .table-bg-secondary {
   background-color: #f8f9fa;
 }
@@ -1348,5 +1399,71 @@ export default {
 
 .modal.show {
   display: block !important;
+}
+
+/* Vue Multiselect styles */
+.multiselect {
+  min-height: 38px;
+}
+
+.multiselect__tags {
+  min-height: 38px;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.multiselect__tags:focus-within {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.multiselect__placeholder {
+  color: #6c757d;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.multiselect__single {
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.5;
+}
+
+.multiselect__input {
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.5;
+}
+
+.multiselect__option--highlight {
+  background: #0d6efd;
+}
+
+.multiselect__option--highlight::after {
+  background: #0d6efd;
+}
+
+.multiselect__option--selected {
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+  background: #0d6efd;
+  color: white;
+}
+
+.multiselect__spinner {
+  background: #0d6efd;
+}
+
+.multiselect__loading-arrow {
+  border-color: #0d6efd transparent transparent;
 }
 </style>

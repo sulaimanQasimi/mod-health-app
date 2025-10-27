@@ -848,4 +848,8 @@ return [
     'showing' => 'ښودل',
     'of' => 'له',
     'items' => 'توکي',
+    'no_medicines_found' => 'هیڅ درمل و نه موندل شو',
+    'no_types_found' => 'هیڅ ډول و نه موندل شو',
+    'no_usage_types_found' => 'هیڅ د کارونې ډول و نه موندل شو',
+    'original_data_copied' => 'اصلي ډیټا کاپي شو',
 ];

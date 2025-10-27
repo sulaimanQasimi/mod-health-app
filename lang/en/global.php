@@ -1011,6 +1011,7 @@ return [
     'actions' => 'Actions',
     'number' => 'Number',
     'patient_name' => 'Patient Name',
+    'patient_id' => 'Patient ID',
     'status' => 'Status',
     'type' => 'Type',
     'name' => 'Name',

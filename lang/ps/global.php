@@ -507,6 +507,7 @@ return [
     'name_must_be_unique' => 'د فیزیوتراپی د ډول نوم',
     'edit_physiotherapy_type' => 'د فیزیوتراپی ډول تصحیح کول',
     'patient_name' => 'د ناروغ نوم',
+    'patient_id' => 'د ناروغ پېژندنه',
     'physiotherapy_type' => 'د فیزیوتراپی ډول',
     'physiotherapist' => 'فیزیوتراپیست',
     'duration' => 'موده',

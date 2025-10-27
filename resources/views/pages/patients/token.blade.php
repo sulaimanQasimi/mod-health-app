@@ -59,7 +59,8 @@
 <body>
     <div class="container">
         <div class="details">
-            <p><strong>{{ $patient->name }} {{ $patient->last_name }}</strong></p>
+            <p><strong>{{ localize('global.patient_id') }}: {{ $patient->id }}</strong></p>
+            <p><strong>{{ localize('global.patient_name') }}: {{ $patient->name }} {{ $patient->last_name }}</strong></p>
             @if($patient->father_name)
                 <p>{{ localize('global.father_name') }}: {{ $patient->father_name }}</p>
             @endif
@@ -71,6 +72,10 @@
             {{ $name  }}
             <br>
             {{ $appointment?->department?->name }}
+            @if($appointment?->department?->room_number)
+                <br>
+                <strong>{{ localize('global.room_number') }}: {{ $appointment->department->room_number }}</strong>
+            @endif
         </div>
     </div>
     <script>

@@ -1459,15 +1459,124 @@ export default {
   font-weight: 700 !important;
   border-width: 2px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1.1rem !important;
+  background-color: #2d5a27 !important;
+  border-color: #2d5a27 !important;
+  color: white !important;
 }
 
 .btn-warning.fw-bold:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background-color: #1e3d1a !important;
+  border-color: #1e3d1a !important;
+  color: white !important;
 }
 
 /* Selected state indicator */
 .btn-warning.fw-bold i {
   font-weight: 900;
+  font-size: 1.2rem !important;
+}
+
+/* General button styling improvements */
+.btn {
+  font-size: 1rem !important;
+}
+
+.btn-sm {
+  font-size: 0.95rem !important;
+}
+
+/* Success button styling with dark grass green */
+.btn-success {
+  background-color: #2d5a27 !important;
+  border-color: #2d5a27 !important;
+  font-size: 1.05rem !important;
+}
+
+.btn-success:hover {
+  background-color: #1e3d1a !important;
+  border-color: #1e3d1a !important;
+}
+
+/* Alternative select button styling */
+.btn-success.fw-bold {
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  background-color: #2d5a27 !important;
+  border-color: #2d5a27 !important;
+}
+
+.btn-success.fw-bold:hover {
+  background-color: #1e3d1a !important;
+  border-color: #1e3d1a !important;
+}
+
+/* Table text improvements */
+.table {
+  font-size: 1.05rem !important;
+}
+
+.table th {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #2d5a27 !important;
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #2d5a27 !important;
+}
+
+.table td {
+  font-size: 15px !important;
+  color: #2d5a27 !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.table tbody tr:hover {
+  background-color: #f0f8f0 !important;
+}
+
+.table tbody tr:hover td {
+  color: #1e3d1a !important;
+}
+
+/* Badge styling with dark grass green */
+.badge {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+}
+
+.badge.bg-success {
+  background-color: #2d5a27 !important;
+}
+
+.badge.bg-warning {
+  background-color: #8b5a2b !important;
+  color: white !important;
+}
+
+/* Modal improvements */
+.modal-title {
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  color: #2d5a27 !important;
+}
+
+.modal-body {
+  font-size: 1.05rem !important;
+}
+
+/* Form label improvements */
+.form-label {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #2d5a27 !important;
+}
+
+/* Card header improvements */
+.card-header h5 {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  color: #2d5a27 !important;
 }
 </style>

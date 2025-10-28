@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,13 +13,13 @@
             font-style: normal;
             font-display: swap;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'ModFont', 'Arial', sans-serif;
             font-size: 12px;
@@ -30,25 +31,24 @@
             direction: rtl;
             text-align: right;
         }
-        
+
         @page {
-            margin: 15mm;
+            margin: 8mm;
             size: A4;
         }
-        
+
         .report-container {
             max-width: 100%;
             margin: 0 auto;
             background: white;
         }
-        
+
         .header {
             margin-bottom: 30px;
             border-bottom: 2px solid #000;
             padding-bottom: 20px;
-            padding: 20px;
         }
-        
+
         .header-grid {
             display: grid;
             grid-template-columns: 120px 1fr 120px;
@@ -56,7 +56,7 @@
             align-items: center;
             min-height: 120px;
         }
-        
+
         .logo-container {
             display: flex;
             justify-content: center;
@@ -65,13 +65,13 @@
             height: 100px;
             position: relative;
         }
-        
+
         .logo-image {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
-        
+
         .text-column {
             padding: 10px;
             min-height: 100px;
@@ -80,7 +80,7 @@
             justify-content: center;
             text-align: center;
         }
-        
+
         .text-column h3 {
             color: #000;
             margin: 0 0 10px 0;
@@ -89,7 +89,7 @@
             text-align: center;
             padding-bottom: 5px;
         }
-        
+
         .text-column p {
             color: #333;
             margin: 2px 0;
@@ -97,61 +97,67 @@
             line-height: 1.3;
             text-align: center;
         }
-        
+
         .report-title {
             text-align: center;
             margin-top: 20px;
             padding-top: 15px;
             border-top: 1px solid #ddd;
         }
-        
+
         .report-title h1 {
             color: #000;
             margin: 0;
             font-size: 24px;
         }
-        
+
         .report-title h2 {
             color: #333;
             margin: 5px 0 0 0;
             font-size: 16px;
             font-weight: normal;
         }
-        
+
         .patient-info {
             padding: 15px;
             margin-bottom: 20px;
             border: 1px solid #000;
         }
-        
+
         .patient-info h3 {
             margin: 0 0 10px 0;
             color: #000;
             font-size: 16px;
         }
-        
+
         .patient-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
+            width: 100%;
+            border-collapse: collapse;
         }
-        
-        .patient-details div {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px dotted #ccc;
+
+        .patient-details th,
+        .patient-details td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: right;
         }
-        
-        .patient-details strong {
+
+        .patient-details th {
+            font-weight: bold;
             color: #000;
+            white-space: nowrap;
         }
-        
+
+        .patient-details td {
+            width: auto;
+        }
+
         .test-section {
             margin-bottom: 30px;
             page-break-inside: avoid;
+            margin-top: 20px;
         }
-        
+
         .test-header {
             color: #000;
             padding: 10px 15px;
@@ -159,68 +165,87 @@
             font-size: 14px;
             font-weight: bold;
         }
-        
-        .test-details {
-            border: 1px solid #000;
-            padding: 15px;
-        }
-        
+
+        .test-details {}
+
         .test-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
         }
-        
-        .test-meta div {
-            display: flex;
-            justify-content: space-between;
+
+        .test-meta th,
+        .test-meta td {
+            border: 1px solid #000;
+            text-align: center;
+            padding: 2px;
         }
-        
-        .test-meta strong {
+
+        .test-meta th {
+            font-weight: bold;
             color: #000;
         }
-        
+
+        .test-meta td {}
+
         .parameters-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            display: table;
         }
-        
+
+        .parameters-table thead {
+            display: table-header-group;
+        }
+
+        .parameters-table tbody {
+            display: table-row-group;
+        }
+
+        .parameters-table tr {
+            display: table-row;
+        }
+
         .parameters-table th,
         .parameters-table td {
             border: 1px solid #000;
             padding: 8px;
             text-align: right;
+            display: table-cell;
+            vertical-align: middle;
         }
-        
+
         .parameters-table th {
             background: #f0f0f0;
             font-weight: bold;
             color: #000;
+            width: 25%;
         }
-        
+
+        .parameters-table td {
+            width: 25%;
+        }
+
         .parameters-table tr:nth-child(even) {
             background: #f5f5f5;
         }
-        
+
         .result-value {
             font-weight: bold;
             color: #000;
         }
-        
+
         .normal-range {
             color: #000;
             font-size: 11px;
         }
-        
+
         .unit {
             color: #333;
             font-size: 11px;
         }
-        
+
         .footer {
             margin-top: 30px;
             padding-top: 20px;
@@ -229,7 +254,7 @@
             color: #000;
             font-size: 11px;
         }
-        
+
         .print-button {
             background: #000;
             color: white;
@@ -239,27 +264,28 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        
+
         .no-print {
             display: block;
         }
-        
+
         @media print {
             body {
                 margin: 0;
                 padding: 15px;
             }
-            
+
             .test-section {
                 page-break-inside: avoid;
             }
-            
+
             .no-print {
                 display: none;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="report-container">
         <!-- Report Header -->
@@ -269,7 +295,7 @@
                 <div class="logo-container logo-left">
                     <img src="{{ asset('images/logos/لوگو قومنداني.JPG') }}" alt="Left Logo" class="logo-image">
                 </div>
-                
+
                 <!-- First Text Column (Arabic) -->
                 <div class="text-column text-column-left">
                     <h2>امارت اسلامی افغانستان</h2>
@@ -279,113 +305,100 @@
                     <h4>قوماندانی اکادمی علوم طبی</h4>
                 </div>
 
-                
+
                 <!-- Right Logo -->
                 <div class="logo-container logo-right">
-                    <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Right Logo" class="logo-image">
+                    <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Right Logo"
+                        class="logo-image">
                 </div>
             </div>
         </div>
 
         <!-- Patient Information -->
         @if($patient)
-            <div class="patient-info">
-                <div class="patient-details">
-                    <div>
-                        <strong>{{ localize('global.name') }}:</strong>
-                        <span>{{ $patient->name }} {{ $patient->last_name }}</span>
-                    </div>
-                    <div>
-                        <strong>{{ localize('global.father_name') }}:</strong>
-                        <span>{{ $patient->father_name ?? '—' }}</span>
-                    </div>
-                    <div>
-                        <strong>{{ localize('global.age') }}:</strong>
-                        <span>{{ $patient->age ?? '—' }}</span>
-                    </div>
-                    <div>
-                        <strong>{{ localize('global.phone') }}:</strong>
-                        <span>{{ $patient->phone ?? '—' }}</span>
-                    </div>
-                    <div>
-                        <strong>{{ localize('global.gender') }}:</strong>
-                        <span>{{ $patient->gender ?? '—' }}</span>
-                    </div>
+            <div class="">
+                <table class="patient-details">
+                    <tr>
+                        <th>{{ localize('global.name') }}</th>
+                        <td>{{ $patient->name }} {{ $patient->last_name }}</td>
+
+                        <th>{{ localize('global.father_name') }}</th>
+                        <td>{{ $patient->father_name ?? '—' }}</td>
+                        <th>{{ localize('global.age') }}</th>
+                        <td>{{ $patient->age ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ localize('global.phone') }}</th>
+                        <td>{{ $patient->phone ?? '—' }}</td>
+
+                        <th>{{ localize('global.gender') }}</th>
+                        <td>{{ $patient->gender ?? '—' }}</td>
+                    </tr>
                     @if($patient->id_number)
-                        <div>
-                            <strong>{{ localize('global.id_number') }}:</strong>
-                            <span>{{ $patient->id_number }}</span>
-                        </div>
+                        <th>{{ localize('global.id_number') }}</th>
+                        <td>{{ $patient->id_number }}</td>
+
                     @endif
                     @if($patient->date_of_birth)
-                        <div>
-                            <strong>{{ localize('global.date_of_birth') }}:</strong>
-                            <span>{{ \Verta($patient->date_of_birth)->formatJalaliDate() }}</span>
-                        </div>
+                        <th>{{ localize('global.date_of_birth') }}</th>
+                        <td>{{ \Verta($patient->date_of_birth)->formatJalaliDate() }}</td>
                     @endif
                     @if($patient->email)
-                        <div>
-                            <strong>{{ localize('global.email') }}:</strong>
-                            <span>{{ $patient->email }}</span>
-                        </div>
+                        <th>{{ localize('global.email') }}</th>
+                        <td>{{ $patient->email }}</td>
                     @endif
                     @if($patient->emergency_contact)
-                        <div>
-                            <strong>{{ localize('global.emergency_contact') }}:</strong>
-                            <span>{{ $patient->emergency_contact }}</span>
-                        </div>
+                        <th>{{ localize('global.emergency_contact') }}</th>
+                        <td>{{ $patient->emergency_contact }}</td>
                     @endif
-                </div>
+                </table>
             </div>
         @endif
 
         <!-- Test Section -->
         <div class="test-section">
-            <h3 class="test-header" style="text-align: center;">
-                {{ $testName ?? localize('global.test_name') }}
-            </h3>
-            
             <div class="test-details">
                 <!-- Test Meta Information -->
                 @if($testRegistration)
-                    <div class="test-meta">
-                        <div>
-                            <strong>{{ localize('global.reference_number') }}:</strong>
-                            <span>{{ $testRegistration->ref_no ?? '—' }}</span>
-                        </div>
-                        <div>
-                            <strong>{{ localize('global.doctor') }}:</strong>
-                            <span>{{ $testRegistration->doctor->name ?? '—' }}</span>
-                        </div>
-                        <div>
-                            <strong>{{ localize('global.registration_date') }}:</strong>
-                            <span>{{ $testRegistration->registration_date ? \Verta($testRegistration->registration_date)->formatJalaliDate() : '—' }}</span>
-                        </div>
-                        @if($testRegistration->completed_at)
-                            <div>
-                                <strong>{{ localize('global.completed_date') }}:</strong>
-                                <span>{{ \Verta($testRegistration->completed_at)->formatJalaliDate() }}</span>
-                            </div>
-                        @endif
-                        @if($testRegistration->assigned_to)
-                            <div>
-                                <strong>{{ localize('global.assigned_to') }}:</strong>
-                                <span>{{ $testRegistration->assignedTo->name ?? '—' }}</span>
-                            </div>
-                        @endif
-                        @if($testRegistration->assigned_section_id)
-                            <div>
-                                <strong>{{ localize('global.assigned_section') }}:</strong>
-                                <span>{{ $testRegistration->assignedSection->name ?? '—' }}</span>
-                            </div>
-                        @endif
-                        @if($testRegistration->labType && $testRegistration->labType->category)
-                            <div>
-                                <strong>{{ localize('global.test_category') }}:</strong>
-                                <span>{{ $testRegistration->labType->category->name ?? '—' }}</span>
-                            </div>
-                        @endif
-                    </div>
+                    <table class="test-meta">
+                        <tr>
+                            <th colspan="6">{{ $testName ?? localize('global.test_name') }}</th>
+                        </tr>
+                        <tr>
+                            <th>{{ localize('global.reference_number') }}</th>
+                            <td>{{ $testRegistration->ref_no ?? '—' }}</td>
+
+                            <th>{{ localize('global.doctor') }}</th>
+                            <td>{{ $testRegistration->doctor->name ?? '—' }}</td>
+
+                            <th>{{ localize('global.registration_date') }}</th>
+                            <td>{{ $testRegistration->registration_date ? \Verta($testRegistration->registration_date)->formatJalaliDate() : '—' }}
+                            </td>
+
+                            @if($testRegistration->completed_at)
+
+                                <th>{{ localize('global.completed_date') }}</th>
+                                <td>{{ \Verta($testRegistration->completed_at)->formatJalaliDate() }}</td>
+
+                            @endif
+                        </tr>
+                        <tr>
+                            @if($testRegistration->assigned_to)
+                                <th>{{ localize('global.assigned_to') }}</th>
+                                <td>{{ $testRegistration->assignedTo->name ?? '—' }}</td>
+
+                            @endif
+                            @if($testRegistration->assigned_section_id)
+                                <th>{{ localize('global.assigned_section') }}</th>
+                                <td>{{ $testRegistration->assignedSection->name ?? '—' }}</td>
+                            @endif
+                            @if($testRegistration->labType && $testRegistration->labType->category)
+                                <th>{{ localize('global.test_category') }}</th>
+                                <td>{{ $testRegistration->labType->category->name ?? '—' }}</td>
+
+                            @endif
+                        </tr>
+                    </table>
                 @endif
 
                 <!-- Test Parameters and Results -->
@@ -394,7 +407,7 @@
                     $hasParameters = $testRegistration && $testRegistration->labType && $testRegistration->labType->directLabTestParameters && $testRegistration->labType->directLabTestParameters->count() > 0;
                     $hasTextResult = $results->where('text_result', '!=', null)->count() > 0;
                 @endphp
-                
+
                 @if($hasParameters)
                     {{-- Parametered test - show parameter table --}}
                     <table class="parameters-table">
@@ -419,10 +432,11 @@
                             @endforeach
                         </tbody>
                     </table>
-                    
+
                     {{-- Show lab type parameters if no results yet --}}
                     @if($testRegistration && $testRegistration->labType && $testRegistration->labType->directLabTestParameters && $testRegistration->labType->directLabTestParameters->count() > 0 && $results->count() == 0)
-                        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
+                        <div
+                            style="margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
                             <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.expected_parameters') }}</h4>
                             <table class="parameters-table">
                                 <thead>
@@ -437,7 +451,8 @@
                                         <tr>
                                             <td style="text-align: center;">{{ $parameter->parameter_name ?? '—' }}</td>
                                             <td class="unit" style="text-align: center;">{{ $parameter->unit ?? '—' }}</td>
-                                            <td class="normal-range" style="text-align: center;">{{ $parameter->normal_range ?? '—' }}</td>
+                                            <td class="normal-range" style="text-align: center;">
+                                                {{ $parameter->normal_range ?? '—' }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -446,9 +461,10 @@
                     @endif
                 @elseif($hasTextResult)
                     {{-- Non-parametered test - show text result --}}
-                    <div class="text-result-section" style="background: #f8f9fa; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; margin: 20px 0;">
+                    <div class="text-result-section">
                         <h4 style="margin-bottom: 15px; color: #333;">{{ localize('global.test_result') }}</h4>
-                        <div style="background: white; padding: 15px; border: 1px solid #ccc; border-radius: 3px; min-height: 100px; white-space: pre-wrap; direction: ltr; text-align: left;">
+                        <div
+                            style="background: white; border: 1px solid #ccc; border-radius: 3px; white-space: pre-wrap; direction: ltr; text-align: left;">
                             {!! $results->where('text_result', '!=', null)->first()->text_result ?? localize('global.no_result_available') !!}
                         </div>
                     </div>
@@ -464,9 +480,10 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>{{ localize('global.report_generated_on') }}: {{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d H:i:s') }}</p>
+            <p>{{ localize('global.report_generated_on') }}:
+                {{ \Morilog\Jalali\Jalalian::now()->format('Y/m/d H:i:s') }}</p>
             <p>{{ localize('global.laboratory_system') }}</p>
-            
+
             <div class="no-print">
                 <button class="print-button" onclick="window.print()">
                     {{ localize('global.print_report') }}
@@ -477,9 +494,10 @@
 
     <script>
         // Auto print when page loads
-        window.onload = function() {
+        window.onload = function () {
             window.print();
         }
     </script>
 </body>
+
 </html>

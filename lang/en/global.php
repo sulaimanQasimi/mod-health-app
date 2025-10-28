@@ -448,6 +448,7 @@ return [
     'doctor' => 'Doctor',
     'outcome_date' => 'Outcome Date',
     'search_by_medicine_patient' => 'Search by medicine or patient',
+    'search_by_token_id' => 'Search by token ID',
     'no_outcome_records_found' => 'No outcome records found',
     'income_record_created_successfully' => 'Income record created successfully',
     'outcome_record_created_successfully' => 'Outcome record created successfully',

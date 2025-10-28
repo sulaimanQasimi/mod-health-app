@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('prescriptions.index') }}" class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="search" class="form-label">{{ localize('global.search') }}</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="search" name="search" 
@@ -27,6 +27,11 @@
                                     <i class="bx bx-search"></i>
                                 </button>
                             </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="token_filter" class="form-label">{{ localize('global.token_id') }}</label>
+                            <input type="text" class="form-control" id="token_filter" name="token_filter" 
+                                value="{{ request('token_filter') }}" placeholder="{{ localize('global.search_by_token_id') }}">
                         </div>
                         <div class="col-md-2">
                             <label for="status" class="form-label">{{ localize('global.status') }}</label>
@@ -94,7 +99,11 @@
                                             </td>
                                             <td>
                                                 @if($prescription->token)
-                                                    <span class="badge bg-info">{{ $prescription->token->number }}</span>
+                                                    <div>
+                                                        <span class="badge bg-info">{{ $prescription->token->number }}</span>
+                                                        <br>
+                                                        <small class="text-muted">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($prescription->token->date) }}</small>
+                                                    </div>
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif

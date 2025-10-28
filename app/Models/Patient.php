@@ -93,6 +93,11 @@ class Patient extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function printedNumbers()
+    {
+        return $this->hasMany(PrintedNumber::class);
+    }
     public function province()
     {
         return $this->hasOne(Province::class, 'id', 'province_id');

@@ -545,6 +545,7 @@ return [
     'my_procedures' => 'زما پروسیجرونه',
     'reports' => 'راپورونه',
     'search_patient_name' => 'د ناروغ د نوم په اساس پلټنه',
+    'search_by_token_id' => 'د ټوکن پېژندنې په اساس پلټنه',
     'search' => 'پلټنه',
     'reset' => 'پاکول',
     'export' => 'صادرول',

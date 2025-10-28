@@ -36,6 +36,20 @@ class PrescriptionController extends Controller
             });
         }
 
+        // Filter by token ID
+        if ($request->filled('token_filter')) {
+            $tokenFilter = $request->token_filter;
+            $query->whereHas('appointment', function ($q) use ($tokenFilter) {
+                $q->whereHas('patient', function ($patientQuery) use ($tokenFilter) {
+                    $patientQuery->whereHas('printedNumbers', function ($tokenQuery) use ($tokenFilter) {
+                        $tokenQuery->where('number', 'like', '%' . $tokenFilter . '%')
+                                  ->whereColumn('printed_numbers.department_id', 'appointments.department_id')
+                                  ->whereColumn('printed_numbers.date', 'appointments.date');
+                    });
+                });
+            });
+        }
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('is_completed', $request->status);

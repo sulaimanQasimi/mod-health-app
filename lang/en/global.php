@@ -493,6 +493,7 @@ return [
     'of' => 'of',
     'results' => 'results',
     'cancel' => 'Cancel',
+    'unsaved_changes_warning' => 'You have unsaved changes. Are you sure you want to leave this page?',
     
     // Enhanced Pharmacy translations
     'enter_pharmacy_name' => 'Enter pharmacy name',

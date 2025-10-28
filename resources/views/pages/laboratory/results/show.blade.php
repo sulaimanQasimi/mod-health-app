@@ -283,11 +283,14 @@
                     </div>
 
                     <div class="d-flex gap-3 justify-content-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+                            <i class="bx bx-arrow-back"></i> {{ localize('global.cancel') }}
+                        </button>
                         <button type="submit" class="btn btn-primary" id="saveResults">
                             <i class="bx bx-save"></i> {{ localize('global.save') }}
                         </button>
                         @if($firstTest?->ref_no)
-                            <a href="{{ route('laboratory.reports.print', $firstTest->ref_no) }}" target="_blank" class="btn btn-outline-secondary">
+                            <a href="{{ route('laboratory.reports.print', $firstTest->ref_no) }}" target="_blank" class="btn btn-outline-info">
                                 <i class="bx bx-printer"></i> {{ localize('global.print_report') }}
                             </a>
                         @endif
@@ -542,5 +545,34 @@
                 });
             }
         });
+
+        // Go back function
+        function goBack() {
+            // Check if there are unsaved changes
+            const form = document.getElementById('resultForm');
+            const formData = new FormData(form);
+            let hasChanges = false;
+            
+            // Check if any input has been modified
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.type !== 'hidden' && input.value.trim() !== '') {
+                    hasChanges = true;
+                }
+            });
+            
+            // Check CKEditor content if it exists
+            if (editor && editor.getData().trim() !== '') {
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                if (confirm('{{ localize("global.unsaved_changes_warning") }}')) {
+                    window.history.back();
+                }
+            } else {
+                window.history.back();
+            }
+        }
     </script>
 @endsection

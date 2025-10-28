@@ -214,12 +214,6 @@
                             <i class="bx bx-list-ul"></i>
                             <span class="d-none d-sm-inline ms-1">{{ localize('global.alternatives') }}</span>
                           </button>
-                          <button type="button" 
-                                  class="btn btn-outline-primary" 
-                                  @click="quickAddAlternative(item)"
-                                  :title="localize('global.quick_add_alternative')">
-                            <i class="bx bx-plus"></i>
-                          </button>
                         </div>
                         <span v-if="item.alternative_items?.length > 0" 
                               class="badge bg-primary align-self-start">
@@ -304,11 +298,11 @@
                     <td>
                       <div class="btn-group btn-group-sm d-flex flex-column flex-sm-row" role="group">
                         <button @click="deselectAlternative(item.selected_alternative)" 
-                                class="btn btn-warning mb-1 mb-sm-0" 
+                                class="btn btn-warning fw-bold mb-1 mb-sm-0" 
                                 :disabled="loading"
                                 :title="localize('global.deselect_alternative')">
                           <i class="bx bx-x"></i>
-                          <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect_alternative') }}</span>
+                          <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect') }}</span>
                         </button>
                         <button type="button" 
                                 class="btn btn-info" 
@@ -551,13 +545,15 @@
                                       :disabled="loading"
                                       :title="localize('global.select_alternative')">
                                 <i class="bx bx-check"></i>
+                                <span class="d-none d-sm-inline ms-1">{{ localize('global.select') }}</span>
                               </button>
                               <button v-else
                                       @click="deselectAlternative(alternative)" 
-                                      class="btn btn-warning" 
+                                      class="btn btn-warning fw-bold" 
                                       :disabled="loading"
                                       :title="localize('global.deselect_alternative')">
                                 <i class="bx bx-x"></i>
+                                <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect') }}</span>
                               </button>
                               <button @click="toggleAlternativeStatus(alternative)" 
                                       class="btn"
@@ -1237,6 +1233,7 @@ export default {
       }
     }
 
+    
 
     const refreshPrescriptionData = async () => {
       try {
@@ -1455,5 +1452,22 @@ export default {
 .nav-tabs .nav-link.active .badge {
   background-color: rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
+}
+
+/* Selected alternative button styles */
+.btn-warning.fw-bold {
+  font-weight: 700 !important;
+  border-width: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-warning.fw-bold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Selected state indicator */
+.btn-warning.fw-bold i {
+  font-weight: 900;
 }
 </style>

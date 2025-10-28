@@ -77,7 +77,7 @@
                                     <tr>
                                         <th>{{ localize('global.number') }}</th>
                                         <th>{{ localize('global.card_number') }}</th>
-                                        <th>{{ localize('global.patient_name') }}</th>
+                                        <th style="font-size: 17px; color: green;">{{ localize('global.patient_name') }}</th>
                                         <th>{{ localize('global.father_name') }}</th>
                                         <th>{{ localize('global.token_id') }}</th>
                                         <th>{{ localize('global.referred_to') }}</th>
@@ -93,7 +93,7 @@
                                             <td>
                                                 <span class="badge bg-secondary">{{ $prescription->patient->id_card ?? '-' }}</span>
                                             </td>
-                                            <td>{{ $prescription->patient->name ?? '-' }}</td>
+                                            <td style="font-size: 17px; color: green;">{{ $prescription->patient->name ?? '-' }}</td>
                                             <td>
                                                 <span class="text-muted">{{ $prescription->patient->father_name ?? '-' }}</span>
                                             </td>

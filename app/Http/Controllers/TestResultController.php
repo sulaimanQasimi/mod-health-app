@@ -155,6 +155,7 @@ class TestResultController extends Controller
             'test_registration_id' => 'required|exists:patient_test_registrations,id',
             'results' => 'nullable|array',
             'text_result' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
         try {
@@ -213,6 +214,10 @@ class TestResultController extends Controller
                 }
             }
 
+            // Update notes field
+            $test->notes = $request->notes;
+            $test->save();
+
             // Check if test should be marked as completed
             $allResults = PatientTestResult::where('ref_no', $request->ref_no)
                 ->where('test_registration_id', $request->test_registration_id)
@@ -230,7 +235,6 @@ class TestResultController extends Controller
 
             if ($allFilled) {
                 // Update test registration status to completed
-                $test = PatientTestRegistration::find($request->test_registration_id);
                 $test->status = 'completed';
                 $test->save();
             }

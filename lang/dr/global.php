@@ -8,6 +8,7 @@ return [
     'patient_records' => 'مریضان',
     'records' => 'مریضان',
     'patient_name' => 'نام مریض',
+    'patient_details' => 'جزئیات مریض',
     'nid' => 'نمبر تذکره',
     'id_card' => 'نمبر کارت',
     'referral_name' => 'معرفی کننده',
@@ -855,6 +856,7 @@ return [
     'urgent' => 'فوری',
     'stat' => 'فوری',
     'notes' => 'یادداشت‌ها',
+    'add_notes_here' => 'یادداشت‌ها را اینجا اضافه کنید...',
     'optional_notes' => 'یادداشت‌های اختیاری...',
     'mark_in_progress' => 'علامت‌گذاری در حال انجام',
     'mark_completed' => 'علامت‌گذاری تکمیل شده',
@@ -3534,6 +3536,7 @@ return [
     'loading' => 'در حال بارگذاری',
     'close' => 'بستن',
     'notes' => 'یادداشت‌ها',
+    'add_notes_here' => 'یادداشت‌ها را اینجا اضافه کنید...',
     'usage_type' => 'نوع استفاده',
     'dosage' => 'دوز',
     'frequency' => 'فرکانس',
@@ -3646,6 +3649,7 @@ return [
     'frequency' => 'فرکانس',
     'amount' => 'مقدار',
     'notes' => 'یادداشت‌ها',
+    'add_notes_here' => 'یادداشت‌ها را اینجا اضافه کنید...',
     'select_medicine_to_auto_fill' => 'دارو را انتخاب کنید تا فیلدها به طور خودکار پر شوند',
 
 ];

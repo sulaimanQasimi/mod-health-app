@@ -430,6 +430,7 @@ return [
     'purchase_date' => 'Purchase Date',
     'invoice_number' => 'Invoice Number',
     'notes' => 'Notes',
+    'add_notes_here' => 'Add notes here...',
     'create_income_record' => 'Create Income Record',
     'select_medicine' => 'Select Medicine',
     'select_income_type' => 'Select Income Type',
@@ -445,6 +446,7 @@ return [
     'damaged' => 'Damaged',
     'lost' => 'Lost',
     'patient' => 'Patient',
+    'patient_details' => 'Patient Details',
     'doctor' => 'Doctor',
     'outcome_date' => 'Outcome Date',
     'search_by_medicine_patient' => 'Search by medicine or patient',
@@ -491,6 +493,7 @@ return [
     'of' => 'of',
     'results' => 'results',
     'cancel' => 'Cancel',
+    'unsaved_changes_warning' => 'You have unsaved changes. Are you sure you want to leave this page?',
     
     // Enhanced Pharmacy translations
     'enter_pharmacy_name' => 'Enter pharmacy name',

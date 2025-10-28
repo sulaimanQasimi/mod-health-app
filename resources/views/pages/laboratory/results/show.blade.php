@@ -13,86 +13,170 @@
         </nav>
 
         {{-- Patient Information Header --}}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <div class="d-flex align-items-center">
-                    <i class="bx bx-user me-2"></i>
-                    <h5 class="mb-0">{{ localize('global.patient_information') }}</h5>
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-gradient-primary text-white border-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-md me-3">
+                            <div class="avatar-initial bg-white text-primary rounded-circle">
+                                <i class="bx bx-user fs-4"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-semibold">{{ localize('global.patient_information') }}</h5>
+                            <small class="opacity-75">{{ localize('global.patient_details') }}</small>
+                        </div>
+                    </div>
+                    @if($firstTest)
+                        <div class="text-end">
+                            <span class="badge bg-white text-primary fs-6 px-3 py-2">
+                                <i class="bx bx-hash me-1"></i>
+                                {{ $firstTest->ref_no ?? '—' }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
             </div>
-            <div class="card-body">
-                <div class="row g-4">
-                    {{-- Patient Name Card --}}
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="card bg-label-primary">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="content-left">
-                                        <span>{{ localize('global.name') }}</span>
-                                        <div class="d-flex align-items-end mt-2">
-                                            <p class="mb-0 me-2 badge badge-center bg-primary" style="font-size: 20px; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->name }} {{ $patient->last_name }}</p>
-                                        </div>
+            <div class="card-body p-0">
+                <div class="row g-0">
+                    {{-- Patient Name --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-end border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle">
+                                        <i class="bx bx-user fs-5"></i>
                                     </div>
-                                    <span class="badge bg-primary rounded p-2">
-                                        <i class="bx bx-user bx-lg"></i>
-                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ $patient->name }} {{ $patient->last_name }}</h6>
+                                    <small class="text-muted">{{ localize('global.patient_name') }}</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    {{-- Father Name Card --}}
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="card bg-label-info">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="content-left">
-                                        <span>{{ localize('global.father_name') }}</span>
-                                        <div class="d-flex align-items-end mt-2">
-                                            <p class="mb-0 me-2 badge badge-center bg-info" style="font-size: 0.9rem; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->father_name }}</p>
-                                        </div>
+                    {{-- Father Name --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-end border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-info bg-opacity-10 text-info rounded-circle">
+                                        <i class="bx bx-male-sign fs-5"></i>
                                     </div>
-                                    <span class="badge bg-info rounded p-2">
-                                        <i class="bx bx-male-sign bx-lg"></i>
-                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ $patient->father_name ?? '—' }}</h6>
+                                    <small class="text-muted">{{ localize('global.father_name') }}</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    {{-- Age Card --}}
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="card bg-label-success">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="content-left">
-                                        <span>{{ localize('global.age') }}</span>
-                                        <div class="d-flex align-items-end mt-2">
-                                            <p class="mb-0 me-2 badge badge-center bg-success" style="font-size: 0.9rem; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->age }} {{ localize('global.years') }}</p>
-                                        </div>
+                    {{-- Age --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-end border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-success bg-opacity-10 text-success rounded-circle">
+                                        <i class="bx bx-cake fs-5"></i>
                                     </div>
-                                    <span class="badge bg-success rounded p-2">
-                                        <i class="bx bx-cake bx-lg"></i>
-                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ $patient->age ?? '—' }} {{ localize('global.years') }}</h6>
+                                    <small class="text-muted">{{ localize('global.age') }}</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    {{-- Phone Card --}}
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="card bg-label-warning">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="content-left">
-                                        <span>{{ localize('global.phone') }}</span>
-                                        <div class="d-flex align-items-end mt-2">
-                                            <p class="mb-0 me-2 badge badge-center bg-warning" style="font-size: 0.9rem; padding: 0.5rem 0.75rem; width: 150px;">{{ $patient->phone }}</p>
-                                        </div>
+                    {{-- Phone --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-warning bg-opacity-10 text-warning rounded-circle">
+                                        <i class="bx bx-phone-call fs-5"></i>
                                     </div>
-                                    <span class="badge bg-warning rounded p-2">
-                                        <i class="bx bx-phone-call bx-lg"></i>
-                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ $patient->phone ?? '—' }}</h6>
+                                    <small class="text-muted">{{ localize('global.phone') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {{-- Additional Info Row --}}
+                <div class="row g-0">
+                    {{-- ID Card --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-end">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-secondary bg-opacity-10 text-secondary rounded-circle">
+                                        <i class="bx bx-id-card fs-5"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ $patient->id_card ?? '—' }}</h6>
+                                    <small class="text-muted">{{ localize('global.id_card') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- Gender --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-end">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-purple bg-opacity-10 text-purple rounded-circle">
+                                        <i class="bx bx-{{ $patient->gender === 'male' ? 'male' : 'female' }} fs-5"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ ucfirst($patient->gender ?? '—') }}</h6>
+                                    <small class="text-muted">{{ localize('global.gender') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- Test Status --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4 border-end">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-{{ $firstTest?->status === 'completed' ? 'success' : ($firstTest?->status === 'in_progress' ? 'warning' : 'secondary') }} bg-opacity-10 text-{{ $firstTest?->status === 'completed' ? 'success' : ($firstTest?->status === 'in_progress' ? 'warning' : 'secondary') }} rounded-circle">
+                                        <i class="bx bx-{{ $firstTest?->status === 'completed' ? 'check-circle' : ($firstTest?->status === 'in_progress' ? 'time' : 'clock') }} fs-5"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">
+                                        <span class="badge bg-{{ $firstTest?->status === 'completed' ? 'success' : ($firstTest?->status === 'in_progress' ? 'warning' : 'secondary') }}">
+                                            {{ ucfirst($firstTest?->status ?? 'pending') }}
+                                        </span>
+                                    </h6>
+                                    <small class="text-muted">{{ localize('global.status') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- Assigned To --}}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-sm bg-info bg-opacity-10 text-info rounded-circle">
+                                        <i class="bx bx-user-check fs-5"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-semibold text-dark">{{ $firstTest?->assignedTo?->name ?? '—' }}</h6>
+                                    <small class="text-muted">{{ localize('global.assigned_to') }}</small>
                                 </div>
                             </div>
                         </div>
@@ -191,12 +275,22 @@
                         </div>
                     @endif
 
+                    {{-- Notes Field --}}
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">{{ localize('global.notes') }}</label>
+                        <textarea name="notes" id="notes" class="form-control" rows="3" 
+                            placeholder="{{ localize('global.add_notes_here') }}">{{ $firstTest->notes ?? '' }}</textarea>
+                    </div>
+
                     <div class="d-flex gap-3 justify-content-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+                            <i class="bx bx-arrow-back"></i> {{ localize('global.cancel') }}
+                        </button>
                         <button type="submit" class="btn btn-primary" id="saveResults">
                             <i class="bx bx-save"></i> {{ localize('global.save') }}
                         </button>
                         @if($firstTest?->ref_no)
-                            <a href="{{ route('laboratory.reports.print', $firstTest->ref_no) }}" target="_blank" class="btn btn-outline-secondary">
+                            <a href="{{ route('laboratory.reports.print', $firstTest->ref_no) }}" target="_blank" class="btn btn-outline-info">
                                 <i class="bx bx-printer"></i> {{ localize('global.print_report') }}
                             </a>
                         @endif
@@ -451,5 +545,34 @@
                 });
             }
         });
+
+        // Go back function
+        function goBack() {
+            // Check if there are unsaved changes
+            const form = document.getElementById('resultForm');
+            const formData = new FormData(form);
+            let hasChanges = false;
+            
+            // Check if any input has been modified
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.type !== 'hidden' && input.value.trim() !== '') {
+                    hasChanges = true;
+                }
+            });
+            
+            // Check CKEditor content if it exists
+            if (editor && editor.getData().trim() !== '') {
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                if (confirm('{{ localize("global.unsaved_changes_warning") }}')) {
+                    window.history.back();
+                }
+            } else {
+                window.history.back();
+            }
+        }
     </script>
 @endsection

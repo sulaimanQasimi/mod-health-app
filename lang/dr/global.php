@@ -2910,6 +2910,7 @@ return [
     'no_users_assigned' => "هیچ کاربری اختصاص داده نشده",
     'manage_users' => "مدیریت کاربران",
     'patient_id' => "شناسه مریض",
+    'token_id' => 'شناسه توکن',
     'patient_image' => 'عکس مریض',
     'qr_code' => 'کی ار کد',
     'view_nutrition_care_details' => "جزئیات رژیم تغذیه",

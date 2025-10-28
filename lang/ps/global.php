@@ -509,6 +509,7 @@ return [
     'edit_physiotherapy_type' => 'د فیزیوتراپی ډول تصحیح کول',
     'patient_name' => 'د ناروغ نوم',
     'patient_id' => 'د ناروغ پېژندنه',
+    'token_id' => 'د ټوکن پېژندنه',
     'physiotherapy_type' => 'د فیزیوتراپی ډول',
     'physiotherapist' => 'فیزیوتراپیست',
     'duration' => 'موده',

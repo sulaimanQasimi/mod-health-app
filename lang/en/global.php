@@ -1017,6 +1017,7 @@ return [
     'number' => 'Number',
     'patient_name' => 'Patient Name',
     'patient_id' => 'Patient ID',
+    'token_id' => 'Token ID',
     'status' => 'Status',
     'type' => 'Type',
     'name' => 'Name',

@@ -74,6 +74,7 @@
                                         <th>{{ localize('global.card_number') }}</th>
                                         <th>{{ localize('global.patient_name') }}</th>
                                         <th>{{ localize('global.father_name') }}</th>
+                                        <th>{{ localize('global.token_id') }}</th>
                                         <th>{{ localize('global.referred_to') }}</th>
                                         <th>{{ localize('global.created_at') }}</th>
                                         <th>{{ localize('global.status') }}</th>
@@ -90,6 +91,13 @@
                                             <td>{{ $prescription->patient->name ?? '-' }}</td>
                                             <td>
                                                 <span class="text-muted">{{ $prescription->patient->father_name ?? '-' }}</span>
+                                            </td>
+                                            <td>
+                                                @if($prescription->token)
+                                                    <span class="badge bg-info">{{ $prescription->token->number }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                             <td>{{ $prescription->doctor->name ?? '-' }}</td>
                                             <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($prescription->created_at) }}</td>

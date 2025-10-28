@@ -24,7 +24,7 @@ class PrescriptionController extends Controller
     public function index(Request $request)
     {
         $query = Prescription::where('branch_id', auth()->user()->branch_id)
-            ->with(['patient', 'doctor']);
+            ->with(['patient', 'doctor', 'appointment.department']);
 
         // Search by patient name
         if ($request->filled('search')) {
@@ -56,6 +56,18 @@ class PrescriptionController extends Controller
         }
 
         $prescriptions = $query->latest()->paginate(10)->withQueryString();
+        
+        // Load token information for each prescription
+        $prescriptions->getCollection()->transform(function ($prescription) {
+            if ($prescription->appointment) {
+                $token = \App\Models\PrintedNumber::where('patient_id', $prescription->patient_id)
+                    ->where('department_id', $prescription->appointment->department_id)
+                    ->whereDate('date', $prescription->appointment->date)
+                    ->first();
+                $prescription->token = $token;
+            }
+            return $prescription;
+        });
         
         return view('pages.prescriptions.index', compact('prescriptions'));
     }

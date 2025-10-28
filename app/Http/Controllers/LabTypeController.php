@@ -32,6 +32,18 @@ class LabTypeController extends Controller
         // Build query with only necessary relationships
         $query = LabType::with(['category']);
         
+        // Status filter - show deleted items if requested
+        if ($request->filled('status')) {
+            if ($request->status === 'deleted') {
+                $query->onlyTrashed();
+            } elseif ($request->status === 'active') {
+                $query->whereNull('deleted_at');
+            }
+        } else {
+            // Default: show only active items
+            $query->whereNull('deleted_at');
+        }
+        
         // Optimized search - search in name and category name
         if ($request->filled('search')) {
             $search = trim($request->search);
@@ -219,6 +231,28 @@ class LabTypeController extends Controller
         }
 
         return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_deleted_successfully.'));
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(Request $request, $id)
+    {
+        $labType = LabType::withTrashed()->findOrFail($id);
+        $labType->restore();
+
+        // Clear categories cache when lab type is restored
+        Cache::forget('lab_types_categories');
+
+        // Check if this is an API request
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.lab_type_restored_successfully')
+            ]);
+        }
+
+        return redirect()->route('lab_types.index')->with('success', localize('global.lab_type_restored_successfully.'));
     }
 
     /**

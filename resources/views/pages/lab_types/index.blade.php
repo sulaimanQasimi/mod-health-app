@@ -54,6 +54,14 @@
                                     <option value="text_based">{{ localize('global.text_based') }}</option>
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <label for="status_filter" class="form-label">{{ localize('global.status') }}</label>
+                                <select class="form-select" id="status_filter" name="status">
+                                    <option value="">{{ localize('global.all_status') }}</option>
+                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ localize('global.active') }}</option>
+                                    <option value="deleted" {{ request('status') == 'deleted' ? 'selected' : '' }}>{{ localize('global.deleted') }}</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-12">
@@ -109,15 +117,24 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <button class="btn btn-sm btn-outline-info" onclick="viewLabType({{ $labType->id }})" title="{{ localize('global.view') }}">
-                                                    <i class="bx bx-show"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-warning" onclick="editLabType({{ $labType->id }})" title="{{ localize('global.edit') }}">
-                                                    <i class="bx bx-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteLabType({{ $labType->id }})" title="{{ localize('global.delete') }}">
-                                                    <i class="bx bx-trash"></i>
-                                                </button>
+                                                @if($labType->trashed())
+                                                    <button class="btn btn-sm btn-outline-info" onclick="viewLabType({{ $labType->id }})" title="{{ localize('global.view') }}">
+                                                        <i class="bx bx-show"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" onclick="restoreLabType({{ $labType->id }})" title="{{ localize('global.restore') }}">
+                                                        <i class="bx bx-undo"></i>
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-sm btn-outline-info" onclick="viewLabType({{ $labType->id }})" title="{{ localize('global.view') }}">
+                                                        <i class="bx bx-show"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-warning" onclick="editLabType({{ $labType->id }})" title="{{ localize('global.edit') }}">
+                                                        <i class="bx bx-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteLabType({{ $labType->id }})" title="{{ localize('global.delete') }}">
+                                                        <i class="bx bx-trash"></i>
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -417,6 +434,24 @@ window.deleteLabType = function(labTypeId) {
         $.ajax({
             url: `/api/lab-types/${labTypeId}`,
             method: 'DELETE',
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    setTimeout(() => location.reload(), 1000); // Reload page to show updated data
+                }
+            },
+            error: function(xhr) {
+                handleAjaxError(xhr);
+            }
+        });
+    }
+};
+
+window.restoreLabType = function(labTypeId) {
+    if (confirm('{{ localize("global.confirm_restore") }}')) {
+        $.ajax({
+            url: `/api/lab-types/${labTypeId}/restore`,
+            method: 'POST',
             success: function(response) {
                 if (response.success) {
                     showToast('success', response.message);

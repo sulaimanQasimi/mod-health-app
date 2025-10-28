@@ -386,6 +386,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('{labType}', [LabTypeController::class, 'show'])->name('show');
         Route::put('{labType}', [LabTypeController::class, 'update'])->name('update');
         Route::delete('{labType}', [LabTypeController::class, 'destroy'])->name('destroy');
+        Route::post('{id}/restore', [LabTypeController::class, 'restore'])->name('restore');
         Route::get('select/dropdown', [LabTypeController::class, 'getLabTypesForSelect'])->name('select');
         Route::get('{labType}/parameters', [LabTestParameterController::class, 'apiIndexByLabType'])->name('parameters');
     });

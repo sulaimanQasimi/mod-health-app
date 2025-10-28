@@ -112,6 +112,10 @@ return [
     'select_option' => 'انتخاب گزینه',
     'please_select' => 'لطفاً انتخاب کنید',
     'confirm_delete' => 'تأیید حذف',
+    'confirm_restore' => 'آیا از بازیابی این مورد اطمینان دارید؟',
+    'restore' => 'بازیابی',
+    'deleted' => 'حذف شده',
+    'all_status' => 'همه حالات',
     'are_you_sure_delete' => 'آیا مطمئن هستید که می‌خواهید این نرس را حذف کنید؟',
     'nurse_deleted_successfully' => 'نرس با موفقیت حذف شد',
     'nurse_created_successfully' => 'نرس با موفقیت ایجاد شد',
@@ -568,6 +572,7 @@ return [
     'lab_type_created_successfully' => 'نوع لابراتوار با موفقیت ایجاد شد',
     'lab_type_updated_successfully' => 'نوع لابراتوار با موفقیت به‌روزرسانی شد',
     'lab_type_deleted_successfully' => 'نوع لابراتوار با موفقیت حذف شد',
+    'lab_type_restored_successfully' => 'نوع لابراتوار با موفقیت بازیابی شد',
     'today_patients' => 'مریضان امروز',
     'today_registered_patients' => 'مریضان ثبت شده امروز',
     'followup_validation' => [

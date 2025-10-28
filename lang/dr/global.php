@@ -664,6 +664,7 @@ return [
     'prescription' => 'نسخه',
     'hospitalize' => 'بستر نمودن',
     'room' => 'اطاق',
+    'room_number' => 'شماره اتاق',
     'bed' => 'بستر',
     'no_previous_diagnoses' => 'هیچ تشخیص قبلی وجود ندارد!',
     'no_previous_prescriptions' => 'هیچ نسخه قبلی وجود ندارد!',

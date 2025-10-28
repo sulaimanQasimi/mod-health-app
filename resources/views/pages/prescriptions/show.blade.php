@@ -5,6 +5,8 @@
     <div id="prescription-show-app" 
          data-prescription-id="{{ $prescription->id }}"
          data-localize="{{ json_encode([
+         'global.auto_filled' => localize('global.auto_filled'),
+         'global.select' => localize('global.select'),
              'global.prescription_details' => localize('global.prescription_details'),
              'global.number' => localize('global.number'),
              'global.patient_name' => localize('global.patient_name'),
@@ -42,7 +44,10 @@
              'global.delete_alternative' => localize('global.delete_alternative'),
              'global.no_alternatives_found' => localize('global.no_alternatives_found'),
              'global.close' => localize('global.close'),
-             'global.loading' => localize('global.loading')
+             'global.loading' => localize('global.loading'),
+             'global.auto-filled' => localize('global.auto-filled'),
+             'global.select_medicine_to_auto_fill' => localize('global.select_medicine_to_auto_fill'),
+             'global.deselect' => localize('global.deselect'),
          ]) }}">
     </div>
 @endsection

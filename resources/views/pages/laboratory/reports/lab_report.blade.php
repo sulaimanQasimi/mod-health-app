@@ -43,19 +43,75 @@
         }
         
         .header {
-            text-align: center;
             margin-bottom: 30px;
             border-bottom: 2px solid #000;
             padding-bottom: 20px;
+            padding: 20px;
         }
         
-        .header h1 {
+        .header-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr 120px;
+            gap: 20px;
+            align-items: center;
+            min-height: 120px;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        
+        .logo-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .text-column {
+            padding: 10px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .text-column h3 {
+            color: #000;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 5px;
+        }
+        
+        .text-column p {
+            color: #333;
+            margin: 2px 0;
+            font-size: 11px;
+            line-height: 1.3;
+            text-align: center;
+        }
+        
+        .report-title {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .report-title h1 {
             color: #000;
             margin: 0;
             font-size: 24px;
         }
         
-        .header h2 {
+        .report-title h2 {
             color: #333;
             margin: 5px 0 0 0;
             font-size: 16px;
@@ -63,9 +119,7 @@
         }
         
         .patient-info {
-            background: #f5f5f5;
             padding: 15px;
-            border-radius: 5px;
             margin-bottom: 20px;
             border: 1px solid #000;
         }
@@ -99,8 +153,7 @@
         }
         
         .test-header {
-            background: #000;
-            color: white;
+            color: #000;
             padding: 10px 15px;
             margin: 0;
             font-size: 14px;
@@ -109,7 +162,6 @@
         
         .test-details {
             border: 1px solid #000;
-            border-top: none;
             padding: 15px;
         }
         
@@ -119,8 +171,6 @@
             gap: 10px;
             margin-bottom: 15px;
             padding: 10px;
-            background: #f5f5f5;
-            border-radius: 3px;
             border: 1px solid #ccc;
         }
         
@@ -214,14 +264,32 @@
     <div class="report-container">
         <!-- Report Header -->
         <div class="header">
-            <h1>{{ localize('global.laboratory_test_report') }}</h1>
-            <h2>{{ $testName ?? localize('global.test_name') }}</h2>
+            <div class="header-grid">
+                <!-- Left Logo -->
+                <div class="logo-container logo-left">
+                    <img src="{{ asset('images/logos/لوگو قومنداني.JPG') }}" alt="Left Logo" class="logo-image">
+                </div>
+                
+                <!-- First Text Column (Arabic) -->
+                <div class="text-column text-column-left">
+                    <h2>امارت اسلامی افغانستان</h2>
+                    <h4>وزارت دفاع ملی</h4>
+                    <h4>ستـــــــــــــردرستیــــــــــــز</h4>
+                    <h4>قوماندانیت صحیه</h4>
+                    <h4>قوماندانی اکادمی علوم طبی</h4>
+                </div>
+
+                
+                <!-- Right Logo -->
+                <div class="logo-container logo-right">
+                    <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Right Logo" class="logo-image">
+                </div>
+            </div>
         </div>
 
         <!-- Patient Information -->
         @if($patient)
             <div class="patient-info">
-                <h3>{{ localize('global.patient_information') }}</h3>
                 <div class="patient-details">
                     <div>
                         <strong>{{ localize('global.name') }}:</strong>
@@ -242,10 +310,6 @@
                     <div>
                         <strong>{{ localize('global.gender') }}:</strong>
                         <span>{{ $patient->gender ?? '—' }}</span>
-                    </div>
-                    <div>
-                        <strong>{{ localize('global.address') }}:</strong>
-                        <span>{{ $patient->address ?? '—' }}</span>
                     </div>
                     @if($patient->id_number)
                         <div>
@@ -290,14 +354,6 @@
                             <span>{{ $testRegistration->ref_no ?? '—' }}</span>
                         </div>
                         <div>
-                            <strong>{{ localize('global.status') }}:</strong>
-                            <span>{{ ucfirst($testRegistration->status ?? '—') }}</span>
-                        </div>
-                        <div>
-                            <strong>{{ localize('global.priority') }}:</strong>
-                            <span>{{ ucfirst($testRegistration->priority ?? '—') }}</span>
-                        </div>
-                        <div>
                             <strong>{{ localize('global.doctor') }}:</strong>
                             <span>{{ $testRegistration->doctor->name ?? '—' }}</span>
                         </div>
@@ -323,32 +379,10 @@
                                 <span>{{ $testRegistration->assignedSection->name ?? '—' }}</span>
                             </div>
                         @endif
-                        @if($testRegistration->notes)
-                            <div style="grid-column: 1 / -1; margin-top: 10px;">
-                                <strong>{{ localize('global.notes') }}:</strong>
-                                <div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 3px; margin-top: 5px; direction: ltr; text-align: left;">
-                                    {!! $testRegistration->notes !!}
-                                </div>
-                            </div>
-                        @endif
-                        @if($testRegistration->detailed_notes)
-                            <div style="grid-column: 1 / -1; margin-top: 10px;">
-                                <strong>{{ localize('global.detailed_notes') }}:</strong>
-                                <div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 3px; margin-top: 5px; direction: ltr; text-align: left;">
-                                    {!! $testRegistration->detailed_notes !!}
-                                </div>
-                            </div>
-                        @endif
                         @if($testRegistration->labType && $testRegistration->labType->category)
                             <div>
                                 <strong>{{ localize('global.test_category') }}:</strong>
                                 <span>{{ $testRegistration->labType->category->name ?? '—' }}</span>
-                            </div>
-                        @endif
-                        @if($testRegistration->branch)
-                            <div>
-                                <strong>{{ localize('global.branch') }}:</strong>
-                                <span>{{ $testRegistration->branch->name ?? '—' }}</span>
                             </div>
                         @endif
                     </div>

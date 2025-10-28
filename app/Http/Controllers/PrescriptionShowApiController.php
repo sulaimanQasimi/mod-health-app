@@ -11,7 +11,6 @@ use App\Models\MedicineUsageType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 
 class PrescriptionShowApiController extends Controller
 {
@@ -21,7 +20,7 @@ class PrescriptionShowApiController extends Controller
     public function getPrescriptionDetails($id)
     {
         try {
-            Log::info('PrescriptionShowApiController: Getting prescription details for ID: ' . $id);
+            \Log::info('PrescriptionShowApiController: Getting prescription details for ID: ' . $id);
             
             $prescription = Prescription::with([
                 'patient',
@@ -38,7 +37,7 @@ class PrescriptionShowApiController extends Controller
                 'prescriptionItems.alternativeItems.usageType'
             ])->findOrFail($id);
 
-            Log::info('PrescriptionShowApiController: Prescription found: ' . $prescription->id);
+            \Log::info('PrescriptionShowApiController: Prescription found: ' . $prescription->id);
 
             return response()->json([
                 'success' => true,
@@ -46,7 +45,7 @@ class PrescriptionShowApiController extends Controller
                 'message' => localize('global.prescription_details_retrieved_successfully')
             ]);
         } catch (\Exception $e) {
-            Log::error('PrescriptionShowApiController: Error getting prescription details: ' . $e->getMessage());
+            \Log::error('PrescriptionShowApiController: Error getting prescription details: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => localize('global.failed_to_retrieve_prescription_details'),
@@ -69,7 +68,11 @@ class PrescriptionShowApiController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()->with('error', localize('global.validation_failed'));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
             $prescription->is_completed = $request->is_completed;
@@ -78,9 +81,17 @@ class PrescriptionShowApiController extends Controller
             }
             $prescription->save();
 
-            return redirect()->back()->with('success', localize('global.prescription_status_updated_successfully'));
+            return response()->json([
+                'success' => true,
+                'data' => $prescription,
+                'message' => localize('global.prescription_status_updated_successfully')
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', localize('global.failed_to_update_prescription_status'));
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_update_prescription_status'),
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -97,15 +108,27 @@ class PrescriptionShowApiController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()->with('error', localize('global.validation_failed'));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
             $item->is_delivered = $request->is_delivered;
             $item->save();
 
-            return redirect()->back()->with('success', localize('global.item_status_updated_successfully'));
+            return response()->json([
+                'success' => true,
+                'data' => $item,
+                'message' => localize('global.item_status_updated_successfully')
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', localize('global.failed_to_update_item_status'));
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_update_item_status'),
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -154,7 +177,11 @@ class PrescriptionShowApiController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()->with('error', localize('global.validation_failed'));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
             $alternative = PrescriptionAlternativeItem::create([
@@ -171,9 +198,23 @@ class PrescriptionShowApiController extends Controller
                 'is_selected' => '0'
             ]);
 
-            return redirect()->back()->with('success', localize('global.alternative_added_successfully'));
+            $alternative->load([
+                'medicine',
+                'medicineType',
+                'usageType'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $alternative,
+                'message' => localize('global.alternative_added_successfully')
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', localize('global.failed_to_add_alternative'));
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_add_alternative'),
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -196,13 +237,17 @@ class PrescriptionShowApiController extends Controller
                     ->update(['is_selected' => '0']);
             }
 
-            $message = $alternative->is_selected ? 
-                localize('global.alternative_selected_successfully') : 
-                localize('global.alternative_deselected_successfully');
-
-            return redirect()->back()->with('success', $message);
+            return response()->json([
+                'success' => true,
+                'data' => $alternative,
+                'message' => localize('global.alternative_selection_updated_successfully')
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', localize('global.failed_to_update_alternative_selection'));
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_update_alternative_selection'),
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -219,15 +264,27 @@ class PrescriptionShowApiController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()->with('error', localize('global.validation_failed'));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
             $alternative->is_delivered = $request->is_delivered;
             $alternative->save();
 
-            return redirect()->back()->with('success', localize('global.alternative_status_updated_successfully'));
+            return response()->json([
+                'success' => true,
+                'data' => $alternative,
+                'message' => localize('global.alternative_status_updated_successfully')
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', localize('global.failed_to_update_alternative_status'));
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_update_alternative_status'),
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -240,9 +297,16 @@ class PrescriptionShowApiController extends Controller
             $alternative = PrescriptionAlternativeItem::findOrFail($alternativeId);
             $alternative->delete();
 
-            return redirect()->back()->with('success', localize('global.alternative_deleted_successfully'));
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.alternative_deleted_successfully')
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', localize('global.failed_to_delete_alternative'));
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_delete_alternative'),
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

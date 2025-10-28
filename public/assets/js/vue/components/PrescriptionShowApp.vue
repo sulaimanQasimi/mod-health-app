@@ -1,6 +1,12 @@
 <template>
   <div class="container-xxl flex-grow-1 container-p-y">
     <div class="content-wrapper">
+      <!-- Toast notifications -->
+      <div v-if="toast.show" :class="['toast', 'show', 'position-fixed', 'top-0', 'end-0', 'p-3', toast.type === 'success' ? 'bg-success' : 'bg-danger']" style="z-index: 1055;">
+        <div class="toast-body text-white">
+          {{ toast.message }}
+        </div>
+      </div>
 
       <div class="col-xl">
         <div class="card mb-4">
@@ -616,6 +622,11 @@ export default {
     const medicines = ref([])
     const medicineTypes = ref([])
     const medicineUsageTypes = ref([])
+    const toast = reactive({
+      show: false,
+      message: '',
+      type: 'success'
+    })
 
     // New alternative form data
     const newAlternative = reactive({
@@ -644,38 +655,16 @@ export default {
       return key
     }
 
-    // Show validation error using Bootstrap toast
-    const showValidationError = (message) => {
-      // Create a temporary toast element
-      const toastHtml = `
-        <div class="bs-toast toast toast-ex animate__animated my-2 fade bg-danger animate__bounceIn show" 
-             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
-          <div class="toast-header">
-            <i class="bx bx-error me-2"></i>
-            <div class="me-auto fw-semibold">${localize('global.validation_error')}</div>
-          </div>
-          <div class="toast-body">${message}</div>
-        </div>
-      `
-      
-      // Insert the toast at the top of the content
-      const contentWrapper = document.querySelector('.content-wrapper')
-      if (contentWrapper) {
-        contentWrapper.insertAdjacentHTML('afterbegin', toastHtml)
-        
-        // Auto-dismiss after 3 seconds
-        setTimeout(() => {
-          const toast = contentWrapper.querySelector('.bs-toast')
-          if (toast) {
-            toast.style.transition = 'opacity 0.4s'
-            toast.style.opacity = '0'
-            setTimeout(() => toast.remove(), 400)
-          }
-        }, 3000)
-      }
+
+    // Methods
+    const showToast = (message, type = 'success') => {
+      toast.message = message
+      toast.type = type
+      toast.show = true
+      setTimeout(() => {
+        toast.show = false
+      }, 3000)
     }
-
-
 
     const loadPrescriptionDetails = async () => {
       loading.value = true
@@ -688,9 +677,10 @@ export default {
         if (response.data.success) {
           prescription.value = response.data.data
         } else {
-          console.error('Error loading prescription details:', response.data.message)
+          showToast(response.data.message, 'error')
         }
       } catch (error) {
+        showToast(localize('global.failed_to_load_prescription_details'), 'error')
         console.error('Error loading prescription details:', error)
       } finally {
         loading.value = false
@@ -713,74 +703,45 @@ export default {
       }
     }
 
-    const completePrescription = () => {
-      // Create a form and submit it
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`
-      
-      // Add CSRF token
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      if (csrfToken) {
-        const csrfInput = document.createElement('input')
-        csrfInput.type = 'hidden'
-        csrfInput.name = '_token'
-        csrfInput.value = csrfToken
-        form.appendChild(csrfInput)
+    const completePrescription = async () => {
+      loading.value = true
+      try {
+        const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`, {
+          is_completed: '1'
+        })
+        if (response.data.success) {
+          prescription.value.is_completed = '1'
+          showToast(localize('global.prescription_completed_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        showToast(localize('global.failed_to_complete_prescription'), 'error')
+        console.error('Error completing prescription:', error)
+      } finally {
+        loading.value = false
       }
-      
-      // Add method override for PUT
-      const methodInput = document.createElement('input')
-      methodInput.type = 'hidden'
-      methodInput.name = '_method'
-      methodInput.value = 'PUT'
-      form.appendChild(methodInput)
-      
-      // Add prescription status
-      const statusInput = document.createElement('input')
-      statusInput.type = 'hidden'
-      statusInput.name = 'is_completed'
-      statusInput.value = '1'
-      form.appendChild(statusInput)
-      
-      document.body.appendChild(form)
-      form.submit()
     }
 
-    const toggleItemStatus = (item) => {
-      const newStatus = item.is_delivered == '0' ? '1' : '0'
-      
-      // Create a form and submit it
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/prescription-show-ajax/update-item-status/${item.id}`
-      
-      // Add CSRF token
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      if (csrfToken) {
-        const csrfInput = document.createElement('input')
-        csrfInput.type = 'hidden'
-        csrfInput.name = '_token'
-        csrfInput.value = csrfToken
-        form.appendChild(csrfInput)
+    const toggleItemStatus = async (item) => {
+      loading.value = true
+      try {
+        const newStatus = item.is_delivered == '0' ? '1' : '0'
+        const response = await axios.put(`/prescription-show-ajax/update-item-status/${item.id}`, {
+          is_delivered: newStatus
+        })
+        if (response.data.success) {
+          item.is_delivered = newStatus
+          showToast(localize('global.item_status_updated_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        showToast(localize('global.failed_to_update_item_status'), 'error')
+        console.error('Error updating item status:', error)
+      } finally {
+        loading.value = false
       }
-      
-      // Add method override for PUT
-      const methodInput = document.createElement('input')
-      methodInput.type = 'hidden'
-      methodInput.name = '_method'
-      methodInput.value = 'PUT'
-      form.appendChild(methodInput)
-      
-      // Add item status
-      const statusInput = document.createElement('input')
-      statusInput.type = 'hidden'
-      statusInput.name = 'is_delivered'
-      statusInput.value = newStatus
-      form.appendChild(statusInput)
-      
-      document.body.appendChild(form)
-      form.submit()
     }
 
     const openAlternativesModal = (item) => {
@@ -840,193 +801,217 @@ export default {
       }
     }
 
-    const addAlternative = () => {
-      // Validate required fields
-      if (!newAlternative.medicine?.id) {
-        showValidationError(localize('global.please_select_medicine'))
-        return
+    const addAlternative = async () => {
+      loading.value = true
+      try {
+        const requestData = {
+          prescription_id: props.prescriptionId,
+          prescription_item_id: currentItem.value.id,
+          medicine_id: newAlternative.medicine?.id || '',
+          medicine_type_id: newAlternative.medicine_type?.id || '',
+          usage_type_id: newAlternative.usage_type?.id || '',
+          dosage: newAlternative.dosage,
+          frequency: newAlternative.frequency,
+          amount: newAlternative.amount,
+          notes: newAlternative.notes
+        }
+        
+        console.log('Sending alternative data:', requestData)
+        console.log('Selected medicine:', newAlternative.medicine)
+        console.log('Selected medicine type:', newAlternative.medicine_type)
+        console.log('Selected usage type:', newAlternative.usage_type)
+        
+        // Validate required fields
+        if (!requestData.medicine_id) {
+          showToast(localize('global.please_select_medicine'), 'error')
+          return
+        }
+        if (!requestData.medicine_type_id) {
+          showToast(localize('global.medicine_type_required'), 'error')
+          return
+        }
+        if (!requestData.usage_type_id) {
+          showToast(localize('global.usage_type_required'), 'error')
+          return
+        }
+        if (!requestData.dosage) {
+          showToast(localize('global.dosage_required'), 'error')
+          return
+        }
+        if (!requestData.frequency) {
+          showToast(localize('global.frequency_required'), 'error')
+          return
+        }
+        if (!requestData.amount) {
+          showToast(localize('global.amount_required'), 'error')
+          return
+        }
+        
+        const response = await axios.post('/prescription-show-ajax/add-alternative', requestData)
+        if (response.data.success) {
+          // Add to current item's alternatives
+          if (!currentItem.value.alternative_items) {
+            currentItem.value.alternative_items = []
+          }
+          currentItem.value.alternative_items.push(response.data.data)
+          showToast(localize('global.alternative_added_successfully'))
+          // Reset form
+          Object.assign(newAlternative, {
+            medicine: null,
+            medicine_type: null,
+            usage_type: null,
+            dosage: '',
+            frequency: '',
+            amount: '',
+            notes: ''
+          })
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        console.error('Error adding alternative:', error)
+        if (error.response && error.response.data) {
+          console.error('Server response:', error.response.data)
+          if (error.response.data.errors) {
+            const errorMessages = Object.values(error.response.data.errors).flat().join(', ')
+            showToast(`${localize('global.validation_errors')}: ${errorMessages}`, 'error')
+          } else if (error.response.data.message) {
+            showToast(error.response.data.message, 'error')
+          } else {
+            showToast(localize('global.failed_to_add_alternative'), 'error')
+          }
+        } else {
+          showToast(localize('global.failed_to_add_alternative'), 'error')
+        }
+      } finally {
+        loading.value = false
       }
-      if (!newAlternative.medicine_type?.id) {
-        showValidationError(localize('global.medicine_type_required'))
-        return
-      }
-      if (!newAlternative.usage_type?.id) {
-        showValidationError(localize('global.usage_type_required'))
-        return
-      }
-      if (!newAlternative.dosage) {
-        showValidationError(localize('global.dosage_required'))
-        return
-      }
-      if (!newAlternative.frequency) {
-        showValidationError(localize('global.frequency_required'))
-        return
-      }
-      if (!newAlternative.amount) {
-        showValidationError(localize('global.amount_required'))
-        return
-      }
-      
-      // Create a form and submit it
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = '/prescription-show-ajax/add-alternative'
-      
-      // Add CSRF token
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      if (csrfToken) {
-        const csrfInput = document.createElement('input')
-        csrfInput.type = 'hidden'
-        csrfInput.name = '_token'
-        csrfInput.value = csrfToken
-        form.appendChild(csrfInput)
-      }
-      
-      // Add form data
-      const fields = {
-        prescription_id: props.prescriptionId,
-        prescription_item_id: currentItem.value.id,
-        medicine_id: newAlternative.medicine?.id || '',
-        medicine_type_id: newAlternative.medicine_type?.id || '',
-        usage_type_id: newAlternative.usage_type?.id || '',
-        dosage: newAlternative.dosage,
-        frequency: newAlternative.frequency,
-        amount: newAlternative.amount,
-        notes: newAlternative.notes
-      }
-      
-      Object.keys(fields).forEach(key => {
-        const input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = key
-        input.value = fields[key]
-        form.appendChild(input)
-      })
-      
-      document.body.appendChild(form)
-      form.submit()
     }
 
-    const selectAlternative = (alternative) => {
+    const selectAlternative = async (alternative) => {
       // Show confirmation dialog
-      const confirmMessage = `${localize('global.confirm_select_alternative')}: ${alternative.medicine?.name}`
-      if (confirm(confirmMessage)) {
-        // Create a form and submit it
-        const form = document.createElement('form')
-        form.method = 'POST'
-        form.action = `/prescription-show-ajax/select-alternative/${alternative.id}`
-        
-        // Add CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-        if (csrfToken) {
-          const csrfInput = document.createElement('input')
-          csrfInput.type = 'hidden'
-          csrfInput.name = '_token'
-          csrfInput.value = csrfToken
-          form.appendChild(csrfInput)
+      const confirmMessage = `${localize('global.confirm_select_alternative')}: ${alternative.medicine?.name}?`
+      if (!confirm(confirmMessage)) {
+        return
+      }
+      
+      loading.value = true
+      try {
+        const response = await axios.put(`/prescription-show-ajax/select-alternative/${alternative.id}`)
+        if (response.data.success) {
+          // Update the alternative selection
+          alternative.is_selected = '1'
+          
+          // Find the prescription item that this alternative belongs to and update it
+          if (prescription.value.prescription_items && currentItem.value) {
+            const parentItem = prescription.value.prescription_items.find(item => 
+              item.id === currentItem.value.id
+            )
+            if (parentItem) {
+              parentItem.selected_alternative = alternative
+            }
+          }
+          
+          // Also update currentItem if it exists
+          if (currentItem.value) {
+            currentItem.value.selected_alternative = alternative
+          }
+          
+          // Refresh prescription data to ensure UI is in sync
+          await refreshPrescriptionData()
+          
+          showToast(localize('global.alternative_selected_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
         }
-        
-        // Add method override for PUT
-        const methodInput = document.createElement('input')
-        methodInput.type = 'hidden'
-        methodInput.name = '_method'
-        methodInput.value = 'PUT'
-        form.appendChild(methodInput)
-        
-        document.body.appendChild(form)
-        form.submit()
+      } catch (error) {
+        showToast(localize('global.failed_to_select_alternative'), 'error')
+        console.error('Error selecting alternative:', error)
+      } finally {
+        loading.value = false
       }
     }
 
-    const deselectAlternative = (alternative) => {
-      // Create a form and submit it
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/prescription-show-ajax/select-alternative/${alternative.id}`
-      
-      // Add CSRF token
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      if (csrfToken) {
-        const csrfInput = document.createElement('input')
-        csrfInput.type = 'hidden'
-        csrfInput.name = '_token'
-        csrfInput.value = csrfToken
-        form.appendChild(csrfInput)
-      }
-      
-      // Add method override for PUT
-      const methodInput = document.createElement('input')
-      methodInput.type = 'hidden'
-      methodInput.name = '_method'
-      methodInput.value = 'PUT'
-      form.appendChild(methodInput)
-      
-      document.body.appendChild(form)
-      form.submit()
-    }
-
-    const toggleAlternativeStatus = (alternative) => {
-      const newStatus = alternative.is_delivered ? '0' : '1'
-      
-      // Create a form and submit it
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `/prescription-show-ajax/update-alternative-status/${alternative.id}`
-      
-      // Add CSRF token
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      if (csrfToken) {
-        const csrfInput = document.createElement('input')
-        csrfInput.type = 'hidden'
-        csrfInput.name = '_token'
-        csrfInput.value = csrfToken
-        form.appendChild(csrfInput)
-      }
-      
-      // Add method override for PUT
-      const methodInput = document.createElement('input')
-      methodInput.type = 'hidden'
-      methodInput.name = '_method'
-      methodInput.value = 'PUT'
-      form.appendChild(methodInput)
-      
-      // Add alternative status
-      const statusInput = document.createElement('input')
-      statusInput.type = 'hidden'
-      statusInput.name = 'is_delivered'
-      statusInput.value = newStatus
-      form.appendChild(statusInput)
-      
-      document.body.appendChild(form)
-      form.submit()
-    }
-
-    const deleteAlternative = (alternative) => {
-      if (confirm(localize('global.confirm_delete_alternative'))) {
-        // Create a form and submit it
-        const form = document.createElement('form')
-        form.method = 'POST'
-        form.action = `/prescription-show-ajax/delete-alternative/${alternative.id}`
-        
-        // Add CSRF token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-        if (csrfToken) {
-          const csrfInput = document.createElement('input')
-          csrfInput.type = 'hidden'
-          csrfInput.name = '_token'
-          csrfInput.value = csrfToken
-          form.appendChild(csrfInput)
+    const deselectAlternative = async (alternative) => {
+      loading.value = true
+      try {
+        const response = await axios.put(`/prescription-show-ajax/select-alternative/${alternative.id}`)
+        if (response.data.success) {
+          alternative.is_selected = '0'
+          
+          // Find the prescription item that has this alternative and update it
+          if (prescription.value.prescription_items) {
+            const parentItem = prescription.value.prescription_items.find(item => 
+              item.selected_alternative && item.selected_alternative.id === alternative.id
+            )
+            if (parentItem) {
+              parentItem.selected_alternative = null
+            }
+          }
+          
+          // Also update currentItem if it exists
+          if (currentItem.value && currentItem.value.selected_alternative && 
+              currentItem.value.selected_alternative.id === alternative.id) {
+            currentItem.value.selected_alternative = null
+          }
+          
+          // Refresh prescription data to ensure UI is in sync
+          await refreshPrescriptionData()
+          
+          showToast(localize('global.alternative_deselected_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
         }
-        
-        // Add method override for DELETE
-        const methodInput = document.createElement('input')
-        methodInput.type = 'hidden'
-        methodInput.name = '_method'
-        methodInput.value = 'DELETE'
-        form.appendChild(methodInput)
-        
-        document.body.appendChild(form)
-        form.submit()
+      } catch (error) {
+        showToast(localize('global.failed_to_deselect_alternative'), 'error')
+        console.error('Error deselecting alternative:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const toggleAlternativeStatus = async (alternative) => {
+      loading.value = true
+      try {
+        const newStatus = alternative.is_delivered ? '0' : '1'
+        const response = await axios.put(`/prescription-show-ajax/update-alternative-status/${alternative.id}`, {
+          is_delivered: newStatus
+        })
+        if (response.data.success) {
+          alternative.is_delivered = newStatus
+          showToast(localize('global.alternative_status_updated_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        showToast(localize('global.failed_to_update_alternative_status'), 'error')
+        console.error('Error updating alternative status:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const deleteAlternative = async (alternative) => {
+      if (!confirm('Are you sure you want to delete this alternative?')) return
+      
+      loading.value = true
+      try {
+        const response = await axios.delete(`/prescription-show-ajax/delete-alternative/${alternative.id}`)
+        if (response.data.success) {
+          // Remove from current item's alternatives
+          const index = currentItem.value.alternative_items.findIndex(alt => alt.id === alternative.id)
+          if (index > -1) {
+            currentItem.value.alternative_items.splice(index, 1)
+          }
+          showToast(localize('global.alternative_deleted_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        showToast(localize('global.failed_to_delete_alternative'), 'error')
+        console.error('Error deleting alternative:', error)
+      } finally {
+        loading.value = false
       }
     }
 
@@ -1035,6 +1020,7 @@ export default {
         newAlternative.dosage = currentItem.value.dosage || ''
         newAlternative.frequency = currentItem.value.frequency || ''
         newAlternative.amount = currentItem.value.amount || ''
+        showToast(localize('global.original_data_copied'))
       }
     }
 
@@ -1137,36 +1123,74 @@ export default {
       selectAll.value = selectableItems.length > 0 && selectedItems.value.size === selectableItems.length
     }
 
-    const bulkMarkDelivered = () => {
+    const bulkMarkDelivered = async () => {
       if (selectedItems.value.size === 0) return
       
-      // For bulk operations, we'll need to create a form for each item
-      // This is a simplified approach - in a real app you might want a dedicated bulk endpoint
-      selectedItems.value.forEach(itemId => {
-        const item = prescription.value.prescription_items?.find(i => i.id === itemId)
-        if (item && item.is_delivered == '0') {
-          toggleItemStatus(item)
-        }
-      })
-      
-      selectedItems.value.clear()
-      selectAll.value = false
+      loading.value = true
+      try {
+        const promises = Array.from(selectedItems.value).map(itemId => {
+          const item = prescription.value.prescription_items?.find(i => i.id === itemId)
+          if (item && item.is_delivered == '0') {
+            return axios.put(`/prescription-show-ajax/update-item-status/${itemId}`, {
+              is_delivered: '1'
+            })
+          }
+          return Promise.resolve()
+        })
+
+        await Promise.all(promises)
+        
+        // Update local state
+        prescription.value.prescription_items?.forEach(item => {
+          if (selectedItems.value.has(item.id) && item.is_delivered == '0') {
+            item.is_delivered = '1'
+          }
+        })
+
+        selectedItems.value.clear()
+        selectAll.value = false
+        showToast(localize('global.items_marked_as_delivered', { count: selectedItems.value.size }))
+      } catch (error) {
+        showToast(localize('global.failed_to_update_items'), 'error')
+        console.error('Error updating items:', error)
+      } finally {
+        loading.value = false
+      }
     }
 
-    const bulkMarkNotDelivered = () => {
+    const bulkMarkNotDelivered = async () => {
       if (selectedItems.value.size === 0) return
       
-      // For bulk operations, we'll need to create a form for each item
-      // This is a simplified approach - in a real app you might want a dedicated bulk endpoint
-      selectedItems.value.forEach(itemId => {
-        const item = prescription.value.prescription_items?.find(i => i.id === itemId)
-        if (item && item.is_delivered == '1') {
-          toggleItemStatus(item)
-        }
-      })
-      
-      selectedItems.value.clear()
-      selectAll.value = false
+      loading.value = true
+      try {
+        const promises = Array.from(selectedItems.value).map(itemId => {
+          const item = prescription.value.prescription_items?.find(i => i.id === itemId)
+          if (item && item.is_delivered == '1') {
+            return axios.put(`/prescription-show-ajax/update-item-status/${itemId}`, {
+              is_delivered: '0'
+            })
+          }
+          return Promise.resolve()
+        })
+
+        await Promise.all(promises)
+        
+        // Update local state
+        prescription.value.prescription_items?.forEach(item => {
+          if (selectedItems.value.has(item.id) && item.is_delivered == '1') {
+            item.is_delivered = '0'
+          }
+        })
+
+        selectedItems.value.clear()
+        selectAll.value = false
+        showToast(localize('global.items_marked_as_not_delivered', { count: selectedItems.value.size }))
+      } catch (error) {
+        showToast(localize('global.failed_to_update_items'), 'error')
+        console.error('Error updating items:', error)
+      } finally {
+        loading.value = false
+      }
     }
 
     const closeModal = () => {
@@ -1279,12 +1303,13 @@ export default {
       medicines,
       medicineTypes,
       medicineUsageTypes,
+      toast,
       newAlternative,
       selectedItems,
       selectAll,
       activeTab,
       localize,
-      showValidationError,
+      showToast,
       loadPrescriptionDetails,
       completePrescription,
       toggleItemStatus,

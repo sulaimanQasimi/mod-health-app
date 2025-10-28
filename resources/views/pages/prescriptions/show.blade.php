@@ -1,11 +1,6 @@
 @extends('layouts.master')
 
 @section('content')
-    <!-- Flash Messages -->
-    @if (Session::has('success') || Session::has('error'))
-        @include('components.toast')
-    @endif
-
     <!-- Vue.js Prescription Show App -->
     <div id="prescription-show-app" 
          data-prescription-id="{{ $prescription->id }}"
@@ -53,9 +48,6 @@
              'global.auto-filled' => localize('global.auto-filled'),
              'global.select_medicine_to_auto_fill' => localize('global.select_medicine_to_auto_fill'),
              'global.deselect' => localize('global.deselect'),
-             'global.confirm_select_alternative' => localize('global.confirm_select_alternative'),
-             'global.confirm_delete_alternative' => localize('global.confirm_delete_alternative'),
-             'global.validation_error' => localize('global.validation_error'),
          ]) }}">
     </div>
 @endsection

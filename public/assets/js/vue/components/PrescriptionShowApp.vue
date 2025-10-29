@@ -1460,8 +1460,7 @@ export default {
   border-width: 2px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-size: 1.1rem !important;
-  background-color: #2d5a27 !important;
-  border-color: #2d5a27 !important;
+  background-color:rgb(25, 210, 0) !important;
   color: white !important;
 }
 
@@ -1490,27 +1489,24 @@ export default {
 
 /* Success button styling with dark grass green */
 .btn-success {
-  background-color: #2d5a27 !important;
-  border-color: #2d5a27 !important;
+  background-color: rgb(25, 210, 0)!important;
+  border-color: rgb(25, 210, 0) !important;
   font-size: 1.05rem !important;
 }
 
 .btn-success:hover {
-  background-color: #1e3d1a !important;
-  border-color: #1e3d1a !important;
+  background-color: #0d6e00 !important;
 }
 
 /* Alternative select button styling */
 .btn-success.fw-bold {
   font-weight: 700 !important;
   font-size: 1.1rem !important;
-  background-color: #2d5a27 !important;
-  border-color: #2d5a27 !important;
+  background-color: rgb(25, 210, 0) !important;
 }
 
 .btn-success.fw-bold:hover {
-  background-color: #1e3d1a !important;
-  border-color: #1e3d1a !important;
+  background-color: #168008 !important;
 }
 
 /* Table text improvements */
@@ -1521,24 +1517,16 @@ export default {
 .table th {
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: #2d5a27 !important;
   background-color: #f8f9fa !important;
   border-bottom: 2px solid #2d5a27 !important;
 }
 
 .table td {
   font-size: 15px !important;
-  color: #2d5a27 !important;
   border-bottom: 1px solid #e9ecef !important;
 }
 
-.table tbody tr:hover {
-  background-color: #f0f8f0 !important;
-}
 
-.table tbody tr:hover td {
-  color: #1e3d1a !important;
-}
 
 /* Badge styling with dark grass green */
 .badge {
@@ -1559,7 +1547,6 @@ export default {
 .modal-title {
   font-size: 1.3rem !important;
   font-weight: 700 !important;
-  color: #2d5a27 !important;
 }
 
 .modal-body {
@@ -1570,13 +1557,11 @@ export default {
 .form-label {
   font-size: 1.1rem !important;
   font-weight: 600 !important;
-  color: #2d5a27 !important;
 }
 
 /* Card header improvements */
 .card-header h5 {
   font-size: 1.4rem !important;
   font-weight: 700 !important;
-  color: #2d5a27 !important;
 }
 </style>

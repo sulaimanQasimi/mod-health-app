@@ -3,36 +3,6 @@
 @section('content')
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
-        {{-- Professional Header --}}
-        <div class="report-header mb-4">
-            <div class="header-grid">
-                <!-- Left Logo -->
-                <div class="logo-container logo-left">
-                    <img src="{{ asset('images/logos/لوگو قومنداني.JPG') }}" alt="Left Logo" class="logo-image">
-                </div>
-
-                <!-- Center Text Column (Arabic) -->
-                <div class="text-column text-column-center">
-                    <h2>امارت اسلامی افغانستان</h2>
-                    <h4>وزارت دفاع ملی</h4>
-                    <h4>ستـــــــــــــردرستیــــــــــــز</h4>
-                    <h4>قوماندانیت صحیه</h4>
-                    <h4>قوماندانی اکادمی علوم طبی</h4>
-                    <h4 class="dep-name">{{ auth()->user()->department?->name ?? '—' }}</h4>
-                </div>
-
-                <!-- Right Logo -->
-                <div class="logo-container logo-right">
-                    <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Right Logo" class="logo-image">
-                </div>
-            </div>
-            
-            <!-- Report Title -->
-            <div class="report-title">
-                <h1>{{ localize('global.grouped_test_results') }}</h1>
-                <h2>{{ localize('global.laboratory_system') }}</h2>
-            </div>
-        </div>
 
         {{-- Statistics Cards --}}
         <div class="row g-4 mb-4">
@@ -285,122 +255,51 @@
                              class="accordion-collapse collapse" 
                              aria-labelledby="heading{{ $categoryId }}" 
                              data-bs-parent="#groupedTestsAccordion">
-                            <div class="accordion-body bg-none">
-                                {{-- Patient Information --}}
-                                @php
-                                    $firstTest = $tests->first();
-                                    $patient = $firstTest && $firstTest->testable ? $firstTest->testable->patient : null;
-                                @endphp
-                                @if($patient)
-                                    <div class="patient-info-section mb-3">
-                                        <h3>{{ localize('global.patient_information') }}</h3>
-                                        <table class="patient-details">
-                                            <tr>
-                                                <th>{{ localize('global.name') }}</th>
-                                                <td>{{ $patient->name }} {{ $patient->last_name }}</td>
-                                                <th>{{ localize('global.father_name') }}</th>
-                                                <td>{{ $patient->father_name ?? '—' }}</td>
-                                                <th>{{ localize('global.age') }}</th>
-                                                <td>{{ $patient->age ?? '—' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>{{ localize('global.phone') }}</th>
-                                                <td>{{ $patient->phone ?? '—' }}</td>
-                                                <th>{{ localize('global.gender') }}</th>
-                                                <td>{{ $patient->gender ?? '—' }}</td>
-                                                <th>{{ localize('global.registration_date') }}</th>
-                                                <td>{{ \Hekmatinasser\Verta\Verta::instance($firstTest->registration_date)->format('Y/n/j H:i') }}</td>
-                                            </tr>
-                                            @if($patient->id_number)
-                                            <tr>
-                                                <th>{{ localize('global.id_number') }}</th>
-                                                <td>{{ $patient->id_number }}</td>
-                                                @if($patient->date_of_birth)
-                                                <th>{{ localize('global.date_of_birth') }}</th>
-                                                <td>{{ \Verta($patient->date_of_birth)->formatJalaliDate() }}</td>
-                                                @endif
-                                                @if($patient->email)
-                                                <th>{{ localize('global.email') }}</th>
-                                                <td>{{ $patient->email }}</td>
-                                                @endif
-                                            </tr>
-                                            @endif
-                                        </table>
-                                    </div>
-                                @endif
-
-                                {{-- Tests in Group --}}
-                                <div class="test-section">
-                                    <div class="test-details">
-                                        <table class="test-meta">
-                                            <tr>
-                                                <th>{{ localize('global.test_group') }}</th>
-                                                <td>{{ $categoryId }}</td>
-                                                <th>{{ localize('global.total_tests') }}</th>
-                                                <td>{{ $tests->count() }}</td>
-                                                <th>{{ localize('global.completed_tests') }}</th>
-                                                <td>{{ $tests->where('status', 'completed')->count() }}</td>
-                                            </tr>
-                                        </table>
-                                        
-                                        <div class="tests-table-container">
-                                            <table class="parameters-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ localize('global.test_name') }}</th>
-                                                        <th>{{ localize('global.reference_number') }}</th>
-                                                        <th>{{ localize('global.status') }}</th>
-                                                        <th>{{ localize('global.priority') }}</th>
-                                                        <th>{{ localize('global.doctor') }}</th>
-                                                        <th>{{ localize('global.actions') }}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($tests as $test)
-                                                        <tr>
-                                                            <td>{{ $test->labType->name ?? '—' }}</td>
-                                                            <td class="result-value">{{ $test->ref_no }}</td>
-                                                            <td>
-                                                                <span class="status-badge 
-                                                                    @if($test->status == 'completed') status-completed
-                                                                    @elseif($test->status == 'in_progress') status-in-progress
-                                                                    @elseif($test->status == 'cancelled') status-cancelled
-                                                                    @else status-pending
-                                                                    @endif">
-                                                                    {{ ucfirst($test->status) }}
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <span class="priority-badge 
-                                                                    @if($test->priority == 'stat') priority-stat
-                                                                    @elseif($test->priority == 'urgent') priority-urgent
-                                                                    @else priority-normal
-                                                                    @endif">
-                                                                    {{ ucfirst($test->priority) }}
-                                                                </span>
-                                                            </td>
-                                                            <td>{{ $test->doctor->name ?? '—' }}</td>
-                                                            <td>
-                                                                <div class="action-buttons">
-                                                                    @if($test->status == 'completed')
-                                                                        <a href="{{ route('laboratory.reports.print', $test->ref_no) }}" 
-                                                                           class="btn-print" target="_blank" title="{{ localize('global.print_report') }}">
-                                                                            <i class="bx bx-printer"></i>
-                                                                        </a>
-                                                                    @else
-                                                                        <a href="{{ route('laboratory.results.show', $test->id) }}" 
-                                                                           class="btn-edit" title="{{ localize('global.edit_test') }}">
-                                                                            <i class="bx bx-edit"></i>
-                                                                        </a>
-                                                                    @endif
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                            <div class="accordion-body">
+                                {{-- Tests in Group - Horizontal Card Layout --}}
+                                <div class="d-flex flex-column gap-3">
+                                    @foreach($tests as $test)
+                                        <div class="test-card card">
+                                            <div class="card-body">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-3">
+                                                        <h6 class="mb-1">{{ $test->labType->name ?? '—' }}</h6>
+                                                        <small class="text-muted">{{ localize('global.reference_number') }}: {{ $test->ref_no }}</small>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <span class="badge 
+                                                            @if($test->status == 'completed') bg-success
+                                                            @elseif($test->status == 'in_progress') bg-warning
+                                                            @elseif($test->status == 'cancelled') bg-danger
+                                                            @else bg-secondary
+                                                            @endif">
+                                                            {{ ucfirst($test->status) }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <span class="priority-badge 
+                                                            @if($test->priority == 'stat') priority-stat
+                                                            @elseif($test->priority == 'urgent') priority-urgent
+                                                            @else priority-normal
+                                                            @endif">
+                                                            {{ ucfirst($test->priority) }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <small class="text-muted">{{ localize('global.doctor') }}:</small>
+                                                        <div>{{ $test->doctor->name ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="col-md-2 text-end">
+                                                        <a href="{{ route('laboratory.reports.print', $test->ref_no) }}" 
+                                                           class="btn btn-success btn-sm" target="_blank" title="{{ localize('global.print_report') }}">
+                                                            <i class="bx bx-printer me-1"></i>
+                                                            {{ localize('global.print') }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -547,198 +446,7 @@
         text-align: right;
     }
 
-    /* Report Header Styles */
-    .report-header {
-        margin-bottom: 30px;
-        border-bottom: 2px solid #000;
-        padding-bottom: 20px;
-    }
 
-    .header-grid {
-        display: grid;
-        grid-template-columns: 120px 1fr 120px;
-        gap: 20px;
-        align-items: center;
-        min-height: 120px;
-    }
-
-    .logo-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100px;
-        height: 100px;
-        position: relative;
-    }
-
-    .logo-image {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-
-    .text-column {
-        padding: 10px;
-        min-height: 100px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .text-column h2 {
-        color: #000;
-        margin: 0 0 10px 0;
-        font-size: 14px;
-        font-weight: bold;
-        text-align: center;
-        padding-bottom: 5px;
-    }
-
-    .text-column h4 {
-        color: #333;
-        margin: 2px 0;
-        font-size: 11px;
-        line-height: 1.3;
-        text-align: center;
-    }
-
-    .dep-name {
-        background-color: #000;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 3px;
-    }
-
-    .report-title {
-        text-align: center;
-        margin-top: 20px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-    }
-
-    .report-title h1 {
-        color: #000;
-        margin: 0;
-        font-size: 24px;
-    }
-
-    .report-title h2 {
-        color: #333;
-        margin: 5px 0 0 0;
-        font-size: 16px;
-        font-weight: normal;
-    }
-
-    /* Patient Information Styles */
-    .patient-info-section {
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid #000;
-    }
-
-    .patient-info-section h3 {
-        margin: 0 0 10px 0;
-        color: #000;
-        font-size: 16px;
-    }
-
-    .patient-details {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .patient-details th,
-    .patient-details td {
-        border: 1px solid #000;
-        padding: 2px;
-        text-align: right;
-    }
-
-    .patient-details th {
-        font-weight: bold;
-        color: #000;
-        white-space: nowrap;
-    }
-
-    .patient-details td {
-        width: auto;
-    }
-
-    /* Test Section Styles */
-    .test-section {
-        margin-bottom: 30px;
-        page-break-inside: avoid;
-        margin-top: 20px;
-    }
-
-    .test-details {}
-
-    .test-meta {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 15px;
-    }
-
-    .test-meta th,
-    .test-meta td {
-        border: 1px solid #000;
-        text-align: center;
-        padding: 2px;
-    }
-
-    .test-meta th {
-        font-weight: bold;
-        color: #000;
-    }
-
-    .parameters-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        display: table;
-    }
-
-    .parameters-table thead {
-        display: table-header-group;
-    }
-
-    .parameters-table tbody {
-        display: table-row-group;
-    }
-
-    .parameters-table tr {
-        display: table-row;
-    }
-
-    .parameters-table th,
-    .parameters-table td {
-        border: 1px solid #000;
-        padding: 8px;
-        text-align: right;
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-    .parameters-table th {
-        background: #f0f0f0;
-        font-weight: bold;
-        color: #000;
-        width: 25%;
-    }
-
-    .parameters-table td {
-        width: 25%;
-    }
-
-    .parameters-table tr:nth-child(even) {
-        background: #f5f5f5;
-    }
-
-    .result-value {
-        font-weight: bold;
-        color: #000;
-    }
 
     /* Status and Priority Badges */
     .status-badge, .priority-badge {
@@ -791,27 +499,35 @@
         border: 1px solid #bee5eb;
     }
 
-    /* Action Buttons */
-    .action-buttons {
-        display: flex;
-        gap: 5px;
+    /* Test Card Styles */
+    .test-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     }
 
-    .btn-print, .btn-edit {
-        padding: 6px 10px;
-        border: 1px solid #000;
-        background: #fff;
-        color: #000;
-        text-decoration: none;
-        border-radius: 3px;
-        font-size: 12px;
-        transition: all 0.3s ease;
+    .test-card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
     }
 
-    .btn-print:hover, .btn-edit:hover {
-        background: #000;
-        color: #fff;
-        text-decoration: none;
+    .test-card .card-body {
+        padding: 1rem;
+    }
+
+    .test-card .badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .test-card h6 {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .test-card .row {
+        min-height: 60px;
     }
 
     /* Accordion Styles */
@@ -948,31 +664,6 @@
 
     /* Responsive adjustments */
     @media (max-width: 768px) {
-        .header-grid {
-            grid-template-columns: 80px 1fr 80px;
-            gap: 10px;
-        }
-
-        .logo-container {
-            width: 80px;
-            height: 80px;
-        }
-
-        .text-column h2 {
-            font-size: 12px;
-        }
-
-        .text-column h4 {
-            font-size: 10px;
-        }
-
-        .report-title h1 {
-            font-size: 20px;
-        }
-
-        .report-title h2 {
-            font-size: 14px;
-        }
 
         .d-flex.flex-wrap {
             flex-direction: column;
@@ -1005,23 +696,6 @@
     }
 
     @media (max-width: 576px) {
-        .header-grid {
-            grid-template-columns: 60px 1fr 60px;
-            gap: 5px;
-        }
-
-        .logo-container {
-            width: 60px;
-            height: 60px;
-        }
-
-        .text-column h2 {
-            font-size: 10px;
-        }
-
-        .text-column h4 {
-            font-size: 9px;
-        }
 
         .pagination-simple .page-link {
             min-width: 30px;

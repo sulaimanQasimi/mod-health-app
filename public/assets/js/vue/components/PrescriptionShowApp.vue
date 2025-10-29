@@ -59,6 +59,12 @@
                         <span><i class="bx bx-check-shield"></i></span>
                       </button>
                     </div>
+                    <div v-else class="text-center">
+                      <span class="badge bg-success fs-6">
+                        <i class="bx bx-check-circle me-1"></i>
+                        {{ localize('global.completed') }}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -70,7 +76,7 @@
             </h5>
 
             <!-- Bulk Operations Toolbar -->
-            <div v-if="selectedItems.size > 0" class="alert alert-info d-flex justify-content-between align-items-center mb-3">
+            <div v-if="selectedItems.size > 0 && prescription.is_completed == '0'" class="alert alert-info d-flex justify-content-between align-items-center mb-3">
               <div>
                 <i class="bx bx-info-circle me-2"></i>
                 {{ selectedItems.size }} {{ localize('global.items_selected') }}
@@ -95,6 +101,15 @@
                 </button>
               </div>
             </div>
+            
+            <!-- Completed Prescription Notice -->
+            <div v-if="prescription.is_completed == '1'" class="alert alert-success d-flex align-items-center mb-3">
+              <i class="bx bx-check-circle me-2 fs-4"></i>
+              <div>
+                <strong>{{ localize('global.prescription_completed') }}</strong>
+                <p class="mb-0">{{ localize('global.prescription_readonly_notice') }}</p>
+              </div>
+            </div>
 
             
             <div class="table-responsive">
@@ -107,7 +122,7 @@
                                type="checkbox" 
                                :checked="selectAll"
                                @change="toggleSelectAll"
-                               :disabled="loading">
+                               :disabled="loading || prescription.is_completed == '1'">
                       </div>
                     </th>
                     <th>{{ localize('global.number') }}</th>
@@ -131,7 +146,7 @@
                                type="checkbox" 
                                :checked="selectedItems.has(item.id)"
                                @change="toggleItemSelection(item.id)"
-                               :disabled="loading">
+                               :disabled="loading || prescription.is_completed == '1'">
                       </div>
                       <div v-else class="text-center">
                         <i class="bx bx-info-circle text-muted"></i>
@@ -198,8 +213,8 @@
                         <button @click="toggleItemStatus(item)" 
                                 class="btn btn-sm"
                                 :class="item.is_delivered == '0' ? 'btn-danger' : 'btn-success'"
-                                :disabled="loading"
-                                :title="item.is_delivered == '0' ? localize('global.mark_delivered') : localize('global.mark_not_delivered')">
+                                :disabled="loading || prescription.is_completed == '1'"
+                                :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : (item.is_delivered == '0' ? localize('global.mark_delivered') : localize('global.mark_not_delivered'))">
                           <i :class="item.is_delivered == '1' ? 'bx bx-check' : 'bx bx-x'"></i>
                         </button>
                       </div>
@@ -210,7 +225,8 @@
                           <button type="button" 
                                   class="btn btn-info" 
                                   @click="openAlternativesModal(item)"
-                                  :title="localize('global.alternatives')">
+                                  :disabled="prescription.is_completed == '1'"
+                                  :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.alternatives')">
                             <i class="bx bx-list-ul"></i>
                             <span class="d-none d-sm-inline ms-1">{{ localize('global.alternatives') }}</span>
                           </button>
@@ -231,7 +247,7 @@
                                type="checkbox" 
                                :checked="selectedItems.has(item.selected_alternative.id)"
                                @change="toggleItemSelection(item.selected_alternative.id)"
-                               :disabled="loading">
+                               :disabled="loading || prescription.is_completed == '1'">
                       </div>
                     </td>
                     <td>
@@ -289,8 +305,8 @@
                         <button @click="toggleAlternativeStatus(item.selected_alternative)" 
                                 class="btn btn-sm"
                                 :class="item.selected_alternative.is_delivered == '0' ? 'btn-danger' : 'btn-success'"
-                                :disabled="loading"
-                                :title="item.selected_alternative.is_delivered == '0' ? localize('global.mark_delivered') : localize('global.mark_not_delivered')">
+                                :disabled="loading || prescription.is_completed == '1'"
+                                :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : (item.selected_alternative.is_delivered == '0' ? localize('global.mark_delivered') : localize('global.mark_not_delivered'))">
                           <i :class="item.selected_alternative.is_delivered == '1' ? 'bx bx-check' : 'bx bx-x'"></i>
                         </button>
                       </div>
@@ -299,15 +315,16 @@
                       <div class="btn-group btn-group-sm d-flex flex-column flex-sm-row" role="group">
                         <button @click="deselectAlternative(item.selected_alternative)" 
                                 class="btn btn-warning fw-bold mb-1 mb-sm-0" 
-                                :disabled="loading"
-                                :title="localize('global.deselect_alternative')">
+                                :disabled="loading || prescription.is_completed == '1'"
+                                :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.deselect_alternative')">
                           <i class="bx bx-x"></i>
                           <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect') }}</span>
                         </button>
                         <button type="button" 
                                 class="btn btn-info" 
                                 @click="openAlternativesModal(item)"
-                                :title="localize('global.alternatives')">
+                                :disabled="prescription.is_completed == '1'"
+                                :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.alternatives')">
                           <i class="bx bx-list-ul"></i>
                           <span class="d-none d-sm-inline ms-1">{{ localize('global.alternatives') }}</span>
                         </button>

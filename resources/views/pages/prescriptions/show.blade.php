@@ -58,6 +58,14 @@
              'global.failed_to_mark_delivered' => localize('global.failed_to_mark_delivered'),
              'global.no_items_to_mark_delivered' => localize('global.no_items_to_mark_delivered'),
              'global.alternative_added_and_selected_successfully' => localize('global.alternative_added_and_selected_successfully'),
+            'global.edit_amount' => localize('global.edit_amount'),
+            'global.enter_amount' => localize('global.enter_amount'),
+            'global.amount_updated_successfully' => localize('global.amount_updated_successfully'),
+            'global.failed_to_update_amount' => localize('global.failed_to_update_amount'),
+            'global.please_enter_amount' => localize('global.please_enter_amount'),
+            'global.validation_errors' => localize('global.validation_errors'),
+            'global.cancel' => localize('global.cancel'),
+            'global.save' => localize('global.save'),
          ]) }}">
     </div>
 @endsection

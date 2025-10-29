@@ -213,7 +213,16 @@
                       <span class="fw-semibold">{{ item.frequency }}</span>
                     </td>
                     <td class="d-none d-sm-table-cell">
-                      <span class="fw-semibold">{{ item.amount }}</span>
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-semibold">{{ item.amount }}</span>
+                        <button @click="openAmountModal(item)" 
+                                class="btn btn-sm btn-outline-primary ms-2" 
+                                :disabled="loading || prescription.is_completed == '1'"
+                                :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.edit_amount')"
+                                style="padding: 2px 6px; font-size: 0.8rem;">
+                          <i class="bx bx-edit"></i>
+                        </button>
+                      </div>
                     </td>
                     <td>
                       <div v-if="item.selected_alternative" class="text-center">
@@ -531,6 +540,50 @@
         </div>
       </div>
     </div>
+
+    <!-- Quick Edit Amount Modal -->
+    <div class="modal fade" id="amountModal" tabindex="-1" 
+         aria-labelledby="amountModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="amountModalLabel">
+              <i class="bx bx-edit me-2"></i>
+              {{ localize('global.edit_amount') }}: {{ editingItem?.medicine?.name }}
+            </h5>
+            <button type="button" class="btn-close" @click="closeAmountModal" :aria-label="localize('global.close')"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="updateAmount">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">
+                  <i class="bx bx-hash me-1 text-primary"></i>
+                  {{ localize('global.amount') }}
+                </label>
+                <input type="number" 
+                       class="form-control" 
+                       v-model="editAmount"
+                       :placeholder="localize('global.enter_amount')"
+                       min="1"
+                       step="1"
+                       required>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeAmountModal">
+              <i class="bx bx-x me-1"></i>
+              {{ localize('global.cancel') }}
+            </button>
+            <button type="button" class="btn btn-primary" @click="updateAmount" :disabled="loading">
+              <i class="bx bx-check me-1" v-if="!loading"></i>
+              <span class="spinner-border spinner-border-sm me-1" v-if="loading"></span>
+              {{ localize('global.save') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -581,6 +634,10 @@ export default {
     
     // Tab navigation
     const activeTab = ref('add')
+    
+    // Amount edit modal
+    const editingItem = ref(null)
+    const editAmount = ref('')
 
 
     // Localization function
@@ -1192,6 +1249,138 @@ export default {
       }
     }
 
+    const openAmountModal = (item) => {
+      editingItem.value = item
+      editAmount.value = item.amount || ''
+      
+      // Show modal using Bootstrap 5 Modal API
+      const modalElement = document.getElementById('amountModal')
+      if (modalElement) {
+        // Try Bootstrap 5 Modal API first
+        if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+          try {
+            // Check if modal instance already exists
+            let modalInstance = window.bootstrap.Modal.getInstance(modalElement)
+            if (!modalInstance) {
+              modalInstance = new window.bootstrap.Modal(modalElement, {
+                backdrop: false,
+                keyboard: true,
+                focus: true
+              })
+            }
+            modalInstance.show()
+          } catch (error) {
+            console.log('Bootstrap Modal error, using jQuery fallback:', error)
+            // Fallback to jQuery Bootstrap
+            if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+              window.$(modalElement).modal({ backdrop: false }).modal('show')
+            } else {
+              // Final fallback: manual show
+              modalElement.style.display = 'block'
+              modalElement.classList.add('show')
+              document.body.classList.add('modal-open')
+            }
+          }
+        }
+        // Try jQuery Bootstrap
+        else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+          window.$(modalElement).modal({ backdrop: false }).modal('show')
+        }
+        // Fallback: show manually
+        else {
+          modalElement.style.display = 'block'
+          modalElement.classList.add('show')
+          document.body.classList.add('modal-open')
+        }
+      } else {
+        console.error('Modal element not found: amountModal')
+      }
+    }
+
+    const closeAmountModal = () => {
+      const modalElement = document.getElementById('amountModal')
+      if (modalElement) {
+        // Try Bootstrap 5 Modal API first
+        if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+          try {
+            const modalInstance = window.bootstrap.Modal.getInstance(modalElement)
+            if (modalInstance) {
+              modalInstance.hide()
+            } else {
+              // Create new instance and hide
+              const modal = new window.bootstrap.Modal(modalElement, { backdrop: false })
+              modal.hide()
+            }
+          } catch (error) {
+            console.log('Bootstrap Modal error, using jQuery fallback:', error)
+            // Fallback to jQuery Bootstrap
+            if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+              window.$(modalElement).modal('hide')
+            } else {
+              // Final fallback: manual hide
+              modalElement.style.display = 'none'
+              modalElement.classList.remove('show')
+              document.body.classList.remove('modal-open')
+            }
+          }
+        }
+        // Try jQuery Bootstrap
+        else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+          window.$(modalElement).modal('hide')
+        }
+        // Fallback: hide manually
+        else {
+          modalElement.style.display = 'none'
+          modalElement.classList.remove('show')
+          document.body.classList.remove('modal-open')
+        }
+      }
+      
+      // Reset form data
+      editingItem.value = null
+      editAmount.value = ''
+    }
+
+    const updateAmount = async () => {
+      if (!editingItem.value || !editAmount.value) {
+        showToast(localize('global.please_enter_amount'), 'error')
+        return
+      }
+
+      loading.value = true
+      try {
+        const response = await axios.put(`/prescription-show-ajax/update-item-amount/${editingItem.value.id}`, {
+          amount: String(editAmount.value)
+        })
+        
+        if (response.data.success) {
+          // Update local state
+          editingItem.value.amount = editAmount.value
+          showToast(localize('global.amount_updated_successfully'))
+          closeAmountModal()
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        console.error('Error updating amount:', error)
+        if (error.response && error.response.data) {
+          console.error('Server response:', error.response.data)
+          if (error.response.data.errors) {
+            const errorMessages = Object.values(error.response.data.errors).flat().join(', ')
+            showToast(`${localize('global.validation_errors')}: ${errorMessages}`, 'error')
+          } else if (error.response.data.message) {
+            showToast(error.response.data.message, 'error')
+          } else {
+            showToast(localize('global.failed_to_update_amount'), 'error')
+          }
+        } else {
+          showToast(localize('global.failed_to_update_amount'), 'error')
+        }
+      } finally {
+        loading.value = false
+      }
+    }
+
     const closeModal = () => {
       const modalElement = document.getElementById('alternativeModal')
       if (modalElement) {
@@ -1331,7 +1520,12 @@ export default {
       closeModal,
       rejectPrescription,
       markDelivered,
-      openThermalPrint
+      openThermalPrint,
+      openAmountModal,
+      closeAmountModal,
+      updateAmount,
+      editingItem,
+      editAmount
     }
   }
 }
@@ -1553,6 +1747,15 @@ export default {
 
 .modal-body {
   font-size: 1.05rem !important;
+}
+
+/* Amount modal z-index fix */
+#amountModal {
+  z-index: 1040 !important;
+}
+
+#amountModal .modal-dialog {
+  z-index: 1041 !important;
 }
 
 /* Form label improvements */

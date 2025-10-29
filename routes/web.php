@@ -850,6 +850,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('prescription-details/{id}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getPrescriptionDetails']);
         Route::put('update-prescription-status/{id}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'updatePrescriptionStatus']);
         Route::put('update-item-status/{itemId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'updateItemStatus']);
+        Route::put('update-item-amount/{itemId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'updateItemAmount']);
         Route::get('alternatives/{itemId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'getAlternatives']);
         Route::post('add-alternative', [\App\Http\Controllers\PrescriptionShowApiController::class, 'addAlternative']);
         Route::put('select-alternative/{alternativeId}', [\App\Http\Controllers\PrescriptionShowApiController::class, 'selectAlternative']);

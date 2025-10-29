@@ -133,6 +133,43 @@ class PrescriptionShowApiController extends Controller
     }
 
     /**
+     * Update prescription item amount
+     */
+    public function updateItemAmount(Request $request, $itemId)
+    {
+        try {
+            $item = PrescriptionItem::findOrFail($itemId);
+            
+            $validator = Validator::make($request->all(), [
+                'amount' => 'required|max:255'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $item->amount = $request->amount;
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $item,
+                'message' => localize('global.amount_updated_successfully')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_update_amount'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get alternatives for a prescription item
      */
     public function getAlternatives($itemId)

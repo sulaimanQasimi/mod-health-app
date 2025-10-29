@@ -3,17 +3,34 @@
 @section('content')
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
-        {{-- Page Header --}}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <div class="d-flex align-items-center">
-                            <i class="bx bx-collection me-2"></i>
-                            <h5 class="mb-0">{{ localize('global.grouped_test_results') }}</h5>
-                        </div>
-                    </div>
+        {{-- Professional Header --}}
+        <div class="report-header mb-4">
+            <div class="header-grid">
+                <!-- Left Logo -->
+                <div class="logo-container logo-left">
+                    <img src="{{ asset('images/logos/لوگو قومنداني.JPG') }}" alt="Left Logo" class="logo-image">
                 </div>
+
+                <!-- Center Text Column (Arabic) -->
+                <div class="text-column text-column-center">
+                    <h2>امارت اسلامی افغانستان</h2>
+                    <h4>وزارت دفاع ملی</h4>
+                    <h4>ستـــــــــــــردرستیــــــــــــز</h4>
+                    <h4>قوماندانیت صحیه</h4>
+                    <h4>قوماندانی اکادمی علوم طبی</h4>
+                    <h4 class="dep-name">{{ auth()->user()->department?->name ?? '—' }}</h4>
+                </div>
+
+                <!-- Right Logo -->
+                <div class="logo-container logo-right">
+                    <img src="{{ asset('images/logos/لوگوی جدید وزارت دفاع ملی.png') }}" alt="Right Logo" class="logo-image">
+                </div>
+            </div>
+            
+            <!-- Report Title -->
+            <div class="report-title">
+                <h1>{{ localize('global.grouped_test_results') }}</h1>
+                <h2>{{ localize('global.laboratory_system') }}</h2>
             </div>
         </div>
 
@@ -275,91 +292,115 @@
                                     $patient = $firstTest && $firstTest->testable ? $firstTest->testable->patient : null;
                                 @endphp
                                 @if($patient)
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <div class="alert alert-info">
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <strong>{{ localize('global.patient') }}:</strong> 
-                                                        {{ $patient->name }} {{ $patient->last_name }}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <strong>{{ localize('global.phone') }}:</strong> 
-                                                        {{ $patient->phone ?? '—' }}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <strong>{{ localize('global.age') }}:</strong> 
-                                                        {{ $patient->age ?? '—' }}
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <strong>{{ localize('global.registration_date') }}:</strong> 
-                                                        {{ \Hekmatinasser\Verta\Verta::instance($firstTest->registration_date)->format('Y/n/j H:i') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="patient-info-section mb-3">
+                                        <h3>{{ localize('global.patient_information') }}</h3>
+                                        <table class="patient-details">
+                                            <tr>
+                                                <th>{{ localize('global.name') }}</th>
+                                                <td>{{ $patient->name }} {{ $patient->last_name }}</td>
+                                                <th>{{ localize('global.father_name') }}</th>
+                                                <td>{{ $patient->father_name ?? '—' }}</td>
+                                                <th>{{ localize('global.age') }}</th>
+                                                <td>{{ $patient->age ?? '—' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>{{ localize('global.phone') }}</th>
+                                                <td>{{ $patient->phone ?? '—' }}</td>
+                                                <th>{{ localize('global.gender') }}</th>
+                                                <td>{{ $patient->gender ?? '—' }}</td>
+                                                <th>{{ localize('global.registration_date') }}</th>
+                                                <td>{{ \Hekmatinasser\Verta\Verta::instance($firstTest->registration_date)->format('Y/n/j H:i') }}</td>
+                                            </tr>
+                                            @if($patient->id_number)
+                                            <tr>
+                                                <th>{{ localize('global.id_number') }}</th>
+                                                <td>{{ $patient->id_number }}</td>
+                                                @if($patient->date_of_birth)
+                                                <th>{{ localize('global.date_of_birth') }}</th>
+                                                <td>{{ \Verta($patient->date_of_birth)->formatJalaliDate() }}</td>
+                                                @endif
+                                                @if($patient->email)
+                                                <th>{{ localize('global.email') }}</th>
+                                                <td>{{ $patient->email }}</td>
+                                                @endif
+                                            </tr>
+                                            @endif
+                                        </table>
                                     </div>
                                 @endif
 
                                 {{-- Tests in Group --}}
-                                 <div class="table-responsive">
-                                     <table class="table table-hover">
-                                         <thead>
+                                <div class="test-section">
+                                    <div class="test-details">
+                                        <table class="test-meta">
                                             <tr>
-                                                <th>{{ localize('global.test_name') }}</th>
-                                                <th>{{ localize('global.reference_number') }}</th>
-                                                <th>{{ localize('global.status') }}</th>
-                                                <th>{{ localize('global.priority') }}</th>
-                                                <th>{{ localize('global.doctor') }}</th>
-                                                <th>{{ localize('global.actions') }}</th>
+                                                <th>{{ localize('global.test_group') }}</th>
+                                                <td>{{ $categoryId }}</td>
+                                                <th>{{ localize('global.total_tests') }}</th>
+                                                <td>{{ $tests->count() }}</td>
+                                                <th>{{ localize('global.completed_tests') }}</th>
+                                                <td>{{ $tests->where('status', 'completed')->count() }}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($tests as $test)
-                                                <tr>
-                                                    <td>{{ $test->labType->name ?? '—' }}</td>
-                                                    <td>
-                                                        <span class="badge bg-warning">{{ $test->ref_no }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge 
-                                                            @if($test->status == 'completed') bg-success
-                                                            @elseif($test->status == 'in_progress') bg-warning
-                                                            @elseif($test->status == 'cancelled') bg-danger
-                                                            @else bg-secondary
-                                                            @endif">
-                                                            {{ ucfirst($test->status) }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge 
-                                                            @if($test->priority == 'stat') bg-danger
-                                                            @elseif($test->priority == 'urgent') bg-warning
-                                                            @else bg-primary
-                                                            @endif">
-                                                            {{ ucfirst($test->priority) }}
-                                                        </span>
-                                                    </td>
-                                                    <td>{{ $test->doctor->name ?? '—' }}</td>
-                                                    <td>
-                                                        <div class="btn-group" role="group">
-                                                            @if($test->status == 'completed')
-                                                                <a href="{{ route('laboratory.reports.print', $test->ref_no) }}" 
-                                                                   class="btn btn-outline-info btn-sm" target="_blank">
-                                                                    <i class="bx bx-printer"></i>
-                                                                </a>
-                                                            @else
-                                                                <a href="{{ route('laboratory.results.show', $test->id) }}" 
-                                                                   class="btn btn-outline-primary btn-sm">
-                                                                    <i class="bx bx-edit"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                        </table>
+                                        
+                                        <div class="tests-table-container">
+                                            <table class="parameters-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{{ localize('global.test_name') }}</th>
+                                                        <th>{{ localize('global.reference_number') }}</th>
+                                                        <th>{{ localize('global.status') }}</th>
+                                                        <th>{{ localize('global.priority') }}</th>
+                                                        <th>{{ localize('global.doctor') }}</th>
+                                                        <th>{{ localize('global.actions') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($tests as $test)
+                                                        <tr>
+                                                            <td>{{ $test->labType->name ?? '—' }}</td>
+                                                            <td class="result-value">{{ $test->ref_no }}</td>
+                                                            <td>
+                                                                <span class="status-badge 
+                                                                    @if($test->status == 'completed') status-completed
+                                                                    @elseif($test->status == 'in_progress') status-in-progress
+                                                                    @elseif($test->status == 'cancelled') status-cancelled
+                                                                    @else status-pending
+                                                                    @endif">
+                                                                    {{ ucfirst($test->status) }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="priority-badge 
+                                                                    @if($test->priority == 'stat') priority-stat
+                                                                    @elseif($test->priority == 'urgent') priority-urgent
+                                                                    @else priority-normal
+                                                                    @endif">
+                                                                    {{ ucfirst($test->priority) }}
+                                                                </span>
+                                                            </td>
+                                                            <td>{{ $test->doctor->name ?? '—' }}</td>
+                                                            <td>
+                                                                <div class="action-buttons">
+                                                                    @if($test->status == 'completed')
+                                                                        <a href="{{ route('laboratory.reports.print', $test->ref_no) }}" 
+                                                                           class="btn-print" target="_blank" title="{{ localize('global.print_report') }}">
+                                                                            <i class="bx bx-printer"></i>
+                                                                        </a>
+                                                                    @else
+                                                                        <a href="{{ route('laboratory.results.show', $test->id) }}" 
+                                                                           class="btn-edit" title="{{ localize('global.edit_test') }}">
+                                                                            <i class="bx bx-edit"></i>
+                                                                        </a>
+                                                                    @endif
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -480,174 +521,404 @@
 <!-- Persian Date Picker CSS -->
 <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}">
 <style>
-    .table th,
-    .table td {
+    @font-face {
+        font-family: 'ModFont';
+        src: url('{{ asset("assets/fonts/mod_font.ttf") }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'ModFont', 'Arial', sans-serif;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        background: white;
+        direction: rtl;
         text-align: right;
     }
-    .card-header h6 {
-        font-weight: 600;
+
+    /* Report Header Styles */
+    .report-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 20px;
     }
-    .alert-info {
-        background-color: #e7f3ff;
-        border-color: #b3d9ff;
+
+    .header-grid {
+        display: grid;
+        grid-template-columns: 120px 1fr 120px;
+        gap: 20px;
+        align-items: center;
+        min-height: 120px;
     }
-    
-    /* Enhanced Filter Section Styles */
-    .card.shadow-sm {
-        border: none;
-        border-radius: 0.75rem;
+
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        height: 100px;
+        position: relative;
     }
-    
-    .card-header.bg-light {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-        border-radius: 0.75rem 0.75rem 0 0;
+
+    .logo-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
     }
-    
-    /* Clickable header styles */
-    .card-header[data-bs-toggle="collapse"] {
+
+    .text-column {
+        padding: 10px;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .text-column h2 {
+        color: #000;
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        padding-bottom: 5px;
+    }
+
+    .text-column h4 {
+        color: #333;
+        margin: 2px 0;
+        font-size: 11px;
+        line-height: 1.3;
+        text-align: center;
+    }
+
+    .dep-name {
+        background-color: #000;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 3px;
+    }
+
+    .report-title {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+    }
+
+    .report-title h1 {
+        color: #000;
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .report-title h2 {
+        color: #333;
+        margin: 5px 0 0 0;
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    /* Patient Information Styles */
+    .patient-info-section {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #000;
+    }
+
+    .patient-info-section h3 {
+        margin: 0 0 10px 0;
+        color: #000;
+        font-size: 16px;
+    }
+
+    .patient-details {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .patient-details th,
+    .patient-details td {
+        border: 1px solid #000;
+        padding: 2px;
+        text-align: right;
+    }
+
+    .patient-details th {
+        font-weight: bold;
+        color: #000;
+        white-space: nowrap;
+    }
+
+    .patient-details td {
+        width: auto;
+    }
+
+    /* Test Section Styles */
+    .test-section {
+        margin-bottom: 30px;
+        page-break-inside: avoid;
+        margin-top: 20px;
+    }
+
+    .test-details {}
+
+    .test-meta {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+    }
+
+    .test-meta th,
+    .test-meta td {
+        border: 1px solid #000;
+        text-align: center;
+        padding: 2px;
+    }
+
+    .test-meta th {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .parameters-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        display: table;
+    }
+
+    .parameters-table thead {
+        display: table-header-group;
+    }
+
+    .parameters-table tbody {
+        display: table-row-group;
+    }
+
+    .parameters-table tr {
+        display: table-row;
+    }
+
+    .parameters-table th,
+    .parameters-table td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: right;
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .parameters-table th {
+        background: #f0f0f0;
+        font-weight: bold;
+        color: #000;
+        width: 25%;
+    }
+
+    .parameters-table td {
+        width: 25%;
+    }
+
+    .parameters-table tr:nth-child(even) {
+        background: #f5f5f5;
+    }
+
+    .result-value {
+        font-weight: bold;
+        color: #000;
+    }
+
+    /* Status and Priority Badges */
+    .status-badge, .priority-badge {
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-completed {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-in-progress {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    .status-cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .status-pending {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border: 1px solid #d6d8db;
+    }
+
+    .priority-stat {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .priority-urgent {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    .priority-normal {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-print, .btn-edit {
+        padding: 6px 10px;
+        border: 1px solid #000;
+        background: #fff;
+        color: #000;
+        text-decoration: none;
+        border-radius: 3px;
+        font-size: 12px;
         transition: all 0.3s ease;
-        user-select: none;
     }
-    
-    
-    .card-header.collapsed {
-        background-color: transparent;
+
+    .btn-print:hover, .btn-edit:hover {
+        background: #000;
+        color: #fff;
+        text-decoration: none;
     }
-    
-    
-    .card-header .badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .form-control-lg {
-        border-radius: 0.5rem;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control-lg:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .input-group-text {
-        border-radius: 0.5rem 0 0 0.5rem;
-        border: 2px solid #e9ecef;
-        border-right: none;
-    }
-    
-    .form-control {
-        border-radius: 0 0.5rem 0.5rem 0;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .form-select {
-        border-radius: 0.5rem;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
-    }
-    
-    .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .btn {
-        border-radius: 0.5rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
-    .form-label {
-        color: #495057;
-        margin-bottom: 0.5rem;
-    }
-    
-    .form-label i {
-        font-size: 1rem;
-    }
-    
-    /* Accordion Custom Styles */
+
+    /* Accordion Styles */
     .accordion-button {
         background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
+        border: 1px solid #000;
         font-weight: 500;
+        color: #000;
     }
-    
+
     .accordion-button:not(.collapsed) {
         background-color: #e7f3ff;
-        border-color: #b3d9ff;
-        color: #0c63e4;
+        border-color: #000;
+        color: #000;
     }
-    
+
     .accordion-button:focus {
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.25);
     }
-    
+
     .accordion-item {
-        border: 1px solid #dee2e6;
+        border: 1px solid #000;
         border-radius: 0.375rem;
         margin-bottom: 0.5rem;
     }
-    
+
     .accordion-body {
         background-color: transparent;
     }
-    
-    /* Print button styling in accordion header */
-    .accordion-button .btn {
-        z-index: 10;
-        position: relative;
+
+    /* Statistics Cards */
+    .card {
+        border: 1px solid #000;
     }
-    
+
+    .card-header {
+        background-color: #000;
+        color: white;
+        border-bottom: 1px solid #000;
+    }
+
+    /* Filter Section */
+    .card.shadow-sm {
+        border: 1px solid #000;
+        border-radius: 0.75rem;
+    }
+
+    .card-header[data-bs-toggle="collapse"] {
+        transition: all 0.3s ease;
+        user-select: none;
+        background-color: #f8f9fa;
+        color: #000;
+    }
+
+    .card-header.collapsed {
+        background-color: #f8f9fa;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #000;
+        border-radius: 0.375rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+    }
+
+    .btn {
+        border: 1px solid #000;
+        border-radius: 0.375rem;
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: #000;
+        border-color: #000;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #333;
+        border-color: #333;
+    }
+
     /* Persian Date Picker Styles */
     .persian-datepicker {
         direction: rtl;
         text-align: right;
     }
-    
+
     .pwt-datepicker-input {
         direction: rtl !important;
         text-align: right !important;
     }
-    
-    /* Collapse Animation */
-    .collapse {
-        transition: all 0.3s ease;
-    }
-    
-    /* Filter toggle button animation */
-    #filterToggleIcon {
-        transition: transform 0.3s ease;
-    }
-    
-    .btn-outline-primary:hover #filterToggleIcon {
-        transform: scale(1.1);
-    }
-    
-    /* Simple Pagination Styles */
+
+    /* Pagination Styles */
     .pagination-simple {
         margin-bottom: 0;
         gap: 0.25rem;
     }
-    
+
     .pagination-simple .page-link {
         border-radius: 0.375rem;
         margin: 0 2px;
-        border: 1px solid #dee2e6;
-        color: #6c757d;
+        border: 1px solid #000;
+        color: #000;
         background-color: #fff;
         transition: all 0.2s ease;
         min-width: 38px;
@@ -655,118 +926,103 @@
         padding: 0.5rem 0.75rem;
         font-size: 0.875rem;
     }
-    
+
     .pagination-simple .page-link:hover {
-        background-color: #e9ecef;
-        border-color: #adb5bd;
-        color: #495057;
+        background-color: #f8f9fa;
+        border-color: #000;
+        color: #000;
     }
-    
+
     .pagination-simple .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
+        background-color: #000;
+        border-color: #000;
         color: white;
     }
-    
+
     .pagination-simple .page-item.disabled .page-link {
         color: #6c757d;
         background-color: #fff;
         border-color: #dee2e6;
         cursor: not-allowed;
     }
-    
-    /* Per page selector */
-    .form-select-sm {
-        border-radius: 0.375rem;
-        border: 1px solid #ced4da;
-        transition: all 0.3s ease;
-    }
-    
-    .form-select-sm:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    
-    /* Pagination info */
-    .text-muted {
-        font-size: 0.875rem;
-    }
-    
-    /* Search Dropdown Styles */
-    .dropdown-menu {
-        border: 1px solid #dee2e6;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        margin-top: 0.25rem;
-    }
-    
-    .dropdown-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    .dropdown-item-text {
-        padding: 0.75rem 1rem;
-        color: #6c757d;
-    }
-    
-    
-    .input-group:focus-within {
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-        border-radius: 0.5rem;
-    }
-    
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
+        .header-grid {
+            grid-template-columns: 80px 1fr 80px;
+            gap: 10px;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+        }
+
+        .text-column h2 {
+            font-size: 12px;
+        }
+
+        .text-column h4 {
+            font-size: 10px;
+        }
+
+        .report-title h1 {
+            font-size: 20px;
+        }
+
+        .report-title h2 {
+            font-size: 14px;
+        }
+
         .d-flex.flex-wrap {
             flex-direction: column;
         }
-        
+
         .d-flex.flex-wrap .btn {
             margin-bottom: 0.5rem;
         }
-        
+
         .d-flex.justify-content-between {
             flex-direction: column;
             gap: 1rem;
         }
-        
+
         .d-flex.justify-content-between > div {
             width: 100%;
             justify-content: center;
         }
-        
-        /* Mobile pagination adjustments */
+
         .pagination-simple {
             flex-wrap: wrap;
             justify-content: center;
         }
-        
+
         .pagination-simple .page-link {
             min-width: 35px;
             padding: 0.375rem 0.5rem;
             font-size: 0.875rem;
         }
-        
-        /* Mobile per page selector */
-        .d-flex.justify-content-between {
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .d-flex.justify-content-between > div:first-child {
-            order: 2;
-        }
-        
-        .d-flex.justify-content-between > nav {
-            order: 1;
-        }
     }
-    
+
     @media (max-width: 576px) {
+        .header-grid {
+            grid-template-columns: 60px 1fr 60px;
+            gap: 5px;
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+        }
+
+        .text-column h2 {
+            font-size: 10px;
+        }
+
+        .text-column h4 {
+            font-size: 9px;
+        }
+
         .pagination-simple .page-link {
             min-width: 30px;
             padding: 0.25rem 0.375rem;

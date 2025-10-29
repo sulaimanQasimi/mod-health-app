@@ -41,6 +41,12 @@
             margin: 0 auto;
             background: white;
         }
+        .text-column h4.depa-name{
+            background-color: black;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
 
         .header {
             margin-bottom: 30px;
@@ -335,7 +341,7 @@
                             <h4>ستـــــــــــــردرستیــــــــــــز</h4>
                             <h4>قوماندانیت صحیه</h4>
                             <h4>قوماندانی اکادمی علوم طبی</h4>
-                        <h4></h4>{{ auth()->user()->department?->name ?? '—' }}</h4>
+                        <h4 class="depa-name">{{ auth()->user()->department?->name ?? '—' }}</h4>
                         </div>
 
                         <!-- Right Logo -->

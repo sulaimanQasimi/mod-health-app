@@ -93,7 +93,7 @@
                                             <td>
                                                 <span class="badge bg-secondary">{{ $prescription->patient->id_card ?? '-' }}</span>
                                             </td>
-                                            <td style="font-size: 17px; color: green;">{{ $prescription->patient->name ?? '-' }}</td>
+                                            <td style="font-size: 17px; color: green; font-weight: bold;">{{ $prescription->patient->name ?? '-' }}</td>
                                             <td>
                                                 <span class="text-muted">{{ $prescription->patient->father_name ?? '-' }}</span>
                                             </td>

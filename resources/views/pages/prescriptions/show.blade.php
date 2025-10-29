@@ -48,6 +48,15 @@
              'global.auto-filled' => localize('global.auto-filled'),
              'global.select_medicine_to_auto_fill' => localize('global.select_medicine_to_auto_fill'),
              'global.deselect' => localize('global.deselect'),
+             'global.in_progress' => localize('global.in_progress'),
+             'global.completed' => localize('global.completed'),
+             'global.reject_prescription' => localize('global.reject_prescription'),
+             'global.confirm_reject_prescription' => localize('global.confirm_reject_prescription'),
+             'global.prescription_rejected_successfully' => localize('global.prescription_rejected_successfully'),
+             'global.failed_to_reject_prescription' => localize('global.failed_to_reject_prescription'),
+             'global.prescription_marked_as_delivered' => localize('global.prescription_marked_as_delivered'),
+             'global.failed_to_mark_delivered' => localize('global.failed_to_mark_delivered'),
+             'global.no_items_to_mark_delivered' => localize('global.no_items_to_mark_delivered'),
          ]) }}">
     </div>
 @endsection

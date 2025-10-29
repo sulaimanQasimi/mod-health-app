@@ -127,6 +127,22 @@
             margin-top: 1px;
         }
 
+        .not-delivered {
+            display: inline-block;
+            margin-right: 4px;
+            padding: 0 3px;
+            font-size: 6.5px;
+            color: #b10000;
+            border: 1px solid #b10000;
+            border-radius: 2px;
+        }
+
+        .notice {
+            font-size: 8px;
+            text-align: center;
+            margin: 6px 0;
+        }
+
         .footer {
             text-align: center;
             font-size: 8px;
@@ -216,8 +232,14 @@
                             <td>
                                 @if($item->selectedAlternative)
                                     {{ $item->selectedAlternative->medicine->name ?? 'نامشخص' }}
+                                    @if(($item->selectedAlternative->is_delivered ?? '0') == '0')
+                                        <span class="not-delivered">تحویل نشده</span>
+                                    @endif
                                 @else
                                     {{ $item->medicine->name ?? 'نامشخص' }}
+                                    @if(($item->is_delivered ?? '0') == '0')
+                                        <span class="not-delivered">تحویل نشده</span>
+                                    @endif
                                 @endif
                             </td>
                             <td>
@@ -254,6 +276,18 @@
                 </tbody>
             </table>
         </div>
+
+        @php
+            $hasUndelivered = false;
+            foreach ($prescription->prescriptionItems as $i) {
+                if (($i->selectedAlternative && (($i->selectedAlternative->is_delivered ?? '0') == '0')) || (!$i->selectedAlternative && (($i->is_delivered ?? '0') == '0'))) {
+                    $hasUndelivered = true; break;
+                }
+            }
+        @endphp
+        @if($hasUndelivered)
+            <div class="notice">برخی اقلام «تحویل نشده» هستند.</div>
+        @endif
 
         <div class="divider"></div>
 

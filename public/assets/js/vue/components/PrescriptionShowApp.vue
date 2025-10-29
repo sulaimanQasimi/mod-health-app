@@ -43,20 +43,32 @@
                   <td>{{ prescription.id }}</td>
                   <td>{{ prescription.patient?.name }}</td>
                   <td>
-                    <span v-if="prescription.is_completed == '0'" class="badge bg-danger">
-                      {{ localize('global.not_delivered') }}
+                    <span v-if="prescription.is_completed == '0'" class="badge bg-warning">
+                      {{ localize('global.in_progress') }}
                     </span>
                     <span v-else class="badge bg-success">
-                      {{ localize('global.delivered') }}
+                      {{ localize('global.completed') }}
                     </span>
                   </td>
                   <td>
-                    <div v-if="prescription.is_completed == '0'" class="d-flex justify-content-center text-center mt-2">
+                    <div v-if="prescription.is_completed == '0'" class="d-flex justify-content-center gap-2 text-center mt-2">
+                      <button @click="rejectPrescription" 
+                              class="btn btn-danger" 
+                              :disabled="loading"
+                              title="{{ localize('global.reject_prescription') }}">
+                        <i class="bx bx-x"></i>
+                      </button>
+                      <button @click="markDelivered" 
+                              class="btn btn-warning" 
+                              :disabled="loading"
+                              title="{{ localize('global.mark_delivered') }}">
+                        <i class="bx bx-check"></i>
+                      </button>
                       <button @click="completePrescription" 
                               class="btn btn-success" 
                               :disabled="loading"
                               title="{{ localize('global.complete_prescription') }}">
-                        <span><i class="bx bx-check-shield"></i></span>
+                        <i class="bx bx-check-shield"></i>
                       </button>
                     </div>
                     <div v-else class="text-center">
@@ -723,37 +735,7 @@ export default {
     const completePrescription = async () => {
       loading.value = true
       try {
-        // First, mark all prescription items as delivered
-        const itemPromises = []
-        
-        // Mark all original prescription items as delivered
-        if (prescription.value.prescription_items) {
-          prescription.value.prescription_items.forEach(item => {
-            if (item.is_delivered == '0') {
-              itemPromises.push(
-                axios.put(`/prescription-show-ajax/update-item-status/${item.id}`, {
-                  is_delivered: '1'
-                })
-              )
-            }
-            
-            // Mark selected alternative as delivered if it exists
-            if (item.selected_alternative && item.selected_alternative.is_delivered != '1') {
-              itemPromises.push(
-                axios.put(`/prescription-show-ajax/update-alternative-status/${item.selected_alternative.id}`, {
-                  is_delivered: '1'
-                })
-              )
-            }
-          })
-        }
-        
-        // Execute all item status updates
-        if (itemPromises.length > 0) {
-          await Promise.all(itemPromises)
-        }
-        
-        // Then complete the prescription
+        // Complete the prescription without automatically marking items as delivered
         const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`, {
           is_completed: '1'
         })
@@ -761,16 +743,6 @@ export default {
         if (response.data.success) {
           // Update local state
           prescription.value.is_completed = '1'
-          
-          // Update all items to delivered status locally
-          if (prescription.value.prescription_items) {
-            prescription.value.prescription_items.forEach(item => {
-              item.is_delivered = '1'
-              if (item.selected_alternative) {
-                item.selected_alternative.is_delivered = '1'
-              }
-            })
-          }
           
           showToast(localize('global.prescription_completed_successfully'))
         } else {
@@ -1254,6 +1226,97 @@ export default {
       }
     }
 
+    const rejectPrescription = async () => {
+      if (!confirm(localize('global.confirm_reject_prescription'))) return
+      
+      loading.value = true
+      try {
+        const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`, {
+          is_rejected: '1'
+        })
+        
+        if (response.data.success) {
+          prescription.value.is_rejected = '1'
+          showToast(localize('global.prescription_rejected_successfully'))
+        } else {
+          showToast(response.data.message, 'error')
+        }
+      } catch (error) {
+        showToast(localize('global.failed_to_reject_prescription'), 'error')
+        console.error('Error rejecting prescription:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const markDelivered = async () => {
+      if (!prescription.value.prescription_items || prescription.value.prescription_items.length === 0) {
+        showToast(localize('global.no_items_to_mark_delivered'), 'warning')
+        return
+      }
+
+      loading.value = true
+      try {
+        // Mark all prescription items as delivered
+        const itemPromises = []
+        let itemsToUpdate = 0
+        
+        if (prescription.value.prescription_items) {
+          prescription.value.prescription_items.forEach(item => {
+            // Mark original item as delivered if not already delivered
+            if (item.is_delivered == '0') {
+              itemPromises.push(
+                axios.put(`/prescription-show-ajax/update-item-status/${item.id}`, {
+                  is_delivered: '1'
+                }).then(response => {
+                  if (response.data.success) {
+                    itemsToUpdate++
+                  }
+                  return response
+                })
+              )
+            }
+            
+            // Mark selected alternative as delivered if it exists and not already delivered
+            if (item.selected_alternative && item.selected_alternative.is_delivered != '1') {
+              itemPromises.push(
+                axios.put(`/prescription-show-ajax/update-alternative-status/${item.selected_alternative.id}`, {
+                  is_delivered: '1'
+                }).then(response => {
+                  if (response.data.success) {
+                    itemsToUpdate++
+                  }
+                  return response
+                })
+              )
+            }
+          })
+        }
+        
+        // Execute all item status updates
+        if (itemPromises.length > 0) {
+          await Promise.all(itemPromises)
+        }
+        
+        // Update local state
+        if (prescription.value.prescription_items) {
+          prescription.value.prescription_items.forEach(item => {
+            item.is_delivered = '1'
+            if (item.selected_alternative) {
+              item.selected_alternative.is_delivered = '1'
+            }
+          })
+        }
+        
+        showToast(localize('global.prescription_marked_as_delivered') + ` (${itemsToUpdate} items)`)
+      } catch (error) {
+        showToast(localize('global.failed_to_mark_delivered'), 'error')
+        console.error('Error marking prescription as delivered:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
     const closeModal = () => {
       const modalElement = document.getElementById('alternativeModal')
       if (modalElement) {
@@ -1390,7 +1453,9 @@ export default {
       bulkMarkDelivered,
       bulkMarkNotDelivered,
       refreshPrescriptionData,
-      closeModal
+      closeModal,
+      rejectPrescription,
+      markDelivered
     }
   }
 }

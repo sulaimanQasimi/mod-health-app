@@ -1556,7 +1556,7 @@ export default {
 }
 
 .btn-success:hover {
-  background-color: #0d6e00 !important;
+  background-color: #63f150c0 !important;
 }
 
 /* Alternative select button styling */
@@ -1567,7 +1567,7 @@ export default {
 }
 
 .btn-success.fw-bold:hover {
-  background-color: #168008 !important;
+  background-color: #39ec21c3 !important;
 }
 
 /* Table text improvements */

@@ -66,6 +66,18 @@
             'global.validation_errors' => localize('global.validation_errors'),
             'global.cancel' => localize('global.cancel'),
             'global.save' => localize('global.save'),
+             'global.alternative_deselected_successfully' => localize('global.alternative_deselected_successfully'),
+             'global.alternative_deleted_successfully' => localize('global.alternative_deleted_successfully'),
+             'global.alternative_selected_successfully' => localize('global.alternative_selected_successfully'),
+             'global.alternative_status_updated_successfully' => localize('global.alternative_status_updated_successfully'),
+             'global.failed_to_select_alternative' => localize('global.failed_to_select_alternative'),
+             'global.failed_to_deselect_alternative' => localize('global.failed_to_deselect_alternative'),
+             'global.failed_to_delete_alternative' => localize('global.failed_to_delete_alternative'),
+             'global.failed_to_update_alternative_status' => localize('global.failed_to_update_alternative_status'),
+             'global.failed_to_update_alternative_selection' => localize('global.failed_to_update_alternative_selection'),
+             'global.failed_to_deselect_alternative_selection' => localize('global.failed_to_deselect_alternative_selection'),
+             'global.confirm_select_alternative' => localize('global.confirm_select_alternative'),
+             'global.are_you_sure_you_want_to_delete_this_alternative' => localize('global.are_you_sure_you_want_to_delete_this_alternative'),
          ]) }}">
     </div>
 @endsection

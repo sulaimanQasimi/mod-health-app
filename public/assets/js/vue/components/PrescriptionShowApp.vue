@@ -1437,14 +1437,15 @@ export default {
 
 .nav-tabs .nav-link.active {
   color: #fff;
-  background-color: #6f42c1;
-  border-color: #6f42c1 #6f42c1 #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd #0d6efd #fff;
   font-weight: 600;
 }
 
 .nav-tabs .nav-link.active:hover {
   color: #fff;
-  background-color: #7724dd;
+  background-color: #0b5ed7;
+  border-color: #0a58ca #0a58ca #fff;
 }
 
 .nav-tabs .nav-link.active i {
@@ -1456,22 +1457,23 @@ export default {
   color: #fff !important;
 }
 
-/* Selected alternative button styles */
+/* Deselect alternative button styles */
 .btn-warning.fw-bold {
   font-weight: 700 !important;
   border-width: 2px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-size: 1.1rem !important;
-  background-color:rgb(25, 210, 0) !important;
-  color: white !important;
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #000 !important;
 }
 
 .btn-warning.fw-bold:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  background-color: #1e3d1a !important;
-  border-color: #1e3d1a !important;
-  color: white !important;
+  background-color: #e0a800 !important;
+  border-color: #d39e00 !important;
+  color: #000 !important;
 }
 
 /* Selected state indicator */
@@ -1483,32 +1485,108 @@ export default {
 /* General button styling improvements */
 .btn {
   font-size: 1rem !important;
+  font-weight: 500 !important;
+  border-radius: 0.375rem !important;
+  transition: all 0.15s ease-in-out !important;
 }
 
 .btn-sm {
   font-size: 0.95rem !important;
+  padding: 0.375rem 0.75rem !important;
 }
 
-/* Success button styling with dark grass green */
+/* Primary button styling */
+.btn-primary {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7 !important;
+  border-color: #0a58ca !important;
+  color: #fff !important;
+}
+
+/* Danger button styling */
+.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.btn-danger:hover {
+  background-color: #bb2d3b !important;
+  border-color: #b02a37 !important;
+  color: #fff !important;
+}
+
+/* Info button styling */
+.btn-info {
+  background-color: #0dcaf0 !important;
+  border-color: #0dcaf0 !important;
+  color: #000 !important;
+}
+
+.btn-info:hover {
+  background-color: #3dd5f3 !important;
+  border-color: #25cff2 !important;
+  color: #000 !important;
+}
+
+/* Secondary button styling */
+.btn-secondary {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.btn-secondary:hover {
+  background-color: #5c636a !important;
+  border-color: #565e64 !important;
+  color: #fff !important;
+}
+
+/* Outline button styling */
+.btn-outline-secondary {
+  color: #6c757d !important;
+  border-color: #6c757d !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #fff !important;
+}
+
+/* Success button styling */
 .btn-success {
-  background-color: rgb(25, 210, 0)!important;
-  border-color: rgb(25, 210, 0) !important;
+  background-color: #198754 !important;
+  border-color: #198754 !important;
   font-size: 1.05rem !important;
+  color: #fff !important;
 }
 
 .btn-success:hover {
-  background-color: #63f150c0 !important;
+  background-color: #157347 !important;
+  border-color: #146c43 !important;
+  color: #fff !important;
 }
 
 /* Alternative select button styling */
 .btn-success.fw-bold {
   font-weight: 700 !important;
   font-size: 1.1rem !important;
-  background-color: rgb(25, 210, 0) !important;
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+  color: #fff !important;
 }
 
 .btn-success.fw-bold:hover {
-  background-color: #39ec21c3 !important;
+  background-color: #157347 !important;
+  border-color: #146c43 !important;
+  color: #fff !important;
 }
 
 /* Table text improvements */
@@ -1520,7 +1598,8 @@ export default {
   font-size: 15px !important;
   font-weight: 600 !important;
   background-color: #f8f9fa !important;
-  border-bottom: 2px solid #2d5a27 !important;
+  border-bottom: 2px solid #dee2e6 !important;
+  color: #495057 !important;
 }
 
 .table td {
@@ -1530,19 +1609,40 @@ export default {
 
 
 
-/* Badge styling with dark grass green */
+/* Badge styling */
 .badge {
   font-size: 0.9rem !important;
   font-weight: 600 !important;
 }
 
 .badge.bg-success {
-  background-color: #2d5a27 !important;
+  background-color: #198754 !important;
+  color: #fff !important;
 }
 
 .badge.bg-warning {
-  background-color: #8b5a2b !important;
-  color: white !important;
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.badge.bg-primary {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+  color: #000 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+  color: #fff !important;
 }
 
 /* Modal improvements */

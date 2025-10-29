@@ -3655,5 +3655,27 @@ return [
     'notes' => 'یادداشت‌ها',
     'add_notes_here' => 'یادداشت‌ها را اینجا اضافه کنید...',
     'select_medicine_to_auto_fill' => 'دارو را انتخاب کنید تا فیلدها به طور خودکار پر شوند',
+    
+    // Prescription Management Translations
+    'reject_prescription' => 'رد نسخه',
+    'confirm_reject_prescription' => 'آیا مطمئن هستید که می‌خواهید این نسخه را رد کنید؟',
+    'prescription_rejected_successfully' => 'نسخه با موفقیت رد شد',
+    'failed_to_reject_prescription' => 'رد نسخه با خطا مواجه شد',
+    'prescription_marked_as_delivered' => 'نسخه به عنوان تحویل شده علامت‌گذاری شد',
+    'failed_to_mark_delivered' => 'علامت‌گذاری تحویل با خطا مواجه شد',
+    'no_items_to_mark_delivered' => 'هیچ آیتمی برای علامت‌گذاری تحویل وجود ندارد',
+    'alternative_added_and_selected_successfully' => 'جایگزین با موفقیت اضافه و انتخاب شد',
+    'alternative_deselected_successfully' => 'جایگزین با موفقیت از انتخاب خارج شد',
+    'alternative_deleted_successfully' => 'جایگزین با موفقیت حذف شد',
+    'alternative_selected_successfully' => 'جایگزین با موفقیت انتخاب شد',
+    'alternative_status_updated_successfully' => 'وضعیت جایگزین با موفقیت به‌روزرسانی شد',
+    'failed_to_select_alternative' => 'انتخاب جایگزین با خطا مواجه شد',
+    'failed_to_deselect_alternative' => 'خروج از انتخاب جایگزین با خطا مواجه شد',
+    'failed_to_delete_alternative' => 'حذف جایگزین با خطا مواجه شد',
+    'failed_to_update_alternative_status' => 'به‌روزرسانی وضعیت جایگزین با خطا مواجه شد',
+    'failed_to_update_alternative_selection' => 'به‌روزرسانی انتخاب جایگزین با خطا مواجه شد',
+    'failed_to_deselect_alternative_selection' => 'خروج از انتخاب جایگزین با خطا مواجه شد',
+    'confirm_select_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را انتخاب کنید؟',
+    'are_you_sure_you_want_to_delete_this_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را حذف کنید؟',
 
 ];

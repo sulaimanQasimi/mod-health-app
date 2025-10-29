@@ -327,6 +327,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('report', [PrescriptionController::class, 'report'])->name('report');
         Route::post('report-search', [PrescriptionController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [PrescriptionController::class, 'exportReport'])->name('export-report');
+        Route::post('export-prescriptions', [PrescriptionController::class, 'exportPrescriptions'])->name('export-prescriptions');
+        Route::post('bulk-update-status', [PrescriptionController::class, 'bulkUpdateStatus'])->name('bulk-update-status');
+        Route::post('bulk-delete', [PrescriptionController::class, 'bulkDelete'])->name('bulk-delete');
 
     });
 
@@ -843,6 +846,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('update-item-status/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'updatePrescriptionItemStatus']);
         Route::delete('delete/{prescriptionId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescription']);
         Route::delete('delete-item/{itemId}', [\App\Http\Controllers\PrescriptionAjaxController::class, 'deletePrescriptionItem']);
+        Route::get('prescriptions-index', [\App\Http\Controllers\PrescriptionAjaxController::class, 'getPrescriptionsIndex']);
     });
 
     // Prescription Show API routes

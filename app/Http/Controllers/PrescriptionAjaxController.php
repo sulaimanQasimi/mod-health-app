@@ -332,4 +332,117 @@ class PrescriptionAjaxController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get prescriptions for index page with filtering, sorting, and pagination
+     */
+    public function getPrescriptionsIndex(Request $request)
+    {
+        try {
+            $query = Prescription::where('branch_id', auth()->user()->branch_id)
+                ->with(['patient', 'doctor', 'appointment.department']);
+
+            // Search by patient name or ID card
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->whereHas('patient', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%')
+                      ->orWhere('id_card', 'like', '%' . $search . '%');
+                });
+            }
+
+            // Filter by token ID
+            if ($request->filled('token_filter')) {
+                $tokenFilter = $request->token_filter;
+                $query->whereHas('appointment', function ($q) use ($tokenFilter) {
+                    $q->whereHas('patient', function ($patientQuery) use ($tokenFilter) {
+                        $patientQuery->whereHas('printedNumbers', function ($tokenQuery) use ($tokenFilter) {
+                            $tokenQuery->where('number', 'like', '%' . $tokenFilter . '%')
+                                      ->whereColumn('printed_numbers.department_id', 'appointments.department_id')
+                                      ->whereColumn('printed_numbers.date', 'appointments.date');
+                        });
+                    });
+                });
+            }
+
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('is_completed', $request->status);
+            } else {
+                // Default to show only not completed prescriptions
+                $query->where('is_completed', false);
+            }
+
+            // Filter by date range
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', \Hekmatinasser\Verta\Verta::parse($request->date_from)->datetime());
+            }
+
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
+            }
+
+            // Sorting
+            $sortBy = $request->get('sortBy', 'created_at');
+            $sortOrder = $request->get('sortOrder', 'desc');
+            
+            $allowedSortFields = ['created_at', 'is_completed', 'patient_name', 'doctor_name'];
+            if (in_array($sortBy, $allowedSortFields)) {
+                if ($sortBy === 'patient_name') {
+                    $query->join('patients', 'prescriptions.patient_id', '=', 'patients.id')
+                          ->orderBy('patients.name', $sortOrder);
+                } elseif ($sortBy === 'doctor_name') {
+                    $query->join('users', 'prescriptions.doctor_id', '=', 'users.id')
+                          ->orderBy('users.name', $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            // Pagination
+            $perPage = $request->get('perPage', 10);
+            $prescriptions = $query->paginate($perPage);
+            
+            // Load token information for each prescription
+            $prescriptions->getCollection()->transform(function ($prescription) {
+                if ($prescription->appointment) {
+                    $token = \App\Models\PrintedNumber::where('patient_id', $prescription->patient_id)
+                        ->where('department_id', $prescription->appointment->department_id)
+                        ->whereDate('date', $prescription->appointment->date)
+                        ->first();
+                    $prescription->token = $token;
+                }
+                return $prescription;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $prescriptions->items(),
+                'pagination' => [
+                    'current_page' => $prescriptions->currentPage(),
+                    'last_page' => $prescriptions->lastPage(),
+                    'per_page' => $prescriptions->perPage(),
+                    'total' => $prescriptions->total(),
+                    'from' => $prescriptions->firstItem(),
+                    'to' => $prescriptions->lastItem(),
+                ],
+                'links' => [
+                    'first' => $prescriptions->url(1),
+                    'last' => $prescriptions->url($prescriptions->lastPage()),
+                    'prev' => $prescriptions->previousPageUrl(),
+                    'next' => $prescriptions->nextPageUrl(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_fetch_prescriptions'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

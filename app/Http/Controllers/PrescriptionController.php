@@ -400,6 +400,198 @@ class PrescriptionController extends Controller
         }
     }
 
+    /**
+     * Export prescriptions with filters and selected items
+     */
+    public function exportPrescriptions(Request $request)
+    {
+        try {
+            $query = Prescription::where('branch_id', auth()->user()->branch_id)
+                ->with(['patient', 'doctor', 'appointment.department']);
+
+            // Apply filters
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->whereHas('patient', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%')
+                      ->orWhere('id_card', 'like', '%' . $search . '%');
+                });
+            }
+
+            if ($request->filled('token_filter')) {
+                $tokenFilter = $request->token_filter;
+                $query->whereHas('appointment', function ($q) use ($tokenFilter) {
+                    $q->whereHas('patient', function ($patientQuery) use ($tokenFilter) {
+                        $patientQuery->whereHas('printedNumbers', function ($tokenQuery) use ($tokenFilter) {
+                            $tokenQuery->where('number', 'like', '%' . $tokenFilter . '%')
+                                      ->whereColumn('printed_numbers.department_id', 'appointments.department_id')
+                                      ->whereColumn('printed_numbers.date', 'appointments.date');
+                        });
+                    });
+                });
+            }
+
+            if ($request->filled('status')) {
+                $query->where('is_completed', $request->status);
+            }
+
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', \Hekmatinasser\Verta\Verta::parse($request->date_from)->datetime());
+            }
+
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
+            }
+
+            // If specific items are selected, filter by those IDs
+            if ($request->filled('selected') && is_array($request->selected)) {
+                $query->whereIn('id', $request->selected);
+            }
+
+            $prescriptions = $query->get();
+
+            // Transform data for export
+            $items = $prescriptions->map(function ($prescription) {
+                return (object) [
+                    'id' => $prescription->id,
+                    'patient_name' => $prescription->patient->name ?? '-',
+                    'patient_id_card' => $prescription->patient->id_card ?? '-',
+                    'father_name' => $prescription->patient->father_name ?? '-',
+                    'doctor_name' => $prescription->doctor->name ?? '-',
+                    'is_completed' => $prescription->is_completed ? '1' : '0',
+                    'created_at' => $prescription->created_at,
+                ];
+            });
+
+            $format = $request->get('format', 'excel');
+            
+            if ($format === 'pdf') {
+                $html = view('pages.prescriptions.reports.pdf_report', ['items' => $items])->render();
+                $mpdf = new Mpdf(['format' => 'A4-L']);
+                $mpdf->WriteHTML($html);
+                $mpdf->Output('prescriptions_report.pdf', 'D');
+            } else {
+                $reader = new Xlsx();
+                $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
+                $sheet = $spreadsheet->getActiveSheet();
+                $row = 3;
+
+                foreach ($items as $index => $item) {
+                    $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+                    $sheet->getColumnDimension('A')->setWidth(5);
+                    $sheet->getColumnDimension('B')->setWidth(40);
+                    $sheet->getColumnDimension('C')->setWidth(20);
+                    $sheet->getColumnDimension('D')->setWidth(20);
+                    $sheet->getColumnDimension('E')->setWidth(20);
+
+                    $status = $item->is_completed == '1' ? 'نسخه های اجرأ شده' : 'نسخه های نا اجرأ';
+                    
+                    $sheet->setCellValue('A' . $row . '', ++$index);
+                    $sheet->setCellValue('B' . $row . '', $item->patient_name);
+                    $sheet->setCellValue('C' . $row . '', $item->doctor_name);
+                    $sheet->setCellValue('D' . $row . '', $item->patient_id_card);
+                    $sheet->setCellValue('E' . $row . '', $status);
+
+                    $row++;
+                }
+
+                return $this->exportResponse($spreadsheet);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_export_prescriptions'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Bulk update prescription status
+     */
+    public function bulkUpdateStatus(Request $request)
+    {
+        try {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'prescription_ids' => 'required|array|min:1',
+                'prescription_ids.*' => 'exists:prescriptions,id',
+                'is_completed' => 'required|boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.validation_failed'),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $prescriptionIds = $request->prescription_ids;
+            $isCompleted = $request->is_completed;
+
+            // Update prescriptions
+            Prescription::whereIn('id', $prescriptionIds)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->update(['is_completed' => $isCompleted]);
+
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.bulk_status_updated_successfully'),
+                'updated_count' => count($prescriptionIds)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_update_bulk_status'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Bulk delete prescriptions
+     */
+    public function bulkDelete(Request $request)
+    {
+        try {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'prescription_ids' => 'required|array|min:1',
+                'prescription_ids.*' => 'exists:prescriptions,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.validation_failed'),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $prescriptionIds = $request->prescription_ids;
+
+            // Delete prescriptions
+            $deletedCount = Prescription::whereIn('id', $prescriptionIds)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.bulk_delete_successful'),
+                'deleted_count' => $deletedCount
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_bulk_delete'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function exportResponse($spreadsheet)
     {

@@ -6,151 +6,71 @@
             @if (Session::has('success') || Session::has('error'))
                 @include('components.toast')
             @endif
-            <!-- Filters Card -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">{{ localize('global.filters') }}</h5>
-                </div>
-                <div class="card-body">
-                    <form method="GET" action="{{ route('prescriptions.index') }}" class="row g-3">
-                        <div class="col-md-2">
-                            <label for="search" class="form-label">{{ localize('global.search') }}</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="search" name="search" 
-                                    value="{{ request('search') }}" placeholder="{{ localize('global.search_by_patient_name') }}">
-                                @if(request('search'))
-                                    <button type="button" class="btn btn-outline-danger" id="clearSearch" title="{{ localize('global.clear_search') }}">
-                                        <i class="bx bx-x"></i>
-                                    </button>
-                                @endif
-                                <button type="submit" class="btn btn-outline-primary" title="{{ localize('global.search') }}">
-                                    <i class="bx bx-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="token_filter" class="form-label">{{ localize('global.token_id') }}</label>
-                            <input type="text" class="form-control" id="token_filter" name="token_filter" 
-                                value="{{ request('token_filter') }}" placeholder="{{ localize('global.search_by_token_id') }}">
-                        </div>
-                        <div class="col-md-2">
-                            <label for="status" class="form-label">{{ localize('global.status') }}</label>
-                            <select class="form-select select2" id="status" name="status">
-                                <option value="">{{ localize('global.all') }}</option>
-                                <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>{{ localize('global.not_delivered') }}</option>
-                                <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>{{ localize('global.delivered') }}</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-                            <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
-                                value="{{ request('date_from') }}">
-                        </div>
-                        <div class="col-md-2">
-                            <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-                            <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" 
-                                value="{{ request('date_to') }}">
-                        </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bx bx-search"></i>
-                            </button>
-                        </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <a href="{{ route('prescriptions.index') }}" class="btn btn-secondary">
-                                <i class="bx bx-refresh"></i>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="col-xl">
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.new_prescriptions') }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>{{ localize('global.number') }}</th>
-                                        <th>{{ localize('global.card_number') }}</th>
-                                        <th style="font-size: 17px; color: green;">{{ localize('global.patient_name') }}</th>
-                                        <th>{{ localize('global.father_name') }}</th>
-                                        <th>{{ localize('global.token_id') }}</th>
-                                        <th>{{ localize('global.referred_to') }}</th>
-                                        <th>{{ localize('global.created_at') }}</th>
-                                        <th>{{ localize('global.status') }}</th>
-                                        <th>{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($prescriptions as $prescription)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>
-                                                <span class="badge bg-secondary">{{ $prescription->patient->id_card ?? '-' }}</span>
-                                            </td>
-                                            <td style="font-size: 17px; color: green; font-weight: bold;">{{ $prescription->patient->name ?? '-' }}</td>
-                                            <td>
-                                                <span class="text-muted">{{ $prescription->patient->father_name ?? '-' }}</span>
-                                            </td>
-                                            <td>
-                                                @if($prescription->token)
-                                                    <div>
-                                                        <span class="badge bg-info">{{ $prescription->token->number }}</span>
-                                                        <br>
-                                                        <small class="text-muted">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($prescription->token->date) }}</small>
-                                                    </div>
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $prescription->doctor->name ?? '-' }}</td>
-                                            <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($prescription->created_at) }}</td>
-                                            <td>
-                                                @if($prescription->is_completed == 0)
-                                                    <span class="badge bg-warning">{{ localize('global.not_delivered') }}</span>
-                                                @else
-                                                    <span class="badge bg-success">{{ localize('global.delivered') }}</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="{{ route('prescriptions.show', $prescription) }}" 
-                                                       class="btn btn-sm btn-outline-primary" title="{{ localize('global.view') }}">
-                                                        <i class="bx bx-show-alt"></i>
-                                                    </a>
-                                                    <a href="{{ route('prescriptions.thermal-receipt', $prescription) }}" 
-                                                       class="btn btn-sm btn-outline-success" target="_blank" title="{{ localize('global.thermal_print') }}">
-                                                        <i class="bx bx-printer"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="text-center py-4">
-                                                <div class="alert alert-info">
-                                                    <i class="bx bx-info-circle me-2"></i>
-                                                    {{ localize('global.no_prescriptions_found') }}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        @if($prescriptions->count() > 0)
-                            <div class="col-md-12 mt-4 mb-4">
-                                {{ $prescriptions->links('pagination::bootstrap-4') }}
-                            </div>
-                        @endif
-                </div>
-            </div>
+            
+            <!-- Vue.js Prescription Index App -->
+            <div id="prescription-index-app" 
+                 data-permissions="{{ json_encode([
+                     'canView' => auth()->user()->can('view-prescriptions'),
+                     'canEdit' => auth()->user()->can('edit-prescriptions'),
+                     'canDelete' => auth()->user()->can('delete-prescriptions'),
+                     'canExport' => auth()->user()->can('export-prescriptions')
+                 ]) }}"
+                 data-localize="{{ json_encode([
+                     'global.filters' => localize('global.filters'),
+                     'global.search' => localize('global.search'),
+                     'global.search_by_patient_name' => localize('global.search_by_patient_name'),
+                     'global.clear_search' => localize('global.clear_search'),
+                     'global.token_id' => localize('global.token_id'),
+                     'global.search_by_token_id' => localize('global.search_by_token_id'),
+                     'global.status' => localize('global.status'),
+                     'global.all' => localize('global.all'),
+                     'global.not_delivered' => localize('global.not_delivered'),
+                     'global.delivered' => localize('global.delivered'),
+                     'global.date_from' => localize('global.date_from'),
+                     'global.date_to' => localize('global.date_to'),
+                     'global.clear_filters' => localize('global.clear_filters'),
+                     'global.new_prescriptions' => localize('global.new_prescriptions'),
+                     'global.export' => localize('global.export'),
+                     'global.export_excel' => localize('global.export_excel'),
+                     'global.export_pdf' => localize('global.export_pdf'),
+                     'global.bulk_actions' => localize('global.bulk_actions'),
+                     'global.mark_as_delivered' => localize('global.mark_as_delivered'),
+                     'global.mark_as_not_delivered' => localize('global.mark_as_not_delivered'),
+                     'global.bulk_delete' => localize('global.bulk_delete'),
+                     'global.number' => localize('global.number'),
+                     'global.card_number' => localize('global.card_number'),
+                     'global.patient_name' => localize('global.patient_name'),
+                     'global.father_name' => localize('global.father_name'),
+                     'global.referred_to' => localize('global.referred_to'),
+                     'global.created_at' => localize('global.created_at'),
+                     'global.actions' => localize('global.actions'),
+                     'global.view' => localize('global.view'),
+                     'global.thermal_print' => localize('global.thermal_print'),
+                     'global.no_prescriptions_found' => localize('global.no_prescriptions_found'),
+                     'global.loading' => localize('global.loading'),
+                     'global.loading_prescriptions' => localize('global.loading_prescriptions'),
+                     'global.first' => localize('global.first'),
+                     'global.previous' => localize('global.previous'),
+                     'global.next' => localize('global.next'),
+                     'global.last' => localize('global.last'),
+                     'global.confirm_bulk_delete' => localize('global.confirm_bulk_delete'),
+                     'global.sorting_by' => localize('global.sorting_by'),
+                     'global.sort_ascending' => localize('global.sort_ascending'),
+                     'global.sort_descending' => localize('global.sort_descending'),
+                     'global.select_all' => localize('global.select_all'),
+                     'global.deselect_all' => localize('global.deselect_all'),
+                     'global.items_selected' => localize('global.items_selected'),
+                     'global.no_items_selected' => localize('global.no_items_selected'),
+                     'global.confirm_bulk_action' => localize('global.confirm_bulk_action'),
+                     'global.applying_filters' => localize('global.applying_filters'),
+                     'global.bulk_print' => localize('global.bulk_print'),
+                     'global.bulk_status_updated_successfully' => localize('global.bulk_status_updated_successfully'),
+                     'global.failed_to_update_bulk_status' => localize('global.failed_to_update_bulk_status'),
+                     'global.bulk_delete_successful' => localize('global.bulk_delete_successful'),
+                     'global.failed_to_bulk_delete' => localize('global.failed_to_bulk_delete'),
+                     'global.failed_to_export_prescriptions' => localize('global.failed_to_export_prescriptions')
+                 ]) }}"
+                 data-branch-id="{{ auth()->user()->branch_id }}">
         </div>
     </div>
     </div>
@@ -158,104 +78,18 @@
 
 @push('custom-js')
 <script>
-$(document).ready(function() {
-    // Initialize Select2
-    $('.select2').select2({
-        placeholder: '{{ localize("global.select_status") }}',
-        allowClear: true,
-        width: '100%'
-    });
-    
-    // Initialize Persian datepicker
-    $('.datepicker_dari').persianDatepicker({
-        format: 'YYYY/MM/DD',
-        altField: '.observer-example',
-        altFormat: 'YYYY/MM/DD',
-        observer: true,
-    });
-    
-    // Auto-submit form when select values change
-    $('select[name="status"]').change(function() {
-        $(this).closest('form').submit();
-    });
-    
-    // Clear all filters on refresh button click
-    $('.btn-secondary').click(function(e) {
-        e.preventDefault();
-        $('input[name="search"]').val('');
-        $('select[name="status"]').val('').trigger('change');
-        $('input[name="date_from"]').val('');
-        $('input[name="date_to"]').val('');
-        // Clear datepicker values
-        $('.datepicker_dari').persianDatepicker('clear');
-        // Redirect to clean URL
-        window.location.href = '{{ route("prescriptions.index") }}';
-    });
-    
-    // Add loading state to search button
-    $('form').submit(function(e) {
-        $('.btn-primary').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i>');
-        $('.btn-secondary').prop('disabled', true);
-    });
-    
-    // Validate date range for Persian dates
-    $('input[name="date_from"], input[name="date_to"]').on('changeDate', function() {
-        var dateFrom = $('input[name="date_from"]').val();
-        var dateTo = $('input[name="date_to"]').val();
-        
-        if (dateFrom && dateTo) {
-            // Convert Persian dates to comparable format
-            var fromParts = dateFrom.split('/');
-            var toParts = dateTo.split('/');
-            
-            if (fromParts.length === 3 && toParts.length === 3) {
-                var fromDate = new Date(parseInt(fromParts[0]), parseInt(fromParts[1]) - 1, parseInt(fromParts[2]));
-                var toDate = new Date(parseInt(toParts[0]), parseInt(toParts[1]) - 1, parseInt(toParts[2]));
-                
-                if (fromDate > toDate) {
-                    alert('{{ localize("global.date_from_cannot_be_greater_than_date_to") }}');
-                    $(this).val('');
-                }
-            }
-        }
-    });
-    
-    // Search functionality - submit on enter or manual search
-    $('input[name="search"]').on('keypress', function(e) {
-        if (e.which === 13) { // Enter key
-            e.preventDefault();
-            $(this).closest('form').submit();
-        }
-    });
-    
-    // Remove auto-submit on input change to prevent unwanted refreshes
-    // Search will only submit on Enter key or button click
-    
-    // Clear search functionality
-    $(document).on('click', '#clearSearch', function() {
-        $('input[name="search"]').val('');
-        $(this).closest('form').submit();
-    });
-    
-    // Show active filters count
-    function updateActiveFiltersCount() {
-        var activeFilters = 0;
-        if ($('input[name="search"]').val()) activeFilters++;
-        if ($('select[name="status"]').val()) activeFilters++;
-        if ($('input[name="date_from"]').val()) activeFilters++;
-        if ($('input[name="date_to"]').val()) activeFilters++;
-        
-        if (activeFilters > 0) {
-            $('.btn-secondary').html('<i class="bx bx-refresh"></i> (' + activeFilters + ')');
-        } else {
-            $('.btn-secondary').html('<i class="bx bx-refresh"></i>');
-        }
+// Global localization function for Vue components
+window.localize = function(key) {
+    const container = document.getElementById('prescription-index-app');
+    if (container) {
+        const data = container.dataset.localize;
+        const translations = JSON.parse(data || '{}');
+        return translations[key] || key;
     }
-    
-    // Update filter count on page load and changes
-    updateActiveFiltersCount();
-    $('input, select').on('change', updateActiveFiltersCount);
-});
+    return key;
+};
 </script>
 @endpush
+
+@vite(['public/assets/js/vue/prescription-index-app.js'])
 

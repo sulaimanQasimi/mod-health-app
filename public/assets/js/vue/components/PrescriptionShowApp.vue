@@ -706,11 +706,55 @@ export default {
     const completePrescription = async () => {
       loading.value = true
       try {
+        // First, mark all prescription items as delivered
+        const itemPromises = []
+        
+        // Mark all original prescription items as delivered
+        if (prescription.value.prescription_items) {
+          prescription.value.prescription_items.forEach(item => {
+            if (item.is_delivered == '0') {
+              itemPromises.push(
+                axios.put(`/prescription-show-ajax/update-item-status/${item.id}`, {
+                  is_delivered: '1'
+                })
+              )
+            }
+            
+            // Mark selected alternative as delivered if it exists
+            if (item.selected_alternative && item.selected_alternative.is_delivered != '1') {
+              itemPromises.push(
+                axios.put(`/prescription-show-ajax/update-alternative-status/${item.selected_alternative.id}`, {
+                  is_delivered: '1'
+                })
+              )
+            }
+          })
+        }
+        
+        // Execute all item status updates
+        if (itemPromises.length > 0) {
+          await Promise.all(itemPromises)
+        }
+        
+        // Then complete the prescription
         const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`, {
           is_completed: '1'
         })
+        
         if (response.data.success) {
+          // Update local state
           prescription.value.is_completed = '1'
+          
+          // Update all items to delivered status locally
+          if (prescription.value.prescription_items) {
+            prescription.value.prescription_items.forEach(item => {
+              item.is_delivered = '1'
+              if (item.selected_alternative) {
+                item.selected_alternative.is_delivered = '1'
+              }
+            })
+          }
+          
           showToast(localize('global.prescription_completed_successfully'))
         } else {
           showToast(response.data.message, 'error')

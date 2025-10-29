@@ -14,10 +14,10 @@
             <h5 class="mb-0">{{ localize('global.prescription_details') }}</h5>
             <div class="pt-3 pt-md-0 text-end">
               <div class="btn-group" role="group">
-                <a :href="`/prescriptions/thermal-receipt/${prescriptionId}`" 
-                   class="btn btn-success" target="_blank">
+                <button @click="openThermalPrint" 
+                        class="btn btn-success">
                   <i class="bx bx-printer"></i> {{ localize('global.thermal_print') }}
-                </a>
+                </button>
                 <a class="btn btn-danger" href="javascript:history.back()" type="button">
                   <span class="text-white">
                     <span class="d-none d-sm-inline-block">{{ localize('global.back') }}</span>
@@ -415,7 +415,7 @@
                 <div class="p-4">
                   <form @submit.prevent="addAlternative">
                     <div class="row g-3">
-                      <div class="col-md-6">
+                      <div class="col-12">
                         <label class="form-label fw-semibold">
                           <i class="bx bx-pill me-1 text-primary"></i>
                           {{ localize('global.medicine') }}
@@ -441,83 +441,13 @@
                           </template>
                         </Multiselect>
                       </div>
-                      <div class="col-md-6">
-                        <label class="form-label fw-semibold">
-                          <i class="bx bx-category me-1 text-info"></i>
-                          {{ localize('global.medicine_type') }}
-                        </label>
-                        <input :value="newAlternative.medicine_type?.type || ''" 
-                               type="text" 
-                               class="form-control" 
-                               readonly
-                               :placeholder="localize('global.auto_filled')">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label fw-semibold">
-                          <i class="bx bx-edit me-1 text-warning"></i>
-                          {{ localize('global.usage_type') }}
-                        </label>
-                        <input :value="newAlternative.usage_type?.name || ''" 
-                               type="text" 
-                               class="form-control" 
-                               readonly
-                               :placeholder="localize('global.auto_filled')">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label fw-semibold">
-                          <i class="bx bx-droplet me-1 text-success"></i>
-                          {{ localize('global.dosage') }}
-                        </label>
-                        <input v-model="newAlternative.dosage" type="text" class="form-control" 
-                               readonly
-                               :placeholder="localize('global.auto_filled')">
-                        <small class="text-muted">{{ localize('global.original') }}: {{ currentItem?.dosage }}</small>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label fw-semibold">
-                          <i class="bx bx-time me-1 text-danger"></i>
-                          {{ localize('global.frequency') }}
-                        </label>
-                        <input v-model="newAlternative.frequency" type="text" class="form-control" 
-                               readonly
-                               :placeholder="localize('global.auto_filled')">
-                        <small class="text-muted">{{ localize('global.original') }}: {{ currentItem?.frequency }}</small>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label fw-semibold">
-                          <i class="bx bx-package me-1 text-secondary"></i>
-                          {{ localize('global.amount') }}
-                        </label>
-                        <input v-model="newAlternative.amount" type="text" class="form-control" 
-                               readonly
-                               :placeholder="localize('global.auto_filled')">
-                        <small class="text-muted">{{ localize('global.original') }}: {{ currentItem?.amount }}</small>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label fw-semibold">
-                          <i class="bx bx-note me-1 text-dark"></i>
-                          {{ localize('global.notes') }}
-                        </label>
-                        <textarea v-model="newAlternative.notes" class="form-control" rows="3" 
-                                  :placeholder="localize('global.notes')"></textarea>
-                      </div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                      <div class="alert alert-info mb-0 flex-grow-1 me-3">
-                        <i class="bx bx-info-circle me-2"></i>
-                        {{ localize('global.select_medicine_to_auto_fill') }}
-                      </div>
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-outline-secondary" @click="copyFromOriginal">
-                          <i class="bx bx-copy me-1"></i>
-                          {{ localize('global.copy_from_original') }}
-                        </button>
-                        <button type="button" class="btn btn-primary" @click="addAlternative" :disabled="loading">
-                          <i class="bx bx-plus me-1" v-if="!loading"></i>
-                          <span class="spinner-border spinner-border-sm me-1" v-if="loading"></span>
-                          {{ localize('global.add_alternative') }}
-                        </button>
-                      </div>
+                    <div class="d-flex justify-content-end align-items-center mt-4">
+                      <button type="submit" class="btn btn-primary" :disabled="loading">
+                        <i class="bx bx-plus me-1" v-if="!loading"></i>
+                        <span class="spinner-border spinner-border-sm me-1" v-if="loading"></span>
+                        {{ localize('global.add_alternative') }}
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -533,12 +463,8 @@
                     <table class="table bg-none">
                       <thead class="table-none">
                         <tr>
-                          <th width="30%">{{ localize('global.medicine') }}</th>
-                          <th width="15%">{{ localize('global.dosage') }}</th>
-                          <th width="15%">{{ localize('global.frequency') }}</th>
-                          <th width="15%">{{ localize('global.amount') }}</th>
-                          <th width="10%">{{ localize('global.status') }}</th>
-                          <th width="15%">{{ localize('global.actions') }}</th>
+                          <th width="70%">{{ localize('global.medicine') }}</th>
+                          <th width="30%">{{ localize('global.actions') }}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -548,23 +474,11 @@
                               <i class="bx bx-pill me-2 text-primary"></i>
                               <div>
                                 <div class="fw-semibold">{{ alternative.medicine?.name }}</div>
-                                <small v-if="alternative.notes" class="text-muted">
-                                  <i class="bx bx-note me-1"></i>{{ alternative.notes }}
-                                </small>
+                                <span v-if="alternative.is_selected" class="badge bg-success mt-1">
+                                  <i class="bx bx-check me-1"></i>{{ localize('global.selected') }}
+                                </span>
                               </div>
                             </div>
-                            <span v-if="alternative.is_selected" class="badge bg-success mt-1">
-                              <i class="bx bx-check me-1"></i>{{ localize('global.selected') }}
-                            </span>
-                          </td>
-                          <td>{{ alternative.dosage }}</td>
-                          <td>{{ alternative.frequency }}</td>
-                          <td>{{ alternative.amount }}</td>
-                          <td>
-                            <span class="badge" :class="alternative.is_delivered ? 'bg-success' : 'bg-danger'">
-                              <i :class="alternative.is_delivered ? 'bx bx-check' : 'bx bx-x'" class="me-1"></i>
-                              {{ alternative.is_delivered ? localize('global.delivered') : localize('global.not_delivered') }}
-                            </span>
                           </td>
                           <td>
                             <div class="btn-group btn-group-sm" role="group">
@@ -583,13 +497,6 @@
                                       :title="localize('global.deselect_alternative')">
                                 <i class="bx bx-x"></i>
                                 <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect') }}</span>
-                              </button>
-                              <button @click="toggleAlternativeStatus(alternative)" 
-                                      class="btn"
-                                      :class="alternative.is_delivered ? 'btn-warning' : 'btn-info'"
-                                      :disabled="loading"
-                                      :title="alternative.is_delivered ? localize('global.mark_not_delivered') : localize('global.mark_delivered')">
-                                <i :class="alternative.is_delivered ? 'bx bx-x' : 'bx bx-check'"></i>
                               </button>
                               <button @click="deleteAlternative(alternative)" 
                                       class="btn btn-danger" 
@@ -841,42 +748,16 @@ export default {
           prescription_id: props.prescriptionId,
           prescription_item_id: currentItem.value.id,
           medicine_id: newAlternative.medicine?.id || '',
-          medicine_type_id: newAlternative.medicine_type?.id || '',
-          usage_type_id: newAlternative.usage_type?.id || '',
-          dosage: newAlternative.dosage,
-          frequency: newAlternative.frequency,
-          amount: newAlternative.amount,
-          notes: newAlternative.notes
+          medicine_type_id: currentItem.value.medicine_type?.id || '',
+          usage_type_id: currentItem.value.usage_type?.id || '',
+          dosage: currentItem.value.dosage || '',
+          frequency: currentItem.value.frequency || '',
+          amount: currentItem.value.amount || '',
+          notes: ''
         }
-        
-        console.log('Sending alternative data:', requestData)
-        console.log('Selected medicine:', newAlternative.medicine)
-        console.log('Selected medicine type:', newAlternative.medicine_type)
-        console.log('Selected usage type:', newAlternative.usage_type)
-        
-        // Validate required fields
+
         if (!requestData.medicine_id) {
           showToast(localize('global.please_select_medicine'), 'error')
-          return
-        }
-        if (!requestData.medicine_type_id) {
-          showToast(localize('global.medicine_type_required'), 'error')
-          return
-        }
-        if (!requestData.usage_type_id) {
-          showToast(localize('global.usage_type_required'), 'error')
-          return
-        }
-        if (!requestData.dosage) {
-          showToast(localize('global.dosage_required'), 'error')
-          return
-        }
-        if (!requestData.frequency) {
-          showToast(localize('global.frequency_required'), 'error')
-          return
-        }
-        if (!requestData.amount) {
-          showToast(localize('global.amount_required'), 'error')
           return
         }
         
@@ -886,8 +767,13 @@ export default {
           if (!currentItem.value.alternative_items) {
             currentItem.value.alternative_items = []
           }
-          currentItem.value.alternative_items.push(response.data.data)
-          showToast(localize('global.alternative_added_successfully'))
+          const newAlt = response.data.data
+          currentItem.value.alternative_items.push(newAlt)
+          
+          // Automatically select the newly added alternative
+          await selectAlternative(newAlt)
+          
+          showToast(localize('global.alternative_added_and_selected_successfully'))
           // Reset form
           Object.assign(newAlternative, {
             medicine: null,
@@ -1058,40 +944,10 @@ export default {
     }
 
     const onMedicineSelect = (selectedMedicine) => {
-      // Auto-fill medicine type and usage type based on selected medicine
+      // Medicine selection - no auto-fill needed since we use main drug's data
       if (selectedMedicine) {
-        // Find matching medicine type - try different possible property names
-        const medicineTypeId = selectedMedicine.medicine_type_id || selectedMedicine.medicine_type?.id
-        const matchingType = medicineTypes.value.find(type => 
-          type.id === medicineTypeId
-        )
-        if (matchingType) {
-          newAlternative.medicine_type = matchingType
-        } else {
-          // If no matching type found, use the first available type as fallback
-          newAlternative.medicine_type = medicineTypes.value[0] || null
-        }
-
-        // Find matching usage type - try different possible property names
-        const usageTypeId = selectedMedicine.usage_type_id || selectedMedicine.usage_type?.id
-        const matchingUsageType = medicineUsageTypes.value.find(usageType => 
-          usageType.id === usageTypeId
-        )
-        if (matchingUsageType) {
-          newAlternative.usage_type = matchingUsageType
-        } else {
-          // If no matching usage type found, use the first available type as fallback
-          newAlternative.usage_type = medicineUsageTypes.value[0] || null
-        }
-
-        // Auto-fill dosage, frequency, and amount from original item
-        if (currentItem.value) {
-          newAlternative.dosage = currentItem.value.dosage || ''
-          newAlternative.frequency = currentItem.value.frequency || ''
-          newAlternative.amount = currentItem.value.amount || ''
-        }
-
-        // Don't automatically submit - let user click Add button
+        // Just update the medicine selection
+        newAlternative.medicine = selectedMedicine
       }
     }
 
@@ -1317,6 +1173,25 @@ export default {
       }
     }
 
+    const openThermalPrint = () => {
+      const printUrl = `/prescriptions/thermal-receipt/${props.prescriptionId}`
+      const printWindow = window.open(printUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes')
+      
+      // Focus the new window
+      if (printWindow) {
+        printWindow.focus()
+        
+        // Check if window is closed and redirect
+        const checkClosed = setInterval(() => {
+          if (printWindow.closed) {
+            clearInterval(checkClosed)
+            // Redirect to prescription index
+            window.location.href = '/prescriptions'
+          }
+        }, 1000) // Check every second
+      }
+    }
+
     const closeModal = () => {
       const modalElement = document.getElementById('alternativeModal')
       if (modalElement) {
@@ -1455,7 +1330,8 @@ export default {
       refreshPrescriptionData,
       closeModal,
       rejectPrescription,
-      markDelivered
+      markDelivered,
+      openThermalPrint
     }
   }
 }

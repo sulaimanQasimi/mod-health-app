@@ -57,6 +57,7 @@
              'global.prescription_marked_as_delivered' => localize('global.prescription_marked_as_delivered'),
              'global.failed_to_mark_delivered' => localize('global.failed_to_mark_delivered'),
              'global.no_items_to_mark_delivered' => localize('global.no_items_to_mark_delivered'),
+             'global.alternative_added_and_selected_successfully' => localize('global.alternative_added_and_selected_successfully'),
          ]) }}">
     </div>
 @endsection

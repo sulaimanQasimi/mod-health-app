@@ -310,7 +310,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Prescriptions routes
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
-        Route::get('index', [PrescriptionController::class, 'index'])->name('index');
+        Route::get('/', [PrescriptionController::class, 'index'])->name('index');
         Route::get('delivered', [PrescriptionController::class, 'delivered'])->name('delivered');
         Route::get('create', [PrescriptionController::class, 'create'])->name('create');
         Route::get('show/{prescription}', [PrescriptionController::class, 'show'])->name('show');

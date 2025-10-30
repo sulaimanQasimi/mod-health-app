@@ -13,6 +13,16 @@ const routes = [
     }
   },
   {
+    path: '/prescriptions/delivered',
+    name: 'prescriptions.delivered',
+    component: PrescriptionIndexPage,
+    props: route => ({ defaultStatus: '1' }),
+    meta: {
+      title: 'Delivered Prescriptions',
+      requiresAuth: true
+    }
+  },
+  {
     path: '/prescriptions/:id',
     name: 'prescriptions.show',
     component: PrescriptionShowApp,

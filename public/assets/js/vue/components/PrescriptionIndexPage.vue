@@ -51,7 +51,7 @@
           
           <div class="col-md-2">
             <label for="status" class="form-label">{{ localize('global.status') }}</label>
-            <select class="form-select" id="status" v-model="filters.status" @change="applyFilters">
+            <select class="form-select" id="status" v-model="filters.status" @change="applyFilters" :disabled="isDeliveredRoute">
               <option value="">{{ localize('global.all') }}</option>
               <option value="0">{{ localize('global.not_delivered') }}</option>
               <option value="1">{{ localize('global.delivered') }}</option>
@@ -352,7 +352,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
 // Props
@@ -368,11 +368,17 @@ const props = defineProps({
   branchId: {
     type: Number,
     default: null
+  },
+  // Optional default status when landing from special routes (e.g., delivered)
+  defaultStatus: {
+    type: [String, Number],
+    default: ''
   }
 })
 
 // Router
 const router = useRouter()
+const route = useRoute()
 
 // Reactive data
 const prescriptions = ref([])
@@ -391,6 +397,9 @@ const sorting = reactive({
   sortBy: 'created_at',
   sortOrder: 'desc'
 })
+// Route-aware flags
+const isDeliveredRoute = computed(() => route.name === 'prescriptions.delivered')
+
 
 const pagination = reactive({
   current_page: 1,
@@ -463,7 +472,9 @@ const fetchPrescriptions = async () => {
       perPage: pagination.per_page,
       sortBy: sorting.sortBy,
       sortOrder: sorting.sortOrder,
-      ...filters
+      ...filters,
+      // Force delivered filter on delivered route
+      status: isDeliveredRoute.value ? '1' : filters.status
     }
 
     const response = await axios.get('/prescription-ajax/prescriptions-index', { params })
@@ -605,6 +616,10 @@ const bulkPrint = () => {
 
 // Lifecycle
 onMounted(() => {
+  // Seed filters from route-provided default status if present
+  if (!filters.status && props.defaultStatus !== '') {
+    filters.status = String(props.defaultStatus)
+  }
   fetchPrescriptions()
   
   // Initialize Persian datepickers

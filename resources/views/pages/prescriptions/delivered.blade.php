@@ -84,6 +84,12 @@
                      
 'global.prescription_completed' => localize('global.prescription_completed'),
 'global.prescription_readonly_notice' => localize('global.prescription_readonly_notice'),
+'global.cancel' => localize('global.cancel'),
+'global.save' => localize('global.save'),
+'global.enter_amount' => localize('global.enter_amount'),
+'global.original' => localize('global.original'),
+'global.not_used' => localize('global.not_used'),
+'global.selected_alternative' => localize('global.selected_alternative'),
                  ]) }}"
                  data-branch-id="{{ auth()->user()->branch_id }}">
             </div>

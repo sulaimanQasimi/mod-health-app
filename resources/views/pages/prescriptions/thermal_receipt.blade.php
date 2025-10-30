@@ -220,7 +220,7 @@
                     <tr>
                         <th style="width: 8%;">#</th>
                         <th style="width: 45%;">ادویه</th>
-                        <th style="width: 15%;">مقدار</th>
+                        <th style="width: 15%;">دوز</th>
                         <th style="width: 12%;">تکرار</th>
                         <th style="width: 20%;">تعداد</th>
                     </tr>

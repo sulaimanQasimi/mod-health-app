@@ -274,13 +274,13 @@
                 </td>
                 <td>
                   <div class="btn-group" role="group">
-                    <a 
-                      :href="`/prescriptions/show/${prescription.id}`" 
+                    <router-link 
+                      :to="{ name: 'prescriptions.show', params: { id: prescription.id }}" 
                       class="btn btn-sm btn-outline-primary" 
                       :title="localize('global.view')"
                     >
                       <i class="bx bx-show-alt"></i>
-                    </a>
+                    </router-link>
                     <a 
                       :href="`/prescriptions/thermal-receipt/${prescription.id}`" 
                       class="btn btn-sm btn-outline-success" 
@@ -352,6 +352,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 // Props
@@ -369,6 +370,9 @@ const props = defineProps({
     default: null
   }
 })
+
+// Router
+const router = useRouter()
 
 // Reactive data
 const prescriptions = ref([])

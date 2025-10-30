@@ -36,7 +36,7 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            external: ['moment-jalaali']
+            // Bundle all dependencies, including moment-jalaali
         }
     }
 });

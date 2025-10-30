@@ -18,11 +18,11 @@
                         class="btn btn-success">
                   <i class="bx bx-printer"></i> {{ localize('global.thermal_print') }}
                 </button>
-                <a class="btn btn-danger" href="javascript:history.back()" type="button">
+                <button class="btn btn-danger" @click="goBack" type="button">
                   <span class="text-white">
                     <span class="d-none d-sm-inline-block">{{ localize('global.back') }}</span>
                   </span>
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -55,19 +55,19 @@
                       <button @click="rejectPrescription" 
                               class="btn btn-danger" 
                               :disabled="loading"
-                              title="{{ localize('global.reject_prescription') }}">
+                              :title="localize('global.reject_prescription')">
                         <i class="bx bx-x"></i>
                       </button>
                       <button @click="markDelivered" 
                               class="btn btn-warning" 
                               :disabled="loading"
-                              title="{{ localize('global.mark_delivered') }}">
+                              :title="localize('global.mark_delivered')">
                         <i class="bx bx-check"></i>
                       </button>
                       <button @click="completePrescription" 
                               class="btn btn-success" 
                               :disabled="loading"
-                              title="{{ localize('global.complete_prescription') }}">
+                              :title="localize('global.complete_prescription')">
                         <i class="bx bx-check-shield"></i>
                       </button>
                     </div>
@@ -128,15 +128,6 @@
               <table class="table table-hover bg-none">
                 <thead class="table-none">
                   <tr>
-                    <th width="50" class="d-none d-md-table-cell">
-                      <div class="form-check">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               :checked="selectAll"
-                               @change="toggleSelectAll"
-                               :disabled="loading || prescription.is_completed == '1'">
-                      </div>
-                    </th>
                     <th>{{ localize('global.number') }}</th>
                     <th class="d-none d-lg-table-cell">{{ localize('global.type') }}</th>
                     <th>{{ localize('global.name') }}</th>
@@ -152,18 +143,6 @@
                 <template v-for="(item, index) in prescription.prescription_items" :key="item.id">
                   <!-- Original Prescription Item -->
                   <tr>
-                    <td class="d-none d-md-table-cell">
-                      <div v-if="!item.selected_alternative" class="form-check">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               :checked="selectedItems.has(item.id)"
-                               @change="toggleItemSelection(item.id)"
-                               :disabled="loading || prescription.is_completed == '1'">
-                      </div>
-                      <div v-else class="text-center">
-                        <i class="bx bx-info-circle text-muted"></i>
-                      </div>
-                    </td>
                     <td>
                       <div class="d-flex align-items-center">
                         <span class="badge bg-primary me-2">{{ index + 1 }}</span>
@@ -249,7 +228,6 @@
                                   :disabled="prescription.is_completed == '1'"
                                   :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.alternatives')">
                             <i class="bx bx-list-ul"></i>
-                            <span class="d-none d-sm-inline ms-1">{{ localize('global.alternatives') }}</span>
                           </button>
                         </div>
                         <span v-if="item.alternative_items?.length > 0" 
@@ -262,15 +240,6 @@
 
                   <!-- Selected Alternative Item (if exists) -->
                   <tr v-if="item.selected_alternative">
-                    <td class="d-none d-md-table-cell">
-                      <div class="form-check">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               :checked="selectedItems.has(item.selected_alternative.id)"
-                               @change="toggleItemSelection(item.selected_alternative.id)"
-                               :disabled="loading || prescription.is_completed == '1'">
-                      </div>
-                    </td>
                     <td>
                       <div class="d-flex align-items-center">
                         <span class="badge bg-success me-2">{{ index + 1 }}.1</span>
@@ -339,7 +308,6 @@
                                 :disabled="loading || prescription.is_completed == '1'"
                                 :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.deselect_alternative')">
                           <i class="bx bx-x"></i>
-                          <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect') }}</span>
                         </button>
                         <button type="button" 
                                 class="btn btn-info" 
@@ -347,7 +315,6 @@
                                 :disabled="prescription.is_completed == '1'"
                                 :title="prescription.is_completed == '1' ? localize('global.prescription_completed_readonly') : localize('global.alternatives')">
                           <i class="bx bx-list-ul"></i>
-                          <span class="d-none d-sm-inline ms-1">{{ localize('global.alternatives') }}</span>
                         </button>
                       </div>
                     </td>
@@ -497,7 +464,6 @@
                                       :disabled="loading"
                                       :title="localize('global.select_alternative')">
                                 <i class="bx bx-check"></i>
-                                <span class="d-none d-sm-inline ms-1">{{ localize('global.select') }}</span>
                               </button>
                               <button v-else
                                       @click="deselectAlternative(alternative)" 
@@ -505,7 +471,6 @@
                                       :disabled="loading"
                                       :title="localize('global.deselect_alternative')">
                                 <i class="bx bx-x"></i>
-                                <span class="d-none d-sm-inline ms-1">{{ localize('global.deselect') }}</span>
                               </button>
                               <button @click="deleteAlternative(alternative)" 
                                       class="btn btn-danger" 
@@ -589,6 +554,7 @@
 
 <script>
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Multiselect from 'vue-multiselect'
 
@@ -598,12 +564,26 @@ export default {
     Multiselect
   },
   props: {
-    prescriptionId: {
-      type: [String, Number],
-      required: true
+    permissions: {
+      type: Object,
+      default: () => ({})
+    },
+    localize: {
+      type: Object,
+      default: () => ({})
+    },
+    branchId: {
+      type: Number,
+      default: null
     }
   },
   setup(props) {
+    // Router
+    const route = useRoute()
+    const router = useRouter()
+    
+    // Get prescription ID from route params
+    const prescriptionId = computed(() => route.params.id)
     // Reactive data
     const prescription = ref({})
     const loading = ref(false)
@@ -642,9 +622,17 @@ export default {
 
     // Localization function
     const localize = (key) => {
-      if (typeof window.localize === 'function') {
+      // First try to get from props
+      if (props.localize && props.localize[key]) {
+        return props.localize[key]
+      }
+      
+      // Fallback to global function
+      if (window.localize) {
         return window.localize(key)
       }
+      
+      // Final fallback
       return key
     }
 
@@ -659,14 +647,18 @@ export default {
       }, 3000)
     }
 
+    const goBack = () => {
+      router.push({ name: 'prescriptions.index' })
+    }
+
     const loadPrescriptionDetails = async () => {
       loading.value = true
       try {
-        console.log('Loading prescription details for ID:', props.prescriptionId)
-        if (!props.prescriptionId) {
+        console.log('Loading prescription details for ID:', prescriptionId.value)
+        if (!prescriptionId.value) {
           throw new Error('Prescription ID is required')
         }
-        const response = await axios.get(`/prescription-show-ajax/prescription-details/${props.prescriptionId}`)
+        const response = await axios.get(`/prescription-show-ajax/prescription-details/${prescriptionId.value}`)
         if (response.data.success) {
           prescription.value = response.data.data
         } else {
@@ -700,7 +692,7 @@ export default {
       loading.value = true
       try {
         // Complete the prescription without automatically marking items as delivered
-        const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`, {
+        const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${prescriptionId.value}`, {
           is_completed: '1'
         })
         
@@ -801,23 +793,38 @@ export default {
     const addAlternative = async () => {
       loading.value = true
       try {
-        const requestData = {
-          prescription_id: props.prescriptionId,
-          prescription_item_id: currentItem.value.id,
-          medicine_id: newAlternative.medicine?.id || '',
-          medicine_type_id: currentItem.value.medicine_type?.id || '',
-          usage_type_id: currentItem.value.usage_type?.id || '',
-          dosage: currentItem.value.dosage || '',
-          frequency: currentItem.value.frequency || '',
-          amount: currentItem.value.amount || '',
-          notes: ''
+        // Gather values with correct types and avoid empty strings
+        const requestDataRaw = {
+          prescription_id: Number(prescriptionId.value),
+          prescription_item_id: Number(currentItem.value?.id),
+          medicine_id: newAlternative.medicine?.id != null ? Number(newAlternative.medicine.id) : null,
+          medicine_type_id: currentItem.value?.medicine_type?.id != null ? Number(currentItem.value.medicine_type.id) : null,
+          usage_type_id: currentItem.value?.usage_type?.id != null ? Number(currentItem.value.usage_type.id) : null,
+          dosage: currentItem.value?.dosage || null,
+          frequency: currentItem.value?.frequency || null,
+          amount: currentItem.value?.amount != null ? String(currentItem.value.amount) : null,
+          notes: newAlternative.notes || null
         }
 
-        if (!requestData.medicine_id) {
+        // Front-end validation for required fields
+        if (!requestDataRaw.medicine_id) {
           showToast(localize('global.please_select_medicine'), 'error')
           return
         }
-        
+        if (!requestDataRaw.medicine_type_id || !requestDataRaw.usage_type_id) {
+          showToast(localize('global.validation_errors') + ': ' + localize('global.select_type'), 'error')
+          return
+        }
+        if (!requestDataRaw.dosage || !requestDataRaw.frequency || !requestDataRaw.amount) {
+          showToast(localize('global.validation_errors') + ': ' + localize('global.auto_filled'), 'error')
+          return
+        }
+
+        // Remove null/empty fields to satisfy backend validators
+        const requestData = Object.fromEntries(
+          Object.entries(requestDataRaw).filter(([, v]) => v !== null && v !== undefined && v !== '')
+        )
+
         const response = await axios.post('/prescription-show-ajax/add-alternative', requestData)
         if (response.data.success) {
           // Add to current item's alternatives
@@ -1144,7 +1151,7 @@ export default {
       
       loading.value = true
       try {
-        const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${props.prescriptionId}`, {
+        const response = await axios.put(`/prescription-show-ajax/update-prescription-status/${prescriptionId.value}`, {
           is_rejected: '1'
         })
         
@@ -1231,7 +1238,7 @@ export default {
     }
 
     const openThermalPrint = () => {
-      const printUrl = `/prescriptions/thermal-receipt/${props.prescriptionId}`
+      const printUrl = `/prescriptions/thermal-receipt/${prescriptionId.value}`
       const printWindow = window.open(printUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes')
       
       // Focus the new window
@@ -1242,8 +1249,8 @@ export default {
         const checkClosed = setInterval(() => {
           if (printWindow.closed) {
             clearInterval(checkClosed)
-            // Redirect to prescription index
-            window.location.href = '/prescriptions'
+            // Redirect to prescription index using Vue Router
+            router.push({ name: 'prescriptions.index' })
           }
         }, 1000) // Check every second
       }
@@ -1425,7 +1432,7 @@ export default {
 
     const refreshPrescriptionData = async () => {
       try {
-        const response = await axios.get(`/prescription-show-ajax/prescription-details/${props.prescriptionId}`)
+        const response = await axios.get(`/prescription-show-ajax/prescription-details/${prescriptionId.value}`)
         if (response.data.success) {
           prescription.value = response.data.data
         }
@@ -1525,7 +1532,8 @@ export default {
       closeAmountModal,
       updateAmount,
       editingItem,
-      editAmount
+      editAmount,
+      goBack
     }
   }
 }
@@ -1535,7 +1543,7 @@ export default {
 @import 'vue-multiselect/dist/vue-multiselect.css';
 
 .toast {
-  z-index: 1055;
+  z-index: 20000 !important;
 }
 
 /* Modal styles */
@@ -1656,7 +1664,7 @@ export default {
   font-weight: 700 !important;
   border-width: 2px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
   background-color: #ffc107 !important;
   border-color: #ffc107 !important;
   color: #000 !important;
@@ -1673,7 +1681,7 @@ export default {
 /* Selected state indicator */
 .btn-warning.fw-bold i {
   font-weight: 900;
-  font-size: 1.2rem !important;
+  font-size: 1rem !important;
 }
 
 /* General button styling improvements */
@@ -1685,8 +1693,8 @@ export default {
 }
 
 .btn-sm {
-  font-size: 0.95rem !important;
-  padding: 0.375rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  padding: 0.25rem 0.5rem !important;
 }
 
 /* Primary button styling */
@@ -1758,7 +1766,7 @@ export default {
 .btn-success {
   background-color: #198754 !important;
   border-color: #198754 !important;
-  font-size: 1.05rem !important;
+  font-size: 1rem !important;
   color: #fff !important;
 }
 
@@ -1771,7 +1779,7 @@ export default {
 /* Alternative select button styling */
 .btn-success.fw-bold {
   font-weight: 700 !important;
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
   background-color: #198754 !important;
   border-color: #198754 !important;
   color: #fff !important;
@@ -1785,11 +1793,11 @@ export default {
 
 /* Table text improvements */
 .table {
-  font-size: 1.05rem !important;
+  font-size: 1rem !important;
 }
 
 .table th {
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   background-color: #f8f9fa !important;
   border-bottom: 2px solid #dee2e6 !important;
@@ -1797,7 +1805,7 @@ export default {
 }
 
 .table td {
-  font-size: 15px !important;
+  font-size: 14px !important;
   border-bottom: 1px solid #e9ecef !important;
 }
 
@@ -1805,7 +1813,7 @@ export default {
 
 /* Badge styling */
 .badge {
-  font-size: 0.9rem !important;
+  font-size: 0.75rem !important;
   font-weight: 600 !important;
 }
 
@@ -1841,12 +1849,12 @@ export default {
 
 /* Modal improvements */
 .modal-title {
-  font-size: 1.3rem !important;
+  font-size: 1.1rem !important;
   font-weight: 700 !important;
 }
 
 .modal-body {
-  font-size: 1.05rem !important;
+  font-size: 1rem !important;
 }
 
 /* Amount modal z-index fix */
@@ -1860,13 +1868,13 @@ export default {
 
 /* Form label improvements */
 .form-label {
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
   font-weight: 600 !important;
 }
 
 /* Card header improvements */
 .card-header h5 {
-  font-size: 1.4rem !important;
+  font-size: 1.25rem !important;
   font-weight: 700 !important;
 }
 </style>

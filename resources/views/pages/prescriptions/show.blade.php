@@ -1,9 +1,16 @@
 @extends('layouts.master')
 
 @section('content')
-    <!-- Vue.js Prescription Show App -->
-    <div id="prescription-show-app" 
+    <!-- Vue.js Prescription App with Router -->
+    <div id="prescription-index-app" 
          data-prescription-id="{{ $prescription->id }}"
+         data-permissions="{{ json_encode([
+             'prescription.create' => auth()->user()->can('create', \App\Models\Prescription::class),
+             'prescription.edit' => auth()->user()->can('update', \App\Models\Prescription::class),
+             'prescription.delete' => auth()->user()->can('delete', \App\Models\Prescription::class),
+             'prescription.view' => auth()->user()->can('view', \App\Models\Prescription::class),
+         ]) }}"
+         data-branch-id="{{ auth()->user()->branch_id }}"
          data-localize="{{ json_encode([
          'global.auto_filled' => localize('global.auto_filled'),
          'global.select' => localize('global.select'),
@@ -25,6 +32,7 @@
              'global.amount' => localize('global.amount'),
              'global.alternatives' => localize('global.alternatives'),
              'global.original' => localize('global.original'),
+             'global.original_not_used' => localize('global.original_not_used'),
              'global.not_used' => localize('global.not_used'),
              'global.selected_alternative' => localize('global.selected_alternative'),
              'global.deselect_alternative' => localize('global.deselect_alternative'),
@@ -43,6 +51,7 @@
              'global.mark_delivered' => localize('global.mark_delivered'),
              'global.delete_alternative' => localize('global.delete_alternative'),
              'global.no_alternatives_found' => localize('global.no_alternatives_found'),
+             'global.no_medicines_found' => localize('global.no_medicines_found'),
              'global.close' => localize('global.close'),
              'global.loading' => localize('global.loading'),
              'global.auto-filled' => localize('global.auto-filled'),
@@ -50,6 +59,13 @@
              'global.deselect' => localize('global.deselect'),
              'global.in_progress' => localize('global.in_progress'),
              'global.completed' => localize('global.completed'),
+             'global.prescription_completed' => localize('global.prescription_completed'),
+             'global.prescription_readonly_notice' => localize('global.prescription_readonly_notice'),
+             'global.items_selected' => localize('global.items_selected'),
+             'global.bulk_mark_delivered' => localize('global.bulk_mark_delivered'),
+             'global.bulk_mark_not_delivered' => localize('global.bulk_mark_not_delivered'),
+             'global.clear_selection' => localize('global.clear_selection'),
+             'global.prescription_completed_readonly' => localize('global.prescription_completed_readonly'),
              'global.reject_prescription' => localize('global.reject_prescription'),
              'global.confirm_reject_prescription' => localize('global.confirm_reject_prescription'),
              'global.prescription_rejected_successfully' => localize('global.prescription_rejected_successfully'),
@@ -66,6 +82,16 @@
             'global.validation_errors' => localize('global.validation_errors'),
             'global.cancel' => localize('global.cancel'),
             'global.save' => localize('global.save'),
+             'global.please_select_medicine' => localize('global.please_select_medicine'),
+             'global.failed_to_load_prescription_details' => localize('global.failed_to_load_prescription_details'),
+             'global.item_status_updated_successfully' => localize('global.item_status_updated_successfully'),
+             'global.failed_to_update_item_status' => localize('global.failed_to_update_item_status'),
+             'global.items_marked_as_delivered' => localize('global.items_marked_as_delivered'),
+             'global.items_marked_as_not_delivered' => localize('global.items_marked_as_not_delivered'),
+             'global.failed_to_update_items' => localize('global.failed_to_update_items'),
+             'global.prescription_completed_successfully' => localize('global.prescription_completed_successfully'),
+             'global.failed_to_complete_prescription' => localize('global.failed_to_complete_prescription'),
+             'global.original_data_copied' => localize('global.original_data_copied'),
              'global.alternative_deselected_successfully' => localize('global.alternative_deselected_successfully'),
              'global.alternative_deleted_successfully' => localize('global.alternative_deleted_successfully'),
              'global.alternative_selected_successfully' => localize('global.alternative_selected_successfully'),
@@ -86,12 +112,12 @@
 <script>
 // Global localization function for Vue components
 window.localize = function(key) {
-    const data = document.getElementById('prescription-show-app').dataset.localize;
+    const data = document.getElementById('prescription-index-app').dataset.localize;
     const translations = JSON.parse(data);
     return translations[key] || key;
 };
 </script>
 @endpush
 
-@vite(['public/assets/js/vue/prescription-show-app.js'])
+@vite(['public/assets/js/vue/prescription-index-app.js'])
 

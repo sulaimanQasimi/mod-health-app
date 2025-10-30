@@ -1,15 +1,26 @@
 import { createApp } from 'vue'
-import PrescriptionIndexPage from './components/PrescriptionIndexPage.vue'
+import PrescriptionApp from './components/PrescriptionApp.vue'
+import router from './router/prescription-router.js'
 import Multiselect from 'vue-multiselect'
 import VuePersianDatetimePicker from 'vue-persian-datetime-picker'
+import 'vue-multiselect/dist/vue-multiselect.css'
 
-// Global localization function
+// Global translation store and helper
+window.__translations = window.__translations || {}
 window.localize = function(key) {
+  if (window.__translations && key in window.__translations) {
+    return window.__translations[key]
+  }
   const container = document.getElementById('prescription-index-app')
   if (container) {
     const data = container.dataset.localize
-    const translations = JSON.parse(data || '{}')
-    return translations[key] || key
+    try {
+      const translations = JSON.parse(data || '{}')
+      Object.assign(window.__translations, translations)
+      return window.__translations[key] || key
+    } catch (e) {
+      return key
+    }
   }
   return key
 }
@@ -21,14 +32,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get data from container attributes
     const permissions = JSON.parse(container.dataset.permissions || '{}')
     const localize = JSON.parse(container.dataset.localize || '{}')
+    // Merge once at boot so SPA routes have all keys available
+    Object.assign(window.__translations, localize)
     const branchId = parseInt(container.dataset.branchId) || null
 
-    // Create Vue app with props
-    const app = createApp(PrescriptionIndexPage, {
+    // Create Vue app with router
+    const app = createApp(PrescriptionApp, {
       permissions: permissions,
       localize: localize,
       branchId: branchId
     })
+
+    // Use router
+    app.use(router)
 
     // Register global components
     app.component('multiselect', Multiselect)

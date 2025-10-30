@@ -3530,7 +3530,7 @@ return [
     'item_status_updated_successfully' => 'وضعیت آیتم با موفقیت به‌روزرسانی شد',
     'prescription_completed_successfully' => 'نسخه با موفقیت تکمیل شد',
     'prescription_completed' => 'نسخه تکمیل شده',
-    'prescription_readonly_notice' => 'این نسخه تکمیل شده و اکنون فقط خواندنی است. هیچ تغییری نمی‌توان اعمال کرد.',
+    'prescription_readonly_notice' => 'این نسخه تکمیل شده و اکنون فقط قابلیت خواندن را دارد. هیچ تغییری نمی‌توان اعمال کرد.',
     'prescription_completed_readonly' => 'نسخه تکمیل شده - فقط خواندنی',
     'are_you_sure_delete_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را حذف کنید؟',
     'confirm_deletion' => 'تأیید حذف',

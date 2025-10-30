@@ -157,10 +157,10 @@
                                         <label class="form-label">تکرار</label>
                                         <input 
                                             v-model="item.frequency" 
-                                            type="number" 
+                                            type="text" 
                                             class="form-control" 
                                             :class="{ 'is-invalid': getFieldError(index, 'frequency') }"
-                                            :placeholder="'تکرار'" 
+                                            :placeholder="'مثال: هر 8 ساعت، دوبار در روز'" 
                                             required>
                                         <div v-if="getFieldError(index, 'frequency')" class="invalid-feedback">
                                             {{ getFieldError(index, 'frequency') }}
@@ -734,13 +734,12 @@ export default {
                     hasErrors = true;
                 }
 
-                // Validate frequency
+                // Validate frequency (free text, just require non-empty)
                 if (!item.frequency || item.frequency === '' || item.frequency === null || item.frequency === undefined) {
                     this.setFieldError(index, 'frequency', 'تکرار الزامی است');
                     hasErrors = true;
-                } else if (isNaN(item.frequency) || parseFloat(item.frequency) <= 0) {
-                    this.setFieldError(index, 'frequency', 'تکرار باید عدد مثبت باشد');
-                    hasErrors = true;
+                } else {
+                    this.setFieldError(index, 'frequency', null);
                 }
 
                 // Validate amount

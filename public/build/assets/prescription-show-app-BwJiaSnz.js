@@ -1,0 +1,1 @@
+import{h as o}from"./vue-multiselect-BO_2zb3A.js";import{P as t}from"./PrescriptionShowApp-ByHOtxps.js";import"./index-NIGUFBhG.js";import"./vue-multiselect.esm-CHt_FUub.js";const p=document.getElementById("prescription-show-app").dataset.prescriptionId;console.log("Prescription ID from data attribute:",p);const r=o(t,{prescriptionId:p});r.mount("#prescription-show-app");

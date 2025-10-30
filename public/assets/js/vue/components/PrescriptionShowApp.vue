@@ -1667,7 +1667,7 @@ export default {
   font-size: 1rem !important;
   background-color: #ffc107 !important;
   border-color: #ffc107 !important;
-  color: #000 !important;
+  color: white !important;
 }
 
 .btn-warning.fw-bold:hover {
@@ -1675,7 +1675,7 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   background-color: #e0a800 !important;
   border-color: #d39e00 !important;
-  color: #000 !important;
+  color: white !important;
 }
 
 /* Selected state indicator */
@@ -1727,13 +1727,13 @@ export default {
 .btn-info {
   background-color: #0dcaf0 !important;
   border-color: #0dcaf0 !important;
-  color: #000 !important;
+  color: white !important;
 }
 
 .btn-info:hover {
   background-color: #3dd5f3 !important;
   border-color: #25cff2 !important;
-  color: #000 !important;
+  color: white !important;
 }
 
 /* Secondary button styling */
@@ -1824,7 +1824,7 @@ export default {
 
 .badge.bg-warning {
   background-color: #ffc107 !important;
-  color: #000 !important;
+  color: white !important;
 }
 
 .badge.bg-primary {
@@ -1834,7 +1834,7 @@ export default {
 
 .badge.bg-info {
   background-color: #0dcaf0 !important;
-  color: #000 !important;
+  color: white !important;
 }
 
 .badge.bg-secondary {

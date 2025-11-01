@@ -124,6 +124,7 @@
                                     <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.ref_number') }}</th>
                                             <th>{{ localize('global.patient') }}</th>
                                             <th>{{ localize('global.lab_type') }}</th>
                                             <th>{{ localize('global.category') }}</th>
@@ -140,6 +141,9 @@
                                         <tr v-for="registration in testRegistrations" :key="registration.id">
                                             <td>
                                                 <span class="badge bg-warning rounded-pill">{{ testRegistrations.indexOf(registration) + 1 }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ registration.ref_no || '—' }}</span>
                                             </td>
                                             <td>
                                                 <span v-if="registration.testable && registration.testable.patient">
@@ -954,6 +958,7 @@ export default {
                 'global.create_and_continue': 'ایجاد و ادامه',
                 'global.create_and_close': 'ایجاد و بستن',
                 'global.number': 'شماره',
+                'global.ref_number': 'شماره مرجع',
                 'global.patient': 'بیمار',
                 'global.status': 'وضعیت',
                 'global.doctor': 'دکتر',

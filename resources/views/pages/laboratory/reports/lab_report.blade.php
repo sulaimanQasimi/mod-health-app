@@ -308,7 +308,7 @@
                     <h4>ستـــــــــــــردرستیــــــــــــز</h4>
                     <h4>قوماندانیت صحیه</h4>
                     <h4>قوماندانی اکادمی علوم طبی</h4>
-                    <h4 class="dep-name">{{ auth()->user()->department?->name ?? '—' }}</h4>
+                    <h4>{{ $testRegistration->assignedSection->name ?? '—' }}</h4>
                 </div>
 
 

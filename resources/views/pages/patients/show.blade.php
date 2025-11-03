@@ -44,8 +44,13 @@
                         <br>
                         <div class="row">
                             <div class="col-md-3">
-
-                                    <h5 class="mb-2">{{ localize('global.province') }}</h5>
+                                <h5 class="mb-2">{{ localize('global.age') }}</h5>
+                                    <div>
+                                        {{$patient->age ?? '-'}}
+                                    </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h5 class="mb-2">{{ localize('global.province') }}</h5>
                                     <div>
                                         {{$patient->province->name_dr}}
                                     </div>
@@ -62,6 +67,9 @@
                                         {{$patient->recipient->name ?? $patient->referral_name}}
                                     </div>
                             </div>
+                        </div>
+                        <br>
+                        <div class="row">
                             <div class="col-md-3">
                                 <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                     <div>

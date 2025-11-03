@@ -48,9 +48,19 @@
         </div>
         <div class="col-md-3">
             <div class="mb-3">
-                <label for="age">{{ localize('global.age') }}</label>
-                <input type="text" name="age" id="age" required value="{{ old('age', isset($patient) ? $patient->age : '') }}"
-                    class="form-control">
+                <label for="age_tab3">{{ localize('global.age') }}</label>
+                <div class="row">
+                    <div class="col-4">
+                        <input type="number" class="form-control" name="age_day" id="age_day_tab3" placeholder="{{ localize('global.day') }}" min="0" max="31" onchange="updateAgeValue('tab3')" value="{{ old('age_day', isset($patient) && preg_match('/^(\d+)\s*روز/', $patient->age ?? '', $matches) ? $matches[1] : '') }}" style="padding: 0;">
+                    </div>
+                    <div class="col-4">
+                        <input type="number" class="form-control" name="age_month" id="age_month_tab3" placeholder="{{ localize('global.month') }}" min="0" max="11" onchange="updateAgeValue('tab3')" value="{{ old('age_month', isset($patient) && preg_match('/^(\d+)\s*ماه/', $patient->age ?? '', $matches) ? $matches[1] : '') }}" style="padding: 0;">
+                    </div>
+                    <div class="col-4">
+                        <input type="number" class="form-control" name="age_year" id="age_year_tab3" placeholder="{{ localize('global.year') }}" min="0" max="150" onchange="updateAgeValue('tab3')" value="{{ old('age_year', isset($patient) && preg_match('/^(\d+)\s*ساله/', $patient->age ?? '', $matches) ? $matches[1] : '') }}" style="padding: 0;">
+                    </div>
+                </div>
+                <input type="hidden" name="age" id="age_tab3" value="{{ old('age', isset($patient) ? $patient->age : '') }}" required>
             </div>
         </div>
         <div class="col-md-3">

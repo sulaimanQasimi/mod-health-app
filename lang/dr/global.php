@@ -3656,7 +3656,8 @@ return [
     'add_notes_here' => 'یادداشت‌ها را اینجا اضافه کنید...',
     'select_medicine_to_auto_fill' => 'دارو را انتخاب کنید تا فیلدها به طور خودکار پر شوند',
     'edit_amount' => 'ویرایش مقدار',
-    
+    'month' => 'ماه',
+    'year' => 'سال',
     // Prescription Management Translations
     'reject_prescription' => 'رد نسخه',
     'confirm_reject_prescription' => 'آیا مطمئن هستید که می‌خواهید این نسخه را رد کنید؟',

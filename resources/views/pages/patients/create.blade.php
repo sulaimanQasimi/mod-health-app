@@ -209,6 +209,41 @@
                     
                     // Initialize appointment form functionality
                     initializeAppointmentForm();
+                    
+                    // Initialize age dropdowns for the loaded tab
+                    var tabNum = '';
+                    if (tab_type === 'first') {
+                        tabNum = 'tab1';
+                    } else if (tab_type === 'second') {
+                        tabNum = 'tab2';
+                    } else if (tab_type === 'third') {
+                        tabNum = 'tab3';
+                    }
+                    
+                    if (tabNum) {
+                        // Parse existing age value if present
+                        var ageInput = document.getElementById('age_' + tabNum);
+                        if (ageInput && ageInput.value) {
+                            parseAgeToDropdowns(tabNum, ageInput.value);
+                        }
+                        // Update age value from input fields
+                        updateAgeValue(tabNum);
+                        
+                        // Add oninput event listeners for real-time updates
+                        var dayInput = document.getElementById('age_day_' + tabNum);
+                        var monthInput = document.getElementById('age_month_' + tabNum);
+                        var yearInput = document.getElementById('age_year_' + tabNum);
+                        
+                        if (dayInput) {
+                            dayInput.addEventListener('input', function() { updateAgeValue(tabNum); });
+                        }
+                        if (monthInput) {
+                            monthInput.addEventListener('input', function() { updateAgeValue(tabNum); });
+                        }
+                        if (yearInput) {
+                            yearInput.addEventListener('input', function() { updateAgeValue(tabNum); });
+                        }
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
@@ -467,10 +502,108 @@
             $('#tokenModal').modal('show');
         }
 
+        // Parse age value from string and populate input fields
+        function parseAgeToDropdowns(tab, ageString) {
+            if (!ageString) return;
+            
+            const dayInput = document.getElementById('age_day_' + tab);
+            const monthInput = document.getElementById('age_month_' + tab);
+            const yearInput = document.getElementById('age_year_' + tab);
+            
+            // Match patterns: "X ساله", "X ماه", "X روز"
+            const yearMatch = ageString.match(/^(\d+)\s*ساله/);
+            const monthMatch = ageString.match(/^(\d+)\s*ماه/);
+            const dayMatch = ageString.match(/^(\d+)\s*روز/);
+            
+            if (yearMatch && yearInput) {
+                yearInput.value = yearMatch[1];
+                if (dayInput) dayInput.value = '';
+                if (monthInput) monthInput.value = '';
+            } else if (monthMatch && monthInput) {
+                monthInput.value = monthMatch[1];
+                if (dayInput) dayInput.value = '';
+                if (yearInput) yearInput.value = '';
+            } else if (dayMatch && dayInput) {
+                dayInput.value = dayMatch[1];
+                if (monthInput) monthInput.value = '';
+                if (yearInput) yearInput.value = '';
+            }
+        }
+
+        // Update age value based on input field values
+        function updateAgeValue(tab) {
+            const dayInput = document.getElementById('age_day_' + tab);
+            const monthInput = document.getElementById('age_month_' + tab);
+            const yearInput = document.getElementById('age_year_' + tab);
+            const ageInput = document.getElementById('age_' + tab);
+            
+            let ageValue = '';
+            
+            // Priority: year > month > day
+            if (yearInput && yearInput.value !== '' && yearInput.value !== null) {
+                ageValue = yearInput.value + ' ساله';
+                // Clear other inputs
+                if (dayInput) dayInput.value = '';
+                if (monthInput) monthInput.value = '';
+            } else if (monthInput && monthInput.value !== '' && monthInput.value !== null) {
+                ageValue = monthInput.value + ' ماه';
+                // Clear other inputs
+                if (dayInput) dayInput.value = '';
+                if (yearInput) yearInput.value = '';
+            } else if (dayInput && dayInput.value !== '' && dayInput.value !== null) {
+                ageValue = dayInput.value + ' روز';
+                // Clear other inputs
+                if (monthInput) monthInput.value = '';
+                if (yearInput) yearInput.value = '';
+            }
+            
+            if (ageInput) {
+                ageInput.value = ageValue;
+            }
+        }
+
+        // Initialize age values on page load
+        $(document).ready(function() {
+            // Initialize age for all tabs
+            ['tab1', 'tab2', 'tab3'].forEach(function(tab) {
+                // Check if there's an existing age value from the hidden input
+                const ageInput = document.getElementById('age_' + tab);
+                if (ageInput && ageInput.value) {
+                    // Parse existing age value and populate input fields
+                    parseAgeToDropdowns(tab, ageInput.value);
+                }
+                // Update the age value from input fields
+                updateAgeValue(tab);
+                
+                // Add oninput event listeners for real-time updates
+                const dayInput = document.getElementById('age_day_' + tab);
+                const monthInput = document.getElementById('age_month_' + tab);
+                const yearInput = document.getElementById('age_year_' + tab);
+                
+                if (dayInput) {
+                    dayInput.addEventListener('input', function() { updateAgeValue(tab); });
+                }
+                if (monthInput) {
+                    monthInput.addEventListener('input', function() { updateAgeValue(tab); });
+                }
+                if (yearInput) {
+                    yearInput.addEventListener('input', function() { updateAgeValue(tab); });
+                }
+            });
+        });
+
         // Bind AJAX form submission to all patient forms
         $(document).on('submit', '#patient-form-tab1, #patient-form-tab2, #patient-form-tab3', function(e) {
             e.preventDefault();
             const formId = $(this).attr('id');
+            // Update age value before submission
+            if (formId === 'patient-form-tab1') {
+                updateAgeValue('tab1');
+            } else if (formId === 'patient-form-tab2') {
+                updateAgeValue('tab2');
+            } else if (formId === 'patient-form-tab3') {
+                updateAgeValue('tab3');
+            }
             submitPatientForm(formId);
         });
 

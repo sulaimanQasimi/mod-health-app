@@ -92,7 +92,10 @@ class PatientController extends Controller
             'last_name' => 'nullable',
             'father_name' => 'nullable',
             'phone' => 'nullable',
-            'age' => 'required',
+            'age' => 'nullable',
+            'age_day' => 'nullable|integer|min:0|max:31',
+            'age_month' => 'nullable|integer|min:0|max:11',
+            'age_year' => 'nullable|integer|min:0|max:150',
             'nid' => 'required',
             'province_id' => 'required',
             'district_id' => 'required',
@@ -118,6 +121,32 @@ class PatientController extends Controller
             'appointment_doctor_id' => 'nullable|exists:users,id',
             'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
         ]);
+
+        // Format age from dropdowns if provided (priority: year > month > day)
+        if (!$data['age'] || empty($data['age'])) {
+            if ($request->filled('age_year') && $request->age_year !== '') {
+                $data['age'] = $request->age_year . ' ساله';
+            } elseif ($request->filled('age_month') && $request->age_month !== '') {
+                $data['age'] = $request->age_month . ' ماه';
+            } elseif ($request->filled('age_day') && $request->age_day !== '') {
+                $data['age'] = $request->age_day . ' روز';
+            }
+        }
+
+        // Ensure age is required
+        if (empty($data['age'])) {
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.validation_error'),
+                    'errors' => ['age' => ['The age field is required.']]
+                ], 422);
+            }
+            return redirect()->back()->withErrors(['age' => 'The age field is required.'])->withInput();
+        }
+
+        // Remove age_day, age_month, age_year from data as they're not in the model
+        unset($data['age_day'], $data['age_month'], $data['age_year']);
 
         $patient = Patient::create($data);
         $appointment = null;
@@ -205,7 +234,10 @@ class PatientController extends Controller
             'last_name' => 'nullable',
             'father_name' => 'nullable',
             'phone' => 'nullable',
-            'age' => 'required',
+            'age' => 'nullable',
+            'age_day' => 'nullable|integer|min:0|max:31',
+            'age_month' => 'nullable|integer|min:0|max:11',
+            'age_year' => 'nullable|integer|min:0|max:150',
             'nid' => 'required',
             'province_id' => 'required',
             'district_id' => 'required',
@@ -230,6 +262,32 @@ class PatientController extends Controller
             'appointment_doctor_id' => 'nullable',
             'appointment_department_id' => 'nullable'
         ]);
+
+        // Format age from dropdowns if provided (priority: year > month > day)
+        if (!$data['age'] || empty($data['age'])) {
+            if ($request->filled('age_year') && $request->age_year !== '') {
+                $data['age'] = $request->age_year . ' ساله';
+            } elseif ($request->filled('age_month') && $request->age_month !== '') {
+                $data['age'] = $request->age_month . ' ماه';
+            } elseif ($request->filled('age_day') && $request->age_day !== '') {
+                $data['age'] = $request->age_day . ' روز';
+            }
+        }
+
+        // Ensure age is required
+        if (empty($data['age'])) {
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.validation_error'),
+                    'errors' => ['age' => ['The age field is required.']]
+                ], 422);
+            }
+            return redirect()->back()->withErrors(['age' => 'The age field is required.'])->withInput();
+        }
+
+        // Remove age_day, age_month, age_year from data as they're not in the model
+        unset($data['age_day'], $data['age_month'], $data['age_year']);
 
         $patient->update($data);
 

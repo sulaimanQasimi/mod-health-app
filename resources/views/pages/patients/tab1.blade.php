@@ -92,7 +92,7 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="age_tab1">{{ localize('global.age') }}</label>
-                <div class="row">
+                <div class="row g-1">
                     <div class="col-4">
                         <input type="number" class="form-control" name="age_day" id="age_day_tab1" placeholder="{{ localize('global.day') }}" min="0" max="31" onchange="updateAgeValue('tab1')" value="{{ old('age_day', isset($patient) && preg_match('/^(\d+)\s*روز/', $patient->age ?? '', $matches) ? $matches[1] : '') }}" style="padding: 0;">
                     </div>

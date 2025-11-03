@@ -90,7 +90,8 @@
                                 <th>{{ localize('global.name') }}</th>
                                 <th>{{ localize('global.last_name') }}</th>
                                 <th>{{ localize('global.father_name') }}</th>
-                                <th>{{ localize('global.province') }}</th>
+                                <th>{{ localize('global.province') }} / {{ localize('global.district') }}</th>
+                                <th>{{ localize('global.age') }}</th>
                                 <th>{{ localize('global.militery_type') }}</th>
                                 <th>{{ localize('global.phone') }}</th>
                                 <th>{{ localize('global.actions') }}</th>
@@ -104,7 +105,14 @@
                                     <td>{{ $patient->name }}</td>
                                     <td>{{ $patient->last_name }}</td>
                                     <td>{{ $patient->father_name ?? '-' }}</td>
-                                    <td>{{ $patient->province->name ?? '-' }}</td>
+                                    <td>
+                                        @php
+                                            $provinceName = $patient->province?->name_dr ?? '-';
+                                            $districtName = $patient->district?->name_dr ?? '-';
+                                            echo ($provinceName !== '-' && $districtName !== '-') ? $provinceName . ' / ' . $districtName : ($provinceName !== '-' ? $provinceName : ($districtName !== '-' ? $districtName : '-'));
+                                        @endphp
+                                    </td>
+                                    <td>{{ $patient->age ?? '-' }}</td>
                                     <td>{{ $patient->militeryType?->name ?? '-' }}</td>
                                     <td>{{ $patient->phone }}</td>
                                     <td>

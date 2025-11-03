@@ -3571,6 +3571,7 @@ return [
     'clear_filters' => 'پاک کردن فیلترها',
     'showing' => 'نمایش',
     'of' => 'از',
+    'complete_prescription' => 'تکمیل نسخه',
     'items' => 'آیتم',
     'no_medicines_found' => 'هیچ دارویی یافت نشد',
     'no_types_found' => 'هیچ نوعی یافت نشد',

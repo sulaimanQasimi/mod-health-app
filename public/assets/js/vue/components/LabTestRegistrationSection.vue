@@ -124,6 +124,7 @@
                                     <thead class="table-body-secondary">
                                         <tr>
                                             <th>{{ localize('global.number') }}</th>
+                                            <th>{{ localize('global.ref_number') }}</th>
                                             <th>{{ localize('global.patient') }}</th>
                                             <th>{{ localize('global.lab_type') }}</th>
                                             <th>{{ localize('global.category') }}</th>
@@ -140,6 +141,9 @@
                                         <tr v-for="registration in testRegistrations" :key="registration.id">
                                             <td>
                                                 <span class="badge bg-warning rounded-pill">{{ testRegistrations.indexOf(registration) + 1 }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ registration.ref_no || '—' }}</span>
                                             </td>
                                             <td>
                                                 <span v-if="registration.testable && registration.testable.patient">
@@ -178,27 +182,16 @@
                                             </td>
                                             <td dir="ltr">{{ formatDate(registration.created_at) }}</td>
                                             <td>
-                                                <div class="btn-group" role="group">
-                                                    <!-- View Parameters Button -->
-                                                    <button 
-                                                        class="btn btn-outline-primary btn-sm" 
-                                                        @click="viewParameters(registration.id)"
-                                                        :title="localize('global.view_test_parameters')"
-                                                    >
-                                                        <i class="bx bx-expand"></i>
-                                                    </button>
-                                                    
-                                                    <!-- Print Report Button -->
-                                                    <a 
-                                                        v-if="registration.status === 'completed'"
-                                                        :href="`/laboratory/reports/print/${registration.ref_no}`"
-                                                        class="btn btn-outline-info btn-sm"
-                                                        :title="localize('global.print_report')"
-                                                        target="_blank"
-                                                    >
-                                                        <i class="bx bx-printer"></i>
-                                                    </a>
-                                                </div>
+                                                <!-- Print Report Button -->
+                                                <a 
+                                                    v-if="registration.status === 'completed'"
+                                                    :href="`/laboratory/reports/print/${registration.ref_no}`"
+                                                    class="btn btn-outline-info btn-sm"
+                                                    :title="localize('global.print_report')"
+                                                    target="_blank"
+                                                >
+                                                    <i class="bx bx-printer"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -965,6 +958,7 @@ export default {
                 'global.create_and_continue': 'ایجاد و ادامه',
                 'global.create_and_close': 'ایجاد و بستن',
                 'global.number': 'شماره',
+                'global.ref_number': 'شماره مرجع',
                 'global.patient': 'بیمار',
                 'global.status': 'وضعیت',
                 'global.doctor': 'دکتر',

@@ -3719,8 +3719,8 @@ return [
     'filter_options' => 'گزینه‌های فیلتر',
     'all_users' => 'همه کاربران',
     'no_users_found' => 'هیچ کاربری یافت نشد',
-    'generate' => 'تولید',
-    'generating' => 'در حال تولید',
+    'generate' => 'ساخت',
+    'generating' => 'در حال ساخت',
     'please_fix_the_following_errors' => 'لطفاً خطاهای زیر را برطرف کنید',
     'total_appointments' => 'مجموع ملاقات‌ها',
     'total_prescriptions' => 'مجموع نسخه‌ها',
@@ -3735,5 +3735,5 @@ return [
     'no_performance_data_found' => 'هیچ داده عملکردی برای دوره انتخابی یافت نشد',
     'users_directory' => 'دایرکتوری کاربران',
     'end_date_must_be_after_start_date' => 'تاریخ پایان باید بعد از یا برابر با تاریخ شروع باشد',
-
+    'select_user' => 'انتخاب کاربر',
 ];

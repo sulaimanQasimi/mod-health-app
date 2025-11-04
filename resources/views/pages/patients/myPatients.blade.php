@@ -48,8 +48,8 @@
                                     <i class="bx bx-calendar me-1"></i> {{ localize('global.start_date') }}
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="date" name="startDate" id="startDate" 
-                                       class="form-control" required 
+                                <input type="text" name="startDate" id="startDate" 
+                                       class="form-control datepicker_dari pdp-el" required 
                                        value="{{ old('startDate', request('startDate')) }}">
                             </div>
                             <div class="col-md-3">
@@ -57,11 +57,11 @@
                                     <i class="bx bx-calendar-check me-1"></i> {{ localize('global.end_date') }}
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="date" name="endDate" id="endDate" 
-                                       class="form-control" required 
+                                <input type="text" name="endDate" id="endDate" 
+                                       class="form-control datepicker_dari pdp-el" required 
                                        value="{{ old('endDate', request('endDate')) }}">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 border">
                                 <label for="userId" class="form-label">
                                     <i class="bx bx-user me-1"></i> {{ localize('global.select_user') }}
                                 </label>
@@ -108,7 +108,7 @@
 
     <!-- Summary Statistics Cards -->
     @isset($results)
-    <div class="row mb-4" id="summaryCards">
+    <div class="row g-4 mb-4" id="summaryCards">
         @php
             $totalAppointments = collect($results)->sum('Appointments');
             $totalPrescriptions = collect($results)->sum('Prescriptions');
@@ -117,73 +117,73 @@
             $grandTotal = collect($results)->sum('Total');
         @endphp
         
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-start border-4 border-primary">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card bg-label-primary">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">{{ localize('global.total_appointments') }}</h6>
-                            <h3 class="mb-0">{{ number_format($totalAppointments) }}</h3>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>{{ localize('global.total_appointments') }}</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">{{ number_format($totalAppointments) }}</h4>
+                            </div>
                         </div>
-                        <div class="avatar avatar-lg">
-                            <span class="avatar-initial rounded bg-label-primary">
-                                <i class="bx bx-calendar fs-4"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-primary rounded p-2">
+                            <i class="bx bx-calendar bx-lg"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-start border-4 border-success">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card bg-label-success">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">{{ localize('global.total_prescriptions') }}</h6>
-                            <h3 class="mb-0">{{ number_format($totalPrescriptions) }}</h3>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>{{ localize('global.total_prescriptions') }}</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">{{ number_format($totalPrescriptions) }}</h4>
+                            </div>
                         </div>
-                        <div class="avatar avatar-lg">
-                            <span class="avatar-initial rounded bg-label-success">
-                                <i class="bx bx-receipt fs-4"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-success rounded p-2">
+                            <i class="bx bx-receipt bx-lg"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-start border-4 border-info">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card bg-label-info">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">{{ localize('global.total_lab_tests') }}</h6>
-                            <h3 class="mb-0">{{ number_format($totalLabTests) }}</h3>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>{{ localize('global.total_lab_tests') }}</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">{{ number_format($totalLabTests) }}</h4>
+                            </div>
                         </div>
-                        <div class="avatar avatar-lg">
-                            <span class="avatar-initial rounded bg-label-info">
-                                <i class="bx bx-test-tube fs-4"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-info rounded p-2">
+                            <i class="bx bx-test-tube bx-lg"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-start border-4 border-warning">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card bg-label-warning">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">{{ localize('global.total_anesthesias') }}</h6>
-                            <h3 class="mb-0">{{ number_format($totalAnesthesias) }}</h3>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>{{ localize('global.total_anesthesias') }}</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2 badge badge-center bg-warning" style="font-size: xx-large;">{{ number_format($totalAnesthesias) }}</h4>
+                            </div>
                         </div>
-                        <div class="avatar avatar-lg">
-                            <span class="avatar-initial rounded bg-label-warning">
-                                <i class="bx bx-first-aid fs-4"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-warning rounded p-2">
+                            <i class="bx bx-first-aid bx-lg"></i>
+                        </span>
                     </div>
                 </div>
             </div>

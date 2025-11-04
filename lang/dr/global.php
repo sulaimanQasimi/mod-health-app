@@ -3713,4 +3713,27 @@ return [
     'failed_to_bulk_delete' => 'حذف گروهی با خطا مواجه شد',
     'failed_to_export_prescriptions' => 'خروجی نسخه‌ها با خطا مواجه شد',
 
+    // User Performance Report
+    'user_performance_report' => 'راپور عملکرد کاربران',
+    'comprehensive_analytics_and_performance_metrics' => 'تحلیلات جامع و معیارهای عملکرد',
+    'filter_options' => 'گزینه‌های فیلتر',
+    'all_users' => 'همه کاربران',
+    'no_users_found' => 'هیچ کاربری یافت نشد',
+    'generate' => 'تولید',
+    'generating' => 'در حال تولید',
+    'please_fix_the_following_errors' => 'لطفاً خطاهای زیر را برطرف کنید',
+    'total_appointments' => 'مجموع ملاقات‌ها',
+    'total_prescriptions' => 'مجموع نسخه‌ها',
+    'total_lab_tests' => 'مجموع معاینات',
+    'total_anesthesias' => 'مجموع انستیزی‌ها',
+    'performance_distribution' => 'توزیع عملکرد',
+    'activity_breakdown' => 'تجزیه فعالیت',
+    'detailed_performance_analytics' => 'تحلیلات تفصیلی عملکرد',
+    'search_users' => 'جستجوی کاربران',
+    'user' => 'کاربر',
+    'percentage' => 'درصد',
+    'no_performance_data_found' => 'هیچ داده عملکردی برای دوره انتخابی یافت نشد',
+    'users_directory' => 'دایرکتوری کاربران',
+    'end_date_must_be_after_start_date' => 'تاریخ پایان باید بعد از یا برابر با تاریخ شروع باشد',
+
 ];

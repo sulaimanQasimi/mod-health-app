@@ -58,28 +58,6 @@
             </select>
           </div>
           
-          <div class="col-md-2">
-            <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-            <input 
-              type="text" 
-              class="form-control datepicker_dari" 
-              id="date_from" 
-              autocomplete="off"
-              readonly
-            >
-          </div>
-          
-          <div class="col-md-2">
-            <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-            <input 
-              type="text" 
-              class="form-control datepicker_dari" 
-              id="date_to" 
-              autocomplete="off"
-              readonly
-            >
-          </div>
-          
           <div class="col-md-1 d-flex align-items-end">
             <button 
               type="button" 
@@ -353,7 +331,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -387,45 +365,10 @@ const prescriptions = ref([])
 const loading = ref(false)
 const selectedPrescriptions = ref([])
 
-// Date fields as refs
-const dateFrom = ref('')
-const dateTo = ref('')
-
 const filters = reactive({
   search: '',
   token_filter: '',
-  status: '',
-  date_from: '',
-  date_to: ''
-})
-
-// Watch date refs to sync with filters
-watch(dateFrom, (newValue) => {
-  filters.date_from = newValue || ''
-  // Update jQuery datepicker if it exists
-  if (window.$) {
-    const $dateFrom = $('#date_from')
-    if ($dateFrom.length && $dateFrom.data('persianDatepicker')) {
-      const currentValue = $dateFrom.val()
-      if (currentValue !== newValue) {
-        $dateFrom.val(newValue || '')
-      }
-    }
-  }
-})
-
-watch(dateTo, (newValue) => {
-  filters.date_to = newValue || ''
-  // Update jQuery datepicker if it exists
-  if (window.$) {
-    const $dateTo = $('#date_to')
-    if ($dateTo.length && $dateTo.data('persianDatepicker')) {
-      const currentValue = $dateTo.val()
-      if (currentValue !== newValue) {
-        $dateTo.val(newValue || '')
-      }
-    }
-  }
+  status: ''
 })
 
 const sorting = reactive({
@@ -457,8 +400,6 @@ const activeFiltersCount = computed(() => {
   if (filters.search) count++
   if (filters.token_filter) count++
   if (filters.status) count++
-  if (dateFrom.value) count++
-  if (dateTo.value) count++
   return count
 })
 
@@ -509,9 +450,7 @@ const fetchPrescriptions = async () => {
       sortOrder: sorting.sortOrder,
       search: filters.search,
       token_filter: filters.token_filter,
-      status: isDeliveredRoute.value ? '1' : filters.status,
-      date_from: dateFrom.value || '',
-      date_to: dateTo.value || ''
+      status: isDeliveredRoute.value ? '1' : filters.status
     }
 
     const response = await axios.get('/prescription-ajax/prescriptions-index', { params })
@@ -541,24 +480,6 @@ const clearFilters = () => {
     search: '',
     token_filter: '',
     status: ''
-  })
-  dateFrom.value = ''
-  dateTo.value = ''
-  
-  // Clear datepicker inputs
-  nextTick(() => {
-    if (window.$) {
-      const $dateFrom = $('#date_from')
-      const $dateTo = $('#date_to')
-      
-      if ($dateFrom.length && $dateFrom.data('persianDatepicker')) {
-        $dateFrom.val('')
-      }
-      
-      if ($dateTo.length && $dateTo.data('persianDatepicker')) {
-        $dateTo.val('')
-      }
-    }
   })
   
   pagination.current_page = 1
@@ -668,109 +589,6 @@ const bulkPrint = () => {
   })
 }
 
-// Initialize jQuery date pickers
-const initializeDatepickers = () => {
-  if (!window.$ || !window.$.fn.persianDatepicker) {
-    return
-  }
-
-  // Initialize date_from
-  const $dateFrom = $('#date_from')
-  if ($dateFrom.length) {
-    // Destroy existing datepicker if it exists to avoid conflicts
-    if ($dateFrom.data('persianDatepicker')) {
-      $dateFrom.persianDatepicker('destroy')
-    }
-    
-    $dateFrom.persianDatepicker({
-      formatDate: 'YYYY-MM-DD',
-      calendar: {
-        persian: {
-          locale: 'en',
-          showHint: true,
-          leapYearMode: 'algorithmic'
-        }
-      },
-      checkDate: function(unix) {
-        return true
-      },
-      onSelect: function(unix) {
-        const $this = $(this)
-        // The datepicker automatically sets the value, get it after a small delay
-        setTimeout(() => {
-          const selectedValue = $this.val()
-          if (selectedValue) {
-            dateFrom.value = selectedValue
-            filters.date_from = selectedValue
-          }
-        }, 10)
-      }
-    })
-    
-    // Also listen to change event for better compatibility
-    $dateFrom.off('change.prescriptionDateFrom').on('change.prescriptionDateFrom', function() {
-      const selectedValue = $(this).val()
-      if (selectedValue) {
-        dateFrom.value = selectedValue
-        filters.date_from = selectedValue
-      }
-    })
-    
-    // Set initial value if exists
-    if (dateFrom.value) {
-      $dateFrom.val(dateFrom.value)
-    }
-  }
-
-  // Initialize date_to
-  const $dateTo = $('#date_to')
-  if ($dateTo.length) {
-    // Destroy existing datepicker if it exists to avoid conflicts
-    if ($dateTo.data('persianDatepicker')) {
-      $dateTo.persianDatepicker('destroy')
-    }
-    
-    $dateTo.persianDatepicker({
-      formatDate: 'YYYY-MM-DD',
-      calendar: {
-        persian: {
-          locale: 'en',
-          showHint: true,
-          leapYearMode: 'algorithmic'
-        }
-      },
-      checkDate: function(unix) {
-        return true
-      },
-      onSelect: function(unix) {
-        const $this = $(this)
-        // The datepicker automatically sets the value, get it after a small delay
-        setTimeout(() => {
-          const selectedValue = $this.val()
-          if (selectedValue) {
-            dateTo.value = selectedValue
-            filters.date_to = selectedValue
-          }
-        }, 10)
-      }
-    })
-    
-    // Also listen to change event for better compatibility
-    $dateTo.off('change.prescriptionDateTo').on('change.prescriptionDateTo', function() {
-      const selectedValue = $(this).val()
-      if (selectedValue) {
-        dateTo.value = selectedValue
-        filters.date_to = selectedValue
-      }
-    })
-    
-    // Set initial value if exists
-    if (dateTo.value) {
-      $dateTo.val(dateTo.value)
-    }
-  }
-}
-
 // Lifecycle
 onMounted(() => {
   // Seed filters from route-provided default status if present
@@ -778,22 +596,6 @@ onMounted(() => {
     filters.status = String(props.defaultStatus)
   }
   fetchPrescriptions()
-  
-  // Initialize jQuery date pickers after DOM is ready
-  nextTick(() => {
-    setTimeout(() => {
-      initializeDatepickers()
-    }, 300)
-  })
-})
-
-// Watch for route changes to reinitialize date pickers
-watch(() => route.path, () => {
-  nextTick(() => {
-    setTimeout(() => {
-      initializeDatepickers()
-    }, 300)
-  })
 })
 
 // Watch for filter changes with debounce
@@ -859,31 +661,5 @@ watch(() => filters.search, () => {
 
 .dropdown-menu {
   z-index: 1050;
-}
-
-/* Date picker styling to match Bootstrap form-control */
-:deep(.vpd-input-wrapper) {
-  width: 100%;
-}
-
-:deep(.vpd-input-wrapper input) {
-  width: 100%;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-:deep(.vpd-input-wrapper input:focus) {
-  color: #212529;
-  background-color: #fff;
-  border-color: #86b7fe;
-  outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 </style>

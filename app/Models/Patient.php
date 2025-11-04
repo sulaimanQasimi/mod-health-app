@@ -100,11 +100,11 @@ class Patient extends Model
     }
     public function province()
     {
-        return $this->hasOne(Province::class, 'id', 'province_id');
+        return $this->belongsTo(Province::class, 'province_id');
     }
     public function district()
     {
-        return $this->hasOne(District::class, 'id', 'district_id');
+        return $this->belongsTo(District::class, 'district_id');
     }
 
     public function recipient()

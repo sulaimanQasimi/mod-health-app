@@ -3738,5 +3738,6 @@ return [
     'is_doctor' => 'آیا دکتر است؟',
     'clinic_type' => 'نوع کلینیک',
     'clinic' => 'کلینیک',
+    'hospital' => 'بیمارستان',
     'select_user' => 'انتخاب کاربر',
 ];

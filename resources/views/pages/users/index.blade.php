@@ -133,6 +133,8 @@
                                 <th>{{ localize('global.name') }}</th>
                                 <th>{{ localize('global.email') }}</th>
                                 <th>{{ localize('global.category') }}</th>
+                                <th>{{ localize('global.is_doctor') }}</th>
+                                <th>{{ localize('global.clinic_type') }}</th>
                                 {{-- @can('deactivate-users') --}}
                                 <th>{{ localize('global.status') }}</th>
                                 {{-- @endcan --}}
@@ -207,6 +209,27 @@
                             data: 'category',
                             render: function(data, type, full, meta) {
                                 return data ? data.name : '-';
+                            }
+                        },
+                        {
+                            data: 'is_doctor',
+                            render: function(data, type, full, meta) {
+                                if (data === 1 || data === true) {
+                                    return '<span class="badge rounded-pill bg-label-success">' + '{{ localize("global.yes") }}' + '</span>';
+                                } else {
+                                    return '<span class="badge rounded-pill bg-label-secondary">' + '{{ localize("global.no") }}' + '</span>';
+                                }
+                            }
+                        },
+                        {
+                            data: 'clinic_type',
+                            render: function(data, type, full, meta) {
+                                if (!data) {
+                                    return '-';
+                                }
+                                var badgeClass = data === 'hospital' ? 'bg-label-primary' : 'bg-label-info';
+                                var displayText = data === 'hospital' ? '{{ localize("global.hospital") }}' : '{{ localize("global.clinic") }}';
+                                return '<span class="badge rounded-pill ' + badgeClass + '">' + displayText + '</span>';
                             }
                         },
                         {

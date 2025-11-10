@@ -40,6 +40,24 @@ class TestResultController extends Controller
 
         // Apply assignment-based access control
         $user = auth()->user();
+        $userClinicType = $user->clinic_type;
+
+        // Filter by appointment clinic_type matching user's clinic_type
+        // This applies to all routes: pending, in-progress, and completed
+        if ($userClinicType) {
+            $query->where(function($q) use ($userClinicType) {
+                // For appointments, filter by clinic_type
+                $q->where(function($subQ) use ($userClinicType) {
+                    $subQ->where('testable_type', 'App\Models\Appointment')
+                         ->whereHas('testable', function($appointmentQ) use ($userClinicType) {
+                             $appointmentQ->where('clinic_type', $userClinicType);
+                         });
+                })
+                // Include non-appointment testables (if any exist) for backward compatibility
+                ->orWhere('testable_type', '!=', 'App\Models\Appointment')
+                ->orWhereNull('testable_type');
+            });
+        }
 
         // Check if user has admin role or permission to see all sections
         if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {

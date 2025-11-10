@@ -3719,8 +3719,8 @@ return [
     'filter_options' => 'گزینه‌های فیلتر',
     'all_users' => 'همه کاربران',
     'no_users_found' => 'هیچ کاربری یافت نشد',
-    'generate' => 'تولید',
-    'generating' => 'در حال تولید',
+    'generate' => 'ساخت',
+    'generating' => 'در حال ساخت',
     'please_fix_the_following_errors' => 'لطفاً خطاهای زیر را برطرف کنید',
     'total_appointments' => 'مجموع ملاقات‌ها',
     'total_prescriptions' => 'مجموع نسخه‌ها',
@@ -3738,4 +3738,5 @@ return [
     'is_doctor' => 'آیا دکتر است؟',
     'clinic_type' => 'نوع کلینیک',
     'clinic' => 'کلینیک',
+    'select_user' => 'انتخاب کاربر',
 ];

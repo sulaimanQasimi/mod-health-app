@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Models\Section;
 use App\Models\User;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -37,7 +38,9 @@ class UserPerformanceReportController extends Controller
             'endDate' => 'required|date|after_or_equal:startDate',
             'userId' => 'nullable|integer|exists:users,id',
         ]);
-
+        $validated['startDate']=verta($validated['endDate'])->format('Y-m-d');
+        $validated['endDate']=verta($validated['endDate'])->format('Y-m-d');
+        
         try {
             $results = DB::select('CALL sp_user_performance_dynamic(?, ?, ?)', [
                 $validated['startDate'],

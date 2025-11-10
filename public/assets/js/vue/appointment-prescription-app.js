@@ -37,4 +37,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         app.mount('#icu-prescription-section-container');
     }
+    
+    // Check for hospitalization prescription container
+    const hospitalizationPrescriptionContainer = document.getElementById('hospitalization-prescription-section-container');
+    if (hospitalizationPrescriptionContainer) {
+        const hospitalization = JSON.parse(hospitalizationPrescriptionContainer.dataset.hospitalization || '{}');
+        const permissions = JSON.parse(hospitalizationPrescriptionContainer.dataset.permissions || '{}');
+        
+        const app = createApp(PrescriptionSection, {
+            hospitalization: hospitalization,
+            canAddPrescription: permissions.canAddPrescription || false,
+            canEditPrescription: permissions.canEditPrescription || false,
+            canDeletePrescription: permissions.canDeletePrescription || false,
+            appointmentCompleted: hospitalization.is_discharged == 1
+        });
+        
+        app.mount('#hospitalization-prescription-section-container');
+    }
 });

@@ -329,6 +329,10 @@ export default {
             type: Object,
             required: false
         },
+        hospitalization: {
+            type: Object,
+            required: false
+        },
         canAddPrescription: {
             type: Boolean,
             default: false
@@ -374,13 +378,17 @@ export default {
     },
     computed: {
         contextData() {
-            return this.icu || this.appointment;
+            return this.icu || this.hospitalization || this.appointment;
         },
         contextType() {
-            return this.icu ? 'icu' : 'appointment';
+            if (this.icu) return 'icu';
+            if (this.hospitalization) return 'hospitalization';
+            return 'appointment';
         },
         contextId() {
-            return this.icu ? this.icu.id : this.appointment.id;
+            if (this.icu) return this.icu.id;
+            if (this.hospitalization) return this.hospitalization.id;
+            return this.appointment.id;
         }
     },
     mounted() {
@@ -475,16 +483,17 @@ export default {
                  }));
 
                  const formData = {
-                     appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id || this.contextData.id,
+                     appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id || (this.hospitalization ? this.hospitalization.appointment?.id || this.hospitalization.appointment_id : this.contextData.id),
                      patient_id: this.contextData.patient_id,
                      doctor_id: this.contextData.doctor_id,
                      branch_id: this.contextData.branch_id,
                      i_c_u_id: this.icu ? this.icu.id : null,
+                     hospitalization_id: this.hospitalization ? this.hospitalization.id : null,
                      prescription_items: transformedItems
                  };
 
-                 // Validate appointment_id is present
-                 if (!formData.appointment_id) {
+                 // Validate appointment_id is present (unless it's a hospitalization without appointment)
+                 if (!formData.appointment_id && !this.hospitalization) {
                      this.showToast('شناسه نوبت یافت نشد. لطفاً صفحه را مجدداً بارگذاری کنید.', 'error');
                      this.loading = false;
                      return;

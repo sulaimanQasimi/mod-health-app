@@ -123,8 +123,21 @@
                                     <div id="prescriptionCollapse" class="accordion-collapse collapse" aria-labelledby="prescriptionHeading"
                                         data-bs-parent="#prescriptionAccordion">
                                         <div class="accordion-body">
-                                            <div id="prescription-section">
-                                                <p>Loading prescription section...</p>
+                                            <!-- Prescription Section Vue Component -->
+                                            <div id="hospitalization-prescription-section-container" 
+                                                 data-hospitalization='@json($hospitalization)'
+                                                 data-permissions='@json([
+                                                     "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                                     "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                                     "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                                 ])'>
+                                                <!-- Fallback content while Vue loads -->
+                                                <div class="text-center py-4">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                    <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -303,9 +316,15 @@
                                                 <td>
                                                     <a href="{{ route('advices.edit', $advice->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('advices.destroy', $advice->id) }}"><span><i
+                                                    <a href="{{ route('advices.destroy', $advice->id) }}"
+                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-advice-form-{{$advice->id}}').submit(); }"
+                                                        class="text-danger" style="cursor: pointer;"><span><i
                                                                 class="bx bx-trash text-danger"></i></span></a>
-
+                                                    <form id="delete-advice-form-{{$advice->id}}" action="{{ route('advices.destroy', $advice->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @empty
@@ -326,18 +345,13 @@
                             </div>
                             <!-- End Advice Accordion -->
 
-                            <!-- Lab Section Component -->
-                            <x-lab-section 
+                            <!-- Lab Test Registration Section Component -->
+                            <x-lab-test-registration-section 
                                 :entity="$hospitalization"
                                 entity-type="hospitalization"
                                 :entity-id="$hospitalization->id"
-                                :can-add-lab="auth()->user()->can('add-patient-labs')"
-                                :can-edit-lab="auth()->user()->can('edit-lab-items')"
-                                :can-delete-lab="auth()->user()->can('delete-lab-items')"
+                                :can-add-test-registration="auth()->user()->can('register-patient-tests')"
                                 :appointment-completed="$hospitalization->is_discharged == 1"
-                                accordion-id="hospitalizationLabAccordion"
-                                collapse-id="hospitalizationLabCollapse"
-                                header-id="hospitalizationLabHeader"
                             />
                             {{-- icu starts here --}}
                             <!-- ICU Accordion -->
@@ -433,9 +447,15 @@
                                                 <td>
                                                     <a href="{{ route('icus.edit', $icu->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('icus.destroy', $icu->id) }}"><span><i
+                                                    <a href="{{ route('icus.destroy', $icu->id) }}"
+                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-icu-form-{{$icu->id}}').submit(); }"
+                                                        class="text-danger" style="cursor: pointer;"><span><i
                                                                 class="bx bx-trash text-danger"></i></span></a>
-
+                                                    <form id="delete-icu-form-{{$icu->id}}" action="{{ route('icus.destroy', $icu->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @empty
@@ -666,9 +686,15 @@
                                                 <td>
                                                     <a href="{{ route('anesthesias.edit', $anesthesia->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>
-                                                    <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"><span><i
+                                                    <a href="{{ route('anesthesias.destroy', $anesthesia->id) }}"
+                                                        onclick="event.preventDefault(); if(confirm('{{ localize('global.are_you_sure_delete') }}')) { document.getElementById('delete-anesthesia-form-{{$anesthesia->id}}').submit(); }"
+                                                        class="text-danger" style="cursor: pointer;"><span><i
                                                                 class="bx bx-trash text-danger"></i></span></a>
-
+                                                    <form id="delete-anesthesia-form-{{$anesthesia->id}}" action="{{ route('anesthesias.destroy', $anesthesia->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @empty
@@ -934,7 +960,7 @@
 
 @section('scripts')
     @vite('public/assets/js/vue/visit-app.js')
-    @vite('public/assets/js/vue/prescription-app.js')
+    @vite('public/assets/js/vue/appointment-prescription-app.js')
     <script>
         function loadLabTypeTests() {
             var labTypeId = document.getElementById('lab_type_id').value;
@@ -1222,6 +1248,15 @@
                     });
             }
         }
+        // Set hospitalization data immediately (before DOM ready)
+        window.hospitalizationData = {
+            id: {{ $hospitalization->id }},
+            is_discharged: {{ $hospitalization->is_discharged ? 'true' : 'false' }},
+            patient_id: {{ $hospitalization->patient_id }},
+            doctor_id: {{ $hospitalization->doctor_id }},
+            branch_id: {{ $hospitalization->branch_id }}
+        };
+        
         $(document).ready(function () {
             // Load all sections via AJAX
             $('#nursing-assessment-section').load('{{ route('nursing-assessments.section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
@@ -1230,20 +1265,6 @@
             $('#medication-administration-records-section').load('{{ route('hospitalizations.medication-administration-records-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#vital-signs-section').load('{{ route('hospitalizations.vital-signs-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#nutrition-care-section').load('{{ route('hospitalizations.nutrition-care-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
-            
-            // Initialize Visit Vue component
-            // The visit-app.js will handle the Vue component mounting
-            // We just need to ensure the data is available
-            window.hospitalizationData = {
-                id: {{ $hospitalization->id }},
-                is_discharged: {{ $hospitalization->is_discharged ? 'true' : 'false' }},
-                patient_id: {{ $hospitalization->patient_id }},
-                doctor_id: {{ $hospitalization->doctor_id }},
-                branch_id: {{ $hospitalization->branch_id }}
-            };
-            
-            console.log('Hospitalization data set:', window.hospitalizationData);
-            console.log('Visit section element:', document.getElementById('visit-section'));
         });
 
 

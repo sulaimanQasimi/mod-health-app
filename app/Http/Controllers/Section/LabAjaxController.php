@@ -10,6 +10,7 @@ use App\Models\ICU;
 use App\Models\Lab;
 use App\Models\LabItem;
 use App\Models\LabType;
+use App\Models\PatientTestRegistration;
 use App\Models\UnderReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -150,28 +151,66 @@ class LabAjaxController extends Controller
     public function loadList(int $id, string $type = "appointment")
     {
         try {
-            $labs = Lab::query();
-            
-            switch($type) {
-                case 'appointment':
-                    $labs->where('appointment_id', $id);
-                    break;
-                case 'icu':
-                    $labs->where('i_c_u_id', $id);
-                    break;
-                case 'hospitalization':
-                    $labs->where('hospitalization_id', $id);
-                    break;
-                case 'under_review':
-                    $labs->where('under_review_id', $id);
-                    break;
-                default:
-                    $labs->where('appointment_id', $id);
+            // For hospitalizations, use PatientTestRegistration (polymorphic)
+            if ($type === 'hospitalization') {
+                $registrations = PatientTestRegistration::where('testable_type', 'App\Models\Hospitalization')
+                    ->where('testable_id', $id)
+                    ->with(['labType', 'doctor', 'testable.patient', 'results.parameter.directLabType'])
+                    ->latest()
+                    ->get();
+                
+                // Transform to match expected format for LabSection component (same as Lab model)
+                $labs = $registrations->map(function ($registration) {
+                    return (object) [
+                        'id' => $registration->id,
+                        'lab_type' => $registration->labType ? (object) [
+                            'id' => $registration->labType->id,
+                            'name' => $registration->labType->name
+                        ] : null,
+                        'patient' => $registration->testable && $registration->testable->patient ? (object) [
+                            'id' => $registration->testable->patient->id,
+                            'name' => $registration->testable->patient->name ?? ($registration->testable->patient->first_name . ' ' . $registration->testable->patient->last_name)
+                        ] : null,
+                        'doctor' => $registration->doctor ? (object) [
+                            'id' => $registration->doctor->id,
+                            'name' => $registration->doctor->name
+                        ] : null,
+                        'status' => $registration->status === 'completed',
+                        'created_at' => $registration->created_at,
+                        'lab_items' => $registration->results->map(function ($result) {
+                            return (object) [
+                                'id' => $result->id,
+                                'lab_type' => $result->parameter && $result->parameter->directLabType ? (object) [
+                                    'id' => $result->parameter->directLabType->id,
+                                    'name' => $result->parameter->directLabType->name
+                                ] : null,
+                                'status' => $result->value !== null && $result->value !== ''
+                            ];
+                        })
+                    ];
+                });
+            } else {
+                // For appointments, ICU, and under_review, use the old Lab model (if table exists)
+                $labs = \App\Models\Lab::query();
+                
+                switch($type) {
+                    case 'appointment':
+                        $labs->where('appointment_id', $id);
+                        break;
+                    case 'icu':
+                        $labs->where('i_c_u_id', $id);
+                        break;
+                    case 'under_review':
+                        $labs->where('under_review_id', $id);
+                        break;
+                    default:
+                        $labs->where('appointment_id', $id);
+                }
+                
+                $labs = $labs->with(['labType', 'patient', 'doctor', 'labItems.labType'])
+                    ->latest()
+                    ->get();
             }
-            
-            $labs = $labs->with(['labType', 'patient', 'doctor', 'labTypeSection.relatedSection', 'labItems.labType'])
-                ->latest()
-                ->get();
                 
             return response()->json([
                 'success' => true,
@@ -196,7 +235,7 @@ class LabAjaxController extends Controller
                 'labItems.labType',
                 'patient',
                 'doctor',
-                'labTypeSection.relatedSection'
+                'labType'
             ])->findOrFail($labId);
 
             return response()->json([

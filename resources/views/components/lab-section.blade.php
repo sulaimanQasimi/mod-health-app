@@ -62,7 +62,4 @@
 </div>
 
 <!-- Include Vite script for Lab Section -->
-<script>
-console.log("Lab Section: Script block loaded");
-</script>
 @vite(['public/assets/js/vue/lab-section.js'])

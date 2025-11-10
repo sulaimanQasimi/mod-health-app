@@ -75,6 +75,7 @@
                                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#visitsCollapse" aria-expanded="true" aria-controls="visitsCollapse">
                                             <i class="bx bx-glasses p-1 me-2"></i>{{ localize('global.visits') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->visits ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="visitsCollapse" class="accordion-collapse collapse show" aria-labelledby="visitsHeading"
@@ -96,6 +97,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#vitalSignsCollapse" aria-expanded="false" aria-controls="vitalSignsCollapse">
                                             <i class="bx bx-heart p-1 me-2"></i>{{ localize('global.vital_signs') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->vitalSigns ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="vitalSignsCollapse" class="accordion-collapse collapse" aria-labelledby="vitalSignsHeading"
@@ -115,6 +117,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#prescriptionCollapse" aria-expanded="false" aria-controls="prescriptionCollapse">
                                             <i class="bx bx-notepad p-1 me-2"></i>{{ localize('global.prescription') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->prescription ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="prescriptionCollapse" class="accordion-collapse collapse" aria-labelledby="prescriptionHeading"
@@ -136,6 +139,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#diabetesChartsCollapse" aria-expanded="false" aria-controls="diabetesChartsCollapse">
                                             <i class="bx bx-line-chart p-1 me-2"></i>{{ localize('global.diabetes_charts') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->diabetesCharts ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="diabetesChartsCollapse" class="accordion-collapse collapse" aria-labelledby="diabetesChartsHeading"
@@ -155,6 +159,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#nursingNotesCollapse" aria-expanded="false" aria-controls="nursingNotesCollapse">
                                             <i class="bx bx-note p-1 me-2"></i>{{ localize('global.nursing_notes') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->nurseNotes ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="nursingNotesCollapse" class="accordion-collapse collapse" aria-labelledby="nursingNotesHeading"
@@ -174,6 +179,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#medicationRecordsCollapse" aria-expanded="false" aria-controls="medicationRecordsCollapse">
                                             <i class="bx bx-pill p-1 me-2"></i>{{ localize('global.medication_administration_records') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->medicationAdministrationRecords ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="medicationRecordsCollapse" class="accordion-collapse collapse" aria-labelledby="medicationRecordsHeading"
@@ -193,6 +199,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#nutritionCareCollapse" aria-expanded="false" aria-controls="nutritionCareCollapse">
                                             <i class="bx bx-food-menu p-1 me-2"></i>{{ localize('global.nutrition_care') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->nutritionCares ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="nutritionCareCollapse" class="accordion-collapse collapse" aria-labelledby="nutritionCareHeading"
@@ -212,6 +219,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#adviceCollapse" aria-expanded="false" aria-controls="adviceCollapse">
                                             <i class="bx bx-command p-1 me-2"></i>{{ localize('global.advice') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->advices ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="adviceCollapse" class="accordion-collapse collapse" aria-labelledby="adviceHeading"
@@ -339,6 +347,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#icuCollapse" aria-expanded="false" aria-controls="icuCollapse">
                                             <i class="bx bx-tv p-1 me-2"></i>{{ localize('global.refere_to_icu') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->icu ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="icuCollapse" class="accordion-collapse collapse" aria-labelledby="icuHeading"
@@ -457,6 +466,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#anesthesiaCollapse" aria-expanded="false" aria-controls="anesthesiaCollapse">
                                             <i class="bx bx-first-aid p-1 me-2"></i>{{ localize('global.refere_to_anasthesia') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->anesthesias ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="anesthesiaCollapse" class="accordion-collapse collapse" aria-labelledby="anesthesiaHeading"
@@ -685,6 +695,7 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#complaintCollapse" aria-expanded="false" aria-controls="complaintCollapse">
                                             <i class="bx bx-walk p-1 me-2"></i>{{ localize('global.create_complaint') }}
+                                            <span class="badge bg-primary ms-2">{{ count($hospitalization->complaints ?? []) }}</span>
                                         </button>
                                     </h2>
                                     <div id="complaintCollapse" class="accordion-collapse collapse" aria-labelledby="complaintHeading"

@@ -3738,7 +3738,7 @@ return [
     'is_doctor' => 'آیا دکتر است؟',
     'clinic_type' => 'نوع کلینیک',
     'clinic' => 'کلینیک',
-    'hospital' => 'بیمارستان',
+    'hospital' => 'شفاخانه',
     'select_user' => 'انتخاب کاربر',
     'assign' => 'اختصاص',
     'invalid_doctor_selection' => 'انتخاب دکتر نامعتبر است',

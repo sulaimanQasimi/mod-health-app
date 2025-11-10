@@ -303,8 +303,8 @@ class AppointmentController extends Controller
         }
 
         if ($request->ajax()) {
-            $appointments = Appointment::where('department_id', $userDepartment)
-                ->whereNull('doctor_id') // Only appointments without assigned doctor
+            $appointments = Appointment::whereNull('doctor_id') 
+                ->where('clinic_type',auth()->user()->clinic_type)
                 ->with(['patient', 'department', 'referringDoctor'])
                 ->latest()
                 ->get()
@@ -326,8 +326,8 @@ class AppointmentController extends Controller
             }
         }
 
-        $appointments = Appointment::where('department_id', $userDepartment)
-            ->whereNull('doctor_id')
+        $appointments = Appointment::whereNull('doctor_id')
+            ->where('clinic_type',auth()->user()->clinic_type)
             ->with(['patient', 'department', 'referringDoctor'])
             ->latest()
             ->get();
@@ -346,13 +346,64 @@ class AppointmentController extends Controller
             return redirect()->back()->with('error', localize('global.appointment_already_assigned'));
         }
 
-        // Assign the current doctor to the appointment
+        // Get doctor_id from request, or use current user's id
+        $doctorId = $request->input('doctor_id', auth()->user()->id);
+
+        // Validate that the selected doctor exists and is a doctor
+        $doctor = User::where('id', $doctorId)
+            ->where('is_doctor', 1)
+            ->where('clinic_type', $appointment->clinic_type)
+            ->where('department_id', $appointment->department_id)
+            ->first();
+
+        if (!$doctor) {
+            return redirect()->back()->with('error', localize('global.invalid_doctor_selection'));
+        }
+
+        // Assign the selected doctor to the appointment
         $appointment->update([
-            'doctor_id' => auth()->user()->id
+            'doctor_id' => $doctorId
         ]);
 
-        return redirect()->route('appointments.show', $appointment->id)
+        return redirect()->back()
             ->with('success', localize('global.appointment_accepted_successfully'));
+    }
+
+    public function getDoctorsByClinicType()
+    {
+        try {
+            $clinicType = auth()->user()->clinic_type;
+            // Call the stored procedure
+            $results = DB::select('CALL only_get_docters_base_on_clinic_type(?, ?, ?, ?)', [
+                $clinicType,
+               1,
+                null,
+                null
+            ]);
+            
+            // Map the results to the expected format
+            $doctors = array_map(function ($doctor) {
+                // Use full_name from stored procedure if available, otherwise concatenate
+                $fullName = $doctor->full_name ?? trim(($doctor->name ?? '') . ' ' . ($doctor->last_name ?? ''));
+                
+                return [
+                    'id' => $doctor->id,
+                    'name' => $fullName,
+                    'email' => $doctor->email ?? ''
+                ];
+            }, $results);
+            
+            return response()->json([
+                'success' => true,
+                'doctors' => $doctors
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading doctors: ' . $e->getMessage(),
+                'doctors' => []
+            ], 500);
+        }
     }
 
     public function report()

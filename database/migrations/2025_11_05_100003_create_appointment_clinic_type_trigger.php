@@ -20,12 +20,12 @@ return new class extends Migration
             BEFORE INSERT ON appointments
             FOR EACH ROW
             BEGIN
-                -- Set clinic_type from doctor\'s clinic_type if doctor_id is provided
-                IF NEW.doctor_id IS NOT NULL THEN
+                -- Set clinic_type from doctor\'s clinic_type if created_by is provided
+                IF NEW.created_by IS NOT NULL THEN
                     SET NEW.clinic_type = (
                         SELECT clinic_type 
                         FROM users 
-                        WHERE id = NEW.doctor_id 
+                        WHERE id = NEW.created_by 
                         AND deleted_at IS NULL
                         LIMIT 1
                     );
@@ -42,11 +42,11 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 -- Update clinic_type if doctor_id has changed
-                IF NEW.doctor_id IS NOT NULL AND (OLD.doctor_id IS NULL OR NEW.doctor_id != OLD.doctor_id) THEN
+                IF NEW.created_by IS NOT NULL AND (OLD.created_by IS NULL OR NEW.created_by != OLD.created_by) THEN
                     SET NEW.clinic_type = (
                         SELECT clinic_type 
                         FROM users 
-                        WHERE id = NEW.doctor_id 
+                        WHERE id = NEW.created_by 
                         AND deleted_at IS NULL
                         LIMIT 1
                     );

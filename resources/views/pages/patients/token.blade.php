@@ -72,6 +72,10 @@
             {{ $name  }}
             <br>
             {{ $appointment?->department?->name }}
+            @if($appointment?->clinic_type)
+                <br>
+                <strong>{{ localize('global.clinic_type') }}: {{ $appointment->clinic_type == 'hospital' ? localize('global.hospital') : localize('global.clinic') }}</strong>
+            @endif
             @if($appointment?->department?->room_number)
                 <br>
                 <strong>{{ localize('global.room_number') }}: {{ $appointment->department->room_number }}</strong>

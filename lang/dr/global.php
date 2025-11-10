@@ -3740,4 +3740,7 @@ return [
     'clinic' => 'کلینیک',
     'hospital' => 'بیمارستان',
     'select_user' => 'انتخاب کاربر',
+    'assign' => 'اختصاص',
+    'invalid_doctor_selection' => 'انتخاب دکتر نامعتبر است',
+    'error_loading_doctors' => 'خطا در بارگذاری داکتران',
 ];

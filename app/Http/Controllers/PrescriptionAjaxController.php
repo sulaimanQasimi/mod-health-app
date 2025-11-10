@@ -339,8 +339,17 @@ class PrescriptionAjaxController extends Controller
     public function getPrescriptionsIndex(Request $request)
     {
         try {
+            $userClinicType = auth()->user()->clinic_type;
+            
             $query = Prescription::where('branch_id', auth()->user()->branch_id)
                 ->with(['patient', 'doctor', 'appointment.department']);
+
+            // Filter by appointment clinic_type matching user's clinic_type
+            if ($userClinicType) {
+                $query->whereHas('appointment', function ($q) use ($userClinicType) {
+                    $q->where('clinic_type', $userClinicType);
+                });
+            }
 
             // Search by patient name or ID card
             if ($request->filled('search')) {

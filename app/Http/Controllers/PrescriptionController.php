@@ -23,8 +23,17 @@ class PrescriptionController extends Controller
      */
     public function index(Request $request)
     {
+        $userClinicType = auth()->user()->clinic_type;
+        
         $query = Prescription::where('branch_id', auth()->user()->branch_id)
             ->with(['patient', 'doctor', 'appointment.department']);
+
+        // Filter by appointment clinic_type matching user's clinic_type
+        if ($userClinicType) {
+            $query->whereHas('appointment', function ($q) use ($userClinicType) {
+                $q->where('clinic_type', $userClinicType);
+            });
+        }
 
         // Search by patient name
         if ($request->filled('search')) {
@@ -91,7 +100,19 @@ class PrescriptionController extends Controller
      */
     public function delivered()
     {
-        $prescriptions = Prescription::where('branch_id', auth()->user()->branch_id)->where('is_completed', true)->latest()->paginate(10);
+        $userClinicType = auth()->user()->clinic_type;
+        
+        $query = Prescription::where('branch_id', auth()->user()->branch_id)
+            ->where('is_completed', true);
+
+        // Filter by appointment clinic_type matching user's clinic_type
+        if ($userClinicType) {
+            $query->whereHas('appointment', function ($q) use ($userClinicType) {
+                $q->where('clinic_type', $userClinicType);
+            });
+        }
+
+        $prescriptions = $query->latest()->paginate(10);
         return view('pages.prescriptions.delivered', compact('prescriptions'));
     }
 

@@ -260,11 +260,22 @@ class LabTypeController extends Controller
      */
     public function getLabTypesForSelect()
     {
-        $labTypes = Cache::remember('lab_types_select', 300, function () {
-            return LabType::select('id', 'name')->orderBy('name')->get();
-        });
-        
-        return response()->json($labTypes);
+        try {
+            $labTypes = Cache::remember('lab_types_select', 300, function () {
+                return LabType::select('id', 'name')->orderBy('name')->get();
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => $labTypes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch lab types',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }

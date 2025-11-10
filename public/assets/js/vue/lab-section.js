@@ -19,24 +19,25 @@ function showFallbackContent() {
     }
 }
 
+// Store mounted app instances to prevent double mounting
+const mountedLabApps = new WeakMap()
+
 // Function to initialize the lab section
 function initializeLabSection() {
-    console.log('Lab Section: Initializing...')
     const labContainer = document.getElementById('lab-section-container')
-    console.log('Lab Section: Container found:', labContainer)
     
     if (labContainer) {
+        // Check if already mounted using WeakMap
+        if (mountedLabApps.has(labContainer)) {
+            return; // Already initialized
+        }
+        
         try {
             const entity = JSON.parse(labContainer.dataset.entity || '{}')
             const permissions = JSON.parse(labContainer.dataset.permissions || '{}')
             const entityType = labContainer.dataset.entityType || 'appointment'
             const entityId = labContainer.dataset.entityId || entity.id
             const appointmentCompleted = labContainer.dataset.appointmentCompleted === 'true'
-            
-            console.log('Lab Section: Entity:', entity)
-            console.log('Lab Section: Permissions:', permissions)
-            console.log('Lab Section: Entity Type:', entityType)
-            console.log('Lab Section: Entity ID:', entityId)
             
             const labApp = createApp(LabSection, {
                 appointment: entity,
@@ -50,7 +51,9 @@ function initializeLabSection() {
             
             labApp.component('Multiselect', Multiselect)
             labApp.mount('#lab-section-container')
-            console.log('Lab Section: Vue app mounted successfully')
+            
+            // Mark as mounted
+            mountedLabApps.set(labContainer, labApp)
             
             // Hide loading fallback
             const loadingFallback = document.getElementById('lab-loading-fallback')
@@ -68,31 +71,35 @@ function initializeLabSection() {
     }
 }
 
+// Function to wait for element and initialize
+function waitForLabContainer(maxAttempts = 50, attempt = 0) {
+    const labContainer = document.getElementById('lab-section-container')
+    
+    if (labContainer) {
+        try {
+            initializeLabSection()
+        } catch (error) {
+            console.error('Lab Section: Initialization failed:', error)
+            showFallbackContent()
+        }
+    } else if (attempt < maxAttempts) {
+        // Retry after 100ms
+        setTimeout(() => waitForLabContainer(maxAttempts, attempt + 1), 100)
+    } else {
+        console.error('Lab Section: Container not found after max attempts')
+        showFallbackContent()
+    }
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Lab Section: DOM Content Loaded')
-    
-    // Set a timeout to show fallback if Vue doesn't load within 5 seconds
-    const timeoutId = setTimeout(() => {
-        console.warn('Lab Section: Timeout reached, showing fallback content')
-        showFallbackContent()
-    }, 5000)
-    
-    // Try to initialize immediately
-    try {
-        initializeLabSection()
-        clearTimeout(timeoutId) // Clear timeout if successful
-    } catch (error) {
-        console.error('Lab Section: Initialization failed:', error)
-        showFallbackContent()
-    }
+    waitForLabContainer()
 })
 
-// Also try to initialize after a short delay in case DOM isn't fully ready
+// Also try after a short delay in case scripts load in different order
 setTimeout(() => {
     const labContainer = document.getElementById('lab-section-container')
-    if (labContainer && labContainer.innerHTML.includes('در حال بارگذاری')) {
-        console.log('Lab Section: Retrying initialization after delay')
-        initializeLabSection()
+    if (labContainer && !mountedLabApps.has(labContainer)) {
+        waitForLabContainer()
     }
-}, 1000)
+}, 500)

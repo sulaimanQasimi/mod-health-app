@@ -378,12 +378,16 @@ export default {
                 });
                 const data = await response.json();
                 
-                if (data.success) {
+                // Handle both response formats: direct array or {success: true, data: [...]}
+                if (Array.isArray(data)) {
+                    this.labTypes = data;
+                } else if (data.success && data.data) {
                     this.labTypes = data.data;
                 } else {
-                    this.showError(data.message);
+                    this.showError(data.message || 'Failed to load lab types');
                 }
             } catch (error) {
+                console.error('Error loading lab types:', error);
                 this.showError('Failed to load lab types');
             }
         },

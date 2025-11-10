@@ -154,7 +154,7 @@ class PrescriptionAjaxController extends Controller
     }
 
     /**
-     * Get prescriptions for a specific appointment or ICU
+     * Get prescriptions for a specific appointment, ICU, or hospitalization
      */
     public function getAppointmentPrescriptions($id, $type = 'appointment')
     {
@@ -163,6 +163,8 @@ class PrescriptionAjaxController extends Controller
             
             if ($type === 'icu') {
                 $query->where('i_c_u_id', $id);
+            } elseif ($type === 'hospitalization') {
+                $query->where('hospitalization_id', $id);
             } else {
                 $query->where('appointment_id', $id);
             }

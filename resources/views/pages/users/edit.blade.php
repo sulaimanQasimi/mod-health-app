@@ -129,16 +129,28 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.category') }}</label>
-                                        <select name="category_id" class="form-control select2">
-                                            <option value="">{{ localize('global.select_category') }}</option>
-                                            @foreach($categories as $category)
-                                                <option value="{{ $category->id }}" {{ old('category_id', $user->category_id) == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->name }}
-                                                </option>
-                                            @endforeach
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="is_doctor" id="is_doctor" value="1" {{ old('is_doctor', $user->is_doctor) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_doctor">
+                                                {{ localize('global.is_doctor') }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ localize('global.clinic_type') }}</label>
+                                        <select name="clinic_type" class="form-control select2">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="hospital" {{ old('clinic_type', $user->clinic_type) == 'hospital' ? 'selected' : '' }}>{{ localize('global.hospital') }}</option>
+                                            <option value="clinic" {{ old('clinic_type', $user->clinic_type) == 'clinic' ? 'selected' : '' }}>{{ localize('global.clinic') }}</option>
                                         </select>
                                     </div>
+                                    @if ($errors->first('clinic_type'))
+                                        <div class="display-error">
+                                            {{ $errors->first('clinic_type') }}
+                                        </div>
+                                    @endif
                                 </div>
 
                             </div>

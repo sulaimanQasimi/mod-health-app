@@ -84,6 +84,8 @@ class UserController extends Controller
         $user->department_id = $request->department_id;
         $user->section_id = $request->section_id;
         $user->category_id = $request->category_id;
+        $user->is_doctor = $request->has('is_doctor') ? true : false;
+        $user->clinic_type = $request->clinic_type;
         $user->password = Hash::make($request->password);
 
         $user->save();
@@ -140,6 +142,9 @@ class UserController extends Controller
             // Remove the password from the input if not provided
             $request->request->remove('password');
         }
+    
+        // Handle checkbox - if not present, set to false
+        $request->merge(['is_doctor' => $request->has('is_doctor') ? true : false]);
     
         $user->update($request->input());
     

@@ -3735,5 +3735,7 @@ return [
     'no_performance_data_found' => 'هیچ داده عملکردی برای دوره انتخابی یافت نشد',
     'users_directory' => 'دایرکتوری کاربران',
     'end_date_must_be_after_start_date' => 'تاریخ پایان باید بعد از یا برابر با تاریخ شروع باشد',
-
+    'is_doctor' => 'آیا دکتر است؟',
+    'clinic_type' => 'نوع کلینیک',
+    'clinic' => 'کلینیک',
 ];

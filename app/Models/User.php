@@ -28,6 +28,8 @@ class User extends Authenticatable
         'department_id',
         'section_id',
         'category_id',
+        'is_doctor',
+        'clinic_type',
     ];
 
     /**
@@ -48,6 +50,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'recipients' => 'array',
+        'is_doctor' => 'boolean',
     ];
 
     public function branch()

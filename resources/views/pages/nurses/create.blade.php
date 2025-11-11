@@ -91,8 +91,8 @@
 
                                 <div class="mb-3">
                                     <label for="date_of_birth" class="form-label">{{ localize('global.date_of_birth') }}</label>
-                                    <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" 
-                                           id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth') }}">
+                                    <input type="text" class="form-control datepicker_dari @error('date_of_birth') is-invalid @enderror" 
+                                           id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth') }}" readonly>
                                     @error('date_of_birth')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -221,7 +221,7 @@
 
                                 <div class="mb-3">
                                     <label for="date_of_joining" class="form-label">{{ localize('global.date_of_joining') }}</label>
-                                    <input type="date" class="form-control @error('date_of_joining') is-invalid @enderror" 
+                                    <input type="text" class="form-control datepicker_dari @error('date_of_joining') is-invalid @enderror" 
                                            id="date_of_joining" name="date_of_joining" value="{{ old('date_of_joining') }}">
                                     @error('date_of_joining')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -250,10 +250,27 @@
 
 @push('scripts')
 <script>
-    // Set maximum date for date of birth to today
-    document.getElementById('date_of_birth').max = new Date().toISOString().split('T')[0];
-    
-    // Set maximum date for date of joining to today
-    document.getElementById('date_of_joining').max = new Date().toISOString().split('T')[0];
+    $(document).ready(function() {
+        // Initialize Persian date picker for date of birth
+        $('#date_of_birth').persianDatepicker({
+            formatDate: 'YYYY-MM-DD',
+            calendar: {
+                persian: {
+                    locale: 'en',
+                    showHint: true,
+                    leapYearMode: 'algorithmic'
+                }
+            },
+            checkDate: function(unix) {
+                // Set maximum date to today (date of birth cannot be in the future)
+                var today = new Date();
+                var todayUnix = today.getTime();
+                return unix <= todayUnix;
+            }
+        });
+        
+        // Set maximum date for date of joining to today
+        document.getElementById('date_of_joining').max = new Date().toISOString().split('T')[0];
+    });
 </script>
 @endpush

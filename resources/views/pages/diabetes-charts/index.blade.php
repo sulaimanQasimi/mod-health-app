@@ -63,10 +63,10 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" placeholder="{{ localize('global.start_date') }}">
+                                    <input type="text" name="start_date" class="form-control datepicker_dari" value="{{ request('start_date') }}" placeholder="{{ localize('global.start_date') }}" readonly>
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" placeholder="{{ localize('global.end_date') }}">
+                                    <input type="text" name="end_date" class="form-control datepicker_dari" value="{{ request('end_date') }}" placeholder="{{ localize('global.end_date') }}" readonly>
                                 </div>
                                 <div class="col-md-2">
                                     <select name="nurse_id" class="form-select">
@@ -345,5 +345,40 @@
     setTimeout(function() {
         $('.alert').fadeOut('slow');
     }, 5000);
+
+    // Initialize Persian date picker for date inputs
+    $(document).ready(function() {
+        $('.datepicker_dari').each(function() {
+            var $this = $(this);
+            
+            // Get existing value
+            var existingValue = $this.val();
+            
+            // Initialize Persian date picker
+            $this.persianDatepicker({
+                formatDate: 'YYYY-MM-DD',
+                calendar: {
+                    persian: {
+                        locale: 'en',
+                        showHint: true,
+                        leapYearMode: 'algorithmic'
+                    }
+                },
+                checkDate: function(unix) {
+                    return true;
+                },
+                onSelect: function() {
+                    // Ensure the value is set correctly
+                    $this.trigger('change');
+                }
+            });
+            
+            // Set the value if it exists (convert from YYYY-MM-DD format)
+            if (existingValue) {
+                // The date picker will handle the conversion
+                $this.val(existingValue);
+            }
+        });
+    });
 </script>
 @endpush

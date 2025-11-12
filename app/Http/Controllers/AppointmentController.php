@@ -226,18 +226,19 @@ class AppointmentController extends Controller
 
     public function doctorAppointments(Request $request)
     {
+        // Get appointments where current user is the assigned doctor
+        $query = Appointment::where('doctor_id', auth()->user()->id)
+            ->where('is_completed', '0')
+            ->with(['patient', 'doctor', 'referringDoctor', 'processedBy'])
+            ->latest();
+
         if ($request->ajax()) {
-            $appointments = Appointment::where('created_by', auth()->user()->id)
-                ->where('is_completed', '0')
-                ->with(['patient', 'doctor', 'referringDoctor'])
-                ->latest()
-                ->get()
+            $appointments = $query->get()
                 ->map(function ($appointment) {
-                    $appointment->jalali_date =Dcter::GregorianToJalali($appointment->date);
+                    $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
                     return $appointment;
                 });
 
-                
             if ($appointments) {
                 return response()->json([
                     'data' => $appointments,
@@ -251,11 +252,7 @@ class AppointmentController extends Controller
             }
         }
 
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)
-            ->where('is_completed', '0')
-            ->with(['patient', 'doctor', 'referringDoctor'])
-            ->latest()
-            ->get();
+        $appointments = $query->get();
         return view('pages.appointments.doctor_appointments', compact('appointments'));
     }
 
@@ -308,7 +305,7 @@ class AppointmentController extends Controller
         // Get paginated appointments
         $appointments = Appointment::whereNull('doctor_id') 
             ->where('clinic_type', auth()->user()->clinic_type)
-            ->with(['patient', 'department', 'referringDoctor'])
+            ->with(['patient', 'department', 'referringDoctor', 'processedBy'])
             ->latest()
             ->paginate(25)
             ->through(function ($appointment) {
@@ -336,9 +333,10 @@ class AppointmentController extends Controller
             'doctor_id' => 'required|exists:users,id'
         ]);
 
-        // Update appointment with doctor
+        // Update appointment with doctor and set processed_by to current user
         $appointment->update([
-            'doctor_id' => $request->doctor_id
+            'doctor_id' => $request->doctor_id,
+            'processed_by' => auth()->id()
         ]);
 
         // Return JSON response for AJAX requests

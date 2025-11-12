@@ -18,23 +18,10 @@
                         </small>
                     </div>
                 </div>
-                <div class="card-datatable table-responsive">
-                    <table class="datatables-basic table border-top">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>{{localize('global.id')}}</th>
-                                <th>{{localize('global.card_number')}}</th>
-                                <th>{{localize('global.patient_name')}}</th>
-                                <th>{{localize('global.father_name')}}</th>
-                                <th>{{localize('global.department')}}</th>
-                                <th>{{localize('global.date')}}</th>
-                                <th>{{localize('global.time')}}</th>
-                                <th>{{localize('global.status')}}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                    </table>
+                <div class="card-body">
+                    <div id="appointments-table-wrapper">
+                        @include('pages.appointments.department_table')
+                    </div>
                 </div>
             </div>
         </div>
@@ -104,149 +91,94 @@
 @endsection
 
 @push('custom-css')
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
     <style>
-        .card-datatable table.dataTable thead th {
+        #appointments-table-wrapper table {
             text-align: right;
         }
-
-        .card-datatable table.dataTable tbody td {
+        
+        #appointments-table-wrapper table thead th {
             text-align: right;
+            background-color: #f8f9fa;
         }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        
+        #appointments-table-wrapper table tbody td {
+            text-align: right;
+            vertical-align: middle;
+        }
+        
+        .pagination {
+            margin-bottom: 0;
         }
     </style>
 @endpush
 
 @push('custom-js')
-    <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script>
-        // Make dt_basic globally accessible
-        var dt_basic;
-
-        $(function() {
-            var dt_basic_table = $('.datatables-basic');
-
-            if (dt_basic_table.length) {
-                dt_basic = dt_basic_table.DataTable({
-                    ajax: "{{ route('appointments.departmentAppointments') }}",
-                    columns: [{
-                            data: 'id'
-                        },
-                        {
-                            data: 'id'
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.id_card : '';
-                            }
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.father_name : '';
-                            }
-                        },
-                        {
-                            data: 'department',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'jalali_date',
-                        },
-                        {
-                            data: 'time'
-                        },
-                        {
-                            data: 'doctor_id',
-                            render: function(data) {
-                                if (data) {
-                                    return '<span class="badge bg-success">{{ localize("global.assigned") }}</span>';
-                                } else {
-                                    return '<span class="badge bg-warning">{{ localize("global.pending") }}</span>';
-                                }
-                            }
-                        },
-                        {
-                            data: null,
-                            defaultContent: ''
-                        }
-                    ],
-                    columnDefs: [{
-                            // For Responsive
-                            className: 'control',
-                            orderable: false,
-                            searchable: false,
-                            responsivePriority: 2,
-                            targets: 0,
-                            render: function(data, type, full, meta) {
-                                return '';
-                            }
-                        },
-                        {
-                            // Actions
-                            targets: -1,
-                            title: '{{ localize('global.actions') }}',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, full, meta) {
-                                var actions = '';
-                                
-                                // Show change department button
-                                actions += '<button type="button" class="btn btn-sm btn-warning" onclick="openChangeDepartmentModal(' + full['id'] + ', ' + (full['department'] ? full['department'].id : 'null') + ')" title="{{ localize("global.change_department") }}">' +
-                                    '<i class="bx bx-transfer"></i> {{ localize("global.change_department") }}' +
-                                '</button>';
-                                
-                                // Show select doctor button only if no doctor is assigned
-                                if (!full['doctor_id']) {
-                                    actions += '<button type="button" class="btn btn-sm btn-success ms-1" onclick="openSelectDoctorModal(' + full['id'] + ')">' +
-                                        '<i class="bx bx-user-plus"></i> {{ localize("global.select_doctor") }}' +
-                                    '</button>';
-                                }
-                                
-                                // Show referral remarks if available
-                                if (full['refferal_remarks']) {
-                                    actions += '<button type="button" class="btn btn-sm btn-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="' + full['refferal_remarks'] + '">' +
-                                        '<i class="bx bx-info-circle"></i>' +
-                                    '</button>';
-                                }
-                                
-                                // Show referring doctor info if available
-                                if (full['referring_doctor'] && full['referring_doctor'].name) {
-                                    actions += '<button type="button" class="btn btn-sm btn-outline-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize("global.introduced_by") }}: ' + full['referring_doctor'].name + '">' +
-                                        '<i class="bx bx-user"></i>' +
-                                    '</button>';
-                                }
-                                
-                                return actions;
-                            }
-                        }
-                    ],
-                    order: [
-                        [0, 'asc']
-                    ],
-                    dom: 'Bfrtip',
-                    displayLength: 25,
-                    lengthMenu: [7, 10, 25, 50, 75, 100],
-                    buttons: [],
-                    responsive: true
-                });
+        // Global function to load appointments table via AJAX
+        window.loadAppointmentsTable = function(url) {
+            if (!url) {
+                // Get current page URL with query params to preserve pagination
+                url = window.location.href;
+                // If no query params, use the base route
+                if (!url.includes('?')) {
+                    url = '{{ route("appointments.departmentAppointments") }}';
+                }
             }
+            
+            // Show loading state
+            $('#appointments-table-wrapper').html('<div class="text-center p-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2 text-muted">Loading appointments...</p></div>');
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    // Update table content
+                    if (response && response.html) {
+                        $('#appointments-table-wrapper').html(response.html);
+                        
+                        // Reinitialize tooltips
+                        $('[data-bs-toggle="tooltip"]').tooltip();
+                        
+                        // Scroll to top of table smoothly
+                        $('html, body').animate({
+                            scrollTop: $('#appointments-table-wrapper').offset().top - 100
+                        }, 300);
+                    } else {
+                        console.error('Invalid response format:', response);
+                        $('#appointments-table-wrapper').html('<div class="alert alert-danger">{{ localize("global.error_loading_data") }}</div>');
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error loading appointments:', xhr);
+                    let errorMessage = '{{ localize("global.error_loading_data") }}';
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    $('#appointments-table-wrapper').html(
+                        '<div class="alert alert-danger">' + errorMessage + '</div>'
+                    );
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(errorMessage);
+                    }
+                }
+            });
+        };
+        
+        $(function() {
+            // Handle pagination clicks with AJAX
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+                const url = $(this).attr('href');
+                if (url) {
+                    loadAppointmentsTable(url);
+                }
+            });
 
             // Initialize Select2 when modal opens
             $('#selectDoctorModal').on('shown.bs.modal', function() {
@@ -408,6 +340,7 @@
                         return;
                     }
                     
+                    // Hide modal first
                     $('#selectDoctorModal').modal('hide');
                     
                     // Show success message
@@ -421,12 +354,12 @@
                         alert(successMessage);
                     }
                     
-                    // Reload datatable via AJAX only (no page reload)
-                    if (typeof dt_basic !== 'undefined' && dt_basic) {
-                        dt_basic.ajax.reload(null, false); // false = keep current page, null = no callback
-                    } else {
-                        console.warn('Datatable not initialized, but avoiding page reload');
-                    }
+                    // Reload appointments table via AJAX after a short delay to ensure modal is closed
+                    setTimeout(function() {
+                        // Get current page URL or use default
+                        const currentPageUrl = window.location.href.split('?')[0] + (window.location.search || '');
+                        loadAppointmentsTable(currentPageUrl);
+                    }, 300);
                 },
                 error: function(xhr) {
                     console.error('Error submitting form:', xhr);
@@ -539,12 +472,8 @@
                     if (response.message) {
                         toastr.success(response.message);
                     }
-                    // Reload datatable via AJAX only (no page reload)
-                    if (typeof dt_basic !== 'undefined' && dt_basic) {
-                        dt_basic.ajax.reload(null, false); // false = keep current page
-                    } else {
-                        console.warn('Datatable not initialized, but avoiding page reload');
-                    }
+                    // Reload appointments table via AJAX (no page reload)
+                    loadAppointmentsTable();
                 },
                 error: function(xhr) {
                     if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -564,3 +493,4 @@
         });
     </script>
 @endpush
+

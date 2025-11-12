@@ -302,35 +302,27 @@ class AppointmentController extends Controller
             return redirect()->back()->with('error', localize('global.no_department_assigned'));
         }
 
-        if ($request->ajax()) {
-            $appointments = Appointment::whereNull('doctor_id') 
-                ->where('clinic_type',auth()->user()->clinic_type)
-                ->with(['patient', 'department', 'referringDoctor'])
-                ->latest()
-                ->get()
-                ->map(function ($appointment) {
-                    $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
-                    return $appointment;
-                });
-
-            if ($appointments) {
-                return response()->json([
-                    'data' => $appointments,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
-        }
-
-        $appointments = Appointment::whereNull('doctor_id')
-            ->where('clinic_type',auth()->user()->clinic_type)
+        // Get paginated appointments
+        $appointments = Appointment::whereNull('doctor_id') 
+            ->where('clinic_type', auth()->user()->clinic_type)
             ->with(['patient', 'department', 'referringDoctor'])
             ->latest()
-            ->get();
+            ->paginate(25)
+            ->through(function ($appointment) {
+                $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+                return $appointment;
+            });
+
+        // If AJAX request, return JSON with HTML
+        if ($request->ajax()) {
+            $html = view('pages.appointments.department_table', compact('appointments'))->render();
+            return response()->json([
+                'html' => $html,
+                'current_page' => $appointments->currentPage(),
+                'last_page' => $appointments->lastPage()
+            ]);
+        }
+
         return view('pages.appointments.department', compact('appointments'));
     }
 

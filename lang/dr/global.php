@@ -861,8 +861,6 @@ return [
     'status_in_progress' => 'در حال انجام',
     'status_completed' => 'تکمیل شده',
     'status_cancelled' => 'لغو شده',
-
-    // Lab Test Registration Section
     'lab_test_registrations' => 'معاینات',
     'add_lab_test_registration' => 'اضافه کردن ثبت نام آزمایش',
     'view_test_parameters' => 'مشاهده پارامترهای آزمایش',
@@ -1093,8 +1091,6 @@ return [
     'job_and_rank' => 'رتبه و وظیفه',
     'register_number' => 'شماره راجستر',
     'card_number' => 'شماره کارت',
-
-    // Outcome Report Translations
     'outcome_report' => 'راپور مقدار خروجی دواخانه',
     'generated_on' => 'تاریخ تولید',
     'total_records' => 'تعداد کل رکوردها',
@@ -2243,8 +2239,6 @@ return [
     "update_nurse" => "بروزرسانی نرس",
     "diagnose" => "تشخیص",
     "note" => "یادداشت",
-
-    // Nurse Notes CRUD Page Translations
     "nurse_notes_list" => "لیست یادداشت‌های نرس",
     "create_new_nurse_note" => "ایجاد یادداشت جدید نرس",
     "edit_nurse_note" => "ویرایش یادداشت نرس",
@@ -2313,8 +2307,6 @@ return [
     "automatically_set_from_context" => "به طور خودکار از زمینه تنظیم می‌شود",
     "under_review" => "تحت بررسی",
     "hospitalization" => "بستری",
-
-    // Medication Administration Records (MAR) - سوابق تجویز ادویه
     "medication_administration_records" => "سوابق تجویز ادویه",
     "mar" => "سوابق تجویز",
     "create_new_mar" => "ایجاد سابقه جدید تجویز ادویه",
@@ -2431,8 +2423,6 @@ return [
     "order_date" => "د امر نیټه",
     "date_signature" => "نیټه او لاسلیک",
     "other" => "نور",
-
-    // Vital Sign Types - نوعیت علائم حیاتی
     "vital_sign_types" => "نوعیت علائم حیاتی",
     "vital_sign_type" => "نوعیت علامت حیاتی",
     "vital_sign_type_name" => "نام نوعیت علامت حیاتی",

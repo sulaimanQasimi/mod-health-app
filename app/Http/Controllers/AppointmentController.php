@@ -334,15 +334,49 @@ class AppointmentController extends Controller
         return view('pages.appointments.department', compact('appointments'));
     }
 
+    public function assignDoctor(Request $request, Appointment $appointment)
+    {
+        // Validate doctor_id is provided
+        $request->validate([
+            'doctor_id' => 'required|exists:users,id'
+        ]);
+
+        // Update appointment with doctor
+        $appointment->update([
+            'doctor_id' => $request->doctor_id
+        ]);
+
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.doctor_assigned_successfully')
+            ]);
+        }
+
+        return redirect()->back()->with('success', localize('global.doctor_assigned_successfully'));
+    }
     public function acceptAppointment(Request $request, Appointment $appointment)
     {
         // Check if the appointment belongs to the user's department
         if ($appointment->department_id !== auth()->user()->department_id) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.unauthorized_access')
+                ], 403);
+            }
             return redirect()->back()->with('error', localize('global.unauthorized_access'));
         }
 
         // Check if appointment is already assigned to a doctor
         if ($appointment->doctor_id) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.appointment_already_assigned')
+                ], 400);
+            }
             return redirect()->back()->with('error', localize('global.appointment_already_assigned'));
         }
 
@@ -357,6 +391,12 @@ class AppointmentController extends Controller
             ->first();
 
         if (!$doctor) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.invalid_doctor_selection')
+                ], 400);
+            }
             return redirect()->back()->with('error', localize('global.invalid_doctor_selection'));
         }
 
@@ -364,6 +404,13 @@ class AppointmentController extends Controller
         $appointment->update([
             'doctor_id' => $doctorId
         ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.appointment_accepted_successfully')
+            ]);
+        }
 
         return redirect()->back()
             ->with('success', localize('global.appointment_accepted_successfully'));

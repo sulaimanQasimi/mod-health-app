@@ -283,6 +283,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('departmentAppointments', [AppointmentController::class, 'departmentAppointments'])->name('departmentAppointments');
         Route::get('get-doctors-by-clinic-type', [AppointmentController::class, 'getDoctorsByClinicType'])->name('get-doctors-by-clinic-type');
         Route::get('get-departments', [AppointmentController::class, 'getDepartments'])->name('get-departments');
+        Route::post('assign-doctor/{appointment}', [AppointmentController::class, 'assignDoctor'])->name('assign-doctor');
         Route::post('accept/{appointment}', [AppointmentController::class, 'acceptAppointment'])->name('accept');
         Route::put('change-department/{appointment}', [AppointmentController::class, 'changeDepartment'])->name('change-department');
         Route::get('create', [AppointmentController::class, 'create'])->name('create');

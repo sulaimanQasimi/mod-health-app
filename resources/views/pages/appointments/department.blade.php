@@ -256,8 +256,22 @@
 
             // Reset modal when closed
             $('#selectDoctorModal').on('hidden.bs.modal', function() {
-                $('#assignDoctorForm')[0].reset();
-                $('#doctor_id').empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
+                const form = $('#assignDoctorForm');
+                const doctorSelect = $('#doctor_id');
+                
+                // Reset form
+                form[0].reset();
+                
+                // Destroy select2 if it exists
+                if (doctorSelect.hasClass('select2-hidden-accessible')) {
+                    doctorSelect.select2('destroy');
+                }
+                
+                // Reset select
+                doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
+                
+                // Reset form action
+                form.attr('action', '#');
             });
 
             // Initialize Select2 for department modal
@@ -279,8 +293,9 @@
             // Set appointment ID
             $('#appointment_id').val(appointmentId);
             
-            // Set form action
-            $('#assignDoctorForm').attr('action', '{{ url("appointments/accept/") }}/' + appointmentId);
+            // Set form action using the assign-doctor route
+            const actionUrl = '{{ url("appointments/assign-doctor") }}/' + appointmentId;
+            $('#assignDoctorForm').attr('action', actionUrl);
             
             // Load doctors
             loadDoctorsForAppointment();
@@ -291,6 +306,11 @@
 
         function loadDoctorsForAppointment() {
             const doctorSelect = $('#doctor_id');
+            
+            // Destroy existing select2 if it exists
+            if (doctorSelect.hasClass('select2-hidden-accessible')) {
+                doctorSelect.select2('destroy');
+            }
             
             // Show loading state
             doctorSelect.empty().append('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
@@ -312,7 +332,7 @@
                         doctorSelect.prop('disabled', true);
                     }
                     
-                    // Reinitialize select2
+                    // Initialize select2
                     doctorSelect.select2({
                         dropdownParent: $('#selectDoctorModal'),
                         width: '100%'
@@ -322,6 +342,12 @@
                     console.error('Error loading doctors:', xhr);
                     doctorSelect.empty().append('<option value="">{{ localize("global.error_loading_doctors") }}</option>');
                     doctorSelect.prop('disabled', true);
+                    
+                    // Initialize select2 even on error
+                    doctorSelect.select2({
+                        dropdownParent: $('#selectDoctorModal'),
+                        width: '100%'
+                    });
                 }
             });
         }
@@ -331,27 +357,100 @@
             e.preventDefault();
             
             const form = $(this);
-            const formData = form.serialize();
             const actionUrl = form.attr('action');
+            
+            // Validate action URL is set
+            if (!actionUrl || actionUrl === '#' || actionUrl === '') {
+                alert('{{ localize("global.error_occurred") }}: Form action not set');
+                return;
+            }
+            
+            // Validate doctor is selected
+            const doctorId = $('#doctor_id').val();
+            if (!doctorId) {
+                if (typeof toastr !== 'undefined') {
+                    toastr.warning('{{ localize("global.please_select_doctor") }}');
+                } else {
+                    alert('{{ localize("global.please_select_doctor") }}');
+                }
+                return;
+            }
+            
+            const formData = form.serialize();
             
             $.ajax({
                 url: actionUrl,
                 type: 'POST',
                 data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                dataType: 'json',
                 success: function(response) {
+                    // Check if response indicates success
+                    if (response && response.success === false) {
+                        // Handle error response
+                        const errorMessage = response.message || '{{ localize("global.error_occurred") }}';
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        } else {
+                            alert(errorMessage);
+                        }
+                        return;
+                    }
+                    
                     $('#selectDoctorModal').modal('hide');
-                    // Reload datatable
+                    
+                    // Show success message
+                    const successMessage = (response && response.message) 
+                        ? response.message 
+                        : '{{ localize("global.doctor_assigned_successfully") }}';
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(successMessage);
+                    } else {
+                        alert(successMessage);
+                    }
+                    
+                    // Reload datatable via AJAX
                     if (typeof dt_basic !== 'undefined') {
-                        dt_basic.ajax.reload();
+                        dt_basic.ajax.reload(null, false); // false = keep current page
                     } else {
                         location.reload();
                     }
                 },
                 error: function(xhr) {
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        alert(xhr.responseJSON.message);
+                    console.error('Error submitting form:', xhr);
+                    
+                    let errorMessage = '{{ localize("global.error_occurred") }}';
+                    
+                    // Handle different response types
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON.errors) {
+                            const errors = xhr.responseJSON.errors;
+                            const errorMessages = [];
+                            for (const field in errors) {
+                                errorMessages.push(errors[field][0]);
+                            }
+                            errorMessage = errorMessages.join('<br>');
+                        }
+                    } else if (xhr.responseText) {
+                        // Try to parse HTML response for error messages
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(xhr.responseText, 'text/html');
+                        const errorElement = doc.querySelector('.alert-danger, .error, [class*="error"]');
+                        if (errorElement) {
+                            errorMessage = errorElement.textContent.trim();
+                        }
+                    }
+                    
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(errorMessage);
                     } else {
-                        alert('{{ localize("global.error_occurred") }}');
+                        alert(errorMessage);
                     }
                 }
             });

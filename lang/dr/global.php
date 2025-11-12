@@ -128,8 +128,6 @@ return [
     'of' => 'از',
     'results' => 'نتایج',
     'work_details' => 'جزئیات کار',
-
-    // Diabetes Chart Management Translations
     'diabetes_charts' => 'چارت دیابت',
     'diabetes_chart' => 'چارت دیابت',
     'diabetes_chart_management' => 'مدیریت چارت دیابت',

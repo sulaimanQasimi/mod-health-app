@@ -1189,6 +1189,7 @@ return [
     'updated_at' => 'تاریخ ویرایش',
     'pharmacy_management' => 'مدیریت دواخانه ها',
     'search_by_name_nid_phone' => 'جستجو بر اساس نام، شماره موبایل ',
+    'search_by_patient_name_card_phone' => 'جستجو بر اساس نام مریض، شماره کارت، شماره موبایل',
     'search_by_medicine_name' => 'جستجو بر اساس نام ادویه',
     'out_of_stock' => 'موجود نیست',
     'income_records' => 'رکوردهای وارده',

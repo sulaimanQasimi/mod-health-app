@@ -290,14 +290,29 @@ class AppointmentController extends Controller
 
     public function departmentAppointments(Request $request)
     {
-        
-        // Get paginated appointments
-        $appointments = Appointment::whereNull('doctor_id')
-        ->whereNull('processed_by')
+        // Build query for appointments
+        $query = Appointment::whereNull('doctor_id')
+            ->whereNull('processed_by')
             ->where('clinic_type', auth()->user()->clinic_type)
-            ->with(['patient', 'department', 'referringDoctor', 'processedBy'])
-            ->latest()
+            ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
+
+        // Search by patient name, id_card, phone, father_name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                    ->orWhere('id_card', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%')
+                    ->orWhere('father_name', 'like', '%' . $search . '%')
+                    ->orWhere('nid', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Get paginated appointments
+        $appointments = $query->latest()
             ->paginate(25)
+            ->appends($request->query())
             ->through(function ($appointment) {
                 $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
                 return $appointment;

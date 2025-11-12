@@ -19,6 +19,37 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- Search Form -->
+                    <form id="searchForm" method="GET" action="{{ route('appointments.departmentAppointments') }}" class="mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bx bx-search"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           name="search" 
+                                           id="searchInput"
+                                           placeholder="{{ localize('global.search_by_patient_name_card_phone') }}"
+                                           value="{{ request('search') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
+                                </button>
+                            </div>
+                            @if(request('search'))
+                                <div class="col-12">
+                                    <a href="{{ route('appointments.departmentAppointments') }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bx bx-x me-1"></i>{{ localize('global.clear_search') }}
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </form>
+                    
                     <div id="appointments-table-wrapper">
                         @include('pages.appointments.department_table')
                     </div>
@@ -171,11 +202,33 @@
         };
         
         $(function() {
+            // Handle search form submission via AJAX
+            $('#searchForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const form = $(this);
+                const formData = form.serialize();
+                const actionUrl = form.attr('action');
+                const url = actionUrl + (formData ? '?' + formData : '');
+                
+                // Update URL without page reload
+                if (history.pushState) {
+                    history.pushState(null, null, url);
+                }
+                
+                // Load appointments with search
+                loadAppointmentsTable(url);
+            });
+            
             // Handle pagination clicks with AJAX
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
                 const url = $(this).attr('href');
                 if (url) {
+                    // Update URL without page reload
+                    if (history.pushState) {
+                        history.pushState(null, null, url);
+                    }
                     loadAppointmentsTable(url);
                 }
             });

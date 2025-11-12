@@ -2459,8 +2459,6 @@ return [
     "vital_sign_schedule_updated_successfully" => "برنامه علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_schedule_deleted_successfully" => "برنامه علامت حیاتی با موفقیت حذف شد",
     "vital_sign_schedule_restored_successfully" => "برنامه علامت حیاتی با موفقیت بازیابی شد",
-
-    // Common Vital Sign Terms - اصطلاحات مشترک علائم حیاتی
     "blood_pressure" => "فشار خون",
     "pulse_rate" => "ضربان قلب",
     "temperature" => "درجه حرارت",

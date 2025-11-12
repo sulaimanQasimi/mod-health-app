@@ -227,7 +227,7 @@ class AppointmentController extends Controller
     public function doctorAppointments(Request $request)
     {
         // Get appointments where current user is the assigned doctor
-        $query = Appointment::where('doctor_id', auth()->user()->id)
+        $query = Appointment::where('processed_by', auth()->user()->id)
             ->where('is_completed', '0')
             ->with(['patient', 'doctor', 'referringDoctor', 'processedBy'])
             ->latest();
@@ -295,15 +295,10 @@ class AppointmentController extends Controller
 
     public function departmentAppointments(Request $request)
     {
-        // Get the current user's department
-        $userDepartment = auth()->user()->department_id;
         
-        if (!$userDepartment) {
-            return redirect()->back()->with('error', localize('global.no_department_assigned'));
-        }
-
         // Get paginated appointments
-        $appointments = Appointment::whereNull('doctor_id') 
+        $appointments = Appointment::whereNull('doctor_id')
+        ->whereNull('processed_by')
             ->where('clinic_type', auth()->user()->clinic_type)
             ->with(['patient', 'department', 'referringDoctor', 'processedBy'])
             ->latest()

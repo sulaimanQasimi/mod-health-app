@@ -258,12 +258,14 @@ class AppointmentController extends Controller
 
     public function completedAppointments(Request $request)
     {
+        // Get completed appointments where current user is the assigned doctor
+        $query = Appointment::where('doctor_id', auth()->user()->id)
+            ->where('is_completed', '1')
+            ->with(['patient', 'doctor', 'referringDoctor', 'processedBy'])
+            ->latest();
+
         if ($request->ajax()) {
-            $appointments = Appointment::where('doctor_id', auth()->user()->id)
-                ->where('is_completed', '1')
-                ->with(['patient', 'doctor'])
-                ->latest()
-                ->get()
+            $appointments = $query->get()
                 ->map(function ($appointment) {
                     $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
                     return $appointment;
@@ -282,14 +284,7 @@ class AppointmentController extends Controller
             }
         }
 
-        $appointments = Appointment::where('doctor_id', auth()->user()->id)
-            ->where('is_completed', '1')
-            ->with([
-                'patient', 'doctor',
-            'created_by'=>auth()->user()->id
-            ])
-            ->latest()
-            ->get();
+        $appointments = $query->get();
         return view('pages.appointments.completed', compact('appointments'));
     }
 

@@ -2469,8 +2469,6 @@ return [
     "body_mass_index" => "شاخص توده بدنی",
     "glucose_level" => "سطح گلوکز",
     "heart_rate" => "ضربان قلب",
-
-    // Form Labels - برچسب‌های فرم
     "select_vital_sign_type" => "انتخاب نوعیت علامت حیاتی",
     "select_morphable_type" => "انتخاب نوع مرجع",
     "enter_morphable_id" => "وارد کردن شناسه مرجع",
@@ -2478,8 +2476,6 @@ return [
     "select_date" => "انتخاب تاریخ",
     "enter_morning_time" => "وارد کردن وقت صبح",
     "enter_evening_time" => "وارد کردن وقت شام",
-
-    // Validation Messages - پیام‌های اعتبارسنجی
     "vital_sign_type_required" => "نوعیت علامت حیاتی الزامی است",
     "morphable_type_required" => "نوع مرجع الزامی است",
     "morphable_id_required" => "شناسه مرجع الزامی است",
@@ -2487,22 +2483,16 @@ return [
     "morning_time_format" => "فرمت وقت صبح صحیح نیست",
     "evening_time_format" => "فرمت وقت شام صحیح نیست",
     "date_before_today" => "تاریخ نمی‌تواند بعد از امروز باشد",
-
-    // Actions - عملیات
     "view_vital_signs" => "مشاهده علائم حیاتی",
     "add_vital_sign" => "اضافه کردن علامت حیاتی",
     "add_schedule" => "اضافه کردن برنامه",
     "view_schedules" => "مشاهده برنامه‌ها",
     "manage_vital_signs" => "مدیریت علائم حیاتی",
     "manage_schedules" => "مدیریت برنامه‌ها",
-
-    // Status Messages - پیام‌های وضعیت
     "no_vital_signs_found" => "هیچ علامت حیاتی یافت نشد",
     "no_schedules_found" => "هیچ برنامه‌ای یافت نشد",
     "vital_signs_for" => "علائم حیاتی برای",
     "schedules_for" => "برنامه‌های برای",
-
-    // Additional Common Terms - اصطلاحات اضافی مشترک
     "filter_by_type" => "فیلتر بر اساس نوع",
     "filter_by_vital_sign" => "فیلتر بر اساس علامت حیاتی",
     "filter_by_nurse" => "فیلتر بر اساس نرس",
@@ -2533,7 +2523,6 @@ return [
     "created_by" => "ایجاد شده توسط",
     "diagnosis" => "مشکل",
     "record" => "رکورد",
-    // Additional Vital Signs Integration - ادغام اضافی علائم حیاتی"
     "view_all_vital_signs" => "مشاهده همه علائم حیاتی",
     "add_first_vital_sign" => "اولین علامت حیاتی را اضافه کنید",
     "add_first_schedule" => "اولین برنامه را اضافه کنید",
@@ -2567,8 +2556,6 @@ return [
     "signature" => "امضا",
     "no" => "شماره",
     "all_medicines" => "همه ادویه ها",
-
-    // Nutrition Care Form
     "nutrition_care" => "مراقبت تغذیه",
     "nutrition_care_form" => "فرم مراقبت تغذیه",
     "patient_name" => "نام مریض",
@@ -2651,8 +2638,6 @@ return [
     "morphable_id" => "شناسه مرجع",
     "under_review" => "تحت مشاهده",
     "hospitalization" => "بستری",
-
-    // Nursing Assessment Translations
     "nursing_assessment" => "فورم ارزیابی مریض",
     "admission_details" => "جزئیات پذیرش",
     "admission_date" => "تاریخ پذیرش",
@@ -3144,8 +3129,6 @@ return [
     "add_first_category" => "افزودن اولین کتگوری",
     "no_categories_message" => "با ایجاد اولین کتگوری آزمایش خود شروع کنید",
     "test_categories_management" => "مدیریت کتگوری‌های آزمایش",
-
-    // Laboratory Tests
     "add_test" => "افزودن آزمایش",
     "search_tests" => "جستجوی آزمایش‌ها...",
     "all_categories" => "همه کتگوری‌ها",

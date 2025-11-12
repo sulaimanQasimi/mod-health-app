@@ -48,7 +48,7 @@
                     <h5 class="modal-title">{{ localize('global.select_doctor') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="assignDoctorForm" method="POST">
+                <form id="assignDoctorForm" method="POST" action="#" onsubmit="return false;">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="appointment_id" name="appointment_id">
@@ -127,9 +127,11 @@
 @push('custom-js')
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script>
+        // Make dt_basic globally accessible
+        var dt_basic;
+
         $(function() {
-            var dt_basic_table = $('.datatables-basic'),
-                dt_basic;
+            var dt_basic_table = $('.datatables-basic');
 
             if (dt_basic_table.length) {
                 dt_basic = dt_basic_table.DataTable({
@@ -352,17 +354,22 @@
             });
         }
 
-        // Handle form submission
+        // Handle form submission - prevent any page reload
         $('#assignDoctorForm').on('submit', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             
             const form = $(this);
             const actionUrl = form.attr('action');
             
             // Validate action URL is set
             if (!actionUrl || actionUrl === '#' || actionUrl === '') {
-                alert('{{ localize("global.error_occurred") }}: Form action not set');
-                return;
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('{{ localize("global.error_occurred") }}: Form action not set');
+                } else {
+                    alert('{{ localize("global.error_occurred") }}: Form action not set');
+                }
+                return false;
             }
             
             // Validate doctor is selected
@@ -373,11 +380,12 @@
                 } else {
                     alert('{{ localize("global.please_select_doctor") }}');
                 }
-                return;
+                return false;
             }
             
             const formData = form.serialize();
             
+            // Submit via AJAX only - no page reload
             $.ajax({
                 url: actionUrl,
                 type: 'POST',
@@ -413,11 +421,11 @@
                         alert(successMessage);
                     }
                     
-                    // Reload datatable via AJAX
-                    if (typeof dt_basic !== 'undefined') {
-                        dt_basic.ajax.reload(null, false); // false = keep current page
+                    // Reload datatable via AJAX only (no page reload)
+                    if (typeof dt_basic !== 'undefined' && dt_basic) {
+                        dt_basic.ajax.reload(null, false); // false = keep current page, null = no callback
                     } else {
-                        location.reload();
+                        console.warn('Datatable not initialized, but avoiding page reload');
                     }
                 },
                 error: function(xhr) {
@@ -508,14 +516,16 @@
             });
         }
 
-        // Handle change department form submission
+        // Handle change department form submission - prevent any page reload
         $('#changeDepartmentForm').on('submit', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             
             const form = $(this);
             const formData = form.serialize();
             const actionUrl = form.attr('action');
             
+            // Submit via AJAX only - no page reload
             $.ajax({
                 url: actionUrl,
                 type: 'PUT',
@@ -529,11 +539,11 @@
                     if (response.message) {
                         toastr.success(response.message);
                     }
-                    // Reload datatable
-                    if (typeof dt_basic !== 'undefined') {
-                        dt_basic.ajax.reload();
+                    // Reload datatable via AJAX only (no page reload)
+                    if (typeof dt_basic !== 'undefined' && dt_basic) {
+                        dt_basic.ajax.reload(null, false); // false = keep current page
                     } else {
-                        location.reload();
+                        console.warn('Datatable not initialized, but avoiding page reload');
                     }
                 },
                 error: function(xhr) {

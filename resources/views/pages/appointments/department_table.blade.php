@@ -81,7 +81,7 @@
                 {{ localize('global.results') }}
             </div>
             <div>
-                {{ $appointments->appends(request()->query())->links() }}
+                {{ $appointments->appends(request()->query())->links('pagination::bootstrap-5') }}
             </div>
         </div>
     @endif

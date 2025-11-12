@@ -3743,4 +3743,9 @@ return [
     'assign' => 'اختصاص',
     'invalid_doctor_selection' => 'انتخاب دکتر نامعتبر است',
     'error_loading_doctors' => 'خطا در بارگذاری داکتران',
+    'change_department' => 'تغییر بخش',
+    'update' => 'بروزرسانی',
+    'no_departments_available' => 'هیچ بخشی موجود نیست',
+    'error_loading_departments' => 'خطا در بارگذاری بخش‌ها',
+    'department_updated_successfully' => 'بخش با موفقیت بروزرسانی شد',
 ];

@@ -406,6 +406,62 @@ class AppointmentController extends Controller
         }
     }
 
+    public function getDepartments()
+    {
+        try {
+            $departments = Department::all()->map(function ($department) {
+                return [
+                    'id' => $department->id,
+                    'name' => $department->name
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'departments' => $departments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading departments: ' . $e->getMessage(),
+                'departments' => []
+            ], 500);
+        }
+    }
+
+    public function changeDepartment(Request $request, Appointment $appointment)
+    {
+        // Validate the request
+        $request->validate([
+            'department_id' => 'required|exists:departments,id'
+        ]);
+
+        // Update the appointment's department
+        $appointment->update([
+            'department_id' => $request->department_id
+        ]);
+
+        // If appointment was assigned to a doctor, unassign if doctor is not in new department
+        if ($appointment->doctor_id) {
+            $doctor = User::find($appointment->doctor_id);
+            if ($doctor && $doctor->department_id != $request->department_id) {
+                $appointment->update([
+                    'doctor_id' => null
+                ]);
+            }
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.department_updated_successfully')
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', localize('global.department_updated_successfully'));
+    }
+
     public function report()
     {
         return view('pages.appointments.reports.index');

@@ -128,8 +128,6 @@ return [
     'of' => 'از',
     'results' => 'نتایج',
     'work_details' => 'جزئیات کار',
-
-    // Diabetes Chart Management Translations
     'diabetes_charts' => 'چارت دیابت',
     'diabetes_chart' => 'چارت دیابت',
     'diabetes_chart_management' => 'مدیریت چارت دیابت',
@@ -846,8 +844,6 @@ return [
     'job_type' => 'نوعیت وظیفه',
     'anesthesia_plan' => 'پلان انستیزی',
     'discharged' => 'رخصت شده',
-
-    // Laboratory Registration Polymorphic
     'appointment_details' => 'جزئیات قرار',
     'select_appointment' => 'انتخاب قرار',
     'search_appointment' => 'جستجوی قرار...',
@@ -865,8 +861,6 @@ return [
     'status_in_progress' => 'در حال انجام',
     'status_completed' => 'تکمیل شده',
     'status_cancelled' => 'لغو شده',
-
-    // Lab Test Registration Section
     'lab_test_registrations' => 'معاینات',
     'add_lab_test_registration' => 'اضافه کردن ثبت نام آزمایش',
     'view_test_parameters' => 'مشاهده پارامترهای آزمایش',
@@ -1097,8 +1091,6 @@ return [
     'job_and_rank' => 'رتبه و وظیفه',
     'register_number' => 'شماره راجستر',
     'card_number' => 'شماره کارت',
-
-    // Outcome Report Translations
     'outcome_report' => 'راپور مقدار خروجی دواخانه',
     'generated_on' => 'تاریخ تولید',
     'total_records' => 'تعداد کل رکوردها',
@@ -2247,8 +2239,6 @@ return [
     "update_nurse" => "بروزرسانی نرس",
     "diagnose" => "تشخیص",
     "note" => "یادداشت",
-
-    // Nurse Notes CRUD Page Translations
     "nurse_notes_list" => "لیست یادداشت‌های نرس",
     "create_new_nurse_note" => "ایجاد یادداشت جدید نرس",
     "edit_nurse_note" => "ویرایش یادداشت نرس",
@@ -2317,8 +2307,6 @@ return [
     "automatically_set_from_context" => "به طور خودکار از زمینه تنظیم می‌شود",
     "under_review" => "تحت بررسی",
     "hospitalization" => "بستری",
-
-    // Medication Administration Records (MAR) - سوابق تجویز ادویه
     "medication_administration_records" => "سوابق تجویز ادویه",
     "mar" => "سوابق تجویز",
     "create_new_mar" => "ایجاد سابقه جدید تجویز ادویه",
@@ -2435,8 +2423,6 @@ return [
     "order_date" => "د امر نیټه",
     "date_signature" => "نیټه او لاسلیک",
     "other" => "نور",
-
-    // Vital Sign Types - نوعیت علائم حیاتی
     "vital_sign_types" => "نوعیت علائم حیاتی",
     "vital_sign_type" => "نوعیت علامت حیاتی",
     "vital_sign_type_name" => "نام نوعیت علامت حیاتی",
@@ -2446,8 +2432,6 @@ return [
     "vital_sign_type_updated_successfully" => "نوعیت علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_type_deleted_successfully" => "نوعیت علامت حیاتی با موفقیت حذف شد",
     "vital_sign_type_restored_successfully" => "نوعیت علامت حیاتی با موفقیت بازیابی شد",
-
-    // Vital Signs - علائم حیاتی
     "vital_signs" => "علائم حیاتی",
     "vital_sign" => "علامت حیاتی",
     "vital_sign_type_id" => "نوعیت علامت حیاتی",
@@ -2461,8 +2445,6 @@ return [
     "vital_sign_updated_successfully" => "علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_deleted_successfully" => "علامت حیاتی با موفقیت حذف شد",
     "vital_sign_restored_successfully" => "علامت حیاتی با موفقیت بازیابی شد",
-
-    // Vital Sign Schedules - برنامه علائم حیاتی
     "vital_sign_schedules" => "برنامه علائم حیاتی",
     "vital_sign_schedule" => "برنامه علامت حیاتی",
     "morning_time" => "وقت صبح",
@@ -2477,8 +2459,6 @@ return [
     "vital_sign_schedule_updated_successfully" => "برنامه علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_schedule_deleted_successfully" => "برنامه علامت حیاتی با موفقیت حذف شد",
     "vital_sign_schedule_restored_successfully" => "برنامه علامت حیاتی با موفقیت بازیابی شد",
-
-    // Common Vital Sign Terms - اصطلاحات مشترک علائم حیاتی
     "blood_pressure" => "فشار خون",
     "pulse_rate" => "ضربان قلب",
     "temperature" => "درجه حرارت",
@@ -2489,8 +2469,6 @@ return [
     "body_mass_index" => "شاخص توده بدنی",
     "glucose_level" => "سطح گلوکز",
     "heart_rate" => "ضربان قلب",
-
-    // Form Labels - برچسب‌های فرم
     "select_vital_sign_type" => "انتخاب نوعیت علامت حیاتی",
     "select_morphable_type" => "انتخاب نوع مرجع",
     "enter_morphable_id" => "وارد کردن شناسه مرجع",
@@ -2498,8 +2476,6 @@ return [
     "select_date" => "انتخاب تاریخ",
     "enter_morning_time" => "وارد کردن وقت صبح",
     "enter_evening_time" => "وارد کردن وقت شام",
-
-    // Validation Messages - پیام‌های اعتبارسنجی
     "vital_sign_type_required" => "نوعیت علامت حیاتی الزامی است",
     "morphable_type_required" => "نوع مرجع الزامی است",
     "morphable_id_required" => "شناسه مرجع الزامی است",
@@ -2507,22 +2483,16 @@ return [
     "morning_time_format" => "فرمت وقت صبح صحیح نیست",
     "evening_time_format" => "فرمت وقت شام صحیح نیست",
     "date_before_today" => "تاریخ نمی‌تواند بعد از امروز باشد",
-
-    // Actions - عملیات
     "view_vital_signs" => "مشاهده علائم حیاتی",
     "add_vital_sign" => "اضافه کردن علامت حیاتی",
     "add_schedule" => "اضافه کردن برنامه",
     "view_schedules" => "مشاهده برنامه‌ها",
     "manage_vital_signs" => "مدیریت علائم حیاتی",
     "manage_schedules" => "مدیریت برنامه‌ها",
-
-    // Status Messages - پیام‌های وضعیت
     "no_vital_signs_found" => "هیچ علامت حیاتی یافت نشد",
     "no_schedules_found" => "هیچ برنامه‌ای یافت نشد",
     "vital_signs_for" => "علائم حیاتی برای",
     "schedules_for" => "برنامه‌های برای",
-
-    // Additional Common Terms - اصطلاحات اضافی مشترک
     "filter_by_type" => "فیلتر بر اساس نوع",
     "filter_by_vital_sign" => "فیلتر بر اساس علامت حیاتی",
     "filter_by_nurse" => "فیلتر بر اساس نرس",
@@ -2553,7 +2523,6 @@ return [
     "created_by" => "ایجاد شده توسط",
     "diagnosis" => "مشکل",
     "record" => "رکورد",
-    // Additional Vital Signs Integration - ادغام اضافی علائم حیاتی"
     "view_all_vital_signs" => "مشاهده همه علائم حیاتی",
     "add_first_vital_sign" => "اولین علامت حیاتی را اضافه کنید",
     "add_first_schedule" => "اولین برنامه را اضافه کنید",
@@ -2587,8 +2556,6 @@ return [
     "signature" => "امضا",
     "no" => "شماره",
     "all_medicines" => "همه ادویه ها",
-
-    // Nutrition Care Form
     "nutrition_care" => "مراقبت تغذیه",
     "nutrition_care_form" => "فرم مراقبت تغذیه",
     "patient_name" => "نام مریض",
@@ -2671,8 +2638,6 @@ return [
     "morphable_id" => "شناسه مرجع",
     "under_review" => "تحت مشاهده",
     "hospitalization" => "بستری",
-
-    // Nursing Assessment Translations
     "nursing_assessment" => "فورم ارزیابی مریض",
     "admission_details" => "جزئیات پذیرش",
     "admission_date" => "تاریخ پذیرش",
@@ -3164,8 +3129,6 @@ return [
     "add_first_category" => "افزودن اولین کتگوری",
     "no_categories_message" => "با ایجاد اولین کتگوری آزمایش خود شروع کنید",
     "test_categories_management" => "مدیریت کتگوری‌های آزمایش",
-
-    // Laboratory Tests
     "add_test" => "افزودن آزمایش",
     "search_tests" => "جستجوی آزمایش‌ها...",
     "all_categories" => "همه کتگوری‌ها",
@@ -3630,8 +3593,6 @@ return [
     "failed_to_retrieve_medicine_types" => "بازیابی انواع دارو ناموفق بود",
     "usage_types_retrieved_successfully" => "انواع استفاده با موفقیت بازیابی شدند",
     "failed_to_retrieve_usage_types" => "بازیابی انواع استفاده ناموفق بود",
-
-    // PrescriptionAjaxController Translations
     "failed_to_fetch_all_medicines" => "بازیابی همه داروها ناموفق بود",
     "failed_to_fetch_medicine_usage_types" => "بازیابی انواع مصرف دارو ناموفق بود",
     "failed_to_create_prescription" => "ایجاد نسخه ناموفق بود",
@@ -3660,7 +3621,6 @@ return [
     'edit_amount' => 'ویرایش مقدار',
     'month' => 'ماه',
     'year' => 'سال',
-    // Prescription Management Translations
     'reject_prescription' => 'رد نسخه',
     'confirm_reject_prescription' => 'آیا مطمئن هستید که می‌خواهید این نسخه را رد کنید؟',
     'prescription_rejected_successfully' => 'نسخه با موفقیت رد شد',
@@ -3681,8 +3641,6 @@ return [
     'failed_to_deselect_alternative_selection' => 'خروج از انتخاب جایگزین با خطا مواجه شد',
     'confirm_select_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را انتخاب کنید؟',
     'are_you_sure_you_want_to_delete_this_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را حذف کنید؟',
-
-    // Vue Prescription Index Page Translations
     'sorting_by' => 'مرتب‌سازی بر اساس',
     'sort_ascending' => 'صعودی',
     'sort_descending' => 'نزولی',
@@ -3713,8 +3671,6 @@ return [
     'bulk_delete_successful' => 'حذف گروهی با موفقیت انجام شد',
     'failed_to_bulk_delete' => 'حذف گروهی با خطا مواجه شد',
     'failed_to_export_prescriptions' => 'خروجی نسخه‌ها با خطا مواجه شد',
-
-    // User Performance Report
     'user_performance_report' => 'راپور عملکرد کاربران',
     'comprehensive_analytics_and_performance_metrics' => 'تحلیلات جامع و معیارهای عملکرد',
     'filter_options' => 'گزینه‌های فیلتر',

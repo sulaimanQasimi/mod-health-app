@@ -3630,8 +3630,6 @@ return [
     "failed_to_retrieve_medicine_types" => "بازیابی انواع دارو ناموفق بود",
     "usage_types_retrieved_successfully" => "انواع استفاده با موفقیت بازیابی شدند",
     "failed_to_retrieve_usage_types" => "بازیابی انواع استفاده ناموفق بود",
-
-    // PrescriptionAjaxController Translations
     "failed_to_fetch_all_medicines" => "بازیابی همه داروها ناموفق بود",
     "failed_to_fetch_medicine_usage_types" => "بازیابی انواع مصرف دارو ناموفق بود",
     "failed_to_create_prescription" => "ایجاد نسخه ناموفق بود",
@@ -3660,7 +3658,6 @@ return [
     'edit_amount' => 'ویرایش مقدار',
     'month' => 'ماه',
     'year' => 'سال',
-    // Prescription Management Translations
     'reject_prescription' => 'رد نسخه',
     'confirm_reject_prescription' => 'آیا مطمئن هستید که می‌خواهید این نسخه را رد کنید؟',
     'prescription_rejected_successfully' => 'نسخه با موفقیت رد شد',
@@ -3681,8 +3678,6 @@ return [
     'failed_to_deselect_alternative_selection' => 'خروج از انتخاب جایگزین با خطا مواجه شد',
     'confirm_select_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را انتخاب کنید؟',
     'are_you_sure_you_want_to_delete_this_alternative' => 'آیا مطمئن هستید که می‌خواهید این جایگزین را حذف کنید؟',
-
-    // Vue Prescription Index Page Translations
     'sorting_by' => 'مرتب‌سازی بر اساس',
     'sort_ascending' => 'صعودی',
     'sort_descending' => 'نزولی',
@@ -3713,8 +3708,6 @@ return [
     'bulk_delete_successful' => 'حذف گروهی با موفقیت انجام شد',
     'failed_to_bulk_delete' => 'حذف گروهی با خطا مواجه شد',
     'failed_to_export_prescriptions' => 'خروجی نسخه‌ها با خطا مواجه شد',
-
-    // User Performance Report
     'user_performance_report' => 'راپور عملکرد کاربران',
     'comprehensive_analytics_and_performance_metrics' => 'تحلیلات جامع و معیارهای عملکرد',
     'filter_options' => 'گزینه‌های فیلتر',

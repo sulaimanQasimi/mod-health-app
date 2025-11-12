@@ -844,8 +844,6 @@ return [
     'job_type' => 'نوعیت وظیفه',
     'anesthesia_plan' => 'پلان انستیزی',
     'discharged' => 'رخصت شده',
-
-    // Laboratory Registration Polymorphic
     'appointment_details' => 'جزئیات قرار',
     'select_appointment' => 'انتخاب قرار',
     'search_appointment' => 'جستجوی قرار...',

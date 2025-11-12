@@ -227,7 +227,7 @@ class AppointmentController extends Controller
     public function doctorAppointments(Request $request)
     {
         if ($request->ajax()) {
-            $appointments = Appointment::where('doctor_id', auth()->user()->id)
+            $appointments = Appointment::where('created_by', auth()->user()->id)
                 ->where('is_completed', '0')
                 ->with(['patient', 'doctor', 'referringDoctor'])
                 ->latest()
@@ -287,7 +287,10 @@ class AppointmentController extends Controller
 
         $appointments = Appointment::where('doctor_id', auth()->user()->id)
             ->where('is_completed', '1')
-            ->with(['patient', 'doctor'])
+            ->with([
+                'patient', 'doctor',
+            'created_by'=>auth()->user()->id
+            ])
             ->latest()
             ->get();
         return view('pages.appointments.completed', compact('appointments'));

@@ -17,10 +17,10 @@ class Appointment extends Model
     public static function boot()
     {
         parent::boot();
-        self::creating(function ($model) {
-            $user = Auth::user();
-            $model->created_by = $user->id ?? 0;
-        });
+        // self::creating(function ($model) {
+        //     $user = Auth::user();
+        //     $model->created_by = $user->id ?? 0;
+        // });
 
         self::updating(function ($model) {
             $user = Auth::user();

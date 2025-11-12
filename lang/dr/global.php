@@ -2432,8 +2432,6 @@ return [
     "vital_sign_type_updated_successfully" => "نوعیت علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_type_deleted_successfully" => "نوعیت علامت حیاتی با موفقیت حذف شد",
     "vital_sign_type_restored_successfully" => "نوعیت علامت حیاتی با موفقیت بازیابی شد",
-
-    // Vital Signs - علائم حیاتی
     "vital_signs" => "علائم حیاتی",
     "vital_sign" => "علامت حیاتی",
     "vital_sign_type_id" => "نوعیت علامت حیاتی",
@@ -2447,8 +2445,6 @@ return [
     "vital_sign_updated_successfully" => "علامت حیاتی با موفقیت تصحیح شد",
     "vital_sign_deleted_successfully" => "علامت حیاتی با موفقیت حذف شد",
     "vital_sign_restored_successfully" => "علامت حیاتی با موفقیت بازیابی شد",
-
-    // Vital Sign Schedules - برنامه علائم حیاتی
     "vital_sign_schedules" => "برنامه علائم حیاتی",
     "vital_sign_schedule" => "برنامه علامت حیاتی",
     "morning_time" => "وقت صبح",

@@ -114,8 +114,7 @@ class IncomeController extends Controller
             'income_type' => 'required|in:purchase,return,donation,transfer',
             'notes' => 'nullable|string'
         ]);
-
-        // Add pharmacy_id to the request data
+// Add pharmacy_id to the request data
         $data = $request->all();
         $data['pharmacy_id'] = $userPharmacy->id;
 

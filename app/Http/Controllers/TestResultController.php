@@ -46,15 +46,21 @@ class TestResultController extends Controller
         // This applies to all routes: pending, in-progress, and completed
         if ($userClinicType) {
             $query->where(function($q) use ($userClinicType) {
-                // For appointments, filter by clinic_type
-                $q->where(function($subQ) use ($userClinicType) {
-                    $subQ->where('testable_type', 'App\Models\Appointment')
-                         ->whereHas('testable', function($appointmentQ) use ($userClinicType) {
-                             $appointmentQ->where('clinic_type', $userClinicType);
-                         });
+                // For appointments, filter by clinic_type directly using whereHasMorph
+                $q->whereHasMorph('testable', [\App\Models\Appointment::class], function($appointmentQ) use ($userClinicType) {
+                    $appointmentQ->where('clinic_type', $userClinicType);
                 })
-                // Include non-appointment testables (if any exist) for backward compatibility
-                ->orWhere('testable_type', '!=', 'App\Models\Appointment')
+                // For hospitalizations, filter by related appointment's clinic_type
+                ->orWhereHasMorph('testable', [\App\Models\Hospitalization::class], function($hospitalizationQ) use ($userClinicType) {
+                    $hospitalizationQ->whereHas('appointment', function($appointmentQ) use ($userClinicType) {
+                        $appointmentQ->where('clinic_type', $userClinicType);
+                    });
+                })
+                // Include other testable types (if any exist) for backward compatibility
+                ->orWhere(function($subQ) {
+                    $subQ->where('testable_type', '!=', 'App\Models\Appointment')
+                         ->where('testable_type', '!=', 'App\Models\Hospitalization');
+                })
                 ->orWhereNull('testable_type');
             });
         }

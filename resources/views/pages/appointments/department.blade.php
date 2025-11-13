@@ -58,34 +58,6 @@
         </div>
     </div>
 
-    <!-- Select Doctor Modal -->
-    <div class="modal fade" id="selectDoctorModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ localize('global.select_doctor') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="assignDoctorForm" method="POST" action="#" onsubmit="return false;">
-                    @csrf
-                    <div class="modal-body">
-                        <input type="hidden" id="appointment_id" name="appointment_id">
-                        <div class="mb-3">
-                            <label for="doctor_id" class="form-label">{{ localize('global.select_doctor') }}</label>
-                            <select class="form-control select2" id="doctor_id" name="doctor_id" required>
-                                <option value="">{{ localize('global.select_doctor') }}</option>
-                            </select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ localize('global.assign') }}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- Change Department Modal -->
     <div class="modal fade" id="changeDepartmentModal" tabindex="-1" aria-hidden="true">
@@ -233,33 +205,6 @@
                 }
             });
 
-            // Initialize Select2 when modal opens
-            $('#selectDoctorModal').on('shown.bs.modal', function() {
-                $('#doctor_id').select2({
-                    dropdownParent: $('#selectDoctorModal'),
-                    width: '100%'
-                });
-            });
-
-            // Reset modal when closed
-            $('#selectDoctorModal').on('hidden.bs.modal', function() {
-                const form = $('#assignDoctorForm');
-                const doctorSelect = $('#doctor_id');
-                
-                // Reset form
-                form[0].reset();
-                
-                // Destroy select2 if it exists
-                if (doctorSelect.hasClass('select2-hidden-accessible')) {
-                    doctorSelect.select2('destroy');
-                }
-                
-                // Reset select
-                doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
-                
-                // Reset form action
-                form.attr('action', '#');
-            });
 
             // Initialize Select2 for department modal
             $('#changeDepartmentModal').on('shown.bs.modal', function() {
@@ -276,105 +221,17 @@
             });
         });
 
-        function openSelectDoctorModal(appointmentId) {
-            // Set appointment ID
-            $('#appointment_id').val(appointmentId);
-            
-            // Set form action using the assign-doctor route
-            const actionUrl = '{{ url("appointments/assign-doctor") }}/' + appointmentId;
-            $('#assignDoctorForm').attr('action', actionUrl);
-            
-            // Load doctors
-            loadDoctorsForAppointment();
-            
-            // Show modal
-            $('#selectDoctorModal').modal('show');
-        }
-
-        function loadDoctorsForAppointment() {
-            const doctorSelect = $('#doctor_id');
-            
-            // Destroy existing select2 if it exists
-            if (doctorSelect.hasClass('select2-hidden-accessible')) {
-                doctorSelect.select2('destroy');
+        // Accept appointment function - directly accepts without doctor selection
+        function acceptAppointment(appointmentId) {
+            if (!confirm('{{ localize("global.are_you_sure_accept_appointment") }}')) {
+                return;
             }
             
-            // Show loading state
-            doctorSelect.empty().append('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
+            const acceptUrl = '{{ url("appointments/accept") }}/' + appointmentId;
             
             $.ajax({
-                url: '{{ route("appointments.get-doctors-by-clinic-type") }}',
-                type: 'GET',
-                success: function(response) {
-                    doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
-                    
-                    if (response.success && response.doctors && response.doctors.length > 0) {
-                        response.doctors.forEach(function(doctor) {
-                            const option = new Option(doctor.name, doctor.id, false, false);
-                            doctorSelect.append(option);
-                        });
-                        doctorSelect.prop('disabled', false);
-                    } else {
-                        doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
-                        doctorSelect.prop('disabled', true);
-                    }
-                    
-                    // Initialize select2
-                    doctorSelect.select2({
-                        dropdownParent: $('#selectDoctorModal'),
-                        width: '100%'
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error loading doctors:', xhr);
-                    doctorSelect.empty().append('<option value="">{{ localize("global.error_loading_doctors") }}</option>');
-                    doctorSelect.prop('disabled', true);
-                    
-                    // Initialize select2 even on error
-                    doctorSelect.select2({
-                        dropdownParent: $('#selectDoctorModal'),
-                        width: '100%'
-                    });
-                }
-            });
-        }
-
-        // Handle form submission - prevent any page reload
-        $('#assignDoctorForm').on('submit', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const form = $(this);
-            const actionUrl = form.attr('action');
-            
-            // Validate action URL is set
-            if (!actionUrl || actionUrl === '#' || actionUrl === '') {
-                if (typeof toastr !== 'undefined') {
-                    toastr.error('{{ localize("global.error_occurred") }}: Form action not set');
-                } else {
-                    alert('{{ localize("global.error_occurred") }}: Form action not set');
-                }
-                return false;
-            }
-            
-            // Validate doctor is selected
-            const doctorId = $('#doctor_id').val();
-            if (!doctorId) {
-                if (typeof toastr !== 'undefined') {
-                    toastr.warning('{{ localize("global.please_select_doctor") }}');
-                } else {
-                    alert('{{ localize("global.please_select_doctor") }}');
-                }
-                return false;
-            }
-            
-            const formData = form.serialize();
-            
-            // Submit via AJAX only - no page reload
-            $.ajax({
-                url: actionUrl,
+                url: acceptUrl,
                 type: 'POST',
-                data: formData,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                     'X-Requested-With': 'XMLHttpRequest'
@@ -393,13 +250,10 @@
                         return;
                     }
                     
-                    // Hide modal first
-                    $('#selectDoctorModal').modal('hide');
-                    
                     // Show success message
                     const successMessage = (response && response.message) 
                         ? response.message 
-                        : '{{ localize("global.doctor_assigned_successfully") }}';
+                        : '{{ localize("global.appointment_accepted_successfully") }}';
                     
                     if (typeof toastr !== 'undefined') {
                         toastr.success(successMessage);
@@ -407,7 +261,7 @@
                         alert(successMessage);
                     }
                     
-                    // Reload appointments table via AJAX after a short delay to ensure modal is closed
+                    // Reload appointments table via AJAX
                     setTimeout(function() {
                         // Get current page URL or use default
                         const currentPageUrl = window.location.href.split('?')[0] + (window.location.search || '');
@@ -415,7 +269,7 @@
                     }, 300);
                 },
                 error: function(xhr) {
-                    console.error('Error submitting form:', xhr);
+                    console.error('Error accepting appointment:', xhr);
                     
                     let errorMessage = '{{ localize("global.error_occurred") }}';
                     
@@ -448,7 +302,7 @@
                     }
                 }
             });
-        });
+        }
 
         function openChangeDepartmentModal(appointmentId, currentDepartmentId) {
             // Set appointment ID

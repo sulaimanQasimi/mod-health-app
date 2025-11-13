@@ -356,51 +356,20 @@ class AppointmentController extends Controller
     }
     public function acceptAppointment(Request $request, Appointment $appointment)
     {
-        // Check if the appointment belongs to the user's department
-        if ($appointment->department_id !== auth()->user()->department_id) {
+        // Check if appointment is already processed
+        if ($appointment->processed_by) {
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => localize('global.unauthorized_access')
-                ], 403);
-            }
-            return redirect()->back()->with('error', localize('global.unauthorized_access'));
-        }
-
-        // Check if appointment is already assigned to a doctor
-        if ($appointment->doctor_id) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.appointment_already_assigned')
+                    'message' => localize('global.appointment_already_processed')
                 ], 400);
             }
-            return redirect()->back()->with('error', localize('global.appointment_already_assigned'));
+            return redirect()->back()->with('error', localize('global.appointment_already_processed'));
         }
 
-        // Get doctor_id from request, or use current user's id
-        $doctorId = $request->input('doctor_id', auth()->user()->id);
-
-        // Validate that the selected doctor exists and is a doctor
-        $doctor = User::where('id', $doctorId)
-            ->where('is_doctor', 1)
-            ->where('clinic_type', $appointment->clinic_type)
-            ->where('department_id', $appointment->department_id)
-            ->first();
-
-        if (!$doctor) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.invalid_doctor_selection')
-                ], 400);
-            }
-            return redirect()->back()->with('error', localize('global.invalid_doctor_selection'));
-        }
-
-        // Assign the selected doctor to the appointment
+        // Only update processed_by to current user (don't assign doctor)
         $appointment->update([
-            'doctor_id' => $doctorId
+            'processed_by' => auth()->id()
         ]);
 
         if ($request->ajax()) {

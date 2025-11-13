@@ -66,7 +66,7 @@ class UnderReview extends Model
 
     public function labs()
     {
-        return $this->hasMany(LabItem::class);
+        return $this->morphMany(PatientTestRegistration::class, 'testable');
     }
 
     public function prescription()

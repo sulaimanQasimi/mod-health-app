@@ -333,6 +333,11 @@ export default {
             type: Object,
             required: false
         },
+        underReviewId: {
+            type: [String, Number],
+            required: false,
+            default: null
+        },
         canAddPrescription: {
             type: Boolean,
             default: false
@@ -489,6 +494,7 @@ export default {
                      branch_id: this.contextData.branch_id,
                      i_c_u_id: this.icu ? this.icu.id : null,
                      hospitalization_id: this.hospitalization ? this.hospitalization.id : null,
+                     under_review_id: this.underReviewId || this.appointment?.under_review_id || this.contextData.under_review_id || (this.appointment?.under_review ? this.appointment.under_review.id : null),
                      prescription_items: transformedItems
                  };
 

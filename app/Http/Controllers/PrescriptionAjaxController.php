@@ -66,7 +66,7 @@ class PrescriptionAjaxController extends Controller
             $validator = Validator::make($request->all(), [
                 'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:users,id',
+                // 'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'prescription_items' => 'required|array|min:1',
                 'prescription_items.*.medicine_id' => 'required|exists:medicines,id',
@@ -86,6 +86,11 @@ class PrescriptionAjaxController extends Controller
                     'errors' => $validator->errors()
                 ], 422);
             }
+            $doctor_id = null;
+            if($request->appointment_id){
+                $appointment = Appointment::findOrFail($request->appointment_id);
+                $doctor_id = $appointment->doctor_id;
+            }
 
             DB::beginTransaction();
 
@@ -95,7 +100,7 @@ class PrescriptionAjaxController extends Controller
                     'branch_id' => $request->branch_id,
                     'appointment_id' => $request->appointment_id,
                     'patient_id' => $request->patient_id,
-                    'doctor_id' => $request->doctor_id,
+                    'doctor_id' => $doctor_id,
                     'hospitalization_id' => $request->hospitalization_id,
                     'under_review_id' => $request->under_review_id,
                     'i_c_u_id' => $request->i_c_u_id,
@@ -111,7 +116,7 @@ class PrescriptionAjaxController extends Controller
                         'prescription_id' => $prescription->id,
                         'appointment_id' => $request->appointment_id,
                         'patient_id' => $request->patient_id,
-                        'doctor_id' => $request->doctor_id,
+                        // 'doctor_id' => $doctor_id,
                         'branch_id' => $request->branch_id,
                         'hospitalization_id' => $request->hospitalization_id,
                         'under_review_id' => $request->under_review_id,

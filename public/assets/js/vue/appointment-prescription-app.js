@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prescriptionContainer) {
         const appointment = JSON.parse(prescriptionContainer.dataset.appointment || '{}');
         const permissions = JSON.parse(prescriptionContainer.dataset.permissions || '{}');
+        const underReviewId = prescriptionContainer.dataset.underReviewId || null;
         
         const app = createApp(PrescriptionSection, {
             appointment: appointment,
+            underReviewId: underReviewId,
             canAddPrescription: permissions.canAddPrescription || false,
             canEditPrescription: permissions.canEditPrescription || false,
             canDeletePrescription: permissions.canDeletePrescription || false,

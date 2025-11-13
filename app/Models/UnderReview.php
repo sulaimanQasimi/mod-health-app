@@ -64,11 +64,6 @@ class UnderReview extends Model
         return $this->belongsTo(Appointment::class);
     }
 
-    public function labs()
-    {
-        return $this->hasMany(LabItem::class);
-    }
-
     public function prescription()
     {
         return $this->hasMany(Prescription::class);

@@ -383,16 +383,18 @@ class AppointmentController extends Controller
             ->with('success', localize('global.appointment_accepted_successfully'));
     }
 
-    public function getDoctorsByClinicType()
+    public function getDoctorsByClinicType(Request $request)
     {
         try {
             $clinicType = auth()->user()->clinic_type;
-            // Call the stored procedure
+            $departmentId = $request->input('department_id', null);
+            
+            // Call the stored procedure with department_id parameter
             $results = DB::select('CALL only_get_docters_base_on_clinic_type(?, ?, ?, ?)', [
                 $clinicType,
-               1,
+                1,
                 null,
-                null
+                $departmentId
             ]);
             
             // Map the results to the expected format

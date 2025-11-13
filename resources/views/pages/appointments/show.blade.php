@@ -1985,9 +1985,15 @@
             // Show loading state
             doctorSelect.html('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
             
+            // Get appointment department_id
+            const departmentId = {{ $appointment->department_id ?? 'null' }};
+            
             $.ajax({
                 url: '{{ route("appointments.get-doctors-by-clinic-type") }}',
                 type: 'GET',
+                data: {
+                    department_id: departmentId
+                },
                 success: function(response) {
                     doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
                     

@@ -26,7 +26,13 @@
                         <i class="bx bx-calendar-check me-2 text-primary"></i>
                         {{ localize('global.appointment_details') }}
                     </h2>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 align-items-center">
+                        <!-- Doctor Selection Dropdown -->
+                        <div class="me-2">
+                            <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;">
+                                <option value="">{{ localize('global.select_doctor') }}</option>
+                            </select>
+                        </div>
                         <a href="javascript:void(0);" onclick="window.open('/appointments/{{$appointment->id}}/printToken', '_blank');" class="btn btn-success btn-sm">
                             <i class="bx bx-printer me-1"></i>
                             {{ localize('global.token') }}
@@ -1972,7 +1978,104 @@
     </script>
 
     <script>
+        // Function to load doctors using the stored procedure
+        function loadDoctorsForAppointment() {
+            const doctorSelect = $('#appointment_doctor_select');
+            
+            // Show loading state
+            doctorSelect.html('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
+            
+            $.ajax({
+                url: '{{ route("appointments.get-doctors-by-clinic-type") }}',
+                type: 'GET',
+                success: function(response) {
+                    doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
+                    
+                    if (response.success && response.doctors && response.doctors.length > 0) {
+                        response.doctors.forEach(function(doctor) {
+                            const option = new Option(doctor.name, doctor.id, false, false);
+                            doctorSelect.append(option);
+                        });
+                        
+                        // Set current doctor if appointment has one
+                        @if($appointment->doctor_id)
+                            doctorSelect.val({{ $appointment->doctor_id }});
+                        @endif
+                        
+                        doctorSelect.prop('disabled', false);
+                    } else {
+                        doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
+                        doctorSelect.prop('disabled', true);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error loading doctors:', xhr);
+                    doctorSelect.empty().append('<option value="">{{ localize("global.error_loading_doctors") }}</option>');
+                    doctorSelect.prop('disabled', true);
+                }
+            });
+        }
+        
         $(document).ready(function () {
+            // Load doctors on page load
+            loadDoctorsForAppointment();
+            
+            // Handle doctor selection change
+            $('#appointment_doctor_select').on('change', function() {
+                const doctorId = $(this).val();
+                const appointmentId = {{ $appointment->id }};
+                
+                if (!doctorId) {
+                    return;
+                }
+                
+                // Update appointment doctor via AJAX
+                $.ajax({
+                    url: '{{ url("appointments/assign-doctor") }}/' + appointmentId,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    data: {
+                        doctor_id: doctorId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response && response.success) {
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(response.message || '{{ localize("global.doctor_assigned_successfully") }}');
+                            }
+                            // Update the displayed doctor name in the card
+                            location.reload(); // Reload to show updated doctor name
+                        } else {
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(response.message || '{{ localize("global.error_occurred") }}');
+                            }
+                            // Reload doctors to reset selection
+                            loadDoctorsForAppointment();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error updating doctor:', xhr);
+                        let errorMessage = '{{ localize("global.error_occurred") }}';
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        } else {
+                            alert(errorMessage);
+                        }
+                        
+                        // Reload doctors to reset selection
+                        loadDoctorsForAppointment();
+                    }
+                });
+            });
+            
             // Check if Select2 is available before initializing
             if (typeof $.fn.select2 === 'undefined') {
                 console.warn('Select2 is not loaded. Skipping Select2 initialization.');

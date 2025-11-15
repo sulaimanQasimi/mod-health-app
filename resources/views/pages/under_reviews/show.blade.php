@@ -1041,33 +1041,30 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Hospitalization Section Accordion -->
-
-            <div class="col-12">
-                <div class="accordion" id="hospitalizationAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="hospitalizationHeading">
-                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#hospitalizationCollapse" aria-expanded="false"
-                                aria-controls="hospitalizationCollapse">
-                                <i class="bx bx-bed me-2 text-secondary"></i>
-                                {{ localize('global.hospitalization') }}
-                                @if($underReview->hospitalization->count() > 0)
-                                    <span class="badge bg-secondary ms-2">{{ $underReview->hospitalization->count() }}</span>
-                                @endif
-                            </button>
-                        </h2>
-                        <div id="hospitalizationCollapse" class="accordion-collapse collapse"
-                            aria-labelledby="hospitalizationHeading" data-bs-parent="#hospitalizationAccordion">
-                            <div class="accordion-body">
-                                <div class="d-flex gap-2 mb-3">
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#createHospitalizationModal{{ $underReview->id }}">
-                                        <i class="bx bx-plus"></i> {{ localize('global.hospitalize_patient') }}
-                                    </button>
-                                </div>
+                <!-- Hospitalization Section Accordion -->
+                <div class="col-12">
+                    <div class="accordion" id="hospitalizationAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="hospitalizationHeading">
+                                <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#hospitalizationCollapse" aria-expanded="false"
+                                    aria-controls="hospitalizationCollapse">
+                                    <i class="bx bx-bed me-2 text-secondary"></i>
+                                    {{ localize('global.hospitalization') }}
+                                    @if($underReview->hospitalization->count() > 0)
+                                        <span class="badge bg-secondary ms-2">{{ $underReview->hospitalization->count() }}</span>
+                                    @endif
+                                </button>
+                            </h2>
+                            <div id="hospitalizationCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="hospitalizationHeading" data-bs-parent="#hospitalizationAccordion">
+                                <div class="accordion-body">
+                                    <div class="d-flex gap-2 mb-3">
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#createHospitalizationModal{{ $underReview->id }}">
+                                            <i class="bx bx-plus"></i> {{ localize('global.hospitalize_patient') }}
+                                        </button>
+                                    </div>
 
                                 <!-- Create Hospitalization Modal -->
                                 <div class="modal fade modal-xl" id="createHospitalizationModal{{ $underReview->id }}"
@@ -1291,10 +1288,61 @@
                         </div>
                     </div>
                 </div>
-                <!-- Lab Test Registration Section Component -->
-                <x-lab-test-registration-section :entity="$underReview" entity-type="under_review"
-                    :entity-id="$underReview->id" :can-add-test-registration="auth()->user()->can('register-patient-tests')"
-                    :appointment-completed="false" />
+                <!-- Nursing Notes Section Accordion -->
+                <div class="col-12">
+                    <div class="accordion" id="nursingNotesAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="nursingNotesHeading">
+                                <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#nursingNotesCollapse" aria-expanded="false"
+                                    aria-controls="nursingNotesCollapse">
+                                    <i class="bx bx-note me-2 text-primary"></i>
+                                    {{ localize('global.nursing_notes') }}
+                                </button>
+                            </h2>
+                            <div id="nursingNotesCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="nursingNotesHeading" data-bs-parent="#nursingNotesAccordion">
+                                <div class="accordion-body">
+                                    <div id="nursing-note-section"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Nursing Assessment Section Accordion -->
+                <div class="col-12">
+                    <div class="accordion" id="nursingAssessmentAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="nursingAssessmentHeading">
+                                <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#nursingAssessmentCollapse" aria-expanded="false"
+                                    aria-controls="nursingAssessmentCollapse">
+                                    <i class="bx bx-clipboard me-2 text-warning"></i>
+                                    {{ localize('global.nursing_assessment') }}
+                                    @if($underReview->nursingAssessments->count() > 0)
+                                        <span class="badge bg-warning ms-2">{{ $underReview->nursingAssessments->count() }}</span>
+                                    @endif
+                                </button>
+                            </h2>
+                            <div id="nursingAssessmentCollapse" class="accordion-collapse collapse"
+                                aria-labelledby="nursingAssessmentHeading" data-bs-parent="#nursingAssessmentAccordion">
+                                <div class="accordion-body">
+                                    <div id="nursing-assessment-section"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lab Test Registration Section Component -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <x-lab-test-registration-section :entity="$underReview" entity-type="under_review"
+                        :entity-id="$underReview->id" :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+                        :appointment-completed="false" />
+                </div>
+            </div>
 
                 <!-- Discharge Section Accordion -->
                 <div class="row mb-4">
@@ -1382,28 +1430,6 @@
                 </div>
             </div>
 
-            <!-- Nursing Notes Section Accordion -->
-            <div class="col-12">
-                <div class="accordion" id="nursingNotesAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="nursingNotesHeading">
-                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#nursingNotesCollapse" aria-expanded="false"
-                                aria-controls="nursingNotesCollapse">
-                                <i class="bx bx-note me-2 text-primary"></i>
-                                {{ localize('global.nursing_notes') }}
-                            </button>
-                        </h2>
-                        <div id="nursingNotesCollapse" class="accordion-collapse collapse"
-                            aria-labelledby="nursingNotesHeading" data-bs-parent="#nursingNotesAccordion">
-                            <div class="accordion-body">
-                                <div id="nursing-note-section"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Create Nutrition Care Modal -->
             <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
                 aria-labelledby="createNutritionCareModalLabel" aria-hidden="true">
@@ -1437,32 +1463,6 @@
                 </div>
             </div>
             <!-- End Create Nutrition Care Modal -->
-
-            <!-- Nursing Assessment Section Accordion -->
-            <div class="col-12">
-                <div class="accordion" id="nursingAssessmentAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="nursingAssessmentHeading">
-                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#nursingAssessmentCollapse" aria-expanded="false"
-                                aria-controls="nursingAssessmentCollapse">
-                                <i class="bx bx-clipboard me-2 text-warning"></i>
-                                {{ localize('global.nursing_assessment') }}
-                                @if($underReview->nursingAssessments->count() > 0)
-                                    <span class="badge bg-warning ms-2">{{ $underReview->nursingAssessments->count() }}</span>
-                                @endif
-                            </button>
-                        </h2>
-                        <div id="nursingAssessmentCollapse" class="accordion-collapse collapse"
-                            aria-labelledby="nursingAssessmentHeading" data-bs-parent="#nursingAssessmentAccordion">
-                            <div class="accordion-body">
-                                <div id="nursing-assessment-section"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Create Nursing Assessment Modal -->
 
 
 @endsection

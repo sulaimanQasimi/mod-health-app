@@ -22,8 +22,7 @@
                                             name="patient_id" value="{{ $advice->appointment->patient_id }}">
                                         <input type="hidden" id="appointment_id{{ $advice->appointment->id }}"
                                             name="appointment_id" value="{{ $advice->appointment->id }}">
-                                            <input type="hidden" id="doctor_id{{ $advice->appointment->id }}"
-                                            name="doctor_id" value="{{ auth()->user()->id }}">
+                                            {{-- doctor_id is now fetched from appointment on the backend --}}
 
                                         <div class="form-group">
 

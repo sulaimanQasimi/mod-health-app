@@ -33,6 +33,20 @@
                                 <option value="">{{ localize('global.select_doctor') }}</option>
                             </select>
                         </div>
+                        @can('update-appointment-status')
+                            @if ($appointment->is_completed == 0)
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createStatusChangeModal{{ $appointment->id }}">
+                                    <i class="bx bx-check-shield me-1"></i>
+                                    {{ localize('global.complete_appointment') }}
+                                </button>
+                            @else
+                                <span class="badge bg-success fs-6">
+                                    <i class="bx bx-check-shield me-1"></i>
+                                    {{ localize('global.appointment_completed') }}
+                                </span>
+                            @endif
+                        @endcan
                         <a href="javascript:void(0);" onclick="window.open('/appointments/{{$appointment->id}}/printToken', '_blank');" class="btn btn-success btn-sm">
                             <i class="bx bx-printer me-1"></i>
                             {{ localize('global.token') }}
@@ -171,33 +185,8 @@
             </div>
         </div>
 
-        <!-- Appointment Status Section -->
+        <!-- Complete Appointment Modal -->
         @can('update-appointment-status')
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-body-secondary text-body d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="bx bx-check-shield me-2 text-primary"></i>
-                                {{ localize('global.appointment_status') }}
-                            </h5>
-                            @if ($appointment->is_completed == 0)
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#createStatusChangeModal{{ $appointment->id }}">
-                                    <i class="bx bx-check-shield me-1"></i>
-                                    {{ localize('global.complete_appointment') }}
-                                </button>
-                            @else
-                                <span class="badge bg-success fs-6">
-                                    <i class="bx bx-check-shield me-1"></i>
-                                    {{ localize('global.appointment_completed') }}
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"
                 aria-labelledby="createStatusChangeModalLabel{{ $appointment->id }}" aria-hidden="true">
                 <div class="modal-dialog">
@@ -208,28 +197,25 @@
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
-                            <form action="{{ route('appointments.changeStatus', $appointment) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="is_completed" value="1">
-
+                        <form action="{{ route('appointments.changeStatus', $appointment) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="is_completed" value="1">
+                            <div class="modal-body">
                                 <div class="form-group">
-
                                     <div class="form-group">
                                         <label
                                             for="status_remark{{ $appointment->id }}">{{ localize('global.status_remark') }}</label>
                                         <textarea class="form-control" id="status_remark{{ $appointment->id }}"
                                             name="status_remark" rows="3"></textarea>
                                     </div>
-
                                 </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                            <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                        </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -672,8 +658,7 @@
                                 value="{{ $appointment->patient_id }}">
                             <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
                                 value="{{ $appointment->id }}">
-                            <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                value="{{ auth()->user()->id }}">
+                            {{-- doctor_id is now fetched from appointment on the backend --}}
                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                 value="{{ auth()->user()->branch_id }}">
                             <input type="hidden" id="is_discharged{{ $appointment->id }}" name="is_discharged" value="0">
@@ -1978,22 +1963,24 @@
     </script>
 
     <script>
-        // Function to load doctors using the stored procedure
+        // Function to load doctors by department using Doctor model
         function loadDoctorsForAppointment() {
             const doctorSelect = $('#appointment_doctor_select');
-            
-            // Show loading state
-            doctorSelect.html('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
             
             // Get appointment department_id
             const departmentId = {{ $appointment->department_id ?? 'null' }};
             
+            if (!departmentId) {
+                doctorSelect.html('<option value="">{{ localize("global.select_department_first") }}</option>').prop('disabled', true);
+                return;
+            }
+            
+            // Show loading state
+            doctorSelect.html('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
+            
             $.ajax({
-                url: '{{ route("appointments.get-doctors-by-clinic-type") }}',
+                url: '/patients/get-doctors-by-department/' + departmentId,
                 type: 'GET',
-                data: {
-                    department_id: departmentId
-                },
                 success: function(response) {
                     doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
                     

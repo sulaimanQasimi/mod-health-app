@@ -75,7 +75,7 @@ return new class extends Migration {
             $table->foreign('prescription_item_id')->references('id')->on('prescription_items')->onDelete('set null');
             $table->foreign('pharmacy_id')->references('id')->on('pharmacies')->onDelete('set null');
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('set null');
-            $table->foreign('doctor_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('deleted_by')->references('id')->on('users')->onDelete('set null');

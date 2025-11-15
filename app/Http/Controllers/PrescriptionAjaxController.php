@@ -86,11 +86,10 @@ class PrescriptionAjaxController extends Controller
                     'errors' => $validator->errors()
                 ], 422);
             }
-            $doctor_id = null;
-            if($request->appointment_id){
-                $appointment = Appointment::findOrFail($request->appointment_id);
-                $doctor_id = $appointment->doctor_id;
-            }
+            
+            // Get doctor_id from appointment
+            $appointment = Appointment::findOrFail($request->appointment_id);
+            $doctor_id = $appointment->doctor_id;
 
             DB::beginTransaction();
 
@@ -409,8 +408,8 @@ class PrescriptionAjaxController extends Controller
                     $query->join('patients', 'prescriptions.patient_id', '=', 'patients.id')
                           ->orderBy('patients.name', $sortOrder);
                 } elseif ($sortBy === 'doctor_name') {
-                    $query->join('users', 'prescriptions.doctor_id', '=', 'users.id')
-                          ->orderBy('users.name', $sortOrder);
+                    $query->join('doctors', 'prescriptions.doctor_id', '=', 'doctors.id')
+                          ->orderBy('doctors.name', $sortOrder);
                 } else {
                     $query->orderBy($sortBy, $sortOrder);
                 }

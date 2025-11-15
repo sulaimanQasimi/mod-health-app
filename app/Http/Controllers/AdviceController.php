@@ -31,11 +31,14 @@ class AdviceController extends Controller
         $validatedData = $request->validate([
             'description' => 'required|max:1000',
             'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required|exists:users,id',
             'appointment_id' => 'required|exists:appointments,id',
             'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
             'hospitalization_id' => 'nullable|exists:hospitalizations,id',
         ]);
+
+        // Get doctor_id from appointment
+        $appointment = \App\Models\Appointment::findOrFail($validatedData['appointment_id']);
+        $validatedData['doctor_id'] = $appointment->doctor_id;
 
         $advice = Advice::create($validatedData);
 
@@ -66,11 +69,14 @@ class AdviceController extends Controller
         $validatedData = $request->validate([
             'description' => 'required|max:1000',
             'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required|exists:users,id',
             'appointment_id' => 'required|exists:appointments,id',
             'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
             'hospitalization_id' => 'nullable|exists:hospitalizations,id',
         ]);
+
+        // Get doctor_id from appointment
+        $appointment = \App\Models\Appointment::findOrFail($validatedData['appointment_id']);
+        $validatedData['doctor_id'] = $appointment->doctor_id;
 
         $advice->update($validatedData);
 

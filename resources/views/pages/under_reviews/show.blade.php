@@ -1,111 +1,135 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="content-wrapper">
-            @if (Session::has('success') || Session::has('error'))
-                @include('components.toast')
-            @endif
-            <div class="col-xl">
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.under_review_details') }}</h5>
-                        <div class="pt-3 pt-md-0 text-end">
-                            <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
-                                <span class="text-white"> <span
-                                        class="d-none d-sm-inline-block  ">{{ localize('global.back') }}</span></span>
-                            </a>
-                        </div>
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+        @if (Session::has('success') || Session::has('error'))
+            @include('components.toast')
+        @endif
+
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}"
+                                class="text-decoration-none">{{ localize('global.dashboard') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('under_reviews.index') }}"
+                                class="text-decoration-none">{{ localize('global.under_reviews') }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ localize('global.under_review_details') }}
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0">
+                        <i class="bx bx-user-detail me-2 text-primary"></i>
+                        {{ localize('global.under_review_details') }}
+                    </h2>
+                    <div class="d-flex gap-2 align-items-center">
+                        <a href="{{ route('under_reviews.edit', $underReview->id) }}" class="btn btn-primary btn-sm">
+                            <i class="bx bx-edit me-1"></i>
+                            {{ localize('global.edit') }}
+                        </a>
+                        <a href="{{ route('under_reviews.index') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bx bx-arrow-back me-1"></i>
+                            {{ localize('global.back') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Under Review Details Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-body-secondary text-body">
+                        <h5 class="mb-0 text-center">
+                            <i class="bx bx-user-detail me-2 text-primary"></i>
+                            {{ localize('global.under_review_details') }}
+                        </h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-12">
-                                <div class="border border-primary mb-4 shadow-sm rounded">
-                                    <h5 class="mb-0 p-3 bg-primary text-white text-center rounded-top">
-                                        <i class="bx bx-user-detail me-2"></i>{{ localize('global.under_review_details') }}
-                                    </h5>
-
-                                    <div class="row p-3 g-3">
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="border border-info rounded p-3 bg-none h-100 shadow-sm">
-                                                <h6 class="mb-2 text-info fw-bold">
-                                                    <i class="bx bx-user me-1"></i>{{ localize('global.patient_name') }}
-                                                </h6>
-                                                <div class="fw-bold text-dark">
-                                                    {{$underReview->patient->name}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="border border-success rounded p-3 bg-none h-100 shadow-sm">
-                                                <h6 class="mb-2 text-success fw-bold">
-                                                    <i
-                                                        class="bx bx-user-check me-1"></i>{{ localize('global.referred_to') }}
-                                                </h6>
-                                                <div class="fw-bold text-dark">
-                                                    {{$underReview->doctor->name}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="border border-warning rounded p-3 bg-none h-100 shadow-sm">
-                                                <h6 class="mb-2 text-warning fw-bold">
-                                                    <i class="bx bx-calendar me-1"></i>{{ localize('global.date') }}
-                                                </h6>
-                                                <div class="fw-bold text-dark">
-                                                    {{ \Hekmatinasser\Verta\Verta::instance($underReview->created_at)->format('Y/n/j') }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <div class="border border-danger rounded p-3 bg-none h-100 shadow-sm">
-                                                <h6 class="mb-2 text-danger fw-bold">
-                                                    <i class="bx bx-time me-1"></i>{{ localize('global.time') }}
-                                                </h6>
-                                                <div class="fw-bold text-dark">
-                                                    {{$underReview->created_at->format('H:i:s')}}
-                                                </div>
-                                            </div>
-                                        </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body small mb-1">{{ localize('global.patient_name') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-user me-1 text-primary"></i>
+                                        {{ $underReview->patient->name }}
                                     </div>
-
-                                    <div class="row p-3 g-3">
-                                        <div class="col-12">
-                                            <div class="border border-secondary rounded p-3 bg-none shadow-sm">
-                                                <h6 class="mb-2 text-secondary fw-bold">
-                                                    <i class="bx bx-info-circle me-1"></i>{{ localize('global.reason') }}
-                                                </h6>
-                                                <div class="text-dark">
-                                                    {{$underReview->reason}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="border border-dark rounded p-3 bg-none shadow-sm">
-                                                <h6 class="mb-2 text-dark fw-bold">
-                                                    <i class="bx bx-note me-1"></i>{{ localize('global.remarks') }}
-                                                </h6>
-                                                <div class="text-dark">
-                                                    {{$underReview->remarks}}
-                                                </div>
-                                            </div>
-                                        </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.referred_to') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-user-check me-1 text-primary"></i>
+                                        {{ $underReview->doctor?->name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.date') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-calendar me-1 text-primary"></i>
+                                        {{ \Hekmatinasser\Verta\Verta::instance($underReview->created_at)->format('Y/n/j') }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.time') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-time me-1 text-primary"></i>
+                                        {{ $underReview->created_at->format('H:i:s') }}
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6 mb-3">
+                                <div class="p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.reason') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-info-circle me-1 text-primary"></i>
+                                        {{ $underReview->reason }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="p-3 border rounded bg-body-secondary">
+                                    <div class="text-body-secondary small mb-1">{{ localize('global.remarks') }}</div>
+                                    <div class="fw-bold">
+                                        <i class="bx bx-note me-1 text-primary"></i>
+                                        {{ $underReview->remarks }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Visits Accordion Section -->
-                        <div class="accordion mt-4 border border-info shadow-sm rounded" id="visitsAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="visitsHeading">
-                                    <button class="accordion-button collapsed bg-none border-info" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#visitsCollapse" aria-expanded="false"
-                                        aria-controls="visitsCollapse">
-                                        <i
-                                            class="bx bx-glasses p-1 me-2 text-info"></i><strong class="text-dark">{{localize('global.visits') }}</strong>
-                                    </button>
-                                </h2>
+        <!-- Visits Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="visitsAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="visitsHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#visitsCollapse" 
+                                aria-expanded="false" aria-controls="visitsCollapse">
+                                <i class="bx bx-glasses me-2 text-info"></i>
+                                {{ localize('global.visits') }}
+                                @if($underReview->visits->count() > 0)
+                                    <span class="badge bg-info ms-2">{{ $underReview->visits->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
                                 <div id="visitsCollapse" class="accordion-collapse collapse" aria-labelledby="visitsHeading"
                                     data-bs-parent="#visitsAccordion">
                                     <div class="accordion-body">
@@ -224,7 +248,7 @@
                                                 aria-expanded="false" aria-controls="prescriptionCollapse">
                                                 <i class="bx bx-notepad me-2 text-success"></i>
                                                 {{ localize('global.prescription') }}
-                                                @if($underReview->appointment->prescription->count() > 0)
+                                                @if($underReview->appointment && $underReview->appointment->prescription && $underReview->appointment->prescription->count() > 0)
                                                     <span class="badge bg-success ms-2">{{ $underReview->appointment->prescription->count() }}</span>
                                                 @endif
                                             </button>
@@ -234,7 +258,7 @@
                                             <div class="accordion-body">
                                                 <!-- Prescription Section Vue Component -->
                                                 <div id="prescription-section-container" 
-                                                     data-appointment='@json($underReview->appointment)'
+                                                     data-appointment='@json($underReview->appointment ?? null)'
                                                      data-under-review-id="{{ $underReview->id }}"
                                                      data-permissions='@json([
                                                          "canAddPrescription" => auth()->user()->can("add-prescription"),
@@ -255,17 +279,22 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Diabetes Charts Accordion Section -->
-                        <div class="accordion mt-4 border border-warning shadow-sm rounded" id="diabetesChartsAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="diabetesChartsHeading">
-                                    <button class="accordion-button collapsed bg-none border-warning" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#diabetesChartsCollapse"
-                                        aria-expanded="false" aria-controls="diabetesChartsCollapse">
-                                        <i
-                                            class="bx bx-bar-chart p-1 me-2 text-warning"></i><strong class="text-dark">{{ localize('global.diabetes_charts') }}</strong>
-                                    </button>
-                                </h2>
+        <!-- Diabetes Charts Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="diabetesChartsAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="diabetesChartsHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#diabetesChartsCollapse" 
+                                aria-expanded="false" aria-controls="diabetesChartsCollapse">
+                                <i class="bx bx-bar-chart me-2 text-warning"></i>
+                                {{ localize('global.diabetes_charts') }}
+                                @if($diabetesCharts->count() > 0)
+                                    <span class="badge bg-warning ms-2">{{ $diabetesCharts->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
                                 <div id="diabetesChartsCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="diabetesChartsHeading" data-bs-parent="#diabetesChartsAccordion">
                                     <div class="accordion-body">
@@ -412,18 +441,27 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Nurse Notes Accordion Section -->
-                        <div class="accordion mt-4 border border-primary shadow-sm rounded" id="nurseNotesAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="nurseNotesHeading">
-                                    <button class="accordion-button collapsed bg-none border-primary" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#nurseNotesCollapse" aria-expanded="false"
-                                        aria-controls="nurseNotesCollapse">
-                                        <i
-                                            class="bx bx-note p-1 me-2 text-primary"></i><strong class="text-dark">{{ localize('global.nurse_notes') }}</strong>
-                                    </button>
-                                </h2>
+        <!-- Nurse Notes Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="nurseNotesAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="nurseNotesHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#nurseNotesCollapse" 
+                                aria-expanded="false" aria-controls="nurseNotesCollapse">
+                                <i class="bx bx-note me-2 text-primary"></i>
+                                {{ localize('global.nurse_notes') }}
+                                @if($nurseNotes->count() > 0)
+                                    <span class="badge bg-primary ms-2">{{ $nurseNotes->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
                                 <div id="nurseNotesCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="nurseNotesHeading" data-bs-parent="#nurseNotesAccordion">
                                     <div class="accordion-body">
@@ -567,17 +605,22 @@
                             </div>
                         </div>
 
-                        <!-- Nutrition Care Accordion Section -->
-                        <div class="accordion mt-4 border border-secondary shadow-sm rounded" id="nutritionCareAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="nutritionCareHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#nutritionCareCollapse" aria-expanded="false"
-                                        aria-controls="nutritionCareCollapse">
-                                        <i
-                                            class="bx bx-food-menu p-1 me-2 text-secondary"></i><strong class="text-dark">{{ localize('global.nutrition_care') }}</strong>
-                                    </button>
-                                </h2>
+        <!-- Nutrition Care Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="nutritionCareAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="nutritionCareHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#nutritionCareCollapse" 
+                                aria-expanded="false" aria-controls="nutritionCareCollapse">
+                                <i class="bx bx-food-menu me-2 text-secondary"></i>
+                                {{ localize('global.nutrition_care') }}
+                                @if($underReview->nutritionCares->count() > 0)
+                                    <span class="badge bg-secondary ms-2">{{ $underReview->nutritionCares->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
                                 <div id="nutritionCareCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="nutritionCareHeading" data-bs-parent="#nutritionCareAccordion">
                                     <div class="accordion-body" id="nutrition-care-section">
@@ -727,19 +770,27 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Medication Administration Records Accordion Section -->
-                        <div class="accordion mt-4 border border-danger shadow-sm rounded" id="medicationAdministrationRecordsAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="medicationAdministrationRecordsHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#medicationAdministrationRecordsCollapse" aria-expanded="false"
-                                        aria-controls="medicationAdministrationRecordsCollapse">
-                                        <i
-                                            class="bx bx-pills p-1 me-2 text-danger"></i><strong class="text-dark">{{ localize('global.medication_administration_records') }}
-                                        ({{ localize('global.mar') }})</strong>
-                                    </button>
-                                </h2>
+        <!-- Medication Administration Records Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="medicationAdministrationRecordsAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="medicationAdministrationRecordsHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#medicationAdministrationRecordsCollapse" 
+                                aria-expanded="false" aria-controls="medicationAdministrationRecordsCollapse">
+                                <i class="bx bx-capsule me-2 text-danger"></i>
+                                {{ localize('global.medication_administration_records') }}
+                                @if($medicationAdministrationRecords->count() > 0)
+                                    <span class="badge bg-danger ms-2">{{ $medicationAdministrationRecords->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
                                 <div id="medicationAdministrationRecordsCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="medicationAdministrationRecordsHeading"
                                     data-bs-parent="#medicationAdministrationRecordsAccordion">
@@ -869,137 +920,155 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Vital Signs Accordion Section -->
-                        <div class="accordion mt-4 border border-dark shadow-sm rounded" id="vitalSignsAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="vitalSignsHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#vitalSignsCollapse" aria-expanded="false"
-                                        aria-controls="vitalSignsCollapse">
-                                        <i class="bx bx-heart p-1 me-2 text-dark"></i><strong class="text-dark">{{ localize('global.vital_signs') }}</strong>
-                                    </button>
-                                </h2>
-                                <div id="vitalSignsCollapse" class="accordion-collapse collapse"
-                                    aria-labelledby="vitalSignsHeading" data-bs-parent="#vitalSignsAccordion">
-                                    <div class="accordion-body">
-                                        <div class="row mb-3">
-                                            <div class="col-md-4">
-                                                @can('create', App\Models\VitalSign::class)
-                                                    <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                        class="btn btn-primary">
-                                                        <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
-                                                    </a>
-                                                @endcan
-                                            </div>
-                                            <div class="col-md-4 text-center">
-                                                @if($underReview->vitalSigns->count() > 0)
-                                                    <a href="{{ route('vital-signs.print', ['App\\Models\\UnderReview', $underReview->id]) }}"
-                                                        class="btn btn-info" target="_blank">
-                                                        <i class="fas fa-print"></i>
-                                                        {{ localize('global.print_vital_signs_chart') }}
-                                                    </a>
-                                                @endif
-                                            </div>
-                                            <div class="col-md-4 text-end">
+        <!-- Vital Signs Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="vitalSignsAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="vitalSignsHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#vitalSignsCollapse"
+                                aria-expanded="false" aria-controls="vitalSignsCollapse">
+                                <i class="bx bx-heart me-2 text-dark"></i>
+                                {{ localize('global.vital_signs') }}
+                                @php $vitalCount = $underReview->vitalSigns?->count() ?? 0; @endphp
+                                @if($vitalCount > 0)
+                                    <span class="badge bg-dark ms-2">{{ $vitalCount }}</span>
+                                @endif
+                            </button>
+                        </h2>
+                        <div id="vitalSignsCollapse" class="accordion-collapse collapse"
+                             aria-labelledby="vitalSignsHeading" data-bs-parent="#vitalSignsAccordion">
+                            <div class="accordion-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        @can('create', App\Models\VitalSign::class)
+                                            <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                               class="btn btn-primary">
+                                                <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
+                                            </a>
+                                        @endcan
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        @if($vitalCount > 0)
+                                            <a href="{{ route('vital-signs.print', ['App\\Models\\UnderReview', $underReview->id]) }}"
+                                               class="btn btn-info" target="_blank">
+                                                <i class="fas fa-print"></i>
+                                                {{ localize('global.print_vital_signs_chart') }}
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                           class="btn btn-outline-primary">
+                                            <i class="bx bx-list-ul"></i>
+                                            {{ localize('global.view_all_vital_signs') }}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                @if($vitalCount > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>{{ localize('id') }}</th>
+                                                <th>{{ localize('vital_sign_type') }}</th>
+                                                <th>{{ localize('created_at') }}</th>
+                                                <th>{{ localize('schedules') }}</th>
+                                                <th>{{ localize('actions') }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($underReview->vitalSigns->take(5) as $vitalSign)
+                                                <tr>
+                                                    <td>{{ $vitalSign->id }}</td>
+                                                    <td>
+                                                        <span class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
+                                                    </td>
+                                                    <td>{{ $vitalSign->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
+                                                    <td>
+                                                        <span class="badge bg-secondary">
+                                                            {{ $vitalSign->schedules ? $vitalSign->schedules->count() : 0 }}
+                                                            {{ localize('schedules') }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            @can('view', $vitalSign)
+                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
+                                                                    class="btn btn-info btn-sm"
+                                                                    title="{{ localize('global.view') }}">
+                                                                    <i class="bx bx-show"></i>
+                                                                </a>
+                                                            @endcan
+                                                            @can('create', App\Models\VitalSignSchedule::class)
+                                                                <a href="{{ route('vital-signs.show', $vitalSign) }}"
+                                                                    class="btn btn-success btn-sm"
+                                                                    title="{{ localize('global.add_schedule') }}">
+                                                                    <i class="bx bx-time"></i>
+                                                                </a>
+                                                            @endcan
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                        @if($vitalCount > 5)
+                                            <div class="text-center mt-3">
                                                 <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
                                                     class="btn btn-outline-primary">
-                                                    <i class="bx bx-list-ul"></i>
-                                                    {{ localize('global.view_all_vital_signs') }}
+                                                    {{ localize('global.view_all') }}
+                                                    ({{ $vitalCount }}
+                                                    {{ localize('global.vital_signs') }})
                                                 </a>
-                                            </div>
-                                        </div>
-
-                                        @if($underReview->vitalSigns->count() > 0)
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>{{ localize('id') }}</th>
-                                                            <th>{{ localize('vital_sign_type') }}</th>
-                                                            <th>{{ localize('created_at') }}</th>
-                                                            <th>{{ localize('schedules') }}</th>
-                                                            <th>{{ localize('actions') }}</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach($underReview->vitalSigns->take(5) as $vitalSign)
-                                                            <tr>
-                                                                <td>{{ $vitalSign->id }}</td>
-                                                                <td>
-                                                                    <span
-                                                                        class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
-                                                                </td>
-                                                                <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
-                                                                <td>
-                                                                    <span
-                                                                        class="badge bg-secondary">{{ $vitalSign->schedules->count() }}
-                                                                        {{ localize('schedules') }}</span>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="btn-group" role="group">
-                                                                        @can('view', $vitalSign)
-                                                                            <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                                                                class="btn btn-info btn-sm"
-                                                                                title="{{ localize('global.view') }}">
-                                                                                <i class="bx bx-show"></i>
-                                                                            </a>
-                                                                        @endcan
-                                                                        @can('create', App\Models\VitalSignSchedule::class)
-                                                                            <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                                                                class="btn btn-success btn-sm"
-                                                                                title="{{ localize('global.add_schedule') }}">
-                                                                                <i class="bx bx-time"></i>
-                                                                            </a>
-                                                                        @endcan
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-
-                                                @if($underReview->vitalSigns->count() > 5)
-                                                    <div class="text-center mt-3">
-                                                        <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                            class="btn btn-outline-primary">
-                                                            {{ localize('global.view_all') }}
-                                                            ({{ $underReview->vitalSigns->count() }}
-                                                            {{ localize('global.vital_signs') }})
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        @else
-                                            <div class="text-center py-4">
-                                                <div class="mb-3">
-                                                    <i class="bx bx-heart bx-lg text-muted"></i>
-                                                </div>
-                                                <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
-                                                <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
-                                                @can('create', App\Models\VitalSign::class)
-                                                    <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                        class="btn btn-primary">
-                                                        <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
-                                                    </a>
-                                                @endcan
                                             </div>
                                         @endif
                                     </div>
-                                </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <div class="mb-3">
+                                            <i class="bx bx-heart bx-lg text-muted"></i>
+                                        </div>
+                                        <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
+                                        <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
+                                        @can('create', App\Models\VitalSign::class)
+                                            <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
+                                               class="btn btn-primary">
+                                                <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
+                                            </a>
+                                        @endcan
+                                    </div>
+                                @endif
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Hospitalization Accordion Section -->
-                        <div class="accordion mt-4 border border-secondary shadow-sm rounded" id="hospitalizationAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="hospitalizationHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#hospitalizationCollapse" aria-expanded="false"
-                                        aria-controls="hospitalizationCollapse">
-                                        <i class="bx bx-bed p-1 me-2 text-secondary"></i><strong class="text-dark">{{ localize('global.hospitalize') }}</strong>
-                                    </button>
-                                </h2>
+        <!-- Hospitalization Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="hospitalizationAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="hospitalizationHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#hospitalizationCollapse" 
+                                aria-expanded="false" aria-controls="hospitalizationCollapse">
+                                <i class="bx bx-bed me-2 text-secondary"></i>
+                                {{ localize('global.hospitalization') }}
+                                @if($underReview->hospitalization->count() > 0)
+                                    <span class="badge bg-secondary ms-2">{{ $underReview->hospitalization->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
                                 <div id="hospitalizationCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="hospitalizationHeading" data-bs-parent="#hospitalizationAccordion">
                                     <div class="accordion-body">
@@ -1247,17 +1316,20 @@
                             :can-add-test-registration="auth()->user()->can('register-patient-tests')"
                             :appointment-completed="false"
                         />
-                        <!-- Discharge Accordion Section -->
-                        <div class="accordion mt-4 border border-success shadow-sm rounded" id="dischargeAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="dischargeHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#dischargeCollapse" aria-expanded="false"
-                                        aria-controls="dischargeCollapse">
-                                        <i
-                                            class="bx bx-walk p-1 me-2 text-success"></i><strong class="text-dark">{{ localize('global.discharge_patient') }}</strong>
-                                    </button>
-                                </h2>
+
+        <!-- Discharge Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="dischargeAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="dischargeHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#dischargeCollapse" 
+                                aria-expanded="false" aria-controls="dischargeCollapse">
+                                <i class="bx bx-log-out me-2 text-success"></i>
+                                {{ localize('global.discharge') }}
+                            </button>
+                        </h2>
                                 <div id="dischargeCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="dischargeHeading" data-bs-parent="#dischargeAccordion">
                                     <div class="accordion-body">
@@ -1327,26 +1399,33 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- Nursing Notes Accordion Section -->
-                        <div class="accordion mt-4 border border-primary shadow-sm rounded" id="nursingNotesAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="nursingNotesHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#nursingNotesCollapse" aria-expanded="false"
-                                        aria-controls="nursingNotesCollapse">
-                                        <i
-                                            class="bx bx-note p-1 me-2 text-primary"></i><strong class="text-dark">{{ localize('global.nursing_notes') }}</strong>
-                                    </button>
-                                </h2>
-                                <div id="nursingNotesCollapse" class="accordion-collapse collapse"
-                                    aria-labelledby="nursingNotesHeading" data-bs-parent="#nursingNotesAccordion">
-                                    <div class="accordion-body">
-                                        <div id="nursing-note-section"></div>
-                                    </div>
-                                </div>
+        <!-- Nursing Notes Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="nursingNotesAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="nursingNotesHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#nursingNotesCollapse" 
+                                aria-expanded="false" aria-controls="nursingNotesCollapse">
+                                <i class="bx bx-note me-2 text-primary"></i>
+                                {{ localize('global.nursing_notes') }}
+                            </button>
+                        </h2>
+                        <div id="nursingNotesCollapse" class="accordion-collapse collapse" aria-labelledby="nursingNotesHeading" data-bs-parent="#nursingNotesAccordion">
+                            <div class="accordion-body">
+                                <div id="nursing-note-section"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
                         <!-- Create Nutrition Care Modal -->
                         <div class="modal fade modal-xl" id="createNutritionCareModal" tabindex="-1"
@@ -1382,51 +1461,38 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End Create Nutrition Care Modal -->
-                        <!-- Nursing Assessment Accordion Section -->
-                        <div class="accordion mt-4 border border-warning shadow-sm rounded" id="nursingAssessmentAccordion">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="nursingAssessmentHeading">
-                                    <button class="accordion-button collapsed bg-none" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#nursingAssessmentCollapse" aria-expanded="false"
-                                        aria-controls="nursingAssessmentCollapse">
-                                        <i
-                                            class="bx bx-clipboard p-1 me-2 text-warning"></i><strong class="text-dark">{{ localize('global.nursing_assessment') }}</strong>
-                                    </button>
-                                </h2>
-                                <div id="nursingAssessmentCollapse" class="accordion-collapse collapse"
-                                    aria-labelledby="nursingAssessmentHeading" data-bs-parent="#nursingAssessmentAccordion">
-                                    <div class="accordion-body">
-                                        <div id="nursing-assessment-section"></div>
-                                    </div>
-                                </div>
+        <!-- End Create Nutrition Care Modal -->
+
+        <!-- Nursing Assessment Section Accordion -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="accordion" id="nursingAssessmentAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="nursingAssessmentHeading">
+                            <button class="accordion-button collapsed bg-body-secondary text-body" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#nursingAssessmentCollapse" 
+                                aria-expanded="false" aria-controls="nursingAssessmentCollapse">
+                                <i class="bx bx-clipboard me-2 text-warning"></i>
+                                {{ localize('global.nursing_assessment') }}
+                                @if($underReview->nursingAssessments->count() > 0)
+                                    <span class="badge bg-warning ms-2">{{ $underReview->nursingAssessments->count() }}</span>
+                                @endif
+                            </button>
+                        </h2>
+                        <div id="nursingAssessmentCollapse" class="accordion-collapse collapse"
+                            aria-labelledby="nursingAssessmentHeading" data-bs-parent="#nursingAssessmentAccordion">
+                            <div class="accordion-body">
+                                <div id="nursing-assessment-section"></div>
                             </div>
                         </div>
-                        <!-- End Create Nursing Assessment Modal -->
                     </div>
                 </div>
-                <!-- End Create Nutrition Care Modal -->
-
-
-
-                <div class="col-md-12 mt-4">
-                    {{$underReview->discharge_remark}}
-                </div>
-
-
-                {{-- end discharge --}}
-
-
             </div>
-
-
         </div>
-    </div>
-    </div>
-    </div>
+        <!-- End Create Nursing Assessment Modal -->
+
 
 @endsection
-
 @section('scripts')
     
     <!-- Vue.js Prescription Section -->

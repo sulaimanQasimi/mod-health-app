@@ -21,7 +21,7 @@
             @method('PUT')
             <input type="hidden" id="patient_id{{ $underReview->appointment->patient_id }}" name="patient_id" value="{{ $underReview->appointment->patient_id }}">
             <input type="hidden" id="appointment_id{{ $underReview->appointment->id }}" name="appointment_id" value="{{ $underReview->appointment->id }}">
-            <input type="hidden" id="doctor_id{{ $underReview->appointment->id }}" name="doctor_id" value="{{ auth()->user()->id }}">
+            {{-- doctor_id is now fetched from appointment on the backend --}}
             <input type="hidden" id="branch_id{{ $underReview->appointment->id }}" name="branch_id" value="{{ auth()->user()->branch_id }}">
             <input type="hidden" id="is_discharged{{ $underReview->appointment->id }}" name="is_discharged" value="0">
 

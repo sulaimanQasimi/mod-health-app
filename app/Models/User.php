@@ -68,11 +68,6 @@ class User extends Authenticatable
         return $this->belongsTo(Section::class);
     }
 
-    public function appointments()
-    {
-        return $this->hasMany(Appointment::class, 'doctor_id', 'id');
-    }
-
     public function patients()
     {
         return $this->hasMany(Patient::class);

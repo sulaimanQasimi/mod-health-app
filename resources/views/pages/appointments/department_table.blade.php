@@ -52,8 +52,8 @@
                             @endif
                             
                             <!-- Referring doctor info if available -->
-                            @if($appointment->referring_doctor && $appointment->referring_doctor->name)
-                                <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize('global.introduced_by') }}: {{ $appointment->referring_doctor->name }}">
+                            @if($appointment->referringDoctor && $appointment->referringDoctor->name)
+                                <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ localize('global.introduced_by') }}: {{ $appointment->referringDoctor->name }}">
                                     <i class="bx bx-user"></i>
                                 </button>
                             @endif

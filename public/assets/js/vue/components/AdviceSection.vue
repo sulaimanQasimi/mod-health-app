@@ -206,8 +206,8 @@ export default {
                 const formData = {
                     description: this.form.description,
                     appointment_id: this.appointment.id,
-                    patient_id: this.appointment.patient_id,
-                    doctor_id: this.appointment.doctor_id
+                    patient_id: this.appointment.patient_id
+                    // doctor_id is now fetched from appointment on the backend
                 };
 
                 const url = this.isEditing 

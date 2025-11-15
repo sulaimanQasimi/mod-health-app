@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
-use App\Models\Section;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -25,9 +24,8 @@ class DoctorController extends Controller
     public function create()
     {
         $departments = Department::all();
-        $sections = Section::all();
         $branches = Branch::all();
-        return view('pages.doctors.create',compact('departments','sections','branches'));
+        return view('pages.doctors.create',compact('departments','branches'));
     }
 
     /**
@@ -37,10 +35,22 @@ class DoctorController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
+            'gender' => 'required|in:Male,Female,Other',
+            'contact_number' => 'required',
+            'father_name' => 'nullable|string',
+            'address' => 'nullable|string',
+            'specialization' => 'nullable|string',
+            'qualification' => 'nullable|string',
+            'room_no' => 'nullable|string',
+            'clinic_type' => 'nullable|in:hospital,clinic',
+            'join_date' => 'nullable|date',
+            'active_status' => 'nullable|boolean',
             'branch_id' => 'required',
             'department_id' => 'required',
-            'section_id' => 'required',
         ]);
+
+        // Convert active_status checkbox to boolean
+        $data['active_status'] = $request->has('active_status') ? true : false;
 
         Doctor::create($data);
 
@@ -60,7 +70,9 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor)
     {
-        //
+        $departments = Department::all();
+        $branches = Branch::all();
+        return view('pages.doctors.edit', compact('doctor', 'departments', 'branches'));
     }
 
     /**
@@ -68,7 +80,28 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Doctor $doctor)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'gender' => 'required|in:Male,Female,Other',
+            'contact_number' => 'required',
+            'father_name' => 'nullable|string',
+            'address' => 'nullable|string',
+            'specialization' => 'nullable|string',
+            'qualification' => 'nullable|string',
+            'room_no' => 'nullable|string',
+            'clinic_type' => 'nullable|in:hospital,clinic',
+            'join_date' => 'nullable|date',
+            'active_status' => 'nullable|boolean',
+            'branch_id' => 'required',
+            'department_id' => 'required',
+        ]);
+
+        // Convert active_status checkbox to boolean
+        $data['active_status'] = $request->has('active_status') ? true : false;
+
+        $doctor->update($data);
+
+        return redirect()->route('doctors.index')->with('success', 'Doctor updated successfully.');
     }
 
     /**

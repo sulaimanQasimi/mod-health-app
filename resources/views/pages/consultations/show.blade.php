@@ -168,10 +168,9 @@
                                             name="patient_id" value="{{ $appointment->patient_id }}">
                                         <input type="hidden" id="appointment_id{{ $appointment->id }}"
                                             name="appointment_id" value="{{ $appointment->id }}">
-                                        <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                            value="{{ auth()->user()->id }}">
+                                        {{-- doctor_id is now fetched from appointment on the backend --}}
                                         <input type="hidden" id="department_id{{ $appointment->id }}" name="department_id"
-                                            value="{{ $appointment->doctor->department_id }}">
+                                            value="{{ $appointment->doctor->department_id ?? '' }}">
                                         <input type="hidden" id="consultation_id{{ $appointment->id }}" name="consultation_id"
                                             value="{{ $consultation->id }}">
 

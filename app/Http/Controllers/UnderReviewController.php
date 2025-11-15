@@ -67,14 +67,17 @@ class UnderReviewController extends Controller
             'remarks' => 'required',
             'room_id' => 'required',
             'patient_id' => 'required',
-            'doctor_id' => 'required',
             'bed_id' => 'required',
-            'appointment_id' => 'required',
+            'appointment_id' => 'required|exists:appointments,id',
             'is_discharged' => 'nullable',
             'discharge_remark' => 'nullable',
             'branch_id' => 'required',
             'operation_id' => 'nullable',
         ]);
+
+        // Get doctor_id from appointment
+        $appointment = \App\Models\Appointment::findOrFail($data['appointment_id']);
+        $data['doctor_id'] = $appointment->doctor_id;
 
         $occupied_bed = Bed::findOrFail($data['bed_id']);
 
@@ -226,6 +229,17 @@ class UnderReviewController extends Controller
         // Load nutrition cares for this under review
         $underReview->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
 
+        // Load appointment with prescription relationship and other relationships
+        $underReview->load([
+            'appointment.prescription',
+            'patient',
+            'doctor',
+            'room',
+            'bed',
+            'visits',
+            'hospitalization'
+        ]);
+
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
 
@@ -278,14 +292,17 @@ class UnderReviewController extends Controller
             'remarks' => 'required',
             'room_id' => 'required',
             'patient_id' => 'required',
-            'doctor_id' => 'required',
             'bed_id' => 'required',
-            'appointment_id' => 'required',
+            'appointment_id' => 'required|exists:appointments,id',
             'is_discharged' => 'nullable',
             'discharge_remark' => 'nullable',
             'branch_id' => 'required',
             'operation_id' => 'nullable',
         ]);
+
+        // Get doctor_id from appointment
+        $appointment = \App\Models\Appointment::findOrFail($validatedData['appointment_id']);
+        $validatedData['doctor_id'] = $appointment->doctor_id;
 
         $underReview->update($validatedData);
 

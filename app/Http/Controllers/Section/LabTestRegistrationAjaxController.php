@@ -72,7 +72,6 @@ class LabTestRegistrationAjaxController extends Controller
                 'notes' => 'nullable|string|max:1000',
                 'detailed_notes' => 'nullable|string',
                 'metadata' => 'nullable|string', // JSON string
-                'doctor_id' => 'required|exists:users,id',
                 'branch_id' => 'required|exists:branches,id',
                 'entity_id' => 'required',
                 'entity_type' => 'required|in:appointment,icu,hospitalization,under_review',
@@ -115,6 +114,18 @@ class LabTestRegistrationAjaxController extends Controller
 
                 // Get patient_id from the related entity
                 $patientId = $this->getPatientIdFromEntity($entity);
+                
+                // Get doctor_id from the entity (appointment, hospitalization, etc.)
+                $doctorId = null;
+                if ($request->entity_type === 'appointment' && $entity instanceof Appointment) {
+                    $doctorId = $entity->doctor_id;
+                } elseif ($request->entity_type === 'hospitalization' && $entity instanceof Hospitalization) {
+                    $doctorId = $entity->doctor_id;
+                } elseif ($request->entity_type === 'icu' && $entity instanceof ICU) {
+                    $doctorId = $entity->doctor_id;
+                } elseif ($request->entity_type === 'under_review' && $entity instanceof UnderReview) {
+                    $doctorId = $entity->doctor_id;
+                }
 
                 // Generate new category_id for this batch to group all selected tests together
                 $maxCategoryId = PatientTestRegistration::max('category_id') ?? 0;
@@ -150,7 +161,7 @@ class LabTestRegistrationAjaxController extends Controller
                         'lab_type_id'       => $labTypeId,
                         'category_id'       => $newCategoryId, // Use the generated category_id to group all tests
                         'status'            => 'pending',
-                        'doctor_id'         => $request->doctor_id,
+                        'doctor_id'         => $doctorId,
                         'branch_id'         => $request->branch_id,
                         'priority'          => $request->priority,
                         'notes'             => $request->notes,

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('appointment_id');
             $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('doctor_id')->nullable();
             $table->unsignedBigInteger('under_review_id')->nullable();
             $table->unsignedBigInteger('hospitalization_id')->nullable();
             $table->unsignedBigInteger('i_c_u_id')->nullable();
@@ -33,7 +33,8 @@ return new class extends Migration
 
             $table->foreign('doctor_id')
                   ->references('id')
-                  ->on('users');
+                  ->on('doctors')
+                  ->onDelete('set null');
 
             $table->foreign('appointment_id')
                   ->references('id')

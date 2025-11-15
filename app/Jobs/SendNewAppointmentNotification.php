@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Appointment;
+use App\Models\Doctor;
 use App\Models\User;
 use App\Notifications\NewAppointmentNotification;
 use Illuminate\Bus\Queueable;
@@ -32,11 +33,20 @@ class SendNewAppointmentNotification implements ShouldQueue
     {
         $appointment = Appointment::where('id', $this->appointmentId)->first();
 
-        $user = User::where('id',$appointment->doctor_id)->get();
+        if ($appointment->doctor_id) {
+            $doctor = Doctor::find($appointment->doctor_id);
+            
+            if ($doctor) {
+                // Find users in the same department and branch as the doctor to notify
+                $users = User::where('department_id', $doctor->department_id)
+                    ->where('branch_id', $doctor->branch_id)
+                    ->get();
 
-        foreach($user as $user)
-            {
-                $user->notify(new NewAppointmentNotification($this->userId, $this->appointmentId));
+                foreach($users as $user)
+                {
+                    $user->notify(new NewAppointmentNotification($this->userId, $this->appointmentId));
+                }
             }
+        }
     }
 }

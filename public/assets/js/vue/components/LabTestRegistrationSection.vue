@@ -740,7 +740,6 @@ export default {
                 formData.append('entity_id', this.entityId);
                 formData.append('entity_type', this.entityType);
                 formData.append('patient_id', this.appointment.patient_id);
-                formData.append('doctor_id', this.appointment.doctor_id);
                 formData.append('branch_id', this.appointment.branch_id);
 
                 const response = await fetch(`/lab-test-registration-ajax/store/${this.entityType}/${this.entityId}`, {
@@ -786,7 +785,6 @@ export default {
                 formData.append('entity_id', this.entityId);
                 formData.append('entity_type', this.entityType);
                 formData.append('patient_id', this.appointment.patient_id);
-                formData.append('doctor_id', this.appointment.doctor_id);
                 formData.append('branch_id', this.appointment.branch_id);
 
                 const response = await fetch(`/lab-test-registration-ajax/store/${this.entityType}/${this.entityId}`, {

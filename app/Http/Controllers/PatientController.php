@@ -118,7 +118,7 @@ class PatientController extends Controller
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
             // Appointment validation
-            'appointment_doctor_id' => 'nullable|exists:users,id',
+            'appointment_doctor_id' => 'nullable|exists:doctors,id',
             'appointment_department_id' => 'required_with:appointment_doctor_id|exists:departments,id'
         ]);
 
@@ -259,8 +259,8 @@ class PatientController extends Controller
             'id_card' => 'nullable|string',
             'job_category' => 'nullable',
             'referred_by' => 'nullable',
-            'appointment_doctor_id' => 'nullable',
-            'appointment_department_id' => 'nullable'
+            'appointment_doctor_id' => 'nullable|exists:doctors,id',
+            'appointment_department_id' => 'nullable|exists:departments,id'
         ]);
 
         // Format age from dropdowns if provided (priority: year > month > day)
@@ -500,7 +500,9 @@ class PatientController extends Controller
 
     public function getDoctorsByDepartment($departmentId)
     {
-            $doctors = User::where('department_id', $departmentId)->get();
+            $doctors = Doctor::where('department_id', $departmentId)
+                ->where('active_status', true)
+                ->get();
             
             return response()->json([
                 'success' => true,

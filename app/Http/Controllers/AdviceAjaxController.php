@@ -42,7 +42,6 @@ class AdviceAjaxController extends Controller
                 'description' => 'required|string|max:1000',
                 'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:users,id',
                 'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
                 'hospitalization_id' => 'nullable|exists:hospitalizations,id',
             ]);
@@ -55,7 +54,12 @@ class AdviceAjaxController extends Controller
                 ], 422);
             }
 
-            $advice = Advice::create($request->all());
+            // Get doctor_id from appointment
+            $appointment = \App\Models\Appointment::findOrFail($request->appointment_id);
+            $data = $request->all();
+            $data['doctor_id'] = $appointment->doctor_id;
+
+            $advice = Advice::create($data);
 
             return response()->json([
                 'success' => true,
@@ -81,7 +85,6 @@ class AdviceAjaxController extends Controller
                 'description' => 'required|string|max:1000',
                 'appointment_id' => 'required|exists:appointments,id',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:users,id',
                 'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
                 'hospitalization_id' => 'nullable|exists:hospitalizations,id',
             ]);
@@ -94,7 +97,12 @@ class AdviceAjaxController extends Controller
                 ], 422);
             }
 
-            $advice->update($request->all());
+            // Get doctor_id from appointment
+            $appointment = \App\Models\Appointment::findOrFail($request->appointment_id);
+            $data = $request->all();
+            $data['doctor_id'] = $appointment->doctor_id;
+
+            $advice->update($data);
 
             return response()->json([
                 'success' => true,

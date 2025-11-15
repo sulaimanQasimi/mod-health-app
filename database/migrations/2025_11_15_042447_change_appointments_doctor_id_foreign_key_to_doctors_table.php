@@ -12,16 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('appointments', function (Blueprint $table) {
-            // Drop the existing foreign key constraint
+            // Drop the existing foreign key constraint if it exists
+            // Note: Laravel generates constraint names, so we need to drop by column
             $table->dropForeign(['doctor_id']);
             
-            // Make doctor_id nullable
-            $table->unsignedBigInteger('doctor_id')->nullable()->change();
-            
-            // Re-add the foreign key constraint
+            // Re-add the foreign key constraint pointing to doctors table
             $table->foreign('doctor_id')
                 ->references('id')
-                ->on('doctors');
+                ->on('doctors')
+                ->onDelete('set null');
         });
     }
 
@@ -34,13 +33,11 @@ return new class extends Migration
             // Drop the foreign key constraint
             $table->dropForeign(['doctor_id']);
             
-            // Make doctor_id not nullable again
-            $table->unsignedBigInteger('doctor_id')->nullable(false)->change();
-            
-            // Re-add the foreign key constraint
+            // Re-add the foreign key constraint pointing back to users table
             $table->foreign('doctor_id')
                 ->references('id')
-                ->on('doctors');
+                ->on('users')
+                ->onDelete('set null');
         });
     }
 };

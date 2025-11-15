@@ -33,10 +33,13 @@ class ConsultationCommentController extends Controller
             'comment' => 'required',
             'consultation_id' => 'required',
             'patient_id' => 'required',
-            'doctor_id' => 'required',
             'department_id' => 'required',
-            'appointment_id' => 'required',
+            'appointment_id' => 'required|exists:appointments,id',
         ]);
+
+        // Get doctor_id from appointment
+        $appointment = \App\Models\Appointment::findOrFail($validatedData['appointment_id']);
+        $validatedData['doctor_id'] = $appointment->doctor_id;
 
         ConsultationComment::create($validatedData);
 

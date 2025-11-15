@@ -12,7 +12,26 @@ class Doctor extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','branch_id','department_id','section_id'];
+    protected $fillable = [
+        'name',
+        'gender',
+        'father_name',
+        'contact_number',
+        'address',
+        'specialization',
+        'qualification',
+        'room_no',
+        'clinic_type',
+        'join_date',
+        'active_status',
+        'branch_id',
+        'department_id'
+    ];
+
+    protected $casts = [
+        'join_date' => 'date',
+        'active_status' => 'boolean',
+    ];
 
     public static function boot()
     {

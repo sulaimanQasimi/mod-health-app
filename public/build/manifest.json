@@ -1,17 +1,17 @@
 {
-  "_AdviceSection-Bj-tiCbx.css": {
-    "file": "assets/AdviceSection-Bj-tiCbx.css",
-    "src": "_AdviceSection-Bj-tiCbx.css"
-  },
-  "_AdviceSection-Bsp2Munz.js": {
-    "file": "assets/AdviceSection-Bsp2Munz.js",
+  "_AdviceSection--xgxOAED.js": {
+    "file": "assets/AdviceSection--xgxOAED.js",
     "name": "AdviceSection",
     "imports": [
       "_vue-multiselect-BO_2zb3A.js"
     ],
     "css": [
-      "assets/AdviceSection-Bj-tiCbx.css"
+      "assets/AdviceSection-CLfLkI1n.css"
     ]
+  },
+  "_AdviceSection-CLfLkI1n.css": {
+    "file": "assets/AdviceSection-CLfLkI1n.css",
+    "src": "_AdviceSection-CLfLkI1n.css"
   },
   "_ConsultationSection-3NKmDSM7.css": {
     "file": "assets/ConsultationSection-3NKmDSM7.css",
@@ -90,27 +90,27 @@
     "isEntry": true
   },
   "public/assets/js/vue/advice-app.js": {
-    "file": "assets/advice-app-Cdh0AUlF.js",
+    "file": "assets/advice-app-BthzfK6v.js",
     "name": "advice-app",
     "src": "public/assets/js/vue/advice-app.js",
     "isEntry": true,
     "imports": [
       "_vue-multiselect-BO_2zb3A.js",
-      "_AdviceSection-Bsp2Munz.js"
+      "_AdviceSection--xgxOAED.js"
     ]
   },
   "public/assets/js/vue/appointment-advice-app.js": {
-    "file": "assets/appointment-advice-app-ZSdgi4YT.js",
+    "file": "assets/appointment-advice-app-BODEc45f.js",
     "name": "appointment-advice-app",
     "src": "public/assets/js/vue/appointment-advice-app.js",
     "isEntry": true,
     "imports": [
       "_vue-multiselect-BO_2zb3A.js",
-      "_AdviceSection-Bsp2Munz.js"
+      "_AdviceSection--xgxOAED.js"
     ]
   },
   "public/assets/js/vue/appointment-prescription-app.js": {
-    "file": "assets/appointment-prescription-app-2-UO2mqw.js",
+    "file": "assets/appointment-prescription-app-BrM_96U8.js",
     "name": "appointment-prescription-app",
     "src": "public/assets/js/vue/appointment-prescription-app.js",
     "isEntry": true,
@@ -119,7 +119,7 @@
       "_vue-multiselect.esm-CHt_FUub.js"
     ],
     "css": [
-      "assets/appointment-prescription-app-Bml6Ujvr.css"
+      "assets/appointment-prescription-app-C1286TOx.css"
     ]
   },
   "public/assets/js/vue/consultation-app.js": {
@@ -174,7 +174,7 @@
     ]
   },
   "public/assets/js/vue/lab-test-registration-section.js": {
-    "file": "assets/lab-test-registration-section-4qWiRGVI.js",
+    "file": "assets/lab-test-registration-section-DZ2XBOXS.js",
     "name": "lab-test-registration-section",
     "src": "public/assets/js/vue/lab-test-registration-section.js",
     "isEntry": true,
@@ -184,7 +184,7 @@
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/lab-test-registration-section-DHJFS9nR.css"
+      "assets/lab-test-registration-section-CPktASxf.css"
     ]
   },
   "public/assets/js/vue/nursing-note-app.js": {

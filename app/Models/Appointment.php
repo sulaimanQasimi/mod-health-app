@@ -41,7 +41,7 @@ class Appointment extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Doctor::class);
     }
 
     public function department()
@@ -130,7 +130,7 @@ class Appointment extends Model
 
     public function referringDoctor()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
     public function processedBy()

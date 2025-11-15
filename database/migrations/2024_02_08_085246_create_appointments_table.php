@@ -33,7 +33,7 @@ return new class extends Migration
                 
             $table->foreign('doctor_id')
                 ->references('id')
-                ->on('users');
+                ->on('doctors');
 
             $table->integer('created_by');
             $table->integer('deleted_by')->nullable();

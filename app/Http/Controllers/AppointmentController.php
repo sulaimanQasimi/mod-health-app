@@ -138,7 +138,7 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         // Get necessary data for the edit form
-        $doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get();
         $patients = Patient::all();
         $branches = Branch::all();
         
@@ -193,8 +193,10 @@ class AppointmentController extends Controller
         ]);
         
         $labTypes = LabType::all();
-        $doctors = User::all();
-        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $doctors = Doctor::all();
+        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->get();
         $rooms = Room::all();
         $beds = Bed::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
@@ -259,7 +261,12 @@ class AppointmentController extends Controller
     public function completedAppointments(Request $request)
     {
         // Get completed appointments where current user is the assigned doctor
-        $query = Appointment::where('doctor_id', auth()->user()->id)
+        // Find doctor records that match current user's department and branch
+        $doctorIds = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->where('department_id', auth()->user()->department_id)
+            ->pluck('id');
+        
+        $query = Appointment::whereIn('doctor_id', $doctorIds)
             ->where('is_completed', '1')
             ->with(['patient', 'doctor', 'referringDoctor', 'processedBy'])
             ->latest();
@@ -335,7 +342,7 @@ class AppointmentController extends Controller
     {
         // Validate doctor_id is provided
         $request->validate([
-            'doctor_id' => 'required|exists:users,id'
+            'doctor_id' => 'required|exists:doctors,id'
         ]);
 
         // Update appointment with doctor and set processed_by to current user
@@ -459,7 +466,7 @@ class AppointmentController extends Controller
 
         // If appointment was assigned to a doctor, unassign if doctor is not in new department
         if ($appointment->doctor_id) {
-            $doctor = User::find($appointment->doctor_id);
+            $doctor = Doctor::find($appointment->doctor_id);
             if ($doctor && $doctor->department_id != $request->department_id) {
                 $appointment->update([
                     'doctor_id' => null

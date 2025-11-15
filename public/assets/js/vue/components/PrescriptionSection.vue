@@ -490,7 +490,6 @@ export default {
                  const formData = {
                      appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id || (this.hospitalization ? this.hospitalization.appointment?.id || this.hospitalization.appointment_id : this.contextData.id),
                      patient_id: this.contextData.patient_id,
-                     doctor_id: this.contextData.doctor_id,
                      branch_id: this.contextData.branch_id,
                      i_c_u_id: this.icu ? this.icu.id : null,
                      hospitalization_id: this.hospitalization ? this.hospitalization.id : null,

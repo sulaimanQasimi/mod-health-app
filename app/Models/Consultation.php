@@ -46,8 +46,8 @@ class Consultation extends Model
 
     public function getAssociatedDoctorsAttribute()
     {
-        $userIds = array_map('intval', json_decode($this->doctor_id, true));
-        return User::whereIn('id', $userIds)->get();
+        $doctorIds = array_map('intval', json_decode($this->doctor_id, true));
+        return Doctor::whereIn('id', $doctorIds)->get();
     }
 
     public function getAssociatedDepartmentsAttribute()

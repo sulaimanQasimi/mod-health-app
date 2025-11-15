@@ -51,7 +51,7 @@ class UnderReview extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Doctor::class);
     }
 
     public function visits()

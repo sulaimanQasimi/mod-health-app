@@ -37,8 +37,8 @@
             <tr>
                 <td>{{ $loop->iteration}}</td>
                 <td>{{ $doctor->name }}</td>
-                <td>{{ $doctor->department->name }}</td>
-                <td>{{ $doctor->section->name }}</td>
+                <td>{{ $doctor->department?->name }}</td>
+                <td>{{ $doctor->section?->name }}</td>
                 <td>
                     <a href="{{ route('doctors.show', $doctor) }}"><i class="bx bx-show-alt"></i></a>
                     <a href="{{ route('doctors.edit', $doctor) }}"><i class="bx bx-message-square-edit"></i></a>

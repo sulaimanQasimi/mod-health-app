@@ -3705,4 +3705,5 @@ return [
     'no_departments_available' => 'هیچ بخشی موجود نیست',
     'error_loading_departments' => 'خطا در بارگذاری بخش‌ها',
     'department_updated_successfully' => 'بخش با موفقیت بروزرسانی شد',
+    'system_theme_subtext'=>'متن_زیر_قالب_سیستم'
 ];

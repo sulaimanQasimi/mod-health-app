@@ -38,7 +38,6 @@
                 <td>{{ $doctor->name }}</td>
                 <td>{{ $doctor->department?->name }}</td>
                 <td>
-                    <a href="{{ route('doctors.show', $doctor) }}"><i class="bx bx-show-alt"></i></a>
                     <a href="{{ route('doctors.edit', $doctor) }}"><i class="bx bx-message-square-edit"></i></a>
                     {{-- <form action="{{ route('doctors.destroy', $doctor) }}" method="POST">
                         @csrf

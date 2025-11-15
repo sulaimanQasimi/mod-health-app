@@ -24,8 +24,8 @@
                     <td>{{ $appointment->jalali_date ?? '-' }}</td>
                     <td>{{ $appointment->time ?? '-' }}</td>
                     <td>
-                        @if($appointment->doctor_id)
-                            <span class="badge bg-success">{{ localize("global.assigned") }}</span>
+                        @if($appointment->processed_by)
+                            <span class="badge bg-success">{{ localize("global.accepted") }}</span>
                         @else
                             <span class="badge bg-warning">{{ localize("global.pending") }}</span>
                         @endif
@@ -37,10 +37,10 @@
                                 <i class="bx bx-transfer"></i> {{ localize("global.change_department") }}
                             </button>
                             
-                            <!-- Select doctor button only if no doctor is assigned -->
-                            @if(!$appointment->doctor_id)
-                                <button type="button" class="btn btn-sm btn-success" onclick="openSelectDoctorModal({{ $appointment->id }})">
-                                    <i class="bx bx-user-plus"></i> {{ localize("global.select_doctor") }}
+                            <!-- Accept button only if not processed -->
+                            @if(!$appointment->processed_by)
+                                <button type="button" class="btn btn-sm btn-success" onclick="acceptAppointment({{ $appointment->id }})">
+                                    <i class="bx bx-check"></i> {{ localize("global.accept") }}
                                 </button>
                             @endif
                             

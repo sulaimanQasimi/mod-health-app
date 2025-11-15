@@ -419,25 +419,50 @@ class PatientController extends Controller
 
     public function history(Patient $patient)
     {
-        $appointments = $patient->appointments;
-        $previousDiagnoses = $patient->diagnoses;
-        $previousConsultations = $patient->consultations;
-        $previousAnesthesias = $patient->anesthesias;
-        $previousHospitalizations = $patient->hospitalizations;
-        $previousLabs = $patient->labs;
-        $previousPrescriptions = $patient->prescriptions;
-        $previousIcus = $patient->icus;
-        return view('pages.patients.history', compact(
-            'patient',
-            'previousDiagnoses',
-            'previousConsultations',
-            'previousAnesthesias',
-            'previousHospitalizations',
-            'previousLabs',
-            'previousPrescriptions',
-            'previousIcus',
-            'appointments'
-        ));
+        try {
+            // Eager load appointments with their labs and related data
+            $appointments = $patient->appointments()->with([
+                'labs.labType',
+                'labs.results.parameter',
+                'doctor'
+            ])->get();
+            
+            // Load all related data with proper error handling
+            $previousDiagnoses = $patient->diagnoses()->get();
+            $previousConsultations = $patient->consultations()->with('associated_departments')->get();
+            $previousAnesthesias = $patient->anesthesias()->with(['operationType', 'surgion'])->get();
+            $previousHospitalizations = $patient->hospitalizations()->with(['room', 'bed'])->get();
+            $previousLabs = $patient->labs; // This is an accessor, returns collection
+            $previousPrescriptions = $patient->prescriptions()->with(['doctor', 'prescriptionItems.medicineType', 'prescriptionItems.medicine'])->get();
+            $previousIcus = $patient->icus()->get();
+            
+            return view('pages.patients.history', compact(
+                'patient',
+                'previousDiagnoses',
+                'previousConsultations',
+                'previousAnesthesias',
+                'previousHospitalizations',
+                'previousLabs',
+                'previousPrescriptions',
+                'previousIcus',
+                'appointments'
+            ));
+        } catch (\Exception $e) {
+            // Log the error and return with empty data
+            \Log::error('Error loading patient history: ' . $e->getMessage());
+            
+            return view('pages.patients.history', [
+                'patient' => $patient,
+                'previousDiagnoses' => collect(),
+                'previousConsultations' => collect(),
+                'previousAnesthesias' => collect(),
+                'previousHospitalizations' => collect(),
+                'previousLabs' => collect(),
+                'previousPrescriptions' => collect(),
+                'previousIcus' => collect(),
+                'appointments' => collect(),
+            ]);
+        }
     }
 
     public function getTab(Request $request)

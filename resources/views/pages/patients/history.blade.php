@@ -177,42 +177,64 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($patient?->appointments as $appointment)
-                        @foreach($appointment?->labs as $lab)
+                        @php
+                            $labCounter = 1;
+                            $allLabs = collect();
+                        @endphp
+                        @foreach ($patient?->appointments ?? [] as $appointment)
+                            @foreach($appointment?->labs ?? [] as $lab)
+                                @php $allLabs->push($lab); @endphp
+                            @endforeach
+                        @endforeach
+                        
+                        @forelse($allLabs as $lab)
                             <tr>
-                                <td>{{ $loop?->iteration }}</td>
-                                <td>{{ $lab?->labType?->name }}</td>
+                                <td>{{ $labCounter++ }}</td>
+                                <td>{{ $lab?->labType?->name ?? 'N/A' }}</td>
                                 <td>
-                                    @if ($lab?->status == '0')
-                                        <span
-                                            class="badge bg-danger">{{ localize('global.not_tested') }}</span>
-                                    @else
+                                    @if ($lab?->status == 'completed')
                                         <span class="badge bg-success">{{ localize('global.tested') }}</span>
+                                    @elseif ($lab?->status == 'in_progress')
+                                        <span class="badge bg-warning">{{ localize('global.in_progress') }}</span>
+                                    @elseif ($lab?->status == 'cancelled')
+                                        <span class="badge bg-secondary">{{ localize('global.cancelled') }}</span>
+                                    @else
+                                        <span class="badge bg-danger">{{ localize('global.not_tested') }}</span>
                                     @endif
                                 </td>
-                                <td>{{ $lab?->result }}</td>
                                 <td>
-                                    @isset($lab?->result_file)
-                                        <a href="{{ asset('storage/' . $lab?->result_file) }}" target="_blank">
-                                            <i class="fa fa-file"></i> {{ localize('global.file') }}
-                                        </a>
-                                    @endisset
-
+                                    @if($lab?->results && $lab->results->count() > 0)
+                                        @foreach($lab->results as $result)
+                                            <div>
+                                                <strong>{{ $result->parameter->name ?? 'N/A' }}:</strong> 
+                                                {{ $result->text_result ?? $result->result ?? 'N/A' }}
+                                                @if($result->unit)
+                                                    {{ $result->unit }}
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        {{ localize('global.no_results') }}
+                                    @endif
                                 </td>
-
+                                <td>
+                                    {{-- Result file functionality not available in new system --}}
+                                    <span class="text-muted">-</span>
+                                </td>
                             </tr>
-                            @endforeach
-
                         @empty
-                            <div class="container">
-                                <div class="col-md-12 d-flex justify-content-center align-itmes-center">
-                                    <div class=" badge bg-label-danger mt-4">
-                                        {{ localize('global.no_previous_labs') }}
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div class="container">
+                                        <div class="col-md-12 d-flex justify-content-center align-items-center">
+                                            <div class="badge bg-label-danger mt-4">
+                                                {{ localize('global.no_previous_labs') }}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                </td>
+                            </tr>
                         @endforelse
-
                     </tbody>
                 </table>
 

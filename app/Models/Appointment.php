@@ -59,9 +59,13 @@ class Appointment extends Model
         return $this->hasMany(LabItem::class)->whereNull('hospitalization_id');
     }
 
+    /**
+     * Get patient test registrations for this appointment
+     * Using the new PatientTestRegistration system
+     */
     public function labs()
     {
-        return $this->hasMany(Lab::class)->whereNull('hospitalization_id');
+        return $this->morphMany(PatientTestRegistration::class, 'testable');
     }
 
     public function consultations()

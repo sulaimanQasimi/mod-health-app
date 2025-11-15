@@ -79,9 +79,47 @@ class Patient extends Model
         return $this->hasMany(Diagnose::class);
     }
 
-    public function labs()
+    /**
+     * Get all patient test registrations through polymorphic relationships
+     * This includes test registrations from appointments, hospitalizations, under_reviews, ICUs, etc.
+     */
+    public function getLabsAttribute()
     {
-        return $this->hasMany(LabItem::class);
+        // Get appointment IDs for this patient
+        $appointmentIds = $this->appointments()->pluck('id')->toArray();
+        
+        // Get hospitalization IDs for this patient
+        $hospitalizationIds = $this->hospitalizations()->pluck('id')->toArray();
+        
+        // Get under_review IDs through appointments
+        $underReviewIds = UnderReview::whereIn('appointment_id', $appointmentIds)->pluck('id')->toArray();
+        
+        // Get ICU IDs through appointments and directly through patient_id
+        $icuIdsFromAppointments = ICU::whereIn('appointment_id', $appointmentIds)->pluck('id')->toArray();
+        $icuIdsFromPatient = ICU::where('patient_id', $this->id)->pluck('id')->toArray();
+        $icuIds = array_unique(array_merge($icuIdsFromAppointments, $icuIdsFromPatient));
+        
+        // Return collection of PatientTestRegistration matching any of these testable relationships
+        return PatientTestRegistration::where(function($query) use ($appointmentIds, $hospitalizationIds, $underReviewIds, $icuIds) {
+            $query->where(function($q) use ($appointmentIds) {
+                $q->where('testable_type', Appointment::class)
+                  ->whereIn('testable_id', $appointmentIds);
+            })
+            ->orWhere(function($q) use ($hospitalizationIds) {
+                $q->where('testable_type', Hospitalization::class)
+                  ->whereIn('testable_id', $hospitalizationIds);
+            })
+            ->orWhere(function($q) use ($underReviewIds) {
+                $q->where('testable_type', UnderReview::class)
+                  ->whereIn('testable_id', $underReviewIds);
+            })
+            ->orWhere(function($q) use ($icuIds) {
+                if (!empty($icuIds)) {
+                    $q->where('testable_type', ICU::class)
+                      ->whereIn('testable_id', $icuIds);
+                }
+            });
+        })->get();
     }
 
     public function prescriptions()
@@ -120,6 +158,11 @@ class Patient extends Model
     public function hospitalizations()
     {
         return $this->hasMany(Hospitalization::class);
+    }
+
+    public function icus()
+    {
+        return $this->hasMany(ICU::class);
     }
 
     public function militeryType()

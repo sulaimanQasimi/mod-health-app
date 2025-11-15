@@ -110,7 +110,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="join_date">{{localize('global.join_date')}}</label>
-                                        <input type="date" name="join_date" id="join_date" value="{{ old('join_date') }}" class="form-control @error('join_date') is-invalid @enderror">
+                                        <input type="text" name="join_date" id="join_date" value="{{ old('join_date') }}" class="form-control datepicker_dari @error('join_date') is-invalid @enderror">
                                         @error('join_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

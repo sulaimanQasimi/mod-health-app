@@ -3723,4 +3723,6 @@ return [
     'specialization'=>'تخصص',
     'qualification'=>'مدرک تحصیلی',
     'example_specialization'=>'مثال: کاردیولوژی',
+    'create_account'=>'ایجاد حساب',
+    'create_doctor'=>'ایجاد دکتر',
 ];

@@ -29,7 +29,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="father_name">{{localize('global.father_name')}}</label>
-                                        <input type="text" name="father_name" id="father_name" value="{{ old('father_name') }}" class="form-control @error('father_name') is-invalid @enderror" placeholder="Enter father name">
+                                        <input type="text" name="father_name" id="father_name" value="{{ old('father_name') }}" class="form-control @error('father_name') is-invalid @enderror">
                                         @error('father_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -40,9 +40,8 @@
                                         <label for="gender">{{localize('global.gender')}} <span class="text-danger">*</span></label>
                                         <select class="form-control select2 @error('gender') is-invalid @enderror" name="gender" id="gender" required>
                                             <option value="">{{ localize('global.select') }}</option>
-                                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                                            <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>{{localize('global.male')}}</option>
+                                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>{{localize('global.female')}}</option>
                                         </select>
                                         @error('gender')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -52,7 +51,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="contact_number">{{localize('global.contact_number')}} <span class="text-danger">*</span></label>
-                                        <input type="text" name="contact_number" id="contact_number" value="{{ old('contact_number') }}" class="form-control @error('contact_number') is-invalid @enderror" placeholder="Phone number" required>
+                                        <input type="text" name="contact_number" id="contact_number" value="{{ old('contact_number') }}" class="form-control @error('contact_number') is-invalid @enderror"  required>
                                         @error('contact_number')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -61,7 +60,7 @@
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="address">{{localize('global.address')}}</label>
-                                        <textarea name="address" id="address" rows="3" class="form-control @error('address') is-invalid @enderror" placeholder="Full address">{{ old('address') }}</textarea>
+                                        <textarea name="address" id="address" rows="3" class="form-control @error('address') is-invalid @enderror" >{{ old('address') }}</textarea>
                                         @error('address')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -79,7 +78,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="qualification">{{localize('global.qualification')}}</label>
-                                        <input type="text" name="qualification" id="qualification" value="{{ old('qualification') }}" class="form-control @error('qualification') is-invalid @enderror" placeholder="e.g., MBBS, MD">
+                                        <input type="text" name="qualification" id="qualification" value="{{ old('qualification') }}" class="form-control @error('qualification') is-invalid @enderror" >
                                         @error('qualification')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -88,7 +87,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="room_no">{{localize('global.room_no')}}</label>
-                                        <input type="text" name="room_no" id="room_no" value="{{ old('room_no') }}" class="form-control @error('room_no') is-invalid @enderror" placeholder="Room number">
+                                        <input type="text" name="room_no" id="room_no" value="{{ old('room_no') }}" class="form-control @error('room_no') is-invalid @enderror" >
                                         @error('room_no')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -99,8 +98,8 @@
                                         <label for="clinic_type">{{localize('global.clinic_type')}}</label>
                                         <select class="form-control select2 @error('clinic_type') is-invalid @enderror" name="clinic_type" id="clinic_type">
                                             <option value="">{{ localize('global.select') }}</option>
-                                            <option value="hospital" {{ old('clinic_type') == 'hospital' ? 'selected' : '' }}>Hospital</option>
-                                            <option value="clinic" {{ old('clinic_type') == 'clinic' ? 'selected' : '' }}>Clinic</option>
+                                            <option value="hospital" {{ old('clinic_type') == 'hospital' ? 'selected' : '' }}>{{localize('global.hospital')}}</option>
+                                            <option value="clinic" {{ old('clinic_type') == 'clinic' ? 'selected' : '' }}>{{localize('global.clinic')}}</option>
                                         </select>
                                         @error('clinic_type')
                                             <div class="invalid-feedback">{{ $message }}</div>

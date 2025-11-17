@@ -10,7 +10,7 @@
 ])
 
 <!-- Lab Test Registrations Accordion -->
-<div class="accordion mt-4" id="{{ $accordionId }}">
+<div style="border: #03c3ec 3px solid;" class="accordion mt-2" id="{{ $accordionId }}">
     <div class="accordion-item">
         <h2 class="accordion-header" id="{{ $headerId }}">
             <button class="accordion-button collapsed bg-body-secondary text-body" type="button"

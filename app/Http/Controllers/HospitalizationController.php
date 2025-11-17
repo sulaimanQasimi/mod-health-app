@@ -14,6 +14,7 @@ use App\Models\OperationType;
 use App\Models\Relation;
 use App\Models\Room;
 use App\Models\User;
+use App\Models\Doctor;
 use App\Models\DiabetesChart;
 use App\Models\Nurse;
 use App\Models\NurseNote;
@@ -37,7 +38,7 @@ class HospitalizationController extends Controller
         if ($request->ajax()) {
             $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
                 ->where('is_discharged', '0')
-                ->with(['patient', 'room', 'bed'])
+                ->with(['patient', 'room', 'bed', 'doctor'])
                 ->get();
 
             if ($hospitalizations) {
@@ -55,7 +56,7 @@ class HospitalizationController extends Controller
 
         $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
             ->where('is_discharged', '0')
-            ->with(['patient', 'room', 'bed'])
+            ->with(['patient', 'room', 'bed', 'doctor'])
             ->get();
         return view('pages.hospitalizations.index', compact('hospitalizations'));
     }
@@ -73,7 +74,7 @@ class HospitalizationController extends Controller
         if ($request->ajax()) {
             $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
                 ->where('is_discharged', '1')
-                ->with(['patient', 'room', 'bed'])
+                ->with(['patient', 'room', 'bed', 'doctor'])
                 ->get()
                 ->map(function ($hospitalization) {
 
@@ -100,7 +101,7 @@ class HospitalizationController extends Controller
         // For non-AJAX requests
         $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
             ->where('is_discharged', '1')
-            ->with(['patient', 'room', 'bed'])
+            ->with(['patient', 'room', 'bed', 'doctor'])
             ->get()
             ->map(function ($hospitalization) {
 
@@ -132,7 +133,7 @@ class HospitalizationController extends Controller
             'remarks' => 'required',
             'room_id' => 'required',
             'patient_id' => 'required',
-            'doctor_id' => 'required',
+            'doctor_id' => 'nullable',
             'bed_id' => 'required',
             'appointment_id' => 'required',
             'is_discharged' => 'nullable',
@@ -171,7 +172,9 @@ class HospitalizationController extends Controller
         // Load only essential data for the main page - heavy data is now loaded via AJAX
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
-        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->get();
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
         $foodTypes = FoodType::all();
@@ -368,7 +371,7 @@ class HospitalizationController extends Controller
         'remarks' => 'required',
         'room_id' => 'required',
         'patient_id' => 'required',
-        'doctor_id' => 'required',
+        'doctor_id' => 'nullable',
         'bed_id' => 'required',
         'appointment_id' => 'required',
         'is_discharged' => 'nullable',

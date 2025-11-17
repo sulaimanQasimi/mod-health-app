@@ -19,6 +19,7 @@ use App\Models\Prescription;
 use App\Models\Province;
 use App\Models\Room;
 use App\Models\User;
+use App\Models\Doctor;
 use App\Models\PhysiotherapyProcedure;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -81,10 +82,8 @@ class HomeController extends Controller
         $icuPercentageChange = $this->getPercentageChange(ICU::class);
         $hospitalizationPercentageChange = $this->getPercentageChange(Hospitalization::class);
 
-        $wordCloudData = User::withCount([
+        $wordCloudData = Doctor::withCount([
             'appointments',
-            'consultations',
-            'anesthesias',
             'consultation_comments',
             'hospitalizations',
             'i_c_u_s',
@@ -92,24 +91,26 @@ class HomeController extends Controller
             'visits'
         ])
             ->get()
-            ->map(function ($user) {
-                // $consultationsCount = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$user->id\"')")->count();
-                // $anesthesiasCount = Anesthesia::whereRaw("JSON_CONTAINS(operation_doctor_id, '\"$user->id\"')")->count();
+            ->map(function ($doctor) {
+                // Count consultations where doctor_id JSON contains this doctor's id
+                $consultationsCount = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$doctor->id\"')")->count();
+                
+                // Count anesthesias where this doctor is involved in various roles
                 $anesthesiasCount = Anesthesia::
-                where(function($query) use
-                ($user)
+                where(function($query) use ($doctor)
                 {
-                    $query->whereRaw("JSON_CONTAINS(operation_assistants_id, '\"$user->id\"')")
-                    ->orWhere('operation_surgion_id', $user->id)
-                ->orWhere('operation_anesthesia_log_id', $user->id)
-                ->orWhere('operation_anesthesist_id', $user->id)
-                ->orWhere('operation_scrub_nurse_id', $user->id)
-                ->orWhere('operation_circulation_nurse_id', $user->id);
+                    $query->where('doctor_id', $doctor->id)
+                    ->orWhereRaw("JSON_CONTAINS(operation_assistants_id, '\"$doctor->id\"')")
+                    ->orWhere('operation_surgion_id', $doctor->id)
+                    ->orWhere('operation_anesthesia_log_id', $doctor->id)
+                    ->orWhere('operation_anesthesist_id', $doctor->id)
+                    ->orWhere('operation_scrub_nurse_id', $doctor->id)
+                    ->orWhere('operation_circulation_nurse_id', $doctor->id);
                 })->count();
 
                 return [
-                    'name' => $user->name,
-                    'weight' => $user->appointments_count + $anesthesiasCount + $user->consultation_comments_count + $user->hospitalizations_count + $user->i_c_u_s_count + $user->prescriptions_count + $user->visits_count,
+                    'name' => $doctor->name,
+                    'weight' => $doctor->appointments_count + $anesthesiasCount + $consultationsCount + $doctor->consultation_comments_count + $doctor->hospitalizations_count + $doctor->i_c_u_s_count + $doctor->prescriptions_count + $doctor->visits_count,
                 ];
             })
             ->values()

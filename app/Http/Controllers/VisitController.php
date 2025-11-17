@@ -17,7 +17,7 @@ class VisitController extends Controller
         if ($request->ajax()) {
             $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
             ->where('is_discharged', '0')
-            ->with(['patient', 'room', 'bed'])->get()
+            ->with(['patient', 'room', 'bed', 'doctor'])->get()
                 ->map(function ($hospitalization) {
                     // Convert created_at to Jalali format and keep only the date part
                     $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
@@ -37,7 +37,7 @@ class VisitController extends Controller
             }
         }
 
-        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)->where('is_discharged', '0')->with(['patient', 'room', 'bed'])->get();
+        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)->where('is_discharged', '0')->with(['patient', 'room', 'bed', 'doctor'])->get();
         return view('pages.hospitalizations.index', compact('hospitalizations'));
     }
 

@@ -22,6 +22,19 @@ class Hospitalization extends Model
         self::creating(function ($model) {
             $user = Auth::user();
             $model->created_by = $user->id ?? 0;
+            
+            // Automatically get doctor_id from appointment if not provided
+            if (empty($model->doctor_id) && !empty($model->appointment_id)) {
+                // Try to get from relationship if already loaded, otherwise query
+                if ($model->relationLoaded('appointment') && $model->appointment) {
+                    $model->doctor_id = $model->appointment->doctor_id;
+                } else {
+                    $appointment = Appointment::find($model->appointment_id);
+                    if ($appointment && $appointment->doctor_id) {
+                        $model->doctor_id = $appointment->doctor_id;
+                    }
+                }
+            }
         });
 
         self::updating(function ($model) {
@@ -53,7 +66,7 @@ class Hospitalization extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'id');
     }
 
     public function visits()

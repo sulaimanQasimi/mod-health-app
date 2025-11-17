@@ -117,22 +117,6 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="branch_id">{{localize('global.branch')}} <span class="text-danger">*</span></label>
-                                        <select class="form-control select2 @error('branch_id') is-invalid @enderror" name="branch_id" id="branch_id" required>
-                                            <option value="">{{ localize('global.select') }}</option>
-                                            @foreach($branches as $value)
-                                                <option value="{{ $value->id }}"
-                                                    {{ old('branch_id', Auth::user()->branch_id) == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('branch_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
                                         <label for="department_id">{{localize('global.department')}} <span class="text-danger">*</span></label>
                                         <select class="form-control select2 @error('department_id') is-invalid @enderror" name="department_id" id="department_id" required>
                                             <option value="">{{ localize('global.select') }}</option>
@@ -171,28 +155,5 @@
     </div>
 @endsection
 @section('scripts')
-
-<script>
-    $(document).ready(function()
-{
-        $('#branch_id').on('change', function()
-    {
-        var branchID = $(this).val();
-        if(branchID !== '')
-        {
-            $.ajax({
-                url: '/get_departments/' + branchID,
-                type: 'GET',
-                success: function(response)
-                {
-
-                    $('#department_id').html(response);
-                }
-            })
-        }
-    })
-
-})
-</script>
 
 @endsection

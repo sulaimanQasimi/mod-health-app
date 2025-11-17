@@ -116,7 +116,7 @@
                 </div>
                 <div class="col-12">
                     {{-- Visits Section --}}
-                    <div class="accordion" id="visitsAccordion">
+                    <div style="border: #03c3ec 2px solid;" class="accordion mt-2" id="visitsAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="visitsHeading">
                                 <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -237,7 +237,7 @@
                 </div>
                     <!-- Prescription Section Accordion -->
                     <div class="col-12">
-                        <div class="accordion" id="prescriptionAccordion">
+                        <div style="border: #71dd37 3px solid;" class="accordion mt-2" id="prescriptionAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="prescriptionHeading">
                                     <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -279,7 +279,7 @@
                     {{-- Diabetes Charts Section --}}
                     <!-- Diabetes Charts Section Accordion -->
                     <div class="col-12">
-                        <div class="accordion" id="diabetesChartsAccordion">
+                        <div style="border: #ffc107 3px solid;" class="accordion mt-2" id="diabetesChartsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="diabetesChartsHeading">
                                     <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -442,7 +442,7 @@
                     </div>
                     {{-- Nurse Notes Section --}}
                     <div class="col-12">
-                        <div class="accordion" id="nurseNotesAccordion">
+                        <div style="border: #696cff 3px solid;" class="accordion mt-2" id="nurseNotesAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="nurseNotesHeading">
                                     <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -600,7 +600,7 @@
                     </div>
                     <!-- Nutrition Care Section Accordion -->
                     <div class="col-12">
-                        <div class="accordion" id="nutritionCareAccordion">
+                        <div style="border: #a1acb8 3px solid;" class="accordion mt-2" id="nutritionCareAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="nutritionCareHeading">
                                     <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -770,7 +770,7 @@
 
                 <!-- Medication Administration Records Section Accordion -->
                 <div class="col-12">
-                    <div class="accordion" id="medicationAdministrationRecordsAccordion">
+                    <div style="border: #ff3e1d 3px solid;" class="accordion mt-2" id="medicationAdministrationRecordsAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="medicationAdministrationRecordsHeading">
                                 <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -917,7 +917,7 @@
 
                 {{-- Vital Signs Section --}}
                 <div class="col-12">
-                    <div class="accordion" id="vitalSignsAccordion">
+                    <div style="border: #566a7f 3px solid;" class="accordion mt-2" id="vitalSignsAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="vitalSignsHeading">
                                 <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -1043,7 +1043,7 @@
                 </div>
                 <!-- Hospitalization Section Accordion -->
                 <div class="col-12">
-                    <div class="accordion" id="hospitalizationAccordion">
+                    <div style="border: #a1acb8 3px solid;" class="accordion mt-2" id="hospitalizationAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="hospitalizationHeading">
                                 <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -1060,7 +1060,7 @@
                                 aria-labelledby="hospitalizationHeading" data-bs-parent="#hospitalizationAccordion">
                                 <div class="accordion-body">
                                     <div class="d-flex gap-2 mb-3">
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        <button type="button" class="btn btn-succes s" data-bs-toggle="modal"
                                             data-bs-target="#createHospitalizationModal{{ $underReview->id }}">
                                             <i class="bx bx-plus"></i> {{ localize('global.hospitalize_patient') }}
                                         </button>
@@ -1290,7 +1290,7 @@
                 </div>
                 <!-- Nursing Notes Section Accordion -->
                 <div class="col-12">
-                    <div class="accordion" id="nursingNotesAccordion">
+                    <div style="border: #696cff 3px solid;" class="accordion mt-2" id="nursingNotesAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="nursingNotesHeading">
                                 <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -1311,7 +1311,7 @@
                 </div>
                 <!-- Nursing Assessment Section Accordion -->
                 <div class="col-12">
-                    <div class="accordion" id="nursingAssessmentAccordion">
+                    <div style="border: #ffc107 3px solid;" class="accordion mt-2" id="nursingAssessmentAccordion">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="nursingAssessmentHeading">
                                 <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
@@ -1347,7 +1347,7 @@
                 <!-- Discharge Section Accordion -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="accordion" id="dischargeAccordion">
+                        <div style="border: #71dd37 3px solid;" class="accordion mt-2" id="dischargeAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="dischargeHeading">
                                     <button class="accordion-button collapsed bg-body-secondary text-body" type="button"

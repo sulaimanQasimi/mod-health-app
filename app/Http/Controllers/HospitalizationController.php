@@ -172,9 +172,10 @@ class HospitalizationController extends Controller
         // Load only essential data for the main page - heavy data is now loaded via AJAX
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
-        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
-            ->where('active_status', true)
-            ->get();
+        // Doctors will be loaded via API, no need to pass them here
+        // $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+        //     ->where('active_status', true)
+        //     ->get();
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
         $foodTypes = FoodType::all();
@@ -190,7 +191,6 @@ class HospitalizationController extends Controller
             'hospitalization', 
             'operationTypes', 
             'labTypes', 
-            'operation_doctors', 
             'medicineTypes', 
             'medicines', 
             'foodTypes', 

@@ -194,9 +194,10 @@ class AppointmentController extends Controller
         
         $labTypes = LabType::all();
         $doctors = Doctor::all();
-        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
-            ->where('active_status', true)
-            ->get();
+        // Doctors will be loaded via API, no need to pass them here
+        // $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+        //     ->where('active_status', true)
+        //     ->get();
         $rooms = Room::all();
         $beds = Bed::all();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
@@ -214,7 +215,7 @@ class AppointmentController extends Controller
         $physiotherapyTypes = \App\Models\PhysiotherapyType::all();
         $physiotherapists = User::where('branch_id', auth()->user()->branch_id)->get();
 
-        return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'branches', 'operationTypes', 'operation_doctors', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes', 'physiotherapyTypes', 'physiotherapists'));
+        return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'branches', 'operationTypes', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes', 'physiotherapyTypes', 'physiotherapists'));
     }
 
     public function destroy(Appointment $appointment)

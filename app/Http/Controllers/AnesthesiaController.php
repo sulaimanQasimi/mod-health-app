@@ -8,6 +8,7 @@ use App\Models\Anesthesia;
 use App\Models\Doctor;
 use App\Models\OperationType;
 use Illuminate\Http\Request;
+use App\Models\Branch;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use HanifHefaz\Dcter\Dcter;
@@ -20,34 +21,193 @@ class AnesthesiaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function new()
+    public function new(Request $request)
     {
-        $anesthesias = Anesthesia::with(['patient', 'operationType', 'surgion'])
-            ->where('status', 'new')
-            ->latest()
-            ->paginate(10);
+        $query = Anesthesia::with(['patient', 'operationType', 'surgion', 'anesthesia_log', 'anesthesist', 'doctor'])
+            ->where('status', 'new');
 
-        return view('pages.anesthesias.new', compact('anesthesias'));
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('patient', function($patientQuery) use ($search) {
+                    $patientQuery->where('name', 'like', "%{$search}%")
+                                 ->orWhere('id_card', 'like', "%{$search}%")
+                                 ->orWhere('father_name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('operationType', function($opQuery) use ($search) {
+                    $opQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('surgion', function($surgionQuery) use ($search) {
+                    $surgionQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('plan', 'like', "%{$search}%");
+            });
+        }
+
+        // Operation Type filter
+        if ($request->filled('operation_type_id')) {
+            $query->where('operation_type_id', $request->operation_type_id);
+        }
+
+        // Branch filter
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Date from filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+
+        // Date to filter
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Anesthesia type filter
+        if ($request->filled('anesthesia_type')) {
+            $query->where('anesthesia_type', $request->anesthesia_type);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        $anesthesias = $query->paginate($request->get('per_page', 15))->withQueryString();
+
+        // Get filter options
+        $operationTypes = \App\Models\OperationType::where('branch_id', auth()->user()->branch_id)->get();
+        $branches = \App\Models\Branch::all();
+
+        return view('pages.anesthesias.new', compact('anesthesias', 'operationTypes', 'branches'));
     }
 
-    public function approved()
+    public function approved(Request $request)
     {
-        $anesthesias = Anesthesia::with(['patient', 'operationType', 'surgion'])
-            ->where('status', 'approved')
-            ->latest()
-            ->paginate(10);
+        $query = Anesthesia::with(['patient', 'operationType', 'surgion', 'anesthesia_log', 'anesthesist', 'doctor'])
+            ->where('status', 'approved');
 
-        return view('pages.anesthesias.approved', compact('anesthesias'));
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('patient', function($patientQuery) use ($search) {
+                    $patientQuery->where('name', 'like', "%{$search}%")
+                                 ->orWhere('id_card', 'like', "%{$search}%")
+                                 ->orWhere('father_name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('operationType', function($opQuery) use ($search) {
+                    $opQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('surgion', function($surgionQuery) use ($search) {
+                    $surgionQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('plan', 'like', "%{$search}%");
+            });
+        }
+
+        // Operation Type filter
+        if ($request->filled('operation_type_id')) {
+            $query->where('operation_type_id', $request->operation_type_id);
+        }
+
+        // Branch filter
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Date from filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+
+        // Date to filter
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Anesthesia type filter
+        if ($request->filled('anesthesia_type')) {
+            $query->where('anesthesia_type', $request->anesthesia_type);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        $anesthesias = $query->paginate($request->get('per_page', 15))->withQueryString();
+
+        // Get filter options
+        $operationTypes = \App\Models\OperationType::where('branch_id', auth()->user()->branch_id)->get();
+        $branches = \App\Models\Branch::all();
+
+        return view('pages.anesthesias.approved', compact('anesthesias', 'operationTypes', 'branches'));
     }
 
-    public function rejected()
+    public function rejected(Request $request)
     {
-        $anesthesias = Anesthesia::with(['patient', 'operationType', 'surgion'])
-            ->where('status', 'rejected')
-            ->latest()
-            ->paginate(10);
+        $query = Anesthesia::with(['patient', 'operationType', 'surgion', 'anesthesia_log', 'anesthesist', 'doctor'])
+            ->where('status', 'rejected');
 
-        return view('pages.anesthesias.rejected', compact('anesthesias'));
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('patient', function($patientQuery) use ($search) {
+                    $patientQuery->where('name', 'like', "%{$search}%")
+                                 ->orWhere('id_card', 'like', "%{$search}%")
+                                 ->orWhere('father_name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('operationType', function($opQuery) use ($search) {
+                    $opQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('surgion', function($surgionQuery) use ($search) {
+                    $surgionQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('plan', 'like', "%{$search}%");
+            });
+        }
+
+        // Operation Type filter
+        if ($request->filled('operation_type_id')) {
+            $query->where('operation_type_id', $request->operation_type_id);
+        }
+
+        // Branch filter
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Date from filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+
+        // Date to filter
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Anesthesia type filter
+        if ($request->filled('anesthesia_type')) {
+            $query->where('anesthesia_type', $request->anesthesia_type);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        $anesthesias = $query->paginate($request->get('per_page', 15))->withQueryString();
+
+        // Get filter options
+        $operationTypes = \App\Models\OperationType::where('branch_id', auth()->user()->branch_id)->get();
+        $branches = \App\Models\Branch::all();
+
+        return view('pages.anesthesias.rejected', compact('anesthesias', 'operationTypes', 'branches'));
     }
 
     /**
@@ -116,10 +276,8 @@ class AnesthesiaController extends Controller
      */
     public function show(Anesthesia $anesthesia)
     {
-        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
-            ->where('active_status', true)
-            ->get();
-        return view('pages.anesthesias.show', compact('anesthesia','operation_doctors'));
+        // Doctors will be loaded via API, no need to pass them here
+        return view('pages.anesthesias.show', compact('anesthesia'));
     }
 
     /**
@@ -127,12 +285,10 @@ class AnesthesiaController extends Controller
      */
     public function edit(Anesthesia $anesthesia)
     {
-        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
-            ->where('active_status', true)
-            ->get();
+        // Doctors will be loaded via API, no need to pass them here
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
 
-        return view('pages.anesthesias.edit', compact('anesthesia','operation_doctors','operationTypes'));
+        return view('pages.anesthesias.edit', compact('anesthesia', 'operationTypes'));
     }
 
     /**

@@ -1281,32 +1281,25 @@
                                         <div class="col-md-4">
                                             <label
                                                 for="operation_surgion_id{{ $appointment->id }}">{{ localize('global.operation_surgion') }}</label>
-                                            <select class="form-control select2" name="operation_surgion_id"
-                                                id="operation_surgion_id">
-                                                <option value="">{{ localize('global.select') }}
-                                                </option>
-                                                @foreach ($operation_doctors as $value)
-                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->name }}
-
-                                                    </option>
-                                                @endforeach
+                                            <select class="form-control select2 operation-doctor-select" 
+                                                    name="operation_surgion_id"
+                                                    id="operation_surgion_id{{ $appointment->id }}"
+                                                    data-appointment-id="{{ $appointment->id }}">
+                                                <option value="">{{ localize('global.select') }}...</option>
+                                                <option value="loading" disabled>{{ localize('global.loading') }}...</option>
                                             </select>
                                         </div>
 
                                         <div class="col-md-4">
                                             <label
                                                 for="operation_assistants_id{{ $appointment->id }}">{{ localize('global.operation_assistants') }}</label>
-                                            <select class="form-control select2" name="operation_assistants_id[]"
-                                                id="operation_assistants_id" multiple>
-                                                <option value="">{{ localize('global.select') }}
-                                                </option>
-                                                @foreach ($operation_doctors as $value)
-                                                    <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                        {{ $value->name }}
-
-                                                    </option>
-                                                @endforeach
+                                            <select class="form-control select2 operation-doctor-select" 
+                                                    name="operation_assistants_id[]"
+                                                    id="operation_assistants_id{{ $appointment->id }}"
+                                                    multiple
+                                                    data-appointment-id="{{ $appointment->id }}">
+                                                <option value="">{{ localize('global.select') }}...</option>
+                                                <option value="loading" disabled>{{ localize('global.loading') }}...</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4">
@@ -2101,6 +2094,11 @@
                 initializeSelect2InModals();
             });
 
+            // Load hospital doctors when anesthesia modal is opened
+            $(document).on('shown.bs.modal', '#createAnasthesiaModal{{ $appointment->id }}', function() {
+                loadHospitalDoctorsForAppointment({{ $appointment->id }});
+            });
+
             // Initialize Select2 for elements outside modals
             $('.select2:not(.modal .select2)').each(function () {
                 var $this = $(this);
@@ -2477,6 +2475,99 @@
                 format: 'YYYY/MM/DD',
                 observer: true,
             });
+
+            // Function to load hospital doctors for appointment anesthesia modal
+            function loadHospitalDoctorsForAppointment(appointmentId) {
+                const surgionSelect = $(`#operation_surgion_id${appointmentId}`);
+                const assistantsSelect = $(`#operation_assistants_id${appointmentId}`);
+                const modal = $(`#createAnasthesiaModal${appointmentId}`);
+                const dropdownParent = modal.length ? modal : $('body');
+                
+                // Show loading state
+                if (surgionSelect.length) {
+                    surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+                }
+                if (assistantsSelect.length) {
+                    assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+                }
+                
+                // Load doctors from API
+                $.ajax({
+                    url: '{{ route("doctor-api.hospital-doctors") }}',
+                    method: 'GET',
+                    data: {
+                        branch_id: {{ auth()->user()->branch_id }}
+                    },
+                    success: function(response) {
+                        if (response.success && response.data) {
+                            // Clear loading option
+                            let surgionOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                            let assistantsOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                            
+                            // Add doctors to options
+                            response.data.forEach(function(doctor) {
+                                const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor.specialization : '');
+                                surgionOptions += `<option value="${doctor.id}">${optionText}</option>`;
+                                assistantsOptions += `<option value="${doctor.id}">${optionText}</option>`;
+                            });
+                            
+                            // Update selects
+                            if (surgionSelect.length) {
+                                surgionSelect.html(surgionOptions);
+                                // Reinitialize Select2
+                                if (surgionSelect.hasClass('select2-hidden-accessible')) {
+                                    surgionSelect.select2('destroy');
+                                }
+                                setTimeout(function() {
+                                    if (typeof $.fn.select2 !== 'undefined') {
+                                        surgionSelect.select2({
+                                            dropdownParent: dropdownParent,
+                                            width: '100%',
+                                            placeholder: '{{ localize("global.select") }}...',
+                                            allowClear: true
+                                        });
+                                    }
+                                }, 100);
+                            }
+                            
+                            if (assistantsSelect.length) {
+                                assistantsSelect.html(assistantsOptions);
+                                // Reinitialize Select2
+                                if (assistantsSelect.hasClass('select2-hidden-accessible')) {
+                                    assistantsSelect.select2('destroy');
+                                }
+                                setTimeout(function() {
+                                    if (typeof $.fn.select2 !== 'undefined') {
+                                        assistantsSelect.select2({
+                                            dropdownParent: dropdownParent,
+                                            width: '100%',
+                                            placeholder: '{{ localize("global.select") }}...',
+                                            allowClear: true
+                                        });
+                                    }
+                                }, 100);
+                            }
+                        } else {
+                            console.error('Failed to load doctors:', response.message);
+                            if (surgionSelect.length) {
+                                surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                            }
+                            if (assistantsSelect.length) {
+                                assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading doctors:', error);
+                        if (surgionSelect.length) {
+                            surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                        }
+                        if (assistantsSelect.length) {
+                            assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                        }
+                    }
+                });
+            }
         });
     </script>
         </div>

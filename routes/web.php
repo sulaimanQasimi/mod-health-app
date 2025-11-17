@@ -886,6 +886,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('delete/{visitId}', [\App\Http\Controllers\VisitAjaxController::class, 'deleteVisit']);
     });
 
+    // Doctor API routes
+    Route::prefix('doctor-api')->name('doctor-api.')->group(function () {
+        Route::get('doctors', [\App\Http\Controllers\DoctorApiController::class, 'getDoctors'])->name('doctors');
+        Route::get('hospital-doctors', [\App\Http\Controllers\DoctorApiController::class, 'getHospitalDoctors'])->name('hospital-doctors');
+    });
+
     // Hospitalization Prescription Ajax routes
     Route::prefix('hospitalization-prescription-ajax')->name('hospitalization-prescription-ajax.')->group(function () {
         Route::get('medicine-types', [\App\Http\Controllers\HospitalizationPrescriptionAjaxController::class, 'getMedicineTypes']);

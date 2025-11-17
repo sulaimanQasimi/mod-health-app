@@ -43,29 +43,34 @@ class Anesthesia extends Model
         return $this->belongsTo(Patient::class);
     }
 
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'id');
+    }
+
     public function surgion()
     {
-        return $this->belongsTo(User::class, 'operation_surgion_id', 'id');
+        return $this->belongsTo(Doctor::class, 'operation_surgion_id', 'id');
     }
 
     public function anesthesia_log()
     {
-        return $this->belongsTo(User::class, 'operation_anesthesia_log_id', 'id');
+        return $this->belongsTo(Doctor::class, 'operation_anesthesia_log_id', 'id');
     }
 
     public function anesthesist()
     {
-        return $this->belongsTo(User::class, 'operation_anesthesist_id', 'id');
+        return $this->belongsTo(Doctor::class, 'operation_anesthesist_id', 'id');
     }
 
     public function scrub_nurse()
     {
-        return $this->belongsTo(User::class, 'operation_scrub_nurse_id', 'id');
+        return $this->belongsTo(Doctor::class, 'operation_scrub_nurse_id', 'id');
     }
 
     public function circulation_nurse()
     {
-        return $this->belongsTo(User::class, 'operation_circulation_nurse_id', 'id');
+        return $this->belongsTo(Doctor::class, 'operation_circulation_nurse_id', 'id');
     }
 
     public function appointment()
@@ -95,8 +100,8 @@ class Anesthesia extends Model
 
     public function getAssociatedAssistantsAttribute()
     {
-        $userIds = array_map('intval', json_decode($this->operation_assistants_id, true));
-        return User::whereIn('id', $userIds)->get();
+        $doctorIds = array_map('intval', json_decode($this->operation_assistants_id, true));
+        return Doctor::whereIn('id', $doctorIds)->get();
     }
 
     public function room()

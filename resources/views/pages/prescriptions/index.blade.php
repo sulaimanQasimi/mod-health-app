@@ -146,6 +146,10 @@
         'global.save' => localize('global.save'),
         'global.enter_amount' => localize('global.enter_amount'),
         'global.close' => localize('global.close'),
+'global.using_original_item_type' => localize('global.using_original_item_type'),
+        'global.using_original_item_usage_type' => localize('global.using_original_item_usage_type'),
+    'global.optional' => localize('global.optional'),
+ 'global.add_notes_about_alternative' => localize('global.add_notes_about_alternative'),
 
     ]) }}" data-branch-id="{{ auth()->user()->branch_id }}">
             </div>

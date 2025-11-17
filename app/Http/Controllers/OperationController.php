@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
 use App\Models\Bed;
+use App\Models\Doctor;
 use App\Models\FoodType;
 use App\Models\Operation;
 use App\Models\Relation;
 use App\Models\Room;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -78,7 +78,9 @@ class OperationController extends Controller
      */
     public function show(Anesthesia $operation)
     {
-        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->get();
         $rooms = Room::all();
         $beds = Bed::all();
         $foodTypes = FoodType::all();
@@ -218,7 +220,7 @@ class OperationController extends Controller
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->leftJoin('users as u', 'a.operation_surgion_id', '=', 'u.id')
+            ->leftJoin('doctors as u', 'a.operation_surgion_id', '=', 'u.id')
             ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
             ->select(
                 'a.id',
@@ -278,7 +280,7 @@ class OperationController extends Controller
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->leftJoin('users as u', 'a.operation_surgion_id', '=', 'u.id')
+            ->leftJoin('doctors as u', 'a.operation_surgion_id', '=', 'u.id')
             ->leftJoin('operation_types as ot', 'a.operation_type_id', '=', 'ot.id')
             ->select(
                 'a.id',

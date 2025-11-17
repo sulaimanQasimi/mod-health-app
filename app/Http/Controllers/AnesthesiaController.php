@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewAnesthesiaNotification;
 use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
+use App\Models\Doctor;
 use App\Models\OperationType;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -116,7 +116,9 @@ class AnesthesiaController extends Controller
      */
     public function show(Anesthesia $anesthesia)
     {
-        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->get();
         return view('pages.anesthesias.show', compact('anesthesia','operation_doctors'));
     }
 
@@ -125,7 +127,9 @@ class AnesthesiaController extends Controller
      */
     public function edit(Anesthesia $anesthesia)
     {
-        $operation_doctors = User::where('branch_id', auth()->user()->branch_id)->get();
+        $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->where('active_status', true)
+            ->get();
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
 
         return view('pages.anesthesias.edit', compact('anesthesia','operation_doctors','operationTypes'));

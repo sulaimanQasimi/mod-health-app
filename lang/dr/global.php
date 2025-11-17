@@ -3727,6 +3727,15 @@ return [
     'male' => "مرد",
     'female' => "زن",
     'hospital' => 'شفاخانه',
-    'clinic' => 'کلینیک'
+    'clinic' => 'کلینیک',
+    'doctors_list' => 'لیست دکتران',
+    
+'all' => 'همه',
+'join_date_from' => 'تاریخ استخدام از',
+'join_date_to' => 'تاریخ استخدام تا',
+    'using_original_item_type' => 'انتخاب دارو اصلی',
+        'using_original_item_usage_type' => 'انتخاب نوع استفاده اصلی',
+    'optional' => 'اختیاری',
+ 'add_notes_about_alternative' => 'یادداشت‌ها (اختیاری)',
 
 ];

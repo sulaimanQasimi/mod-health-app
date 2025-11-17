@@ -24,6 +24,7 @@
                                 <th>{{localize('global.father_name')}}</th>
                                 <th>{{localize('global.room')}}</th>
                                 <th>{{localize('global.bed')}}</th>
+                                <th>{{localize('global.doctor')}}</th>
                                 <th>{{localize('global.hospitalization_date')}}</th>
                                 <th></th>
                             </tr>
@@ -104,6 +105,12 @@
                             data: 'bed',
                             render: function(data) {
                                 return data ? data.number : '';
+                            }
+                        },
+                        {
+                            data: 'doctor',
+                            render: function(data) {
+                                return data ? data.name : '';
                             }
                         },
                         {

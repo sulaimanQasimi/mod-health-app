@@ -32,6 +32,13 @@
                                 <i class="bx bx-edit me-1"></i>
                                 {{ localize('global.edit') }}
                             </a>
+                            @if(!$underReview->discharge_remark)
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#createDischargeModal{{ $underReview->id }}">
+                                    <i class="bx bx-log-out me-1"></i>
+                                    {{ localize('global.discharge_patient') }}
+                                </button>
+                            @endif
                             <a href="{{ route('under_reviews.index') }}" class="btn btn-outline-primary btn-sm">
                                 <i class="bx bx-arrow-back me-1"></i>
                                 {{ localize('global.back') }}
@@ -40,6 +47,47 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Create Discharge Modal -->
+            <div class="modal fade" id="createDischargeModal{{ $underReview->id }}"
+                tabindex="-1" aria-labelledby="createDischargeModalLabel{{ $underReview->id }}"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"
+                                id="createDischargeModalLabel{{ $underReview->id }}">
+                                {{ localize('global.discharge_patient') }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('under_reviews.update', $underReview) }}"
+                                method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" id="is_discharged{{ $underReview->id }}"
+                                    name="is_discharged" value="1">
+                                <div class="form-group">
+                                    <label
+                                        for="discharge_remark{{ $underReview->id }}">{{ localize('global.discharge_remark') }}</label>
+                                    <textarea class="form-control"
+                                        id="discharge_remark{{ $underReview->id }}"
+                                        name="discharge_remark" rows="3"></textarea>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                            <button type="submit"
+                                class="btn btn-primary">{{ localize('global.save') }}</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- End Create Discharge Modal -->
 
             <!-- Under Review Details Card -->
             <div class="row mb-4">
@@ -1360,54 +1408,6 @@
                                 <div id="dischargeCollapse" class="accordion-collapse collapse"
                                     aria-labelledby="dischargeHeading" data-bs-parent="#dischargeAccordion">
                                     <div class="accordion-body">
-                                        <div class="d-flex gap-2 mb-3">
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#createDischargeModal{{ $underReview->id }}">
-                                                <i class="bx bx-plus"></i> {{ localize('global.discharge_patient') }}
-                                            </button>
-                                        </div>
-
-                                        <!-- Create Discharge Modal -->
-                                        <div class="modal fade" id="createDischargeModal{{ $underReview->id }}"
-                                            tabindex="-1" aria-labelledby="createDischargeModalLabel{{ $underReview->id }}"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title"
-                                                            id="createDischargeModalLabel{{ $underReview->id }}">
-                                                            {{ localize('global.discharge_patient') }}
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form action="{{ route('under_reviews.update', $underReview) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <input type="hidden" id="is_discharged{{ $underReview->id }}"
-                                                                name="is_discharged" value="1">
-                                                            <div class="form-group">
-                                                                <label
-                                                                    for="discharge_remark{{ $underReview->id }}">{{ localize('global.discharge_remark') }}</label>
-                                                                <textarea class="form-control"
-                                                                    id="discharge_remark{{ $underReview->id }}"
-                                                                    name="discharge_remark" rows="3"></textarea>
-                                                            </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                        <button type="submit"
-                                                            class="btn btn-primary">{{ localize('global.save') }}</button>
-                                                    </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- End Create Discharge Modal -->
-
                                         @if($underReview->discharge_remark)
                                             <div class="alert alert-info">
                                                 <h6>{{ localize('global.discharge_remark') }}:</h6>

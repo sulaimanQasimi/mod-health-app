@@ -13,11 +13,13 @@
                         <!-- Enhanced Anesthesia Details Section -->
                         <div class="col-md-12 mb-4">
                             <div class="card border shadow-sm anesthesia-details-card">
-                                <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #35365f !important; color: #696cff !important;">
+                                <div class="card-header d-flex align-items-center justify-content-between"
+                                    style="background-color: #35365f !important; color: #696cff !important;">
                                     <h5 class="mb-0 d-flex align-items-center" style="color: #696cff !important;">
                                         {{ localize('global.anesthesia_details') }}
                                     </h5>
-                                    <span class="badge fs-6 ms-auto" style="background-color: #696cff !important; color: #35365f !important;">
+                                    <span class="badge fs-6 ms-auto"
+                                        style="background-color: #696cff !important; color: #35365f !important;">
                                         @if ($anesthesia->status == 'new')
                                             <i class="bx bx-time me-1"></i>{{ localize('global.new') }}
                                         @elseif ($anesthesia->status == 'rejected')
@@ -32,7 +34,8 @@
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user me-2"></i>
                                                     <span>{{ localize('global.patient_name') }}</span>
                                                 </div>
@@ -43,31 +46,37 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-plus-medical me-2"></i>
                                                     <span>{{ localize('global.operation_type') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
                                                     <div>
-                                                        <span class="badge bg-success">{{ $anesthesia->operationType?->name ?? 'N/A' }}</span>
+                                                        <span
+                                                            class="badge bg-success">{{ $anesthesia->operationType?->name ?? 'N/A' }}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-calendar me-2"></i>
                                                     <span>{{ localize('global.date') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) ?? 'N/A' }}</div>
+                                                    <div>
+                                                        {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) ?? 'N/A' }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-time-five me-2"></i>
                                                     <span>{{ localize('global.time') }}</span>
                                                 </div>
@@ -82,7 +91,8 @@
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-timer me-2"></i>
                                                     <span>{{ localize('global.operation_duration') }}</span>
                                                 </div>
@@ -93,7 +103,8 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-bed me-2"></i>
                                                     <span>{{ localize('global.position_on_bed') }}</span>
                                                 </div>
@@ -104,7 +115,8 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-clipboard me-2"></i>
                                                     <span>{{ localize('global.operation_plan') }}</span>
                                                 </div>
@@ -119,7 +131,8 @@
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user-md me-2"></i>
                                                     <span>{{ localize('global.operation_surgion') }}</span>
                                                 </div>
@@ -128,35 +141,38 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if(isset($anesthesia->anesthesist->name))
-                                        <div class="col-md-3">
-                                            <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
-                                                    <i class="bx bx-user-circle me-2"></i>
-                                                    <span>{{ localize('global.anesthesist') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3">
-                                                    <div>{{ $anesthesia->anesthesist->name }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
-                                        @if(isset($anesthesia->anesthesia_log->name))
-                                        <div class="col-md-3">
-                                            <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
-                                                    <i class="bx bx-file-blank me-2"></i>
-                                                    <span>{{ localize('global.anesthesia_log') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3">
-                                                    <div>{{ $anesthesia->anesthesia_log->name }}</div>
+                                        @if (isset($anesthesia->anesthesist->name))
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="p-2 d-flex align-items-center"
+                                                        style="background-color: #35365f !important; color: #696cff !important;">
+                                                        <i class="bx bx-user-circle me-2"></i>
+                                                        <span>{{ localize('global.anesthesist') }}</span>
+                                                    </div>
+                                                    <div class="bg-body-secondary p-3">
+                                                        <div>{{ $anesthesia->anesthesist->name }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
+                                        @if (isset($anesthesia->anesthesia_log->name))
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="p-2 d-flex align-items-center"
+                                                        style="background-color: #35365f !important; color: #696cff !important;">
+                                                        <i class="bx bx-file-blank me-2"></i>
+                                                        <span>{{ localize('global.anesthesia_log') }}</span>
+                                                    </div>
+                                                    <div class="bg-body-secondary p-3">
+                                                        <div>{{ $anesthesia->anesthesia_log->name }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         @endif
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-droplet me-2"></i>
                                                     <span>{{ localize('global.estimated_blood_waste') }}</span>
                                                 </div>
@@ -169,35 +185,38 @@
 
                                     <!-- Nurses & Additional Info Row -->
                                     <div class="row g-3 mb-4">
-                                        @if(isset($anesthesia->scrub_nurse->name))
-                                        <div class="col-md-3">
-                                            <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
-                                                    <i class="bx bx-user-pin me-2"></i>
-                                                    <span>{{ localize('global.scrub_nurse') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3">
-                                                    <div>{{ $anesthesia->scrub_nurse->name }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
-                                        @if(isset($anesthesia->circulation_nurse->name))
-                                        <div class="col-md-3">
-                                            <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
-                                                    <i class="bx bx-user-voice me-2"></i>
-                                                    <span>{{ localize('global.circulation_nurse') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3">
-                                                    <div>{{ $anesthesia->circulation_nurse->name }}</div>
+                                        @if (isset($anesthesia->scrub_nurse->name))
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="p-2 d-flex align-items-center"
+                                                        style="background-color: #35365f !important; color: #696cff !important;">
+                                                        <i class="bx bx-user-pin me-2"></i>
+                                                        <span>{{ localize('global.scrub_nurse') }}</span>
+                                                    </div>
+                                                    <div class="bg-body-secondary p-3">
+                                                        <div>{{ $anesthesia->scrub_nurse->name }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
+                                        @if (isset($anesthesia->circulation_nurse->name))
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="p-2 d-flex align-items-center"
+                                                        style="background-color: #35365f !important; color: #696cff !important;">
+                                                        <i class="bx bx-user-voice me-2"></i>
+                                                        <span>{{ localize('global.circulation_nurse') }}</span>
+                                                    </div>
+                                                    <div class="bg-body-secondary p-3">
+                                                        <div>{{ $anesthesia->circulation_nurse->name }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         @endif
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-message-dots me-2"></i>
                                                     <span>{{ localize('global.anesthesia_log_reply') }}</span>
                                                 </div>
@@ -208,7 +227,8 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-clipboard me-2"></i>
                                                     <span>{{ localize('global.anesthesia_plan') }}</span>
                                                 </div>
@@ -223,14 +243,16 @@
                                     <div class="row g-3">
                                         <div class="col-md-3">
                                             <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                                <div class="p-2 d-flex align-items-center"
+                                                    style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-pulse me-2"></i>
                                                     <span>{{ localize('global.anesthesia_type') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
                                                     <div>
-                                                        @if($anesthesia->anesthesia_type)
-                                                            <span class="badge bg-info">{{ $anesthesia->anesthesia_type }}</span>
+                                                        @if ($anesthesia->anesthesia_type)
+                                                            <span
+                                                                class="badge bg-info">{{ $anesthesia->anesthesia_type }}</span>
                                                         @else
                                                             N/A
                                                         @endif
@@ -238,172 +260,187 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if($anesthesia->other_problems)
-                                        <div class="col-md-9">
-                                            <div class="h-100">
-                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
-                                                    <i class="bx bx-error-circle me-2"></i>
-                                                    <span>{{ localize('global.other_problems') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3">
-                                                    <div>{{ $anesthesia->other_problems }}</div>
+                                        @if ($anesthesia->other_problems)
+                                            <div class="col-md-9">
+                                                <div class="h-100">
+                                                    <div class="p-2 d-flex align-items-center"
+                                                        style="background-color: #35365f !important; color: #696cff !important;">
+                                                        <i class="bx bx-error-circle me-2"></i>
+                                                        <span>{{ localize('global.other_problems') }}</span>
+                                                    </div>
+                                                    <div class="bg-body-secondary p-3">
+                                                        <div>{{ $anesthesia->other_problems }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                                @if($anesthesia->status == 'new')
-                                <hr class="border border-label-primary">
-                                <div class="d-flex justify-content-center mb-2 p-2">
-                                        <div class="col-md-2">
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                            data-bs-target="#createAnasthesiaModal{{ $anesthesia->id }}"><span><i
-                                                    class="bx bx-check"></i>{{localize('global.approve')}}</span></button>
-                                        </div>
+                        @if ($anesthesia->status == 'new')
+                            <hr class="border border-label-primary">
+                            <div class="d-flex justify-content-center mb-2 p-2">
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#createAnasthesiaModal{{ $anesthesia->id }}"><span><i
+                                                class="bx bx-check"></i>{{ localize('global.approve') }}</span></button>
+                                </div>
 
-                                        <div class="col-md-2">
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                         data-bs-target="#createAnasthesiaRejectModal{{ $anesthesia->id }}"><span><i
-                                                class="bx bx-x"></i>{{localize('global.reject')}}</span></button>
-                                        </div>
+                                                class="bx bx-x"></i>{{ localize('global.reject') }}</span></button>
                                 </div>
-                                @endif
-                                <div class="modal fade" id="createAnasthesiaModal{{ $anesthesia->id }}" tabindex="-1"
-                                    aria-labelledby="createAnasthesiaModalLabel{{ $anesthesia->id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="createAnasthesiaModalLabel{{ $anesthesia->id }}">
-                                                    {{ localize('global.refere_to_operation') }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('anesthesias.update', $anesthesia) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden"
-                                                        name="status" value="approved">
-
-                                                    <div class="form-group">
-
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="anesthesia_log_reply{{ $anesthesia->id }}">{{ localize('global.anesthesia_log_reply') }}</label>
-                                                            <textarea class="form-control" id="anesthesia_log_reply{{ $anesthesia->id }}" name="anesthesia_log_reply" rows="3"></textarea>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
-                                                            <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
-                                                        </div>
-
-                                                        <div class="row">
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="operation_anesthesia_log_id{{ $anesthesia->id }}">{{ localize('global.anesthesia_log') }}</label>
-                                                            <select class="form-control select2 operation-doctor-select"
-                                                                name="operation_anesthesia_log_id"
-                                                                id="operation_anesthesia_log_id{{ $anesthesia->id }}"
-                                                                data-anesthesia-id="{{ $anesthesia->id }}"
-                                                                data-selected-value="{{ old('operation_anesthesia_log_id', $anesthesia->operation_anesthesia_log_id) }}">
-                                                                <option value="">{{ localize('global.select') }}...</option>
-                                                                <option value="loading" disabled>{{ localize('global.loading') }}...</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="col-md-4">
-                                                            <label
-                                                                for="anesthesist{{ $anesthesia->id }}">{{ localize('global.anesthesist') }}</label>
-                                                            <select class="form-control select2 operation-doctor-select"
-                                                                name="operation_anesthesist_id"
-                                                                id="operation_anesthesist_id{{ $anesthesia->id }}"
-                                                                data-anesthesia-id="{{ $anesthesia->id }}"
-                                                                data-selected-value="{{ old('operation_anesthesist_id', $anesthesia->operation_anesthesist_id) }}">
-                                                                <option value="">{{ localize('global.select') }}...</option>
-                                                                <option value="loading" disabled>{{ localize('global.loading') }}...</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="col-md-4">
-                                                            <label for="anesthesia_type{{ $anesthesia->id }}">{{ localize('global.anesthesia_type') }}</label>
-                                                            <select class="form-control select2" name="anesthesia_type" id="anesthesia_type">
-                                                                <option value="">{{ localize('global.select') }}</option>
-                                                                <option value="local" {{ $anesthesia->anesthesia_type == 'local' ? 'selected' : '' }}>{{ localize('global.local') }}</option>
-                                                                <option value="spinal" {{ $anesthesia->anesthesia_type == 'spinal' ? 'selected' : '' }}>{{ localize('global.spinal') }}</option>
-                                                                <option value="general" {{ $anesthesia->anesthesia_type == 'general' ? 'selected' : '' }}>{{ localize('global.general') }}</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                <button type="submit"
-                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
-                                            </div>
-                                            </form>
-                                        </div>
+                            </div>
+                        @endif
+                        <div class="modal fade" id="createAnasthesiaModal{{ $anesthesia->id }}" tabindex="-1"
+                            aria-labelledby="createAnasthesiaModalLabel{{ $anesthesia->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createAnasthesiaModalLabel{{ $anesthesia->id }}">
+                                            {{ localize('global.refere_to_operation') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
                                     </div>
-                                </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('anesthesias.update', $anesthesia) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="status" value="approved">
 
-                                <div class="modal fade" id="createAnasthesiaRejectModal{{ $anesthesia->id }}" tabindex="-1"
-                                    aria-labelledby="createAnasthesiaRejectModalLabel{{ $anesthesia->id }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="createAnasthesiaRejectModalLabel{{ $anesthesia->id }}">
-                                                    {{ localize('global.rejection_reason') }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('anesthesias.update', $anesthesia) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="hidden"
-                                                        name="status" value="rejected">
+                                            <div class="form-group">
 
-                                                    <div class="form-group">
+                                                <div class="form-group">
+                                                    <label
+                                                        for="anesthesia_log_reply{{ $anesthesia->id }}">{{ localize('global.anesthesia_log_reply') }}</label>
+                                                    <textarea class="form-control" id="anesthesia_log_reply{{ $anesthesia->id }}" name="anesthesia_log_reply"
+                                                        rows="3"></textarea>
+                                                </div>
 
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="rejection_reason{{ $anesthesia->id }}">{{ localize('global.rejection_reason') }}</label>
-                                                            <textarea class="form-control" id="rejection_reason{{ $anesthesia->id }}" name="anesthesia_log_reply" rows="3"></textarea>
-                                                        </div>
+                                                <div class="form-group">
+                                                    <label
+                                                        for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
+                                                    <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
+                                                </div>
 
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
-                                                            <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
-                                                        </div>
-
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <label
+                                                            for="operation_anesthesia_log_id{{ $anesthesia->id }}">{{ localize('global.anesthesia_log') }}</label>
+                                                        <select class="form-control select2 operation-doctor-select"
+                                                            name="operation_anesthesia_log_id"
+                                                            id="operation_anesthesia_log_id{{ $anesthesia->id }}"
+                                                            data-anesthesia-id="{{ $anesthesia->id }}"
+                                                            data-selected-value="{{ old('operation_anesthesia_log_id', $anesthesia->operation_anesthesia_log_id) }}">
+                                                            <option value="">{{ localize('global.select') }}...
+                                                            </option>
+                                                            <option value="loading" disabled>
+                                                                {{ localize('global.loading') }}...</option>
+                                                        </select>
                                                     </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
-                                                <button type="submit"
-                                                    class="btn btn-primary">{{ localize('global.save') }}</button>
-                                            </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
 
+                                                    <div class="col-md-4">
+                                                        <label
+                                                            for="anesthesist{{ $anesthesia->id }}">{{ localize('global.anesthesist') }}</label>
+                                                        <select class="form-control select2 operation-doctor-select"
+                                                            name="operation_anesthesist_id"
+                                                            id="operation_anesthesist_id{{ $anesthesia->id }}"
+                                                            data-anesthesia-id="{{ $anesthesia->id }}"
+                                                            data-selected-value="{{ old('operation_anesthesist_id', $anesthesia->operation_anesthesist_id) }}">
+                                                            <option value="">{{ localize('global.select') }}...
+                                                            </option>
+                                                            <option value="loading" disabled>
+                                                                {{ localize('global.loading') }}...</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <label
+                                                            for="anesthesia_type{{ $anesthesia->id }}">{{ localize('global.anesthesia_type') }}</label>
+                                                        <select class="form-control select2" name="anesthesia_type"
+                                                            id="anesthesia_type">
+                                                            <option value="">{{ localize('global.select') }}
+                                                            </option>
+                                                            <option value="local"
+                                                                {{ $anesthesia->anesthesia_type == 'local' ? 'selected' : '' }}>
+                                                                {{ localize('global.local') }}</option>
+                                                            <option value="spinal"
+                                                                {{ $anesthesia->anesthesia_type == 'spinal' ? 'selected' : '' }}>
+                                                                {{ localize('global.spinal') }}</option>
+                                                            <option value="general"
+                                                                {{ $anesthesia->anesthesia_type == 'general' ? 'selected' : '' }}>
+                                                                {{ localize('global.general') }}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="createAnasthesiaRejectModal{{ $anesthesia->id }}" tabindex="-1"
+                            aria-labelledby="createAnasthesiaRejectModalLabel{{ $anesthesia->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"
+                                            id="createAnasthesiaRejectModalLabel{{ $anesthesia->id }}">
+                                            {{ localize('global.rejection_reason') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('anesthesias.update', $anesthesia) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="status" value="rejected">
+
+                                            <div class="form-group">
+
+                                                <div class="form-group">
+                                                    <label
+                                                        for="rejection_reason{{ $anesthesia->id }}">{{ localize('global.rejection_reason') }}</label>
+                                                    <textarea class="form-control" id="rejection_reason{{ $anesthesia->id }}" name="anesthesia_log_reply"
+                                                        rows="3"></textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label
+                                                        for="anesthesia_plan{{ $anesthesia->id }}">{{ localize('global.anesthesia_plan') }}</label>
+                                                    <textarea class="form-control" id="anesthesia_plan{{ $anesthesia->id }}" name="anesthesia_plan" rows="3"></textarea>
+                                                </div>
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer border border-label-primary">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                        <button type="submit"
+                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
     </div>
 @endsection
@@ -526,7 +563,7 @@
         }
 
         /* Select2 styles for show page */
-        #createAnasthesiaModal{{ $anesthesia->id }} .operation-doctor-select + .select2-container {
+        #createAnasthesiaModal{{ $anesthesia->id }} .operation-doctor-select+.select2-container {
             width: 100% !important;
             z-index: 9999;
         }
@@ -578,22 +615,26 @@
             const anesthesistSelect = $('#operation_anesthesist_id{{ $anesthesia->id }}');
             const modal = $('#createAnasthesiaModal{{ $anesthesia->id }}');
             const dropdownParent = modal.length ? modal : $('body');
-            
+
             // Get selected values from data attributes
             const selectedAnesthesiaLogId = anesthesiaLogSelect.data('selected-value');
             const selectedAnesthesistId = anesthesistSelect.data('selected-value');
-            
+
             // Show loading state
             if (anesthesiaLogSelect.length) {
-                anesthesiaLogSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+                anesthesiaLogSelect.html(
+                    '<option value="">{{ localize('global.select') }}...</option><option value="loading" disabled>{{ localize('global.loading') }}...</option>'
+                    );
             }
             if (anesthesistSelect.length) {
-                anesthesistSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+                anesthesistSelect.html(
+                    '<option value="">{{ localize('global.select') }}...</option><option value="loading" disabled>{{ localize('global.loading') }}...</option>'
+                    );
             }
-            
+
             // Load doctors from API
             $.ajax({
-                url: '{{ route("doctor-api.hospital-doctors") }}',
+                url: '{{ route('doctor-api.hospital-doctors') }}',
                 method: 'GET',
                 data: {
                     branch_id: {{ auth()->user()->branch_id }}
@@ -601,19 +642,26 @@
                 success: function(response) {
                     if (response.success && response.data) {
                         // Clear loading option
-                        let anesthesiaLogOptions = '<option value="">{{ localize("global.select") }}...</option>';
-                        let anesthesistOptions = '<option value="">{{ localize("global.select") }}...</option>';
-                        
+                        let anesthesiaLogOptions =
+                            '<option value="">{{ localize('global.select') }}...</option>';
+                        let anesthesistOptions =
+                            '<option value="">{{ localize('global.select') }}...</option>';
+
                         // Add doctors to options
                         response.data.forEach(function(doctor) {
-                            const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor.specialization : '');
-                            const isSelectedAnesthesiaLog = selectedAnesthesiaLogId && Number(doctor.id) == Number(selectedAnesthesiaLogId);
-                            const isSelectedAnesthesist = selectedAnesthesistId && Number(doctor.id) == Number(selectedAnesthesistId);
-                            
-                            anesthesiaLogOptions += `<option value="${doctor.id}" ${isSelectedAnesthesiaLog ? 'selected' : ''}>${optionText}</option>`;
-                            anesthesistOptions += `<option value="${doctor.id}" ${isSelectedAnesthesist ? 'selected' : ''}>${optionText}</option>`;
+                            const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor
+                                .specialization : '');
+                            const isSelectedAnesthesiaLog = selectedAnesthesiaLogId && Number(doctor
+                                .id) == Number(selectedAnesthesiaLogId);
+                            const isSelectedAnesthesist = selectedAnesthesistId && Number(doctor.id) ==
+                                Number(selectedAnesthesistId);
+
+                            anesthesiaLogOptions +=
+                                `<option value="${doctor.id}" ${isSelectedAnesthesiaLog ? 'selected' : ''}>${optionText}</option>`;
+                            anesthesistOptions +=
+                                `<option value="${doctor.id}" ${isSelectedAnesthesist ? 'selected' : ''}>${optionText}</option>`;
                         });
-                        
+
                         // Update selects
                         if (anesthesiaLogSelect.length) {
                             anesthesiaLogSelect.html(anesthesiaLogOptions);
@@ -626,13 +674,13 @@
                                     anesthesiaLogSelect.select2({
                                         dropdownParent: dropdownParent,
                                         width: '100%',
-                                        placeholder: '{{ localize("global.select") }}...',
+                                        placeholder: '{{ localize('global.select') }}...',
                                         allowClear: true
                                     });
                                 }
                             }, 100);
                         }
-                        
+
                         if (anesthesistSelect.length) {
                             anesthesistSelect.html(anesthesistOptions);
                             // Reinitialize Select2
@@ -644,7 +692,7 @@
                                     anesthesistSelect.select2({
                                         dropdownParent: dropdownParent,
                                         width: '100%',
-                                        placeholder: '{{ localize("global.select") }}...',
+                                        placeholder: '{{ localize('global.select') }}...',
                                         allowClear: true
                                     });
                                 }
@@ -653,20 +701,28 @@
                     } else {
                         console.error('Failed to load doctors:', response.message);
                         if (anesthesiaLogSelect.length) {
-                            anesthesiaLogSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                            anesthesiaLogSelect.html(
+                                '<option value="">{{ localize('global.select') }}...</option><option value="" disabled>{{ localize('global.failed_to_load_doctors') }}</option>'
+                                );
                         }
                         if (anesthesistSelect.length) {
-                            anesthesistSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                            anesthesistSelect.html(
+                                '<option value="">{{ localize('global.select') }}...</option><option value="" disabled>{{ localize('global.failed_to_load_doctors') }}</option>'
+                                );
                         }
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('Error loading doctors:', error);
                     if (anesthesiaLogSelect.length) {
-                        anesthesiaLogSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                        anesthesiaLogSelect.html(
+                            '<option value="">{{ localize('global.select') }}...</option><option value="" disabled>{{ localize('global.error_loading_doctors') }}</option>'
+                            );
                     }
                     if (anesthesistSelect.length) {
-                        anesthesistSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                        anesthesistSelect.html(
+                            '<option value="">{{ localize('global.select') }}...</option><option value="" disabled>{{ localize('global.error_loading_doctors') }}</option>'
+                            );
                     }
                 }
             });

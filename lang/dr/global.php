@@ -3738,4 +3738,6 @@ return [
     'add_notes_about_alternative' => 'یادداشت‌ها (اختیاری)',
     'search_by_patient_operation'=>'جستجوی مریض ',
     'apply_filters'=>' فیلتر',
+    'rejected'=>'رد شده',
+    'no_anesthesias_found'=>'هیچ انستیزی برای نمایش یافت نشد',
 ];

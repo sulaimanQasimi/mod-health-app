@@ -100,7 +100,7 @@
                                     <label for="date_from" class="form-label fw-semibold">
                                         <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_from') ?: 'Date From' }}
                                     </label>
-                                    <input type="date" class="form-control" id="date_from" name="date_from" 
+                                    <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
                                            value="{{ request('date_from') }}">
                                 </div>
 
@@ -109,7 +109,7 @@
                                     <label for="date_to" class="form-label fw-semibold">
                                         <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_to') ?: 'Date To' }}
                                     </label>
-                                    <input type="date" class="form-control" id="date_to" name="date_to" 
+                                    <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" 
                                            value="{{ request('date_to') }}">
                                 </div>
 
@@ -212,7 +212,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 50px;">#</th>
@@ -324,18 +324,8 @@
 
 @section('styles')
     <style>
-        .table-hover tbody tr:hover {
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-
         .card-header[data-bs-toggle="collapse"] {
             cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .card-header[data-bs-toggle="collapse"]:hover {
-            background-color: #f8f9fa;
         }
 
         .badge {

@@ -3743,4 +3743,5 @@ return [
     'are_you_sure_accept_appointment'=>'آیا مطمئن هستید که می خواهید این انستیزی را قبول کنید؟',
     'no_appointments_found'=>'هیچ ملاقاتی برای نمایش یافت نشد',
     'direct_appointment'=>'مستقیم',
+    'select_department_first'=>'ابتدا داکتر را انتخاب کنید',
 ];

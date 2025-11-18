@@ -743,7 +743,7 @@ return [
     'refere_to_anasthesia' => 'معرفی به انستیزی',
     'operation_type' => 'نوعیت عملیات',
     'approve' => 'تائید',
-    'anesthesia_log_reply' => 'جواب انستیزی لوگ',
+    'anesthesia_log_reply' => 'جواب انستیزی لوگ/ نرس',
     'age' => 'سن',
     'edit_patient' => 'تصحیح معلومات مریض',
     'id' => 'آی دی',

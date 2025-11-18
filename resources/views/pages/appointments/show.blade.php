@@ -2573,3 +2573,12 @@
         </div>
     </div>
 @endsection
+
+@section('styles')
+    <style>
+        /* Remove border from Lab Test Registrations Accordion */
+        #labTestRegistrationsAccordion {
+            border: none !important;
+        }
+    </style>
+@endsection

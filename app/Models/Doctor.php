@@ -63,6 +63,11 @@ class Doctor extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
     public function section()
     {
         return $this->belongsTo(Section::class);

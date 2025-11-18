@@ -10,133 +10,248 @@
                 <div class="card mb-4">
                     <div class="card-body">
 
-                        <div class="col-md-12">
-                            <div class="border border-label-primary mb-4">
-                                <h5 class="mb-4 p-3 bg-label-primary text-center">
-                                    {{ localize('global.anesthesia_details') }}</h5>
+                        <!-- Enhanced Anesthesia Details Section -->
+                        <div class="col-md-12 mb-4">
+                            <div class="card border-0 shadow-sm anesthesia-details-card">
+                                <div class="card-header bg-gradient-primary text-white d-flex align-items-center justify-content-between">
+                                    <h5 class="mb-0 d-flex align-items-center">
+                                        <i class="bx bx-first-aid me-2 fs-4"></i>
+                                        {{ localize('global.anesthesia_details') }}
+                                    </h5>
+                                    <span class="badge bg-white text-primary fs-6">
+                                        @if ($anesthesia->status == 'new')
+                                            <i class="bx bx-time me-1"></i>{{ localize('global.new') }}
+                                        @elseif ($anesthesia->status == 'rejected')
+                                            <i class="bx bx-x-circle me-1"></i>{{ localize('global.rejected') }}
+                                        @else
+                                            <i class="bx bx-check-circle me-1"></i>{{ localize('global.approved') }}
+                                        @endif
+                                    </span>
+                                </div>
+                                <div class="card-body p-4">
+                                    <!-- Patient & Operation Info Row -->
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-user text-primary me-2"></i>
+                                                    {{ localize('global.patient_name') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->patient?->name ?? 'N/A' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-plus-medical text-success me-2"></i>
+                                                    {{ localize('global.operation_type') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    <span class="badge bg-label-success">{{ $anesthesia->operationType?->name ?? 'N/A' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-calendar text-info me-2"></i>
+                                                    {{ localize('global.date') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) ?? 'N/A' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-time-five text-warning me-2"></i>
+                                                    {{ localize('global.time') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->time ?? 'N/A' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div class="row p-2 text-center">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.patient_name') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->patient?->name ?? 'N/A' }}
+                                    <!-- Operation Details Row -->
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-6">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-clipboard text-primary me-2"></i>
+                                                    {{ localize('global.operation_plan') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->plan ?: 'N/A' }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_type') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->operationType?->name ?? 'N/A' }}
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-timer text-info me-2"></i>
+                                                    {{ localize('global.operation_duration') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->planned_duration ?: 'N/A' }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.date') }}</h5>
-                                        <div>
-                                            {{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.time') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->time }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row p-2 text-center">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_plan') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->plan }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_duration') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->planned_duration }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.position_on_bed') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->position_on_bed }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.estimated_blood_waste') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->estimated_blood_waste }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row p-2 text-center">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.other_problems') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->other_problems }}
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-bed text-secondary me-2"></i>
+                                                    {{ localize('global.position_on_bed') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->position_on_bed ?: 'N/A' }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.operation_surgion') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->surgion?->name ?? 'N/A' }}
+                                    <!-- Medical Team Row -->
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-user-md text-danger me-2"></i>
+                                                    {{ localize('global.operation_surgion') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->surgion?->name ?? 'N/A' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if(isset($anesthesia->anesthesia_log->name))
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-file-blank text-primary me-2"></i>
+                                                    {{ localize('global.anesthesia_log') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->anesthesia_log->name }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @if(isset($anesthesia->anesthesist->name))
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-user-circle text-success me-2"></i>
+                                                    {{ localize('global.anesthesist') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->anesthesist->name }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-droplet text-danger me-2"></i>
+                                                    {{ localize('global.estimated_blood_waste') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->estimated_blood_waste ?: 'N/A' }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    @if(isset($anesthesia->anesthesia_log->name))
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log') }}</h5>
-                                        <div>
-                                            {{$anesthesia->anesthesia_log->name}}
-                                        </div>
-                                    </div>
-                                    @endif
-                                    @if(isset($anesthesia->anesthesist->name))
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesist') }}</h5>
-                                        <div>
-                                            {{$anesthesia->anesthesist->name}}
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
 
-                                <div class="row p-2 text-center">
-                                    @if(isset($anesthesia->scrub_nurse->name))
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.scrub_nurse') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->scrub_nurse->name }}
+                                    <!-- Nurses & Additional Info Row -->
+                                    <div class="row g-3 mb-4">
+                                        @if(isset($anesthesia->scrub_nurse->name))
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-user-pin text-info me-2"></i>
+                                                    {{ localize('global.scrub_nurse') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->scrub_nurse->name }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @if(isset($anesthesia->circulation_nurse->name))
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-user-voice text-warning me-2"></i>
+                                                    {{ localize('global.circulation_nurse') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->circulation_nurse->name }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-message-dots text-secondary me-2"></i>
+                                                    {{ localize('global.anesthesia_log_reply') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->anesthesia_log_reply ?: 'N/A' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-clipboard text-primary me-2"></i>
+                                                    {{ localize('global.anesthesia_plan') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->anesthesia_plan ?: 'N/A' }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    @endif
-                                    @if(isset($anesthesia->circulation_nurse->name))
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.circulation_nurse') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->circulation_nurse->name }}
+
+                                    <!-- Anesthesia Type & Other Problems Row -->
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-pulse text-info me-2"></i>
+                                                    {{ localize('global.anesthesia_type') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    @if($anesthesia->anesthesia_type)
+                                                        <span class="badge bg-label-info">{{ $anesthesia->anesthesia_type }}</span>
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    @endif
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_log_reply') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->anesthesia_log_reply }}
+                                        @if($anesthesia->other_problems)
+                                        <div class="col-md-9">
+                                            <div class="detail-item">
+                                                <div class="detail-label">
+                                                    <i class="bx bx-error-circle text-warning me-2"></i>
+                                                    {{ localize('global.other_problems') }}
+                                                </div>
+                                                <div class="detail-value">
+                                                    {{ $anesthesia->other_problems }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_plan') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->anesthesia_plan }}
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="row p-2 text-center">
-                                    <div class="col-md-3">
-                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.anesthesia_type') }}</h5>
-                                        <div>
-                                            {{ $anesthesia->anesthesia_type }}
-                                        </div>
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
 
                                 @if($anesthesia->status == 'new')
                                 <hr class="border border-label-primary">
@@ -189,36 +304,26 @@
                                                         <div class="col-md-4">
                                                             <label
                                                                 for="operation_anesthesia_log_id{{ $anesthesia->id }}">{{ localize('global.anesthesia_log') }}</label>
-                                                            <select class="form-control select2"
+                                                            <select class="form-control select2 operation-doctor-select"
                                                                 name="operation_anesthesia_log_id"
-                                                                id="operation_anesthesia_log_id">
-                                                                <option value="">{{ localize('global.select') }}
-                                                                </option>
-                                                                @foreach ($operation_doctors as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                        {{ $value->name }}
-
-                                                                    </option>
-                                                                @endforeach
+                                                                id="operation_anesthesia_log_id{{ $anesthesia->id }}"
+                                                                data-anesthesia-id="{{ $anesthesia->id }}"
+                                                                data-selected-value="{{ old('operation_anesthesia_log_id', $anesthesia->operation_anesthesia_log_id) }}">
+                                                                <option value="">{{ localize('global.select') }}...</option>
+                                                                <option value="loading" disabled>{{ localize('global.loading') }}...</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-4">
                                                             <label
                                                                 for="anesthesist{{ $anesthesia->id }}">{{ localize('global.anesthesist') }}</label>
-                                                            <select class="form-control select2"
+                                                            <select class="form-control select2 operation-doctor-select"
                                                                 name="operation_anesthesist_id"
-                                                                id="operation_anesthesist_id">
-                                                                <option value="">{{ localize('global.select') }}
-                                                                </option>
-                                                                @foreach ($operation_doctors as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                        {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                        {{ $value->name }}
-
-                                                                    </option>
-                                                                @endforeach
+                                                                id="operation_anesthesist_id{{ $anesthesia->id }}"
+                                                                data-anesthesia-id="{{ $anesthesia->id }}"
+                                                                data-selected-value="{{ old('operation_anesthesist_id', $anesthesia->operation_anesthesist_id) }}">
+                                                                <option value="">{{ localize('global.select') }}...</option>
+                                                                <option value="loading" disabled>{{ localize('global.loading') }}...</option>
                                                             </select>
                                                         </div>
 
@@ -298,4 +403,276 @@
         </div>
     </div>
     </div>
+@endsection
+
+@section('styles')
+    <style>
+        /* Enhanced Anesthesia Details Card Styles */
+        .anesthesia-details-card {
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .anesthesia-details-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .anesthesia-details-card .card-header {
+            background: linear-gradient(135deg, #696cff 0%, #5a5fef 100%);
+            border: none;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .anesthesia-details-card .card-header h5 {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .anesthesia-details-card .card-header .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid #696cff;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .detail-item:hover {
+            background: #f0f0f0;
+            border-left-color: #5a5fef;
+            transform: translateX(3px);
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-label i {
+            font-size: 1.1rem;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #212529;
+            word-wrap: break-word;
+        }
+
+        .detail-value .badge {
+            font-size: 0.875rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        /* Status Badge Colors */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #696cff 0%, #5a5fef 100%);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .anesthesia-details-card .card-header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 0.5rem;
+            }
+
+            .anesthesia-details-card .card-body {
+                padding: 1rem !important;
+            }
+
+            .detail-item {
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .detail-label {
+                font-size: 0.8rem;
+            }
+
+            .detail-value {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Dark Mode Support */
+        [data-bs-theme="dark"] .detail-item {
+            background: #2b2c40;
+            border-left-color: #696cff;
+        }
+
+        [data-bs-theme="dark"] .detail-item:hover {
+            background: #3a3b4d;
+        }
+
+        [data-bs-theme="dark"] .detail-label {
+            color: #a3a4cc;
+        }
+
+        [data-bs-theme="dark"] .detail-value {
+            color: #a3a4cc;
+        }
+
+        /* Select2 styles for show page */
+        #createAnasthesiaModal{{ $anesthesia->id }} .operation-doctor-select + .select2-container {
+            width: 100% !important;
+            z-index: 9999;
+        }
+
+        #createAnasthesiaModal{{ $anesthesia->id }} .select2-container--default .select2-selection--single {
+            height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        #createAnasthesiaModal{{ $anesthesia->id }} .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            padding-left: 0.75rem;
+            padding-right: 20px;
+        }
+
+        #createAnasthesiaModal{{ $anesthesia->id }} .select2-dropdown {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        #createAnasthesiaModal{{ $anesthesia->id }} .select2-search--dropdown .select2-search__field {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        #createAnasthesiaModal{{ $anesthesia->id }} .select2-results__option {
+            padding: 0.5rem 0.75rem;
+        }
+
+        #createAnasthesiaModal{{ $anesthesia->id }} .select2-results__option--highlighted {
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+@endsection
+
+@section('scripts')
+    <script>
+        // Load hospital doctors when anesthesia modal is opened
+        $(document).on('shown.bs.modal', '#createAnasthesiaModal{{ $anesthesia->id }}', function() {
+            loadHospitalDoctorsForShow();
+        });
+
+        function loadHospitalDoctorsForShow() {
+            const anesthesiaLogSelect = $('#operation_anesthesia_log_id{{ $anesthesia->id }}');
+            const anesthesistSelect = $('#operation_anesthesist_id{{ $anesthesia->id }}');
+            const modal = $('#createAnasthesiaModal{{ $anesthesia->id }}');
+            const dropdownParent = modal.length ? modal : $('body');
+            
+            // Get selected values from data attributes
+            const selectedAnesthesiaLogId = anesthesiaLogSelect.data('selected-value');
+            const selectedAnesthesistId = anesthesistSelect.data('selected-value');
+            
+            // Show loading state
+            if (anesthesiaLogSelect.length) {
+                anesthesiaLogSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+            }
+            if (anesthesistSelect.length) {
+                anesthesistSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+            }
+            
+            // Load doctors from API
+            $.ajax({
+                url: '{{ route("doctor-api.hospital-doctors") }}',
+                method: 'GET',
+                data: {
+                    branch_id: {{ auth()->user()->branch_id }}
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        // Clear loading option
+                        let anesthesiaLogOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                        let anesthesistOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                        
+                        // Add doctors to options
+                        response.data.forEach(function(doctor) {
+                            const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor.specialization : '');
+                            const isSelectedAnesthesiaLog = selectedAnesthesiaLogId && Number(doctor.id) == Number(selectedAnesthesiaLogId);
+                            const isSelectedAnesthesist = selectedAnesthesistId && Number(doctor.id) == Number(selectedAnesthesistId);
+                            
+                            anesthesiaLogOptions += `<option value="${doctor.id}" ${isSelectedAnesthesiaLog ? 'selected' : ''}>${optionText}</option>`;
+                            anesthesistOptions += `<option value="${doctor.id}" ${isSelectedAnesthesist ? 'selected' : ''}>${optionText}</option>`;
+                        });
+                        
+                        // Update selects
+                        if (anesthesiaLogSelect.length) {
+                            anesthesiaLogSelect.html(anesthesiaLogOptions);
+                            // Reinitialize Select2
+                            if (anesthesiaLogSelect.hasClass('select2-hidden-accessible')) {
+                                anesthesiaLogSelect.select2('destroy');
+                            }
+                            setTimeout(function() {
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    anesthesiaLogSelect.select2({
+                                        dropdownParent: dropdownParent,
+                                        width: '100%',
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        allowClear: true
+                                    });
+                                }
+                            }, 100);
+                        }
+                        
+                        if (anesthesistSelect.length) {
+                            anesthesistSelect.html(anesthesistOptions);
+                            // Reinitialize Select2
+                            if (anesthesistSelect.hasClass('select2-hidden-accessible')) {
+                                anesthesistSelect.select2('destroy');
+                            }
+                            setTimeout(function() {
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    anesthesistSelect.select2({
+                                        dropdownParent: dropdownParent,
+                                        width: '100%',
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        allowClear: true
+                                    });
+                                }
+                            }, 100);
+                        }
+                    } else {
+                        console.error('Failed to load doctors:', response.message);
+                        if (anesthesiaLogSelect.length) {
+                            anesthesiaLogSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                        }
+                        if (anesthesistSelect.length) {
+                            anesthesistSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading doctors:', error);
+                    if (anesthesiaLogSelect.length) {
+                        anesthesiaLogSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                    }
+                    if (anesthesistSelect.length) {
+                        anesthesistSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                    }
+                }
+            });
+        }
+    </script>
 @endsection

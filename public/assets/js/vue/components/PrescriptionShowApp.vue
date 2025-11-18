@@ -417,6 +417,82 @@
                           </template>
                         </Multiselect>
                       </div>
+                      
+                      <!-- Medicine Type Field -->
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                          <i class="bx bx-category me-1 text-info"></i>
+                          {{ localize('global.type') }}
+                        </label>
+                        <Multiselect
+                          v-model="newAlternative.medicine_type"
+                          :options="medicineTypes"
+                          :placeholder="localize('global.select_type')"
+                          :searchable="true"
+                          :allow-empty="false"
+                          :show-labels="false"
+                          label="type"
+                          track-by="id"
+                          :required="true"
+                          :loading="loading"
+                        >
+                          <template #noOptions>
+                            {{ localize('global.no_types_found') }}
+                          </template>
+                          <template #noResult>
+                            {{ localize('global.no_types_found') }}
+                          </template>
+                        </Multiselect>
+                        <small class="text-muted" v-if="currentItem">
+                          <i class="bx bx-info-circle me-1"></i>
+                          {{ localize('global.using_original_item_type') }}
+                        </small>
+                      </div>
+                      
+                      <!-- Usage Type Field -->
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                          <i class="bx bx-list-check me-1 text-success"></i>
+                          {{ localize('global.usage_type') }}
+                        </label>
+                        <Multiselect
+                          v-model="newAlternative.usage_type"
+                          :options="medicineUsageTypes"
+                          :placeholder="localize('global.select_usage_type')"
+                          :searchable="true"
+                          :allow-empty="false"
+                          :show-labels="false"
+                          label="name"
+                          track-by="id"
+                          :required="true"
+                          :loading="loading"
+                        >
+                          <template #noOptions>
+                            {{ localize('global.no_usage_types_found') }}
+                          </template>
+                          <template #noResult>
+                            {{ localize('global.no_usage_types_found') }}
+                          </template>
+                        </Multiselect>
+                        <small class="text-muted" v-if="currentItem">
+                          <i class="bx bx-info-circle me-1"></i>
+                          {{ localize('global.using_original_item_type') }}
+                        </small>
+                      </div>
+                      
+                      <!-- Notes Field (Optional) -->
+                      <div class="col-12">
+                        <label class="form-label fw-semibold">
+                          <i class="bx bx-note me-1 text-secondary"></i>
+                          {{ localize('global.notes') }} ({{ localize('global.optional') }})
+                        </label>
+                        <textarea 
+                          class="form-control" 
+                          v-model="newAlternative.notes"
+                          :placeholder="localize('global.add_notes_about_alternative')"
+                          rows="2"
+                        ></textarea>
+                      </div>
                     </div>
                     <div class="d-flex justify-content-end align-items-center mt-4">
                       <button type="submit" class="btn btn-primary" :disabled="loading">
@@ -735,11 +811,34 @@ export default {
 
     const openAlternativesModal = (item) => {
       currentItem.value = item
+      
+      // Ensure item has the required relationships loaded
+      // Check both camelCase (Laravel default) and snake_case naming
+      const hasMedicineType = !!(item.medicineType || item.medicine_type)
+      const hasUsageType = !!(item.usageType || item.usage_type)
+      
+      // If relationships are missing, log for debugging
+      if (!hasMedicineType || !hasUsageType) {
+        console.warn('Prescription item missing relationships:', {
+          item: item,
+          has_medicineType: !!item.medicineType,
+          has_medicine_type: !!item.medicine_type,
+          has_usageType: !!item.usageType,
+          has_usage_type: !!item.usage_type,
+          medicine_type_id: item.medicine_type_id,
+          usage_type_id: item.usage_type_id
+        })
+      }
+      
       // Pre-fill form with main medicine data (excluding dosage, frequency, amount)
+      // Get medicine_type and usage_type from item (check both naming conventions)
+      const medicineType = item.medicineType || item.medicine_type || null
+      const usageType = item.usageType || item.usage_type || null
+      
       Object.assign(newAlternative, {
         medicine: item.medicine || null,
-        medicine_type: item.medicine_type || null,
-        usage_type: item.usage_type || null,
+        medicine_type: medicineType,
+        usage_type: usageType,
         dosage: '',
         frequency: '',
         amount: '',
@@ -793,13 +892,67 @@ export default {
     const addAlternative = async () => {
       loading.value = true
       try {
+        // Validate current item exists and has required data
+        if (!currentItem.value) {
+          showToast(localize('global.no_item_selected'), 'error')
+          loading.value = false
+          return
+        }
+
+        // Get medicine_type_id and usage_type_id from form selection or current item
+        // First try from form (newAlternative), then fall back to currentItem
+        let medicine_type_id = null
+        let usage_type_id = null
+        
+        // Try from form selection first
+        if (newAlternative.medicine_type?.id) {
+          medicine_type_id = Number(newAlternative.medicine_type.id)
+        }
+        // Try from form as direct ID
+        else if (newAlternative.medicine_type && typeof newAlternative.medicine_type === 'number') {
+          medicine_type_id = Number(newAlternative.medicine_type)
+        }
+        // Fall back to currentItem - Try medicineType relationship (camelCase from Laravel)
+        else if (currentItem.value?.medicineType?.id) {
+          medicine_type_id = Number(currentItem.value.medicineType.id)
+        }
+        // Try medicine_type relationship (snake_case)
+        else if (currentItem.value?.medicine_type?.id) {
+          medicine_type_id = Number(currentItem.value.medicine_type.id)
+        }
+        // Try direct ID
+        else if (currentItem.value?.medicine_type_id) {
+          medicine_type_id = Number(currentItem.value.medicine_type_id)
+        }
+        
+        // Try from form selection first
+        if (newAlternative.usage_type?.id) {
+          usage_type_id = Number(newAlternative.usage_type.id)
+        }
+        // Try from form as direct ID
+        else if (newAlternative.usage_type && typeof newAlternative.usage_type === 'number') {
+          usage_type_id = Number(newAlternative.usage_type)
+        }
+        // Fall back to currentItem - Try usageType relationship (camelCase from Laravel)
+        else if (currentItem.value?.usageType?.id) {
+          usage_type_id = Number(currentItem.value.usageType.id)
+        }
+        // Try usage_type relationship (snake_case)
+        else if (currentItem.value?.usage_type?.id) {
+          usage_type_id = Number(currentItem.value.usage_type.id)
+        }
+        // Try direct ID
+        else if (currentItem.value?.usage_type_id) {
+          usage_type_id = Number(currentItem.value.usage_type_id)
+        }
+
         // Gather values with correct types and avoid empty strings
         const requestDataRaw = {
           prescription_id: Number(prescriptionId.value),
           prescription_item_id: Number(currentItem.value?.id),
           medicine_id: newAlternative.medicine?.id != null ? Number(newAlternative.medicine.id) : null,
-          medicine_type_id: currentItem.value?.medicine_type?.id != null ? Number(currentItem.value.medicine_type.id) : null,
-          usage_type_id: currentItem.value?.usage_type?.id != null ? Number(currentItem.value.usage_type.id) : null,
+          medicine_type_id: medicine_type_id != null ? Number(medicine_type_id) : null,
+          usage_type_id: usage_type_id != null ? Number(usage_type_id) : null,
           dosage: currentItem.value?.dosage || null,
           frequency: currentItem.value?.frequency || null,
           amount: currentItem.value?.amount != null ? String(currentItem.value.amount) : null,
@@ -809,14 +962,26 @@ export default {
         // Front-end validation for required fields
         if (!requestDataRaw.medicine_id) {
           showToast(localize('global.please_select_medicine'), 'error')
+          loading.value = false
           return
         }
         if (!requestDataRaw.medicine_type_id || !requestDataRaw.usage_type_id) {
+          console.error('Missing types:', {
+            medicine_type_id: requestDataRaw.medicine_type_id,
+            usage_type_id: requestDataRaw.usage_type_id,
+            currentItem: currentItem.value,
+            medicineType: currentItem.value?.medicineType,
+            usageType: currentItem.value?.usageType,
+            medicine_type: currentItem.value?.medicine_type,
+            usage_type: currentItem.value?.usage_type
+          })
           showToast(localize('global.validation_errors') + ': ' + localize('global.select_type'), 'error')
+          loading.value = false
           return
         }
         if (!requestDataRaw.dosage || !requestDataRaw.frequency || !requestDataRaw.amount) {
           showToast(localize('global.validation_errors') + ': ' + localize('global.auto_filled'), 'error')
+          loading.value = false
           return
         }
 

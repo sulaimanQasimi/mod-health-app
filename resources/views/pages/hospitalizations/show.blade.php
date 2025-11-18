@@ -534,52 +534,35 @@
                                                     </div>
 
                                                     <h5 class="mt-2">{{ localize('global.operation_team') }}</h5>
-                                                    {{-- <select class="form-control select2" name="operation_doctor_id[]"
-                                                        id="operation_doctor_id" multiple>
-                                                        <option value="">{{ localize('global.select') }}</option>
-                                                        @foreach ($operation_doctors as $value)
-                                                        <option value="{{ $value->id }}" {{ old('name')==$value->id ?
-                                                            'selected' : '' }}>
-                                                            {{ $value->name }}
-
-                                                        </option>
-                                                        @endforeach
-                                                    </select> --}}
 
                                                     <div class="form-group">
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <label
                                                                     for="operation_surgion_id{{ $hospitalization->id }}">{{ localize('global.operation_surgion') }}</label>
-                                                                <select class="form-control select2"
-                                                                    name="operation_surgion_id" id="operation_surgion_id">
+                                                                <select class="form-control select2 operation-doctor-select"
+                                                                    name="operation_surgion_id" 
+                                                                    id="operation_surgion_id{{ $hospitalization->id }}"
+                                                                    data-hospitalization-id="{{ $hospitalization->id }}">
                                                                     <option value="">
-                                                                        {{ localize('global.select') }}
+                                                                        {{ localize('global.select') }}...
                                                                     </option>
-                                                                    @foreach ($operation_doctors as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-
-                                                                        </option>
-                                                                    @endforeach
+                                                                    <option value="loading" disabled>{{ localize('global.loading') }}...</option>
                                                                 </select>
                                                             </div>
 
                                                             <div class="col-md-6">
                                                                 <label
                                                                     for="operation_assistants_id{{ $hospitalization->id }}">{{ localize('global.operation_assistants') }}</label>
-                                                                <select class="form-control select2"
+                                                                <select class="form-control select2 operation-doctor-select"
                                                                     name="operation_assistants_id[]"
-                                                                    id="operation_assistants_id" multiple>
+                                                                    id="operation_assistants_id{{ $hospitalization->id }}"
+                                                                    multiple
+                                                                    data-hospitalization-id="{{ $hospitalization->id }}">
                                                                     <option value="">
-                                                                        {{ localize('global.select') }}
+                                                                        {{ localize('global.select') }}...
                                                                     </option>
-                                                                    @foreach ($operation_doctors as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-
-                                                                        </option>
-                                                                    @endforeach
+                                                                    <option value="loading" disabled>{{ localize('global.loading') }}...</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -955,6 +938,57 @@
         #anesthesiaAccordion .accordion-item { border: 2px solid #157347; }
         #complaintAccordion .accordion-item { border: 2px solid #b02a37; }
         #dischargeAccordion .accordion-item { border: 2px solid #6c757d; }
+
+        /* Select2 styles for anesthesia modal */
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-container {
+            width: 100% !important;
+            z-index: 9999;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-container--default .select2-selection--single,
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-container--default .select2-selection--multiple {
+            height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            padding-left: 0;
+            padding-right: 20px;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            padding: 0;
+            line-height: 28px;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+            right: 10px;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-dropdown {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-search--dropdown .select2-search__field {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-results__option {
+            padding: 0.5rem 0.75rem;
+        }
+
+        #createAnasthesiaModal{{ $hospitalization->id }} .select2-results__option--highlighted {
+            background-color: #0d6efd;
+            color: white;
+        }
     </style>
 @endsection
 
@@ -1257,7 +1291,172 @@
             branch_id: {{ $hospitalization->branch_id }}
         };
         
+        // Function to load hospital doctors via API
+        function loadHospitalDoctors(hospitalizationId) {
+            const surgionSelect = $(`#operation_surgion_id${hospitalizationId}`);
+            const assistantsSelect = $(`#operation_assistants_id${hospitalizationId}`);
+            
+            // Show loading state
+            if (surgionSelect.length) {
+                surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+            }
+            if (assistantsSelect.length) {
+                assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+            }
+            
+            // Load doctors from API
+            $.ajax({
+                url: '{{ route("doctor-api.hospital-doctors") }}',
+                method: 'GET',
+                data: {
+                    branch_id: {{ auth()->user()->branch_id }}
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        // Clear loading option
+                        let surgionOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                        let assistantsOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                        
+                        // Add doctors to options
+                        response.data.forEach(function(doctor) {
+                            const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor.specialization : '');
+                            surgionOptions += `<option value="${doctor.id}">${optionText}</option>`;
+                            assistantsOptions += `<option value="${doctor.id}">${optionText}</option>`;
+                        });
+                        
+                        // Get modal element for dropdownParent
+                        const modal = $(`#createAnasthesiaModal${hospitalizationId}`);
+                        // Use modal itself as dropdownParent to ensure proper z-index
+                        const dropdownParent = modal.length ? modal : $('body');
+                        
+                        // Update selects
+                        if (surgionSelect.length) {
+                            surgionSelect.html(surgionOptions);
+                            // Reinitialize Select2
+                            if (surgionSelect.hasClass('select2-hidden-accessible')) {
+                                surgionSelect.select2('destroy');
+                            }
+                            // Wait a bit for DOM to update
+                            setTimeout(function() {
+                                // Check if Select2 is available
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    surgionSelect.select2({
+                                        dropdownParent: dropdownParent,
+                                        width: '100%',
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        allowClear: true,
+                                        language: {
+                                            noResults: function() {
+                                                return '{{ localize("global.no_results_found") ?: "No results found" }}';
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    console.warn('Select2 is not loaded');
+                                }
+                            }, 150);
+                        }
+                        
+                        if (assistantsSelect.length) {
+                            assistantsSelect.html(assistantsOptions);
+                            // Reinitialize Select2
+                            if (assistantsSelect.hasClass('select2-hidden-accessible')) {
+                                assistantsSelect.select2('destroy');
+                            }
+                            // Wait a bit for DOM to update
+                            setTimeout(function() {
+                                // Check if Select2 is available
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    assistantsSelect.select2({
+                                        dropdownParent: dropdownParent,
+                                        width: '100%',
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        allowClear: true,
+                                        language: {
+                                            noResults: function() {
+                                                return '{{ localize("global.no_results_found") ?: "No results found" }}';
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    console.warn('Select2 is not loaded');
+                                }
+                            }, 150);
+                        }
+                    } else {
+                        console.error('Failed to load doctors:', response.message);
+                        if (surgionSelect.length) {
+                            surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                        }
+                        if (assistantsSelect.length) {
+                            assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading doctors:', error);
+                    if (surgionSelect.length) {
+                        surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                    }
+                    if (assistantsSelect.length) {
+                        assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                    }
+                }
+            });
+        }
+
+        // Initialize Select2 for operation type and other selects in anesthesia modal
+        function initializeAnesthesiaSelect2() {
+            const modal = $('#createAnasthesiaModal{{ $hospitalization->id }}');
+            // Use modal itself as dropdownParent to ensure proper z-index and styling
+            const dropdownParent = modal.length ? modal : $('body');
+            
+            // Check if Select2 is available
+            if (typeof $.fn.select2 === 'undefined') {
+                console.warn('Select2 is not loaded');
+                return;
+            }
+            
+            // Initialize Select2 for operation_type_id
+            const operationTypeSelect = modal.find('select[name="operation_type_id"]');
+            if (operationTypeSelect.length) {
+                // Destroy existing instance if any
+                if (operationTypeSelect.hasClass('select2-hidden-accessible')) {
+                    operationTypeSelect.select2('destroy');
+                }
+                // Initialize Select2
+                operationTypeSelect.select2({
+                    dropdownParent: dropdownParent,
+                    width: '100%',
+                    placeholder: '{{ localize("global.select") }}...',
+                    allowClear: true
+                });
+            }
+        }
+
+        // Load doctors when anesthesia modal is opened
+        $(document).on('shown.bs.modal', '#createAnasthesiaModal{{ $hospitalization->id }}', function() {
+            // Initialize Select2 for existing selects first
+            initializeAnesthesiaSelect2();
+            // Then load doctors
+            loadHospitalDoctors({{ $hospitalization->id }});
+        });
+
         $(document).ready(function () {
+            // Initialize Select2 for any existing selects on page load
+            if (typeof $.fn.select2 !== 'undefined') {
+                // Initialize Select2 for selects outside modals
+                $('.select2:not(.modal .select2)').each(function() {
+                    const $select = $(this);
+                    if (!$select.hasClass('select2-hidden-accessible')) {
+                        $select.select2({
+                            width: '100%',
+                            placeholder: '{{ localize("global.select") }}...'
+                        });
+                    }
+                });
+            }
+
             // Load all sections via AJAX
             $('#nursing-assessment-section').load('{{ route('nursing-assessments.section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#nursing-note-section').load('{{ route('nurse-notes.section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');

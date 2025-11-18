@@ -13,11 +13,11 @@
                         <!-- Enhanced Anesthesia Details Section -->
                         <div class="col-md-12 mb-4">
                             <div class="card border shadow-sm anesthesia-details-card">
-                                <div class="card-header d-flex align-items-center justify-content-center" style="background-color: #35365f !important; color: #696cff !important;">
-                                    <h5 class="mb-0 d-flex align-items-center" style="color: #ffffff !important;">
+                                <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #35365f !important; color: #696cff !important;">
+                                    <h5 class="mb-0 d-flex align-items-center" style="color: #696cff !important;">
                                         {{ localize('global.anesthesia_details') }}
                                     </h5>
-                                    <span class="badge fs-6" style="background-color: #696cff !important; color: #35365f !important;">
+                                    <span class="badge fs-6 ms-auto" style="background-color: #696cff !important; color: #35365f !important;">
                                         @if ($anesthesia->status == 'new')
                                             <i class="bx bx-time me-1"></i>{{ localize('global.new') }}
                                         @elseif ($anesthesia->status == 'rejected')
@@ -37,7 +37,7 @@
                                                     <span>{{ localize('global.patient_name') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->patient?->name ?? 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->patient?->name ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -48,7 +48,7 @@
                                                     <span>{{ localize('global.operation_type') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">
+                                                    <div>
                                                         <span class="badge bg-success">{{ $anesthesia->operationType?->name ?? 'N/A' }}</span>
                                                     </div>
                                                 </div>
@@ -61,7 +61,7 @@
                                                     <span>{{ localize('global.date') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) ?? 'N/A' }}</div>
+                                                    <div>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -72,7 +72,7 @@
                                                     <span>{{ localize('global.time') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->time ?? 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->time ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -87,7 +87,7 @@
                                                     <span>{{ localize('global.operation_duration') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->planned_duration ?: 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->planned_duration ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -98,7 +98,7 @@
                                                     <span>{{ localize('global.position_on_bed') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->position_on_bed ?: 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->position_on_bed ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -109,7 +109,7 @@
                                                     <span>{{ localize('global.operation_plan') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->plan ?: 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->plan ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -124,7 +124,7 @@
                                                     <span>{{ localize('global.operation_surgion') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->surgion?->name ?? 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->surgion?->name ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -136,7 +136,7 @@
                                                     <span>{{ localize('global.anesthesist') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->anesthesist->name }}</div>
+                                                    <div>{{ $anesthesia->anesthesist->name }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -149,7 +149,7 @@
                                                     <span>{{ localize('global.anesthesia_log') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->anesthesia_log->name }}</div>
+                                                    <div>{{ $anesthesia->anesthesia_log->name }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -161,7 +161,7 @@
                                                     <span>{{ localize('global.estimated_blood_waste') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->estimated_blood_waste ?: 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->estimated_blood_waste ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -177,7 +177,7 @@
                                                     <span>{{ localize('global.scrub_nurse') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->scrub_nurse->name }}</div>
+                                                    <div>{{ $anesthesia->scrub_nurse->name }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -190,7 +190,7 @@
                                                     <span>{{ localize('global.circulation_nurse') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->circulation_nurse->name }}</div>
+                                                    <div>{{ $anesthesia->circulation_nurse->name }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -202,7 +202,7 @@
                                                     <span>{{ localize('global.anesthesia_log_reply') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->anesthesia_log_reply ?: 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->anesthesia_log_reply ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -213,7 +213,7 @@
                                                     <span>{{ localize('global.anesthesia_plan') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->anesthesia_plan ?: 'N/A' }}</div>
+                                                    <div>{{ $anesthesia->anesthesia_plan ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -228,7 +228,7 @@
                                                     <span>{{ localize('global.anesthesia_type') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">
+                                                    <div>
                                                         @if($anesthesia->anesthesia_type)
                                                             <span class="badge bg-info">{{ $anesthesia->anesthesia_type }}</span>
                                                         @else
@@ -246,7 +246,7 @@
                                                     <span>{{ localize('global.other_problems') }}</span>
                                                 </div>
                                                 <div class="bg-body-secondary p-3">
-                                                    <div class="fw-semibold">{{ $anesthesia->other_problems }}</div>
+                                                    <div>{{ $anesthesia->other_problems }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -420,12 +420,6 @@
         .anesthesia-details-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .anesthesia-details-card .card-header {
-            background: linear-gradient(135deg, #696cff 0%, #5a5fef 100%);
-            border: none;
-            padding: 1.25rem 1.5rem;
         }
 
         .anesthesia-details-card .card-header h5 {

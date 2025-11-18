@@ -212,7 +212,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 50px;">#</th>
@@ -324,18 +324,8 @@
 
 @section('styles')
     <style>
-        .table-hover tbody tr:hover {
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-
         .card-header[data-bs-toggle="collapse"] {
             cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .card-header[data-bs-toggle="collapse"]:hover {
-            background-color: #f8f9fa;
         }
 
         .badge {

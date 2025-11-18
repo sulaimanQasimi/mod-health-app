@@ -32,7 +32,7 @@
                                     <!-- Patient & Operation Info Row -->
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-user me-2"></i>
                                                     <span>{{ localize('global.patient_name') }}</span>
@@ -43,7 +43,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-plus-medical me-2"></i>
                                                     <span>{{ localize('global.operation_type') }}</span>
@@ -56,7 +56,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-calendar me-2"></i>
                                                     <span>{{ localize('global.date') }}</span>
@@ -67,7 +67,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-time-five me-2"></i>
                                                     <span>{{ localize('global.time') }}</span>
@@ -81,19 +81,8 @@
 
                                     <!-- Operation Details Row -->
                                     <div class="row g-3 mb-4">
-                                        <div class="col-md-6">
-                                            <div class="rounded">
-                                                <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
-                                                    <i class="bx bx-clipboard me-2"></i>
-                                                    <span>{{ localize('global.operation_plan') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
-                                                    <div class="fw-semibold">{{ $anesthesia->plan ?: 'N/A' }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-timer me-2"></i>
                                                     <span>{{ localize('global.operation_duration') }}</span>
@@ -104,7 +93,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-bed me-2"></i>
                                                     <span>{{ localize('global.position_on_bed') }}</span>
@@ -114,12 +103,23 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="rounded h-100">
+                                                <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
+                                                    <i class="bx bx-clipboard me-2"></i>
+                                                    <span>{{ localize('global.operation_plan') }}</span>
+                                                </div>
+                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                    <div class="fw-semibold">{{ $anesthesia->plan ?: 'N/A' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <!-- Medical Team Row -->
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-user-md me-2"></i>
                                                     <span>{{ localize('global.operation_surgion') }}</span>
@@ -129,22 +129,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @if(isset($anesthesia->anesthesia_log->name))
-                                        <div class="col-md-3">
-                                            <div class="rounded">
-                                                <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
-                                                    <i class="bx bx-file-blank me-2"></i>
-                                                    <span>{{ localize('global.anesthesia_log') }}</span>
-                                                </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
-                                                    <div class="fw-semibold">{{ $anesthesia->anesthesia_log->name }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
                                         @if(isset($anesthesia->anesthesist->name))
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-user-circle me-2"></i>
                                                     <span>{{ localize('global.anesthesist') }}</span>
@@ -155,8 +142,21 @@
                                             </div>
                                         </div>
                                         @endif
+                                        @if(isset($anesthesia->anesthesia_log->name))
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
+                                                <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
+                                                    <i class="bx bx-file-blank me-2"></i>
+                                                    <span>{{ localize('global.anesthesia_log') }}</span>
+                                                </div>
+                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                    <div class="fw-semibold">{{ $anesthesia->anesthesia_log->name }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        <div class="col-md-3">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-droplet me-2"></i>
                                                     <span>{{ localize('global.estimated_blood_waste') }}</span>
@@ -172,7 +172,7 @@
                                     <div class="row g-3 mb-4">
                                         @if(isset($anesthesia->scrub_nurse->name))
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-user-pin me-2"></i>
                                                     <span>{{ localize('global.scrub_nurse') }}</span>
@@ -185,7 +185,7 @@
                                         @endif
                                         @if(isset($anesthesia->circulation_nurse->name))
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-user-voice me-2"></i>
                                                     <span>{{ localize('global.circulation_nurse') }}</span>
@@ -197,7 +197,7 @@
                                         </div>
                                         @endif
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-message-dots me-2"></i>
                                                     <span>{{ localize('global.anesthesia_log_reply') }}</span>
@@ -208,7 +208,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-clipboard me-2"></i>
                                                     <span>{{ localize('global.anesthesia_plan') }}</span>
@@ -223,7 +223,7 @@
                                     <!-- Anesthesia Type & Other Problems Row -->
                                     <div class="row g-3">
                                         <div class="col-md-3">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-pulse me-2"></i>
                                                     <span>{{ localize('global.anesthesia_type') }}</span>
@@ -241,7 +241,7 @@
                                         </div>
                                         @if($anesthesia->other_problems)
                                         <div class="col-md-9">
-                                            <div class="rounded">
+                                            <div class="rounded h-100">
                                                 <div class="bg-primary text-white p-2 rounded-top d-flex align-items-center">
                                                     <i class="bx bx-error-circle me-2"></i>
                                                     <span>{{ localize('global.other_problems') }}</span>

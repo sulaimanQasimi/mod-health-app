@@ -12,13 +12,12 @@
 
                         <!-- Enhanced Anesthesia Details Section -->
                         <div class="col-md-12 mb-4">
-                            <div class="card border-0 shadow-sm anesthesia-details-card">
-                                <div class="card-header bg-gradient-primary text-white d-flex align-items-center justify-content-between">
-                                    <h5 class="mb-0 d-flex align-items-center">
-                                        <i class="bx bx-first-aid me-2 fs-4"></i>
+                            <div class="card border shadow-sm anesthesia-details-card">
+                                <div class="card-header d-flex align-items-center justify-content-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                    <h5 class="mb-0 d-flex align-items-center" style="color: #ffffff !important;">
                                         {{ localize('global.anesthesia_details') }}
                                     </h5>
-                                    <span class="badge bg-white text-primary fs-6">
+                                    <span class="badge fs-6" style="background-color: #696cff !important; color: #35365f !important;">
                                         @if ($anesthesia->status == 'new')
                                             <i class="bx bx-time me-1"></i>{{ localize('global.new') }}
                                         @elseif ($anesthesia->status == 'rejected')
@@ -32,23 +31,23 @@
                                     <!-- Patient & Operation Info Row -->
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user me-2"></i>
                                                     <span>{{ localize('global.patient_name') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->patient?->name ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-plus-medical me-2"></i>
                                                     <span>{{ localize('global.operation_type') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">
                                                         <span class="badge bg-success">{{ $anesthesia->operationType?->name ?? 'N/A' }}</span>
                                                     </div>
@@ -56,23 +55,23 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-calendar me-2"></i>
                                                     <span>{{ localize('global.date') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($anesthesia->date) ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-time-five me-2"></i>
                                                     <span>{{ localize('global.time') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->time ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
@@ -82,34 +81,34 @@
                                     <!-- Operation Details Row -->
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-timer me-2"></i>
                                                     <span>{{ localize('global.operation_duration') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->planned_duration ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-bed me-2"></i>
                                                     <span>{{ localize('global.position_on_bed') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->position_on_bed ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-clipboard me-2"></i>
                                                     <span>{{ localize('global.operation_plan') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->plan ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
@@ -119,24 +118,24 @@
                                     <!-- Medical Team Row -->
                                     <div class="row g-3 mb-4">
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user-md me-2"></i>
                                                     <span>{{ localize('global.operation_surgion') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->surgion?->name ?? 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         @if(isset($anesthesia->anesthesist->name))
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user-circle me-2"></i>
                                                     <span>{{ localize('global.anesthesist') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->anesthesist->name }}</div>
                                                 </div>
                                             </div>
@@ -144,24 +143,24 @@
                                         @endif
                                         @if(isset($anesthesia->anesthesia_log->name))
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-file-blank me-2"></i>
                                                     <span>{{ localize('global.anesthesia_log') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->anesthesia_log->name }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         @endif
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-droplet me-2"></i>
                                                     <span>{{ localize('global.estimated_blood_waste') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->estimated_blood_waste ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
@@ -172,12 +171,12 @@
                                     <div class="row g-3 mb-4">
                                         @if(isset($anesthesia->scrub_nurse->name))
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user-pin me-2"></i>
                                                     <span>{{ localize('global.scrub_nurse') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->scrub_nurse->name }}</div>
                                                 </div>
                                             </div>
@@ -185,35 +184,35 @@
                                         @endif
                                         @if(isset($anesthesia->circulation_nurse->name))
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-user-voice me-2"></i>
                                                     <span>{{ localize('global.circulation_nurse') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->circulation_nurse->name }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         @endif
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-message-dots me-2"></i>
                                                     <span>{{ localize('global.anesthesia_log_reply') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->anesthesia_log_reply ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-clipboard me-2"></i>
                                                     <span>{{ localize('global.anesthesia_plan') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->anesthesia_plan ?: 'N/A' }}</div>
                                                 </div>
                                             </div>
@@ -223,12 +222,12 @@
                                     <!-- Anesthesia Type & Other Problems Row -->
                                     <div class="row g-3">
                                         <div class="col-md-3">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-pulse me-2"></i>
                                                     <span>{{ localize('global.anesthesia_type') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">
                                                         @if($anesthesia->anesthesia_type)
                                                             <span class="badge bg-info">{{ $anesthesia->anesthesia_type }}</span>
@@ -241,12 +240,12 @@
                                         </div>
                                         @if($anesthesia->other_problems)
                                         <div class="col-md-9">
-                                            <div class="rounded h-100">
-                                                <div class="p-2 rounded-top d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
+                                            <div class="h-100">
+                                                <div class="p-2 d-flex align-items-center" style="background-color: #35365f !important; color: #696cff !important;">
                                                     <i class="bx bx-error-circle me-2"></i>
                                                     <span>{{ localize('global.other_problems') }}</span>
                                                 </div>
-                                                <div class="bg-body-secondary p-3 rounded-bottom">
+                                                <div class="bg-body-secondary p-3">
                                                     <div class="fw-semibold">{{ $anesthesia->other_problems }}</div>
                                                 </div>
                                             </div>

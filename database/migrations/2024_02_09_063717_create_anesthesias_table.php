@@ -68,10 +68,10 @@ return new class extends Migration
             ->on('users');
             $table->foreign('operation_scrub_nurse_id')
             ->references('id')
-            ->on('users');
+            ->on('nurses');
             $table->foreign('operation_circulation_nurse_id')
             ->references('id')
-            ->on('users');
+            ->on('nurses');
             $table->foreign('patient_id')
             ->references('id')
             ->on('patients');

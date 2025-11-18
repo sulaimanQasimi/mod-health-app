@@ -6,6 +6,7 @@ use App\Models\Anesthesia;
 use App\Models\Bed;
 use App\Models\Doctor;
 use App\Models\FoodType;
+use App\Models\Nurse;
 use App\Models\Operation;
 use App\Models\Relation;
 use App\Models\Room;
@@ -81,11 +82,17 @@ class OperationController extends Controller
         $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
             ->where('active_status', true)
             ->get();
+        $branchId = auth()->user()->branch_id;
+        $operation_nurses = Nurse::where('employment_status', 'active')
+
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get();
         $rooms = Room::all();
         $beds = Bed::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
-        return view('pages.operations.show', compact('operation', 'operation_doctors', 'rooms', 'beds', 'foodTypes', 'relations'));
+        return view('pages.operations.show', compact('operation', 'operation_doctors', 'operation_nurses', 'rooms', 'beds', 'foodTypes', 'relations'));
     }
 
     /**

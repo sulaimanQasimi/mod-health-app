@@ -117,21 +117,21 @@
                                             {{ $operation->anesthesist ? $operation->anesthesist->name : 'No Anesthesist' }}
                                         </div>
                                     </div>
-                                    @if (isset($operation->scrub_nurse->name))
+                                    @if (isset($operation->scrub_nurse))
                                         <div class="col-md-3">
                                             <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.scrub_nurse') }}</h5>
                                             <div>
-                                                {{ $operation->scrub_nurse->name }}
+                                                {{ $operation->scrub_nurse->full_name }}
                                             </div>
                                         </div>
                                     @endif
-                                    @if (isset($operation->circulation_nurse->name))
+                                    @if (isset($operation->circulation_nurse))
                                         <div class="col-md-3">
                                             <h5 class="mb-2 bg-label-primary p-1">
                                                 {{ localize('global.circulation_nurse') }}
                                             </h5>
                                             <div>
-                                                {{ $operation->circulation_nurse->name }}
+                                                {{ $operation->circulation_nurse->full_name }}
                                             </div>
                                         </div>
                                     @endif
@@ -226,11 +226,13 @@
                                                                     id="operation_scrub_nurse_id">
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
-                                                                    @foreach ($operation_doctors as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('operation_scrub_nurse_id', $operation->operation_scrub_nurse_id) == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-                                                                        </option>
-                                                                    @endforeach
+                                                                    @if(isset($operation_nurses) && $operation_nurses->count() > 0)
+                                                                        @foreach ($operation_nurses as $value)
+                                                                            <option value="{{ $value->id }}" {{ old('operation_scrub_nurse_id', $operation->operation_scrub_nurse_id) == $value->id ? 'selected' : '' }}>
+                                                                                {{ $value->full_name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    @endif
                                                                 </select>
                                                             </div>
 
@@ -242,11 +244,13 @@
                                                                     id="operation_circulation_nurse_id">
                                                                     <option value="">{{ localize('global.select') }}
                                                                     </option>
-                                                                    @foreach ($operation_doctors as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('operation_circulation_nurse_id', $operation->operation_circulation_nurse_id) == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-                                                                        </option>
-                                                                    @endforeach
+                                                                    @if(isset($operation_nurses) && $operation_nurses->count() > 0)
+                                                                        @foreach ($operation_nurses as $value)
+                                                                            <option value="{{ $value->id }}" {{ old('operation_circulation_nurse_id', $operation->operation_circulation_nurse_id) == $value->id ? 'selected' : '' }}>
+                                                                                {{ $value->full_name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    @endif
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -1711,6 +1715,77 @@
     <script>
         $(document).ready(function () {
 
+            // Initialize Select2 for nurse dropdowns when modal is shown
+            $('#createOperationNursesModal{{ $operation->id }}').on('shown.bs.modal', function () {
+                var $modal = $(this);
+                
+                // Check if Select2 is available
+                if (typeof $.fn.select2 === 'undefined') {
+                    console.warn('Select2 is not loaded. Skipping Select2 initialization.');
+                    return;
+                }
+
+                // Function to initialize select2 for a dropdown
+                function initSelect2($select, placeholder) {
+                    if ($select.length) {
+                        // Destroy existing instance if any
+                        if ($select.hasClass('select2-hidden-accessible')) {
+                            $select.select2('destroy');
+                        }
+                        // Initialize Select2
+                        $select.select2({
+                            width: '100%',
+                            placeholder: placeholder || '{{ localize("global.select") }}...',
+                            allowClear: true,
+                            dropdownParent: $modal,
+                            language: {
+                                noResults: function() {
+                                    return '{{ localize("global.no_results_found") ?: "No results found" }}';
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Initialize Select2 for scrub nurse dropdown
+                initSelect2($modal.find('#operation_scrub_nurse_id'));
+
+                // Initialize Select2 for circulation nurse dropdown
+                initSelect2($modal.find('#operation_circulation_nurse_id'));
+
+                // Initialize Select2 for room dropdown
+                initSelect2($modal.find('#operation_room_id'));
+
+                // Initialize Select2 for bed dropdown
+                initSelect2($modal.find('#operation_bed_id'));
+            });
+
+            // Destroy Select2 instances when modal is hidden to prevent conflicts
+            $('#createOperationNursesModal{{ $operation->id }}').on('hidden.bs.modal', function () {
+                var $modal = $(this);
+                if (typeof $.fn.select2 !== 'undefined') {
+                    $modal.find('#operation_scrub_nurse_id').select2('destroy');
+                    $modal.find('#operation_circulation_nurse_id').select2('destroy');
+                    $modal.find('#operation_room_id').select2('destroy');
+                    $modal.find('#operation_bed_id').select2('destroy');
+                }
+            });
+
+            // Initialize Select2 for other select2 elements on page load (excluding modal dropdowns)
+            if (typeof $.fn.select2 !== 'undefined') {
+                $('.select2:not(#operation_scrub_nurse_id):not(#operation_circulation_nurse_id):not(#operation_room_id):not(#operation_bed_id)').each(function() {
+                    var $select = $(this);
+                    // Skip if inside the operation nurses modal (handled separately)
+                    if (!$select.closest('#createOperationNursesModal{{ $operation->id }}').length && !$select.hasClass('select2-hidden-accessible')) {
+                        $select.select2({
+                            width: '100%',
+                            placeholder: '{{ localize("global.select") }}...',
+                            allowClear: true
+                        });
+                    }
+                });
+            }
+
             $('#under_review_room').on('change', function () {
                 var roomId = $(this).val();
                 if (roomId !== '') {
@@ -1724,17 +1799,55 @@
                     })
                 }
             });
-            $('#operation_room_id').on('change', function () {
+            // Handle room change and update bed dropdown with Select2
+            $(document).on('change', '#operation_room_id', function () {
                 var roomId = $(this).val();
+                var $bedSelect = $('#operation_bed_id');
+                var $modal = $('#createOperationNursesModal{{ $operation->id }}');
+                
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
                         success: function (response) {
-
-                            $('#operation_bed_id').html(response);
+                            // Destroy existing Select2 instance
+                            if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            
+                            // Update bed options
+                            $bedSelect.html(response);
+                            
+                            // Reinitialize Select2 for bed dropdown
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    width: '100%',
+                                    placeholder: '{{ localize("global.select") }}...',
+                                    allowClear: true,
+                                    dropdownParent: $modal.length ? $modal : $('body'),
+                                    language: {
+                                        noResults: function() {
+                                            return '{{ localize("global.no_results_found") ?: "No results found" }}';
+                                        }
+                                    }
+                                });
+                            }
                         }
-                    })
+                    });
+                } else {
+                    // Clear bed dropdown if no room selected
+                    if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            width: '100%',
+                            placeholder: '{{ localize("global.select") }}...',
+                            allowClear: true,
+                            dropdownParent: $modal.length ? $modal : $('body')
+                        });
+                    }
                 }
             });
             $('#room_id').on('change', function () {

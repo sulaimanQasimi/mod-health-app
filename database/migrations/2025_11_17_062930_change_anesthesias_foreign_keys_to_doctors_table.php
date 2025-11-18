@@ -12,15 +12,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('anesthesias', function (Blueprint $table) {
-            // Drop old foreign keys
-            $table->dropForeign(['doctor_id']);
-            $table->dropForeign(['operation_surgion_id']);
-            $table->dropForeign(['operation_anesthesia_log_id']);
-            $table->dropForeign(['operation_anesthesist_id']);
-            $table->dropForeign(['operation_scrub_nurse_id']);
-            $table->dropForeign(['operation_circulation_nurse_id']);
-        });
+        // Drop old foreign keys if they exist (using try-catch to handle missing keys)
+        $columns = ['doctor_id', 'operation_surgion_id', 'operation_anesthesia_log_id', 'operation_anesthesist_id', 'operation_scrub_nurse_id', 'operation_circulation_nurse_id'];
+        
+        foreach ($columns as $column) {
+            try {
+                Schema::table('anesthesias', function (Blueprint $table) use ($column) {
+                    $table->dropForeign([$column]);
+                });
+            } catch (\Exception $e) {
+                // Foreign key doesn't exist, try to drop by finding the constraint name
+                try {
+                    $foreignKey = DB::selectOne("
+                        SELECT CONSTRAINT_NAME 
+                        FROM information_schema.KEY_COLUMN_USAGE 
+                        WHERE TABLE_SCHEMA = DATABASE() 
+                        AND TABLE_NAME = 'anesthesias' 
+                        AND COLUMN_NAME = ?
+                        AND REFERENCED_TABLE_NAME IS NOT NULL
+                    ", [$column]);
+                    
+                    if ($foreignKey && isset($foreignKey->CONSTRAINT_NAME)) {
+                        DB::statement("ALTER TABLE anesthesias DROP FOREIGN KEY `{$foreignKey->CONSTRAINT_NAME}`");
+                    }
+                } catch (\Exception $e2) {
+                    // Foreign key doesn't exist, continue
+                }
+            }
+        }
 
         // Add new foreign keys pointing to doctors table
         Schema::table('anesthesias', function (Blueprint $table) {
@@ -46,12 +65,12 @@ return new class extends Migration
 
             $table->foreign('operation_scrub_nurse_id')
                 ->references('id')
-                ->on('doctors')
+                ->on('nurses')
                 ->onDelete('set null');
 
             $table->foreign('operation_circulation_nurse_id')
                 ->references('id')
-                ->on('doctors')
+                ->on('nurses')
                 ->onDelete('set null');
         });
     }
@@ -95,12 +114,12 @@ return new class extends Migration
 
             $table->foreign('operation_scrub_nurse_id')
                 ->references('id')
-                ->on('users')
+                ->on('nurses')
                 ->onDelete('set null');
 
             $table->foreign('operation_circulation_nurse_id')
                 ->references('id')
-                ->on('users')
+                ->on('nurses')
                 ->onDelete('set null');
         });
     }

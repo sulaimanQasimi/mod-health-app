@@ -36,10 +36,56 @@ class HospitalizationController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
+            $query = Hospitalization::where('branch_id', auth()->user()->branch_id)
                 ->where('is_discharged', '0')
-                ->with(['patient', 'room', 'bed', 'doctor'])
-                ->get();
+                ->with(['patient', 'room', 'bed', 'doctor']);
+
+            // Search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->whereHas('patient', function($patientQuery) use ($search) {
+                        $patientQuery->where('name', 'like', "%{$search}%")
+                                     ->orWhere('id_card', 'like', "%{$search}%")
+                                     ->orWhere('father_name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('room', function($roomQuery) use ($search) {
+                        $roomQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('bed', function($bedQuery) use ($search) {
+                        $bedQuery->where('number', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('doctor', function($doctorQuery) use ($search) {
+                        $doctorQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('reason', 'like', "%{$search}%");
+                });
+            }
+
+            // Room filter
+            if ($request->filled('room_id')) {
+                $query->where('room_id', $request->room_id);
+            }
+
+            // Date from filter
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+
+            // Date to filter
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+
+            $hospitalizations = $query->get()
+                ->map(function ($hospitalization) {
+                    if ($hospitalization->created_at) {
+                        $hospitalization->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
+                    } else {
+                        $hospitalization->jalali_date = 'Not set';
+                    }
+                    return $hospitalization;
+                });
 
             if ($hospitalizations) {
                 return response()->json([
@@ -54,11 +100,10 @@ class HospitalizationController extends Controller
             }
         }
 
-        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
-            ->where('is_discharged', '0')
-            ->with(['patient', 'room', 'bed', 'doctor'])
-            ->get();
-        return view('pages.hospitalizations.index', compact('hospitalizations'));
+        // Get filter options for non-AJAX requests
+        $rooms = \App\Models\Room::where('branch_id', auth()->user()->branch_id)->get();
+        
+        return view('pages.hospitalizations.index', compact('rooms'));
     }
 
     /**

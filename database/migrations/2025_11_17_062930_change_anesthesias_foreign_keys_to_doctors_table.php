@@ -41,6 +41,32 @@ return new class extends Migration
             }
         }
 
+        // Set doctor_id columns to null for anesthesias where the doctor doesn't exist in doctors table
+        $doctorColumns = ['doctor_id', 'operation_surgion_id', 'operation_anesthesia_log_id', 'operation_anesthesist_id'];
+        
+        foreach ($doctorColumns as $column) {
+            DB::statement("
+                UPDATE anesthesias a
+                LEFT JOIN doctors d ON a.{$column} = d.id
+                SET a.{$column} = NULL 
+                WHERE a.{$column} IS NOT NULL 
+                AND d.id IS NULL
+            ");
+        }
+        
+        // Set nurse_id columns to null for anesthesias where the nurse doesn't exist in nurses table
+        $nurseColumns = ['operation_scrub_nurse_id', 'operation_circulation_nurse_id'];
+        
+        foreach ($nurseColumns as $column) {
+            DB::statement("
+                UPDATE anesthesias a
+                LEFT JOIN nurses n ON a.{$column} = n.id
+                SET a.{$column} = NULL 
+                WHERE a.{$column} IS NOT NULL 
+                AND n.id IS NULL
+            ");
+        }
+
         // Add new foreign keys pointing to doctors table
         Schema::table('anesthesias', function (Blueprint $table) {
             $table->foreign('doctor_id')
@@ -80,15 +106,60 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('anesthesias', function (Blueprint $table) {
-            // Drop new foreign keys
-            $table->dropForeign(['doctor_id']);
-            $table->dropForeign(['operation_surgion_id']);
-            $table->dropForeign(['operation_anesthesia_log_id']);
-            $table->dropForeign(['operation_anesthesist_id']);
-            $table->dropForeign(['operation_scrub_nurse_id']);
-            $table->dropForeign(['operation_circulation_nurse_id']);
-        });
+        // Drop new foreign keys
+        $columns = ['doctor_id', 'operation_surgion_id', 'operation_anesthesia_log_id', 'operation_anesthesist_id', 'operation_scrub_nurse_id', 'operation_circulation_nurse_id'];
+        
+        foreach ($columns as $column) {
+            try {
+                Schema::table('anesthesias', function (Blueprint $table) use ($column) {
+                    $table->dropForeign([$column]);
+                });
+            } catch (\Exception $e) {
+                // Try to find and drop by constraint name
+                try {
+                    $foreignKey = DB::selectOne("
+                        SELECT CONSTRAINT_NAME 
+                        FROM information_schema.KEY_COLUMN_USAGE 
+                        WHERE TABLE_SCHEMA = DATABASE() 
+                        AND TABLE_NAME = 'anesthesias' 
+                        AND COLUMN_NAME = ?
+                        AND REFERENCED_TABLE_NAME IS NOT NULL
+                    ", [$column]);
+                    
+                    if ($foreignKey && isset($foreignKey->CONSTRAINT_NAME)) {
+                        DB::statement("ALTER TABLE anesthesias DROP FOREIGN KEY `{$foreignKey->CONSTRAINT_NAME}`");
+                    }
+                } catch (\Exception $e2) {
+                    // Foreign key doesn't exist, continue
+                }
+            }
+        }
+        
+        // Set doctor_id columns to null for anesthesias where the doctor doesn't exist in users table
+        $doctorColumns = ['doctor_id', 'operation_surgion_id', 'operation_anesthesia_log_id', 'operation_anesthesist_id'];
+        
+        foreach ($doctorColumns as $column) {
+            DB::statement("
+                UPDATE anesthesias a
+                LEFT JOIN users u ON a.{$column} = u.id
+                SET a.{$column} = NULL 
+                WHERE a.{$column} IS NOT NULL 
+                AND u.id IS NULL
+            ");
+        }
+        
+        // Set nurse_id columns to null for anesthesias where the nurse doesn't exist in nurses table
+        $nurseColumns = ['operation_scrub_nurse_id', 'operation_circulation_nurse_id'];
+        
+        foreach ($nurseColumns as $column) {
+            DB::statement("
+                UPDATE anesthesias a
+                LEFT JOIN nurses n ON a.{$column} = n.id
+                SET a.{$column} = NULL 
+                WHERE a.{$column} IS NOT NULL 
+                AND n.id IS NULL
+            ");
+        }
 
         // Restore old foreign keys pointing to users table
         Schema::table('anesthesias', function (Blueprint $table) {

@@ -35,7 +35,7 @@
                                     <div class="col-md-3">
                                         <h5 class="mb-2">{{ localize('global.referred_to') }}</h5>
                                         <div>
-                                            {{ $hospitalization->doctor->name }}
+                                            {{ $hospitalization->doctor?->name }}
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -310,7 +310,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $advice->description }}</td>
                                                 <td>
-                                                    {{ $advice->doctor->name }}
+                                                    {{ $advice->doctor?->name }}
                                                 </td>
                                                 <td dir="ltr">{{ verta($advice->created_at)->format('Y-m-d H:i') }}</td>
                                                 <td>

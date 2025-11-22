@@ -362,7 +362,7 @@
                                     </small>
                                 </div>
                                 <div>
-                                    {{ $doctors->links() }}
+                                    {{ $doctors->links('pagination::bootstrap-5') }}
                                 </div>
                             </div>
                         </div>

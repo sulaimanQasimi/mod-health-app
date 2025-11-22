@@ -20,6 +20,11 @@
                             <input type="text" class="form-control" id="search" name="search" 
                                 value="{{ request('search') }}" placeholder="{{ localize('global.search_by_name_nid_phone') }}">
                         </div>
+                        <div class="col-md-3">
+                            <label for="card_search" class="form-label">{{ localize('global.id_card') }} {{ localize('global.search') }}</label>
+                            <input type="text" class="form-control" id="card_search" name="card_search" 
+                                value="{{ request('card_search') }}" placeholder="{{ localize('global.search_by_card') }}">
+                        </div>
                         <div class="col-md-2">
                             <label for="militery_type_id" class="form-label">{{ localize('global.militery_type') }}</label>
                             <select class="form-select" id="militery_type_id" name="militery_type_id">
@@ -59,12 +64,12 @@
                             </select>
                         </div>
                         <div class="col-md-1 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary w-100">
                                 <i class="bx bx-search"></i>
                             </button>
                         </div>
                         <div class="col-md-1 d-flex align-items-end">
-                            <a href="{{ route('patients.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('patients.index') }}" class="btn btn-secondary w-100">
                                 <i class="bx bx-refresh"></i>
                             </a>
                         </div>
@@ -179,6 +184,7 @@ $(document).ready(function() {
     // Clear search on refresh button click
     $('.btn-secondary').click(function() {
         $('input[name="search"]').val('');
+        $('input[name="card_search"]').val('');
     });
     
     // Add loading state to search button

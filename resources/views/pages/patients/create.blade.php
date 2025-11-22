@@ -130,12 +130,38 @@
 @section('scripts')
     <script>
         function changeType(emp_type) {
-            if (emp_type == '0') {
-                label = "{{ localize('global.rank') }}";
-            } else {
-                label = "{{ localize('global.bast') }}";
+            // Handle rank label update (for tab2)
+            const rankLabel = document.getElementById('rank_label');
+            if (rankLabel) {
+                if (emp_type == '0') {
+                    rankLabel.innerHTML = "{{ localize('global.rank') }}";
+                } else {
+                    rankLabel.innerHTML = "{{ localize('global.bast') }}";
+                }
             }
-            $('#rank_label').html(label);
+            
+            // Handle tab1 elements (military type div, rank div) - only if they exist
+            const militeryTypeDiv = document.getElementById('militery_type_div');
+            const rankDiv = document.getElementById('rank_div');
+            const militeryTypeSelect = document.getElementById('militery_type_id');
+            const rankInput = document.getElementById('rank');
+            
+            if (militeryTypeDiv && rankDiv && militeryTypeSelect && rankInput) {
+                // This is tab1, handle the display logic
+                if (emp_type === '0') { // Military
+                    militeryTypeDiv.style.display = 'block';
+                    rankDiv.style.display = 'none';
+                    militeryTypeSelect.required = true;
+                    rankInput.required = false;
+                    rankInput.value = ''; // Clear rank value when switching to military
+                } else { // Civilian
+                    militeryTypeDiv.style.display = 'none';
+                    rankDiv.style.display = 'block';
+                    militeryTypeSelect.required = false;
+                    rankInput.required = true;
+                    militeryTypeSelect.value = ''; // Clear military type when switching to civilian
+                }
+            }
         }
         $(document).ready(function () {
             getTab('{{$tab_name}}');
@@ -206,6 +232,14 @@
                     
                     // Initialize select2 with search functionality and auto focus
                     initializeSelect2WithAutoFocus();
+                    
+                    // Initialize changeType function for job_category if it exists
+                    setTimeout(function() {
+                        const jobCategorySelect = document.getElementById('job_category');
+                        if (jobCategorySelect && jobCategorySelect.value !== '') {
+                            changeType(jobCategorySelect.value);
+                        }
+                    }, 100);
                     
                     // Initialize appointment form functionality
                     initializeAppointmentForm();
@@ -408,15 +442,35 @@
             // Clear all text inputs
             form.find('input[type="text"], input[type="number"]').val('');
             
-            // Clear select2 dropdowns
-            form.find('.select2').val(null).trigger('change');
+            // Clear select2 dropdowns - use a try-catch to handle any errors
+            try {
+                form.find('.select2').each(function() {
+                    const $select = $(this);
+                    // Store the current value to avoid triggering change if already null
+                    if ($select.val() !== null && $select.val() !== '') {
+                        $select.val(null).trigger('change');
+                    }
+                });
+            } catch (e) {
+                console.warn('Error clearing select2 dropdowns:', e);
+            }
             
             // Reset district dropdown to default state
-            $('#district_id').html('<option value="">{{ localize("global.select") }}</option>');
+            const districtSelect = $('#district_id');
+            if (districtSelect.length) {
+                districtSelect.html('<option value="">{{ localize("global.select") }}</option>');
+            }
             
             // Reset appointment dropdowns
-            $('#appointment_doctor_id').html('<option value="">{{ localize("global.select_doctor_first") }}</option>').prop('disabled', true);
-            $('#appointment_department_id').val(null).trigger('change');
+            const doctorSelect = $('#appointment_doctor_id');
+            if (doctorSelect.length) {
+                doctorSelect.html('<option value="">{{ localize("global.select_doctor_first") }}</option>').prop('disabled', true);
+            }
+            
+            const deptSelect = $('#appointment_department_id');
+            if (deptSelect.length) {
+                deptSelect.val(null).trigger('change');
+            }
             
             // Re-initialize select2 for cleared dropdowns
             initializeSelect2WithAutoFocus();

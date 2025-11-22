@@ -48,6 +48,12 @@ class PatientController extends Controller
             });
         }
 
+        // Search by card (id_card)
+        if ($request->filled('card_search')) {
+            $cardSearch = $request->card_search;
+            $query->where('id_card', 'like', '%' . $cardSearch . '%');
+        }
+
         // Filter by militery type
         if ($request->filled('militery_type_id')) {
             $query->where('militery_type_id', $request->militery_type_id);

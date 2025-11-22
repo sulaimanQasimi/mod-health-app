@@ -31,6 +31,15 @@ return new class extends Migration
             $table->unsignedBigInteger('doctor_id')->nullable()->change();
         });
         
+        // Set doctor_id to null for hospitalizations where the doctor doesn't exist in doctors table
+        DB::statement("
+            UPDATE hospitalizations h
+            LEFT JOIN doctors d ON h.doctor_id = d.id
+            SET h.doctor_id = NULL 
+            WHERE h.doctor_id IS NOT NULL 
+            AND d.id IS NULL
+        ");
+        
         Schema::table('hospitalizations', function (Blueprint $table) {
             $table->foreign('doctor_id')
                 ->references('id')
@@ -44,21 +53,41 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('hospitalizations', function (Blueprint $table) {
-            $foreignKey = DB::select("
-                SELECT CONSTRAINT_NAME 
-                FROM information_schema.KEY_COLUMN_USAGE 
-                WHERE TABLE_SCHEMA = DATABASE()
-                AND TABLE_NAME = 'hospitalizations'
-                AND COLUMN_NAME = 'doctor_id'
-                AND REFERENCED_TABLE_NAME IS NOT NULL
-                LIMIT 1
-            ");
-            
-            if (!empty($foreignKey)) {
-                DB::statement("ALTER TABLE `hospitalizations` DROP FOREIGN KEY `{$foreignKey[0]->CONSTRAINT_NAME}`");
+        // Drop the foreign key constraint
+        try {
+            Schema::table('hospitalizations', function (Blueprint $table) {
+                $table->dropForeign(['doctor_id']);
+            });
+        } catch (\Exception $e) {
+            // Foreign key doesn't exist, try to drop by finding the constraint name
+            try {
+                $foreignKey = DB::selectOne("
+                    SELECT CONSTRAINT_NAME 
+                    FROM information_schema.KEY_COLUMN_USAGE 
+                    WHERE TABLE_SCHEMA = DATABASE() 
+                    AND TABLE_NAME = 'hospitalizations' 
+                    AND COLUMN_NAME = 'doctor_id'
+                    AND REFERENCED_TABLE_NAME IS NOT NULL
+                ");
+                
+                if ($foreignKey && isset($foreignKey->CONSTRAINT_NAME)) {
+                    DB::statement("ALTER TABLE hospitalizations DROP FOREIGN KEY `{$foreignKey->CONSTRAINT_NAME}`");
+                }
+            } catch (\Exception $e2) {
+                // Foreign key doesn't exist, continue
             }
-            
+        }
+        
+        // Set doctor_id to null for hospitalizations where the doctor doesn't exist in users table
+        DB::statement("
+            UPDATE hospitalizations h
+            LEFT JOIN users u ON h.doctor_id = u.id
+            SET h.doctor_id = NULL 
+            WHERE h.doctor_id IS NOT NULL 
+            AND u.id IS NULL
+        ");
+        
+        Schema::table('hospitalizations', function (Blueprint $table) {
             $table->foreign('doctor_id')
                 ->references('id')
                 ->on('users')

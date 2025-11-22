@@ -37,6 +37,15 @@ return new class extends Migration
             }
         }
 
+        // Set doctor_id to null for appointments where the doctor doesn't exist in doctors table
+        DB::statement("
+            UPDATE appointments a
+            LEFT JOIN doctors d ON a.doctor_id = d.id
+            SET a.doctor_id = NULL 
+            WHERE a.doctor_id IS NOT NULL 
+            AND d.id IS NULL
+        ");
+
         // Re-add the foreign key constraint pointing to doctors table
         Schema::table('appointments', function (Blueprint $table) {
             $table->foreign('doctor_id')
@@ -75,6 +84,15 @@ return new class extends Migration
                 // Foreign key doesn't exist, continue
             }
         }
+        
+        // Set doctor_id to null for appointments where the doctor doesn't exist in users table
+        DB::statement("
+            UPDATE appointments a
+            LEFT JOIN users u ON a.doctor_id = u.id
+            SET a.doctor_id = NULL 
+            WHERE a.doctor_id IS NOT NULL 
+            AND u.id IS NULL
+        ");
         
         // Re-add the foreign key constraint pointing back to users table
         Schema::table('appointments', function (Blueprint $table) {

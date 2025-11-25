@@ -3744,5 +3744,8 @@ return [
     'no_appointments_found'=>'هیچ ملاقاتی برای نمایش یافت نشد',
     'direct_appointment'=>'مستقیم',
     'select_department_first'=>'ابتدا داکتر را انتخاب کنید',
-    'under_reviews'=>'تحت مشاهده'
+    'under_reviews'=>'تحت مشاهده',
+    'no_doctors_found'=>'هیچ دکتری برای نمایش یافت نشد',
+    'try_adjusting_filters'=>'لطفاً فیلترها را تنظیم کنید',
+    'search_by_name_contact_specialization'=>'جستجوی با نام، شماره تماس و تخصص'
 ];

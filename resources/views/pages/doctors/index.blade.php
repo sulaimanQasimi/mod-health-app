@@ -55,7 +55,7 @@
                                 </div>
 
                                 {{-- Department Filter --}}
-                                <div class="col-md-3">
+                                <div class="col-md-3 border">
                                     <label for="department_id" class="form-label fw-semibold">
                                         <i class="bx bx-building me-1 text-info"></i>{{ localize('global.department') }}
                                     </label>
@@ -70,7 +70,7 @@
                                 </div>
 
                                 {{-- Branch Filter --}}
-                                <div class="col-md-3">
+                                <div class="col-md-3 border">
                                     <label for="branch_id" class="form-label fw-semibold">
                                         <i class="bx bx-map me-1 text-success"></i>{{ localize('global.branch') ?: 'Branch' }}
                                     </label>
@@ -230,7 +230,7 @@
 
             {{-- Doctors Table --}}
             <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom">
+                <div class="card-header bg-none border-bottom">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-semibold">
                             <i class="bx bx-list-ul me-2 text-primary"></i>
@@ -354,7 +354,7 @@
                         </div>
 
                         {{-- Pagination --}}
-                        <div class="card-footer bg-white border-top">
+                        <div class="card-footer bg-none border-top">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">

@@ -838,12 +838,15 @@
                         </div>
                     </div>
 
-                    <!-- Lab Section Component -->
-                    <x-lab-section :entity="$icu" entity-type="icu" :entity-id="$icu->id"
-                        :can-add-lab="auth()->user()->can('add-patient-labs')"
-                        :can-edit-lab="auth()->user()->can('edit-lab-items')"
-                        :can-delete-lab="auth()->user()->can('delete-lab-items')"
-                        :appointment-completed="$icu->is_discharged == 1" />
+                    <!-- Lab Test Registration Section Component (ICU) -->
+                    <x-lab-test-registration-section 
+                        :entity="$icu"
+                        entity-type="icu"
+                        :entity-id="$icu->id"
+                        :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+                        :appointment-completed="$icu->is_discharged == 1"
+                    />
+
                     <!-- Procedures Accordion -->
                     <div class="accordion mt-4" id="proceduresAccordion">
                         <div class="accordion-item">

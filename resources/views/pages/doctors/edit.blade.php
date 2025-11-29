@@ -111,7 +111,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="join_date">{{localize('global.join_date')}}</label>
-                                        <input type="text" name="join_date" id="join_date" value="{{ old('join_date', $doctor->join_date ? \Carbon\Carbon::parse($doctor->join_date)->format('Y-m-d') : '') }}" class="form-control datepicker_dari @error('join_date') is-invalid @enderror">
+                                        <input type="text" name="join_date" id="join_date" value="{{ old('join_date', $doctor->join_date ? verta($doctor->join_date)->format('Y-m-d') : '') }}" class="form-control datepicker_dari @error('join_date') is-invalid @enderror">
                                         @error('join_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -137,7 +137,12 @@
                                     <div class="mb-3">
                                         <label for="active_status">{{localize('global.active_status')}}</label>
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="active_status" id="active_status" value="1" {{ old('active_status', $doctor->active_status ?? true) ? 'checked' : '' }}>
+                                            @php
+                                                $isActive = old('active_status') !== null 
+                                                    ? (bool)old('active_status') 
+                                                    : ($doctor->active_status ?? true);
+                                            @endphp
+                                            <input class="form-check-input" type="checkbox" name="active_status" id="active_status" value="1" {{ $isActive ? 'checked' : '' }}>
                                             <label class="form-check-label" for="active_status">
                                                 {{localize('global.active')}}
                                             </label>

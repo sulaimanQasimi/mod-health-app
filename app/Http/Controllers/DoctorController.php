@@ -96,18 +96,54 @@ class DoctorController extends Controller
             'qualification' => 'nullable|string',
             'room_no' => 'nullable|string',
             'clinic_type' => 'nullable|in:hospital,clinic',
-            'join_date' => 'nullable|date',
-            'active_status' => 'nullable|boolean',
-            'branch_id' => 'required',
+            'join_date' => 'nullable|string',
+            'active_status' => 'nullable',
             'department_id' => 'required',
         ]);
+
+        // Automatically set branch_id from authenticated user
+        $data['branch_id'] = auth()->user()->branch_id ?? null;
+        
+        if (!$data['branch_id']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Branch ID is required. Please contact administrator.');
+        }
+
+        // Automatically set section_id from authenticated user, or get first section from department
+        $data['section_id'] = auth()->user()->section_id ?? null;
+        
+        // If user doesn't have section_id, try to get first section from the selected department
+        if (!$data['section_id'] && $data['department_id']) {
+            $section = \App\Models\Section::where('department_id', $data['department_id'])->first();
+            if ($section) {
+                $data['section_id'] = $section->id;
+            }
+        }
+        
+        if (!$data['section_id']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Section ID is required. Please contact administrator.');
+        }
 
         // Convert active_status checkbox to boolean
         $data['active_status'] = $request->has('active_status') ? true : false;
 
+        // Convert Dari date to standard date format if provided
+        if ($request->filled('join_date')) {
+            try {
+                $data['join_date'] = Verta::parse($request->join_date)->datetime();
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Invalid date format for join date.');
+            }
+        }
+
         Doctor::create($data);
 
-        return redirect()->route('doctors.index')->with('success', 'Doctor created successfully.');
+        return redirect()->route('doctors.index')->with('success', localize('global.doctor_created_successfully'));
     }
 
     /**
@@ -143,18 +179,53 @@ class DoctorController extends Controller
             'qualification' => 'nullable|string',
             'room_no' => 'nullable|string',
             'clinic_type' => 'nullable|in:hospital,clinic',
-            'join_date' => 'nullable|date',
-            'active_status' => 'nullable|boolean',
-            'branch_id' => 'required',
+            'join_date' => 'nullable|string',
+            'active_status' => 'nullable',
             'department_id' => 'required',
         ]);
+
+        // Automatically set branch_id from authenticated user (or keep existing if user doesn't have one)
+        $data['branch_id'] = auth()->user()->branch_id ?? $doctor->branch_id;
+        
+        if (!$data['branch_id']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Branch ID is required. Please contact administrator.');
+        }
+
+        // Automatically set section_id from authenticated user, or get first section from department, or keep existing
+        $data['section_id'] = auth()->user()->section_id ?? null;
+        
+        // If user doesn't have section_id, try to get first section from the selected department
+        if (!$data['section_id'] && $data['department_id']) {
+            $section = \App\Models\Section::where('department_id', $data['department_id'])->first();
+            if ($section) {
+                $data['section_id'] = $section->id;
+            }
+        }
+        
+        // If still no section_id, keep the existing one
+        if (!$data['section_id']) {
+            $data['section_id'] = $doctor->section_id;
+        }
 
         // Convert active_status checkbox to boolean
         $data['active_status'] = $request->has('active_status') ? true : false;
 
+        // Convert Dari date to standard date format if provided
+        if ($request->filled('join_date')) {
+            try {
+                $data['join_date'] = Verta::parse($request->join_date)->datetime();
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Invalid date format for join date.');
+            }
+        }
+
         $doctor->update($data);
 
-        return redirect()->route('doctors.index')->with('success', 'Doctor updated successfully.');
+        return redirect()->route('doctors.index')->with('success', localize('global.doctor_updated_successfully'));
     }
 
     /**

@@ -67,7 +67,8 @@ class UserController extends Controller
         $departments = Department::all();
         $sections = Section::all();
         $categories = Category::all();
-        return view('pages.users.create',compact('roles','branches','departments','sections','categories'));
+        $permissions = Permission::all();
+        return view('pages.users.create',compact('roles','branches','departments','sections','categories', 'permissions'));
     }
 
     /**
@@ -88,6 +89,10 @@ class UserController extends Controller
         $user->clinic_type = $request->clinic_type;
         $user->password = Hash::make($request->password);
 
+        if ($request->hasFile('avatar')) {
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+        }
+
         $user->save();
 
         $roles = $request['roles'];
@@ -100,6 +105,8 @@ class UserController extends Controller
                 $user->assignRole($role_r);
             }
         }
+
+        $user->syncPermissions($request->input('permissions', []));
 
         return redirect()->route('users.index')->with('success', localize('global.user_create_success'));
     }
@@ -145,8 +152,19 @@ class UserController extends Controller
     
         // Handle checkbox - if not present, set to false
         $request->merge(['is_doctor' => $request->has('is_doctor') ? true : false]);
-    
-        $user->update($request->input());
+
+        $data = $request->input();
+
+        // Handle Avatar Upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar) {
+                \Storage::disk('public')->delete($user->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->update($data);
     
         $roles = $request['roles'];
     

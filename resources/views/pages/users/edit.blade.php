@@ -6,130 +6,138 @@
             @if (Session::has('success') || Session::has('error'))
                 @include('components.toast')
             @endif
-            <div class="col-xl">
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.edit') }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('users.update', $user->id) }}" method="post" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.name') }}</label>
-                                        <input type="text" class="form-control" name="name"
-                                            value="{{ old('name', $user->name) }}">
-                                    </div>
-                                    @if ($errors->first('name'))
-                                        <div class="display-error">
-                                            {{ $errors->first('name') }}
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold py-3 mb-0">
+                    <span class="text-muted fw-light">{{ localize('global.users') }} /</span> {{ localize('global.edit') }}
+                </h4>
+                <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back me-1"></i> {{ localize('global.back') }}
+                </a>
+            </div>
+
+            <form action="{{ route('users.update', $user->id) }}" method="post" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                
+                <div class="row">
+                    <!-- Left Column: Avatar & Basic Info -->
+                    <div class="col-md-4">
+                        <!-- Avatar Card -->
+                        <div class="card mb-4">
+                            <div class="card-body text-center">
+                                <div class="user-avatar-section mb-3">
+                                    <div class="d-flex align-items-center justify-content-center flex-column">
+                                        @if($user->avatar)
+                                            <img class="img-fluid rounded my-3" src="{{ asset('storage/' . $user->avatar) }}" height="120" width="120" alt="User avatar" id="avatar-preview" />
+                                        @else
+                                            <img class="img-fluid rounded my-3" src="{{ asset('assets/img/avatars/1.png') }}" height="120" width="120" alt="User avatar" id="avatar-preview" />
+                                        @endif
+                                        <div class="button-wrapper">
+                                            <label for="upload" class="btn btn-primary me-2 mb-3" tabindex="0">
+                                                <span class="d-none d-sm-block">{{ localize('global.upload_new_photo') }}</span>
+                                                <i class="bx bx-upload d-block d-sm-none"></i>
+                                                <input type="file" id="upload" class="account-file-input" hidden accept="image/png, image/jpeg" name="avatar" onchange="previewImage(this)"/>
+                                            </label>
+                                            <div class="text-muted small">Allowed JPG, GIF or PNG. Max size of 2MB</div>
                                         </div>
-                                    @endif
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.last_name') }}</label>
-                                        <input type="text" class="form-control" name="last_name"
-                                            value="{{ old('last_name', $user->last_name) }}">
                                     </div>
-                                    @if ($errors->first('last_name'))
-                                        <div class="display-error">
-                                            {{ $errors->first('last_name') }}
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
+                        </div>
 
+                        <!-- Basic Info Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">{{ localize('global.basic_information') }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.name') }}</label>
+                                    <input type="text" class="form-control" name="name" value="{{ old('name', $user->name) }}">
+                                    @error('name')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.last_name') }}</label>
+                                    <input type="text" class="form-control" name="last_name" value="{{ old('last_name', $user->last_name) }}">
+                                    @error('last_name')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ localize('global.email') }}</label>
+                                    <input type="text" class="form-control" name="email" value="{{ old('email', $user->email) }}">
+                                    @error('email')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.email') }}</label>
-                                        <input type="text" class="form-control" name="email"
-                                            value="{{ old('email', $user->email) }}">
-                                    </div>
-                                    @if ($errors->first('email'))
-                                        <div class="display-error">
-                                            {{ $errors->first('email') }}
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.password') }}</label>
-                                        <input type="password" class="form-control" name="password"
-                                            value="{{ old('password') }}">
-                                    </div>
-                                    @if ($errors->first('password'))
-                                        <div class="display-error">
-                                            {{ $errors->first('password') }}
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.password_confirmation') }}</label>
-                                        <input type="password" class="form-control" name="password_confirmation"
-                                            value="{{ old('password_confirmation') }}">
-                                    </div>
-                                    @if ($errors->first('password_confirmation'))
-                                        <div class="display-error">
-                                            {{ $errors->first('password_confirmation') }}
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
+                    <!-- Right Column: Professional, Security, Access -->
+                    <div class="col-md-8">
+                        
+                        <!-- Professional Details Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">{{ localize('global.professional_details') }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label">{{ localize('global.branch') }}</label>
-                                        <select class="form-control select2" name="branch_id">
+                                        <select class="form-select select2" name="branch_id" id="branch_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach ($branches as $value)
-                                                <option value="{{ $value->id }}"
-                                                    {{ old('branch_id', $user->branch_id) == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name }}</option>
+                                                <option value="{{ $value->id }}" {{ old('branch_id', $user->branch_id) == $value->id ? 'selected' : '' }}>
+                                                    {{ $value->name }}
+                                                </option>
                                             @endforeach
-
                                         </select>
+                                        @error('branch_id')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    @if ($errors->first('branch'))
-                                        <div class="display-error">
-                                            {{ $errors->first('branch') }}
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="department_id">{{ localize('global.department') }}</label>
-                                        <select class="form-control select2" name="department_id" id="department_id">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">{{ localize('global.department') }}</label>
+                                        <select class="form-select select2" name="department_id" id="department_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach ($departments as $value)
-                                                <option value="{{ $value->id }}"
-                                                    {{ old('department_id', $user->department_id) == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name }}</option>
+                                                <option value="{{ $value->id }}" {{ old('department_id', $user->department_id) == $value->id ? 'selected' : '' }}>
+                                                    {{ $value->name }}
+                                                </option>
                                             @endforeach
-
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="section_id">{{ localize('global.section') }}</label>
-                                        <select class="form-control select2" name="section_id" id="section_id">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">{{ localize('global.section') }}</label>
+                                        <select class="form-select select2" name="section_id" id="section_id">
                                             <option value="">{{ localize('global.select') }}</option>
                                             @foreach ($sections as $value)
-                                                <option value="{{ $value->id }}"
-                                                    {{ old('section_id', $user->section_id) == $value->id ? 'selected' : '' }}>
-                                                    {{ $value->name }}</option>
+                                                <option value="{{ $value->id }}" {{ old('section_id', $user->section_id) == $value->id ? 'selected' : '' }}>
+                                                    {{ $value->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <div class="form-check">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ localize('global.clinic_type') }}</label>
+                                        <select name="clinic_type" class="form-select select2">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="hospital" {{ old('clinic_type', $user->clinic_type) == 'hospital' ? 'selected' : '' }}>{{ localize('global.hospital') }}</option>
+                                            <option value="clinic" {{ old('clinic_type', $user->clinic_type) == 'clinic' ? 'selected' : '' }}>{{ localize('global.clinic') }}</option>
+                                        </select>
+                                        @error('clinic_type')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                                        <div class="form-check form-switch mb-2">
                                             <input class="form-check-input" type="checkbox" name="is_doctor" id="is_doctor" value="1" {{ old('is_doctor', $user->is_doctor) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="is_doctor">
                                                 {{ localize('global.is_doctor') }}
@@ -137,73 +145,108 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ localize('global.clinic_type') }}</label>
-                                        <select name="clinic_type" class="form-control select2">
-                                            <option value="">{{ localize('global.select') }}</option>
-                                            <option value="hospital" {{ old('clinic_type', $user->clinic_type) == 'hospital' ? 'selected' : '' }}>{{ localize('global.hospital') }}</option>
-                                            <option value="clinic" {{ old('clinic_type', $user->clinic_type) == 'clinic' ? 'selected' : '' }}>{{ localize('global.clinic') }}</option>
-                                        </select>
-                                    </div>
-                                    @if ($errors->first('clinic_type'))
-                                        <div class="display-error">
-                                            {{ $errors->first('clinic_type') }}
-                                        </div>
-                                    @endif
-                                </div>
-
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3 mt-3">
-                                    <h5>{{ localize('global.roles') }}</h5>
-                                    <div class="form-check mb-2">
-                                        <input type="checkbox" class="form-check-input" id="select_all_roles">
-                                        <label class="form-check-label fw-bold" for="select_all_roles">
-                                            {{ localize('global.select_all') }}
-                                        </label>
-                                    </div>
-                                    @foreach ($roles as $value)
-                                        <div class="d-flex">
-                                            <div class="form-check me-3 me-lg-5">
-                                                {{ Form::checkbox('roles[]', $value->id, $user->roles->contains($value->id), ['class' => 'form-check-input role-checkbox']) }}
-                                                {{ $value->name_dr }}
-                                            </div>
-                                        </div>
-                                    @endforeach
+                        </div>
+
+                        <!-- Security Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">{{ localize('global.security') }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-warning" role="alert">
+                                    <h6 class="alert-heading fw-bold mb-1">Note:</h6>
+                                    <span>Leave password fields empty if you don't want to change the password.</span>
                                 </div>
-                                <div class="col-md-6 mb-3 mt-3">
-                                    <h5>{{ localize('global.permissions') }}</h5>
-                                    <div class="form-check mb-2">
-                                        <input type="checkbox" class="form-check-input" id="select_all_permissions">
-                                        <label class="form-check-label fw-bold" for="select_all_permissions">
-                                            {{ localize('global.select_all') }}
-                                        </label>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ localize('global.password') }}</label>
+                                        <input type="password" class="form-control" name="password" autocomplete="new-password">
+                                        @error('password')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    @foreach ($permissions as $value)
-                                        <div class="form-check">
-                                            {{ Form::checkbox('permissions[]', $value->id, $user->permissions->contains($value->id), ['class' => 'form-check-input permission-checkbox']) }}
-                                                {{ $value->name_dr }}
-                                        </div>
-                                    @endforeach
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ localize('global.password_confirmation') }}</label>
+                                        <input type="password" class="form-control" name="password_confirmation">
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
+                        <!-- Access Control Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">{{ localize('global.access_control') }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <h6 class="fw-semibold mb-3">{{ localize('global.roles') }}</h6>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" id="select_all_roles">
+                                            <label class="form-check-label fw-bold" for="select_all_roles">
+                                                {{ localize('global.select_all') }}
+                                            </label>
+                                        </div>
+                                        <div class="d-flex flex-column gap-2">
+                                            @foreach ($roles as $value)
+                                                <div class="form-check">
+                                                    {{ Form::checkbox('roles[]', $value->id, $user->roles->contains($value->id), ['class' => 'form-check-input role-checkbox', 'id' => 'role_'.$value->id]) }}
+                                                    <label class="form-check-label" for="role_{{ $value->id }}">
+                                                        {{ $value->name_dr }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <h6 class="fw-semibold mb-3">{{ localize('global.permissions') }}</h6>
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox" class="form-check-input" id="select_all_permissions">
+                                            <label class="form-check-label fw-bold" for="select_all_permissions">
+                                                {{ localize('global.select_all') }}
+                                            </label>
+                                        </div>
+                                        <div class="d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
+                                            @foreach ($permissions as $value)
+                                                <div class="form-check">
+                                                    {{ Form::checkbox('permissions[]', $value->id, $user->permissions->contains($value->id), ['class' => 'form-check-input permission-checkbox', 'id' => 'perm_'.$value->id]) }}
+                                                    <label class="form-check-label" for="perm_{{ $value->id }}">
+                                                        {{ $value->name_dr }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('users.index') }}" class="btn btn-label-secondary">{{ localize('global.cancel') }}</a>
+                            <button type="submit" class="btn btn-primary">{{ localize('global.save_changes') }}</button>
+                        </div>
 
-                            <a href="{{ route('users.index') }}"><button type="button"
-                                    class="btn btn-danger">{{ localize('global.back') }}</button>
-                                <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
-                            </a>
-                        </form>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 @endsection
+
 @push('custom-js')
     <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         $(document).ready(function() {
             $('.select2').select2();
 
@@ -264,7 +307,6 @@
                         url: '/get_departments/' + branchID,
                         type: 'GET',
                         success: function(response) {
-
                             $('#department_id').html(response);
                         }
                     })
@@ -278,7 +320,6 @@
                         url: '/get_sections/' + depID,
                         type: 'GET',
                         success: function(response) {
-
                             $('#section_id').html(response);
                         }
                     })

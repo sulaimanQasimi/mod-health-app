@@ -77,8 +77,7 @@ class DoctorController extends Controller
     public function create()
     {
         $departments = Department::all();
-        $branches = Branch::all();
-        return view('pages.doctors.create',compact('departments','branches'));
+        return view('pages.doctors.create', compact('departments'));
     }
 
     /**
@@ -101,30 +100,13 @@ class DoctorController extends Controller
             'department_id' => 'required',
         ]);
 
-        // Automatically set branch_id from authenticated user
-        $data['branch_id'] = auth()->user()->branch_id ?? null;
+        // Set branch_id from authenticated user
+        $data['branch_id'] = auth()->user()->branch_id;
         
         if (!$data['branch_id']) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Branch ID is required. Please contact administrator.');
-        }
-
-        // Automatically set section_id from authenticated user, or get first section from department
-        $data['section_id'] = auth()->user()->section_id ?? null;
-        
-        // If user doesn't have section_id, try to get first section from the selected department
-        if (!$data['section_id'] && $data['department_id']) {
-            $section = \App\Models\Section::where('department_id', $data['department_id'])->first();
-            if ($section) {
-                $data['section_id'] = $section->id;
-            }
-        }
-        
-        if (!$data['section_id']) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Section ID is required. Please contact administrator.');
         }
 
         // Convert active_status checkbox to boolean
@@ -141,17 +123,12 @@ class DoctorController extends Controller
             }
         }
 
+        // Set created_by
+        $data['created_by'] = auth()->id();
+
         Doctor::create($data);
 
         return redirect()->route('doctors.index')->with('success', localize('global.doctor_created_successfully'));
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Doctor $doctor)
-    {
-        //
     }
 
     /**

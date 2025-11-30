@@ -84,9 +84,9 @@ class AppointmentController extends Controller
      
          // Convert dates to Jalali for display
          $appointments->getCollection()->transform(function ($appointment) {
-             $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
-             return $appointment;
-         });
+                     $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+                     return $appointment;
+                 });
      
          // Get filter data
          $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get();

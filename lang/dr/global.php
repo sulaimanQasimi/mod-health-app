@@ -3749,5 +3749,6 @@ return [
     'try_adjusting_filters'=>'لطفاً فیلترها را تنظیم کنید',
     'search_by_name_contact_specialization'=>'جستجوی با نام، شماره تماس و تخصص',
     'doctor_created_successfully'=>'دکتر با موفقیت ایجاد شد',
-    'doctor_updated_successfully'=>'دکتر با موفقیت بروزرسانی شد'
+    'doctor_updated_successfully'=>'دکتر با موفقیت بروزرسانی شد',
+    'completed_date'=>'تاریخ تکمیل'
 ];

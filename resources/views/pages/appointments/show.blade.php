@@ -27,12 +27,14 @@
                         {{ localize('global.appointment_details') }}
                     </h2>
                     <div class="d-flex gap-2 align-items-center">
-                        <!-- Doctor Selection Dropdown -->
+                        <!-- Doctor Selection Dropdown - Hidden when appointment is completed -->
+                        @if ($appointment->is_completed == 0)
                         <div class="me-2">
                             <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;">
                                 <option value="">{{ localize('global.select_doctor') }}</option>
                             </select>
                         </div>
+                        @endif
                         @can('update-appointment-status')
                             @if ($appointment->is_completed == 0)
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -2005,8 +2007,10 @@
         }
         
         $(document).ready(function () {
-            // Load doctors on page load
+            // Load doctors on page load only if dropdown exists (appointment not completed)
+            @if ($appointment->is_completed == 0)
             loadDoctorsForAppointment();
+            @endif
             
             // Handle doctor selection change - allow changes even when appointment is completed
             $('#appointment_doctor_select').on('change', function() {

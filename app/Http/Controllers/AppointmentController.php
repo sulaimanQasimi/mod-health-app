@@ -347,6 +347,7 @@ class AppointmentController extends Controller
         ]);
 
         // Update appointment with doctor and set processed_by to current user
+        // Allow doctor changes even when appointment is completed
         $appointment->update([
             'doctor_id' => $request->doctor_id,
             'processed_by' => auth()->id()

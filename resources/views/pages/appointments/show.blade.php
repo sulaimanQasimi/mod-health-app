@@ -1988,6 +1988,8 @@
                             doctorSelect.val({{ $appointment->doctor_id }});
                         @endif
                         
+                        // Enable dropdown - allow doctor changes even when appointment is completed
+                        // The dropdown should always be enabled when doctors are available, regardless of completion status
                         doctorSelect.prop('disabled', false);
                     } else {
                         doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
@@ -2006,7 +2008,7 @@
             // Load doctors on page load
             loadDoctorsForAppointment();
             
-            // Handle doctor selection change
+            // Handle doctor selection change - allow changes even when appointment is completed
             $('#appointment_doctor_select').on('change', function() {
                 const doctorId = $(this).val();
                 const appointmentId = {{ $appointment->id }};
@@ -2015,7 +2017,7 @@
                     return;
                 }
                 
-                // Update appointment doctor via AJAX
+                // Update appointment doctor via AJAX - works for both completed and pending appointments
                 $.ajax({
                     url: '{{ url("appointments/assign-doctor") }}/' + appointmentId,
                     type: 'POST',

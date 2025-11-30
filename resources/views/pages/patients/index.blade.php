@@ -14,13 +14,28 @@
                     <h5 class="mb-0">{{ localize('global.filters') }}</h5>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="{{ route('patients.index') }}" class="row g-3">
-                        <div class="col-md-3">
-                            <label for="search" class="form-label">{{ localize('global.search') }}</label>
-                            <input type="text" class="form-control" id="search" name="search" 
-                                value="{{ request('search') }}" placeholder="{{ localize('global.search_by_name_nid_phone') }}">
+                    <form method="GET" action="{{ route('patients.index') }}" id="filter-form" class="row g-3">
+                        <div class="col-md-2">
+                            <label for="name" class="form-label">{{ localize('global.name') }}</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                value="{{ request('name') }}" placeholder="{{ localize('global.search_by_name') }}">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <label for="father_name" class="form-label">{{ localize('global.father_name') }}</label>
+                            <input type="text" class="form-control" id="father_name" name="father_name" 
+                                value="{{ request('father_name') }}" placeholder="{{ localize('global.search_by_father_name') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="last_name" class="form-label">{{ localize('global.last_name') }}</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                value="{{ request('last_name') }}" placeholder="{{ localize('global.search_by_last_name') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="phone" class="form-label">{{ localize('global.phone') }}</label>
+                            <input type="text" class="form-control" id="phone" name="phone" 
+                                value="{{ request('phone') }}" placeholder="{{ localize('global.search_by_phone') }}">
+                        </div>
+                        <div class="col-md-2">
                             <label for="card_search" class="form-label">{{ localize('global.id_card') }} {{ localize('global.search') }}</label>
                             <input type="text" class="form-control" id="card_search" name="card_search" 
                                 value="{{ request('card_search') }}" placeholder="{{ localize('global.search_by_card') }}">
@@ -63,14 +78,12 @@
                                 <option value="1" {{ request('job_category') == '1' ? 'selected' : '' }}>{{ localize('global.civilian') }}</option>
                             </select>
                         </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bx bx-search"></i>
+                        <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-search"></i> {{ localize('global.search') }}
                             </button>
-                        </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <a href="{{ route('patients.index') }}" class="btn btn-secondary w-100">
-                                <i class="bx bx-refresh"></i>
+                            <a href="{{ route('patients.index') }}" class="btn btn-secondary">
+                                <i class="bx bx-refresh"></i> {{ localize('global.reset') }}
                             </a>
                         </div>
                     </form>
@@ -183,7 +196,10 @@ $(document).ready(function() {
     
     // Clear search on refresh button click
     $('.btn-secondary').click(function() {
-        $('input[name="search"]').val('');
+        $('input[name="name"]').val('');
+        $('input[name="father_name"]').val('');
+        $('input[name="last_name"]').val('');
+        $('input[name="phone"]').val('');
         $('input[name="card_search"]').val('');
     });
     

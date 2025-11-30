@@ -37,15 +37,24 @@ class PatientController extends Controller
             ->with(['militeryType', 'province', 'district']);
 
 
-        // Search by name and nid and phone
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('last_name', 'like', '%' . $search . '%')
-                    ->orWhere('nid', 'like', '%' . $search . '%')
-                    ->orWhere('phone', 'like', '%' . $search . '%');
-            });
+        // Filter by name
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        // Filter by father name
+        if ($request->filled('father_name')) {
+            $query->where('father_name', 'like', '%' . $request->father_name . '%');
+        }
+
+        // Filter by last name
+        if ($request->filled('last_name')) {
+            $query->where('last_name', 'like', '%' . $request->last_name . '%');
+        }
+
+        // Filter by phone number
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->phone . '%');
         }
 
         // Search by card (id_card)

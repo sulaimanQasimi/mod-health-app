@@ -495,17 +495,6 @@
         <!-- Left Side - Login Form -->
         <div class="login-right">
             <div class="login-card">
-                <div class="top-controls">
-                    <a href="#" class="control-btn" title="Toggle Theme">
-                        <i class="bx bx-moon"></i>
-                    </a>
-                    <div class="dropdown">
-                        <a href="#" class="control-btn" title="Change Language">
-                            <i class="bx bx-globe"></i>
-                        </a>
-                    </div>
-                </div>
-
                 <div class="login-header">
                     <h2 class="login-title">{{ localize('global.sign_in') }}</h2>
                                 </div>
@@ -556,12 +545,11 @@
                         @endif
                     </div>
 
-                    <div class="remember-forgot">
+                    <div class="remember-forgot" dir="rtl">
                         <div class="custom-checkbox">
                             <input type="checkbox" id="remember-me" name="remember">
                             <label for="remember-me">{{ localize('global.remember_me') }}</label>
                         </div>
-                        <a href="#" class="forgot-link">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn-login">

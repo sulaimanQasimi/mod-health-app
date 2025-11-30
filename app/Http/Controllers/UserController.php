@@ -27,34 +27,54 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    if ($request->ajax()) {
-        $users = User::with(['roles', 'category'])->get();
-
-            if ($users) {
-                return response()->json([
-                    'data' => $users,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+    {
+        $query = User::with(['roles', 'category']);
+        
+        // Add category filter
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        
+        // Add status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Add role filter
+        if ($request->filled('role_id')) {
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('roles.id', $request->role_id);
+            });
+        }
+        
+        // Add is_doctor filter
+        if ($request->filled('is_doctor')) {
+            $query->where('is_doctor', $request->is_doctor);
+        }
+        
+        // Add clinic_type filter
+        if ($request->filled('clinic_type')) {
+            $query->where('clinic_type', $request->clinic_type);
+        }
+        
+        // Add search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        // Use pagination instead of get()
+        $users = $query->paginate(20)->appends($request->except('page'));
+        
+        $categories = Category::all();
+        $roles = Role::all();
+        
+        return view('pages.users.index', compact('users', 'categories', 'roles'));
     }
-
-    $query = User::with(['category']);
-    
-    // Add category filter
-    if ($request->filled('category_id')) {
-        $query->where('category_id', $request->category_id);
-    }
-    
-    $users = $query->get();
-    $categories = Category::all();
-    return view('pages.users.index', compact('users', 'categories'));
-}
 
 
     /**
@@ -67,7 +87,8 @@ class UserController extends Controller
         $departments = Department::all();
         $sections = Section::all();
         $categories = Category::all();
-        return view('pages.users.create',compact('roles','branches','departments','sections','categories'));
+        $permissions = Permission::all();
+        return view('pages.users.create',compact('roles','branches','departments','sections','categories', 'permissions'));
     }
 
     /**
@@ -88,6 +109,10 @@ class UserController extends Controller
         $user->clinic_type = $request->clinic_type;
         $user->password = Hash::make($request->password);
 
+        if ($request->hasFile('avatar')) {
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+        }
+
         $user->save();
 
         $roles = $request['roles'];
@@ -100,6 +125,8 @@ class UserController extends Controller
                 $user->assignRole($role_r);
             }
         }
+
+        $user->syncPermissions($request->input('permissions', []));
 
         return redirect()->route('users.index')->with('success', localize('global.user_create_success'));
     }
@@ -145,8 +172,19 @@ class UserController extends Controller
     
         // Handle checkbox - if not present, set to false
         $request->merge(['is_doctor' => $request->has('is_doctor') ? true : false]);
-    
-        $user->update($request->input());
+
+        $data = $request->input();
+
+        // Handle Avatar Upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar) {
+                \Storage::disk('public')->delete($user->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->update($data);
     
         $roles = $request['roles'];
     

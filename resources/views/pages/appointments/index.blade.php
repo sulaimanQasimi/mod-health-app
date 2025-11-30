@@ -1,4 +1,3 @@
-
 @extends('layouts.master')
 
 @section('content')
@@ -9,26 +8,132 @@
         @endif
         <div class="container-xxl flex-grow-1 container-p-y">
 
+            <!-- Filters Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ localize('global.filters') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('appointments.index') }}" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
+                            <input type="text" class="form-control" id="patient_name" name="patient_name" 
+                                value="{{ request('patient_name') }}" placeholder="{{ localize('global.search_by_patient_name') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="id_card" class="form-label">{{ localize('global.id_card') }}</label>
+                            <input type="text" class="form-control" id="id_card" name="id_card" 
+                                value="{{ request('id_card') }}" placeholder="{{ localize('global.search_by_card') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
+                            <select class="form-select" id="doctor_id" name="doctor_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($doctors as $doctor)
+                                    <option value="{{ $doctor->id }}" {{ request('doctor_id') == $doctor->id ? 'selected' : '' }}>
+                                        {{ $doctor->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="department_id" class="form-label">{{ localize('global.department') }}</label>
+                            <select class="form-select" id="department_id" name="department_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" {{ request('department_id') == $department->id ? 'selected' : '' }}>
+                                        {{ $department->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="is_completed" class="form-label">{{ localize('global.status') }}</label>
+                            <select class="form-select" id="is_completed" name="is_completed">
+                                <option value="">{{ localize('global.all') }}</option>
+                                <option value="0" {{ request('is_completed') == '0' ? 'selected' : '' }}>{{ localize('global.pending') }}</option>
+                                <option value="1" {{ request('is_completed') == '1' ? 'selected' : '' }}>{{ localize('global.completed') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" 
+                                value="{{ request('date_from') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" 
+                                value="{{ request('date_to') }}">
+                        </div>
+                        <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-search"></i> {{ localize('global.search') }}
+                            </button>
+                            <a href="{{ route('appointments.index') }}" class="btn btn-secondary">
+                                <i class="bx bx-refresh"></i> {{ localize('global.reset') }}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ localize('global.patients_list') }}</h5>
+                    <h5 class="mb-0">{{ localize('global.appointments_list') }}</h5>
                 </div>
                 <div class="card-datatable table-responsive">
-                    <table class="datatables-basic table border-top">
+                    <table class="table border-top">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th>{{localize('global.id')}}</th>
-                                <th>{{localize('global.card_number')}}</th>
-                                <th>{{localize('global.patient_name')}}</th>
-                                <th>{{localize('global.father_name')}}</th>
-                                <th>{{localize('global.referred_to')}}</th>
-                                <th>{{localize('global.date')}}</th>
-                                <th>{{localize('global.time')}}</th>
-                                <th></th>
+                                <th>{{ localize('global.id') }}</th>
+                                <th>{{ localize('global.card_number') }}</th>
+                                <th>{{ localize('global.patient_name') }}</th>
+                                <th>{{ localize('global.father_name') }}</th>
+                                <th>{{ localize('global.referred_to') }}</th>
+                                <th>{{ localize('global.department') }}</th>
+                                <th>{{ localize('global.date') }}</th>
+                                <th>{{ localize('global.time') }}</th>
+                                <th>{{ localize('global.status') }}</th>
+                                <th>{{ localize('global.actions') }}</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @forelse ($appointments as $appointment)
+                                <tr>
+                                    <td>{{ $appointment->id }}</td>
+                                    <td>{{ $appointment->patient->id_card ?? '-' }}</td>
+                                    <td>{{ $appointment->patient->name ?? '-' }}</td>
+                                    <td>{{ $appointment->patient->father_name ?? '-' }}</td>
+                                    <td>{{ $appointment->doctor->name ?? '-' }}</td>
+                                    <td>{{ $appointment->department->name ?? '-' }}</td>
+                                    <td>{{ $appointment->jalali_date ?? '-' }}</td>
+                                    <td>{{ $appointment->time ?? '-' }}</td>
+                                    <td>
+                                        @if($appointment->is_completed == 1)
+                                            <span class="badge bg-success">{{ localize('global.completed') }}</span>
+                                        @else
+                                            <span class="badge bg-warning">{{ localize('global.pending') }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('appointments.show', $appointment->id) }}"
+                                            class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>
+                                        @if($appointment->patient_id)
+                                        <a href="{{ route('patients.history', $appointment->patient_id) }}"
+                                            class="btn btn-sm btn-icon text-primary"><i class="bx bx-history"></i></a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="10" class="text-center">{{ localize('global.no_records_found') }}</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
                     </table>
+                    <div class="col-md-12 mt-4 mb-4">
+                        {{ $appointments->links('pagination::bootstrap-4') }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,158 +144,35 @@
 @endsection
 
 @push('custom-css')
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css') }}" />
-    <style>
-        .card-datatable table.dataTable thead th {
-            text-align: right;
-        }
-
-        .card-datatable table.dataTable tbody td {
-            text-align: right;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-    </style>
+<style>
+    .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        text-align: right;
+    }
+    
+    .table td {
+        text-align: right;
+    }
+    
+    .pagination {
+        margin-bottom: 0;
+    }
+</style>
 @endpush
 
 @push('custom-js')
-    <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
-    <script>
-        $(function() {
-            var dt_basic_table = $('.datatables-basic'),
-                dt_basic;
-
-            if (dt_basic_table.length) {
-                dt_basic = dt_basic_table.DataTable({
-                    ajax: "{{ route('appointments.index') }}",
-                    columns: [{
-                            data: 'id'
-                        },
-
-                        {
-                            data: 'id'
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.id_card : '';
-                            }
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'patient',
-                            render: function(data) {
-                                return data ? data.father_name : '';
-                            }
-                        },
-                        {
-                            data: 'doctor',
-                            render: function(data) {
-                                return data ? data.name : '';
-                            }
-                        },
-                        {
-                            data: 'jalali_date',
-
-                        },
-                        {
-                            data: 'time'
-                        },
-
-                        {
-                            data: ''
-                        },
-
-
-                    ],
-                    columnDefs: [{
-                            // For Responsive
-                            className: 'control',
-                            orderable: false,
-                            searchable: false,
-                            responsivePriority: 2,
-                            targets: 0,
-                            render: function(data, type, full, meta) {
-                                return '';
-                            }
-                        },
-                        {
-                            // Actions
-                            targets: -1,
-                            title: '{{ localize('global.actions') }}',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, full, meta) {
-                                return (
-                                    `<a href="{{ url('appointments/show/') }}` + `/` + full['id'] +
-                                    `" class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>` +
-                                    `<a href="{{ url('patients/history/') }}` + `/` + full['patient_id'] +
-                                    `" class="btn btn-sm btn-icon item-edit text-primary"><i class="bx bx-history"></i></a>`
-                                );
-                            }
-                        }
-                    ],
-                    order: [
-                        [0, 'asc']
-                    ],
-                    dom: '<"flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-                    displayLength: 25,
-                    lengthMenu: [7, 10, 25, 50, 75, 100],
-                    buttons: [],
-                    responsive: {
-                        details: {
-                            display: $.fn.dataTable.Responsive.display.modal({
-                                header: function(row) {
-                                    var data = row.data();
-                                    return 'Details of ' + data['full_name'];
-                                }
-                            }),
-                            type: 'column',
-                            renderer: function(api, rowIdx, columns) {
-                                var data = $.map(columns, function(col, i) {
-                                    return col.title !==
-                                        '' // ? Do not show row in modal popup if title is blank (for check box)
-                                        ?
-                                        '<tr data-dt-row="' +
-                                        col.rowIndex +
-                                        '" data-dt-column="' +
-                                        col.columnIndex +
-                                        '">' +
-                                        '<td>' +
-                                        col.title +
-                                        ':' +
-                                        '</td> ' +
-                                        '<td>' +
-                                        col.data +
-                                        '</td>' +
-                                        '</tr>' :
-                                        '';
-                                }).join('');
-
-                                return data ? $('<table class="table"/><tbody />').append(data) : false;
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Filter form control to default size
-            // ? setTimeout used for multilingual table initialization
-            setTimeout(() => {
-                $('.dataTables_filter .form-control').removeClass('form-control-sm');
-                $('.dataTables_length .form-select').removeClass('form-select-sm');
-            }, 300);
-        });
-    </script>
+<script>
+$(document).ready(function() {
+    // Auto-submit form when select values change
+    $('select[name="doctor_id"], select[name="department_id"], select[name="is_completed"]').change(function() {
+        $(this).closest('form').submit();
+    });
+    
+    // Add loading state to search button
+    $('form').submit(function() {
+        $('.btn-primary').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i>');
+    });
+});
+</script>
 @endpush

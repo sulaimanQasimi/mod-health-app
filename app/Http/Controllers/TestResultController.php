@@ -23,6 +23,123 @@ class TestResultController extends Controller
     }
 
     /**
+     * Apply clinic type filter based on user's clinic
+     */
+    private function applyClinicTypeFilter($query, $user)
+    {
+        if (!$user->clinic_type) {
+            return $query;
+        }
+
+        return $query->where(function($q) use ($user) {
+            $q->whereHasMorph('testable', [\App\Models\Appointment::class], function($appointmentQ) use ($user) {
+                $appointmentQ->where('clinic_type', $user->clinic_type);
+            })
+            ->orWhereHasMorph('testable', [\App\Models\Hospitalization::class], function($hospitalizationQ) use ($user) {
+                $hospitalizationQ->whereHas('appointment', function($appointmentQ) use ($user) {
+                    $appointmentQ->where('clinic_type', $user->clinic_type);
+                });
+            })
+            ->orWhere(function($subQ) {
+                $subQ->where('testable_type', '!=', 'App\Models\Appointment')
+                     ->where('testable_type', '!=', 'App\Models\Hospitalization');
+            })
+            ->orWhereNull('testable_type');
+        });
+    }
+
+    /**
+     * Apply access control based on user role and route
+     */
+    private function applyAccessControl($query, $user, $routeName)
+    {
+        if ($user->hasRole('admin') || $user->can('view-all-sections')) {
+            return $query;
+        }
+
+        if ($routeName === 'laboratory.results.pending') {
+            return $query->whereNull('assigned_to');
+        } elseif ($routeName === 'laboratory.results.in-progress') {
+            return $query->where('assigned_to', $user->id);
+        } elseif ($routeName === 'laboratory.results.completed') {
+            return $query->where(function($q) use ($user) {
+                $q->where('completed_by', $user->id)
+                  ->orWhere('assigned_to', $user->id);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Convert Persian date to Gregorian
+     */
+    private function convertPersianDate($persianDate)
+    {
+        try {
+            return \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)
+                ->toCarbon()
+                ->format('Y-m-d');
+        } catch (\Exception $e) {
+            return $persianDate; // Return as-is if conversion fails
+        }
+    }
+
+    /**
+     * Apply date range filters to query
+     */
+    private function applyDateFilters($query, $request, $dateField = 'date')
+    {
+        // Date from filter
+        if ($request->filled('date_from_gregorian')) {
+            $query->whereHas('testable', function($q) use ($request, $dateField) {
+                $q->whereDate($dateField, '>=', $request->date_from_gregorian);
+            });
+        } elseif ($request->filled('date_from')) {
+            $dateFrom = $this->convertPersianDate($request->date_from);
+            $query->whereHas('testable', function($q) use ($dateFrom, $dateField) {
+                $q->whereDate($dateField, '>=', $dateFrom);
+            });
+        }
+
+        // Date to filter
+        if ($request->filled('date_to_gregorian')) {
+            $query->whereHas('testable', function($q) use ($request, $dateField) {
+                $q->whereDate($dateField, '<=', $request->date_to_gregorian);
+            });
+        } elseif ($request->filled('date_to')) {
+            $dateTo = $this->convertPersianDate($request->date_to);
+            $query->whereHas('testable', function($q) use ($dateTo, $dateField) {
+                $q->whereDate($dateField, '<=', $dateTo);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Create empty result entries for parameters
+     */
+    private function createEmptyResults($test)
+    {
+        $results = collect();
+        
+        if ($test->labType && $test->labType->directLabTestParameters) {
+            foreach ($test->labType->directLabTestParameters as $parameter) {
+                $results->push(new \App\Models\PatientTestResult([
+                    'lab_parameter_id' => $parameter->id,
+                    'parameter' => $parameter,
+                    'unit' => $parameter->unit,
+                    'normal_range' => $parameter->normal_range,
+                    'result' => null
+                ]));
+            }
+        }
+        
+        return $results;
+    }
+
+    /**
      * Display patient list for test results
      */
     public function patientList(Request $request)
@@ -38,59 +155,19 @@ class TestResultController extends Controller
             'assignedSection'
         ]);
 
-        // Apply assignment-based access control
+        // Apply filters
         $user = auth()->user();
-        $userClinicType = $user->clinic_type;
-
-        // Filter by appointment clinic_type matching user's clinic_type
-        // This applies to all routes: pending, in-progress, and completed
-        if ($userClinicType) {
-            $query->where(function($q) use ($userClinicType) {
-                // For appointments, filter by clinic_type directly using whereHasMorph
-                $q->whereHasMorph('testable', [\App\Models\Appointment::class], function($appointmentQ) use ($userClinicType) {
-                    $appointmentQ->where('clinic_type', $userClinicType);
-                })
-                // For hospitalizations, filter by related appointment's clinic_type
-                ->orWhereHasMorph('testable', [\App\Models\Hospitalization::class], function($hospitalizationQ) use ($userClinicType) {
-                    $hospitalizationQ->whereHas('appointment', function($appointmentQ) use ($userClinicType) {
-                        $appointmentQ->where('clinic_type', $userClinicType);
-                    });
-                })
-                // Include other testable types (if any exist) for backward compatibility
-                ->orWhere(function($subQ) {
-                    $subQ->where('testable_type', '!=', 'App\Models\Appointment')
-                         ->where('testable_type', '!=', 'App\Models\Hospitalization');
-                })
-                ->orWhereNull('testable_type');
-            });
-        }
-
-        // Check if user has admin role or permission to see all sections
-        if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
-            // For pending tests: show all unassigned tests
-            // For in-progress tests: show only tests assigned to current user
-            // For completed tests: show only tests completed by current user or assigned to current user
-            if ($request->route()->getName() === 'laboratory.results.pending') {
-                // Show all unassigned pending tests
-                $query->whereNull('assigned_to');
-            } elseif ($request->route()->getName() === 'laboratory.results.in-progress') {
-                // Show only tests assigned to current user
-                $query->where('assigned_to', $user->id);
-            } elseif ($request->route()->getName() === 'laboratory.results.completed') {
-                // Show only tests completed by current user or assigned to current user
-                $query->where(function($q) use ($user) {
-                    $q->where('completed_by', $user->id)
-                      ->orWhere('assigned_to', $user->id);
-                });
-            }
-        }
+        $query = $this->applyClinicTypeFilter($query, $user);
+        $query = $this->applyAccessControl($query, $user, $request->route()->getName());
 
         // Apply search filter (patient name)
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('testable.patient', function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('last_name', 'like', '%' . $search . '%');
+            $query->whereHas('testable', function($q) use ($search) {
+                $q->whereHas('patient', function($patientQ) use ($search) {
+                    $patientQ->where('name', 'like', '%' . $search . '%')
+                             ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
             });
         }
 
@@ -116,48 +193,8 @@ class TestResultController extends Controller
         }
 
 
-        // Apply date range filter with Persian date support
-        if ($request->filled('date_from_gregorian')) {
-            $dateFrom = $request->date_from_gregorian;
-            $query->whereHas('testable', function($q) use ($dateFrom) {
-                $q->whereDate('date', '>=', $dateFrom);
-            });
-        } elseif ($request->filled('date_from')) {
-            // Convert Persian date to Gregorian
-            try {
-                $persianDate = $request->date_from;
-                $dateFrom = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)->toCarbon()->format('Y-m-d');
-                $query->whereHas('testable', function($q) use ($dateFrom) {
-                    $q->whereDate('date', '>=', $dateFrom);
-                });
-            } catch (\Exception $e) {
-                // If conversion fails, try as Gregorian date
-                $query->whereHas('testable', function($q) use ($request) {
-                    $q->whereDate('date', '>=', $request->date_from);
-                });
-            }
-        }
-
-        if ($request->filled('date_to_gregorian')) {
-            $dateTo = $request->date_to_gregorian;
-            $query->whereHas('testable', function($q) use ($dateTo) {
-                $q->whereDate('date', '<=', $dateTo);
-            });
-        } elseif ($request->filled('date_to')) {
-            // Convert Persian date to Gregorian
-            try {
-                $persianDate = $request->date_to;
-                $dateTo = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)->toCarbon()->format('Y-m-d');
-                $query->whereHas('testable', function($q) use ($dateTo) {
-                    $q->whereDate('date', '<=', $dateTo);
-                });
-            } catch (\Exception $e) {
-                // If conversion fails, try as Gregorian date
-                $query->whereHas('testable', function($q) use ($request) {
-                    $q->whereDate('date', '<=', $request->date_to);
-                });
-            }
-        }
+        // Apply date range filter
+        $query = $this->applyDateFilters($query, $request);
 
         // Get filtered results and group by patient
         $patients = $query->latest()
@@ -340,17 +377,9 @@ class TestResultController extends Controller
                 ->with('parameter')
                 ->get();
             
-            // If no results exist, create empty result entries for all parameters
-            if($firstTestResults->isEmpty() && $firstTest->labType && $firstTest->labType->directLabTestParameters) {
-                foreach($firstTest->labType->directLabTestParameters as $parameter) {
-                    $firstTestResults->push(new \App\Models\PatientTestResult([
-                        'lab_parameter_id' => $parameter->id,
-                        'parameter' => $parameter,
-                        'unit' => $parameter->unit,
-                        'normal_range' => $parameter->normal_range,
-                        'result' => null
-                    ]));
-                }
+            // If no results exist, create empty result entries
+            if ($firstTestResults->isEmpty()) {
+                $firstTestResults = $this->createEmptyResults($firstTest);
             }
         }
 
@@ -376,17 +405,9 @@ class TestResultController extends Controller
                 ->with('parameter')
                 ->get();
 
-            // If no results exist, create empty result entries for all parameters
-            if($results->isEmpty() && $test->labType && $test->labType->directLabTestParameters) {
-                foreach($test->labType->directLabTestParameters as $parameter) {
-                    $results->push(new \App\Models\PatientTestResult([
-                        'lab_parameter_id' => $parameter->id,
-                        'parameter' => $parameter,
-                        'unit' => $parameter->unit,
-                        'normal_range' => $parameter->normal_range,
-                        'result' => null
-                    ]));
-                }
+            // If no results exist, create empty result entries
+            if ($results->isEmpty()) {
+                $results = $this->createEmptyResults($test);
             }
 
             return response()->json([

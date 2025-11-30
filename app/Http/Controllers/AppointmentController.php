@@ -37,26 +37,62 @@ class AppointmentController extends Controller
 
      public function index(Request $request)
      {
-         if ($request->ajax()) {
-             $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
-                 ->with(['patient', 'doctor'])
-                 ->latest()
-                 ->get()
-                 ->map(function ($appointment) {
-                     $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
-                     return $appointment;
-                 });
+         $query = Appointment::where('branch_id', auth()->user()->branch_id)
+             ->with(['patient', 'doctor', 'department']);
      
-             return response()->json([
-                 'data' => $appointments,
-             ]);
+         // Search by patient name
+         if ($request->filled('patient_name')) {
+             $query->whereHas('patient', function($q) use ($request) {
+                 $q->where('name', 'like', '%' . $request->patient_name . '%')
+                   ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+             });
          }
      
-         $appointments = Appointment::where('branch_id', auth()->user()->branch_id)
-             ->with('patient', 'doctor')
-             ->latest()
-             ->get();
-         return view('pages.appointments.index', compact('appointments'));
+         // Search by patient ID card
+         if ($request->filled('id_card')) {
+             $query->whereHas('patient', function($q) use ($request) {
+                 $q->where('id_card', 'like', '%' . $request->id_card . '%');
+             });
+         }
+     
+         // Filter by doctor
+         if ($request->filled('doctor_id')) {
+             $query->where('doctor_id', $request->doctor_id);
+         }
+     
+         // Filter by department
+         if ($request->filled('department_id')) {
+             $query->where('department_id', $request->department_id);
+         }
+     
+         // Filter by completion status
+         if ($request->filled('is_completed')) {
+             $query->where('is_completed', $request->is_completed);
+         }
+     
+         // Filter by date range
+         if ($request->filled('date_from')) {
+             $query->whereDate('date', '>=', $request->date_from);
+         }
+     
+         if ($request->filled('date_to')) {
+             $query->whereDate('date', '<=', $request->date_to);
+         }
+     
+         // Get paginated results
+         $appointments = $query->latest()->paginate(25)->withQueryString();
+     
+         // Convert dates to Jalali for display
+         $appointments->getCollection()->transform(function ($appointment) {
+             $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+             return $appointment;
+         });
+     
+         // Get filter data
+         $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get();
+         $departments = Department::all();
+     
+         return view('pages.appointments.index', compact('appointments', 'doctors', 'departments'));
      }
 
     public function create()
@@ -347,6 +383,7 @@ class AppointmentController extends Controller
         ]);
 
         // Update appointment with doctor and set processed_by to current user
+        // Allow doctor changes even when appointment is completed
         $appointment->update([
             'doctor_id' => $request->doctor_id,
             'processed_by' => auth()->id()

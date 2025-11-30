@@ -27,12 +27,14 @@
                         {{ localize('global.appointment_details') }}
                     </h2>
                     <div class="d-flex gap-2 align-items-center">
-                        <!-- Doctor Selection Dropdown -->
+                        <!-- Doctor Selection Dropdown - Hidden when appointment is completed -->
+                        @if ($appointment->is_completed == 0)
                         <div class="me-2">
                             <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;">
                                 <option value="">{{ localize('global.select_doctor') }}</option>
                             </select>
                         </div>
+                        @endif
                         @can('update-appointment-status')
                             @if ($appointment->is_completed == 0)
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -47,6 +49,7 @@
                                 </span>
                             @endif
                         @endcan
+                        @if ($appointment->is_completed == 0)
                         <a href="javascript:void(0);" onclick="window.open('/appointments/{{$appointment->id}}/printToken', '_blank');" class="btn btn-success btn-sm">
                             <i class="bx bx-printer me-1"></i>
                             {{ localize('global.token') }}
@@ -55,6 +58,7 @@
                             <i class="bx bx-edit me-1"></i>
                             {{ localize('global.edit') }}
                         </a>
+                        @endif
                         <a href="{{ route('appointments.index') }}" class="btn btn-outline-primary btn-sm">
                             <i class="bx bx-arrow-back me-1"></i>
                             {{ localize('global.back') }}
@@ -1988,6 +1992,8 @@
                             doctorSelect.val({{ $appointment->doctor_id }});
                         @endif
                         
+                        // Enable dropdown - allow doctor changes even when appointment is completed
+                        // The dropdown should always be enabled when doctors are available, regardless of completion status
                         doctorSelect.prop('disabled', false);
                     } else {
                         doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
@@ -2003,10 +2009,12 @@
         }
         
         $(document).ready(function () {
-            // Load doctors on page load
+            // Load doctors on page load only if dropdown exists (appointment not completed)
+            @if ($appointment->is_completed == 0)
             loadDoctorsForAppointment();
+            @endif
             
-            // Handle doctor selection change
+            // Handle doctor selection change - allow changes even when appointment is completed
             $('#appointment_doctor_select').on('change', function() {
                 const doctorId = $(this).val();
                 const appointmentId = {{ $appointment->id }};
@@ -2015,7 +2023,7 @@
                     return;
                 }
                 
-                // Update appointment doctor via AJAX
+                // Update appointment doctor via AJAX - works for both completed and pending appointments
                 $.ajax({
                     url: '{{ url("appointments/assign-doctor") }}/' + appointmentId,
                     type: 'POST',

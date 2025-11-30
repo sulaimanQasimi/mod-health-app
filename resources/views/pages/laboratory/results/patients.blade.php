@@ -92,160 +92,189 @@
             <div class="card-body">
                 @if($patients->count() > 0)
                     <div id="registrations-container">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="text-center">{{ localize('global.patient') }}</th>
-                                        <th class="text-center">{{ localize('global.test_name') }}</th>
-                                        <th class="text-center">{{ localize('global.test_type') }}</th>
-                                        <th class="text-center">{{ localize('global.ref_no') }}</th>
-                                        <th class="text-center">{{ localize('global.status') }}</th>
-                                        <th class="text-center">{{ localize('global.priority') }}</th>
-                                        <th class="text-center">{{ localize('global.doctor') }}</th>
-                                        <th class="text-center">{{ localize('global.date') }}</th>
-                                        <th class="text-center">{{ localize('global.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($patients as $patientId => $registrations)
-                                        @php
-                                            $patient = $registrations->first()->testable->patient ?? null;
-                                        @endphp
-                                        
-                                        @if($patient)
-                                            @foreach($registrations as $registration)
-                                            <tr>
-                                                <td class="text-center">
-                                                    <div class="d-flex align-items-center justify-content-center">
-                                                        <div class="avatar avatar-sm me-2">
-                                                            <div class="avatar-initial bg-primary text-white rounded-circle">
-                                                                <i class="bx bx-user"></i>
+                        <div class="accordion" id="patientsAccordion">
+                            @foreach($patients as $patientId => $registrations)
+                                @php
+                                    $patient = $registrations->first()->testable->patient ?? null;
+                                    $accordionId = 'patient-' . $patientId;
+                                @endphp
+                                
+                                @if($patient)
+                                    <div class="accordion-item mb-3">
+                                        <h2 class="accordion-header" id="heading-{{ $accordionId }}">
+                                            <button class="accordion-button collapsed" type="button" 
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse-{{ $accordionId }}" 
+                                                    aria-expanded="false" 
+                                                    aria-controls="collapse-{{ $accordionId }}">
+                                                <div class="d-flex align-items-center w-100">
+                                                    <div class="avatar avatar-md me-3">
+                                                        <div class="avatar-initial bg-primary text-white rounded-circle">
+                                                            <i class="bx bx-user bx-md"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <h6 class="mb-0">{{ $patient->name }} {{ $patient->last_name }}</h6>
+                                                                <small class="text-muted">
+                                                                    <i class="bx bx-user me-1"></i>{{ $patient->father_name }} | 
+                                                                    <i class="bx bx-calendar me-1"></i>{{ $patient->age }} | 
+                                                                    <i class="bx bx-phone me-1"></i>{{ $patient->phone }}
+                                                                </small>
+                                                            </div>
+                                                            <div class="me-3">
+                                                                <span class="badge bg-primary rounded-pill">
+                                                                    {{ $registrations->count() }} {{ localize('global.tests') ?? 'Tests' }}
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                        <div class="text-start">
-                                                            <div class="fw-semibold">{{ $patient->name }} {{ $patient->last_name }}</div>
-                                                            <small class="text-muted">{{ $patient->father_name }} | {{ $patient->age }} | {{ $patient->phone }}</small>
-                                                        </div>
                                                     </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="d-flex align-items-center justify-content-center">
-                                                        <i class="bx bx-test-tube me-2 text-primary"></i>
-                                                        <strong>{{ $registration->labType->name ?? '—' }}</strong>
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    @if($registration->labType && $registration->labType->directLabTestParameters && $registration->labType->directLabTestParameters->count() > 0)
-                                                        <span class="badge bg-info">{{ localize('global.parametered') }}</span>
-                                                    @else
-                                                        <span class="badge bg-secondary">{{ localize('global.text_based') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    <code class="bg-light px-2 py-1 rounded">{{ $registration->ref_no }}</code>
-                                                </td>
-                                                <td class="text-center">
-                                                    @php
-                                                        $statusClass = match($registration->status) {
-                                                            'pending' => 'bg-warning',
-                                                            'in_progress' => 'bg-info',
-                                                            'completed' => 'bg-success',
-                                                            'cancelled' => 'bg-danger',
-                                                            default => 'bg-secondary'
-                                                        };
-                                                    @endphp
-                                                    <span class="badge {{ $statusClass }} rounded-pill">
-                                                        {{ localize('global.' . $registration->status) }}
-                                                    </span>
-                                                    
-                                                    @if($registration->assigned_to)
-                                                        <br>
-                                                        <small class="text-muted">
-                                                            <i class="bx bx-user me-1"></i>
-                                                            {{ $registration->assignedTo->name ?? 'Unknown' }}
-                                                        </small>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    @php
-                                                        $priorityClass = match($registration->priority) {
-                                                            'normal' => 'bg-primary',
-                                                            'urgent' => 'bg-warning',
-                                                            'stat' => 'bg-danger',
-                                                            default => 'bg-secondary'
-                                                        };
-                                                    @endphp
-                                                    <span class="badge {{ $priorityClass }} rounded-pill">
-                                                        {{ localize('global.' . $registration->priority) }}
-                                                    </span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="d-flex align-items-center justify-content-center">
-                                                        <i class="bx bx-user me-1 text-muted"></i>
-                                                        {{ $registration->doctor->name ?? '—' }}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    @if($registration->testable && $registration->testable->date)
-                                                        <span class="text-muted">
-                                                            {{ \Verta(\Carbon\Carbon::parse($registration->testable->date))->formatJalaliDate() }}
-                                                        </span>
-                                                    @else
-                                                        <span class="text-muted">—</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group btn-group-sm" role="group">
-                                                        @if($registration->status === 'pending')
-                                                            @if(!$registration->assigned_to)
-                                                                <button type="button" class="btn btn-success btn-sm accept-test-btn" 
-                                                                        data-registration-id="{{ $registration->id }}" 
-                                                                        title="{{ localize('global.accept_test') }}">
-                                                                    <i class="bx bx-check"></i>
-                                                                </button>
-                                                            @else
-                                                                <span class="badge bg-info">{{ localize('global.assigned') }}</span>
-                                                            @endif
-                                                        @endif
-                                                        
-                                                        @if($registration->status === 'in_progress')
-                                                            <a href="{{ route('laboratory.results.show', $registration->id) }}" class="btn btn-primary btn-sm" title="{{ localize('global.enter_results') }}">
-                                                                <i class="bx bx-edit"></i>
-                                                            </a>
-                                                            <form action="{{ route('laboratory.registrations.mark-completed', $registration->id) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-success btn-sm" title="{{ localize('global.mark_completed') }}">
-                                                                    <i class="bx bx-check"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                        
-                                                        @if($registration->status === 'completed')
-                                                            <a href="{{ route('laboratory.results.show', $registration->id) }}" class="btn btn-outline-primary btn-sm" title="{{ localize('global.view_results') }}">
-                                                                <i class="bx bx-show"></i>
-                                                            </a>
-                                                            <a href="{{ route('laboratory.reports.print', $registration->ref_no) }}" class="btn btn-outline-success btn-sm" title="{{ localize('global.print_report') }}" target="_blank">
-                                                                <i class="bx bx-printer"></i>
-                                                            </a>
-                                                        @endif
-                                                        
-                                                        @if(in_array($registration->status, ['pending', 'in_progress']))
-                                                            <form action="{{ route('laboratory.registrations.cancel', $registration->id) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-danger btn-sm" title="{{ localize('global.cancel_registration') }}">
-                                                                    <i class="bx bx-x"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="collapse-{{ $accordionId }}" 
+                                             class="accordion-collapse collapse" 
+                                             aria-labelledby="heading-{{ $accordionId }}" 
+                                             data-bs-parent="#patientsAccordion">
+                                            <div class="accordion-body p-0">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th class="text-center">{{ localize('global.test_name') }}</th>
+                                                                <th class="text-center">{{ localize('global.test_type') }}</th>
+                                                                <th class="text-center">{{ localize('global.ref_no') }}</th>
+                                                                <th class="text-center">{{ localize('global.status') }}</th>
+                                                                <th class="text-center">{{ localize('global.priority') }}</th>
+                                                                <th class="text-center">{{ localize('global.doctor') }}</th>
+                                                                <th class="text-center">{{ localize('global.date') }}</th>
+                                                                <th class="text-center">{{ localize('global.actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($registrations as $registration)
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <div class="d-flex align-items-center justify-content-center">
+                                                                        <i class="bx bx-test-tube me-2 text-primary"></i>
+                                                                        <strong>{{ $registration->labType->name ?? '—' }}</strong>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if($registration->labType && $registration->labType->directLabTestParameters && $registration->labType->directLabTestParameters->count() > 0)
+                                                                        <span class="badge bg-info">{{ localize('global.parametered') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-secondary">{{ localize('global.text_based') }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <code class="bg-light px-2 py-1 rounded">{{ $registration->ref_no }}</code>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @php
+                                                                        $statusClass = match($registration->status) {
+                                                                            'pending' => 'bg-warning',
+                                                                            'in_progress' => 'bg-info',
+                                                                            'completed' => 'bg-success',
+                                                                            'cancelled' => 'bg-danger',
+                                                                            default => 'bg-secondary'
+                                                                        };
+                                                                    @endphp
+                                                                    <span class="badge {{ $statusClass }} rounded-pill">
+                                                                        {{ localize('global.' . $registration->status) }}
+                                                                    </span>
+                                                                    
+                                                                    @if($registration->assigned_to)
+                                                                        <br>
+                                                                        <small class="text-muted">
+                                                                            <i class="bx bx-user me-1"></i>
+                                                                            {{ $registration->assignedTo->name ?? 'Unknown' }}
+                                                                        </small>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @php
+                                                                        $priorityClass = match($registration->priority) {
+                                                                            'normal' => 'bg-primary',
+                                                                            'urgent' => 'bg-warning',
+                                                                            'stat' => 'bg-danger',
+                                                                            default => 'bg-secondary'
+                                                                        };
+                                                                    @endphp
+                                                                    <span class="badge {{ $priorityClass }} rounded-pill">
+                                                                        {{ localize('global.' . $registration->priority) }}
+                                                                    </span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <div class="d-flex align-items-center justify-content-center">
+                                                                        <i class="bx bx-user me-1 text-muted"></i>
+                                                                        {{ $registration->doctor->name ?? '—' }}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if($registration->testable && $registration->testable->date)
+                                                                        <span class="text-muted">
+                                                                            {{ \Verta(\Carbon\Carbon::parse($registration->testable->date))->formatJalaliDate() }}
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="text-muted">—</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <div class="btn-group btn-group-sm" role="group">
+                                                                        @if($registration->status === 'pending')
+                                                                            @if(!$registration->assigned_to)
+                                                                                <button type="button" class="btn btn-success btn-sm accept-test-btn" 
+                                                                                        data-registration-id="{{ $registration->id }}" 
+                                                                                        title="{{ localize('global.accept_test') }}">
+                                                                                    <i class="bx bx-check"></i>
+                                                                                </button>
+                                                                            @else
+                                                                                <span class="badge bg-info">{{ localize('global.assigned') }}</span>
+                                                                            @endif
+                                                                        @endif
+                                                                        
+                                                                        @if($registration->status === 'in_progress')
+                                                                            <a href="{{ route('laboratory.results.show', $registration->id) }}" class="btn btn-primary btn-sm" title="{{ localize('global.enter_results') }}">
+                                                                                <i class="bx bx-edit"></i>
+                                                                            </a>
+                                                                            <form action="{{ route('laboratory.registrations.mark-completed', $registration->id) }}" method="POST" class="d-inline">
+                                                                                @csrf
+                                                                                <button type="submit" class="btn btn-success btn-sm" title="{{ localize('global.mark_completed') }}">
+                                                                                    <i class="bx bx-check"></i>
+                                                                                </button>
+                                                                            </form>
+                                                                        @endif
+                                                                        
+                                                                        @if($registration->status === 'completed')
+                                                                            <a href="{{ route('laboratory.results.show', $registration->id) }}" class="btn btn-outline-primary btn-sm" title="{{ localize('global.view_results') }}">
+                                                                                <i class="bx bx-show"></i>
+                                                                            </a>
+                                                                            <a href="{{ route('laboratory.reports.print', $registration->ref_no) }}" class="btn btn-outline-success btn-sm" title="{{ localize('global.print_report') }}" target="_blank">
+                                                                                <i class="bx bx-printer"></i>
+                                                                            </a>
+                                                                        @endif
+                                                                        
+                                                                        @if(in_array($registration->status, ['pending', 'in_progress']))
+                                                                            <form action="{{ route('laboratory.registrations.cancel', $registration->id) }}" method="POST" class="d-inline">
+                                                                                @csrf
+                                                                                <button type="submit" class="btn btn-danger btn-sm" title="{{ localize('global.cancel_registration') }}">
+                                                                                    <i class="bx bx-x"></i>
+                                                                                </button>
+                                                                            </form>
+                                                                        @endif
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
                 @else
@@ -311,6 +340,11 @@
         height: 2.5rem;
     }
     
+    .avatar-md {
+        width: 3rem;
+        height: 3rem;
+    }
+    
     .avatar-initial {
         width: 100%;
         height: 100%;
@@ -339,14 +373,86 @@
         font-size: 0.75em;
         padding: 0.375rem 0.75rem;
     }
-    
-    .avatar {
-        width: 2rem;
-        height: 2rem;
+
+    /* Accordion Styling */
+    .accordion-item {
+        border: 1px solid #e3e6f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
     }
-    
-    .avatar-initial {
+
+    .accordion-item:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .accordion-button {
+        background-color: #fff;
+        padding: 1.25rem 1.5rem;
+        font-weight: 500;
+        border: none;
+        box-shadow: none;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #5e5873;
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+
+    .accordion-button::after {
+        background-size: 1.25rem;
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+
+    .accordion-body {
+        padding: 0;
+    }
+
+    .accordion-body .table {
+        margin-bottom: 0;
+    }
+
+    .accordion-body .table thead th {
+        background-color: #f8f9fa;
         font-size: 0.875rem;
+        padding: 0.75rem 0.5rem;
+    }
+
+    .accordion-body .table tbody td {
+        padding: 0.875rem 0.5rem;
+    }
+
+    /* Patient Header Styling */
+    .accordion-button h6 {
+        color: #5e5873;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .accordion-button small {
+        font-size: 0.875rem;
+    }
+
+    .accordion-button .badge {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Smooth Collapse Animation */
+    .accordion-collapse {
+        transition: height 0.35s ease;
     }
 </style>
 @endpush
@@ -357,130 +463,89 @@ $(document).ready(function() {
     // Initialize tooltips
     $('[title]').tooltip();
     
-    // Handle filter form submission with AJAX
-    $('#patient-filter-form').on('submit', function(e) {
-        e.preventDefault();
-        
-        showLoadingOverlay();
-        
-        var formData = $(this).serialize();
-        var url = '{{ request()->url() }}?' + formData;
-        
-        $.ajax({
-            url: url,
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            success: function(response) {
-                $('#registrations-container').html($(response).find('#registrations-container').html());
-                $('#registrations-container').addClass('fade-in');
-                
-                // Update URL
-                if (history.pushState) {
-                    history.pushState(null, null, url);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
-                alert('{{ localize("global.error_loading_data") }}');
-            },
-            complete: function() {
-                hideLoadingOverlay();
-            }
-        });
-    });
-    
-    // Auto-submit on select change
-    $('select[name="status"], select[name="priority"]').change(function() {
-        $('#patient-filter-form').submit();
-    });
-    
-    // Clear search functionality
-    $(document).on('click', '#clearSearch', function() {
-        $('input[name="search"]').val('');
-        $('#patient-filter-form').submit();
-    });
-    
     // Initialize Persian datepicker
     $('.datepicker_dari').persianDatepicker({
         format: 'YYYY/MM/DD',
         observer: true,
     });
     
-    
-    // Handle form submissions with loading states
-    $('form[action*="mark-in-progress"], form[action*="mark-completed"], form[action*="cancel"]').on('submit', function() {
-        var btn = $(this).find('button[type="submit"]');
-        var originalHtml = btn.html();
-        
-        btn.prop('disabled', true);
-        btn.html('<span class="spinner-border spinner-border-sm me-1"></span>' + btn.text());
-        
-        // Re-enable after 3 seconds as fallback
-        setTimeout(function() {
-            btn.prop('disabled', false);
-            btn.html(originalHtml);
-        }, 3000);
+    // Auto-submit on filter change
+    $('select[name="status"], select[name="priority"]').change(function() {
+        $('#patient-filter-form').submit();
     });
     
-    function showLoadingOverlay() {
-        $('#loading-overlay').show();
-    }
-    
-    function hideLoadingOverlay() {
-        $('#loading-overlay').hide();
-    }
-    
-    // Handle browser back/forward buttons
-    window.addEventListener('popstate', function(event) {
-        if (event.state) {
-            location.reload();
-        }
+    // Clear search functionality
+    $('#clearSearch').click(function() {
+        $('input[name="search"]').val('');
+        $('#patient-filter-form').submit();
     });
     
-    // Handle accept test functionality
-    $(document).on('click', '.accept-test-btn', function() {
-        var registrationId = $(this).data('registration-id');
-        var btn = $(this);
-        var originalHtml = btn.html();
+    // Handle filter form submission with AJAX
+    $('#patient-filter-form').on('submit', function(e) {
+        e.preventDefault();
         
-        // Show loading state
-        btn.prop('disabled', true);
-        btn.html('<span class="spinner-border spinner-border-sm"></span>');
+        showLoading();
         
         $.ajax({
-            url: '/laboratory/results/' + registrationId + '/accept',
-            method: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content')
+            url: '{{ request()->url() }}?' + $(this).serialize(),
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(response) {
+                $('#registrations-container').html($(response).find('#registrations-container').html()).addClass('fade-in');
+                history.pushState && history.pushState(null, null, this.url);
             },
+            error: function() {
+                alert('{{ localize("global.error_loading_data") }}');
+            },
+            complete: hideLoading
+        });
+    });
+    
+    // Handle accept test button
+    $(document).on('click', '.accept-test-btn', function() {
+        const $btn = $(this);
+        const originalHtml = $btn.html();
+        
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+        
+        $.ajax({
+            url: '/laboratory/results/' + $btn.data('registration-id') + '/accept',
+            method: 'POST',
+            data: { _token: $('meta[name="csrf-token"]').attr('content') },
             success: function(response) {
                 if (response.success) {
-                    // Show success message
                     toastr.success(response.message);
-                    
-                    // Reload the page to show updated data
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1000);
+                    setTimeout(() => location.reload(), 1000);
                 } else {
                     toastr.error(response.message);
-                    btn.prop('disabled', false);
-                    btn.html(originalHtml);
+                    $btn.prop('disabled', false).html(originalHtml);
                 }
             },
             error: function(xhr) {
-                var message = '{{ localize("global.error_accepting_test") }}';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                toastr.error(message);
-                btn.prop('disabled', false);
-                btn.html(originalHtml);
+                toastr.error(xhr.responseJSON?.message || '{{ localize("global.error_accepting_test") }}');
+                $btn.prop('disabled', false).html(originalHtml);
             }
         });
     });
+    
+    // Handle form submissions with loading states
+    $('form[action*="mark-"], form[action*="cancel"]').on('submit', function() {
+        const $btn = $(this).find('button[type="submit"]');
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>' + $btn.text());
+        setTimeout(() => $btn.prop('disabled', false), 3000);
+    });
+    
+    // Helper functions
+    function showLoading() {
+        $('#loading-overlay').show();
+    }
+    
+    function hideLoading() {
+        $('#loading-overlay').hide();
+    }
+    
+    // Handle browser back/forward
+    window.addEventListener('popstate', () => location.reload());
 });
 </script>
 @endsection

@@ -27,34 +27,54 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    if ($request->ajax()) {
-        $users = User::with(['roles', 'category'])->get();
-
-            if ($users) {
-                return response()->json([
-                    'data' => $users,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+    {
+        $query = User::with(['roles', 'category']);
+        
+        // Add category filter
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        
+        // Add status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Add role filter
+        if ($request->filled('role_id')) {
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('roles.id', $request->role_id);
+            });
+        }
+        
+        // Add is_doctor filter
+        if ($request->filled('is_doctor')) {
+            $query->where('is_doctor', $request->is_doctor);
+        }
+        
+        // Add clinic_type filter
+        if ($request->filled('clinic_type')) {
+            $query->where('clinic_type', $request->clinic_type);
+        }
+        
+        // Add search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        // Use pagination instead of get()
+        $users = $query->paginate(20)->appends($request->except('page'));
+        
+        $categories = Category::all();
+        $roles = Role::all();
+        
+        return view('pages.users.index', compact('users', 'categories', 'roles'));
     }
-
-    $query = User::with(['category']);
-    
-    // Add category filter
-    if ($request->filled('category_id')) {
-        $query->where('category_id', $request->category_id);
-    }
-    
-    $users = $query->get();
-    $categories = Category::all();
-    return view('pages.users.index', compact('users', 'categories'));
-}
 
 
     /**

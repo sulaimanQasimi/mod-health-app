@@ -8,15 +8,10 @@
     <meta name="description" content="Modern Health App Login" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon/favicon.ico" />
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
 
     <!-- Icons -->
-    <link rel="stylesheet" href="../../assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
 
     @if (session()->get('language') == 'en')
         <style type="text/css">
@@ -513,8 +508,7 @@
 
                 <div class="login-header">
                     <h2 class="login-title">{{ localize('global.sign_in') }}</h2>
-                    <p class="login-subtitle">Welcome back! Please enter your credentials</p>
-                </div>
+                                </div>
 
                 <form method="POST" action="{{ route('login') }}" id="loginForm">
                     @csrf

@@ -49,6 +49,7 @@
                                 </span>
                             @endif
                         @endcan
+                        @if ($appointment->is_completed == 0)
                         <a href="javascript:void(0);" onclick="window.open('/appointments/{{$appointment->id}}/printToken', '_blank');" class="btn btn-success btn-sm">
                             <i class="bx bx-printer me-1"></i>
                             {{ localize('global.token') }}
@@ -57,6 +58,7 @@
                             <i class="bx bx-edit me-1"></i>
                             {{ localize('global.edit') }}
                         </a>
+                        @endif
                         <a href="{{ route('appointments.index') }}" class="btn btn-outline-primary btn-sm">
                             <i class="bx bx-arrow-back me-1"></i>
                             {{ localize('global.back') }}

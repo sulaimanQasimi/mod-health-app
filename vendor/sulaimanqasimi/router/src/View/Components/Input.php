@@ -15,7 +15,6 @@ class Input extends Component
     public bool $disabled;
     public bool $readonly;
     public ?string $id;
-    public array $attributes;
     public ?string $variant;
     public ?string $error;
 
@@ -31,7 +30,6 @@ class Input extends Component
         bool $disabled = false,
         bool $readonly = false,
         ?string $id = null,
-        array $attributes = [],
         ?string $variant = null,
         ?string $error = null
     ) {
@@ -43,7 +41,6 @@ class Input extends Component
         $this->disabled = $disabled;
         $this->readonly = $readonly;
         $this->id = $id ?? $name;
-        $this->attributes = $attributes;
         $this->variant = $variant;
         $this->error = $error;
     }

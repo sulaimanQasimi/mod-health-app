@@ -13,7 +13,6 @@ class Radio extends Component
     public bool $required;
     public bool $disabled;
     public ?string $id;
-    public array $attributes;
     public ?string $variant;
     public ?string $error;
 
@@ -27,7 +26,6 @@ class Radio extends Component
         bool $required = false,
         bool $disabled = false,
         ?string $id = null,
-        array $attributes = [],
         ?string $variant = null,
         ?string $error = null
     ) {
@@ -37,7 +35,6 @@ class Radio extends Component
         $this->required = $required;
         $this->disabled = $disabled;
         $this->id = $id ?? $name . '_' . $value;
-        $this->attributes = $attributes;
         $this->variant = $variant;
         $this->error = $error;
     }

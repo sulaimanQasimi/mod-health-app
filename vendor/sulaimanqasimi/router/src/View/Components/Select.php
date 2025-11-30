@@ -15,7 +15,6 @@ class Select extends Component
     public bool $disabled;
     public bool $multiple;
     public ?string $id;
-    public array $attributes;
     public ?string $variant;
     public ?string $error;
 
@@ -31,7 +30,6 @@ class Select extends Component
         bool $disabled = false,
         bool $multiple = false,
         ?string $id = null,
-        array $attributes = [],
         ?string $variant = null,
         ?string $error = null
     ) {
@@ -43,7 +41,6 @@ class Select extends Component
         $this->disabled = $disabled;
         $this->multiple = $multiple;
         $this->id = $id ?? $name;
-        $this->attributes = $attributes;
         $this->variant = $variant;
         $this->error = $error;
     }

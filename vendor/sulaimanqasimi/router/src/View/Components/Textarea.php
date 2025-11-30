@@ -15,7 +15,6 @@ class Textarea extends Component
     public bool $readonly;
     public ?string $id;
     public int $rows;
-    public array $attributes;
     public ?string $variant;
     public ?string $error;
 
@@ -31,7 +30,6 @@ class Textarea extends Component
         bool $readonly = false,
         ?string $id = null,
         int $rows = 3,
-        array $attributes = [],
         ?string $variant = null,
         ?string $error = null
     ) {
@@ -43,7 +41,6 @@ class Textarea extends Component
         $this->readonly = $readonly;
         $this->id = $id ?? $name;
         $this->rows = $rows;
-        $this->attributes = $attributes;
         $this->variant = $variant;
         $this->error = $error;
     }

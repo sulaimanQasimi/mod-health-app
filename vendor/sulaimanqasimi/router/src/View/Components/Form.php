@@ -10,7 +10,6 @@ class Form extends Component
     public string $method;
     public string $action;
     public bool $hasFiles;
-    public array $attributes;
 
     /**
      * Create a new component instance.
@@ -18,13 +17,11 @@ class Form extends Component
     public function __construct(
         string $method = 'POST',
         string $action = '',
-        bool $hasFiles = false,
-        array $attributes = []
+        bool $hasFiles = false
     ) {
         $this->method = strtoupper($method);
         $this->action = $action;
         $this->hasFiles = $hasFiles;
-        $this->attributes = $attributes;
     }
 
     /**

@@ -11,7 +11,6 @@ class FormGroup extends Component
     public ?string $name;
     public ?string $help;
     public bool $required;
-    public array $attributes;
 
     /**
      * Create a new component instance.
@@ -20,14 +19,12 @@ class FormGroup extends Component
         ?string $label = null,
         ?string $name = null,
         ?string $help = null,
-        bool $required = false,
-        array $attributes = []
+        bool $required = false
     ) {
         $this->label = $label;
         $this->name = $name;
         $this->help = $help;
         $this->required = $required;
-        $this->attributes = $attributes;
     }
 
     /**

@@ -166,4 +166,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class);
+    }
 }

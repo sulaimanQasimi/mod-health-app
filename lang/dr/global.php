@@ -2,6 +2,8 @@
 
 return [
     'loading_dashboard' => 'در حال بارگذاری...',
+    'appointment_already_accepted' => 'نوبت قبلاً پذیرفته شده است',
+    'cannot_change_doctor_after_acceptance' => 'نمی‌توانید پزشک را پس از پذیرش تغییر دهید',
     'export_report' => 'گزارش خروجی',
     'select_export_format' => 'انتخاب فرمت خروجی',
     'patient_records' => 'مریضان',
@@ -3752,5 +3754,7 @@ return [
     'search_by_name_contact_specialization'=>'جستجوی با نام، شماره تماس و تخصص',
     'doctor_created_successfully'=>'دکتر با موفقیت ایجاد شد',
     'doctor_updated_successfully'=>'دکتر با موفقیت بروزرسانی شد',
-    'completed_date'=>'تاریخ تکمیل'
+    'completed_date'=>'تاریخ تکمیل',
+    'appointment_already_accepted'=>'نوبت قبلاً پذیرفته شده است',
+    'cannot_change_doctor_after_acceptance'=>'نمی‌توانید پزشک را پس از پذیرش تغییر دهید'
 ];

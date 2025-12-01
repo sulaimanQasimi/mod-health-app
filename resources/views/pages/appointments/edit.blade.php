@@ -83,7 +83,7 @@
                                         {{ localize('global.doctor') }} <span class="text-danger">*</span>
                                     </label>
                                     <select class="form-select border @error('doctor_id') is-invalid @enderror" 
-                                            name="doctor_id" id="doctor_id" required>
+                                            name="doctor_id" id="doctor_id" {{ $appointment->processed_by ? 'disabled' : '' }} required>
                                         <option value="">{{ localize('global.select_doctor') }}</option>
                                         @foreach($doctors as $doctor)
                                             <option value="{{ $doctor->id }}" 
@@ -92,6 +92,12 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @if($appointment->processed_by)
+                                        <input type="hidden" name="doctor_id" value="{{ $appointment->doctor_id }}">
+                                        <small class="text-muted d-block mt-1">
+                                            <i class="bx bx-info-circle"></i> {{ localize('global.cannot_change_doctor_after_acceptance') }}
+                                        </small>
+                                    @endif
                                     @error('doctor_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

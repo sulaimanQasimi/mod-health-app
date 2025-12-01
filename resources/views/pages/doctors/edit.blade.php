@@ -135,6 +135,22 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
+                                        <label for="user_id">{{localize('global.user')}}</label>
+                                        <select class="form-control select2 @error('user_id') is-invalid @enderror" name="user_id" id="user_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}"
+                                                    {{ old('user_id', $doctor->user_id) == $user->id ? 'selected' : '' }}>
+                                                {{ $user->name }} {{ $user->last_name ? $user->last_name : '' }} ({{ $user->email }})</option>
+                                            @endforeach
+                                        </select>
+                                        @error('user_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
                                         <label for="active_status">{{localize('global.active_status')}}</label>
                                         <div class="form-check form-switch">
                                             @php

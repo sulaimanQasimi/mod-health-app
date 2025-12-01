@@ -25,7 +25,8 @@ class Doctor extends Model
         'join_date',
         'active_status',
         'branch_id',
-        'department_id'
+        'department_id',
+        'user_id'
     ];
 
     protected $casts = [
@@ -106,6 +107,11 @@ class Doctor extends Model
     public function anesthesias()
     {
         return $this->hasMany(Anesthesia::class, 'doctor_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Doctor;
+use App\Models\User;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 
@@ -77,7 +78,8 @@ class DoctorController extends Controller
     public function create()
     {
         $departments = Department::all();
-        return view('pages.doctors.create', compact('departments'));
+        $users = User::where('is_doctor', true)->orderBy('name')->get();
+        return view('pages.doctors.create', compact('departments', 'users'));
     }
 
     /**
@@ -138,7 +140,8 @@ class DoctorController extends Controller
     {
         $departments = Department::all();
         $branches = Branch::all();
-        return view('pages.doctors.edit', compact('doctor', 'departments', 'branches'));
+        $users = User::where('is_doctor', true)->orderBy('name')->get();
+        return view('pages.doctors.edit', compact('doctor', 'departments', 'branches', 'users'));
     }
 
     /**
@@ -159,6 +162,7 @@ class DoctorController extends Controller
             'join_date' => 'nullable|string',
             'active_status' => 'nullable',
             'department_id' => 'required',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         // Automatically set branch_id from authenticated user (or keep existing if user doesn't have one)

@@ -2027,13 +2027,6 @@
                 const appointmentId = {{ $appointment->id }};
                 
                 // Prevent changes if appointment is already processed
-                @if($appointment->processed_by)
-                    $(this).val({{ $appointment->doctor_id ?? 'null' }});
-                    if (typeof toastr !== 'undefined') {
-                        toastr.warning('{{ localize("global.cannot_change_doctor_after_acceptance") }}');
-                    }
-                    return;
-                @endif
                 
                 if (!doctorId) {
                     return;

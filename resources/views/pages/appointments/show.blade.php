@@ -1995,13 +1995,8 @@
                             doctorSelect.val({{ $appointment->doctor_id }});
                         @endif
                         
-                        // Disable dropdown if appointment is already processed (accepted)
-                        @if($appointment->processed_by)
-                            doctorSelect.prop('disabled', true);
-                        @else
-                            // Enable dropdown only if appointment is not processed
-                            doctorSelect.prop('disabled', false);
-                        @endif
+                        // Re-enable dropdown after loading doctors
+                        doctorSelect.prop('disabled', false);
                     } else {
                         doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
                         doctorSelect.prop('disabled', true);
@@ -2028,9 +2023,6 @@
                 
                 // Prevent changes if appointment is already processed
                 
-                if (!doctorId) {
-                    return;
-                }
                 
                 // Update appointment doctor via AJAX - only for non-processed appointments
                 $.ajax({

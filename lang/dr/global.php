@@ -1,8 +1,7 @@
 <?php
 
-use Dom\XPath;
-
 return [
+    'loading_dashboard' => 'در حال بارگذاری...',
     'export_report' => 'گزارش خروجی',
     'select_export_format' => 'انتخاب فرمت خروجی',
     'patient_records' => 'مریضان',

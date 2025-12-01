@@ -23,6 +23,7 @@ use App\Models\Doctor;
 use App\Models\PhysiotherapyProcedure;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -36,141 +37,293 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-
-    public function index()
+    public function index(Request $request)
     {
-        $totalPatients = Patient::where('branch_id',auth()->user()->branch_id)->count();
-        $totalCheckups = PatientTestRegistration::where('branch_id',auth()->user()->branch_id)->count();
-        $totalAppointments = Appointment::where('branch_id',auth()->user()->branch_id)->count();
-        $totalPrescriptions = Prescription::where('branch_id',auth()->user()->branch_id)->count();
-        $totalConsultations = Consultation::where('branch_id',auth()->user()->branch_id)->count();
-        $totalOperations = Anesthesia::where('branch_id',auth()->user()->branch_id)->where('is_operation_done','1')->count();
-        $totalIcuAdmissions = ICU::where('branch_id',auth()->user()->branch_id)->count();
-        $totalInPatientAdmissions = Hospitalization::where('branch_id',auth()->user()->branch_id)->count();
-        $totalPhysiotherapyProcedures = PhysiotherapyProcedure::whereHas('appointment', function($query) {
-            $query->where('branch_id', auth()->user()->branch_id);
-        })->count();
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            try {
+                $branchId = auth()->user()->branch_id;
+                $today = Carbon::today();
+                $yesterday = Carbon::yesterday();
 
-        // Today's statistics
-        $todayPatients = Patient::where('branch_id', auth()->user()->branch_id)
-            ->whereDate('created_at', Carbon::today())
-            ->count();
-        
-        $yesterdayPatients = Patient::where('branch_id', auth()->user()->branch_id)
-            ->whereDate('created_at', Carbon::yesterday())
-            ->count();
-        
-        $todayPatientsPercentageChange = $this->calculateTodayPercentageChange($todayPatients, $yesterdayPatients);
-
-        // Retrieve data for charts
-        $patientsTrendData = $this->getPatientsTrendData();
-        $appointmentsTrendData = $this->getAppointmentsTrendData();
-        // ... (similar for other entities)
-
-        // Retrieve models percentage changes
-        $patientPercentageChange = $this->getPercentageChange(Patient::class);
-        $checkupPercentageChange = $this->getPercentageChange(PatientTestRegistration::class);
-        $appointmentPercentageChange = $this->getPercentageChange(Appointment::class);
-        $prescriptionPercentageChange = $this->getPercentageChange(Prescription::class);
-        $consultationPercentageChange = $this->getPercentageChange(Consultation::class);
-        $operationPercentageChange = $this->getPercentageChange(Anesthesia::class);
-        $icuPercentageChange = $this->getPercentageChange(ICU::class);
-        $hospitalizationPercentageChange = $this->getPercentageChange(Hospitalization::class);
-
-        $wordCloudData = Doctor::withCount([
-            'appointments',
-            'consultation_comments',
-            'hospitalizations',
-            'i_c_u_s',
-            'prescriptions',
-            'visits'
-        ])
-            ->get()
-            ->map(function ($doctor) {
-                // Count consultations where doctor_id JSON contains this doctor's id
-                $consultationsCount = Consultation::whereRaw("JSON_CONTAINS(doctor_id, '\"$doctor->id\"')")->count();
+                // Get all counts
+                $counts = $this->getDashboardCounts($branchId, $today, $yesterday);
                 
-                // Count anesthesias where this doctor is involved in various roles
-                $anesthesiasCount = Anesthesia::
-                where(function($query) use ($doctor)
-                {
-                    $query->where('doctor_id', $doctor->id)
-                    ->orWhereRaw("JSON_CONTAINS(operation_assistants_id, '\"$doctor->id\"')")
-                    ->orWhere('operation_surgion_id', $doctor->id)
-                    ->orWhere('operation_anesthesia_log_id', $doctor->id)
-                    ->orWhere('operation_anesthesist_id', $doctor->id)
-                    ->orWhere('operation_scrub_nurse_id', $doctor->id)
-                    ->orWhere('operation_circulation_nurse_id', $doctor->id);
-                })->count();
+                // Today's statistics
+                $todayPatients = $counts['todayPatients'];
+                $yesterdayPatients = $counts['yesterdayPatients'];
+                $todayPatientsPercentageChange = $this->calculateTodayPercentageChange($todayPatients, $yesterdayPatients);
 
-                return [
-                    'name' => $doctor->name,
-                    'weight' => $doctor->appointments_count + $anesthesiasCount + $consultationsCount + $doctor->consultation_comments_count + $doctor->hospitalizations_count + $doctor->i_c_u_s_count + $doctor->prescriptions_count + $doctor->visits_count,
-                ];
-            })
-            ->values()
-            ->toArray();
+                // Retrieve data for charts
+                $patientsTrendData = $this->getPatientsTrendData($branchId);
+                $appointmentsTrendData = $this->getAppointmentsTrendData($branchId);
 
-        $occupied_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
-                   ->where('rooms.branch_id', auth()->user()->branch_id)
-                   ->where('beds.is_occupied', true)
-                   ->count();
+                // Get all percentage changes
+                $percentageChanges = $this->getAllPercentageChanges($branchId);
 
-        $free_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
-        ->where('rooms.branch_id', auth()->user()->branch_id)
-        ->where('beds.is_occupied', false)
-        ->count();
+                // Get word cloud data
+                $wordCloudData = $this->getWordCloudData($branchId);
 
-        $all_beds = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
-        ->where('rooms.branch_id', auth()->user()->branch_id)
-        ->count();
+                // Get bed statistics
+                $bedStats = $this->getBedStatistics($branchId);
 
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'totalPatients' => $counts['totalPatients'],
+                        'totalCheckups' => $counts['totalCheckups'],
+                        'totalAppointments' => $counts['totalAppointments'],
+                        'totalPrescriptions' => $counts['totalPrescriptions'],
+                        'totalConsultations' => $counts['totalConsultations'],
+                        'totalOperations' => $counts['totalOperations'],
+                        'totalIcuAdmissions' => $counts['totalIcuAdmissions'],
+                        'totalInPatientAdmissions' => $counts['totalInPatientAdmissions'],
+                        'totalPhysiotherapyProcedures' => $counts['totalPhysiotherapyProcedures'],
+                        'todayPatients' => $todayPatients,
+                        'todayPatientsPercentageChange' => $todayPatientsPercentageChange,
+                        'patientsTrendData' => $patientsTrendData,
+                        'appointmentsTrendData' => $appointmentsTrendData,
+                        'wordCloudData' => $wordCloudData,
+                        'patientPercentageChange' => $percentageChanges['patient'],
+                        'checkupPercentageChange' => $percentageChanges['checkup'],
+                        'appointmentPercentageChange' => $percentageChanges['appointment'],
+                        'prescriptionPercentageChange' => $percentageChanges['prescription'],
+                        'consultationPercentageChange' => $percentageChanges['consultation'],
+                        'operationPercentageChange' => $percentageChanges['operation'],
+                        'icuPercentageChange' => $percentageChanges['icu'],
+                        'hospitalizationPercentageChange' => $percentageChanges['hospitalization'],
+                        'occupied_beds' => $bedStats['occupied'],
+                        'free_beds' => $bedStats['free'],
+                        'all_beds' => $bedStats['all']
+                    ]
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to load dashboard data',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        }
 
-        return view('pages.dashboard.index', [
-            'totalPatients' => $totalPatients,
-            'totalCheckups' => $totalCheckups,
-            'totalAppointments' => $totalAppointments,
-            'totalPrescriptions' => $totalPrescriptions,
-            'totalConsultations' => $totalConsultations,
-            'totalOperations' => $totalOperations,
-            'totalIcuAdmissions' => $totalIcuAdmissions,
-            'totalInPatientAdmissions' => $totalInPatientAdmissions,
-            'totalPhysiotherapyProcedures' => $totalPhysiotherapyProcedures,
-            'todayPatients' => $todayPatients,
-            'todayPatientsPercentageChange' => $todayPatientsPercentageChange,
-            'patientsTrendData' => $patientsTrendData,
-            'appointmentsTrendData' => $appointmentsTrendData,
-            'wordCloudData' => $wordCloudData,
-            'patientPercentageChange' => $patientPercentageChange,
-            'checkupPercentageChange' => $checkupPercentageChange,
-            'appointmentPercentageChange' => $appointmentPercentageChange,
-            'prescriptionPercentageChange' => $prescriptionPercentageChange,
-            'consultationPercentageChange' => $consultationPercentageChange,
-            'operationPercentageChange' => $operationPercentageChange,
-            'icuPercentageChange' => $icuPercentageChange,
-            'hospitalizationPercentageChange' => $hospitalizationPercentageChange,
-            'occupied_beds' => $occupied_beds,
-            'free_beds' => $free_beds,
-            'all_beds' => $all_beds
-        ]);
+        // Return view for regular requests
+        return view('pages.dashboard.index');
+    }
+
+    /**
+     * Get all dashboard counts in optimized way
+     */
+    private function getDashboardCounts($branchId, $today, $yesterday)
+    {
+        return [
+            'totalPatients' => Patient::where('branch_id', $branchId)->count(),
+            'totalCheckups' => PatientTestRegistration::where('branch_id', $branchId)->count(),
+            'totalAppointments' => Appointment::where('branch_id', $branchId)->count(),
+            'totalPrescriptions' => Prescription::where('branch_id', $branchId)->count(),
+            'totalConsultations' => Consultation::where('branch_id', $branchId)->count(),
+            'totalOperations' => Anesthesia::where('branch_id', $branchId)->where('is_operation_done', '1')->count(),
+            'totalIcuAdmissions' => ICU::where('branch_id', $branchId)->count(),
+            'totalInPatientAdmissions' => Hospitalization::where('branch_id', $branchId)->count(),
+            'totalPhysiotherapyProcedures' => PhysiotherapyProcedure::whereHas('appointment', function($query) use ($branchId) {
+                $query->where('branch_id', $branchId);
+            })->count(),
+            'todayPatients' => Patient::where('branch_id', $branchId)->whereDate('created_at', $today)->count(),
+            'yesterdayPatients' => Patient::where('branch_id', $branchId)->whereDate('created_at', $yesterday)->count(),
+        ];
+    }
+
+    /**
+     * Get all percentage changes in optimized batch
+     */
+    private function getAllPercentageChanges($branchId)
+    {
+        $currentMonth = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        $previousMonth = Carbon::now()->subMonth()->startOfMonth();
+        $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+
+        // Get current month counts
+        $currentCounts = [
+            'patient' => Patient::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'checkup' => PatientTestRegistration::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'appointment' => Appointment::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'prescription' => Prescription::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'consultation' => Consultation::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'operation' => Anesthesia::where('branch_id', $branchId)->where('is_operation_done', '1')
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'icu' => ICU::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+            'hospitalization' => Hospitalization::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$currentMonth, $currentMonthEnd])->count(),
+        ];
+
+        // Get previous month counts
+        $previousCounts = [
+            'patient' => Patient::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'checkup' => PatientTestRegistration::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'appointment' => Appointment::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'prescription' => Prescription::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'consultation' => Consultation::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'operation' => Anesthesia::where('branch_id', $branchId)->where('is_operation_done', '1')
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'icu' => ICU::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+            'hospitalization' => Hospitalization::where('branch_id', $branchId)
+                ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])->count(),
+        ];
+
+        // Calculate percentage changes
+        $percentageChanges = [];
+        foreach ($currentCounts as $key => $currentCount) {
+            $previousCount = $previousCounts[$key];
+            $percentageChanges[$key] = $previousCount > 0 
+                ? round(($currentCount - $previousCount) / $previousCount * 100, 2) 
+                : 0;
+        }
+
+        return $percentageChanges;
+    }
+
+    /**
+     * Optimize word cloud data query - reduce N+1 queries
+     */
+    private function getWordCloudData($branchId)
+    {
+        // Get all doctors for the branch with relationship counts
+        $doctors = Doctor::where('branch_id', $branchId)
+            ->withCount([
+                'appointments' => function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                },
+                'consultation_comments',
+                'hospitalizations' => function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                },
+                'i_c_u_s' => function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                },
+                'prescriptions' => function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                },
+                'visits'
+            ])
+            ->get();
+
+        // Get all consultations and count by doctor_id JSON field
+        $consultations = DB::table('consultations')
+            ->where('branch_id', $branchId)
+            ->select('doctor_id')
+            ->get();
+
+        // Build consultation counts map
+        $consultationCountsMap = [];
+        foreach ($consultations as $consultation) {
+            $doctorIds = json_decode($consultation->doctor_id, true) ?? [];
+            foreach ($doctorIds as $doctorId) {
+                if (!isset($consultationCountsMap[$doctorId])) {
+                    $consultationCountsMap[$doctorId] = 0;
+                }
+                $consultationCountsMap[$doctorId]++;
+            }
+        }
+
+        // Get all anesthesias and count by various doctor fields
+        $anesthesias = DB::table('anesthesias')
+            ->where('branch_id', $branchId)
+            ->select('doctor_id', 'operation_assistants_id', 'operation_surgion_id', 
+                     'operation_anesthesia_log_id', 'operation_anesthesist_id', 
+                     'operation_scrub_nurse_id', 'operation_circulation_nurse_id')
+            ->get();
+
+        // Build anesthesia counts map
+        $anesthesiaCountsMap = [];
+        foreach ($anesthesias as $anesthesia) {
+            $doctorIds = [];
+            if ($anesthesia->doctor_id) $doctorIds[] = $anesthesia->doctor_id;
+            if ($anesthesia->operation_surgion_id) $doctorIds[] = $anesthesia->operation_surgion_id;
+            if ($anesthesia->operation_anesthesia_log_id) $doctorIds[] = $anesthesia->operation_anesthesia_log_id;
+            if ($anesthesia->operation_anesthesist_id) $doctorIds[] = $anesthesia->operation_anesthesist_id;
+            if ($anesthesia->operation_scrub_nurse_id) $doctorIds[] = $anesthesia->operation_scrub_nurse_id;
+            if ($anesthesia->operation_circulation_nurse_id) $doctorIds[] = $anesthesia->operation_circulation_nurse_id;
+            
+            $assistants = json_decode($anesthesia->operation_assistants_id, true) ?? [];
+            $doctorIds = array_merge($doctorIds, $assistants);
+            $doctorIds = array_unique($doctorIds);
+            
+            foreach ($doctorIds as $doctorId) {
+                if (!isset($anesthesiaCountsMap[$doctorId])) {
+                    $anesthesiaCountsMap[$doctorId] = 0;
+                }
+                $anesthesiaCountsMap[$doctorId]++;
+            }
+        }
+
+        // Calculate weights for each doctor
+        return $doctors->map(function ($doctor) use ($consultationCountsMap, $anesthesiaCountsMap) {
+            $consultationsCount = $consultationCountsMap[$doctor->id] ?? 0;
+            $anesthesiasCount = $anesthesiaCountsMap[$doctor->id] ?? 0;
+
+            $weight = $doctor->appointments_count 
+                + $anesthesiasCount 
+                + $consultationsCount 
+                + $doctor->consultation_comments_count 
+                + $doctor->hospitalizations_count 
+                + $doctor->i_c_u_s_count 
+                + $doctor->prescriptions_count 
+                + $doctor->visits_count;
+
+            return [
+                'name' => $doctor->name,
+                'weight' => $weight,
+            ];
+        })
+        ->filter(function($item) {
+            return $item['weight'] > 0; // Only include doctors with activity
+        })
+        ->values()
+        ->toArray();
+    }
+
+    /**
+     * Get bed statistics in a single query
+     */
+    private function getBedStatistics($branchId)
+    {
+        $bedStats = Bed::join('rooms', 'beds.room_id', '=', 'rooms.id')
+            ->where('rooms.branch_id', $branchId)
+            ->selectRaw('
+                COUNT(*) as all_beds,
+                SUM(CASE WHEN beds.is_occupied = 1 THEN 1 ELSE 0 END) as occupied_beds,
+                SUM(CASE WHEN beds.is_occupied = 0 THEN 1 ELSE 0 END) as free_beds
+            ')
+            ->first();
+
+        return [
+            'all' => $bedStats->all_beds ?? 0,
+            'occupied' => $bedStats->occupied_beds ?? 0,
+            'free' => $bedStats->free_beds ?? 0,
+        ];
     }
 
     // Helper methods to retrieve trend data
-    private function getPatientsTrendData()
+    private function getPatientsTrendData($branchId)
     {
-        // Assuming you want to retrieve the patient count data for the last 12 months
-        $now = Carbon::now();
-        $startDate = $now->subYear()->startOfMonth();
-        $now = Carbon::now();
-        $endDate = $now->endOfMonth();
-
+        // Retrieve the patient count data for the last 12 months
+        $startDate = Carbon::now()->subYear()->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
 
         $patientsTrendData = Patient::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->where('branch_id', $branchId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('DATE_FORMAT(created_at, "%Y-%m")'))
             ->orderBy('month')
@@ -187,17 +340,14 @@ class HomeController extends Controller
         ];
     }
 
-
-    private function getAppointmentsTrendData()
+    private function getAppointmentsTrendData($branchId)
     {
-        // Assuming you want to retrieve the patient count data for the last 12 months
-        $now = Carbon::now();
-        $startDate = $now->startOfMonth();
-        $now = Carbon::now();
-        $endDate = $now->endOfMonth();
-
+        // Retrieve the appointment count data for the current month
+        $startDate = Carbon::now()->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
 
         $appointmentsTrendData = Appointment::selectRaw('DATE_FORMAT(created_at, "%d") as day, COUNT(*) as count')
+            ->where('branch_id', $branchId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('DATE_FORMAT(created_at, "%d")'))
             ->orderBy('day')
@@ -212,34 +362,6 @@ class HomeController extends Controller
             'labels' => $labels,
             'data' => $data
         ];
-    }
-
-    private function getPercentageChange($model)
-    {
-        // Get the current month and year
-        $currentMonth = Carbon::now()->format('m');
-        $currentYear = Carbon::now()->format('Y');
-
-        // Get the model count for the current month
-        $currentMonthCount = $model::whereMonth('created_at', $currentMonth)
-                             ->whereYear('created_at', $currentYear)
-                             ->count();
-
-        // Get the model count for the previous month
-        $previousMonth = Carbon::now()->subMonth()->format('m');
-        $previousYear = Carbon::now()->subMonth()->format('Y');
-        $previousMonthCount = $model::whereMonth('created_at', $previousMonth)
-                             ->whereYear('created_at', $previousYear)
-                             ->count();
-
-        // Calculate the percentage change
-        if ($previousMonthCount > 0) {
-            $percentageChange = round(($currentMonthCount - $previousMonthCount) / $previousMonthCount * 100, 2);
-        } else {
-            $percentageChange = 0;
-        }
-
-        return $percentageChange;
     }
 
     private function calculateTodayPercentageChange($todayCount, $yesterdayCount)

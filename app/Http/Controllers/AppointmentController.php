@@ -381,17 +381,7 @@ class AppointmentController extends Controller
 
     public function assignDoctor(Request $request, Appointment $appointment)
     {
-        // Prevent assigning/changing doctor if appointment is already processed
-        if ($appointment->processed_by) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => localize('global.cannot_change_doctor_after_acceptance')
-                ], 400);
-            }
-            return redirect()->back()->with('error', localize('global.cannot_change_doctor_after_acceptance'));
-        }
-
+       
         // Validate doctor_id is provided
         $request->validate([
             'doctor_id' => 'required|exists:doctors,id'

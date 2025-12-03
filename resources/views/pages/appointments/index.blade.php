@@ -57,12 +57,12 @@
                         </div>
                         <div class="col-md-2">
                             <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-                            <input type="date" class="form-control" id="date_from" name="date_from" 
+                            <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" 
                                 value="{{ request('date_from') }}">
                         </div>
                         <div class="col-md-2">
                             <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-                            <input type="date" class="form-control" id="date_to" name="date_to" 
+                            <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" 
                                 value="{{ request('date_to') }}">
                         </div>
                         <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">

@@ -34,12 +34,38 @@ class UserPerformanceReportController extends Controller
     public function fetch(Request $request): View|JsonResponse
     {
         $validated = $request->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
+            'startDate' => 'required|string',
+            'endDate' => 'required|string',
             'userId' => 'nullable|integer|exists:users,id',
         ]);
-        $validated['startDate']=verta($validated['endDate'])->format('Y-m-d');
-        $validated['endDate']=verta($validated['endDate'])->format('Y-m-d');
+        
+        // Convert Persian dates to Gregorian
+        try {
+            $validated['startDate'] = Verta::parse($validated['startDate'])->format('Y-m-d');
+            $validated['endDate'] = Verta::parse($validated['endDate'])->format('Y-m-d');
+            
+            // Validate date range after conversion
+            if ($validated['startDate'] > $validated['endDate']) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'End date must be after or equal to start date.',
+                        'errors' => ['endDate' => 'End date must be after or equal to start date.']
+                    ], 422);
+                }
+                return back()->withErrors(['endDate' => 'End date must be after or equal to start date.']);
+            }
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid date format. Please use Persian date format.',
+                    'error' => $e->getMessage(),
+                    'errors' => ['startDate' => 'Invalid date format. Please use Persian date format.']
+                ], 422);
+            }
+            return back()->withErrors(['startDate' => 'Invalid date format. Please use Persian date format.']);
+        }
         
         try {
             $results = DB::select('CALL sp_user_performance_dynamic(?, ?, ?)', [

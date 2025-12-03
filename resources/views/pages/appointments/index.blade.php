@@ -144,25 +144,25 @@
 @endsection
 
 @push('custom-css')
-<style>
+    <style>
     .table th {
         background-color: #f8f9fa;
         border-bottom: 2px solid #dee2e6;
-        text-align: right;
-    }
-    
+            text-align: right;
+        }
+
     .table td {
-        text-align: right;
-    }
-    
+            text-align: right;
+        }
+
     .pagination {
         margin-bottom: 0;
-    }
-</style>
+        }
+    </style>
 @endpush
 
 @push('custom-js')
-<script>
+    <script>
 $(document).ready(function() {
     // Auto-submit form when select values change
     $('select[name="doctor_id"], select[name="department_id"], select[name="is_completed"]').change(function() {
@@ -173,6 +173,6 @@ $(document).ready(function() {
     $('form').submit(function() {
         $('.btn-primary').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i>');
     });
-});
-</script>
+        });
+    </script>
 @endpush

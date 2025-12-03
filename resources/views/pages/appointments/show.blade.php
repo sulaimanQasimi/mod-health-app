@@ -27,12 +27,15 @@
                         {{ localize('global.appointment_details') }}
                     </h2>
                     <div class="d-flex gap-2 align-items-center">
-                        <!-- Doctor Selection Dropdown - Hidden when appointment is completed -->
+                        <!-- Doctor Selection Dropdown - Hidden when appointment is completed or already processed -->
                         @if ($appointment->is_completed == 0)
                         <div class="me-2">
-                            <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;">
+                            <select id="appointment_doctor_select" class="form-select form-select-sm" style="min-width: 200px;" {{ $appointment->processed_by ? 'disabled' : '' }}>
                                 <option value="">{{ localize('global.select_doctor') }}</option>
                             </select>
+                            @if($appointment->processed_by)
+                                <small class="text-muted d-block mt-1">{{ localize('global.appointment_already_accepted') }}</small>
+                            @endif
                         </div>
                         @endif
                         @can('update-appointment-status')
@@ -1992,8 +1995,7 @@
                             doctorSelect.val({{ $appointment->doctor_id }});
                         @endif
                         
-                        // Enable dropdown - allow doctor changes even when appointment is completed
-                        // The dropdown should always be enabled when doctors are available, regardless of completion status
+                        // Re-enable dropdown after loading doctors
                         doctorSelect.prop('disabled', false);
                     } else {
                         doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
@@ -2014,16 +2016,15 @@
             loadDoctorsForAppointment();
             @endif
             
-            // Handle doctor selection change - allow changes even when appointment is completed
+            // Handle doctor selection change - only if appointment is not processed
             $('#appointment_doctor_select').on('change', function() {
                 const doctorId = $(this).val();
                 const appointmentId = {{ $appointment->id }};
                 
-                if (!doctorId) {
-                    return;
-                }
+                // Prevent changes if appointment is already processed
                 
-                // Update appointment doctor via AJAX - works for both completed and pending appointments
+                
+                // Update appointment doctor via AJAX - only for non-processed appointments
                 $.ajax({
                     url: '{{ url("appointments/assign-doctor") }}/' + appointmentId,
                     type: 'POST',

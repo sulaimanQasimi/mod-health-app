@@ -3,22 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewAppointmentNotification;
-use App\Models\Appointment;
+use App\Models\{Appointment, Doctor, Patient, PrintedNumber, FoodType, LabType, Medicine, MedicineType, MedicineUsageType, OperationType, Relation, Room, User};
 use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
-use App\Models\Doctor;
-use App\Models\Patient;
-use App\Models\PrintedNumber;
-use App\Models\FoodType;
-use App\Models\LabType;
-use App\Models\Medicine;
-use App\Models\MedicineType;
-use App\Models\MedicineUsageType;
-use App\Models\OperationType;
-use App\Models\Relation;
-use App\Models\Room;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -84,9 +72,9 @@ class AppointmentController extends Controller
      
          // Convert dates to Jalali for display
          $appointments->getCollection()->transform(function ($appointment) {
-             $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
-             return $appointment;
-         });
+                     $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+                     return $appointment;
+                 });
      
          // Get filter data
          $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->get();
@@ -183,6 +171,13 @@ class AppointmentController extends Controller
 
     public function update(Request $request, Appointment $appointment)
     {
+        // Prevent changing doctor if appointment is already processed
+        if ($appointment->processed_by && $request->doctor_id != $appointment->doctor_id) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', localize('global.cannot_change_doctor_after_acceptance'));
+        }
+
         // Validate the input
         $validatedData = $request->validate([
             'patient_id' => 'required',
@@ -193,6 +188,11 @@ class AppointmentController extends Controller
             'refferal_remarks' => 'nullable|string',
             // Add any other validation rules as needed
         ]);
+        
+        // If appointment is processed, preserve the original doctor_id
+        if ($appointment->processed_by) {
+            $validatedData['doctor_id'] = $appointment->doctor_id;
+        }
         
         // Update the appointment
         $appointment->update($validatedData);
@@ -337,8 +337,12 @@ class AppointmentController extends Controller
         // Build query for appointments
         $query = Appointment::whereNull('doctor_id')
             ->whereNull('processed_by')
+            ->when(auth()->user()->doctor, function ($query) {
+                $query->where('department_id', auth()->user()->doctor->department_id);
+            })
             ->where('clinic_type', auth()->user()->clinic_type)
             ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
+
 
         // Search by patient name, id_card, phone, father_name
         if ($request->filled('search')) {
@@ -377,13 +381,13 @@ class AppointmentController extends Controller
 
     public function assignDoctor(Request $request, Appointment $appointment)
     {
+       
         // Validate doctor_id is provided
         $request->validate([
             'doctor_id' => 'required|exists:doctors,id'
         ]);
 
         // Update appointment with doctor and set processed_by to current user
-        // Allow doctor changes even when appointment is completed
         $appointment->update([
             'doctor_id' => $request->doctor_id,
             'processed_by' => auth()->id()
@@ -412,15 +416,26 @@ class AppointmentController extends Controller
             return redirect()->back()->with('error', localize('global.appointment_already_processed'));
         }
 
-        // Only update processed_by to current user (don't assign doctor)
-        $appointment->update([
+        $updateData = [
             'processed_by' => auth()->id()
-        ]);
+        ];
+
+        // Check if current user has a doctor assigned
+        $userDoctor = Doctor::where('user_id', auth()->id())->first();
+        
+        if ($userDoctor) {
+            // Assign the doctor to the appointment
+            $updateData['doctor_id'] = $userDoctor->id;
+        }
+
+        // Update appointment with processed_by and doctor (if user has one)
+        $appointment->update($updateData);
 
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => localize('global.appointment_accepted_successfully')
+                'message' => localize('global.appointment_accepted_successfully'),
+                'doctor_assigned' => $userDoctor ? true : false
             ]);
         }
 

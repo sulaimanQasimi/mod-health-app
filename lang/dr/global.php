@@ -3744,7 +3744,8 @@ return [
     'apply_filters'=>' فیلتر',
     'rejected'=>'رد شده',
     'no_anesthesias_found'=>'هیچ انستیزی برای نمایش یافت نشد',
-    'are_you_sure_accept_appointment'=>'آیا مطمئن هستید که می خواهید این انستیزی را قبول کنید؟',
+    'are_you_sure_accept_appointment'=>'آیا مطمئن هستید که می خواهید این ملاقات را قبول کنید؟',
+    'appointment_accepted_successfully'=>'ملاقات با موفقیت قبول شد',
     'no_appointments_found'=>'هیچ ملاقاتی برای نمایش یافت نشد',
     'direct_appointment'=>'مستقیم',
     'select_department_first'=>'ابتدا داکتر را انتخاب کنید',
@@ -3755,6 +3756,8 @@ return [
     'doctor_created_successfully'=>'دکتر با موفقیت ایجاد شد',
     'doctor_updated_successfully'=>'دکتر با موفقیت بروزرسانی شد',
     'completed_date'=>'تاریخ تکمیل',
+    'doctor_assigned_successfully'=>'دکتر با موفقیت اختصاص داده شد',
+    'search_by_card'=>'جستجو به اساس کارت',
     'appointment_already_accepted'=>'نوبت قبلاً پذیرفته شده است',
     'cannot_change_doctor_after_acceptance'=>'نمی‌توانید پزشک را پس از پذیرش تغییر دهید'
 ];

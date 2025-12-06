@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use HanifHefaz\Dcter\Dcter;
+use Hekmatinasser\Verta\Facades\Verta;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -58,14 +59,16 @@ class AppointmentController extends Controller
              $query->where('is_completed', $request->is_completed);
          }
      
-         // Filter by date range
-         if ($request->filled('date_from')) {
-             $query->whereDate('date', '>=', $request->date_from);
-         }
-     
-         if ($request->filled('date_to')) {
-             $query->whereDate('date', '<=', $request->date_to);
-         }
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            // Convert Persian date to Gregorian
+            $query->whereDate('date', '>=', Verta::parse($request->date_from)->datetime());
+        }
+    
+        if ($request->filled('date_to')) {
+            // Convert Persian date to Gregorian
+            $query->whereDate('date', '<=', Verta::parse($request->date_to)->datetime());
+        }
      
          // Get paginated results
          $appointments = $query->latest()->paginate(25)->withQueryString();

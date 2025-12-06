@@ -138,8 +138,6 @@
                                             class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>
                                         <a href="{{ route('patients.edit', $patient->id) }}"
                                             class="btn btn-sm btn-icon text-primary"><i class="bx bx-edit"></i></a>
-                                        <a href="{{ route('patients.destroy', $patient->id) }}"
-                                            class="btn btn-sm btn-icon text-danger"><i class="bx bx-trash"></i></a>
                                     </td>
                                 </tr>
                             @endforeach

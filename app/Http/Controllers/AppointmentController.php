@@ -297,38 +297,30 @@ class AppointmentController extends Controller
 
     public function completedAppointments(Request $request)
     {
-        // Get completed appointments where current user is the assigned doctor
-        // Find doctor records that match current user's department and branch
-        $doctorIds = Doctor::where('branch_id', auth()->user()->branch_id)
-            ->where('department_id', auth()->user()->department_id)
-            ->pluck('id');
         
-        $query = Appointment::whereIn('doctor_id', $doctorIds)
+        $query = Appointment::where('processed_by', auth()->user()->id)
             ->where('is_completed', '1')
             ->with(['patient', 'doctor', 'referringDoctor', 'processedBy'])
             ->latest();
 
-        if ($request->ajax()) {
-            $appointments = $query->get()
-                ->map(function ($appointment) {
-                    $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
-                    return $appointment;
-                });
+        $appointments = $query->paginate(25)->withQueryString();
+        
+        // Add jalali_date to each appointment
+        $appointments->getCollection()->transform(function ($appointment) {
+            $appointment->jalali_date = Dcter::GregorianToJalali($appointment->date);
+            return $appointment;
+        });
 
-            if ($appointments) {
-                return response()->json([
-                    'data' => $appointments,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $appointments->items(),
+                'current_page' => $appointments->currentPage(),
+                'last_page' => $appointments->lastPage(),
+                'per_page' => $appointments->perPage(),
+                'total' => $appointments->total(),
+            ]);
         }
 
-        $appointments = $query->get();
         return view('pages.appointments.completed', compact('appointments'));
     }
 

@@ -147,8 +147,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [PatientController::class, 'create'])->name('create');
         Route::get('show/{patient}', [PatientController::class, 'show'])->name('show');
         Route::post('store', [PatientController::class, 'store'])->name('store');
-        Route::get('edit/{patient}', [PatientController::class, 'edit'])->name('edit');
-        Route::put('update/{patient}', [PatientController::class, 'update'])->name('update');
         Route::get('/print-card/{patient}', [PatientController::class, 'printCard'])->name('print-card');
         Route::get('destroy/{patient}', [PatientController::class, 'destroy'])->name('destroy');
         Route::post('/patients/{id}/add-image', [PatientController::class, 'addImage'])->name('addImage');

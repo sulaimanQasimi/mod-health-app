@@ -500,10 +500,12 @@ class TestResultController extends Controller
         if ($request->filled('search')) {
             $search = trim($request->search);
             $query->where(function($q) use ($search) {
-                $q->whereHas('testable.patient', function($patientQuery) use ($search) {
-                    $patientQuery->where('name', 'like', '%' . $search . '%')
-                                ->orWhere('last_name', 'like', '%' . $search . '%')
-                                ->orWhere('phone', 'like', '%' . $search . '%');
+                $q->whereHas('testable', function($testableQuery) use ($search) {
+                    $testableQuery->whereHas('patient', function($patientQuery) use ($search) {
+                        $patientQuery->where('name', 'like', '%' . $search . '%')
+                                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                                    ->orWhere('phone', 'like', '%' . $search . '%');
+                    });
                 })
                 ->orWhere('ref_no', 'like', '%' . $search . '%');
             });

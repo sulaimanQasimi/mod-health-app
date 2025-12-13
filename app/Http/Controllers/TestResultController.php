@@ -7,6 +7,7 @@ use App\Models\Patient;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -749,6 +750,242 @@ class TestResultController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => localize('global.error_accepting_test') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Load all parameters for multiple test registrations
+     */
+    public function loadAllParameters(Request $request)
+    {
+        $request->validate([
+            'registration_ids' => 'required|array',
+            'registration_ids.*' => 'exists:patient_test_registrations,id',
+        ]);
+
+        try {
+            $registrationIds = $request->registration_ids;
+            $tests = [];
+
+            foreach ($registrationIds as $registrationId) {
+                $registration = PatientTestRegistration::with([
+                    'labType.directLabTestParameters',
+                    'results'
+                ])->find($registrationId);
+
+                if (!$registration) {
+                    continue;
+                }
+
+                $parameters = [];
+                $textResult = null;
+                $labType = $registration->labType;
+                $isParametered = false;
+
+                if ($labType && $labType->directLabTestParameters && $labType->directLabTestParameters->count() > 0) {
+                    $isParametered = true;
+                    foreach ($labType->directLabTestParameters as $parameter) {
+                        // Get existing result if any
+                        $existingResult = $registration->results()
+                            ->where('lab_parameter_id', $parameter->id)
+                            ->first();
+
+                        $parameters[] = [
+                            'id' => $parameter->id,
+                            'parameter_name' => $parameter->parameter_name,
+                            'unit' => $parameter->unit,
+                            'normal_range' => $parameter->normal_range,
+                            'result' => $existingResult ? $existingResult->result : null,
+                        ];
+                    }
+                } else {
+                    // Text-based test
+                    $existingTextResult = $registration->results()
+                        ->whereNull('lab_parameter_id')
+                        ->first();
+                    $textResult = $existingTextResult ? $existingTextResult->text_result : null;
+                }
+
+                $tests[$registrationId] = [
+                    'registration_id' => $registrationId,
+                    'ref_no' => $registration->ref_no,
+                    'lab_type_name' => $labType ? $labType->name : 'Unknown',
+                    'parameters' => $parameters,
+                    'is_parametered' => $isParametered,
+                    'text_result' => $textResult,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'tests' => $tests,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.error_loading_parameters') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Save all parameters for multiple test registrations with same group_id
+     */
+    public function saveAllParameters(Request $request)
+    {
+        $request->validate([
+            'registration_ids' => 'required|array',
+            'registration_ids.*' => 'exists:patient_test_registrations,id',
+            'results' => 'nullable|array',
+            'text_results' => 'nullable|array',
+            'patient_id' => 'nullable|exists:patients,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $registrationIds = $request->registration_ids;
+            $results = $request->results;
+            $patientId = $request->patient_id;
+
+            // Generate a unique group_id (using timestamp + random number)
+            $groupId = 'GRP_' . time() . '_' . rand(1000, 9999);
+
+            // Get all registrations
+            $registrations = PatientTestRegistration::whereIn('id', $registrationIds)->get();
+
+            // Update all registrations with the same category_id (using it as group_id)
+            // If category_id doesn't exist, we'll use a new approach - store group_id in metadata
+            $categoryId = $registrations->first()->category_id ?? null;
+            
+            // If no category_id exists, create one or use the first registration's category_id
+            if (!$categoryId) {
+                // Get the max category_id and increment it, or use a new one
+                $maxCategoryId = PatientTestRegistration::max('category_id') ?? 0;
+                $categoryId = $maxCategoryId + 1;
+            }
+
+            // Update all registrations with the same category_id
+            PatientTestRegistration::whereIn('id', $registrationIds)
+                ->update(['category_id' => $categoryId]);
+
+            $results = $request->results ?? [];
+            $textResults = $request->text_results ?? [];
+
+            // Process results for each registration
+            foreach ($registrationIds as $registrationId) {
+                $registration = PatientTestRegistration::with('labType.directLabTestParameters')
+                    ->find($registrationId);
+
+                if (!$registration) {
+                    continue;
+                }
+
+                // Handle text-based results
+                if (isset($textResults[$registrationId]) && !empty(trim($textResults[$registrationId]))) {
+                    $textResult = trim($textResults[$registrationId]);
+                    
+                    $existingTextResult = PatientTestResult::where('ref_no', $registration->ref_no)
+                        ->where('test_registration_id', $registrationId)
+                        ->whereNull('lab_parameter_id')
+                        ->first();
+
+                    if ($existingTextResult) {
+                        $existingTextResult->update(['text_result' => $textResult]);
+                    } else {
+                        PatientTestResult::create([
+                            'patient_id' => $patientId ?? $registration->testable?->patient_id ?? 1,
+                            'ref_no' => $registration->ref_no,
+                            'lab_parameter_id' => null,
+                            'text_result' => $textResult,
+                            'test_registration_id' => $registrationId,
+                        ]);
+                    }
+                    
+                    // Mark text-based test as completed
+                    $registration->status = 'completed';
+                    $registration->completed_at = now();
+                    $registration->completed_by = auth()->id();
+                    $registration->save();
+                    continue;
+                }
+
+                // Handle parametered results
+                $registrationResults = $results[$registrationId] ?? [];
+                $hasSavedResults = false;
+
+                if (!empty($registrationResults)) {
+                    // Save each parameter result
+                    foreach ($registrationResults as $parameterId => $resultValue) {
+                        if (empty($resultValue) || trim($resultValue) === '') {
+                            continue;
+                        }
+
+                        $hasSavedResults = true;
+                        $existingResult = PatientTestResult::where('ref_no', $registration->ref_no)
+                            ->where('lab_parameter_id', $parameterId)
+                            ->where('test_registration_id', $registrationId)
+                            ->first();
+
+                        if ($existingResult) {
+                            // Update existing result
+                            $existingResult->update(['result' => $resultValue]);
+                        } else {
+                            // Get parameter details
+                            $parameter = \App\Models\LabTestParameter::find($parameterId);
+                            
+                            // Create new result entry
+                            PatientTestResult::create([
+                                'patient_id' => $patientId ?? $registration->testable?->patient_id ?? 1,
+                                'ref_no' => $registration->ref_no,
+                                'lab_parameter_id' => $parameterId,
+                                'result' => $resultValue,
+                                'unit' => $parameter->unit ?? null,
+                                'normal_range' => $parameter->normal_range ?? null,
+                                'test_registration_id' => $registrationId,
+                            ]);
+                        }
+                    }
+
+                    // Mark as completed if results were saved
+                    if ($hasSavedResults) {
+                        $registration->status = 'completed';
+                        $registration->completed_at = now();
+                        $registration->completed_by = auth()->id();
+                        $registration->save();
+                    } else {
+                        // Mark as in progress if not already
+                        if ($registration->status === 'pending') {
+                            $registration->status = 'in_progress';
+                            $registration->save();
+                        }
+                    }
+                } else {
+                    // If no results provided but test exists, check if it should be marked as in progress
+                    if ($registration->status === 'pending') {
+                        $registration->status = 'in_progress';
+                        $registration->save();
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.all_parameters_saved_successfully'),
+                'group_id' => $categoryId,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.error_saving_parameters') . ': ' . $e->getMessage()
             ], 500);
         }
     }

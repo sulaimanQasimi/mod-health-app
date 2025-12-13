@@ -3761,4 +3761,7 @@ return [
     'appointment_already_accepted'=>'نوبت قبلاً پذیرفته شده است',
     'cannot_change_doctor_after_acceptance'=>'نمی‌توانید پزشک را پس از پذیرش تغییر دهید',
     'accept_all'=>'قبول تمام معاینات',
+"save_all"=>"ذخیره تمام معاینات",
+'fill_all'=>'پر کردن تمام معاینات',
+"fill_all_parameters"=>"پر کردن تمام پارامترها",
 ];

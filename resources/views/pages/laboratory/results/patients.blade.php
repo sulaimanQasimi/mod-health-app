@@ -128,6 +128,18 @@
                                                     <span class="badge bg-primary rounded-pill">
                                                         {{ $registrations->count() }} {{ localize('global.tests') ?? 'Tests' }}
                                                     </span>
+                                                    @if($registrations->count() > 0 && Route::is('laboratory.results.in-progress'))
+                                                        <button type="button" 
+                                                                class="btn btn-info fill-all-params-btn" 
+                                                                data-patient-id="{{ $patientId }}"
+                                                                data-registration-ids="{{ $registrations->pluck('id')->implode(',') }}"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#fillAllParamsModal"
+                                                                title="{{ localize('global.fill_all_parameters') ?? 'Fill All Parameters' }}">
+                                                            <i class="bx bx-edit me-1"></i>
+                                                            {{ localize('global.fill_all') ?? 'Fill All' }}
+                                                        </button>
+                                                    @endif
                                                     @if($pendingRegistrations->count() > 0)
                                                         <button type="button" 
                                                                 class="btn btn-success accept-all-btn" 
@@ -308,6 +320,39 @@
                         </div>
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fill All Parameters Modal -->
+<div class="modal fade" id="fillAllParamsModal" tabindex="-1" aria-labelledby="fillAllParamsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fillAllParamsModalLabel">
+                    <i class="bx bx-edit me-2"></i>
+                    {{ localize('global.fill_all_parameters') ?? 'Fill All Parameters' }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="fillAllParamsContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">{{ localize('global.loading') ?? 'Loading...' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {{ localize('global.cancel') ?? 'Cancel' }}
+                </button>
+                <button type="button" class="btn btn-primary" id="saveAllParamsBtn">
+                    <i class="bx bx-save me-1"></i>
+                    {{ localize('global.save_all') ?? 'Save All' }}
+                </button>
             </div>
         </div>
     </div>
@@ -508,6 +553,7 @@
     .accordion-collapse {
         transition: height 0.35s ease;
     }
+
 </style>
 @endpush
 
@@ -586,7 +632,22 @@ $(document).ready(function() {
     $(document).on('click', '.accept-all-btn', function() {
         const $btn = $(this);
         const originalHtml = $btn.html();
-        const registrationIds = $btn.data('registration-ids').split(',').filter(id => id.trim() !== '');
+        // Use attr() to get the raw string value
+        const registrationIdsStr = $btn.attr('data-registration-ids') || '';
+        
+        // Handle both string and array formats
+        let registrationIds = [];
+        if (registrationIdsStr && typeof registrationIdsStr === 'string') {
+            registrationIds = registrationIdsStr.split(',').filter(id => id.trim() !== '');
+        } else {
+            // Fallback to data() method
+            const registrationIdsData = $btn.data('registration-ids');
+            if (typeof registrationIdsData === 'string') {
+                registrationIds = registrationIdsData.split(',').filter(id => id.trim() !== '');
+            } else if (Array.isArray(registrationIdsData)) {
+                registrationIds = registrationIdsData.filter(id => id != null && id !== '');
+            }
+        }
         
         if (registrationIds.length === 0) {
             toastr.warning('{{ localize("global.no_pending_tests") ?? "No pending tests to accept" }}');
@@ -654,6 +715,240 @@ $(document).ready(function() {
     
     // Handle browser back/forward
     window.addEventListener('popstate', () => location.reload());
+    
+    
+    // Handle Fill All Parameters Modal
+    let currentRegistrationIds = [];
+    let currentPatientId = null;
+    
+    $('#fillAllParamsModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        // Use attr() to get the raw string value, then parse it
+        const registrationIdsStr = button.attr('data-registration-ids') || '';
+        
+        // Handle both string and array formats
+        if (registrationIdsStr && typeof registrationIdsStr === 'string') {
+            currentRegistrationIds = registrationIdsStr.split(',').filter(id => id.trim() !== '');
+        } else {
+            // Fallback to data() method if attr() doesn't work
+            const registrationIdsData = button.data('registration-ids');
+            if (typeof registrationIdsData === 'string') {
+                currentRegistrationIds = registrationIdsData.split(',').filter(id => id.trim() !== '');
+            } else if (Array.isArray(registrationIdsData)) {
+                currentRegistrationIds = registrationIdsData.filter(id => id != null && id !== '');
+            } else {
+                currentRegistrationIds = [];
+            }
+        }
+        
+        currentPatientId = button.attr('data-patient-id') || button.data('patient-id');
+        
+        // Load parameters for all tests
+        if (currentRegistrationIds.length > 0) {
+            loadAllParameters(currentRegistrationIds);
+        } else {
+            $('#fillAllParamsContent').html('<div class="alert alert-warning">{{ localize("global.no_tests_found") ?? "No tests found" }}</div>');
+        }
+    });
+    
+    function loadAllParameters(registrationIds) {
+        const content = $('#fillAllParamsContent');
+        content.html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">{{ localize("global.loading") ?? "Loading..." }}</span></div></div>');
+        
+        $.ajax({
+            url: '{{ route("laboratory.results.load-all-parameters") }}',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                registration_ids: registrationIds
+            },
+            success: function(response) {
+                if (response.success) {
+                    renderParametersForm(response.data);
+                } else {
+                    content.html('<div class="alert alert-danger">' + response.message + '</div>');
+                }
+            },
+            error: function(xhr) {
+                content.html('<div class="alert alert-danger">{{ localize("global.error_loading_data") ?? "Error loading data" }}</div>');
+            }
+        });
+    }
+    
+    function renderParametersForm(data) {
+        let html = '<form id="fillAllParamsForm">';
+        
+        // Group by test registration
+        Object.keys(data.tests).forEach(registrationId => {
+            const test = data.tests[registrationId];
+            html += `
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="bx bx-test-tube me-2"></i>
+                            ${test.lab_type_name || 'Test'} - ${test.ref_no || ''}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+            `;
+            
+            if (test.is_parametered && test.parameters && test.parameters.length > 0) {
+                // Parametered test
+                html += `
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>{{ localize("global.parameter") ?? "Parameter" }}</th>
+                                        <th>{{ localize("global.result") ?? "Result" }}</th>
+                                        <th>{{ localize("global.unit") ?? "Unit" }}</th>
+                                        <th>{{ localize("global.normal_range") ?? "Normal Range" }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                
+                test.parameters.forEach(param => {
+                    html += `
+                        <tr>
+                            <td><strong>${param.parameter_name || '—'}</strong></td>
+                            <td>
+                                <input type="text" 
+                                       name="results[${registrationId}][${param.id}]" 
+                                       value="${(param.result || '').replace(/"/g, '&quot;')}" 
+                                       class="form-control form-control-sm"
+                                       data-parameter-id="${param.id}"
+                                       data-registration-id="${registrationId}">
+                            </td>
+                            <td><span class="text-muted">${param.unit || '—'}</span></td>
+                            <td><span class="text-muted">${param.normal_range || '—'}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                `;
+            } else {
+                // Text-based test
+                html += `
+                        <div class="mb-3">
+                            <label class="form-label"><strong>{{ localize("global.result") ?? "Result" }}</strong></label>
+                            <textarea 
+                                name="text_results[${registrationId}]" 
+                                class="form-control" 
+                                rows="4"
+                                data-registration-id="${registrationId}"
+                                data-is-text-result="true">${(test.text_result || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        </div>
+                `;
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</form>';
+        $('#fillAllParamsContent').html(html);
+    }
+    
+    // Handle Save All Parameters
+    $('#saveAllParamsBtn').on('click', function() {
+        const $btn = $(this);
+        const originalHtml = $btn.html();
+        
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>{{ localize("global.saving") ?? "Saving..." }}');
+        
+        const formData = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            registration_ids: currentRegistrationIds,
+            patient_id: currentPatientId,
+            results: {},
+            text_results: {}
+        };
+        
+        // Collect all form data - parametered tests
+        $('#fillAllParamsForm input[type="text"]').each(function() {
+            const $input = $(this);
+            const registrationId = $input.data('registration-id');
+            const parameterId = $input.data('parameter-id');
+            const isTextResult = $input.data('is-text-result');
+            
+            // Skip if it's a text result (handled separately)
+            if (isTextResult) {
+                return;
+            }
+            
+            if (parameterId && registrationId) {
+                const value = $input.val();
+                if (value && value.trim() !== '') {
+                    if (!formData.results[registrationId]) {
+                        formData.results[registrationId] = {};
+                    }
+                    formData.results[registrationId][parameterId] = value;
+                }
+            }
+        });
+        
+        // Collect text results
+        $('#fillAllParamsForm textarea').each(function() {
+            const $textarea = $(this);
+            const registrationId = $textarea.data('registration-id');
+            const value = $textarea.val();
+            
+            if (registrationId && value && value.trim() !== '') {
+                formData.text_results[registrationId] = value;
+            }
+        });
+        
+        $.ajax({
+            url: '{{ route("laboratory.results.save-all-parameters") }}',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    // Store group_id before closing modal
+                    const groupId = response.group_id;
+                    
+                    toastr.success(response.message || '{{ localize("global.all_parameters_saved_successfully") ?? "All parameters saved successfully" }}');
+                    
+                    // Open print page in new tab if group_id is available
+                    // Do this before closing modal to avoid popup blocker
+                    if (groupId) {
+                        const baseUrl = '{{ url("/") }}';
+                        const printUrl = baseUrl + '/laboratory/reports/print-group/' + groupId;
+                        const printWindow = window.open(printUrl, '_blank');
+                        
+                        if (!printWindow || printWindow.closed || typeof printWindow.closed == 'undefined') {
+                            // Popup blocked - create a link and click it programmatically
+                            const link = document.createElement('a');
+                            link.href = printUrl;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    }
+                    
+                    $('#fillAllParamsModal').modal('hide');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    toastr.error(response.message || '{{ localize("global.error_saving_parameters") ?? "Error saving parameters" }}');
+                    $btn.prop('disabled', false).html(originalHtml);
+                }
+            },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || '{{ localize("global.error_saving_parameters") ?? "Error saving parameters" }}';
+                toastr.error(message);
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
 });
 </script>
 @endsection

@@ -100,35 +100,57 @@
                                 @endphp
                                 
                                 @if($patient)
+                                    @php
+                                        $pendingRegistrations = $registrations->filter(function($reg) {
+                                            return $reg->status === 'pending' && !$reg->assigned_to;
+                                        });
+                                    @endphp
                                     <div class="accordion-item mb-3">
+                                        <!-- Top Header Section with Accept All Button -->
+                                        <div class="accordion-top-header p-3 border-bottom bg-light">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-md me-3">
+                                                        <div class="avatar-initial bg-primary text-white rounded-circle">
+                                                            <i class="bx bx-user bx-md"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ $patient->name }} {{ $patient->last_name }}</h6>
+                                                        <small class="text-muted">
+                                                            <i class="bx bx-user me-1"></i>{{ $patient->father_name }} | 
+                                                            <i class="bx bx-calendar me-1"></i>{{ $patient->age }} | 
+                                                            <i class="bx bx-phone me-1"></i>{{ $patient->phone }}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="badge bg-primary rounded-pill">
+                                                        {{ $registrations->count() }} {{ localize('global.tests') ?? 'Tests' }}
+                                                    </span>
+                                                    @if($pendingRegistrations->count() > 0)
+                                                        <button type="button" 
+                                                                class="btn btn-success accept-all-btn" 
+                                                                data-patient-id="{{ $patientId }}"
+                                                                data-registration-ids="{{ $pendingRegistrations->pluck('id')->implode(',') }}"
+                                                                title="{{ localize('global.accept_all_tests') ?? 'Accept All Tests' }}">
+                                                            <i class="bx bx-check-double me-1"></i>
+                                                            {{ localize('global.accept_all') ?? 'Accept All' }}
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Accordion Header -->
                                         <h2 class="accordion-header" id="heading-{{ $accordionId }}">
                                             <button class="accordion-button collapsed" type="button" 
                                                     data-bs-toggle="collapse" data-bs-target="#collapse-{{ $accordionId }}" 
                                                     aria-expanded="false" 
                                                     aria-controls="collapse-{{ $accordionId }}">
                                                 <div class="d-flex align-items-center w-100">
-                                                    <div class="avatar avatar-md me-3">
-                                                        <div class="avatar-initial bg-primary text-white rounded-circle">
-                                                            <i class="bx bx-user bx-md"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <h6 class="mb-0">{{ $patient->name }} {{ $patient->last_name }}</h6>
-                                                                <small class="text-muted">
-                                                                    <i class="bx bx-user me-1"></i>{{ $patient->father_name }} | 
-                                                                    <i class="bx bx-calendar me-1"></i>{{ $patient->age }} | 
-                                                                    <i class="bx bx-phone me-1"></i>{{ $patient->phone }}
-                                                                </small>
-                                                            </div>
-                                                            <div class="me-3">
-                                                                <span class="badge bg-primary rounded-pill">
-                                                                    {{ $registrations->count() }} {{ localize('global.tests') ?? 'Tests' }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <i class="bx bx-chevron-down me-2"></i>
+                                                    <span>{{ localize('global.view_tests') ?? 'View Tests' }}</span>
                                                 </div>
                                             </button>
                                         </h2>
@@ -388,12 +410,44 @@
         transform: translateY(-2px);
     }
 
+    /* Accordion Top Header */
+    .accordion-top-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+
+    .accordion-top-header h6 {
+        color: #5e5873;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .accordion-top-header .badge {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .accordion-top-header .btn {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .accordion-top-header .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
     .accordion-button {
         background-color: #fff;
-        padding: 1.25rem 1.5rem;
+        padding: 0.875rem 1.5rem;
         font-weight: 500;
         border: none;
         box-shadow: none;
+        color: #5e5873;
     }
 
     .accordion-button:not(.collapsed) {
@@ -526,6 +580,60 @@ $(document).ready(function() {
                 $btn.prop('disabled', false).html(originalHtml);
             }
         });
+    });
+    
+    // Handle accept all tests button
+    $(document).on('click', '.accept-all-btn', function() {
+        const $btn = $(this);
+        const originalHtml = $btn.html();
+        const registrationIds = $btn.data('registration-ids').split(',').filter(id => id.trim() !== '');
+        
+        if (registrationIds.length === 0) {
+            toastr.warning('{{ localize("global.no_pending_tests") ?? "No pending tests to accept" }}');
+            return;
+        }
+        
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>{{ localize("global.accepting") ?? "Accepting..." }}');
+        
+        let completed = 0;
+        let failed = 0;
+        const total = registrationIds.length;
+        
+        // Accept all tests sequentially
+        const acceptNext = function(index) {
+            if (index >= registrationIds.length) {
+                // All done
+                if (failed === 0) {
+                    toastr.success('{{ localize("global.all_tests_accepted_successfully") ?? "All tests accepted successfully" }}');
+                } else {
+                    toastr.warning('{{ localize("global.some_tests_failed") ?? "Some tests failed to accept" }}: ' + completed + '/' + total);
+                }
+                setTimeout(() => location.reload(), 1000);
+                return;
+            }
+            
+            const registrationId = registrationIds[index].trim();
+            
+            $.ajax({
+                url: '/laboratory/results/' + registrationId + '/accept',
+                method: 'POST',
+                data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                success: function(response) {
+                    if (response.success) {
+                        completed++;
+                    } else {
+                        failed++;
+                    }
+                    acceptNext(index + 1);
+                },
+                error: function(xhr) {
+                    failed++;
+                    acceptNext(index + 1);
+                }
+            });
+        };
+        
+        acceptNext(0);
     });
     
     // Handle form submissions with loading states

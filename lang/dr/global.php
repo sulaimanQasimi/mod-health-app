@@ -3759,5 +3759,6 @@ return [
     'doctor_assigned_successfully'=>'دکتر با موفقیت اختصاص داده شد',
     'search_by_card'=>'جستجو به اساس کارت',
     'appointment_already_accepted'=>'نوبت قبلاً پذیرفته شده است',
-    'cannot_change_doctor_after_acceptance'=>'نمی‌توانید پزشک را پس از پذیرش تغییر دهید'
+    'cannot_change_doctor_after_acceptance'=>'نمی‌توانید پزشک را پس از پذیرش تغییر دهید',
+    'accept_all'=>'قبول تمام معاینات',
 ];

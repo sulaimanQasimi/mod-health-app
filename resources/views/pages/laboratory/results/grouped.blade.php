@@ -86,7 +86,7 @@
 
         {{-- Advanced Search and Filters --}}
         <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-none border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse"">
+            <div class="card-header bg-none border-0">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <i class="bx bx-filter-alt text-primary me-2" style="font-size: 1.2rem;"></i>
@@ -94,8 +94,7 @@
                     </div>
                 </div>
             </div>
-            <div class="collapse" id="filterCollapse">
-                <div class="card-body">
+            <div class="card-body">
                     <form method="GET" action="{{ route('laboratory.results.grouped') }}">
                         {{-- Combined Search and Filter Container --}}
                         <div class="row g-3">
@@ -168,7 +167,6 @@
                             </div>
                         </div>
                     </form>
-                </div>
             </div>
         </div>
 
@@ -575,15 +573,9 @@
         border-radius: 0.75rem;
     }
 
-    .card-header[data-bs-toggle="collapse"] {
-        transition: all 0.3s ease;
-        user-select: none;
+    .card-header {
         background-color: #f8f9fa;
         color: #000;
-    }
-
-    .card-header.collapsed {
-        background-color: #f8f9fa;
     }
 
     .form-control, .form-select {
@@ -725,15 +717,6 @@ $(document).ready(function() {
         checkDate: function(unix) {
             return true;
         }
-    });
-    
-    // Handle filter collapse icon rotation
-    $('#filterCollapse').on('show.bs.collapse', function () {
-        $('#filterToggleIcon').removeClass('bx-chevron-down').addClass('bx-chevron-up');
-    });
-    
-    $('#filterCollapse').on('hide.bs.collapse', function () {
-        $('#filterToggleIcon').removeClass('bx-chevron-up').addClass('bx-chevron-down');
     });
     
     // Update filter count

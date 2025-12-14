@@ -156,7 +156,7 @@
         <!-- Dentist Department Menu -->
         <li class="menu-item {{ Route::is('dentist-registrations.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-tooth"></i>
+                <i class="menu-icon tf-icons bx bx-plus-medical"></i>
                 <div>{{ localize('global.dentist_department') }}</div>
             </a>
             <ul class="menu-sub">

@@ -428,10 +428,10 @@ export default {
 
         localize(key) {
             const translations = {
-                'global.dentist_registrations': 'ثبت نام دندانپزشکی',
-                'global.register_to_dentist': 'ثبت نام به دندانپزشک',
-                'global.dentist': 'دندانپزشک',
-                'global.select_dentist': 'انتخاب دندانپزشک',
+                'global.dentist_registrations': 'ثبت نام بخش دندان',
+                'global.register_to_dentist': 'ثبت نام به بخش دندان',
+                'global.dentist': 'بخش دندان',
+                'global.select_dentist': 'انتخاب بخش دندان',
                 'global.registration_date': 'تاریخ ثبت نام',
                 'global.notes': 'یادداشت‌ها',
                 'global.optional_notes': 'یادداشت‌های اختیاری...',
@@ -448,20 +448,20 @@ export default {
                 'global.notes': 'یادداشت‌ها',
                 'global.actions': 'عملیات',
                 'global.view_details': 'مشاهده جزئیات',
-                'global.no_dentist_registrations_found': 'هیچ ثبت نام دندانپزشکی یافت نشد',
+                'global.no_dentist_registrations_found': 'هیچ ثبت نام بخش دندان یافت نشد',
                 'global.success': 'موفقیت',
                 'global.error': 'خطا',
                 'global.status_pending': 'در انتظار',
                 'global.status_in_progress': 'در حال انجام',
                 'global.status_completed': 'تکمیل شده',
                 'global.status_cancelled': 'لغو شده',
-                'global.failed_to_load_dentists': 'بارگذاری دندانپزشکان ناموفق بود',
+                'global.failed_to_load_dentists': 'بارگذاری بخش دندان ها ناموفق بود',
                 'global.failed_to_load_registrations': 'بارگذاری ثبت نام‌ها ناموفق بود',
-                'global.please_select_dentist': 'لطفاً دندانپزشک را انتخاب کنید',
+                'global.please_select_dentist': 'لطفاً بخش دندان را انتخاب کنید',
                 'global.please_select_registration_date': 'لطفاً تاریخ ثبت نام را انتخاب کنید',
                 'global.failed_to_create_registration': 'ایجاد ثبت نام ناموفق بود',
                 'global.registration_created_successfully': 'ثبت نام با موفقیت ایجاد شد',
-                'global.dentist_registration_modal_info': 'بیمار از نوبت به بخش دندانپزشکی معرفی می‌شود',
+                'global.dentist_registration_modal_info': 'بیمار از نوبت به بخش دندان معرفی می‌شود',
                 'global.note': 'یادداشت'
             };
             return translations[key] || key;

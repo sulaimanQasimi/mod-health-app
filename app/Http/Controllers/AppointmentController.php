@@ -254,6 +254,9 @@ class AppointmentController extends Controller
         $physiotherapyTypes = \App\Models\PhysiotherapyType::all();
         $physiotherapists = User::where('branch_id', auth()->user()->branch_id)->get();
 
+        // Load dentist registrations
+        $appointment->load('dentistRegistrations.dentist', 'dentistRegistrations.examinations', 'dentistRegistrations.treatments', 'dentistRegistrations.xrays', 'dentistRegistrations.dentalNotes');
+
         return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'branches', 'operationTypes', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes', 'physiotherapyTypes', 'physiotherapists'));
     }
 

@@ -1779,6 +1779,15 @@
             @include('pages.appointments.physiotherapy_procedures_crud')
         @endcan
 
+        <!-- Dentist Registration Section Component -->
+        <x-dentist-registration-section 
+            :entity="$appointment"
+            entity-type="appointment"
+            :entity-id="$appointment->id"
+            :can-add-dentist-registration="true"
+            :appointment-completed="$appointment->is_completed == 1"
+        />
+
     </div>
 @endsection
 

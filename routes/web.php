@@ -72,6 +72,16 @@ use App\Http\Controllers\PhysiotherapyTypeController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\DiabetesChartController;
 use App\Http\Controllers\MedicationAdministrationRecordController;
+use App\Http\Controllers\DentistRegistrationController;
+use App\Http\Controllers\DentalExaminationController;
+use App\Http\Controllers\DentalTreatmentController;
+use App\Http\Controllers\DentalXrayController;
+use App\Http\Controllers\DentalNoteController;
+use App\Http\Controllers\DentistAjaxController;
+use App\Http\Controllers\DentalChartController;
+use App\Http\Controllers\DentalChartAjaxController;
+use App\Http\Controllers\DentalChartImageController;
+use App\Http\Controllers\DentalPeriodontalController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -1012,6 +1022,97 @@ Route::group(['middleware' => ['auth']], function () {
         // Scan routes
         Route::get('scan', [TestResultController::class, 'scanCode'])->name('scan');
         Route::get('scan/ref', [TestResultController::class, 'scanRefCode'])->name('scan.ref');
+    });
+
+    // Dentist Department routes
+    Route::prefix('dentist-registrations')->name('dentist-registrations.')->group(function () {
+        Route::get('index', [\App\Http\Controllers\DentistRegistrationController::class, 'index'])->name('index');
+        Route::get('create/{appointment}', [\App\Http\Controllers\DentistRegistrationController::class, 'create'])->name('create');
+        Route::post('store/{appointment}', [\App\Http\Controllers\DentistRegistrationController::class, 'store'])->name('store');
+        Route::get('show/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'show'])->name('show');
+        Route::get('edit/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'edit'])->name('edit');
+        Route::put('update/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'update'])->name('update');
+        Route::delete('destroy/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'destroy'])->name('destroy');
+        Route::post('mark-completed/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('mark-in-progress/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'markInProgress'])->name('mark-in-progress');
+        Route::post('cancel/{dentistRegistration}', [\App\Http\Controllers\DentistRegistrationController::class, 'cancel'])->name('cancel');
+    });
+
+    // Dental Examinations routes
+    Route::prefix('dental-examinations')->name('dental-examinations.')->group(function () {
+        Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalExaminationController::class, 'store'])->name('store');
+        Route::put('update/{dentalExamination}', [\App\Http\Controllers\DentalExaminationController::class, 'update'])->name('update');
+        Route::delete('destroy/{dentalExamination}', [\App\Http\Controllers\DentalExaminationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Dental Treatments routes
+    Route::prefix('dental-treatments')->name('dental-treatments.')->group(function () {
+        Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalTreatmentController::class, 'store'])->name('store');
+        Route::put('update/{dentalTreatment}', [\App\Http\Controllers\DentalTreatmentController::class, 'update'])->name('update');
+        Route::delete('destroy/{dentalTreatment}', [\App\Http\Controllers\DentalTreatmentController::class, 'destroy'])->name('destroy');
+    });
+
+    // Dental X-rays routes
+    Route::prefix('dental-xrays')->name('dental-xrays.')->group(function () {
+        Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalXrayController::class, 'store'])->name('store');
+        Route::put('update/{dentalXray}', [\App\Http\Controllers\DentalXrayController::class, 'update'])->name('update');
+        Route::delete('destroy/{dentalXray}', [\App\Http\Controllers\DentalXrayController::class, 'destroy'])->name('destroy');
+    });
+
+    // Dental Notes routes
+    Route::prefix('dental-notes')->name('dental-notes.')->group(function () {
+        Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalNoteController::class, 'store'])->name('store');
+        Route::put('update/{dentalNote}', [\App\Http\Controllers\DentalNoteController::class, 'update'])->name('update');
+        Route::delete('destroy/{dentalNote}', [\App\Http\Controllers\DentalNoteController::class, 'destroy'])->name('destroy');
+    });
+
+    // Dentist AJAX routes
+    Route::prefix('dentist-ajax')->name('dentist-ajax.')->group(function () {
+        Route::get('registrations/{appointmentId}', [\App\Http\Controllers\DentistAjaxController::class, 'getRegistrations'])->name('registrations');
+        Route::get('examinations/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getExaminations'])->name('examinations');
+        Route::get('treatments/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getTreatments'])->name('treatments');
+        Route::get('xrays/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getXrays'])->name('xrays');
+        Route::get('notes/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getNotes'])->name('notes');
+        Route::post('examinations/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'storeExamination'])->name('store-examination');
+        Route::post('treatments/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'storeTreatment'])->name('store-treatment');
+    });
+
+    // Dental Charts routes
+    Route::prefix('dental-charts')->name('dental-charts.')->group(function () {
+        Route::get('index/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'index'])->name('index');
+        Route::get('create/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'create'])->name('create');
+        Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'store'])->name('store');
+        Route::get('show/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'show'])->name('show');
+        Route::get('edit/{dentalChart}', [\App\Http\Controllers\DentalChartController::class, 'edit'])->name('edit');
+        Route::put('update/{dentalChart}', [\App\Http\Controllers\DentalChartController::class, 'update'])->name('update');
+        Route::delete('destroy/{dentalChart}', [\App\Http\Controllers\DentalChartController::class, 'destroy'])->name('destroy');
+        Route::get('history/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'history'])->name('history');
+        Route::get('compare/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'compare'])->name('compare');
+        Route::get('export/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'exportPdf'])->name('export');
+        Route::get('print/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'printView'])->name('print');
+    });
+
+    // Dental Chart AJAX routes
+    Route::prefix('dental-chart-ajax')->name('dental-chart-ajax.')->group(function () {
+        Route::get('charts/{dentistRegistration}', [\App\Http\Controllers\DentalChartAjaxController::class, 'getCharts'])->name('charts');
+        Route::get('tooth-chart/{dentistRegistration}/{toothNumber}', [\App\Http\Controllers\DentalChartAjaxController::class, 'getToothChart'])->name('tooth-chart');
+        Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalChartAjaxController::class, 'storeChart'])->name('store');
+        Route::put('update/{dentalChart}', [\App\Http\Controllers\DentalChartAjaxController::class, 'updateChart'])->name('update');
+        Route::post('measurements/{dentalChart}', [\App\Http\Controllers\DentalChartAjaxController::class, 'storeMeasurement'])->name('store-measurement');
+    });
+
+    // Dental Chart Images routes
+    Route::prefix('dental-chart-images')->name('dental-chart-images.')->group(function () {
+        Route::post('store/{dentalChart}', [\App\Http\Controllers\DentalChartImageController::class, 'store'])->name('store');
+        Route::get('show/{dentalChartImage}', [\App\Http\Controllers\DentalChartImageController::class, 'show'])->name('show');
+        Route::delete('destroy/{dentalChartImage}', [\App\Http\Controllers\DentalChartImageController::class, 'destroy'])->name('destroy');
+    });
+
+    // Dental Periodontal routes
+    Route::prefix('dental-periodontal')->name('dental-periodontal.')->group(function () {
+        Route::post('store/{dentalChart}', [\App\Http\Controllers\DentalPeriodontalController::class, 'store'])->name('store');
+        Route::put('update/{measurement}', [\App\Http\Controllers\DentalPeriodontalController::class, 'update'])->name('update');
+        Route::get('measurements/{dentalChart}', [\App\Http\Controllers\DentalPeriodontalController::class, 'getMeasurements'])->name('measurements');
     });
 
 });

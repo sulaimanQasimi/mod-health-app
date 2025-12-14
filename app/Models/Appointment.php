@@ -145,4 +145,12 @@ class Appointment extends Model
     {
         return $this->morphMany(PatientTestRegistration::class, 'testable');
     }
+
+    /**
+     * Get dentist registrations for this appointment
+     */
+    public function dentistRegistrations()
+    {
+        return $this->hasMany(DentistRegistration::class);
+    }
 }

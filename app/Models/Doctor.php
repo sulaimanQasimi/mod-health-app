@@ -114,4 +114,9 @@ class Doctor extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function dentistRegistrations()
+    {
+        return $this->hasMany(DentistRegistration::class, 'dentist_id');
+    }
+
 }

@@ -240,8 +240,8 @@
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('laboratory.reports.print-group', $categoryId) }}" 
-                                           class="btn btn-success btn-sm" target="_blank"
-                                           onclick="event.stopPropagation();">
+                                           class="btn btn-success btn-sm print-group-link" target="_blank"
+                                           data-print-url="{{ route('laboratory.reports.print-group', $categoryId) }}">
                                             <i class="bx bx-printer me-1"></i>
                                             {{ localize('global.print_group') }}
                                         </a>
@@ -556,6 +556,19 @@
         background-color: transparent;
     }
 
+    /* Print button inside accordion */
+    .print-group-link {
+        position: relative;
+        z-index: 10;
+        pointer-events: auto;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .accordion-button .print-group-link {
+        margin: 0;
+    }
+
     /* Statistics Cards */
     .card {
         border: 1px solid #000;
@@ -778,6 +791,22 @@ $(document).ready(function() {
         } else {
             $('#searchDropdown').removeClass('show');
         }
+    });
+    
+    // Handle print group button clicks - prevent accordion toggle
+    $(document).on('click', '.print-group-link', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var url = $(this).attr('data-print-url') || $(this).attr('href');
+        if (url) {
+            window.open(url, '_blank');
+        }
+        return false;
+    });
+    
+    // Also handle mousedown to prevent accordion toggle
+    $(document).on('mousedown', '.print-group-link', function(e) {
+        e.stopPropagation();
     });
     
 });

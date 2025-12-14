@@ -3768,4 +3768,5 @@ return [
     'view_tests'=>'مشاهده معاینات',
     'all_tests_accepted_successfully'=>'تمام معاینات با موفقیت قبول شدند',
     'accepting'=>'در حال قبول',
+    'parameter'=>'پارامتر',
 ];

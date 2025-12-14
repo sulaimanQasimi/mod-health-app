@@ -18,11 +18,12 @@
             ];
         }
     }
+    $teethDataJson = json_encode($teethDataKeyed, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 @endphp
 
 <div id="dental-chart-vue-container" 
      data-dentist-registration-id="{{ $dentistRegistration->id }}"
-     data-teeth-data="{{ htmlspecialchars(json_encode($teethDataKeyed), ENT_QUOTES, 'UTF-8') }}">
+     data-teeth-data="{{ $teethDataJson }}">
     <!-- Vue component will mount here -->
     <div class="text-center p-4">
         <div class="spinner-border text-primary" role="status">

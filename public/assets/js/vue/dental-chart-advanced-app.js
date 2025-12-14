@@ -12,9 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let images = [];
         
         try {
-            images = JSON.parse(imagesRaw);
+            // Clean the data string
+            const cleanData = imagesRaw.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&');
+            images = JSON.parse(cleanData);
         } catch (e) {
-            console.error('Error parsing images data:', e);
+            console.error('Error parsing images data:', e, 'Raw:', imagesRaw);
+            images = [];
         }
 
         const app = createApp(ImageGallery, {
@@ -33,9 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let measurements = [];
         
         try {
-            measurements = JSON.parse(measurementsRaw);
+            // Clean the data string
+            const cleanData = measurementsRaw.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&');
+            measurements = JSON.parse(cleanData);
         } catch (e) {
-            console.error('Error parsing measurements data:', e);
+            console.error('Error parsing measurements data:', e, 'Raw:', measurementsRaw);
+            measurements = [];
         }
 
         const app = createApp(PeriodontalChart, {

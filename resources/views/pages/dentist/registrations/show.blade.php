@@ -592,12 +592,35 @@
                                 <input type="text" class="form-control" id="treatment_type" name="treatment_type" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="treatment_date" class="form-label">{{ localize('global.treatment_date') }}</label>
-                                <input type="date" class="form-control" id="treatment_date" name="treatment_date" value="{{ date('Y-m-d') }}" required>
+                                <label for="treatment_date" class="form-label">{{ localize('global.treatment_date') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control datepicker_dari" id="treatment_date" name="treatment_date" 
+                                       placeholder="{{ localize('global.select_date') }}" required readonly>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="tooth_number" class="form-label">{{ localize('global.tooth_number') }}</label>
-                                <input type="text" class="form-control" id="tooth_number" name="tooth_number">
+                                <select class="form-select" id="tooth_number" name="tooth_number">
+                                    <option value="">{{ localize('global.select') }} / {{ localize('global.none') }}</option>
+                                    <optgroup label="Upper Right (11-18)">
+                                        @for($i = 11; $i <= 18; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </optgroup>
+                                    <optgroup label="Upper Left (21-28)">
+                                        @for($i = 21; $i <= 28; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </optgroup>
+                                    <optgroup label="Lower Left (31-38)">
+                                        @for($i = 31; $i <= 38; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </optgroup>
+                                    <optgroup label="Lower Right (41-48)">
+                                        @for($i = 41; $i <= 48; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </optgroup>
+                                </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">{{ localize('global.status') }}</label>
@@ -712,6 +735,49 @@
     <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />
     
     <script>
+        // Initialize Persian datepicker for treatment date
+        $(document).ready(function() {
+            // Initialize Persian date picker for treatment_date in modal
+            $('#addTreatmentModal').on('shown.bs.modal', function() {
+                const treatmentDateInput = $('#treatment_date');
+                if (treatmentDateInput.length && !treatmentDateInput.data('persianDatepicker')) {
+                    treatmentDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            });
+            
+            // Also initialize if modal is already shown (for page refresh scenarios)
+            if ($('#addTreatmentModal').hasClass('show')) {
+                const treatmentDateInput = $('#treatment_date');
+                if (treatmentDateInput.length && !treatmentDateInput.data('persianDatepicker')) {
+                    treatmentDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            }
+        });
+        
         // Auto-activate dental-chart tab if redirected from dental-charts.show
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);

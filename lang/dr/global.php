@@ -3892,4 +3892,11 @@ return [
     'crown' => 'روکش',
     'missing' => 'مفقود',
     'extraction' => 'کشیدن دندان',
+    'legend' => 'راهنما',
+    'healthy' => 'سالم',
+    'cavity' => 'پوسیدگی',
+    'filling' => 'پرکردگی',
+    'crown' => 'روکش',
+    'missing' => 'مفقود',
+    'extraction' => 'کشیدن دندان',
     ];

@@ -3892,4 +3892,5 @@ return [
     'crown' => 'روکش',
     'missing' => 'مفقود',
     'extraction' => 'کشیدن دندان',
+    'view_image'=>'مشاهده عکس',
     ];

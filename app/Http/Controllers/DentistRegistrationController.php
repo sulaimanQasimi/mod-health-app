@@ -92,10 +92,32 @@ class DentistRegistrationController extends Controller
             'treatments',
             'xrays',
             'dentalNotes',
-            'dentalCharts'
+            'dentalCharts.measurements',
+            'dentalCharts.images',
+            'dentalCharts.periodontalMeasurements'
         ]);
 
-        return view('pages.dentist.registrations.show', compact('dentistRegistration'));
+        // Get all teeth data for the visual chart
+        $allTeeth = [];
+        for ($i = 11; $i <= 18; $i++) $allTeeth[$i] = null; // Upper right
+        for ($i = 21; $i <= 28; $i++) $allTeeth[$i] = null; // Upper left
+        for ($i = 31; $i <= 38; $i++) $allTeeth[$i] = null; // Lower left
+        for ($i = 41; $i <= 48; $i++) $allTeeth[$i] = null; // Lower right
+
+        // Get latest chart entry for each tooth
+        $latestCharts = $dentistRegistration->dentalCharts()
+            ->with(['images', 'periodontalMeasurements'])
+            ->orderBy('chart_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('tooth_number')
+            ->keyBy('tooth_number');
+
+        foreach ($latestCharts as $toothNumber => $chart) {
+            $allTeeth[$toothNumber] = $chart;
+        }
+
+        return view('pages.dentist.registrations.show', compact('dentistRegistration', 'allTeeth', 'latestCharts'));
     }
 
     /**

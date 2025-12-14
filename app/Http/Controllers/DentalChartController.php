@@ -6,6 +6,7 @@ use App\Models\DentistRegistration;
 use App\Models\DentalChart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use HanifHefaz\Dcter\Dcter;
 
 class DentalChartController extends Controller
 {
@@ -60,9 +61,25 @@ class DentalChartController extends Controller
             'bleeding' => 'nullable|boolean',
             'mobility' => 'nullable|in:none,grade1,grade2,grade3',
             'treatment_history' => 'nullable|string',
-            'chart_date' => 'required|date',
+            'chart_date' => 'required|string',
             'notes' => 'nullable|string',
         ]);
+
+        // Convert Persian date to Gregorian
+        if (!empty($validatedData['chart_date'])) {
+            try {
+                $validatedData['chart_date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['chart_date']));
+            } catch (\Exception $e) {
+                // If conversion fails, try to validate as Gregorian date
+                if (!strtotime($validatedData['chart_date'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => localize('global.invalid_date_format'),
+                        'errors' => ['chart_date' => [localize('global.invalid_date_format')]]
+                    ], 422);
+                }
+            }
+        }
 
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
         $chart = DentalChart::create($validatedData);
@@ -116,7 +133,9 @@ class DentalChartController extends Controller
      */
     public function edit(DentalChart $dentalChart)
     {
-        $dentalChart->load('dentistRegistration', 'measurements');
+        $dentalChart->load('dentistRegistration', 'measurements', 'images', 'periodontalMeasurements');
+        // Convert chart_date to Persian format for display
+        $dentalChart->persian_chart_date = Dcter::GregorianToJalali($dentalChart->chart_date->format('Y-m-d'));
         return view('pages.dentist.charts.edit', compact('dentalChart'));
     }
 
@@ -133,9 +152,25 @@ class DentalChartController extends Controller
             'bleeding' => 'nullable|boolean',
             'mobility' => 'nullable|in:none,grade1,grade2,grade3',
             'treatment_history' => 'nullable|string',
-            'chart_date' => 'required|date',
+            'chart_date' => 'required|string',
             'notes' => 'nullable|string',
         ]);
+
+        // Convert Persian date to Gregorian
+        if (!empty($validatedData['chart_date'])) {
+            try {
+                $validatedData['chart_date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['chart_date']));
+            } catch (\Exception $e) {
+                // If conversion fails, try to validate as Gregorian date
+                if (!strtotime($validatedData['chart_date'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => localize('global.invalid_date_format'),
+                        'errors' => ['chart_date' => [localize('global.invalid_date_format')]]
+                    ], 422);
+                }
+            }
+        }
 
         $dentalChart->update($validatedData);
 

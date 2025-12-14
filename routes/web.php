@@ -1082,7 +1082,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('index/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'index'])->name('index');
         Route::get('create/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'create'])->name('create');
         Route::post('store/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'store'])->name('store');
-        Route::get('show/{dentistRegistration}', [\App\Http\Controllers\DentalChartController::class, 'show'])->name('show');
+        // Redirect show to dentist-registrations.show with tab parameter
+        Route::get('show/{dentistRegistration}', function(\App\Models\DentistRegistration $dentistRegistration) {
+            return redirect()->route('dentist-registrations.show', $dentistRegistration) . '?tab=dental-chart';
+        })->name('show');
         Route::get('edit/{dentalChart}', [\App\Http\Controllers\DentalChartController::class, 'edit'])->name('edit');
         Route::put('update/{dentalChart}', [\App\Http\Controllers\DentalChartController::class, 'update'])->name('update');
         Route::delete('destroy/{dentalChart}', [\App\Http\Controllers\DentalChartController::class, 'destroy'])->name('destroy');

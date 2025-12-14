@@ -340,6 +340,77 @@ function openToothModal(toothNumber, chartId) {
                         csrfInput.value = csrfToken;
                     }
                     
+                    // Check if chart_date input exists, if not add it
+                    let chartDateInput = form.querySelector('input[name="chart_date"]');
+                    if (!chartDateInput) {
+                        // Extract chart_date from the form or use today
+                        const chartDateValue = form.querySelector('#chart_date')?.value || '';
+                        chartDateInput = document.createElement('input');
+                        chartDateInput.type = 'text';
+                        chartDateInput.name = 'chart_date';
+                        chartDateInput.id = 'chart_date_picker';
+                        chartDateInput.className = 'form-control datepicker_dari';
+                        chartDateInput.required = true;
+                        chartDateInput.readOnly = true;
+                        chartDateInput.placeholder = window.localize ? window.localize('global.select_date') : 'Select Date';
+                        // Insert before the first form field
+                        const firstField = form.querySelector('.row, .mb-3, .form-select, .form-control');
+                        if (firstField && firstField.parentElement) {
+                            const dateFieldContainer = document.createElement('div');
+                            dateFieldContainer.className = 'col-md-6 mb-3';
+                            const dateLabel = document.createElement('label');
+                            dateLabel.className = 'form-label';
+                            dateLabel.innerHTML = (window.localize ? window.localize('global.chart_date') : 'Chart Date') + ' <span class="text-danger">*</span>';
+                            dateFieldContainer.appendChild(dateLabel);
+                            dateFieldContainer.appendChild(chartDateInput);
+                            if (form.querySelector('.row')) {
+                                form.querySelector('.row').insertBefore(dateFieldContainer, form.querySelector('.row').firstChild);
+                            } else {
+                                form.insertBefore(dateFieldContainer, form.firstChild);
+                            }
+                        } else {
+                            form.insertBefore(chartDateInput, form.firstChild);
+                        }
+                    }
+                    
+                    // Initialize Persian datepicker for the form
+                    setTimeout(() => {
+                        if (typeof window.$ !== 'undefined' && window.$.fn.persianDatepicker) {
+                            const datePickerInput = form.querySelector('#chart_date_picker, input[name="chart_date"].datepicker_dari, #chart_date');
+                            if (datePickerInput && !datePickerInput.dataset.persianDatepickerInitialized) {
+                                // Get the value - it should be in Persian format from backend
+                                const currentValue = datePickerInput.value;
+                                
+                                $(datePickerInput).persianDatepicker({
+                                    formatDate: 'YYYY-MM-DD',
+                                    calendar: {
+                                        persian: {
+                                            locale: 'en',
+                                            showHint: true,
+                                            leapYearMode: 'algorithmic'
+                                        }
+                                    },
+                                    checkDate: function(unix) {
+                                        return true;
+                                    },
+                                    onSelect: function() {
+                                        const selectedDate = $(this).val();
+                                        if (selectedDate) {
+                                            datePickerInput.value = selectedDate;
+                                        }
+                                    }
+                                });
+                                
+                                // Set the value after initialization if editing
+                                if (currentValue) {
+                                    $(datePickerInput).val(currentValue);
+                                }
+                                
+                                datePickerInput.dataset.persianDatepickerInitialized = 'true';
+                            }
+                        }
+                    }, 150);
+                    
                     // Add onsubmit to handle AJAX
                     form.addEventListener('submit', function(e) {
                         e.preventDefault();
@@ -473,14 +544,23 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
     const actionUrl = isEdit ? `/dental-charts/update/${chartId}` : `/dental-charts/store/${dentistRegistrationId}`;
     const method = isEdit ? 'PUT' : 'POST';
     
+    // Get today's date in Persian format for default value
+    const today = new Date();
+    const todayPersian = today.toLocaleDateString('fa-IR');
+    
     modalBody.innerHTML = `
         <form id="toothForm" action="${actionUrl}" method="POST">
             <input type="hidden" name="_token" value="${csrfToken}">
             ${isEdit ? '<input type="hidden" name="_method" value="PUT">' : ''}
             <input type="hidden" name="tooth_number" value="${toothNumber}">
-            <input type="hidden" name="chart_date" value="${new Date().toISOString().split('T')[0]}">
             
             <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.chart_date') : 'Chart Date'} <span class="text-danger">*</span></label>
+                    <input type="text" name="chart_date" id="chart_date_picker" class="form-control datepicker_dari" 
+                           placeholder="${window.localize ? window.localize('global.select_date') : 'Select Date'}" 
+                           required readonly>
+                </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">${window.localize ? window.localize('global.tooth_condition') : 'Tooth Condition'} <span class="text-danger">*</span></label>
                     <select name="tooth_condition" class="form-select" required>
@@ -574,6 +654,47 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
             newForm.dataset.dentistRegistrationId = dentistRegistrationId;
             newForm.dataset.chartId = chartId || '';
             
+            // Initialize Persian datepicker
+            if (typeof window.$ !== 'undefined' && window.$.fn.persianDatepicker) {
+                const datePickerInput = newForm.querySelector('#chart_date_picker');
+                if (datePickerInput && !datePickerInput.dataset.persianDatepickerInitialized) {
+                    $(datePickerInput).persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        },
+                        onSelect: function() {
+                            // Ensure the value is set correctly
+                            const selectedDate = $(this).val();
+                            if (selectedDate) {
+                                datePickerInput.value = selectedDate;
+                            }
+                        }
+                    });
+                    datePickerInput.dataset.persianDatepickerInitialized = 'true';
+                    
+                    // Set default value to today if not editing
+                    if (!isEdit && !datePickerInput.value) {
+                        // Get today's date in Persian format
+                        const today = new Date();
+                        const year = today.getFullYear();
+                        const month = String(today.getMonth() + 1).padStart(2, '0');
+                        const day = String(today.getDate()).padStart(2, '0');
+                        // Note: This is a temporary Gregorian date, the datepicker will convert it
+                        // We'll let the datepicker handle the default
+                    }
+                }
+            } else {
+                console.warn('Persian datepicker library not loaded');
+            }
+            
             // Add event listener to the new form
             newForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -594,7 +715,7 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
                 }
             });
         }
-    }, 100);
+    }, 150);
 }
 
 

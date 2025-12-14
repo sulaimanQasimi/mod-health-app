@@ -23,7 +23,7 @@
                             <a href="{{ route('dentist-registrations.show', $dentistRegistration) }}" class="btn btn-secondary">
                                 <i class="bx bx-arrow-back"></i> {{ localize('global.back') }}
                             </a>
-                            <a href="{{ route('dental-charts.show', $dentistRegistration) }}" class="btn btn-primary">
+                            <a href="{{ route('dentist-registrations.show', $dentistRegistration) }}?tab=dental-chart" class="btn btn-primary">
                                 <i class="bx bx-show"></i> {{ localize('global.view_chart') }}
                             </a>
                             <a href="{{ route('dental-charts.create', $dentistRegistration) }}" class="btn btn-success">

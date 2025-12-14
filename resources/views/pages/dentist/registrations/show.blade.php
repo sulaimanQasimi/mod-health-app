@@ -364,39 +364,166 @@
             <!-- Dental Chart Tab -->
             <div class="tab-pane fade" id="dental-chart" role="tabpanel">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.dental_chart') }}</h5>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('dental-charts.show', $dentistRegistration) }}" class="btn btn-primary btn-sm">
-                                <i class="bx bx-show"></i> {{ localize('global.view_full_chart') }}
-                            </a>
-                            <a href="{{ route('dental-charts.create', $dentistRegistration) }}" class="btn btn-success btn-sm">
-                                <i class="bx bx-plus"></i> {{ localize('global.add_tooth_record') }}
-                            </a>
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">{{ localize('global.dental_chart') }}</h5>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('dental-charts.history', $dentistRegistration) }}" class="btn btn-info btn-sm">
+                                    <i class="bx bx-history"></i> {{ localize('global.history') }}
+                                </a>
+                                <a href="{{ route('dental-charts.print', $dentistRegistration) }}" class="btn btn-warning btn-sm" target="_blank">
+                                    <i class="bx bx-printer"></i> {{ localize('global.print') }}
+                                </a>
+                                <a href="{{ route('dental-charts.export', $dentistRegistration) }}" class="btn btn-success btn-sm">
+                                    <i class="bx bx-download"></i> {{ localize('global.export_pdf') }}
+                                </a>
+                                <a href="{{ route('dental-charts.create', $dentistRegistration) }}" class="btn btn-primary btn-sm">
+                                    <i class="bx bx-plus"></i> {{ localize('global.add_tooth_record') }}
+                                </a>
+                            </div>
                         </div>
+                        <!-- Tabs Navigation -->
+                        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#chart-tab" type="button">
+                                    <i class="bx bx-grid-alt me-1"></i> {{ localize('global.chart') }}
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#images-tab" type="button">
+                                    <i class="bx bx-image me-1"></i> {{ localize('global.images') }}
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#periodontal-tab" type="button">
+                                    <i class="bx bx-pulse me-1"></i> {{ localize('global.periodontal') }}
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                     <div class="card-body">
-                        @php
-                            $dentistRegistration->load('dentalCharts');
-                            $allTeeth = [];
-                            for ($i = 11; $i <= 18; $i++) $allTeeth[$i] = null;
-                            for ($i = 21; $i <= 28; $i++) $allTeeth[$i] = null;
-                            for ($i = 31; $i <= 38; $i++) $allTeeth[$i] = null;
-                            for ($i = 41; $i <= 48; $i++) $allTeeth[$i] = null;
-                            
-                            $latestCharts = $dentistRegistration->dentalCharts()
-                                ->orderBy('chart_date', 'desc')
-                                ->orderBy('created_at', 'desc')
-                                ->get()
-                                ->unique('tooth_number')
-                                ->keyBy('tooth_number');
-                            
-                            foreach ($latestCharts as $toothNumber => $chart) {
-                                $allTeeth[$toothNumber] = $chart;
-                            }
-                        @endphp
-                        @include('pages.dentist.charts.partials.tooth-chart', ['allTeeth' => $allTeeth, 'dentistRegistration' => $dentistRegistration])
-                        @vite('public/assets/js/vue/dental-chart-app.js')
+                        <div class="tab-content">
+                            <!-- Chart Tab -->
+                            <div class="tab-pane fade show active" id="chart-tab">
+                                <div class="text-center mb-3">
+                                    <h6>{{ localize('global.visual_tooth_chart') }}</h6>
+                                </div>
+                                @include('pages.dentist.charts.partials.tooth-chart', ['allTeeth' => $allTeeth, 'dentistRegistration' => $dentistRegistration])
+                                @vite('public/assets/js/vue/dental-chart-app.js')
+                                
+                                <!-- Chart Details Table -->
+                                <div class="mt-4">
+                                    <h6 class="mb-3">{{ localize('global.chart_details') }}</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{ localize('global.tooth_number') }}</th>
+                                                    <th>{{ localize('global.condition') }}</th>
+                                                    <th>{{ localize('global.gum_health') }}</th>
+                                                    <th>{{ localize('global.oral_hygiene_score') }}</th>
+                                                    <th>{{ localize('global.pocket_depth') }}</th>
+                                                    <th>{{ localize('global.bleeding') }}</th>
+                                                    <th>{{ localize('global.mobility') }}</th>
+                                                    <th>{{ localize('global.chart_date') }}</th>
+                                                    <th>{{ localize('global.actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse($latestCharts as $chart)
+                                                    <tr>
+                                                        <td><strong>{{ $chart->tooth_number }}</strong></td>
+                                                        <td>
+                                                            <span class="badge bg-{{ $chart->tooth_condition == 'healthy' ? 'success' : ($chart->tooth_condition == 'cavity' ? 'warning' : ($chart->tooth_condition == 'missing' ? 'secondary' : 'info')) }}">
+                                                                {{ ucfirst(str_replace('_', ' ', $chart->tooth_condition)) }}
+                                                            </span>
+                                                        </td>
+                                                        <td>{{ $chart->gum_health ? ucfirst($chart->gum_health) : 'N/A' }}</td>
+                                                        <td>{{ $chart->oral_hygiene_score ?? 'N/A' }}</td>
+                                                        <td>{{ $chart->pocket_depth ? $chart->pocket_depth . ' mm' : 'N/A' }}</td>
+                                                        <td>
+                                                            @if($chart->bleeding)
+                                                                <span class="badge bg-danger">{{ localize('global.yes') }}</span>
+                                                            @else
+                                                                <span class="badge bg-success">{{ localize('global.no') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $chart->mobility ? ucfirst($chart->mobility) : 'N/A' }}</td>
+                                                        <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($chart->chart_date) }}</td>
+                                                        <td>
+                                                            <a href="{{ route('dental-charts.edit', $chart) }}" class="btn btn-sm btn-warning">
+                                                                <i class="bx bx-edit"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="9" class="text-center">{{ localize('global.no_charts_found') }}</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Images Tab -->
+                            <div class="tab-pane fade" id="images-tab">
+                                @if($latestCharts->isNotEmpty() && $latestCharts->first())
+                                    @php
+                                        $firstChart = $latestCharts->first();
+                                        $imagesData = $firstChart->images->map(function($img) {
+                                            return [
+                                                'id' => $img->id,
+                                                'image_path' => $img->image_path,
+                                                'image_url' => $img->image_url,
+                                                'image_type' => $img->image_type,
+                                                'description' => $img->description,
+                                            ];
+                                        })->toArray();
+                                        $imagesJson = json_encode($imagesData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+                                    @endphp
+                                    <div id="image-gallery-container" 
+                                         data-dental-chart-id="{{ $firstChart->id }}"
+                                         data-images="{{ $imagesJson }}">
+                                        <!-- Vue component will mount here -->
+                                    </div>
+                                    @vite('public/assets/js/vue/dental-chart-advanced-app.js')
+                                @else
+                                    <p class="text-center text-muted">{{ localize('global.no_chart_data') }}</p>
+                                @endif
+                            </div>
+
+                            <!-- Periodontal Tab -->
+                            <div class="tab-pane fade" id="periodontal-tab">
+                                @if($latestCharts->isNotEmpty() && $latestCharts->first())
+                                    @php
+                                        $firstChart = $latestCharts->first();
+                                        $measurementsData = $firstChart->periodontalMeasurements->map(function($m) {
+                                            return [
+                                                'id' => $m->id,
+                                                'measurement_point' => $m->measurement_point,
+                                                'pocket_depth' => $m->pocket_depth,
+                                                'recession' => $m->recession,
+                                                'bleeding' => $m->bleeding,
+                                                'plaque' => $m->plaque,
+                                                'measurement_date' => $m->measurement_date ? $m->measurement_date->format('Y-m-d') : null,
+                                                'notes' => $m->notes,
+                                            ];
+                                        })->toArray();
+                                        $measurementsJson = json_encode($measurementsData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+                                    @endphp
+                                    <div id="periodontal-chart-container"
+                                         data-dental-chart-id="{{ $firstChart->id }}"
+                                         data-measurements="{{ $measurementsJson }}">
+                                        <!-- Vue component will mount here -->
+                                    </div>
+                                    @vite('public/assets/js/vue/dental-chart-advanced-app.js')
+                                @else
+                                    <p class="text-center text-muted">{{ localize('global.no_chart_data') }}</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -577,4 +704,49 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <!-- Persian Datepicker Library -->
+    <script src="{{ asset('assets/persian date2/js/persianDatepicker.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />
+    
+    <script>
+        // Auto-activate dental-chart tab if redirected from dental-charts.show
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || sessionStorage.getItem('activeDentalChartTab');
+            
+            if (activeTab === 'dental-chart' || sessionStorage.getItem('activeDentalChartTab') === 'dental-chart') {
+                // Activate the dental-chart tab
+                const dentalChartTab = document.getElementById('dental-chart-tab');
+                const dentalChartPane = document.getElementById('dental-chart');
+                
+                if (dentalChartTab && dentalChartPane) {
+                    // Remove active class from all tabs and panes
+                    document.querySelectorAll('#dentistTabs .nav-link').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    document.querySelectorAll('#dentistTabsContent .tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    
+                    // Activate dental-chart tab
+                    dentalChartTab.classList.add('active');
+                    dentalChartPane.classList.add('show', 'active');
+                    
+                    // Clear the session storage
+                    sessionStorage.removeItem('activeDentalChartTab');
+                }
+            }
+            
+            // Store active tab in session when dental-chart tab is clicked
+            const dentalChartTabBtn = document.getElementById('dental-chart-tab');
+            if (dentalChartTabBtn) {
+                dentalChartTabBtn.addEventListener('shown.bs.tab', function() {
+                    sessionStorage.setItem('activeDentalChartTab', 'dental-chart');
+                });
+            }
+        });
+    </script>
 @endsection

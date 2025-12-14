@@ -36,9 +36,10 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="chart_date" class="form-label">{{ localize('global.chart_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control @error('chart_date') is-invalid @enderror" 
+                                <input type="text" class="form-control datepicker_dari @error('chart_date') is-invalid @enderror" 
                                     id="chart_date" name="chart_date" 
-                                    value="{{ old('chart_date', $dentalChart->chart_date->format('Y-m-d')) }}" required>
+                                    value="{{ old('chart_date', \HanifHefaz\Dcter\Dcter::GregorianToJalali($dentalChart->chart_date->format('Y-m-d'))) }}" 
+                                    placeholder="{{ localize('global.select_date') }}" required readonly>
                                 @error('chart_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -146,4 +147,29 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <!-- Persian Datepicker Library -->
+    <script src="{{ asset('assets/persian date2/js/persianDatepicker.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize Persian date picker for chart_date
+            $('#chart_date').persianDatepicker({
+                formatDate: 'YYYY-MM-DD',
+                calendar: {
+                    persian: {
+                        locale: 'en',
+                        showHint: true,
+                        leapYearMode: 'algorithmic'
+                    }
+                },
+                checkDate: function(unix) {
+                    return true;
+                }
+            });
+        });
+    </script>
 @endsection

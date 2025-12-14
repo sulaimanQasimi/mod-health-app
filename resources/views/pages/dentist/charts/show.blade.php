@@ -74,9 +74,36 @@
                         <!-- Images Tab -->
                         <div class="tab-pane fade" id="images-tab">
                             @if($latestCharts->isNotEmpty() && $latestCharts->first())
+                                @php
+                                    $firstChart = $latestCharts->first();
+                                    $imagesData = $firstChart->images->map(function($img) {
+                                        return [
+                                            'id' => $img->id,
+                                            'image_path' => $img->image_path,
+                                            'image_url' => $img->image_url,
+                                            'image_type' => $img->image_type,
+                                            'description' => $img->description,
+                                        ];
+                                    })->toArray();
+                                    $imagesJson = json_encode($imagesData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+                                    
+                                    $measurementsData = $firstChart->periodontalMeasurements->map(function($m) {
+                                        return [
+                                            'id' => $m->id,
+                                            'measurement_point' => $m->measurement_point,
+                                            'pocket_depth' => $m->pocket_depth,
+                                            'recession' => $m->recession,
+                                            'bleeding' => $m->bleeding,
+                                            'plaque' => $m->plaque,
+                                            'measurement_date' => $m->measurement_date ? $m->measurement_date->format('Y-m-d') : null,
+                                            'notes' => $m->notes,
+                                        ];
+                                    })->toArray();
+                                    $measurementsJson = json_encode($measurementsData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+                                @endphp
                                 <div id="image-gallery-container" 
-                                     data-dental-chart-id="{{ $latestCharts->first()->id }}"
-                                     data-images="{{ htmlspecialchars(json_encode($latestCharts->first()->images ?? []), ENT_QUOTES, 'UTF-8') }}">
+                                     data-dental-chart-id="{{ $firstChart->id }}"
+                                     data-images="{{ $imagesJson }}">
                                     <!-- Vue component will mount here -->
                                 </div>
                                 @vite('public/assets/js/vue/dental-chart-advanced-app.js')
@@ -88,9 +115,25 @@
                         <!-- Periodontal Tab -->
                         <div class="tab-pane fade" id="periodontal-tab">
                             @if($latestCharts->isNotEmpty() && $latestCharts->first())
+                                @php
+                                    $firstChart = $latestCharts->first();
+                                    $measurementsData = $firstChart->periodontalMeasurements->map(function($m) {
+                                        return [
+                                            'id' => $m->id,
+                                            'measurement_point' => $m->measurement_point,
+                                            'pocket_depth' => $m->pocket_depth,
+                                            'recession' => $m->recession,
+                                            'bleeding' => $m->bleeding,
+                                            'plaque' => $m->plaque,
+                                            'measurement_date' => $m->measurement_date ? $m->measurement_date->format('Y-m-d') : null,
+                                            'notes' => $m->notes,
+                                        ];
+                                    })->toArray();
+                                    $measurementsJson = json_encode($measurementsData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+                                @endphp
                                 <div id="periodontal-chart-container"
-                                     data-dental-chart-id="{{ $latestCharts->first()->id }}"
-                                     data-measurements="{{ htmlspecialchars(json_encode($latestCharts->first()->periodontalMeasurements ?? []), ENT_QUOTES, 'UTF-8') }}">
+                                     data-dental-chart-id="{{ $firstChart->id }}"
+                                     data-measurements="{{ $measurementsJson }}">
                                     <!-- Vue component will mount here -->
                                 </div>
                                 @vite('public/assets/js/vue/dental-chart-advanced-app.js')

@@ -66,8 +66,10 @@ class DentalChartController extends Controller
 
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
         $chart = DentalChart::create($validatedData);
+        $chart->load('images', 'periodontalMeasurements');
 
-        if ($request->ajax() || $request->wantsJson()) {
+        // Always return JSON for AJAX requests
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'success' => true,
                 'message' => localize('global.dental_chart_created_successfully'),
@@ -137,11 +139,12 @@ class DentalChartController extends Controller
 
         $dentalChart->update($validatedData);
 
-        if ($request->ajax() || $request->wantsJson()) {
+        // Always return JSON for AJAX requests
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'success' => true,
                 'message' => localize('global.dental_chart_updated_successfully'),
-                'data' => $dentalChart
+                'data' => $dentalChart->load('images', 'periodontalMeasurements')
             ]);
         }
 

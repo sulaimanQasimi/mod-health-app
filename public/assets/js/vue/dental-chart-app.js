@@ -1,7 +1,195 @@
 import { createApp } from 'vue'
 import DentalChart from './components/DentalChart.vue'
 
-// Define openToothModal function first, before Vue app initialization
+// Define closeModal function
+function closeModal() {
+    const modalElement = document.getElementById('toothModal');
+    if (!modalElement) return;
+    
+    try {
+        // Try Bootstrap 5 Modal API first
+        if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+            const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            } else {
+                // Create new instance and hide
+                const modal = new window.bootstrap.Modal(modalElement);
+                modal.hide();
+            }
+        }
+        // Try jQuery Bootstrap
+        else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+            window.$(modalElement).modal('hide');
+        }
+        // Fallback: hide manually
+        else {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            document.body.classList.remove('modal-open');
+            const backdrop = document.getElementById('toothModalBackdrop');
+            if (backdrop) backdrop.remove();
+        }
+    } catch (e) {
+        console.error('Error closing modal:', e);
+        // Fallback manual close
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        const backdrop = document.getElementById('toothModalBackdrop');
+        if (backdrop) backdrop.remove();
+    }
+}
+
+// Define submitToothForm function - AJAX submission
+function submitToothForm(form, chartId, isEdit) {
+    const formData = new FormData(form);
+    
+    // Get dentist registration ID from form or container
+    const dentistRegistrationId = form.dataset.dentistRegistrationId || 
+                                   document.getElementById('dental-chart-vue-container')?.dataset.dentistRegistrationId || 
+                                   form.querySelector('input[name="dentist_registration_id"]')?.value || '';
+    
+    // Determine the correct URL - prioritize explicit parameters over form.action
+    let url;
+    if (isEdit && chartId) {
+        // For edit, always use the update route
+        url = `/dental-charts/update/${chartId}`;
+    } else if (dentistRegistrationId) {
+        // For create, use the store route
+        url = `/dental-charts/store/${dentistRegistrationId}`;
+    } else if (form.action && form.action !== window.location.href && 
+               !form.action.includes('dentist-registrations/show') &&
+               form.action.includes('dental-charts')) {
+        // Only use form.action if it's a valid dental-charts route
+        url = form.action;
+    } else {
+        console.error('Cannot determine submission URL', {
+            isEdit,
+            chartId,
+            dentistRegistrationId,
+            formAction: form.action,
+            currentUrl: window.location.href
+        });
+        alert('Error: Cannot determine submission URL. Please refresh the page.');
+        return;
+    }
+    
+    // Normalize URL - ensure it's a relative path starting with /
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        // Extract path from full URL
+        try {
+            const urlObj = new URL(url);
+            url = urlObj.pathname;
+        } catch (e) {
+            console.error('Invalid URL format:', url);
+        }
+    } else if (!url.startsWith('/')) {
+        url = '/' + url;
+    }
+    
+    console.log('Submitting to URL:', url, { isEdit, chartId, dentistRegistrationId });
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + (window.localize ? window.localize('global.saving') : 'Saving...');
+    
+    // Add CSRF token to form data if not present
+    if (!formData.has('_token')) {
+        formData.append('_token', csrfToken);
+    }
+    
+    // Add method spoofing for PUT if editing
+    if (isEdit && !formData.has('_method')) {
+        formData.append('_method', 'PUT');
+    }
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(response => {
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        } else {
+            // If HTML response (redirect), parse it
+            return response.text().then(html => {
+                // Check if it's a redirect or error page
+                if (response.redirected || response.url !== url) {
+                    return { success: true, redirect: true, url: response.url };
+                }
+                // Try to extract error messages from HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const errorMessages = doc.querySelectorAll('.error, .invalid-feedback, .alert-danger');
+                if (errorMessages.length > 0) {
+                    const errors = Array.from(errorMessages).map(el => el.textContent.trim()).join(', ');
+                    return { success: false, message: errors };
+                }
+                return { success: true };
+            });
+        }
+    })
+    .then(data => {
+        if (data && data.success !== undefined) {
+            if (data.success) {
+                // Show success message
+                if (data.message) {
+                    // You can use a toast notification here if available
+                    console.log('Success:', data.message);
+                }
+                
+                // Close modal
+                closeModal();
+                
+                // Reload the chart data without full page reload
+                if (window.location.reload) {
+                    // Small delay to show success, then reload
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                // Show error message
+                const errorMsg = data.message || data.error || (window.localize ? window.localize('global.save_failed') : 'Save failed');
+                alert(errorMsg);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } else if (data && data.errors) {
+            // Validation errors
+            const errorMessages = Object.values(data.errors).flat().join('\n');
+            alert(errorMessages || (window.localize ? window.localize('global.validation_failed') : 'Validation failed'));
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        } else {
+            // Unknown response format, assume success
+            closeModal();
+            setTimeout(() => window.location.reload(), 500);
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting form:', error);
+        alert(window.localize ? window.localize('global.save_failed') : 'Save failed: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
+}
+
+// Define openToothModal function, before Vue app initialization
 function openToothModal(toothNumber, chartId) {
     console.log('openToothModal called with:', toothNumber, chartId);
     
@@ -120,28 +308,49 @@ function openToothModal(toothNumber, chartId) {
                 const doc = parser.parseFromString(html, 'text/html');
                 const form = doc.querySelector('form');
                 if (form) {
-                    // Update form action to use AJAX
-                    form.action = `/dental-charts/update/${chartId}`;
-                    form.method = 'POST';
-                    // Add method spoofing for PUT
-                    const methodInput = document.createElement('input');
-                    methodInput.type = 'hidden';
-                    methodInput.name = '_method';
-                    methodInput.value = 'PUT';
-                    form.appendChild(methodInput);
-                    // Add CSRF token if not present
-                    if (!form.querySelector('input[name="_token"]')) {
-                        const csrfInput = document.createElement('input');
+                    // Force update form action to correct AJAX endpoint
+                    form.setAttribute('action', `/dental-charts/update/${chartId}`);
+                    form.setAttribute('method', 'POST');
+                    
+                    // Store IDs on form for easy access
+                    form.dataset.dentistRegistrationId = dentistRegistrationId;
+                    form.dataset.chartId = chartId;
+                    
+                    // Ensure method spoofing for PUT
+                    let methodInput = form.querySelector('input[name="_method"]');
+                    if (!methodInput) {
+                        methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'PUT';
+                        form.appendChild(methodInput);
+                    } else {
+                        methodInput.value = 'PUT';
+                    }
+                    
+                    // Ensure CSRF token is present
+                    let csrfInput = form.querySelector('input[name="_token"]');
+                    if (!csrfInput) {
+                        csrfInput = document.createElement('input');
                         csrfInput.type = 'hidden';
                         csrfInput.name = '_token';
                         csrfInput.value = csrfToken;
                         form.appendChild(csrfInput);
+                    } else {
+                        csrfInput.value = csrfToken;
                     }
+                    
                     // Add onsubmit to handle AJAX
-                    form.onsubmit = function(e) {
+                    form.addEventListener('submit', function(e) {
                         e.preventDefault();
-                        submitToothForm(form, chartId, true);
-                    };
+                        e.stopPropagation();
+                        const submitFn = typeof submitToothForm === 'function' 
+                            ? submitToothForm 
+                            : window.submitToothForm;
+                        if (submitFn) {
+                            submitFn(form, chartId, true);
+                        }
+                    });
                     modalBody.innerHTML = '';
                     modalBody.appendChild(form);
                 } else {
@@ -200,13 +409,21 @@ function openToothModal(toothNumber, chartId) {
     }
 }
 
-// Make function globally available immediately - before DOMContentLoaded
+// Make functions globally available immediately - before DOMContentLoaded
 window.openToothModal = openToothModal;
+window.submitToothForm = submitToothForm;
+window.closeModal = closeModal;
 
-// Also make it available on window load as backup
+// Also make them available on window load as backup
 window.addEventListener('load', function() {
     if (!window.openToothModal) {
         window.openToothModal = openToothModal;
+    }
+    if (!window.submitToothForm) {
+        window.submitToothForm = submitToothForm;
+    }
+    if (!window.closeModal) {
+        window.closeModal = closeModal;
     }
 });
 
@@ -220,9 +437,22 @@ document.addEventListener('DOMContentLoaded', function() {
         let teethData = {};
         
         try {
-            teethData = JSON.parse(teethDataRaw);
+            // Clean the data string - remove any HTML entities
+            const cleanData = teethDataRaw.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&');
+            teethData = JSON.parse(cleanData);
         } catch (e) {
             console.error('Error parsing teeth data:', e);
+            console.error('Raw data:', teethDataRaw);
+            console.error('Data length:', teethDataRaw.length);
+            // Try to fix common issues
+            try {
+                // Try with unescaped quotes
+                const fixedData = teethDataRaw.replace(/&quot;/g, '"');
+                teethData = JSON.parse(fixedData);
+            } catch (e2) {
+                console.error('Second parse attempt failed:', e2);
+                teethData = {};
+            }
         }
         
         // Teeth data is already keyed by tooth_number from the backend
@@ -244,7 +474,7 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
     const method = isEdit ? 'PUT' : 'POST';
     
     modalBody.innerHTML = `
-        <form id="toothForm" onsubmit="event.preventDefault(); submitToothForm(this, ${chartId || 'null'}, ${isEdit});">
+        <form id="toothForm" action="${actionUrl}" method="POST">
             <input type="hidden" name="_token" value="${csrfToken}">
             ${isEdit ? '<input type="hidden" name="_method" value="PUT">' : ''}
             <input type="hidden" name="tooth_number" value="${toothNumber}">
@@ -319,100 +549,54 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
             </div>
         </form>
     `;
-}
-
-function submitToothForm(form, chartId, isEdit) {
-    const formData = new FormData(form);
-    const url = isEdit ? `/dental-charts/update/${chartId}` : form.action;
-    const method = isEdit ? 'PUT' : 'POST';
     
-    // Show loading state
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + (window.localize ? window.localize('global.saving') : 'Saving...');
-    
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
-    })
-    .then(response => {
-        if (response.redirected) {
-            window.location.href = response.url;
-        } else {
-            return response.json().catch(() => {
-                // If not JSON, assume success and reload
-                window.location.reload();
+    // Attach event listener to the form after it's added to DOM
+    setTimeout(() => {
+        const form = document.getElementById('toothForm');
+        if (form) {
+            // Ensure form has correct action attribute
+            if (!form.action || form.action.includes('dentist-registrations/show')) {
+                const correctAction = isEdit ? `/dental-charts/update/${chartId}` : `/dental-charts/store/${dentistRegistrationId}`;
+                form.setAttribute('action', correctAction);
+                form.action = correctAction;
+            }
+            
+            // Remove any existing listeners by cloning
+            const newForm = form.cloneNode(true);
+            
+            // Ensure cloned form has correct action
+            newForm.setAttribute('action', form.action);
+            newForm.action = form.action;
+            
+            form.parentNode.replaceChild(newForm, form);
+            
+            // Store dentist registration ID and chart ID on form for easy access
+            newForm.dataset.dentistRegistrationId = dentistRegistrationId;
+            newForm.dataset.chartId = chartId || '';
+            
+            // Add event listener to the new form
+            newForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Get the function reference
+                const submitFn = typeof submitToothForm === 'function' 
+                    ? submitToothForm 
+                    : (typeof window.submitToothForm === 'function' 
+                        ? window.submitToothForm 
+                        : null);
+                
+                if (submitFn) {
+                    submitFn(newForm, chartId, isEdit);
+                } else {
+                    console.error('submitToothForm function not available');
+                    alert('Form submission error. Please refresh the page.');
+                }
             });
         }
-    })
-    .then(data => {
-        if (data && data.success !== undefined) {
-            if (data.success) {
-                // Close modal and reload page
-                closeModal();
-                window.location.reload();
-            } else {
-                alert(data.message || (window.localize ? window.localize('global.save_failed') : 'Save failed'));
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        } else {
-            // Reload on success
-            closeModal();
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert(window.localize ? window.localize('global.save_failed') : 'Save failed');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-    });
+    }, 100);
 }
 
-function closeModal() {
-    const modalElement = document.getElementById('toothModal');
-    if (!modalElement) return;
-    
-    try {
-        // Try Bootstrap 5 Modal API first
-        if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
-            const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
-            if (modalInstance) {
-                modalInstance.hide();
-            } else {
-                // Create new instance and hide
-                const modal = new window.bootstrap.Modal(modalElement);
-                modal.hide();
-            }
-        }
-        // Try jQuery Bootstrap
-        else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
-            window.$(modalElement).modal('hide');
-        }
-        // Fallback: hide manually
-        else {
-            modalElement.style.display = 'none';
-            modalElement.classList.remove('show');
-            document.body.classList.remove('modal-open');
-            const backdrop = document.getElementById('toothModalBackdrop');
-            if (backdrop) backdrop.remove();
-        }
-    } catch (e) {
-        console.error('Error closing modal:', e);
-        // Fallback manual close
-        modalElement.style.display = 'none';
-        modalElement.classList.remove('show');
-        document.body.classList.remove('modal-open');
-        const backdrop = document.getElementById('toothModalBackdrop');
-        if (backdrop) backdrop.remove();
-    }
-}
 
 function createToothModal() {
     // Check if modal already exists

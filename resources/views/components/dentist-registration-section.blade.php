@@ -16,7 +16,7 @@
             <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
                 data-bs-toggle="collapse" data-bs-target="#{{ $collapseId }}" aria-expanded="false"
                 aria-controls="{{ $collapseId }}">
-                <i class="bx bx-tooth me-2 text-primary"></i>
+                <i class="bx bx-plus-medical me-2 text-primary"></i>
                 {{ localize('global.dentist_registration') }}
                 <span class="badge bg-primary ms-2">{{ count($entity->dentistRegistrations ?? []) }}</span>
             </button>

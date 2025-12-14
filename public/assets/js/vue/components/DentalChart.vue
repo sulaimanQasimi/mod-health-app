@@ -145,15 +145,39 @@ export default {
             return 'incisor'
         },
         handleToothClick(toothNumber) {
+            console.log('Tooth clicked:', toothNumber);
             // Set selected tooth
             this.selectedTooth = toothNumber
             
             // Emit event and also call global handler if available
             this.$emit('tooth-clicked', toothNumber)
-            if (window.openToothModal) {
-                const toothData = this.getToothData(toothNumber)
-                const chartId = toothData ? toothData.id : null
-                window.openToothModal(toothNumber, chartId)
+            
+            // Get tooth data and chart ID
+            const toothData = this.getToothData(toothNumber)
+            const chartId = toothData ? toothData.id : null
+            
+            console.log('Tooth data:', toothData, 'Chart ID:', chartId);
+            console.log('openToothModal available:', typeof window.openToothModal);
+            
+            // Call modal function - ensure it's available
+            if (typeof window.openToothModal === 'function') {
+                try {
+                    window.openToothModal(toothNumber, chartId)
+                } catch (error) {
+                    console.error('Error calling openToothModal:', error);
+                    alert('Error opening modal: ' + error.message);
+                }
+            } else {
+                console.warn('openToothModal not available, retrying...');
+                // Fallback: try again after a short delay
+                setTimeout(() => {
+                    if (typeof window.openToothModal === 'function') {
+                        window.openToothModal(toothNumber, chartId)
+                    } else {
+                        console.error('openToothModal function still not available after retry');
+                        alert('Unable to open modal. Please refresh the page.')
+                    }
+                }, 200)
             }
         },
         localize(key) {

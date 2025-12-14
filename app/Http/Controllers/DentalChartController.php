@@ -67,6 +67,14 @@ class DentalChartController extends Controller
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
         $chart = DentalChart::create($validatedData);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.dental_chart_created_successfully'),
+                'data' => $chart
+            ]);
+        }
+
         return redirect()->route('dentist-registrations.show', $dentistRegistration)
             ->with('success', localize('global.dental_chart_created_successfully'));
     }
@@ -128,6 +136,14 @@ class DentalChartController extends Controller
         ]);
 
         $dentalChart->update($validatedData);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.dental_chart_updated_successfully'),
+                'data' => $dentalChart
+            ]);
+        }
 
         return redirect()->route('dentist-registrations.show', $dentalChart->dentistRegistration)
             ->with('success', localize('global.dental_chart_updated_successfully'));

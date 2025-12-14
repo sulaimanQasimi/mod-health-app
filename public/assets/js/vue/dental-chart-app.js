@@ -1,6 +1,215 @@
 import { createApp } from 'vue'
 import DentalChart from './components/DentalChart.vue'
 
+// Define openToothModal function first, before Vue app initialization
+function openToothModal(toothNumber, chartId) {
+    console.log('openToothModal called with:', toothNumber, chartId);
+    
+    const modalBody = document.getElementById('toothModalBody');
+    const modalElement = document.getElementById('toothModal');
+    
+    if (!modalElement) {
+        console.error('Tooth modal element not found. Creating modal...');
+        createToothModal();
+        // Try again after creating
+        setTimeout(() => openToothModal(toothNumber, chartId), 100);
+        return;
+    }
+    
+    // Check if Bootstrap is available and use appropriate method
+    // Use the same pattern as other modals in the codebase
+    let modal;
+    if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+        try {
+            // Check if modal instance already exists
+            let modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+            if (!modalInstance) {
+                modalInstance = new window.bootstrap.Modal(modalElement, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
+            }
+            modal = modalInstance;
+        } catch (error) {
+            console.log('Bootstrap Modal error, using jQuery fallback:', error);
+            // Fallback to jQuery Bootstrap
+            if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+                modal = { 
+                    show: () => window.$(modalElement).modal('show'), 
+                    hide: () => window.$(modalElement).modal('hide') 
+                };
+            } else {
+                // Final fallback: manual show
+                modal = {
+                    show: () => {
+                        modalElement.style.display = 'block';
+                        modalElement.classList.add('show');
+                        document.body.classList.add('modal-open');
+                        const backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        backdrop.id = 'toothModalBackdrop';
+                        backdrop.onclick = () => modal.hide();
+                        document.body.appendChild(backdrop);
+                    },
+                    hide: () => {
+                        modalElement.style.display = 'none';
+                        modalElement.classList.remove('show');
+                        document.body.classList.remove('modal-open');
+                        const backdrop = document.getElementById('toothModalBackdrop');
+                        if (backdrop) backdrop.remove();
+                    }
+                };
+            }
+        }
+    }
+    // Try jQuery Bootstrap
+    else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+        modal = { 
+            show: () => window.$(modalElement).modal('show'), 
+            hide: () => window.$(modalElement).modal('hide') 
+        };
+    }
+    // Fallback: show manually
+    else {
+        console.warn('Bootstrap not available, using manual modal');
+        modal = {
+            show: () => {
+                modalElement.style.display = 'block';
+                modalElement.classList.add('show');
+                document.body.classList.add('modal-open');
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                backdrop.id = 'toothModalBackdrop';
+                backdrop.onclick = () => modal.hide();
+                document.body.appendChild(backdrop);
+            },
+            hide: () => {
+                modalElement.style.display = 'none';
+                modalElement.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                const backdrop = document.getElementById('toothModalBackdrop');
+                if (backdrop) backdrop.remove();
+            }
+        };
+    }
+    const modalTitle = document.getElementById('modalToothNumber');
+    
+    if (modalTitle) {
+        modalTitle.textContent = toothNumber;
+    }
+    
+    const dentistRegistrationId = document.getElementById('dental-chart-vue-container')?.dataset.dentistRegistrationId || '';
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    
+    if (chartId) {
+        // Load existing chart data via AJAX
+        modalBody.innerHTML = `
+            <div class="text-center mb-3">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        fetch(`/dental-charts/edit/${chartId}`)
+            .then(response => response.text())
+            .then(html => {
+                // Extract form from the edit page HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const form = doc.querySelector('form');
+                if (form) {
+                    // Update form action to use AJAX
+                    form.action = `/dental-charts/update/${chartId}`;
+                    form.method = 'POST';
+                    // Add method spoofing for PUT
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'PUT';
+                    form.appendChild(methodInput);
+                    // Add CSRF token if not present
+                    if (!form.querySelector('input[name="_token"]')) {
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = csrfToken;
+                        form.appendChild(csrfInput);
+                    }
+                    // Add onsubmit to handle AJAX
+                    form.onsubmit = function(e) {
+                        e.preventDefault();
+                        submitToothForm(form, chartId, true);
+                    };
+                    modalBody.innerHTML = '';
+                    modalBody.appendChild(form);
+                } else {
+                    // Fallback to simple form
+                    showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken, chartId);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading chart:', error);
+                showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken, chartId);
+            });
+    } else {
+        // Show create form
+        showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken, null);
+    }
+    
+    try {
+        if (modal && typeof modal.show === 'function') {
+            modal.show();
+            console.log('Modal shown successfully');
+        } else {
+            console.error('Modal show method not available');
+            // Fallback: manual show
+            modalElement.style.display = 'block';
+            modalElement.classList.add('show');
+            document.body.classList.add('modal-open');
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            backdrop.id = 'toothModalBackdrop';
+            backdrop.onclick = () => {
+                modalElement.style.display = 'none';
+                modalElement.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                backdrop.remove();
+            };
+            document.body.appendChild(backdrop);
+        }
+    } catch (error) {
+        console.error('Error showing modal:', error);
+        // Fallback: try direct show
+        if (modalElement) {
+            modalElement.style.display = 'block';
+            modalElement.classList.add('show');
+            document.body.classList.add('modal-open');
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            backdrop.id = 'toothModalBackdrop';
+            backdrop.onclick = () => {
+                modalElement.style.display = 'none';
+                modalElement.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                backdrop.remove();
+            };
+            document.body.appendChild(backdrop);
+        }
+    }
+}
+
+// Make function globally available immediately - before DOMContentLoaded
+window.openToothModal = openToothModal;
+
+// Also make it available on window load as backup
+window.addEventListener('load', function() {
+    if (!window.openToothModal) {
+        window.openToothModal = openToothModal;
+    }
+});
+
 // Initialize Vue app for dental chart
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('dental-chart-vue-container');
@@ -24,85 +233,200 @@ document.addEventListener('DOMContentLoaded', function() {
             dentistRegistrationId: dentistRegistrationId
         });
         
-        // Handle tooth click event
-        app.config.globalProperties.$toothClickHandler = function(toothNumber) {
-            // Find if chart exists for this tooth
-            const toothData = teethDataKeyed[toothNumber];
-            const chartId = toothData ? toothData.id : null;
-            
-            // Open modal or navigate to edit/create
-            openToothModal(toothNumber, chartId);
-        };
-        
         app.mount('#dental-chart-vue-container');
     }
 });
 
-// Global function for opening tooth modal (can be called from Vue component)
-function openToothModal(toothNumber, chartId) {
-    const modalBody = document.getElementById('toothModalBody');
-    if (!modalBody) {
-        // Create modal if it doesn't exist
-        createToothModal();
-    }
+
+function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken, chartId) {
+    const isEdit = chartId !== null;
+    const actionUrl = isEdit ? `/dental-charts/update/${chartId}` : `/dental-charts/store/${dentistRegistrationId}`;
+    const method = isEdit ? 'PUT' : 'POST';
     
-    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('toothModal'));
-    const modalTitle = document.getElementById('modalToothNumber');
-    
-    if (modalTitle) {
-        modalTitle.textContent = toothNumber;
-    }
-    
-    if (chartId) {
-        // Load existing chart data
-        modalBody.innerHTML = `
-            <div class="text-center mb-3">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        `;
-        
-        // Load chart details via AJAX or redirect
-        window.location.href = `/dental-charts/edit/${chartId}`;
-    } else {
-        // Show create form
-        const dentistRegistrationId = document.getElementById('dental-chart-vue-container')?.dataset.dentistRegistrationId || '';
-        modalBody.innerHTML = `
-            <form action="/dental-charts/store/${dentistRegistrationId}" method="POST">
-                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.content || ''}">
-                <input type="hidden" name="tooth_number" value="${toothNumber}">
-                <input type="hidden" name="chart_date" value="${new Date().toISOString().split('T')[0]}">
-                <div class="mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.tooth_condition') : 'Tooth Condition'}</label>
+    modalBody.innerHTML = `
+        <form id="toothForm" onsubmit="event.preventDefault(); submitToothForm(this, ${chartId || 'null'}, ${isEdit});">
+            <input type="hidden" name="_token" value="${csrfToken}">
+            ${isEdit ? '<input type="hidden" name="_method" value="PUT">' : ''}
+            <input type="hidden" name="tooth_number" value="${toothNumber}">
+            <input type="hidden" name="chart_date" value="${new Date().toISOString().split('T')[0]}">
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.tooth_condition') : 'Tooth Condition'} <span class="text-danger">*</span></label>
                     <select name="tooth_condition" class="form-select" required>
                         <option value="healthy">${window.localize ? window.localize('global.healthy') : 'Healthy'}</option>
                         <option value="cavity">${window.localize ? window.localize('global.cavity') : 'Cavity'}</option>
                         <option value="filling">${window.localize ? window.localize('global.filling') : 'Filling'}</option>
                         <option value="crown">${window.localize ? window.localize('global.crown') : 'Crown'}</option>
+                        <option value="bridge">${window.localize ? window.localize('global.bridge') : 'Bridge'}</option>
+                        <option value="root_canal">${window.localize ? window.localize('global.root_canal') : 'Root Canal'}</option>
+                        <option value="implant">${window.localize ? window.localize('global.implant') : 'Implant'}</option>
+                        <option value="decay">${window.localize ? window.localize('global.decay') : 'Decay'}</option>
+                        <option value="fractured">${window.localize ? window.localize('global.fractured') : 'Fractured'}</option>
+                        <option value="extraction">${window.localize ? window.localize('global.extraction') : 'Extraction'}</option>
                         <option value="missing">${window.localize ? window.localize('global.missing') : 'Missing'}</option>
+                        <option value="impacted">${window.localize ? window.localize('global.impacted') : 'Impacted'}</option>
                     </select>
                 </div>
-                <div class="mb-3">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.gum_health') : 'Gum Health'}</label>
+                    <select name="gum_health" class="form-select">
+                        <option value="">${window.localize ? window.localize('global.select') : 'Select'}</option>
+                        <option value="healthy">${window.localize ? window.localize('global.healthy') : 'Healthy'}</option>
+                        <option value="gingivitis">${window.localize ? window.localize('global.gingivitis') : 'Gingivitis'}</option>
+                        <option value="periodontitis">${window.localize ? window.localize('global.periodontitis') : 'Periodontitis'}</option>
+                        <option value="recession">${window.localize ? window.localize('global.recession') : 'Recession'}</option>
+                        <option value="bleeding">${window.localize ? window.localize('global.bleeding') : 'Bleeding'}</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.oral_hygiene_score') : 'Oral Hygiene Score'}</label>
+                    <input type="number" step="0.1" min="0" max="10" name="oral_hygiene_score" class="form-control" placeholder="0-10">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.pocket_depth') : 'Pocket Depth'} (mm)</label>
+                    <input type="number" step="0.01" min="0" max="20" name="pocket_depth" class="form-control" placeholder="0-20">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.bleeding') : 'Bleeding'}</label>
+                    <select name="bleeding" class="form-select">
+                        <option value="0">${window.localize ? window.localize('global.no') : 'No'}</option>
+                        <option value="1">${window.localize ? window.localize('global.yes') : 'Yes'}</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.mobility') : 'Mobility'}</label>
+                    <select name="mobility" class="form-select">
+                        <option value="">${window.localize ? window.localize('global.select') : 'Select'}</option>
+                        <option value="none">${window.localize ? window.localize('global.none') : 'None'}</option>
+                        <option value="grade1">${window.localize ? window.localize('global.grade1') : 'Grade 1'}</option>
+                        <option value="grade2">${window.localize ? window.localize('global.grade2') : 'Grade 2'}</option>
+                        <option value="grade3">${window.localize ? window.localize('global.grade3') : 'Grade 3'}</option>
+                    </select>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">${window.localize ? window.localize('global.treatment_history') : 'Treatment History'}</label>
+                    <textarea name="treatment_history" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="col-md-12 mb-3">
                     <label class="form-label">${window.localize ? window.localize('global.notes') : 'Notes'}</label>
                     <textarea name="notes" class="form-control" rows="3"></textarea>
                 </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${window.localize ? window.localize('global.cancel') : 'Cancel'}</button>
                 <button type="submit" class="btn btn-primary">${window.localize ? window.localize('global.save') : 'Save'}</button>
-            </form>
-        `;
-    }
+            </div>
+        </form>
+    `;
+}
+
+function submitToothForm(form, chartId, isEdit) {
+    const formData = new FormData(form);
+    const url = isEdit ? `/dental-charts/update/${chartId}` : form.action;
+    const method = isEdit ? 'PUT' : 'POST';
     
-    modal.show();
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + (window.localize ? window.localize('global.saving') : 'Saving...');
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            return response.json().catch(() => {
+                // If not JSON, assume success and reload
+                window.location.reload();
+            });
+        }
+    })
+    .then(data => {
+        if (data && data.success !== undefined) {
+            if (data.success) {
+                // Close modal and reload page
+                closeModal();
+                window.location.reload();
+            } else {
+                alert(data.message || (window.localize ? window.localize('global.save_failed') : 'Save failed'));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } else {
+            // Reload on success
+            closeModal();
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(window.localize ? window.localize('global.save_failed') : 'Save failed');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
+}
+
+function closeModal() {
+    const modalElement = document.getElementById('toothModal');
+    if (!modalElement) return;
+    
+    try {
+        // Try Bootstrap 5 Modal API first
+        if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+            const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            } else {
+                // Create new instance and hide
+                const modal = new window.bootstrap.Modal(modalElement);
+                modal.hide();
+            }
+        }
+        // Try jQuery Bootstrap
+        else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+            window.$(modalElement).modal('hide');
+        }
+        // Fallback: hide manually
+        else {
+            modalElement.style.display = 'none';
+            modalElement.classList.remove('show');
+            document.body.classList.remove('modal-open');
+            const backdrop = document.getElementById('toothModalBackdrop');
+            if (backdrop) backdrop.remove();
+        }
+    } catch (e) {
+        console.error('Error closing modal:', e);
+        // Fallback manual close
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('show');
+        document.body.classList.remove('modal-open');
+        const backdrop = document.getElementById('toothModalBackdrop');
+        if (backdrop) backdrop.remove();
+    }
 }
 
 function createToothModal() {
+    // Check if modal already exists
+    if (document.getElementById('toothModal')) {
+        return;
+    }
+    
     const modalHTML = `
-        <div class="modal fade" id="toothModal" tabindex="-1">
+        <div class="modal fade" id="toothModal" tabindex="-1" aria-labelledby="toothModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">${window.localize ? window.localize('global.tooth') : 'Tooth'} <span id="modalToothNumber"></span></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h5 class="modal-title" id="toothModalLabel">${window.localize ? window.localize('global.tooth') : 'Tooth'} <span id="modalToothNumber"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" id="toothModalBody">
                         <!-- Content will be loaded here -->
@@ -114,5 +438,3 @@ function createToothModal() {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
-// Make function globally available
-window.openToothModal = openToothModal;

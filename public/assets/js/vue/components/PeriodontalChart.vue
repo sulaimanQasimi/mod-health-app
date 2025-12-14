@@ -177,16 +177,18 @@ export default {
     },
     mounted() {
         // Initialize measurement form
+        const measurements = {};
         this.measurementPoints.forEach(point => {
-            this.$set(this.measurementForm.measurements, point.value, {
+            measurements[point.value] = {
                 measurement_point: point.value,
                 pocket_depth: '',
                 recession: '',
                 bleeding: false,
                 plaque: false,
                 notes: ''
-            });
+            };
         });
+        this.measurementForm.measurements = measurements;
     },
     methods: {
         async saveMeasurements() {

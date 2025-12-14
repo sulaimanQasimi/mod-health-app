@@ -142,7 +142,7 @@
     ]
   },
   "public/assets/js/vue/dental-chart-advanced-app.js": {
-    "file": "assets/dental-chart-advanced-app-CY9x6ILa.js",
+    "file": "assets/dental-chart-advanced-app-DWI_ekV-.js",
     "name": "dental-chart-advanced-app",
     "src": "public/assets/js/vue/dental-chart-advanced-app.js",
     "isEntry": true,
@@ -150,11 +150,11 @@
       "__plugin-vue_export-helper-CvOMsnYn.js"
     ],
     "css": [
-      "assets/dental-chart-advanced-app-Bdt09HVY.css"
+      "assets/dental-chart-advanced-app-JAnXpTrF.css"
     ]
   },
   "public/assets/js/vue/dental-chart-app.js": {
-    "file": "assets/dental-chart-app-DVJe4IqJ.js",
+    "file": "assets/dental-chart-app-CN08_mwH.js",
     "name": "dental-chart-app",
     "src": "public/assets/js/vue/dental-chart-app.js",
     "isEntry": true,
@@ -162,7 +162,7 @@
       "__plugin-vue_export-helper-CvOMsnYn.js"
     ],
     "css": [
-      "assets/dental-chart-app-O2P6ru6V.css"
+      "assets/dental-chart-app-BIqcAkSf.css"
     ]
   },
   "public/assets/js/vue/dentist-registration-section.js": {

@@ -1,8 +1,7 @@
 <template>
     <div class="dental-chart-container">
         <div class="chart-header text-center mb-4">
-            <h5 class="mb-1">{{ localize('global.human_dentition') }}</h5>
-            <p class="text-muted mb-0 small">{{ localize('global.permanent_teeth') }}</p>
+            <h5 class="mb-1 text-primary">{{ localize('global.human_dentition') }}</h5>
         </div>
 
         <!-- Upper Jaw Section -->
@@ -191,7 +190,6 @@ export default {
 <style scoped>
 .dental-chart-container {
     padding: 20px;
-    background: #fff;
     border-radius: 8px;
     max-width: 1000px;
     margin: 0 auto;
@@ -204,7 +202,7 @@ export default {
 .jaw-label {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
+    color: #c9b6b6;
     margin-bottom: 15px;
 }
 

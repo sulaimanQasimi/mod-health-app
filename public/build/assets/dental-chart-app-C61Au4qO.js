@@ -30,7 +30,7 @@ import{_ as x,c as w,o as y,a as u,t as L,k as E,n as S,f as B,l as I,F as T,r a
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">سلامت لثه</label>
+                    <label class="form-label">سلامت بیره دندان</label>
                     <select name="gum_health" class="form-select">
                         <option value="">Select</option>
                         <option value="healthy">Healthy</option>
@@ -56,7 +56,7 @@ import{_ as x,c as w,o as y,a as u,t as L,k as E,n as S,f as B,l as I,F as T,r a
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">حرکت دندان</label>
+                    <label class="form-label">لقی دندان</label>
                     <select name="mobility" class="form-select">
                         <option value="">Select</option>
                         <option value="none">None</option>

@@ -35,14 +35,8 @@
                                 <input type="text" class="form-control" value="{{ $dentalChart->tooth_number }}" disabled>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="chart_date" class="form-label">{{ localize('global.chart_date') }} <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker_dari @error('chart_date') is-invalid @enderror" 
-                                    id="chart_date" name="chart_date" 
-                                    value="{{ old('chart_date', \HanifHefaz\Dcter\Dcter::GregorianToJalali($dentalChart->chart_date->format('Y-m-d'))) }}" 
-                                    placeholder="{{ localize('global.select_date') }}" required readonly>
-                                @error('chart_date')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <label class="form-label">{{ localize('global.chart_date') }}</label>
+                                <input type="text" class="form-control" value="{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($dentalChart->chart_date->format('Y-m-d')) }}" disabled>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="tooth_condition" class="form-label">{{ localize('global.tooth_condition') }} <span class="text-danger">*</span></label>
@@ -282,21 +276,6 @@
         $(document).ready(function() {
             const dentistRegistrationId = {{ $dentalChart->dentistRegistration->id }};
             const dentalChartId = {{ $dentalChart->id }};
-
-            // Initialize Persian date picker for chart_date
-            $('#chart_date').persianDatepicker({
-                formatDate: 'YYYY-MM-DD',
-                calendar: {
-                    persian: {
-                        locale: 'en',
-                        showHint: true,
-                        leapYearMode: 'algorithmic'
-                    }
-                },
-                checkDate: function(unix) {
-                    return true;
-                }
-            });
 
             // Initialize Persian date picker for treatment date
             $('#addTreatmentFromChartEditModal').on('shown.bs.modal', function() {

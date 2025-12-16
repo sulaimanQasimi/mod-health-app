@@ -340,43 +340,13 @@ function openToothModal(toothNumber, chartId) {
                         csrfInput.value = csrfToken;
                     }
                     
-                    // Check if chart_date input exists, if not add it
-                    let chartDateInput = form.querySelector('input[name="chart_date"]');
-                    if (!chartDateInput) {
-                        // Extract chart_date from the form or use today
-                        const chartDateValue = form.querySelector('#chart_date')?.value || '';
-                        chartDateInput = document.createElement('input');
-                        chartDateInput.type = 'text';
-                        chartDateInput.name = 'chart_date';
-                        chartDateInput.id = 'chart_date_picker';
-                        chartDateInput.className = 'form-control datepicker_dari';
-                        chartDateInput.required = true;
-                        chartDateInput.readOnly = true;
-                        chartDateInput.placeholder = window.localize ? window.localize('global.select_date') : 'Select Date';
-                        // Insert before the first form field
-                        const firstField = form.querySelector('.row, .mb-3, .form-select, .form-control');
-                        if (firstField && firstField.parentElement) {
-                            const dateFieldContainer = document.createElement('div');
-                            dateFieldContainer.className = 'col-md-6 mb-3';
-                            const dateLabel = document.createElement('label');
-                            dateLabel.className = 'form-label';
-                            dateLabel.innerHTML = (window.localize ? window.localize('global.chart_date') : 'Chart Date') + ' <span class="text-danger">*</span>';
-                            dateFieldContainer.appendChild(dateLabel);
-                            dateFieldContainer.appendChild(chartDateInput);
-                            if (form.querySelector('.row')) {
-                                form.querySelector('.row').insertBefore(dateFieldContainer, form.querySelector('.row').firstChild);
-                            } else {
-                                form.insertBefore(dateFieldContainer, form.firstChild);
-                            }
-                        } else {
-                            form.insertBefore(chartDateInput, form.firstChild);
-                        }
-                    }
+                    // chart_date is now automatically set to today in the backend, no need to include it in the form
                     
-                    // Initialize Persian datepicker for the form
+                    // Initialize Persian datepicker for other date fields if needed
                     setTimeout(() => {
                         if (typeof window.$ !== 'undefined' && window.$.fn.persianDatepicker) {
-                            const datePickerInput = form.querySelector('#chart_date_picker, input[name="chart_date"].datepicker_dari, #chart_date');
+                            // Check for other date pickers in the form (not chart_date)
+                            const datePickerInput = form.querySelector('input.datepicker_dari:not([name="chart_date"])');
                             if (datePickerInput && !datePickerInput.dataset.persianDatepickerInitialized) {
                                 // Get the value - it should be in Persian format from backend
                                 const currentValue = datePickerInput.value;
@@ -556,12 +526,6 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
             
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.chart_date') : 'Chart Date'} <span class="text-danger">*</span></label>
-                    <input type="text" name="chart_date" id="chart_date_picker" class="form-control datepicker_dari" 
-                           placeholder="${window.localize ? window.localize('global.select_date') : 'Select Date'}" 
-                           required readonly>
-                </div>
-                <div class="col-md-6 mb-3">
                     <label class="form-label">${window.localize ? window.localize('global.tooth_condition') : 'Tooth Condition'} <span class="text-danger">*</span></label>
                     <select name="tooth_condition" class="form-select" required>
                         <option value="healthy">${window.localize ? window.localize('global.healthy') : 'Healthy'}</option>
@@ -656,7 +620,9 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
             
             // Initialize Persian datepicker
             if (typeof window.$ !== 'undefined' && window.$.fn.persianDatepicker) {
-                const datePickerInput = newForm.querySelector('#chart_date_picker');
+                // chart_date is now automatically set to today in the backend
+                // Check for other date pickers if needed
+                const datePickerInput = newForm.querySelector('input.datepicker_dari:not([name="chart_date"])');
                 if (datePickerInput && !datePickerInput.dataset.persianDatepickerInitialized) {
                     $(datePickerInput).persianDatepicker({
                         formatDate: 'YYYY-MM-DD',

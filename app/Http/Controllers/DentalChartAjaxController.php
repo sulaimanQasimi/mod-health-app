@@ -74,10 +74,11 @@ class DentalChartAjaxController extends Controller
                 'bleeding' => 'nullable|boolean',
                 'mobility' => 'nullable|in:none,grade1,grade2,grade3',
                 'treatment_history' => 'nullable|string',
-                'chart_date' => 'required|date',
                 'notes' => 'nullable|string',
             ]);
 
+            // Automatically set chart_date to today
+            $validatedData['chart_date'] = now()->format('Y-m-d');
             $validatedData['dentist_registration_id'] = $dentistRegistration->id;
             $chart = DentalChart::create($validatedData);
 
@@ -109,9 +110,11 @@ class DentalChartAjaxController extends Controller
                 'bleeding' => 'nullable|boolean',
                 'mobility' => 'nullable|in:none,grade1,grade2,grade3',
                 'treatment_history' => 'nullable|string',
-                'chart_date' => 'required|date',
                 'notes' => 'nullable|string',
             ]);
+
+            // Keep existing chart_date (don't update it)
+            // chart_date is automatically set to today when creating, but preserved when updating
 
             $dentalChart->update($validatedData);
 

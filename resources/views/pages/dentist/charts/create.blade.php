@@ -51,14 +51,6 @@
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="chart_date" class="form-label">{{ localize('global.chart_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control @error('chart_date') is-invalid @enderror" 
-                                    id="chart_date" name="chart_date" value="{{ old('chart_date', date('Y-m-d')) }}" required>
-                                @error('chart_date')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
                                 <label for="tooth_condition" class="form-label">{{ localize('global.tooth_condition') }} <span class="text-danger">*</span></label>
                                 <select class="form-select @error('tooth_condition') is-invalid @enderror" id="tooth_condition" name="tooth_condition" required>
                                     <option value="healthy" {{ old('tooth_condition') == 'healthy' ? 'selected' : '' }}>{{ localize('global.healthy') }}</option>

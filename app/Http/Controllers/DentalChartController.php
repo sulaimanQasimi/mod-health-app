@@ -63,26 +63,11 @@ class DentalChartController extends Controller
             'bleeding' => 'nullable|boolean',
             'mobility' => 'nullable|in:none,grade1,grade2,grade3',
             'treatment_history' => 'nullable|string',
-            'chart_date' => 'required|string',
             'notes' => 'nullable|string',
         ]);
 
-        // Convert Persian date to Gregorian
-        if (!empty($validatedData['chart_date'])) {
-            try {
-                $validatedData['chart_date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['chart_date']));
-            } catch (\Exception $e) {
-                // If conversion fails, try to validate as Gregorian date
-                if (!strtotime($validatedData['chart_date'])) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => localize('global.invalid_date_format'),
-                        'errors' => ['chart_date' => [localize('global.invalid_date_format')]]
-                    ], 422);
-                }
-            }
-        }
-
+        // Automatically set chart_date to today
+        $validatedData['chart_date'] = now()->format('Y-m-d');
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
         $chart = DentalChart::create($validatedData);
         $chart->load('images', 'periodontalMeasurements');
@@ -156,25 +141,11 @@ class DentalChartController extends Controller
             'bleeding' => 'nullable|boolean',
             'mobility' => 'nullable|in:none,grade1,grade2,grade3',
             'treatment_history' => 'nullable|string',
-            'chart_date' => 'required|string',
             'notes' => 'nullable|string',
         ]);
 
-        // Convert Persian date to Gregorian
-        if (!empty($validatedData['chart_date'])) {
-            try {
-                $validatedData['chart_date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['chart_date']));
-            } catch (\Exception $e) {
-                // If conversion fails, try to validate as Gregorian date
-                if (!strtotime($validatedData['chart_date'])) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => localize('global.invalid_date_format'),
-                        'errors' => ['chart_date' => [localize('global.invalid_date_format')]]
-                    ], 422);
-                }
-            }
-        }
+        // Keep existing chart_date (don't update it)
+        // chart_date is automatically set to today when creating, but preserved when updating
 
         $dentalChart->update($validatedData);
 

@@ -203,6 +203,88 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Treatments by Tooth -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ localize('global.treatments_by_tooth') }}</h5>
+                </div>
+                <div class="card-body">
+                    @if($latestCharts->isNotEmpty())
+                        <div class="accordion" id="treatmentsAccordion">
+                            @foreach($latestCharts as $chart)
+                                @php
+                                    $chartTreatments = $chart->treatments;
+                                    $toothTreatments = $dentistRegistration->treatments()
+                                        ->where('tooth_number', $chart->tooth_number)
+                                        ->where(function($q) use ($chart) {
+                                            $q->where('dental_chart_id', $chart->id)
+                                              ->orWhereNull('dental_chart_id');
+                                        })
+                                        ->get();
+                                @endphp
+                                @if($toothTreatments->count() > 0)
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading{{ $chart->tooth_number }}">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                    data-bs-target="#collapse{{ $chart->tooth_number }}" aria-expanded="false">
+                                                {{ localize('global.tooth') }} {{ $chart->tooth_number }} 
+                                                <span class="badge bg-primary ms-2">{{ $toothTreatments->count() }}</span>
+                                            </button>
+                                        </h2>
+                                        <div id="collapse{{ $chart->tooth_number }}" class="accordion-collapse collapse" 
+                                             data-bs-parent="#treatmentsAccordion">
+                                            <div class="accordion-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{{ localize('global.date') }}</th>
+                                                                <th>{{ localize('global.treatment_type') }}</th>
+                                                                <th>{{ localize('global.description') }}</th>
+                                                                <th>{{ localize('global.status') }}</th>
+                                                                <th>{{ localize('global.cost') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($toothTreatments as $treatment)
+                                                                <tr>
+                                                                    <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($treatment->treatment_date) }}</td>
+                                                                    <td>{{ $treatment->treatment_type }}</td>
+                                                                    <td>{{ Str::limit($treatment->treatment_description, 50) }}</td>
+                                                                    <td>
+                                                                        @if($treatment->status == 'planned')
+                                                                            <span class="badge bg-secondary">{{ localize('global.planned') }}</span>
+                                                                        @elseif($treatment->status == 'in_progress')
+                                                                            <span class="badge bg-info">{{ localize('global.in_progress') }}</span>
+                                                                        @elseif($treatment->status == 'completed')
+                                                                            <span class="badge bg-success">{{ localize('global.completed') }}</span>
+                                                                        @else
+                                                                            <span class="badge bg-danger">{{ localize('global.cancelled') }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>{{ $treatment->cost ? number_format($treatment->cost, 2) : 'N/A' }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                        @if($latestCharts->filter(function($chart) use ($dentistRegistration) {
+                            return $dentistRegistration->treatments()->where('tooth_number', $chart->tooth_number)->count() > 0;
+                        })->isEmpty())
+                            <p class="text-muted text-center">{{ localize('global.no_treatments_found') }}</p>
+                        @endif
+                    @else
+                        <p class="text-muted text-center">{{ localize('global.no_charts_found') }}</p>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 @endsection

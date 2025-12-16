@@ -44,7 +44,9 @@ class DentalChartController extends Controller
      */
     public function create(DentistRegistration $dentistRegistration)
     {
-        return view('pages.dentist.charts.create', compact('dentistRegistration'));
+        // Get treatments for reference (will be filtered by tooth_number in view via AJAX)
+        $treatments = $dentistRegistration->treatments()->with('dentalChart')->get();
+        return view('pages.dentist.charts.create', compact('dentistRegistration', 'treatments'));
     }
 
     /**
@@ -103,7 +105,7 @@ class DentalChartController extends Controller
      */
     public function show(DentistRegistration $dentistRegistration)
     {
-        $dentistRegistration->load('dentalCharts.measurements', 'dentalCharts.images', 'dentalCharts.periodontalMeasurements');
+        $dentistRegistration->load('dentalCharts.measurements', 'dentalCharts.images', 'dentalCharts.periodontalMeasurements', 'dentalCharts.treatments');
         
         // Get all teeth data for the visual chart
         $allTeeth = [];
@@ -114,7 +116,7 @@ class DentalChartController extends Controller
 
         // Get latest chart entry for each tooth
         $latestCharts = $dentistRegistration->dentalCharts()
-            ->with(['images', 'periodontalMeasurements'])
+            ->with(['images', 'periodontalMeasurements', 'treatments'])
             ->orderBy('chart_date', 'desc')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -133,10 +135,12 @@ class DentalChartController extends Controller
      */
     public function edit(DentalChart $dentalChart)
     {
-        $dentalChart->load('dentistRegistration', 'measurements', 'images', 'periodontalMeasurements');
+        $dentalChart->load('dentistRegistration', 'measurements', 'images', 'periodontalMeasurements', 'treatments');
+        // Get related treatments for this chart's tooth
+        $relatedTreatments = $dentalChart->getRelatedTreatments();
         // Convert chart_date to Persian format for display
         $dentalChart->persian_chart_date = Dcter::GregorianToJalali($dentalChart->chart_date->format('Y-m-d'));
-        return view('pages.dentist.charts.edit', compact('dentalChart'));
+        return view('pages.dentist.charts.edit', compact('dentalChart', 'relatedTreatments'));
     }
 
     /**

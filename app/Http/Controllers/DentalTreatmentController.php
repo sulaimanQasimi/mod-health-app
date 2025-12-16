@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DentistRegistration;
 use App\Models\DentalTreatment;
+use App\Models\DentalChart;
 use Illuminate\Http\Request;
 use HanifHefaz\Dcter\Dcter;
 
@@ -15,6 +16,7 @@ class DentalTreatmentController extends Controller
     public function store(Request $request, DentistRegistration $dentistRegistration)
     {
         $validatedData = $request->validate([
+            'dental_chart_id' => 'nullable|exists:dental_charts,id',
             'treatment_type' => 'required|string',
             'tooth_number' => 'nullable|integer|min:11|max:48',
             'treatment_description' => 'required|string',
@@ -37,6 +39,15 @@ class DentalTreatmentController extends Controller
         }
 
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
+        
+        // Auto-populate tooth_number from chart if dental_chart_id is provided
+        if (!empty($validatedData['dental_chart_id']) && empty($validatedData['tooth_number'])) {
+            $chart = DentalChart::find($validatedData['dental_chart_id']);
+            if ($chart && $chart->dentist_registration_id == $dentistRegistration->id) {
+                $validatedData['tooth_number'] = $chart->tooth_number;
+            }
+        }
+        
         $treatment = DentalTreatment::create($validatedData);
 
         return redirect()->back()->with('success', localize('global.treatment_created_successfully'));
@@ -48,6 +59,7 @@ class DentalTreatmentController extends Controller
     public function update(Request $request, DentalTreatment $dentalTreatment)
     {
         $validatedData = $request->validate([
+            'dental_chart_id' => 'nullable|exists:dental_charts,id',
             'treatment_type' => 'required|string',
             'tooth_number' => 'nullable|integer|min:11|max:48',
             'treatment_description' => 'required|string',

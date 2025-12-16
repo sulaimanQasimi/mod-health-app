@@ -12,6 +12,7 @@ class DentalTreatment extends Model
 
     protected $fillable = [
         'dentist_registration_id',
+        'dental_chart_id',
         'treatment_type',
         'tooth_number',
         'treatment_description',
@@ -46,6 +47,11 @@ class DentalTreatment extends Model
         return $this->belongsTo(DentistRegistration::class);
     }
 
+    public function dentalChart()
+    {
+        return $this->belongsTo(DentalChart::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -59,6 +65,11 @@ class DentalTreatment extends Model
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public function scopeForChart($query, $chartId)
+    {
+        return $query->where('dental_chart_id', $chartId);
     }
 
     public function markCompleted()

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DentistRegistration;
 use App\Models\DentalExamination;
 use App\Models\DentalTreatment;
+use App\Models\DentalChart;
 use App\Models\DentalXray;
 use App\Models\DentalNote;
 use Illuminate\Http\Request;
@@ -134,6 +135,7 @@ class DentistAjaxController extends Controller
     {
         try {
             $validatedData = $request->validate([
+                'dental_chart_id' => 'nullable|exists:dental_charts,id',
                 'treatment_type' => 'required|string',
                 'tooth_number' => 'nullable|string',
                 'treatment_description' => 'required|string',
@@ -144,7 +146,17 @@ class DentistAjaxController extends Controller
             ]);
 
             $validatedData['dentist_registration_id'] = $dentistRegistration->id;
+            
+            // Auto-populate tooth_number from chart if dental_chart_id is provided
+            if (!empty($validatedData['dental_chart_id']) && empty($validatedData['tooth_number'])) {
+                $chart = DentalChart::find($validatedData['dental_chart_id']);
+                if ($chart && $chart->dentist_registration_id == $dentistRegistration->id) {
+                    $validatedData['tooth_number'] = $chart->tooth_number;
+                }
+            }
+            
             $treatment = DentalTreatment::create($validatedData);
+            $treatment->load('dentalChart');
 
             return response()->json([
                 'success' => true,
@@ -155,6 +167,43 @@ class DentistAjaxController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create treatment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get treatments for a specific chart or tooth
+     */
+    public function getTreatmentsForChart(Request $request, DentistRegistration $dentistRegistration)
+    {
+        try {
+            $chartId = $request->get('dental_chart_id');
+            $toothNumber = $request->get('tooth_number');
+            
+            $query = $dentistRegistration->treatments()->with('dentalChart');
+            
+            if ($chartId) {
+                $query->where(function($q) use ($chartId, $toothNumber) {
+                    $q->where('dental_chart_id', $chartId);
+                    if ($toothNumber) {
+                        $q->orWhere('tooth_number', $toothNumber);
+                    }
+                });
+            } elseif ($toothNumber) {
+                $query->where('tooth_number', $toothNumber);
+            }
+            
+            $treatments = $query->orderBy('treatment_date', 'desc')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $treatments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch treatments',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -201,6 +250,44 @@ class DentistAjaxController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch registrations',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Link an existing treatment to a dental chart
+     */
+    public function linkTreatmentToChart(DentalTreatment $treatment, DentalChart $dentalChart)
+    {
+        try {
+            // Verify that treatment and chart belong to the same registration
+            if ($treatment->dentist_registration_id !== $dentalChart->dentist_registration_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Treatment and chart must belong to the same registration'
+                ], 422);
+            }
+
+            // Update treatment to link to chart
+            $treatment->update(['dental_chart_id' => $dentalChart->id]);
+            
+            // Also ensure tooth_number matches if not already set
+            if (empty($treatment->tooth_number) && $dentalChart->tooth_number) {
+                $treatment->update(['tooth_number' => $dentalChart->tooth_number]);
+            }
+
+            $treatment->load('dentalChart');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Treatment linked to chart successfully',
+                'data' => $treatment
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to link treatment to chart',
                 'error' => $e->getMessage()
             ], 500);
         }

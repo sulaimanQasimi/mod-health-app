@@ -68,6 +68,11 @@ class DentalChart extends Model
         return $this->hasMany(DentalPeriodontalMeasurement::class);
     }
 
+    public function treatments()
+    {
+        return $this->hasMany(DentalTreatment::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -139,5 +144,20 @@ class DentalChart extends Model
                 ->from('dental_charts')
                 ->groupBy('dentist_registration_id', 'tooth_number');
         });
+    }
+
+    /**
+     * Get related treatments for this chart's tooth
+     * Returns treatments linked to this chart and treatments for the same tooth
+     */
+    public function getRelatedTreatments()
+    {
+        return DentalTreatment::where(function ($query) {
+            $query->where('dental_chart_id', $this->id)
+                ->orWhere(function ($q) {
+                    $q->where('dentist_registration_id', $this->dentist_registration_id)
+                      ->where('tooth_number', $this->tooth_number);
+                });
+        })->get();
     }
 }

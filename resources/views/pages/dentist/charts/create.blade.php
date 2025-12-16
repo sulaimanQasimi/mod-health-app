@@ -159,6 +159,206 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Treatments Section -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ localize('global.treatments') }}</h5>
+                    <button type="button" class="btn btn-primary btn-sm" id="addTreatmentBtn" data-bs-toggle="modal" data-bs-target="#addTreatmentFromChartModal" disabled>
+                        <i class="bx bx-plus"></i> {{ localize('global.add_treatment') }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="treatmentsList">
+                        <p class="text-muted text-center">{{ localize('global.select_tooth_to_view_treatments') }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Add Treatment Modal -->
+    <div class="modal fade" id="addTreatmentFromChartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ localize('global.add_treatment') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="treatmentFormFromChart">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" id="treatment_dentist_registration_id" name="dentist_registration_id" value="{{ $dentistRegistration->id }}">
+                        <input type="hidden" id="treatment_tooth_number" name="tooth_number">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="treatment_type" class="form-label">{{ localize('global.treatment_type') }}</label>
+                                <input type="text" class="form-control" id="treatment_type" name="treatment_type" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="treatment_date" class="form-label">{{ localize('global.treatment_date') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control datepicker_dari" id="treatment_date" name="treatment_date" 
+                                       placeholder="{{ localize('global.select_date') }}" required readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="treatment_status" class="form-label">{{ localize('global.status') }}</label>
+                                <select class="form-select" id="treatment_status" name="status" required>
+                                    <option value="planned">{{ localize('global.planned') }}</option>
+                                    <option value="in_progress">{{ localize('global.in_progress') }}</option>
+                                    <option value="completed">{{ localize('global.completed') }}</option>
+                                    <option value="cancelled">{{ localize('global.cancelled') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="treatment_cost" class="form-label">{{ localize('global.cost') }}</label>
+                                <input type="number" step="0.01" class="form-control" id="treatment_cost" name="cost">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="treatment_description" class="form-label">{{ localize('global.description') }}</label>
+                                <textarea class="form-control" id="treatment_description" name="treatment_description" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="treatment_notes" class="form-label">{{ localize('global.notes') }}</label>
+                                <textarea class="form-control" id="treatment_notes" name="notes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ localize('global.save') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    <!-- Persian Datepicker Library -->
+    <script src="{{ asset('assets/persian date2/js/persianDatepicker.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />
+    
+    <script>
+        $(document).ready(function() {
+            const dentistRegistrationId = {{ $dentistRegistration->id }};
+            let currentToothNumber = null;
+
+            // Initialize Persian date picker for treatment date
+            $('#addTreatmentFromChartModal').on('shown.bs.modal', function() {
+                const treatmentDateInput = $('#treatment_date');
+                if (treatmentDateInput.length && !treatmentDateInput.data('persianDatepicker')) {
+                    treatmentDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            });
+
+            // Handle tooth number selection change
+            $('#tooth_number').on('change', function() {
+                currentToothNumber = $(this).val();
+                if (currentToothNumber) {
+                    $('#addTreatmentBtn').prop('disabled', false);
+                    $('#treatment_tooth_number').val(currentToothNumber);
+                    loadTreatmentsForTooth(currentToothNumber);
+                } else {
+                    $('#addTreatmentBtn').prop('disabled', true);
+                    $('#treatmentsList').html('<p class="text-muted text-center">{{ localize('global.select_tooth_to_view_treatments') }}</p>');
+                }
+            });
+
+            // Load treatments for a specific tooth
+            function loadTreatmentsForTooth(toothNumber) {
+                $.ajax({
+                    url: '{{ route("dentist-ajax.treatments.for-chart", $dentistRegistration) }}',
+                    method: 'GET',
+                    data: {
+                        tooth_number: toothNumber
+                    },
+                    success: function(response) {
+                        if (response.success && response.data.length > 0) {
+                            let html = '<div class="table-responsive"><table class="table table-sm">';
+                            html += '<thead><tr><th>{{ localize("global.date") }}</th><th>{{ localize("global.treatment_type") }}</th><th>{{ localize("global.description") }}</th><th>{{ localize("global.status") }}</th></tr></thead><tbody>';
+                            response.data.forEach(function(treatment) {
+                                html += '<tr>';
+                                html += '<td>' + treatment.treatment_date + '</td>';
+                                html += '<td>' + treatment.treatment_type + '</td>';
+                                html += '<td>' + treatment.treatment_description + '</td>';
+                                html += '<td><span class="badge bg-' + getStatusColor(treatment.status) + '">' + treatment.status + '</span></td>';
+                                html += '</tr>';
+                            });
+                            html += '</tbody></table></div>';
+                            $('#treatmentsList').html(html);
+                        } else {
+                            $('#treatmentsList').html('<p class="text-muted text-center">{{ localize("global.no_treatments_found_for_this_tooth") }}</p>');
+                        }
+                    },
+                    error: function() {
+                        $('#treatmentsList').html('<p class="text-danger text-center">{{ localize("global.error_loading_treatments") }}</p>');
+                    }
+                });
+            }
+
+            function getStatusColor(status) {
+                const colors = {
+                    'planned': 'secondary',
+                    'in_progress': 'info',
+                    'completed': 'success',
+                    'cancelled': 'danger'
+                };
+                return colors[status] || 'secondary';
+            }
+
+            // Handle treatment form submission
+            $('#treatmentFormFromChart').on('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    treatment_type: $('#treatment_type').val(),
+                    tooth_number: $('#treatment_tooth_number').val(),
+                    treatment_description: $('#treatment_description').val(),
+                    treatment_date: $('#treatment_date').val(),
+                    status: $('#treatment_status').val(),
+                    cost: $('#treatment_cost').val(),
+                    notes: $('#treatment_notes').val()
+                };
+
+                $.ajax({
+                    url: '{{ route("dentist-ajax.treatments.store", $dentistRegistration) }}',
+                    method: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#addTreatmentFromChartModal').modal('hide');
+                            $('#treatmentFormFromChart')[0].reset();
+                            if (currentToothNumber) {
+                                loadTreatmentsForTooth(currentToothNumber);
+                            }
+                            // Show success message
+                            alert('{{ localize("global.treatment_created_successfully") }}');
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = '{{ localize("global.failed_to_create_treatment") }}';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        alert(errorMsg);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

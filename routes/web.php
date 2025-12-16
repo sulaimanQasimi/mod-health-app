@@ -1071,10 +1071,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('registrations/{appointmentId}', [\App\Http\Controllers\DentistAjaxController::class, 'getRegistrations'])->name('registrations');
         Route::get('examinations/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getExaminations'])->name('examinations');
         Route::get('treatments/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getTreatments'])->name('treatments');
+        Route::get('treatments/for-chart/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getTreatmentsForChart'])->name('treatments.for-chart');
         Route::get('xrays/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getXrays'])->name('xrays');
         Route::get('notes/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'getNotes'])->name('notes');
         Route::post('examinations/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'storeExamination'])->name('store-examination');
-        Route::post('treatments/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'storeTreatment'])->name('store-treatment');
+        Route::post('treatments/store/{dentistRegistration}', [\App\Http\Controllers\DentistAjaxController::class, 'storeTreatment'])->name('treatments.store');
+        Route::post('treatments/link/{treatment}/{dentalChart}', [\App\Http\Controllers\DentistAjaxController::class, 'linkTreatmentToChart'])->name('treatments.link');
     });
 
     // Dental Charts routes

@@ -1,14 +1,14 @@
 <template>
     <div class="dental-chart-container">
         <div class="chart-header text-center mb-4">
-            <h5 class="mb-1">{{ localize('global.human_dentition') }}</h5>
-            <p class="text-muted mb-0 small">{{ localize('global.permanent_teeth') }}</p>
+            <h5 class="mb-1">دندان‌ها</h5>
+            <p class="text-muted mb-0 small">دندان‌های دائمی</p>
         </div>
 
         <!-- Upper Jaw Section -->
         <div class="jaw-section upper-jaw mb-4">
             <div class="jaw-label text-center mb-3">
-                <strong>{{ localize('global.upper_jaw') }}</strong>
+                <strong>جوف فوقانی</strong>
             </div>
             
             <!-- Upper Right Quadrant (18-11) -->
@@ -44,7 +44,7 @@
         <!-- Lower Jaw Section -->
         <div class="jaw-section lower-jaw">
             <div class="jaw-label text-center mb-3">
-                <strong>{{ localize('global.lower_jaw') }}</strong>
+                <strong>جوف تحتانی</strong>
             </div>
             
             <!-- Lower Left Quadrant (48-41) -->
@@ -76,25 +76,25 @@
 
         <!-- Legend -->
         <div class="chart-legend mt-4 pt-3 border-top">
-            <h6 class="mb-2 text-center">{{ localize('global.legend') }}:</h6>
+            <h6 class="mb-2 text-center">راهنما:</h6>
             <div class="d-flex flex-wrap justify-content-center gap-2">
                 <span class="badge" style="background-color: #008000; color: white;">
-                    {{ localize('global.healthy') }}
+                    سالم
                 </span>
                 <span class="badge" style="background-color: #ffc107; color: #000;">
-                    {{ localize('global.cavity') }}
+                    پوسیدگی
                 </span>
                 <span class="badge" style="background-color: #17a2b8; color: white;">
-                    {{ localize('global.filling') }}
+                    پرکردگی
                 </span>
                 <span class="badge" style="background-color: #6f42c1; color: white;">
-                    {{ localize('global.crown') }}
+                    پوش 
                 </span>
                 <span class="badge" style="background-color: #6c757d; color: white;">
-                    {{ localize('global.missing') }}
+                    فاقد دندان
                 </span>
                 <span class="badge" style="background-color: #dc3545; color: white;">
-                    {{ localize('global.extraction') }}
+                    کشیده شده
                 </span>
             </div>
         </div>

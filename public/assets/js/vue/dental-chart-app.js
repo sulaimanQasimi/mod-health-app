@@ -526,70 +526,70 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
             
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.tooth_condition') : 'Tooth Condition'} <span class="text-danger">*</span></label>
+                    <label class="form-label">وضعیت دندان <span class="text-danger">*</span></label>
                     <select name="tooth_condition" class="form-select" required>
-                        <option value="healthy">${window.localize ? window.localize('global.healthy') : 'Healthy'}</option>
-                        <option value="cavity">${window.localize ? window.localize('global.cavity') : 'Cavity'}</option>
-                        <option value="filling">${window.localize ? window.localize('global.filling') : 'Filling'}</option>
-                        <option value="crown">${window.localize ? window.localize('global.crown') : 'Crown'}</option>
-                        <option value="bridge">${window.localize ? window.localize('global.bridge') : 'Bridge'}</option>
-                        <option value="root_canal">${window.localize ? window.localize('global.root_canal') : 'Root Canal'}</option>
-                        <option value="implant">${window.localize ? window.localize('global.implant') : 'Implant'}</option>
-                        <option value="decay">${window.localize ? window.localize('global.decay') : 'Decay'}</option>
-                        <option value="fractured">${window.localize ? window.localize('global.fractured') : 'Fractured'}</option>
-                        <option value="extraction">${window.localize ? window.localize('global.extraction') : 'Extraction'}</option>
-                        <option value="missing">${window.localize ? window.localize('global.missing') : 'Missing'}</option>
-                        <option value="impacted">${window.localize ? window.localize('global.impacted') : 'Impacted'}</option>
+                        <option value="healthy">Healthy</option>
+                        <option value="cavity">Cavity</option>
+                        <option value="filling">Filling</option>
+                        <option value="crown">Crown</option>
+                        <option value="bridge">Bridge</option>
+                        <option value="root_canal">Root Canal</option>
+                        <option value="implant">Implant</option>
+                        <option value="decay">Decay</option>
+                        <option value="fractured">Fractured</option>
+                        <option value="extraction">Extraction</option>
+                        <option value="missing">Missing</option>
+                        <option value="impacted">Impacted</option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.gum_health') : 'Gum Health'}</label>
+                    <label class="form-label">سلامت لثه</label>
                     <select name="gum_health" class="form-select">
-                        <option value="">${window.localize ? window.localize('global.select') : 'Select'}</option>
-                        <option value="healthy">${window.localize ? window.localize('global.healthy') : 'Healthy'}</option>
-                        <option value="gingivitis">${window.localize ? window.localize('global.gingivitis') : 'Gingivitis'}</option>
-                        <option value="periodontitis">${window.localize ? window.localize('global.periodontitis') : 'Periodontitis'}</option>
-                        <option value="recession">${window.localize ? window.localize('global.recession') : 'Recession'}</option>
-                        <option value="bleeding">${window.localize ? window.localize('global.bleeding') : 'Bleeding'}</option>
+                        <option value="">Select</option>
+                        <option value="healthy">Healthy</option>
+                        <option value="gingivitis">Gingivitis</option>
+                        <option value="periodontitis">Periodontitis</option>
+                        <option value="recession">Recession</option>
+                        <option value="bleeding">Bleeding</option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.oral_hygiene_score') : 'Oral Hygiene Score'}</label>
+                    <label class="form-label">امتیاز بهداشت دهان</label>
                     <input type="number" step="0.1" min="0" max="10" name="oral_hygiene_score" class="form-control" placeholder="0-10">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.pocket_depth') : 'Pocket Depth'} (mm)</label>
+                    <label class="form-label">عمق پاکت (mm)</label>
                     <input type="number" step="0.01" min="0" max="20" name="pocket_depth" class="form-control" placeholder="0-20">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.bleeding') : 'Bleeding'}</label>
+                    <label class="form-label">خونریزی</label>
                     <select name="bleeding" class="form-select">
-                        <option value="0">${window.localize ? window.localize('global.no') : 'No'}</option>
-                        <option value="1">${window.localize ? window.localize('global.yes') : 'Yes'}</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.mobility') : 'Mobility'}</label>
+                    <label class="form-label">حرکت دندان</label>
                     <select name="mobility" class="form-select">
-                        <option value="">${window.localize ? window.localize('global.select') : 'Select'}</option>
-                        <option value="none">${window.localize ? window.localize('global.none') : 'None'}</option>
-                        <option value="grade1">${window.localize ? window.localize('global.grade1') : 'Grade 1'}</option>
-                        <option value="grade2">${window.localize ? window.localize('global.grade2') : 'Grade 2'}</option>
-                        <option value="grade3">${window.localize ? window.localize('global.grade3') : 'Grade 3'}</option>
+                        <option value="">Select</option>
+                        <option value="none">None</option>
+                        <option value="grade1">Grade 1</option>
+                        <option value="grade2">Grade 2</option>
+                        <option value="grade3">Grade 3</option>
                     </select>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.treatment_history') : 'Treatment History'}</label>
+                    <label class="form-label">سابقه درمان</label>
                     <textarea name="treatment_history" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="form-label">${window.localize ? window.localize('global.notes') : 'Notes'}</label>
+                    <label class="form-label">یادداشت ها</label>
                     <textarea name="notes" class="form-control" rows="3"></textarea>
                 </div>
             </div>
             <div class="d-flex justify-content-end gap-2 mt-3">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${window.localize ? window.localize('global.cancel') : 'Cancel'}</button>
-                <button type="submit" class="btn btn-primary">${window.localize ? window.localize('global.save') : 'Save'}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-primary">ذخیره</button>
             </div>
         </form>
     `;

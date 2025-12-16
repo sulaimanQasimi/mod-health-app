@@ -558,7 +558,7 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
                     <input type="number" step="0.1" min="0" max="10" name="oral_hygiene_score" class="form-control" placeholder="0-10">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">عمق پاکت (mm)</label>
+                    <label class="form-label">عمق ریشه (mm)</label>
                     <input type="number" step="0.01" min="0" max="20" name="pocket_depth" class="form-control" placeholder="0-20">
                 </div>
                 <div class="col-md-6 mb-3">

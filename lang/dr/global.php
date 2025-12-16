@@ -3879,7 +3879,7 @@ return [
     'oral_hygiene_score' => 'وضعیت گونه',
     'pocket_depth' => 'عمق گونه',
     'bleeding' => 'خونریزی',
-    'mobility' => 'حرکت',
+    'mobility' => 'لقی',
     'no_charts_found' => 'هیچ چارتی برای نمایش یافت نشد',
     'visual_tooth_chart' => 'چارت تصویری دندان',
     'human_dentition' => 'دندان‌بندی انسان',

@@ -191,7 +191,6 @@ export default {
 <style scoped>
 .dental-chart-container {
     padding: 20px;
-    background: #fff;
     border-radius: 8px;
     max-width: 1000px;
     margin: 0 auto;
@@ -204,7 +203,7 @@ export default {
 .jaw-label {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
+    color: #c9b6b6;
     margin-bottom: 15px;
 }
 

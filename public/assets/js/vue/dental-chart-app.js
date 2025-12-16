@@ -543,7 +543,7 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">سلامت لثه</label>
+                    <label class="form-label">سلامت بیره دندان</label>
                     <select name="gum_health" class="form-select">
                         <option value="">Select</option>
                         <option value="healthy">Healthy</option>
@@ -569,7 +569,7 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">حرکت دندان</label>
+                    <label class="form-label">لقی دندان</label>
                     <select name="mobility" class="form-select">
                         <option value="">Select</option>
                         <option value="none">None</option>

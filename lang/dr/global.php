@@ -3936,4 +3936,5 @@ return [
     'mobility_slight' => 'کم',
     'mobility_moderate' => 'متوسط',
     'mobility_severe' => 'شدید',
+    'mobility_grade'=>'لقی دندان',
 ];

@@ -61,7 +61,7 @@
                                 <div class="col-md-3 mb-3">
                                     <div class="text-center p-3 border rounded bg-body-secondary">
                                         <div class="text-body small mb-1">{{ localize('global.dentist') }}</div>
-                                        <div class="fw-bold">{{ $dentistRegistration->dentist->name ?? 'N/A' }}</div>
+                                        <div class="fw-bold">{{ $dentistRegistration->dentist->name ?? localize('global.not_available') }}</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-3">
@@ -239,7 +239,7 @@
                                             <tr>
                                                 <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($treatment->treatment_date) }}</td>
                                                 <td>{{ $treatment->treatment_type }}</td>
-                                                <td>{{ $treatment->tooth_number ?? 'N/A' }}</td>
+                                                <td>{{ $treatment->tooth_number ?? localize('global.not_available') }}</td>
                                                 <td>{{ $treatment->treatment_description }}</td>
                                                 <td>
                                                     @if($treatment->status == 'planned')
@@ -252,7 +252,7 @@
                                                         <span class="badge bg-danger">{{ localize('global.cancelled') }}</span>
                                                     @endif
                                                 </td>
-                                                <td>{{ $treatment->cost ? number_format($treatment->cost, 2) : 'N/A' }}</td>
+                                                <td>{{ $treatment->cost ? number_format($treatment->cost, 2) : localize('global.not_available') }}</td>
                                                 <td>
                                                     <form action="{{ route('dental-treatments.destroy', $treatment) }}" method="POST" class="d-inline">
                                                         @csrf
@@ -435,12 +435,12 @@
                                                         <td><strong>{{ $chart->tooth_number }}</strong></td>
                                                         <td>
                                                             <span class="badge bg-{{ $chart->tooth_condition == 'healthy' ? 'success' : ($chart->tooth_condition == 'cavity' ? 'warning' : ($chart->tooth_condition == 'missing' ? 'secondary' : 'info')) }}">
-                                                                {{ ucfirst(str_replace('_', ' ', $chart->tooth_condition)) }}
+                                                                {{ localize('global.' . $chart->tooth_condition) ?: ucfirst(str_replace('_', ' ', $chart->tooth_condition)) }}
                                                             </span>
                                                         </td>
-                                                        <td>{{ $chart->gum_health ? ucfirst($chart->gum_health) : 'N/A' }}</td>
-                                                        <td>{{ $chart->oral_hygiene_score ?? 'N/A' }}</td>
-                                                        <td>{{ $chart->pocket_depth ? $chart->pocket_depth . ' mm' : 'N/A' }}</td>
+                                                        <td>{{ $chart->gum_health ? (localize('global.gum_health_' . $chart->gum_health) ?: ucfirst($chart->gum_health)) : localize('global.not_available') }}</td>
+                                                        <td>{{ $chart->oral_hygiene_score ?? localize('global.not_available') }}</td>
+                                                        <td>{{ $chart->pocket_depth ? $chart->pocket_depth . ' ' . localize('global.mm') : localize('global.not_available') }}</td>
                                                         <td>
                                                             @if($chart->bleeding)
                                                                 <span class="badge bg-danger">{{ localize('global.yes') }}</span>
@@ -448,7 +448,7 @@
                                                                 <span class="badge bg-success">{{ localize('global.no') }}</span>
                                                             @endif
                                                         </td>
-                                                        <td>{{ $chart->mobility ? ucfirst($chart->mobility) : 'N/A' }}</td>
+                                                        <td>{{ $chart->mobility ? (localize('global.mobility_' . $chart->mobility) ?: ucfirst($chart->mobility)) : localize('global.not_available') }}</td>
                                                         <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($chart->chart_date) }}</td>
                                                         <td>
                                                             <a href="{{ route('dental-charts.edit', $chart) }}" class="btn btn-sm btn-warning">
@@ -545,25 +545,27 @@
                             <label for="examination_date" class="form-label">{{ localize('global.examination_date') }}</label>
                             <input type="date" class="form-control" id="examination_date" name="examination_date" value="{{ date('Y-m-d') }}" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="chief_complaint" class="form-label">{{ localize('global.chief_complaint') }}</label>
-                            <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="2"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="clinical_findings" class="form-label">{{ localize('global.clinical_findings') }}</label>
-                            <textarea class="form-control" id="clinical_findings" name="clinical_findings" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="diagnosis" class="form-label">{{ localize('global.diagnosis') }}</label>
-                            <textarea class="form-control" id="diagnosis" name="diagnosis" rows="2"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="treatment_plan" class="form-label">{{ localize('global.treatment_plan') }}</label>
-                            <textarea class="form-control" id="treatment_plan" name="treatment_plan" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">{{ localize('global.notes') }}</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="chief_complaint" class="form-label">{{ localize('global.chief_complaint') }}</label>
+                                <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="diagnosis" class="form-label">{{ localize('global.diagnosis') }}</label>
+                                <textarea class="form-control" id="diagnosis" name="diagnosis" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="clinical_findings" class="form-label">{{ localize('global.clinical_findings') }}</label>
+                                <textarea class="form-control" id="clinical_findings" name="clinical_findings" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="treatment_plan" class="form-label">{{ localize('global.treatment_plan') }}</label>
+                                <textarea class="form-control" id="treatment_plan" name="treatment_plan" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="notes" class="form-label">{{ localize('global.notes') }}</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

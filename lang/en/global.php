@@ -1080,4 +1080,9 @@ return [
     'end_date_must_be_after_start_date' => 'End date must be after or equal to start date',
     'print' => 'Print',
     'export' => 'Export',
+    'images' => 'Images',
+    'upload_image' => 'Upload Image',
+    'no_images_uploaded' => 'No images uploaded',
+    'periodontal_measurements' => 'Periodontal Measurements',
+    'no_measurements_recorded' => 'No measurements recorded',
 ];

@@ -68,6 +68,36 @@
                                 <h5>{{ localize('global.visual_tooth_chart') }}</h5>
                             </div>
                             @include('pages.dentist.charts.partials.tooth-chart', ['allTeeth' => $allTeeth, 'dentistRegistration' => $dentistRegistration])
+                            <div id="dental-chart-i18n"
+                                 data-localize="{{ json_encode([
+                                    'global.images' => localize('global.images'),
+                                    'global.upload_image' => localize('global.upload_image'),
+                                    'global.no_images_uploaded' => localize('global.no_images_uploaded'),
+                                    'global.periodontal_measurements' => localize('global.periodontal_measurements'),
+                                    'global.no_measurements_recorded' => localize('global.no_measurements_recorded'),
+                                    'global.delete' => localize('global.delete'),
+                                    'global.cancel' => localize('global.cancel'),
+                                    'global.save' => localize('global.save'),
+                                    'global.upload' => localize('global.upload'),
+                                    'global.description' => localize('global.description'),
+                                    'global.date' => localize('global.date'),
+                                    'global.notes' => localize('global.notes'),
+                                ]) }}">
+                            </div>
+                            <script>
+                                (function () {
+                                    if (window.localize) return;
+                                    const el = document.getElementById('dental-chart-i18n');
+                                    try {
+                                        window.__dentalChartTranslations = JSON.parse(el?.dataset?.localize || '{}');
+                                    } catch (e) {
+                                        window.__dentalChartTranslations = {};
+                                    }
+                                    window.localize = function (key) {
+                                        return window.__dentalChartTranslations?.[key] || key;
+                                    };
+                                })();
+                            </script>
                             @vite('public/assets/js/vue/dental-chart-app.js')
                         </div>
 

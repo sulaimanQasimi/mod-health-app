@@ -126,6 +126,32 @@ class DentistRegistration extends Model
         $this->update(['status' => 'in_progress']);
     }
 
+    /**
+     * If this registration has no dentist assigned, try to auto-assign it to the
+     * currently logged-in user's Doctor record (Doctor.user_id == auth user id).
+     */
+    public function assignToCurrentDentistIfMissing(): bool
+    {
+        if (!empty($this->dentist_id)) {
+            return false;
+        }
+
+        $userId = Auth::id();
+        if (empty($userId)) {
+            return false;
+        }
+
+        $doctor = Doctor::where('user_id', $userId)->first();
+        if (!$doctor) {
+            return false;
+        }
+
+        $this->dentist_id = $doctor->id;
+        $this->save();
+
+        return true;
+    }
+
     public function cancel()
     {
         $this->update(['status' => 'cancelled']);

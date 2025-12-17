@@ -6,6 +6,7 @@ use App\Models\DentistRegistration;
 use App\Models\DentalChart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Validation\ValidationException;
 use HanifHefaz\Dcter\Dcter;
 
 class DentalChartController extends Controller
@@ -15,6 +16,8 @@ class DentalChartController extends Controller
      */
     public function index(Request $request, DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         $query = $dentistRegistration->dentalCharts()->with(['measurements', 'creator']);
 
         // Filter by tooth number
@@ -44,6 +47,8 @@ class DentalChartController extends Controller
      */
     public function create(DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         // Get treatments for reference (will be filtered by tooth_number in view via AJAX)
         $treatments = $dentistRegistration->treatments()->with('dentalChart')->get();
         return view('pages.dentist.charts.create', compact('dentistRegistration', 'treatments'));
@@ -54,7 +59,11 @@ class DentalChartController extends Controller
      */
     public function store(Request $request, DentistRegistration $dentistRegistration)
     {
-        $validatedData = $request->validate([
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
+        $isImplant = $request->input('tooth_condition') === 'implant';
+
+        $rules = [
             'tooth_number' => 'required|integer|min:11|max:48',
             'tooth_condition' => 'required|in:healthy,cavity,filling,crown,bridge,extraction,missing,impacted,root_canal,implant,decay,fractured',
             'gum_health' => 'nullable|in:healthy,gingivitis,periodontitis,recession,bleeding',
@@ -64,11 +73,48 @@ class DentalChartController extends Controller
             'mobility' => 'nullable|in:none,grade1,grade2,grade3',
             'treatment_history' => 'nullable|string',
             'notes' => 'nullable|string',
-        ]);
+        ];
+
+        if ($isImplant) {
+            $rules = array_merge($rules, [
+                'implant_system_brand' => 'nullable|string|max:255',
+                'implant_diameter' => 'nullable|numeric|min:0',
+                'implant_length' => 'nullable|numeric|min:0',
+                'implant_status' => 'nullable|in:planned,placed,failed,removed',
+                'implant_notes' => 'nullable|string',
+            ]);
+        }
+
+        $validatedData = $request->validate($rules);
+
+        $implantDetails = [];
+        if ($isImplant) {
+            // Auto-set implant date on backend (use chart date / today)
+            $implantDate = now()->format('Y-m-d');
+
+            $implantDetails = array_filter([
+                'implant_date' => $implantDate,
+                'implant_system_brand' => $validatedData['implant_system_brand'] ?? null,
+                'implant_diameter' => $validatedData['implant_diameter'] ?? null,
+                'implant_length' => $validatedData['implant_length'] ?? null,
+                'implant_status' => $validatedData['implant_status'] ?? null,
+                'implant_notes' => $validatedData['implant_notes'] ?? null,
+            ], function ($v) {
+                return !is_null($v) && $v !== '';
+            });
+        }
 
         // Automatically set chart_date to today
         $validatedData['chart_date'] = now()->format('Y-m-d');
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
+
+        // Persist implant details into JSON `measurements['implant']`
+        if ($isImplant && !empty($implantDetails)) {
+            $validatedData['measurements'] = array_merge($validatedData['measurements'] ?? [], [
+                'implant' => $implantDetails,
+            ]);
+        }
+
         $chart = DentalChart::create($validatedData);
         $chart->load('images', 'periodontalMeasurements');
 
@@ -90,6 +136,8 @@ class DentalChartController extends Controller
      */
     public function show(DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         $dentistRegistration->load('dentalCharts.measurements', 'dentalCharts.images', 'dentalCharts.periodontalMeasurements', 'dentalCharts.treatments');
         
         // Get all teeth data for the visual chart
@@ -121,6 +169,9 @@ class DentalChartController extends Controller
     public function edit(DentalChart $dentalChart)
     {
         $dentalChart->load('dentistRegistration', 'measurements', 'images', 'periodontalMeasurements', 'treatments');
+        if ($dentalChart->dentistRegistration) {
+            $dentalChart->dentistRegistration->assignToCurrentDentistIfMissing();
+        }
         // Get related treatments for this chart's tooth
         $relatedTreatments = $dentalChart->getRelatedTreatments();
         // Convert chart_date to Persian format for display
@@ -133,7 +184,13 @@ class DentalChartController extends Controller
      */
     public function update(Request $request, DentalChart $dentalChart)
     {
-        $validatedData = $request->validate([
+        if ($dentalChart->dentistRegistration) {
+            $dentalChart->dentistRegistration->assignToCurrentDentistIfMissing();
+        }
+
+        $isImplant = $request->input('tooth_condition') === 'implant';
+
+        $rules = [
             'tooth_condition' => 'required|in:healthy,cavity,filling,crown,bridge,extraction,missing,impacted,root_canal,implant,decay,fractured',
             'gum_health' => 'nullable|in:healthy,gingivitis,periodontitis,recession,bleeding',
             'oral_hygiene_score' => 'nullable|numeric|min:0|max:10',
@@ -142,12 +199,51 @@ class DentalChartController extends Controller
             'mobility' => 'nullable|in:none,grade1,grade2,grade3',
             'treatment_history' => 'nullable|string',
             'notes' => 'nullable|string',
-        ]);
+        ];
+
+        if ($isImplant) {
+            $rules = array_merge($rules, [
+                'implant_system_brand' => 'nullable|string|max:255',
+                'implant_diameter' => 'nullable|numeric|min:0',
+                'implant_length' => 'nullable|numeric|min:0',
+                'implant_status' => 'nullable|in:planned,placed,failed,removed',
+                'implant_notes' => 'nullable|string',
+            ]);
+        }
+
+        $validatedData = $request->validate($rules);
+
+        $implantDetails = [];
+        if ($isImplant) {
+            // Auto-set implant date on backend:
+            // - keep existing implant_date if already set
+            // - otherwise fallback to chart_date
+            $existingImplantDate = $dentalChart->implant_details['implant_date'] ?? null;
+            $implantDate = $existingImplantDate ?: ($dentalChart->chart_date ? $dentalChart->chart_date->format('Y-m-d') : now()->format('Y-m-d'));
+
+            $implantDetails = array_filter([
+                'implant_date' => $implantDate,
+                'implant_system_brand' => $validatedData['implant_system_brand'] ?? null,
+                'implant_diameter' => $validatedData['implant_diameter'] ?? null,
+                'implant_length' => $validatedData['implant_length'] ?? null,
+                'implant_status' => $validatedData['implant_status'] ?? null,
+                'implant_notes' => $validatedData['implant_notes'] ?? null,
+            ], function ($v) {
+                return !is_null($v) && $v !== '';
+            });
+        }
 
         // Keep existing chart_date (don't update it)
         // chart_date is automatically set to today when creating, but preserved when updating
 
-        $dentalChart->update($validatedData);
+        $dentalChart->fill($validatedData);
+        if ($isImplant) {
+            $dentalChart->implant_details = $implantDetails;
+        } else {
+            // If condition changes away from implant, clear implant JSON
+            $dentalChart->implant_details = [];
+        }
+        $dentalChart->save();
 
         // Always return JSON for AJAX requests
         if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
@@ -179,6 +275,8 @@ class DentalChartController extends Controller
      */
     public function history(Request $request, DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         $dentistRegistration->load('appointment.patient', 'dentist');
         
         // Get all unique chart dates
@@ -224,6 +322,8 @@ class DentalChartController extends Controller
      */
     public function compare(Request $request, DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         $dentistRegistration->load('appointment.patient', 'dentist');
         
         $date1 = $request->get('date1', now()->format('Y-m-d'));
@@ -266,6 +366,8 @@ class DentalChartController extends Controller
      */
     public function exportPdf(DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         $dentistRegistration->load([
             'appointment.patient',
             'dentist',
@@ -322,6 +424,8 @@ class DentalChartController extends Controller
      */
     public function printView(DentistRegistration $dentistRegistration)
     {
+        $dentistRegistration->assignToCurrentDentistIfMissing();
+
         $dentistRegistration->load([
             'appointment.patient',
             'dentist',

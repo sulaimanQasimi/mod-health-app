@@ -1,6 +1,30 @@
 import { createApp } from 'vue'
 import DentalChart from './components/DentalChart.vue'
 
+function initImplantFields(root = document) {
+    if (!root) return;
+
+    const wrappers = root.querySelectorAll('[data-implant-fields]');
+    wrappers.forEach(wrapper => {
+        const form = wrapper.closest('form') || root.querySelector('form');
+        const conditionSelect = (form || root).querySelector('select[name="tooth_condition"]');
+        if (!conditionSelect) return;
+
+        const setState = () => {
+            const isImplant = conditionSelect.value === 'implant';
+            wrapper.style.display = isImplant ? '' : 'none';
+
+            // Disable implant inputs when not implant so they don't get submitted
+            wrapper.querySelectorAll('input, select, textarea').forEach(el => {
+                el.disabled = !isImplant;
+            });
+        };
+
+        conditionSelect.addEventListener('change', setState);
+        setState();
+    });
+}
+
 // Define closeModal function
 function closeModal() {
     const modalElement = document.getElementById('toothModal');
@@ -380,6 +404,9 @@ function openToothModal(toothNumber, chartId) {
                             }
                         }
                     }, 150);
+
+                    // Toggle implant-only fields in edit form
+                    initImplantFields(form);
                     
                     // Add onsubmit to handle AJAX
                     form.addEventListener('submit', function(e) {
@@ -454,6 +481,7 @@ function openToothModal(toothNumber, chartId) {
 window.openToothModal = openToothModal;
 window.submitToothForm = submitToothForm;
 window.closeModal = closeModal;
+window.initImplantFields = initImplantFields;
 
 // Also make them available on window load as backup
 window.addEventListener('load', function() {
@@ -466,10 +494,16 @@ window.addEventListener('load', function() {
     if (!window.closeModal) {
         window.closeModal = closeModal;
     }
+    if (!window.initImplantFields) {
+        window.initImplantFields = initImplantFields;
+    }
 });
 
 // Initialize Vue app for dental chart
 document.addEventListener('DOMContentLoaded', function() {
+    // Init implant fields on non-Vue pages (create/edit Blade pages)
+    initImplantFields(document);
+
     const container = document.getElementById('dental-chart-vue-container');
     
     if (container) {
@@ -541,6 +575,41 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
                         <option value="missing">Missing</option>
                         <option value="impacted">Impacted</option>
                     </select>
+                </div>
+                
+                <!-- Implant-only fields -->
+                <div class="col-12" data-implant-fields style="display:none;">
+                    <div class="border rounded p-3 mb-3 bg-body-secondary">
+                        <h6 class="mb-3">جزئیات ایمپلنت</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">سیستم/برند ایمپلنت</label>
+                                <input type="text" name="implant_system_brand" class="form-control" placeholder="مثال: Straumann">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">قطر (میلی‌متر)</label>
+                                <input type="number" step="0.01" min="0" name="implant_diameter" class="form-control" placeholder="مثال: 4.1">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">طول (میلی‌متر)</label>
+                                <input type="number" step="0.01" min="0" name="implant_length" class="form-control" placeholder="مثال: 10">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">وضعیت ایمپلنت</label>
+                                <select name="implant_status" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="planned">Planned</option>
+                                    <option value="placed">Placed</option>
+                                    <option value="failed">Failed</option>
+                                    <option value="removed">Removed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">یادداشت‌های ایمپلنت</label>
+                                <textarea name="implant_notes" class="form-control" rows="3" placeholder="یادداشت‌های مرتبط با ایمپلنت را وارد کنید"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">سلامت بیره دندان</label>
@@ -617,6 +686,9 @@ function showToothForm(modalBody, toothNumber, dentistRegistrationId, csrfToken,
             // Store dentist registration ID and chart ID on form for easy access
             newForm.dataset.dentistRegistrationId = dentistRegistrationId;
             newForm.dataset.chartId = chartId || '';
+
+            // Toggle implant-only fields
+            initImplantFields(newForm);
             
             // Initialize Persian datepicker
             if (typeof window.$ !== 'undefined' && window.$.fn.persianDatepicker) {

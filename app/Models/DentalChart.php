@@ -33,6 +33,10 @@ class DentalChart extends Model
         'measurements' => 'array',
     ];
 
+    protected $appends = [
+        'implant_details',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -81,6 +85,35 @@ class DentalChart extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Implant details are stored under the JSON column `measurements['implant']`.
+     * Expose a stable attribute name to avoid confusion with the `measurements()` relationship.
+     */
+    public function getImplantDetailsAttribute(): array
+    {
+        $measurements = $this->getAttributeValue('measurements');
+        if (!is_array($measurements)) {
+            return [];
+        }
+        $implant = $measurements['implant'] ?? [];
+        return is_array($implant) ? $implant : [];
+    }
+
+    public function setImplantDetailsAttribute($value): void
+    {
+        $details = is_array($value) ? $value : [];
+        $measurements = $this->getAttributeValue('measurements');
+        $measurements = is_array($measurements) ? $measurements : [];
+
+        if (empty($details)) {
+            unset($measurements['implant']);
+        } else {
+            $measurements['implant'] = $details;
+        }
+
+        $this->setAttribute('measurements', $measurements);
     }
 
     /**

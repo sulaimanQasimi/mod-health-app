@@ -58,6 +58,52 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <!-- Implant-only fields -->
+                            @php
+                                $implantDetails = is_array(old('implant_details')) ? old('implant_details') : ($dentalChart->implant_details ?? []);
+                                $implantSystemBrand = old('implant_system_brand', $implantDetails['implant_system_brand'] ?? '');
+                                $implantDiameter = old('implant_diameter', $implantDetails['implant_diameter'] ?? '');
+                                $implantLength = old('implant_length', $implantDetails['implant_length'] ?? '');
+                                $implantStatus = old('implant_status', $implantDetails['implant_status'] ?? '');
+                                $implantNotes = old('implant_notes', $implantDetails['implant_notes'] ?? '');
+                            @endphp
+                            <div class="col-12 mb-3" data-implant-fields style="display:none;">
+                                <div class="border rounded p-3 bg-body-secondary">
+                                    <h6 class="mb-3">{{ localize('global.implant') }} Details</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Implant System/Brand</label>
+                                            <input type="text" name="implant_system_brand" class="form-control"
+                                                value="{{ $implantSystemBrand }}">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Diameter (mm)</label>
+                                            <input type="number" step="0.01" min="0" name="implant_diameter" class="form-control"
+                                                value="{{ $implantDiameter }}">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Length (mm)</label>
+                                            <input type="number" step="0.01" min="0" name="implant_length" class="form-control"
+                                                value="{{ $implantLength }}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Implant Status</label>
+                                            <select name="implant_status" class="form-select">
+                                                <option value="">{{ localize('global.select') }}</option>
+                                                <option value="planned" {{ $implantStatus == 'planned' ? 'selected' : '' }}>Planned</option>
+                                                <option value="placed" {{ $implantStatus == 'placed' ? 'selected' : '' }}>Placed</option>
+                                                <option value="failed" {{ $implantStatus == 'failed' ? 'selected' : '' }}>Failed</option>
+                                                <option value="removed" {{ $implantStatus == 'removed' ? 'selected' : '' }}>Removed</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label">Implant Notes</label>
+                                            <textarea name="implant_notes" class="form-control" rows="3">{{ $implantNotes }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-6 mb-3">
                                 <label for="gum_health" class="form-label">{{ localize('global.gum_health') }}</label>
                                 <select class="form-select @error('gum_health') is-invalid @enderror" id="gum_health" name="gum_health">
@@ -361,4 +407,6 @@
             });
         });
     </script>
+
+    @vite('public/assets/js/vue/dental-chart-app.js')
 @endsection

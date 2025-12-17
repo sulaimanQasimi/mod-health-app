@@ -870,4 +870,9 @@ return [
     'original_data_copied' => 'اصلي ډیټا کاپي شو',
     'auto_filled' => 'په اتوماتیک ډول ډک شوی',
     'select_medicine_to_auto_fill' => 'د درمل انتخاب وکړئ ترڅو د فورم فیلدونه په اتوماتیک ډول ډک شي',
+    'images' => 'انځورونه',
+    'upload_image' => 'انځور اپلوډ کړئ',
+    'no_images_uploaded' => 'هیڅ انځور نه دی اپلوډ شوی',
+    'periodontal_measurements' => 'پریودنتال اندازه‌ګیرنې',
+    'no_measurements_recorded' => 'هیڅ اندازه‌ګیرنه ثبت شوې نه ده',
 ];

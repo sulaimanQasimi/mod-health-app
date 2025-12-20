@@ -3950,4 +3950,5 @@ return [
     'no_images_uploaded' => 'هیچ تصویری آپلود نشده است',
     'periodontal_measurements' => 'اندازه‌گیری‌های پریودنتال',
     'no_measurements_recorded' => 'هیچ اندازه‌گیری ثبت نشده است',
+    'add_measurement' => 'افزودن اندازه‌گیری'
 ];

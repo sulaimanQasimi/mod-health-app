@@ -20,9 +20,11 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">{{ localize('global.measurement_date') }}</label>
-                            <input type="date" 
+                            <input type="text" 
+                                   ref="measurementDateInput"
                                    v-model="measurementForm.measurement_date" 
-                                   class="form-control"
+                                   class="form-control datepicker_dari"
+                                   readonly
                                    required>
                         </div>
                     </div>
@@ -157,7 +159,7 @@ export default {
                 { value: 'palatal', label: 'Palatal' }
             ],
             measurementForm: {
-                measurement_date: new Date().toISOString().split('T')[0],
+                measurement_date: '',
                 measurements: {}
             }
         }
@@ -189,6 +191,15 @@ export default {
             };
         });
         this.measurementForm.measurements = measurements;
+    },
+    watch: {
+        showForm(newVal) {
+            if (newVal) {
+                this.$nextTick(() => {
+                    this.initDatePicker();
+                });
+            }
+        }
     },
     methods: {
         async saveMeasurements() {
@@ -257,7 +268,39 @@ export default {
                     notes: ''
                 };
             });
-            this.measurementForm.measurement_date = new Date().toISOString().split('T')[0];
+            // Reset date - will be set by datepicker
+            this.measurementForm.measurement_date = '';
+            this.$nextTick(() => {
+                this.initDatePicker();
+            });
+        },
+        initDatePicker() {
+            if (typeof window.$ !== 'undefined' && window.$.fn.persianDatepicker) {
+                const dateInput = this.$refs.measurementDateInput;
+                if (dateInput) {
+                    const $input = $(dateInput);
+                    // Check if datepicker is already initialized
+                    if (!$input.data('persianDatepicker')) {
+                        $input.persianDatepicker({
+                            formatDate: 'YYYY-MM-DD',
+                            calendar: {
+                                persian: {
+                                    locale: 'en',
+                                    showHint: true,
+                                    leapYearMode: 'algorithmic'
+                                }
+                            },
+                            checkDate: function(unix) {
+                                return true;
+                            },
+                            onSelect: () => {
+                                // Update v-model when date is selected
+                                this.measurementForm.measurement_date = $input.val();
+                            }
+                        });
+                    }
+                }
+            }
         },
         getPointLabel(point) {
             const pointObj = this.measurementPoints.find(p => p.value === point);

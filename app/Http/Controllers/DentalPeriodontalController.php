@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DentalChart;
 use App\Models\DentalPeriodontalMeasurement;
 use Illuminate\Http\Request;
+use HanifHefaz\Dcter\Dcter;
 
 class DentalPeriodontalController extends Controller
 {
@@ -21,19 +22,35 @@ class DentalPeriodontalController extends Controller
             'measurements.*.bleeding' => 'nullable|boolean',
             'measurements.*.plaque' => 'nullable|boolean',
             'measurements.*.notes' => 'nullable|string',
-            'measurement_date' => 'required|date',
+            'measurement_date' => 'required|string',
         ]);
+
+        // Convert Persian date to Gregorian
+        $measurementDate = $validatedData['measurement_date'];
+        if (!empty($measurementDate)) {
+            try {
+                $measurementDate = Dcter::JalaliToGregorian(Dcter::Carbonize($measurementDate));
+            } catch (\Exception $e) {
+                // If conversion fails, try to validate as Gregorian date
+                if (!strtotime($measurementDate)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => localize('global.invalid_date_format')
+                    ], 422);
+                }
+            }
+        }
 
         // Delete existing measurements for this chart and date
         DentalPeriodontalMeasurement::where('dental_chart_id', $dentalChart->id)
-            ->where('measurement_date', $validatedData['measurement_date'])
+            ->where('measurement_date', $measurementDate)
             ->delete();
 
         // Create new measurements
         $created = [];
         foreach ($validatedData['measurements'] as $measurement) {
             $measurement['dental_chart_id'] = $dentalChart->id;
-            $measurement['measurement_date'] = $validatedData['measurement_date'];
+            $measurement['measurement_date'] = $measurementDate;
             $created[] = DentalPeriodontalMeasurement::create($measurement);
         }
 

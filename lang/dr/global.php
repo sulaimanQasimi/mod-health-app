@@ -3948,7 +3948,5 @@ return [
     'images' => 'تصاویر',
     'upload_image' => 'آپلود تصویر',
     'no_images_uploaded' => 'هیچ تصویری آپلود نشده است',
-    'periodontal_measurements' => 'اندازه‌گیری‌های پریودنتال',
-    'no_measurements_recorded' => 'هیچ اندازه‌گیری ثبت نشده است',
-    'add_measurement' => 'افزودن اندازه‌گیری'
+    'select_tooth_to_view_treatments'=>'لطفاً دندانی را انتخاب کنید تا تداوی‌های آن را مشاهده کنید',
 ];

@@ -147,6 +147,14 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="prescription-tab" data-bs-toggle="tab" data-bs-target="#prescription" type="button" role="tab">
+                                <i class="bx bx-notepad me-1"></i> {{ localize('global.prescription') }}
+                                @if($dentistRegistration->appointment && $dentistRegistration->appointment->prescription->count() > 0)
+                                    <span class="badge bg-success ms-1">{{ $dentistRegistration->appointment->prescription->count() }}</span>
+                                @endif
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="dental-chart-tab" data-bs-toggle="tab" data-bs-target="#dental-chart" type="button" role="tab">
                                 <i class="bx bx-grid-alt me-1"></i> {{ localize('global.dental_chart') }}
                                 @if($dentistRegistration->dentalCharts->count() > 0)
@@ -356,6 +364,30 @@
                             @empty
                                 <p class="text-center text-muted">{{ localize('global.no_notes_found') }}</p>
                             @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prescription Tab -->
+                <div class="tab-pane fade" id="prescription" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Prescription Section Vue Component -->
+                            <div id="prescription-section-container" 
+                                 data-appointment='@json($dentistRegistration->appointment ?? null)'
+                                 data-permissions='@json([
+                                     "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                     "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                     "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                 ])'>
+                                <!-- Fallback content while Vue loads -->
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -648,6 +680,17 @@
         </div>
     </div>
 
+    <!-- Lab Test Registration Section Component -->
+    @if($dentistRegistration->appointment)
+        <x-lab-test-registration-section 
+            :entity="$dentistRegistration->appointment"
+            entity-type="appointment"
+            :entity-id="$dentistRegistration->appointment->id"
+            :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+            :appointment-completed="$dentistRegistration->appointment->is_completed == 1"
+        />
+    @endif
+
     <!-- Add Examination Modal -->
     <div class="modal fade" id="addExaminationModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
@@ -850,6 +893,9 @@
 @endsection
 
 @section('scripts')
+    <!-- Vue.js Prescription Section -->
+    @vite(['public/assets/js/vue/appointment-prescription-app.js'])
+    
     <!-- Persian Datepicker Library -->
     <script src="{{ asset('assets/persian date2/js/persianDatepicker.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />

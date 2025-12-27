@@ -1,13 +1,16 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [
         vue(),
+        react(),
         laravel({
             input: [
                 'resources/css/app.css', 
+                'resources/js/app.tsx',
                 'resources/js/app.js',
                 'resources/js/ckeditor.js',
                 'public/assets/js/vue/lab-section.js',
@@ -34,7 +37,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            'vue': 'vue/dist/vue.esm-bundler.js'
+            'vue': 'vue/dist/vue.esm-bundler.js',
+            '@': '/resources/js'
         }
     },
     build: {

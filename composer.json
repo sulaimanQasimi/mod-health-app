@@ -17,6 +17,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "hanifhefaz/dcter": "^1.1",
         "hekmatinasser/verta": "^8.5",
+        "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
@@ -81,6 +82,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": ["PKSA-365x-2zjk-pt47"]
         }
     },
     "minimum-stability": "stable",

@@ -168,55 +168,23 @@
 
             <!-- Tab Content -->
             <div class="tab-content" id="dentistTabsContent">
-                <!-- Examinations Tab -->
+                <!-- Examinations Tab (Lab Test Registration Section) -->
                 <div class="tab-pane fade show active" id="examinations" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ localize('global.dental_examinations') }}</h5>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addExaminationModal">
-                                <i class="bx bx-plus"></i> {{ localize('global.add_examination') }}
-                            </button>
+                    @if($dentistRegistration->appointment)
+                        <x-lab-test-registration-section 
+                            :entity="$dentistRegistration->appointment"
+                            entity-type="appointment"
+                            :entity-id="$dentistRegistration->appointment->id"
+                            :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+                            :appointment-completed="$dentistRegistration->appointment->is_completed == 1"
+                        />
+                    @else
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="text-center text-muted">{{ localize('global.no_appointment_available') }}</p>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            @forelse($dentistRegistration->examinations as $examination)
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h6 class="card-title">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($examination->examination_date) }}</h6>
-                                                @if($examination->chief_complaint)
-                                                    <p><strong>{{ localize('global.chief_complaint') }}:</strong> {{ $examination->chief_complaint }}</p>
-                                                @endif
-                                                @if($examination->clinical_findings)
-                                                    <p><strong>{{ localize('global.clinical_findings') }}:</strong> {{ $examination->clinical_findings }}</p>
-                                                @endif
-                                                @if($examination->diagnosis)
-                                                    <p><strong>{{ localize('global.diagnosis') }}:</strong> {{ $examination->diagnosis }}</p>
-                                                @endif
-                                                @if($examination->treatment_plan)
-                                                    <p><strong>{{ localize('global.treatment_plan') }}:</strong> {{ $examination->treatment_plan }}</p>
-                                                @endif
-                                                @if($examination->notes)
-                                                    <p><strong>{{ localize('global.notes') }}:</strong> {{ $examination->notes }}</p>
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <form action="{{ route('dental-examinations.destroy', $examination) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ localize('global.are_you_sure') }}')">
-                                                        <i class="bx bx-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="text-center text-muted">{{ localize('global.no_examinations_found') }}</p>
-                            @endforelse
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Treatments Tab -->
@@ -679,17 +647,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Lab Test Registration Section Component -->
-    @if($dentistRegistration->appointment)
-        <x-lab-test-registration-section 
-            :entity="$dentistRegistration->appointment"
-            entity-type="appointment"
-            :entity-id="$dentistRegistration->appointment->id"
-            :can-add-test-registration="auth()->user()->can('register-patient-tests')"
-            :appointment-completed="$dentistRegistration->appointment->is_completed == 1"
-        />
-    @endif
 
     <!-- Add Examination Modal -->
     <div class="modal fade" id="addExaminationModal" tabindex="-1">

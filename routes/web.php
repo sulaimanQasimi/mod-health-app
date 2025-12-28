@@ -302,7 +302,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('changeStatus/{appointment}', [AppointmentController::class, 'changeStatus'])->name('changeStatus');
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
         Route::get('report', [AppointmentController::class, 'report'])->name('report');
-        Route::post('report-search', [AppointmentController::class, 'ReportSearch'])->name('report-search');
+        Route::match(['get', 'post'], 'report-search', [AppointmentController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [AppointmentController::class, 'exportReport'])->name('export-report');
         Route::get('{appointment}/printToken', [AppointmentController::class, 'printToken'])->name('printToken');
     });

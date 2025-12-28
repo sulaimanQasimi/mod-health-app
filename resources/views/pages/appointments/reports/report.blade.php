@@ -55,7 +55,16 @@
                             </span> 
                         @endif
                         </td>
-                        <td>{{ \Hekmatinasser\Verta\Facades\Verta::createFromFormat('Y-m-d', $item->date)->format('Y/m/d') }}</td>
+                        <td>
+                            @php
+                                $vertaDate = $item->date ? \Hekmatinasser\Verta\Facades\Verta::createFromFormat('Y-m-d', $item->date) : false;
+                            @endphp
+                            @if($vertaDate)
+                                {{ $vertaDate->format('Y/m/d') }}
+                            @else
+                                {{ $item->date ?? '—' }}
+                            @endif
+                        </td>
                         <td>{{ $item->time }}</td>
                         
                     </tr>

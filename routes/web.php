@@ -1017,6 +1017,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('results/grouped', [TestResultController::class, 'groupedTests'])->name('results.grouped');
         Route::get('reports/print/{ref_no}', [TestResultController::class, 'printResultByRef'])->name('reports.print');
         Route::get('reports/print-group/{category_id}', [TestResultController::class, 'printGroupedTests'])->name('reports.print-group');
+        // Attachment routes
+        Route::post('results/{test_result_id}/attachments', [TestResultController::class, 'uploadAttachments'])->name('results.attachments.upload');
+        Route::get('results/{test_result_id}/attachments', [TestResultController::class, 'getAttachments'])->name('results.attachments.get');
+        Route::delete('results/attachments/{attachment_id}', [TestResultController::class, 'deleteAttachment'])->name('results.attachments.delete');
         
         // Scan routes
         Route::get('scan', [TestResultController::class, 'scanCode'])->name('scan');

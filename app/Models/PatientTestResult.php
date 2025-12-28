@@ -114,6 +114,14 @@ class PatientTestResult extends Model
     }
 
     /**
+     * Get the attachments for this test result
+     */
+    public function attachments()
+    {
+        return $this->hasMany(PatientTestResultAttachment::class, 'patient_test_result_id');
+    }
+
+    /**
      * Check if result is within normal range
      */
     public function isWithinNormalRange()

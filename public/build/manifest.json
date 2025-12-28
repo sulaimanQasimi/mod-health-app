@@ -223,7 +223,7 @@
     ]
   },
   "public/assets/js/vue/lab-test-registration-section.js": {
-    "file": "assets/lab-test-registration-section-PJzI78Wf.js",
+    "file": "assets/lab-test-registration-section-L66ja5Zh.js",
     "name": "lab-test-registration-section",
     "src": "public/assets/js/vue/lab-test-registration-section.js",
     "isEntry": true,
@@ -233,7 +233,7 @@
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/lab-test-registration-section-J2l6otjT.css",
+      "assets/lab-test-registration-section-DSPgjqsT.css",
       "assets/vue-multiselect-Chsy-e4F.css"
     ]
   },

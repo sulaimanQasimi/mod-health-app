@@ -3950,5 +3950,12 @@ return [
     'no_images_uploaded' => 'هیچ تصویری آپلود نشده است',
     'periodontal_measurements' => 'اندازه‌گیری‌های پریودنتال',
     'no_measurements_recorded' => 'هیچ اندازه‌گیری ثبت نشده است',
-    'add_measurement' => 'افزودن اندازه‌گیری'
+    'add_measurement' => 'افزودن اندازه‌گیری',
+    'attach_files' => 'ضمیمه فایل‌ها',
+    'select_files' => 'انتخاب فایل‌ها',
+    'pdf_excel_images' => 'PDF، Excel، تصاویر',
+    'max_file_size_10mb' => 'حداکثر اندازه فایل ۱۰ مگابایت',
+    'add_description_here' => 'اینجا توضیحات اضافه کنید',
+    'attached_files' => 'فایل‌های ضمیمه‌شده',
+    'no_attachments' => 'هیچ ضمیمه‌ای وجود ندارد',
 ];

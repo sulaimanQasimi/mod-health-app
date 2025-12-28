@@ -438,7 +438,8 @@ class PatientController extends Controller
         
         // Preserve query parameters in pagination links
         if ($request->hasAny(['patient_name', 'nid', 'id_card', 'referral_name', 'job_category', 
-                              'type', 'referred_by', 'age', 'gender', 'province_id', 'district_id', 'from', 'to'])) {
+                              'type', 'referred_by', 'age', 'gender', 'province_id', 'district_id', 
+                              'from', 'to', 'per_page'])) {
             $items->appends($request->query());
         }
 

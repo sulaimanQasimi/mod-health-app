@@ -132,7 +132,7 @@
                                     </div>
                                 </div>
                                 <div class="row g-2 mt-2">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <button type="submit" class="btn btn-label-primary">
                                             <i class="fa fa-search m-2"></i> <span>
                                                 {{ localize('global.documents.search') }}</span>
@@ -140,7 +140,17 @@
                                         <button type="reset" class="btn btn-label-secondary">
                                             <i class="fa fa-history m-2"></i>
                                             <span>{{ localize('global.reset') }}</span>
-
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="per_page" class="form-label">{{ localize('global.per_page') }}</label>
+                                        <select class="form-select" name="per_page" id="per_page">
+                                            <option value="10" {{ request('per_page', 15) == 10 ? 'selected' : '' }}>10</option>
+                                            <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                                            <option value="25" {{ request('per_page', 15) == 25 ? 'selected' : '' }}>25</option>
+                                            <option value="50" {{ request('per_page', 15) == 50 ? 'selected' : '' }}>50</option>
+                                            <option value="100" {{ request('per_page', 15) == 100 ? 'selected' : '' }}>100</option>
+                                        </select>
                                     </div>
                                 </div>
                             </form>
@@ -199,7 +209,12 @@
                 }
 
             })
-        })
+        });
+
+        // Auto-submit when per_page changes
+        $('#per_page').on('change', function() {
+            $('form').submit();
+        });
     </script>
 @endpush
 @push('custom-css')

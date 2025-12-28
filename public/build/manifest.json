@@ -28,32 +28,32 @@
       "assets/ConsultationSection-3NKmDSM7.css"
     ]
   },
-  "_PrescriptionShowApp-CKHKlNPp.css": {
-    "file": "assets/PrescriptionShowApp-CKHKlNPp.css",
-    "src": "_PrescriptionShowApp-CKHKlNPp.css"
-  },
-  "_PrescriptionShowApp-CWF1nm8b.js": {
-    "file": "assets/PrescriptionShowApp-CWF1nm8b.js",
+  "_PrescriptionShowApp-CFeR0Kjn.js": {
+    "file": "assets/PrescriptionShowApp-CFeR0Kjn.js",
     "name": "PrescriptionShowApp",
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
-      "_index-NIGUFBhG.js",
+      "_index-BetwS6Uc.js",
       "_vue-multiselect.esm-_lojsyio.js"
     ],
     "css": [
       "assets/PrescriptionShowApp-CKHKlNPp.css"
     ]
   },
-  "__commonjsHelpers-CE1G-McA.js": {
-    "file": "assets/_commonjsHelpers-CE1G-McA.js",
+  "_PrescriptionShowApp-CKHKlNPp.css": {
+    "file": "assets/PrescriptionShowApp-CKHKlNPp.css",
+    "src": "_PrescriptionShowApp-CKHKlNPp.css"
+  },
+  "__commonjsHelpers-DsqdWQfm.js": {
+    "file": "assets/_commonjsHelpers-DsqdWQfm.js",
     "name": "_commonjsHelpers"
   },
   "__plugin-vue_export-helper-beOoQdwu.js": {
     "file": "assets/_plugin-vue_export-helper-beOoQdwu.js",
     "name": "_plugin-vue_export-helper"
   },
-  "_index-NIGUFBhG.js": {
-    "file": "assets/index-NIGUFBhG.js",
+  "_index-BetwS6Uc.js": {
+    "file": "assets/index-BetwS6Uc.js",
     "name": "index"
   },
   "_sweetalert2.esm.all-DzlfzZPw.js": {
@@ -72,12 +72,12 @@
     ]
   },
   "public/assets/js/qr-code-generator.js": {
-    "file": "assets/qr-code-generator-2pU24JTW.js",
+    "file": "assets/qr-code-generator-DbHge89M.js",
     "name": "qr-code-generator",
     "src": "public/assets/js/qr-code-generator.js",
     "isEntry": true,
     "imports": [
-      "__commonjsHelpers-CE1G-McA.js"
+      "__commonjsHelpers-DsqdWQfm.js"
     ]
   },
   "public/assets/js/simple-qr-fallback.js": {
@@ -154,7 +154,7 @@
     ]
   },
   "public/assets/js/vue/dental-chart-app.js": {
-    "file": "assets/dental-chart-app-B_Ym2-Ku.js",
+    "file": "assets/dental-chart-app-C6aqO_1K.js",
     "name": "dental-chart-app",
     "src": "public/assets/js/vue/dental-chart-app.js",
     "isEntry": true,
@@ -223,7 +223,7 @@
     ]
   },
   "public/assets/js/vue/lab-test-registration-section.js": {
-    "file": "assets/lab-test-registration-section-B8WsamkO.js",
+    "file": "assets/lab-test-registration-section-PJzI78Wf.js",
     "name": "lab-test-registration-section",
     "src": "public/assets/js/vue/lab-test-registration-section.js",
     "isEntry": true,
@@ -233,7 +233,7 @@
       "_sweetalert2.esm.all-DzlfzZPw.js"
     ],
     "css": [
-      "assets/lab-test-registration-section-CPktASxf.css",
+      "assets/lab-test-registration-section-J2l6otjT.css",
       "assets/vue-multiselect-Chsy-e4F.css"
     ]
   },
@@ -266,16 +266,16 @@
     ]
   },
   "public/assets/js/vue/prescription-index-app.js": {
-    "file": "assets/prescription-index-app-CKvNw5vP.js",
+    "file": "assets/prescription-index-app-JsKIzDnx.js",
     "name": "prescription-index-app",
     "src": "public/assets/js/vue/prescription-index-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
-      "_PrescriptionShowApp-CWF1nm8b.js",
-      "_index-NIGUFBhG.js",
+      "_PrescriptionShowApp-CFeR0Kjn.js",
+      "_index-BetwS6Uc.js",
       "_vue-multiselect.esm-_lojsyio.js",
-      "__commonjsHelpers-CE1G-McA.js"
+      "__commonjsHelpers-DsqdWQfm.js"
     ],
     "css": [
       "assets/prescription-index-app-CsOpwKcX.css",
@@ -283,14 +283,14 @@
     ]
   },
   "public/assets/js/vue/prescription-show-app.js": {
-    "file": "assets/prescription-show-app-D8dy61Xl.js",
+    "file": "assets/prescription-show-app-Dbnku6GA.js",
     "name": "prescription-show-app",
     "src": "public/assets/js/vue/prescription-show-app.js",
     "isEntry": true,
     "imports": [
       "__plugin-vue_export-helper-beOoQdwu.js",
-      "_PrescriptionShowApp-CWF1nm8b.js",
-      "_index-NIGUFBhG.js",
+      "_PrescriptionShowApp-CFeR0Kjn.js",
+      "_index-BetwS6Uc.js",
       "_vue-multiselect.esm-_lojsyio.js"
     ],
     "css": [
@@ -320,22 +320,67 @@
       "app.css"
     ]
   },
+  "resources/js/Pages/Layout.tsx": {
+    "file": "assets/Layout-MoAYOXKB.js",
+    "name": "Layout",
+    "src": "resources/js/Pages/Layout.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js"
+    ],
+    "css": [
+      "assets/app-tn0RQdqM.css"
+    ]
+  },
+  "resources/js/Pages/Welcome.tsx": {
+    "file": "assets/Welcome-DMbvIyvc.js",
+    "name": "Welcome",
+    "src": "resources/js/Pages/Welcome.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.tsx",
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js"
+    ],
+    "css": [
+      "assets/app-tn0RQdqM.css"
+    ]
+  },
   "resources/js/app.js": {
-    "file": "assets/app-D6U3w36s.js",
+    "file": "assets/app-DsyJfcyX.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_index-NIGUFBhG.js"
+      "_index-BetwS6Uc.js"
+    ]
+  },
+  "resources/js/app.tsx": {
+    "file": "assets/app-Xi9c0FQ3.js",
+    "name": "app",
+    "src": "resources/js/app.tsx",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-DsqdWQfm.js",
+      "_index-BetwS6Uc.js"
+    ],
+    "dynamicImports": [
+      "resources/js/Pages/Layout.tsx",
+      "resources/js/Pages/Welcome.tsx"
+    ],
+    "css": [
+      "assets/app-tn0RQdqM.css"
     ]
   },
   "resources/js/ckeditor.js": {
-    "file": "assets/ckeditor-cXTkG3Wm.js",
+    "file": "assets/ckeditor-Df4Ezdzb.js",
     "name": "ckeditor",
     "src": "resources/js/ckeditor.js",
     "isEntry": true,
     "imports": [
-      "__commonjsHelpers-CE1G-McA.js"
+      "__commonjsHelpers-DsqdWQfm.js"
     ]
   }
 }

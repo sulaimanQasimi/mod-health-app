@@ -182,16 +182,26 @@
                                             </td>
                                             <td dir="ltr">{{ formatDate(registration.created_at) }}</td>
                                             <td>
-                                                <!-- Print Report Button -->
-                                                <a 
-                                                    v-if="registration.status === 'completed'"
-                                                    :href="`/laboratory/reports/print/${registration.ref_no}`"
-                                                    class="btn btn-outline-info btn-sm"
-                                                    :title="localize('global.print_report')"
-                                                    target="_blank"
-                                                >
-                                                    <i class="bx bx-printer"></i>
-                                                </a>
+                                                <div class="d-flex gap-1">
+                                                    <!-- View Parameters Button -->
+                                                    <button 
+                                                        class="btn btn-outline-primary btn-sm"
+                                                        @click="viewParameters(registration.id)"
+                                                        :title="localize('global.view_test_parameters')"
+                                                    >
+                                                        <i class="bx bx-show"></i>
+                                                    </button>
+                                                    <!-- Print Report Button -->
+                                                    <a 
+                                                        v-if="registration.status === 'completed'"
+                                                        :href="`/laboratory/reports/print/${registration.ref_no}`"
+                                                        class="btn btn-outline-info btn-sm"
+                                                        :title="localize('global.print_report')"
+                                                        target="_blank"
+                                                    >
+                                                        <i class="bx bx-printer"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -461,6 +471,16 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <a 
+                            v-if="selectedRegistration && selectedRegistration.ref_no"
+                            :href="`/laboratory/reports/print/${selectedRegistration.ref_no}`"
+                            class="btn btn-outline-secondary"
+                            :title="localize('global.print_report')"
+                            target="_blank"
+                        >
+                            <i class="bx bx-printer me-1"></i>
+                            {{ localize('global.print') }}
+                        </a>
                         <button type="button" class="btn btn-secondary" @click="closeParametersModal">
                             {{ localize('global.close') }}
                         </button>
@@ -1003,7 +1023,9 @@ export default {
                 'global.failed_to_create_test_registration': 'ایجاد ثبت نام آزمایش ناموفق بود',
                 'global.assigned_to': 'مسول',
                 'global.assigned_section': 'بخش واگذار شده',
-                'global.assigned_date': 'تاریخ واگذاری'
+                'global.assigned_date': 'تاریخ واگذاری',
+                'global.print': 'چاپ',
+                'global.print_page': 'چاپ صفحه'
             };
             return translations[key] || key;
         },

@@ -538,29 +538,107 @@ class AppointmentController extends Controller
 
     public function report()
     {
-        return view('pages.appointments.reports.index');
+        $doctors = Doctor::where('active_status', true)->orderBy('name')->get();
+        $users = User::where('status', 1)->orderBy('name')->get();
+        return view('pages.appointments.reports.index', compact('doctors', 'users'));
     }
+
+    /**
+     * Search appointments for reports with filters
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
     public function reportSearch(Request $request)
     {
-        $query = DB::table('appointments as a')->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time');
+        $query = DB::table('appointments as a')
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->leftJoin('users as u', 'a.processed_by', '=', 'u.id')
+            ->select(
+                'a.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'a.is_completed',
+                'a.status_remark',
+                'a.refferal_remarks',
+                'a.date',
+                'a.time',
+                'a.processed_by',
+                'u.name as processed_by_name'
+            );
 
+        // Patient name filter
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
         }
 
-        if ($request->filled('date')) {
+        // Doctor filter
+        if ($request->filled('doctor_id')) {
+            $query->where('a.doctor_id', $request->doctor_id);
+        }
+
+        // Processed by filter
+        if ($request->filled('processed_by')) {
+            $query->where('a.processed_by', $request->processed_by);
+        }
+
+        // Date range filter
+        if ($request->filled('start') && $request->filled('end')) {
+            try {
+                $startDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->start)->datetime();
+                $endDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->end)->datetime();
+                
+                $query->whereDate('a.date', '>=', $startDate)
+                      ->whereDate('a.date', '<=', $endDate);
+            } catch (\Exception $e) {
+                // Invalid date format, skip date filter
+            }
+        } elseif ($request->filled('date')) {
+            // Single date filter (backward compatibility)
             $query->where('a.date', $request->date);
         }
 
+        // Time filter
         if ($request->filled('time')) {
             $query->where('a.time', $request->time);
         }
 
+        // Status filter
         if ($request->filled('is_completed')) {
             $query->where('a.is_completed', $request->is_completed);
         }
 
-        $items = $query->get();
+        // Order by date descending
+        $query->orderBy('a.date', 'desc')->orderBy('a.time', 'desc');
+
+        // Handle pagination with "all" option
+        $perPage = $request->get('per_page', 15);
+        
+        if ($perPage === 'all') {
+            $items = $query->get();
+        } else {
+            // Convert to Eloquent-like pagination for query builder
+            $perPage = (int) $perPage;
+            $page = $request->get('page', 1);
+            $total = $query->count();
+            $items = $query->skip(($page - 1) * $perPage)->take($perPage)->get();
+            
+            // Create paginator manually with query string preservation
+            $items = new \Illuminate\Pagination\LengthAwarePaginator(
+                $items,
+                $total,
+                $perPage,
+                $page,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->except('page') // Preserve all query params except page
+                ]
+            );
+        }
+
         return view('pages.appointments.reports.report', ['items' => $items]);
     }
 
@@ -568,7 +646,26 @@ class AppointmentController extends Controller
     {
         $data = json_decode($request->data, true);
 
-        $items = DB::table('appointments as a')->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time')->whereIn('a.id', $data)->get();
+        $items = DB::table('appointments as a')
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->leftJoin('users as u', 'a.processed_by', '=', 'u.id')
+            ->select(
+                'a.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'a.is_completed',
+                'a.status_remark',
+                'a.refferal_remarks',
+                'a.date',
+                'a.time',
+                'a.processed_by',
+                'u.name as processed_by_name'
+            )
+            ->whereIn('a.id', $data)
+            ->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
         $sheet = $spreadsheet->getActiveSheet();

@@ -179,11 +179,11 @@
                             :appointment-completed="$dentistRegistration->appointment->is_completed == 1"
                         />
                     @else
-                        <div class="card">
-                            <div class="card-body">
+                    <div class="card">
+                        <div class="card-body">
                                 <p class="text-center text-muted">{{ localize('global.no_appointment_available') }}</p>
-                            </div>
-                        </div>
+                                            </div>
+                                            </div>
                     @endif
                 </div>
 

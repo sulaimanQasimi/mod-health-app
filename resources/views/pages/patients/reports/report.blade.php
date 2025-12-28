@@ -3,7 +3,7 @@
     <div class="export-section mb-4">
         <div class="card shadow-sm border-0">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="mb-1 text-primary fw-semibold">
                             <i class="fas fa-download me-2"></i>{{ localize('global.export_report') }}
@@ -12,7 +12,7 @@
                     </div>
                     <form action="{{ route('patients.export-report') }}" method="POST" class="d-flex gap-2">
                         {{ csrf_field() }}
-                        <input type="hidden" name="data" value="{{ $items->pluck('id') }}">
+                        <input type="hidden" name="data" value="{{ $items->pluck('id')->toJson() }}">
                         
                         <button type="submit" name="type" value="excel" class="btn btn-success btn-lg px-4">
                             <i class="fas fa-file-excel me-2"></i>
@@ -36,7 +36,12 @@
                         <i class="fas fa-table me-2 text-white"></i>{{ localize('global.patient_records') }}
                     </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-success text-primary rounded-pill fw-medium">{{ $items->count() }} {{ localize('global.records') }}</span>
+                        <span class="badge bg-success text-primary rounded-pill fw-medium">
+                            {{ $items->total() }} {{ localize('global.records') }}
+                            @if($items->hasPages())
+                                ({{ $items->firstItem() }}-{{ $items->lastItem() }} {{ localize('global.of') }} {{ $items->total() }})
+                            @endif
+                        </span>
                     </div>
                 </div>
             </div>
@@ -65,13 +70,13 @@
                         <tbody>
                             @forelse ($items as $item)
                                 <tr class="border-bottom">
-                                    <td class="text-center text-muted fw-medium">{{ $loop->iteration }}</td>
+                                    <td class="text-center text-muted fw-medium">{{ $items->firstItem() + $loop->index }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
                                                 <i class="fas fa-user text-white small"></i>
                                             </div>
-                                            <span class="fw-medium">{{ $item->patient_name }}</span>
+                                            <span class="fw-medium">{{ $item->name }}</span>
                                         </div>
                                     </td>
                                     <td>
@@ -124,13 +129,13 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="text-muted">{{ $item->referred_by }}</span>
+                                        <span class="text-muted">{{ $item->recipient->name ?? '—' }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-none border text-dark border">{{ $item->province_name }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ $item->province->name_dr ?? '—' }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-none border text-dark border">{{ $item->district_name }}</span>
+                                        <span class="badge bg-none border text-dark border">{{ $item->district->name_dr ?? '—' }}</span>
                                     </td>
                                     <td>
                                         <span class="badge bg-none border text-dark border">{{ verta($item->registration_date)->format('Y/m/d') }}</span>
@@ -150,6 +155,21 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Pagination -->
+                @if($items->hasPages())
+                    <div class="card-footer border-top py-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="text-muted small mb-2 mb-md-0">
+                                {{ localize('global.showing') }} {{ $items->firstItem() }} {{ localize('global.to') }} {{ $items->lastItem() }} 
+                                {{ localize('global.of') }} {{ $items->total() }} {{ localize('global.results') }}
+                            </div>
+                            <div>
+                                {{ $items->links() }}
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

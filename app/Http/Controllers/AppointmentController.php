@@ -536,54 +536,47 @@ class AppointmentController extends Controller
             ->with('success', localize('global.department_updated_successfully'));
     }
 
-    public function report()
+    public function report(Request $request)
     {
         $doctors = Doctor::where('active_status', true)->orderBy('name')->get();
         $users = User::where('status', 1)->orderBy('name')->get();
-        return view('pages.appointments.reports.index', compact('doctors', 'users'));
-    }
-
-    /**
-     * Search appointments for reports with pagination
-     *
-     * @param Request $request
-     * @return \Illuminate\View\View
-     */
-    public function reportSearch(Request $request)
-    {
-        $perPage = $request->get('per_page', 15);
         
-        $query = Appointment::with(['patient', 'doctor', 'processedBy', 'branch'])
-            ->select([
-                'appointments.id',
-                'appointments.patient_id',
-                'appointments.doctor_id',
-                'appointments.branch_id',
-                'appointments.is_completed',
-                'appointments.status_remark',
-                'appointments.refferal_remarks',
-                'appointments.date',
-                'appointments.time',
-                'appointments.processed_by'
-            ]);
-
-        // Apply filters
-        $this->applyAppointmentReportFilters($query, $request);
-
-        // Handle pagination with "all" option
-        if ($perPage === 'all') {
-            $items = $query->get();
-        } else {
-            $items = $query->paginate((int) $perPage);
+        $items = null;
+        
+        // Only query if there are search parameters
+        if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end', 
+                              'date', 'time', 'is_completed', 'per_page'])) {
+            $perPage = $request->get('per_page', 15);
             
-            // Preserve query parameters in pagination links
-            if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end', 
-                                  'date', 'time', 'is_completed', 'per_page'])) {
+            $query = Appointment::with(['patient', 'doctor', 'processedBy', 'branch'])
+                ->select([
+                    'appointments.id',
+                    'appointments.patient_id',
+                    'appointments.doctor_id',
+                    'appointments.branch_id',
+                    'appointments.is_completed',
+                    'appointments.status_remark',
+                    'appointments.refferal_remarks',
+                    'appointments.date',
+                    'appointments.time',
+                    'appointments.processed_by'
+                ]);
+
+            // Apply filters
+            $this->applyAppointmentReportFilters($query, $request);
+
+            // Handle pagination with "all" option
+            if ($perPage === 'all') {
+                $items = $query->get();
+            } else {
+                $items = $query->paginate((int) $perPage);
+                
+                // Preserve query parameters in pagination links
                 $items->appends($request->query());
             }
         }
 
-        return view('pages.appointments.reports.report', compact('items'));
+        return view('pages.appointments.reports.index', compact('doctors', 'users', 'items'));
     }
 
     /**

@@ -18,8 +18,7 @@
                     </h2>
                     <div id="accordionWithIcon-1" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <form method="POST" action="{{ route('appointments.report-search') }}">
-                                @csrf
+                            <form method="GET" action="{{ route('appointments.report') }}">
                                 <div class="row g-2">
                                     <div class="col-md-3">
                                         <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
@@ -107,10 +106,9 @@
                 </div>
             </div>
             <div class="table-responsive m-1" id="app">
-                <div class="search-document-data">
-
-
-                </div>
+                @if(isset($items))
+                    @include('pages.appointments.reports.report', ['items' => $items])
+                @endif
             </div>
         </div>
         <!--/ Basic Bootstrap Table -->
@@ -120,28 +118,7 @@
 @endsection
 
 @push('custom-js')
-<script src="{{ asset('assets/js/vue/vue.js') }}"></script>
 <script>
-        $('form').submit(function(e) {
-            e.preventDefault();
-            $.ajax({
-                type: 'post',
-                url: "{{ route('appointments.report-search') }}",
-                data: $(this).serialize(),
-                beforeSend: function() {
-                    // setting a timeout
-                    $('.search-document-data').html(
-                        '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
-                        );
-                      
-                },
-                success: function(resp) {
-                    $('.search-document-data').html(resp);
-                }
-
-            })
-        });
-
         // Auto-submit when per_page changes
         $('#per_page').on('change', function() {
             $('form').submit();

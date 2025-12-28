@@ -17,7 +17,7 @@
                     </h2>
                     <div id="accordionWithIcon-1" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <form>
+                            <form method="POST" action="{{ route('patients.report-search') }}">
                                 @csrf
                                 <div class="row g-2">
                                     <div class="col-md-3">

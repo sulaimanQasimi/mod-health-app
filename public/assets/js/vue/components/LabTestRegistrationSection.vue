@@ -505,7 +505,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title">
                             <i class="bx bx-paperclip me-2"></i>
-                            {{ localize('global.attach_files') }} - {{ selectedRegistrationForAttachments?.lab_type?.name || 'Test' }}
+                            {{ localize('global.attached_files') }} - {{ selectedRegistrationForAttachments?.lab_type?.name || 'Test' }}
                         </h5>
                         <button type="button" class="btn-close" @click="closeAttachmentsModal"></button>
                     </div>
@@ -519,56 +519,6 @@
                                     <small><code>{{ selectedRegistrationForAttachments.ref_no }}</code></small>
                                 </div>
                             </div>
-                            
-                            <form id="attachFilesForm" enctype="multipart/form-data" style="display: block !important;" @submit.prevent="uploadAttachments">
-                                <input type="hidden" name="test_result_id" :value="currentTestResultId || 0">
-                                <input type="hidden" name="registration_id" :value="selectedRegistrationForAttachments.id">
-                                
-                                <div class="mb-3">
-                                    <label for="attachmentFiles" class="form-label">
-                                        {{ localize('global.select_files') }} 
-                                        <small class="text-muted">({{ localize('global.pdf_excel_images') }})</small>
-                                    </label>
-                                    <input 
-                                        type="file" 
-                                        class="form-control" 
-                                        id="attachmentFiles" 
-                                        name="files[]" 
-                                        multiple 
-                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif"
-                                        ref="fileInput"
-                                    >
-                                    <small class="text-muted">{{ localize('global.max_file_size_10mb') }}</small>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="attachmentDescription" class="form-label">
-                                        {{ localize('global.description') }} ({{ localize('global.optional') }})
-                                    </label>
-                                    <textarea 
-                                        class="form-control" 
-                                        id="attachmentDescription" 
-                                        name="description" 
-                                        rows="2" 
-                                        v-model="attachmentDescription"
-                                        :placeholder="localize('global.add_description_here')"
-                                    ></textarea>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <button 
-                                        type="submit" 
-                                        class="btn btn-primary" 
-                                        :disabled="uploadingAttachments"
-                                    >
-                                        <span v-if="uploadingAttachments" class="spinner-border spinner-border-sm me-2"></span>
-                                        <i v-else class="bx bx-upload me-1"></i>
-                                        {{ localize('global.upload_files') }}
-                                    </button>
-                                </div>
-                            </form>
-                            
-                            <hr>
                             
                             <div class="mb-2">
                                 <h6 class="mb-0">
@@ -603,25 +553,16 @@
                                             </small>
                                         </div>
                                     </div>
-                                    <div class="btn-group btn-group-sm">
+                                    <div>
                                         <a 
                                             :href="attachment.file_url" 
                                             target="_blank" 
-                                            class="btn btn-outline-primary" 
+                                            class="btn btn-outline-primary btn-sm" 
                                             :title="localize('global.view')"
                                         >
-                                            <i class="bx bx-show"></i>
+                                            <i class="bx bx-show me-1"></i>
+                                            {{ localize('global.view') }}
                                         </a>
-                                        <button 
-                                            type="button" 
-                                            class="btn btn-outline-danger" 
-                                            @click="deleteAttachment(attachment.id)"
-                                            :title="localize('global.delete')"
-                                            :disabled="deletingAttachmentId === attachment.id"
-                                        >
-                                            <span v-if="deletingAttachmentId === attachment.id" class="spinner-border spinner-border-sm"></span>
-                                            <i v-else class="bx bx-trash"></i>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -830,9 +771,6 @@ export default {
             currentTestResultId: null,
             attachments: [],
             loadingAttachments: false,
-            uploadingAttachments: false,
-            deletingAttachmentId: null,
-            attachmentDescription: '',
             form: {
                 lab_type_ids: [],
                 priority: 'normal',
@@ -1241,7 +1179,6 @@ export default {
             this.showAttachmentsModal = true;
             this.attachments = [];
             this.currentTestResultId = null;
-            this.attachmentDescription = '';
             
             // Load test result and attachments
             await this.loadTestResultAndAttachments(registration.id);
@@ -1252,10 +1189,6 @@ export default {
             this.selectedRegistrationForAttachments = null;
             this.attachments = [];
             this.currentTestResultId = null;
-            this.attachmentDescription = '';
-            if (this.$refs.fileInput) {
-                this.$refs.fileInput.value = '';
-            }
         },
 
         async loadTestResultAndAttachments(registrationId) {
@@ -1324,111 +1257,6 @@ export default {
             }
         },
 
-        async uploadAttachments() {
-            const fileInput = this.$refs.fileInput;
-            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                this.showError(this.localize('global.please_select_files'));
-                return;
-            }
-
-            this.uploadingAttachments = true;
-
-            try {
-                const formData = new FormData();
-                
-                // Add files
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    formData.append('files[]', fileInput.files[i]);
-                }
-                
-                // Add description
-                if (this.attachmentDescription) {
-                    formData.append('description', this.attachmentDescription);
-                }
-                
-                // Add registration_id if test result doesn't exist yet
-                if (!this.currentTestResultId || this.currentTestResultId == 0) {
-                    formData.append('registration_id', this.selectedRegistrationForAttachments.id);
-                }
-
-                const url = this.currentTestResultId && this.currentTestResultId != 0
-                    ? `/laboratory/results/${this.currentTestResultId}/attachments`
-                    : `/laboratory/results/0/attachments`;
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    this.showSuccess(data.message || this.localize('global.files_uploaded_successfully'));
-                    
-                    // Update test result ID if it was created
-                    if (data.test_result_id) {
-                        this.currentTestResultId = data.test_result_id;
-                    }
-                    
-                    // Reset form
-                    fileInput.value = '';
-                    this.attachmentDescription = '';
-                    
-                    // Reload attachments
-                    if (this.currentTestResultId) {
-                        await this.loadAttachments(this.currentTestResultId);
-                    }
-                } else {
-                    this.showError(data.message || this.localize('global.error_uploading_files'));
-                }
-            } catch (error) {
-                console.error('Error uploading attachments:', error);
-                this.showError(this.localize('global.error_uploading_files'));
-            } finally {
-                this.uploadingAttachments = false;
-            }
-        },
-
-        async deleteAttachment(attachmentId) {
-            if (!confirm(this.localize('global.confirm_delete_file'))) {
-                return;
-            }
-
-            this.deletingAttachmentId = attachmentId;
-
-            try {
-                const response = await fetch(`/laboratory/results/attachments/${attachmentId}`, {
-                    method: 'DELETE',
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    this.showSuccess(data.message || this.localize('global.file_deleted_successfully'));
-                    // Remove from list
-                    this.attachments = this.attachments.filter(a => a.id !== attachmentId);
-                } else {
-                    this.showError(data.message || this.localize('global.error_deleting_file'));
-                }
-            } catch (error) {
-                console.error('Error deleting attachment:', error);
-                this.showError(this.localize('global.error_deleting_file'));
-            } finally {
-                this.deletingAttachmentId = null;
-            }
-        },
 
         getFileIcon(mimeType) {
             if (!mimeType) return 'bx bx-file';

@@ -544,102 +544,103 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Search appointments for reports with filters
+     * Search appointments for reports with pagination
      *
      * @param Request $request
      * @return \Illuminate\View\View
      */
     public function reportSearch(Request $request)
     {
-        $query = DB::table('appointments as a')
-            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
-            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
-            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->leftJoin('users as u', 'a.processed_by', '=', 'u.id')
-            ->select(
-                'a.id',
-                'p.name as patient_name',
-                'd.name as doctor_name',
-                'b.name as branch_name',
-                'a.is_completed',
-                'a.status_remark',
-                'a.refferal_remarks',
-                'a.date',
-                'a.time',
-                'a.processed_by',
-                'u.name as processed_by_name'
-            );
+        $perPage = $request->get('per_page', 15);
+        
+        $query = Appointment::with(['patient', 'doctor', 'processedBy', 'branch'])
+            ->select([
+                'appointments.id',
+                'appointments.patient_id',
+                'appointments.doctor_id',
+                'appointments.branch_id',
+                'appointments.is_completed',
+                'appointments.status_remark',
+                'appointments.refferal_remarks',
+                'appointments.date',
+                'appointments.time',
+                'appointments.processed_by'
+            ]);
 
+        // Apply filters
+        $this->applyAppointmentReportFilters($query, $request);
+
+        // Handle pagination with "all" option
+        if ($perPage === 'all') {
+            $items = $query->get();
+        } else {
+            $items = $query->paginate((int) $perPage);
+            
+            // Preserve query parameters in pagination links
+            if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end', 
+                                  'date', 'time', 'is_completed', 'per_page'])) {
+                $items->appends($request->query());
+            }
+        }
+
+        return view('pages.appointments.reports.report', compact('items'));
+    }
+
+    /**
+     * Apply filters to the appointment query
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Request $request
+     * @return void
+     */
+    private function applyAppointmentReportFilters($query, Request $request)
+    {
         // Patient name filter
         if ($request->filled('patient_name')) {
-            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->patient_name . '%');
+            });
         }
 
         // Doctor filter
         if ($request->filled('doctor_id')) {
-            $query->where('a.doctor_id', $request->doctor_id);
+            $query->where('appointments.doctor_id', $request->doctor_id);
         }
 
         // Processed by filter
         if ($request->filled('processed_by')) {
-            $query->where('a.processed_by', $request->processed_by);
+            $query->where('appointments.processed_by', $request->processed_by);
         }
 
-        // Date range filter
+        // Date range filter - Convert Persian to Gregorian
         if ($request->filled('start') && $request->filled('end')) {
             try {
                 $startDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->start)->datetime();
                 $endDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->end)->datetime();
                 
-                $query->whereDate('a.date', '>=', $startDate)
-                      ->whereDate('a.date', '<=', $endDate);
+                $query->whereDate('appointments.date', '>=', $startDate)
+                      ->whereDate('appointments.date', '<=', $endDate);
             } catch (\Exception $e) {
                 // Invalid date format, skip date filter
             }
         } elseif ($request->filled('date')) {
             // Single date filter (backward compatibility)
-            $query->where('a.date', $request->date);
+            $query->whereDate('appointments.date', $request->date);
         }
 
         // Time filter
         if ($request->filled('time')) {
-            $query->where('a.time', $request->time);
+            $query->where('appointments.time', $request->time);
         }
 
         // Status filter
         if ($request->filled('is_completed')) {
-            $query->where('a.is_completed', $request->is_completed);
+            $query->where('appointments.is_completed', $request->is_completed);
         }
 
-        // Order by date descending
-        $query->orderBy('a.date', 'desc')->orderBy('a.time', 'desc');
-
-        // Handle pagination with "all" option
-        $perPage = $request->get('per_page', 15);
-        
-        if ($perPage === 'all') {
-            $items = $query->get();
-        } else {
-            // Convert to Eloquent-like pagination for query builder
-            $perPage = (int) $perPage;
-            $page = $request->get('page', 1);
-            $total = $query->count();
-            $items = $query->skip(($page - 1) * $perPage)->take($perPage)->get();
-            
-            // Create paginator manually with query string preservation
-            $items = new \Illuminate\Pagination\LengthAwarePaginator(
-                $items,
-                $total,
-                $perPage,
-                $page,
-                [
-                    'path' => $request->url(),
-                    'query' => $request->except('page') // Preserve all query params except page
-                ]
-            );
-        }
-
-        return view('pages.appointments.reports.report', ['items' => $items]);
+        // Order by date and time descending
+        $query->orderBy('appointments.date', 'desc')
+              ->orderBy('appointments.time', 'desc');
     }
 
     public function exportReport(Request $request)

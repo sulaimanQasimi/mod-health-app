@@ -40,10 +40,10 @@
                                 {{ $loop->iteration }}
                             @endif
                         </td>
-                        <td>{{ $item->patient_name }}</td>
-                        <td>{{ $item->doctor_name ?? '—' }}</td>
-                        <td>{{ $item->branch_name ?? '—' }}</td>
-                        <td>{{ $item->processed_by_name ?? '—' }}</td>
+                        <td>{{ $item->patient->name ?? '—' }}</td>
+                        <td>{{ $item->doctor->name ?? '—' }}</td>
+                        <td>{{ $item->branch->name ?? '—' }}</td>
+                        <td>{{ $item->processedBy->name ?? '—' }}</td>
                         <td>
                         @if ($item->is_completed == '0')
                             <span class="badge rounded-pill bg-primary">

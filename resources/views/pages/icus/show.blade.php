@@ -839,7 +839,7 @@
                     </div>
 
                     <!-- Lab Test Registration Section Component (ICU) -->
-                    <x-lab-test-registration-s  ection 
+                    <x-lab-test-registration-section 
                         :entity="$icu"
                         entity-type="icu"
                         :entity-id="$icu->id"

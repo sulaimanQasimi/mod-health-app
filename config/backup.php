@@ -53,9 +53,11 @@ return [
              * The names of the connections to the databases that should be backed up
              * MySQL, PostgreSQL, SQLite and Mongo databases are supported.
              *
+             * By default, ALL tables with their data will be included in the backup.
              * The content of the database dump may be customized for each connection
              * by adding a 'dump' key to the connection settings in config/database.php.
-             * E.g.
+             * 
+             * E.g. to exclude specific tables:
              * 'mysql' => [
              *       ...
              *      'dump' => [
@@ -99,8 +101,9 @@ return [
 
         /*
          * If specified, the database dumped file name will contain a timestamp (e.g.: 'Y-m-d-H-i-s').
+         * This helps identify when the backup was created.
          */
-        'database_dump_file_timestamp_format' => null,
+        'database_dump_file_timestamp_format' => 'Y-m-d_H-i-s',
 
         /*
          * The base of the dump filename, either 'database' or 'connection'
@@ -115,8 +118,11 @@ return [
          *
          * If not specified, the file extension will be .archive for MongoDB and .sql for all other databases
          * The file extension should be specified without a leading .
+         * 
+         * Note: All tables with their data will be included in the dump by default.
+         * To exclude tables, configure the 'dump' key in config/database.php for each connection.
          */
-        'database_dump_file_extension' => '',
+        'database_dump_file_extension' => 'sql',
 
         'destination' => [
             /*

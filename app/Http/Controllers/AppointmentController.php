@@ -37,14 +37,19 @@ class AppointmentController extends Controller
              });
          }
      
-         // Search by patient ID card
-         if ($request->filled('id_card')) {
-             $query->whereHas('patient', function($q) use ($request) {
-                 $q->where('id_card', 'like', '%' . $request->id_card . '%');
-             });
-         }
-     
-         // Filter by doctor
+        // Search by patient ID card
+        if ($request->filled('id_card')) {
+            $query->whereHas('patient', function($q) use ($request) {
+                $q->where('id_card', 'like', '%' . $request->id_card . '%');
+            });
+        }
+    
+        // Filter by patient ID
+        if ($request->filled('patient_id')) {
+            $query->where('patient_id', $request->patient_id);
+        }
+    
+        // Filter by doctor
          if ($request->filled('doctor_id')) {
              $query->where('doctor_id', $request->doctor_id);
          }

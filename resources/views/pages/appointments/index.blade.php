@@ -26,6 +26,11 @@
                                 value="{{ request('id_card') }}" placeholder="{{ localize('global.search_by_card') }}">
                         </div>
                         <div class="col-md-2">
+                            <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                            <input type="text" class="form-control" id="patient_id" name="patient_id" 
+                                value="{{ request('patient_id') }}" placeholder="{{ localize('global.search_by_patient_id') }}">
+                        </div>
+                        <div class="col-md-2">
                             <label for="doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
                             <select class="form-select" id="doctor_id" name="doctor_id">
                                 <option value="">{{ localize('global.all') }}</option>

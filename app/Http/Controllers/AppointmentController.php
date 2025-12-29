@@ -115,6 +115,8 @@ class AppointmentController extends Controller
         $validatedData['date'] = $now->format('Y-m-d');
         $validatedData['time'] = $now->format('H:i:s');
 
+        $validatedData['clinic_type'] = auth()->user()->clinic_type;
+
         if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');
 

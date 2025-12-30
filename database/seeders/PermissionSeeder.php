@@ -1594,6 +1594,14 @@ class PermissionSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
+        // Dentist Registrations Permission
+        Permission::createOrFirst([
+            'name' => 'access-dentist-registrations',
+            'name_dr' => 'دسترسی به بخش دندان',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
         $this->call(PhysiotherapyPermissionSeeder::class);
         $this->call(PharmacyPermissionSeeder::class);
         $this->call(NursingAssessmentPermissionSeeder::class);

@@ -1028,7 +1028,9 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     // Dentist Department routes
-    Route::prefix('dentist-registrations')->name('dentist-registrations.')->group(function () {
+    Route::prefix('dentist-registrations')
+        ->middleware('permission:access-dentist-registrations')
+        ->name('dentist-registrations.')->group(function () {
         Route::get('index', [\App\Http\Controllers\DentistRegistrationController::class, 'index'])->name('index');
         Route::get('create/{appointment}', [\App\Http\Controllers\DentistRegistrationController::class, 'create'])->name('create');
         Route::post('store/{appointment}', [\App\Http\Controllers\DentistRegistrationController::class, 'store'])->name('store');

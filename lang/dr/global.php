@@ -3958,4 +3958,5 @@ return [
     'add_description_here' => 'اینجا توضیحات اضافه کنید',
     'attached_files' => 'فایل‌های ضمیمه‌شده',
     'no_attachments' => 'هیچ ضمیمه‌ای وجود ندارد',
+    "is_dentist"=>"ایا داکتر دندان است"
 ];

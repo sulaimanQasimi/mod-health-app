@@ -20,7 +20,6 @@ use App\Http\Controllers\LabController;
 use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserPerformanceReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\NotificationController;
@@ -122,10 +121,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update-avatar', [UserController::class, 'updateAvatar'])->name('update-avatar');
     });
 
-    // User Performance Report routes
-    Route::prefix('user-performance-report')->name('user-performance-report.')->group(function () {
-        Route::get('performance', [UserPerformanceReportController::class, 'index'])->name('performance');
-        Route::post('fetch', [UserPerformanceReportController::class, 'fetch'])->name('fetch');
+    // Doctor Performance Report routes
+    Route::prefix('doctor-performance-report')->name('doctor-performance-report.')->group(function () {
+        Route::get('performance', [\App\Http\Controllers\DoctorPerformanceReportController::class, 'index'])->name('performance');
+        Route::post('fetch', [\App\Http\Controllers\DoctorPerformanceReportController::class, 'fetch'])->name('fetch');
     });
 
     // Roles routes

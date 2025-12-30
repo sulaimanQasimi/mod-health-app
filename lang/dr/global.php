@@ -3675,7 +3675,7 @@ return [
     'bulk_delete_successful' => 'حذف گروهی با موفقیت انجام شد',
     'failed_to_bulk_delete' => 'حذف گروهی با خطا مواجه شد',
     'failed_to_export_prescriptions' => 'خروجی نسخه‌ها با خطا مواجه شد',
-    'user_performance_report' => 'راپور عملکرد کاربران',
+    'user_performance_report' => 'راپور عملکرد داکتران',
     'comprehensive_analytics_and_performance_metrics' => 'تحلیلات جامع و معیارهای عملکرد',
     'filter_options' => 'گزینه‌های فیلتر',
     'all_users' => 'همه کاربران',

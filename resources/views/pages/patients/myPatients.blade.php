@@ -40,7 +40,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('user-performance-report.fetch') }}" id="performanceForm">
+                    <form method="POST" action="{{ route('doctor-performance-report.fetch') }}" id="performanceForm">
                         @csrf
                         <div class="row g-3">
                             <div class="col-md-3">
@@ -62,21 +62,21 @@
                                        value="{{ old('endDate', request('endDate')) }}">
                             </div>
                             <div class="col-md-4 border">
-                                <label for="userId" class="form-label">
-                                    <i class="bx bx-user me-1"></i> {{ localize('global.select_user') }}
+                                <label for="doctorId" class="form-label">
+                                    <i class="bx bx-user me-1"></i> {{ localize('global.select_doctor') ?: 'Select Doctor' }}
                                 </label>
-                                <select name="userId" id="userId" class="form-select select2">
-                                    <option value="">{{ localize('global.all_users') }}</option>
-                                    @forelse($users as $user)
-                                    <option value="{{ $user->id }}" 
-                                            {{ old('userId', request('userId')) == $user->id ? 'selected' : '' }}>
-                                        {{ $user->name }}
-                                        @if($user->section_name || $user->department_name)
-                                            - {{ $user->section_name ?? 'N/A' }} / {{ $user->department_name ?? 'N/A' }}
+                                <select name="doctorId" id="doctorId" class="form-select select2">
+                                    <option value="">{{ localize('global.all_doctors') ?: 'All Doctors' }}</option>
+                                    @forelse($doctors ?? [] as $doctor)
+                                    <option value="{{ $doctor->id }}" 
+                                            {{ old('doctorId', request('doctorId')) == $doctor->id ? 'selected' : '' }}>
+                                        {{ $doctor->name }}
+                                        @if($doctor->specialization || $doctor->department_name)
+                                            - {{ $doctor->specialization ?? 'N/A' }} / {{ $doctor->department_name ?? 'N/A' }}
                                         @endif
                                     </option>
                                     @empty
-                                    <option disabled>{{ localize('global.no_users_found') }}</option>
+                                    <option disabled>{{ localize('global.no_doctors_found') ?: 'No doctors found' }}</option>
                                     @endforelse
                                 </select>
                             </div>
@@ -231,7 +231,7 @@
                     </h5>
                     <div class="d-flex gap-2">
                         <input type="text" id="tableSearch" class="form-control form-control-sm" 
-                               placeholder="{{ localize('global.search_users') }}..." style="width: 200px;">
+                               placeholder="{{ localize('global.search_doctors') ?: 'Search doctors...' }}" style="width: 200px;">
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetTable()">
                             <i class="bx bx-refresh"></i>
                         </button>
@@ -361,56 +361,56 @@
     </div>
     @endisset
 
-    <!-- Users List (Collapsible) -->
+    <!-- Doctors List (Collapsible) -->
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <button class="btn btn-link p-0 text-decoration-none w-100 text-start" 
                             type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#usersList" aria-expanded="false">
+                            data-bs-target="#doctorsList" aria-expanded="false">
                         <h5 class="mb-0">
                             <i class="bx bx-chevron-down me-2"></i>
-                            {{ localize('global.users_directory') }}
+                            {{ localize('global.doctors_directory') ?: 'Doctors Directory' }}
                         </h5>
                     </button>
                 </div>
-                <div class="collapse" id="usersList">
+                <div class="collapse" id="doctorsList">
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th>{{ localize('global.name') }}</th>
-                                        <th>{{ localize('global.section') }}</th>
+                                        <th>{{ localize('global.specialization') }}</th>
                                         <th>{{ localize('global.department') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($users as $user)
+                                    @forelse($doctors ?? [] as $doctor)
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar avatar-sm me-2">
                                                     <span class="avatar-initial rounded bg-label-secondary">
-                                                        {{ substr($user->name, 0, 1) }}
+                                                        {{ substr($doctor->name, 0, 1) }}
                                                     </span>
                                                 </div>
-                                                {{ $user->name }}
+                                                {{ $doctor->name }}
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-label-info">{{ $user->section_name ?? 'N/A' }}</span>
+                                            <span class="badge bg-label-info">{{ $doctor->specialization ?? 'N/A' }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-label-primary">{{ $user->department_name ?? 'N/A' }}</span>
+                                            <span class="badge bg-label-primary">{{ $doctor->department_name ?? 'N/A' }}</span>
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
                                         <td colspan="3" class="text-center py-4">
                                             <i class="bx bx-user-x fs-1 text-muted d-block mb-2"></i>
-                                            <p class="text-muted mb-0">{{ localize('global.no_users_found') }}</p>
+                                            <p class="text-muted mb-0">{{ localize('global.no_doctors_found') ?: 'No doctors found' }}</p>
                                         </td>
                                     </tr>
                                     @endforelse
@@ -464,7 +464,7 @@
         if ($.fn.select2) {
             $('.select2').select2({
                 theme: 'bootstrap-5',
-                placeholder: 'Select a user...',
+                placeholder: 'Select a doctor...',
                 allowClear: true
             });
         }
@@ -550,7 +550,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'user-performance-report-' + new Date().toISOString().split('T')[0] + '.xls';
+        a.download = 'doctor-performance-report-' + new Date().toISOString().split('T')[0] + '.xls';
         a.click();
         URL.revokeObjectURL(url);
     }
@@ -560,7 +560,7 @@
         const results = @json($results);
         
         // Prepare data for performance chart
-        const labels = results.map(r => r.User || 'N/A');
+        const labels = results.map(r => r.Doctor || 'N/A');
         const appointmentsData = results.map(r => r.Appointments || 0);
         const prescriptionsData = results.map(r => r.Prescriptions || 0);
         const labTestsData = results.map(r => r.LabTests || 0);

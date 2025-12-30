@@ -154,19 +154,21 @@
         @endcan
 
         <!-- Dentist Department Menu -->
-        <li class="menu-item {{ Route::is('dentist-registrations.*') ? 'active open' : '' }}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-plus-medical"></i>
-                <div>{{ localize('global.dentist_department') }}</div>
-            </a>
-            <ul class="menu-sub">
-                <li class="menu-item {{ Route::is('dentist-registrations.index') ? 'active' : '' }}">
-                    <a href="{{ route('dentist-registrations.index') }}" class="menu-link">
-                        <div>{{ localize('global.dentist_registrations') }}</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
+        @can('access-dentist-registrations')
+            <li class="menu-item {{ Route::is('dentist-registrations.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-plus-medical"></i>
+                    <div>{{ localize('global.dentist_department') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('dentist-registrations.index') ? 'active' : '' }}">
+                        <a href="{{ route('dentist-registrations.index') }}" class="menu-link">
+                            <div>{{ localize('global.dentist_registrations') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
 
         @can('show-my-consultations-menu')
             <li class="menu-item {{ Route::is('consultations.index') ? 'active' : '' }}">

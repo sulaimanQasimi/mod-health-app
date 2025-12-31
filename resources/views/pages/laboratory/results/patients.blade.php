@@ -272,6 +272,18 @@
                                                                             <a href="{{ route('laboratory.results.show', $registration->id) }}" class="btn btn-primary btn-sm" title="{{ localize('global.enter_results') }}">
                                                                                 <i class="bx bx-edit"></i>
                                                                             </a>
+                                                                            @if(!$registration->labType || !$registration->labType->directLabTestParameters || $registration->labType->directLabTestParameters->count() == 0)
+                                                                                <button type="button" 
+                                                                                        class="btn btn-info btn-sm attach-files-btn" 
+                                                                                        data-registration-id="{{ $registration->id }}"
+                                                                                        data-ref-no="{{ $registration->ref_no }}"
+                                                                                        data-test-name="{{ $registration->labType->name ?? 'Test' }}"
+                                                                                        data-bs-toggle="modal"
+                                                                                        data-bs-target="#attachFilesModal"
+                                                                                        title="{{ localize('global.attach_files') ?? 'Attach Files' }}">
+                                                                                    <i class="bx bx-paperclip"></i>
+                                                                                </button>
+                                                                            @endif
                                                                             <form action="{{ route('laboratory.registrations.mark-completed', $registration->id) }}" method="POST" class="d-inline">
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-success btn-sm" title="{{ localize('global.mark_completed') }}">
@@ -320,6 +332,88 @@
                         </div>
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attach Files Modal -->
+<div class="modal fade" id="attachFilesModal" tabindex="-1" aria-labelledby="attachFilesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attachFilesModalLabel">
+                    <i class="bx bx-paperclip me-2"></i>
+                    <span id="attachFilesModalTitle">{{ localize('global.attach_files') ?? 'Attach Files' }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="alert alert-info">
+                        <i class="bx bx-info-circle me-2"></i>
+                        <strong id="attachFilesTestInfo"></strong>
+                        <br>
+                        <small id="attachFilesRefNo"></small>
+                    </div>
+                </div>
+                
+                <form id="attachFilesForm" enctype="multipart/form-data" style="display: block !important;">
+                    @csrf
+                    <input type="hidden" id="attachFilesTestResultId" name="test_result_id">
+                    <input type="hidden" id="attachFilesRegistrationId" name="registration_id">
+                    
+                    <div class="mb-3">
+                        <label for="attachmentFiles" class="form-label">
+                            {{ localize('global.select_files') ?? 'Select Files' }}
+                            <small class="text-muted">({{ localize('global.pdf_excel_images') ?? 'PDF, Excel, Images, etc.' }})</small>
+                        </label>
+                        <input type="file" 
+                               class="form-control" 
+                               id="attachmentFiles" 
+                               name="files[]" 
+                               multiple 
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif">
+                        <small class="text-muted">{{ localize('global.max_file_size_10mb') ?? 'Maximum file size: 10MB per file' }}</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="attachmentDescription" class="form-label">{{ localize('global.description') ?? 'Description' }} ({{ localize('global.optional') ?? 'Optional' }})</label>
+                        <textarea class="form-control" 
+                                  id="attachmentDescription" 
+                                  name="description" 
+                                  rows="2" 
+                                  placeholder="{{ localize('global.add_description_here') ?? 'Add description here...' }}"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary" id="uploadAttachmentsBtn">
+                            <i class="bx bx-upload me-1"></i>
+                            {{ localize('global.upload_files') ?? 'Upload Files' }}
+                        </button>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <div class="mb-2">
+                    <h6 class="mb-0">
+                        <i class="bx bx-file me-1"></i>
+                        {{ localize('global.attached_files') ?? 'Attached Files' }}
+                    </h6>
+                </div>
+                
+                <div id="attachmentsList" class="list-group">
+                    <div class="text-center py-3 text-muted">
+                        <i class="bx bx-loader-alt bx-spin"></i>
+                        {{ localize('global.loading') ?? 'Loading...' }}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {{ localize('global.close') ?? 'Close' }}
+                </button>
             </div>
         </div>
     </div>
@@ -946,6 +1040,231 @@ $(document).ready(function() {
                 const message = xhr.responseJSON?.message || '{{ localize("global.error_saving_parameters") ?? "Error saving parameters" }}';
                 toastr.error(message);
                 $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+    
+    // Handle Attach Files Modal
+    let currentTestResultId = null;
+    let currentRegistrationId = null;
+    
+    $('#attachFilesModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        currentRegistrationId = button.data('registration-id');
+        const refNo = button.data('ref-no');
+        const testName = button.data('test-name');
+        
+        $('#attachFilesModalTitle').text('{{ localize("global.attach_files") ?? "Attach Files" }} - ' + testName);
+        $('#attachFilesTestInfo').text(testName);
+        $('#attachFilesRefNo').html('<code>' + refNo + '</code>');
+        $('#attachFilesRegistrationId').val(currentRegistrationId);
+        
+        // Reset form
+        $('#attachFilesForm')[0].reset();
+        $('#attachFilesTestResultId').val('');
+        
+        // Show form and hide loading initially
+        $('#attachFilesForm').show();
+        $('#attachmentsList').html('<div class="text-center py-3 text-muted"><i class="bx bx-loader-alt bx-spin"></i> {{ localize("global.loading") ?? "Loading..." }}</div>');
+        
+        // Load test result ID and attachments
+        loadTestResultAndAttachments(currentRegistrationId);
+    });
+    
+    function loadTestResultAndAttachments(registrationId) {
+        const attachmentsList = $('#attachmentsList');
+        attachmentsList.html('<div class="text-center py-3 text-muted"><i class="bx bx-loader-alt bx-spin"></i> {{ localize("global.loading") ?? "Loading..." }}</div>');
+        
+        // First, get the test result for this registration
+        $.ajax({
+            url: '{{ url("/laboratory/results/load") }}/' + registrationId,
+            method: 'GET',
+            success: function(response) {
+                if (response.success && response.data) {
+                    // Find the text-based result (no lab_parameter_id)
+                    const textResult = response.data.results?.find(r => !r.lab_parameter_id);
+                    
+                    if (textResult && textResult.id) {
+                        currentTestResultId = textResult.id;
+                        $('#attachFilesTestResultId').val(textResult.id);
+                        
+                        // Ensure form is visible
+                        $('#attachFilesForm').show();
+                        
+                        // Load attachments
+                        loadAttachments(textResult.id);
+                    } else {
+                        // No test result yet, but we can still allow uploads - they'll create the result
+                        currentTestResultId = null;
+                        $('#attachFilesTestResultId').val('0'); // Use 0 to indicate we need to create
+                        attachmentsList.html('<div class="alert alert-info"><i class="bx bx-info-circle me-2"></i>{{ localize("global.test_result_not_found") ?? "Test result not found. Files will be attached when you upload them." }}</div>');
+                        $('#attachFilesForm').show();
+                    }
+                } else {
+                    attachmentsList.html('<div class="alert alert-warning">{{ localize("global.test_result_not_found") ?? "Test result not found. Please enter a result first." }}</div>');
+                }
+            },
+            error: function() {
+                attachmentsList.html('<div class="alert alert-danger">{{ localize("global.error_loading_data") ?? "Error loading data" }}</div>');
+            }
+        });
+    }
+    
+    function loadAttachments(testResultId) {
+        const attachmentsList = $('#attachmentsList');
+        
+        $.ajax({
+            url: '{{ url("/laboratory/results") }}/' + testResultId + '/attachments',
+            method: 'GET',
+            success: function(response) {
+                if (response.status === 'success') {
+                    renderAttachments(response.attachments);
+                } else {
+                    attachmentsList.html('<div class="alert alert-warning">{{ localize("global.no_attachments_found") ?? "No attachments found" }}</div>');
+                }
+            },
+            error: function() {
+                attachmentsList.html('<div class="alert alert-danger">{{ localize("global.error_loading_attachments") ?? "Error loading attachments" }}</div>');
+            }
+        });
+    }
+    
+    function renderAttachments(attachments) {
+        const attachmentsList = $('#attachmentsList');
+        
+        if (attachments.length === 0) {
+            attachmentsList.html('<div class="text-center py-3 text-muted"><i class="bx bx-file-blank me-1"></i>{{ localize("global.no_attachments") ?? "No attachments yet" }}</div>');
+            return;
+        }
+        
+        let html = '';
+        attachments.forEach(function(attachment) {
+            const fileIcon = getFileIcon(attachment.file_type);
+            html += `
+                <div class="list-group-item d-flex justify-content-between align-items-center" data-attachment-id="${attachment.id}">
+                    <div class="d-flex align-items-center flex-grow-1">
+                        <i class="${fileIcon} me-2 text-primary" style="font-size: 1.5rem;"></i>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">${escapeHtml(attachment.file_name)}</div>
+                            ${attachment.description ? '<small class="text-muted">' + escapeHtml(attachment.description) + '</small><br>' : ''}
+                            <small class="text-muted">
+                                <i class="bx bx-calendar me-1"></i>${attachment.created_at}
+                                ${attachment.file_size ? ' | <i class="bx bx-data me-1"></i>' + attachment.file_size : ''}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                        <a href="${attachment.file_url}" target="_blank" class="btn btn-outline-primary" title="{{ localize("global.view") ?? "View" }}">
+                            <i class="bx bx-show"></i>
+                        </a>
+                        <button type="button" class="btn btn-outline-danger delete-attachment-btn" data-attachment-id="${attachment.id}" title="{{ localize("global.delete") ?? "Delete" }}">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        attachmentsList.html(html);
+    }
+    
+    function getFileIcon(mimeType) {
+        if (!mimeType) return 'bx bx-file';
+        
+        if (mimeType.includes('pdf')) return 'bx bxs-file-pdf';
+        if (mimeType.includes('excel') || mimeType.includes('spreadsheet') || mimeType.includes('xls')) return 'bx bxs-file';
+        if (mimeType.includes('word') || mimeType.includes('document') || mimeType.includes('doc')) return 'bx bxs-file-doc';
+        if (mimeType.includes('image')) return 'bx bxs-image';
+        return 'bx bx-file';
+    }
+    
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text ? text.replace(/[&<>"']/g, m => map[m]) : '';
+    }
+    
+    // Handle file upload
+    $('#attachFilesForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const uploadBtn = $('#uploadAttachmentsBtn');
+        const originalHtml = uploadBtn.html();
+        
+        if (!formData.get('files[]')) {
+            toastr.warning('{{ localize("global.please_select_files") ?? "Please select files to upload" }}');
+            return;
+        }
+        
+        // Add registration_id if test result doesn't exist yet
+        if (!currentTestResultId || currentTestResultId == 0) {
+            formData.append('registration_id', currentRegistrationId);
+        }
+        
+        uploadBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>{{ localize("global.uploading") ?? "Uploading..." }}');
+        
+        $.ajax({
+            url: '{{ url("/laboratory/results") }}/' + currentTestResultId + '/attachments',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.status === 'success') {
+                    toastr.success(response.message || '{{ localize("global.files_uploaded_successfully") ?? "Files uploaded successfully" }}');
+                    $('#attachFilesForm')[0].reset();
+                    loadAttachments(currentTestResultId);
+                } else {
+                    toastr.error(response.message || '{{ localize("global.error_uploading_files") ?? "Error uploading files" }}');
+                }
+                uploadBtn.prop('disabled', false).html(originalHtml);
+            },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || '{{ localize("global.error_uploading_files") ?? "Error uploading files" }}';
+                toastr.error(message);
+                uploadBtn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+    
+    // Handle delete attachment
+    $(document).on('click', '.delete-attachment-btn', function() {
+        const attachmentId = $(this).data('attachment-id');
+        const $btn = $(this);
+        
+        if (!confirm('{{ localize("global.confirm_delete_file") ?? "Are you sure you want to delete this file?" }}')) {
+            return;
+        }
+        
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+        
+        $.ajax({
+            url: '{{ url("/laboratory/results/attachments") }}/' + attachmentId,
+            method: 'DELETE',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    toastr.success(response.message || '{{ localize("global.file_deleted_successfully") ?? "File deleted successfully" }}');
+                    if (currentTestResultId) {
+                        loadAttachments(currentTestResultId);
+                    }
+                } else {
+                    toastr.error(response.message || '{{ localize("global.error_deleting_file") ?? "Error deleting file" }}');
+                    $btn.prop('disabled', false).html('<i class="bx bx-trash"></i>');
+                }
+            },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || '{{ localize("global.error_deleting_file") ?? "Error deleting file" }}';
+                toastr.error(message);
+                $btn.prop('disabled', false).html('<i class="bx bx-trash"></i>');
             }
         });
     });

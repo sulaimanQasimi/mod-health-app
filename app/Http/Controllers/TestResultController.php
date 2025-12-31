@@ -6,9 +6,11 @@ use App\Models\LabTestParameter;
 use App\Models\Patient;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
+use App\Models\PatientTestResultAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
@@ -412,9 +414,23 @@ class TestResultController extends Controller
             }
 
             return response()->json([
+                'success' => true,
                 'status' => 'success',
-                'test' => $test,
-                'results' => $results
+                'data' => [
+                    'test' => $test,
+                    'results' => $results->map(function($result) {
+                        return [
+                            'id' => $result->id,
+                            'lab_parameter_id' => $result->lab_parameter_id,
+                            'result' => $result->result,
+                            'text_result' => $result->text_result,
+                            'parameter' => $result->parameter ? [
+                                'id' => $result->parameter->id,
+                                'parameter_name' => $result->parameter->parameter_name,
+                            ] : null,
+                        ];
+                    })
+                ]
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
@@ -988,6 +1004,142 @@ class TestResultController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => localize('global.error_saving_parameters') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Upload attachments for a test result
+     */
+    public function uploadAttachments(Request $request, $testResultId)
+    {
+        $request->validate([
+            'files.*' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif|max:10240', // 10MB max
+            'description' => 'nullable|string|max:500',
+            'registration_id' => 'nullable|exists:patient_test_registrations,id',
+        ]);
+
+        try {
+            // If testResultId is 0 or empty, try to create a test result from registration_id
+            if (!$testResultId || $testResultId == 0) {
+                if ($request->has('registration_id')) {
+                    $registration = PatientTestRegistration::findOrFail($request->registration_id);
+                    
+                    // Create a text-based result if it doesn't exist
+                    $testResult = PatientTestResult::firstOrCreate(
+                        [
+                            'test_registration_id' => $registration->id,
+                            'ref_no' => $registration->ref_no,
+                            'lab_parameter_id' => null,
+                        ],
+                        [
+                            'patient_id' => $registration->testable->patient_id ?? 1,
+                            'text_result' => null,
+                        ]
+                    );
+                    $testResultId = $testResult->id;
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => localize('global.test_result_not_found')
+                    ], 404);
+                }
+            } else {
+                $testResult = PatientTestResult::findOrFail($testResultId);
+            }
+            
+            $uploadedFiles = [];
+            
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('test_result_attachments', $filename, 'public');
+                    
+                    $attachment = PatientTestResultAttachment::create([
+                        'patient_test_result_id' => $testResult->id,
+                        'file_path' => $path,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_type' => $file->getMimeType(),
+                        'file_size' => $file->getSize(),
+                        'description' => $request->description,
+                    ]);
+                    
+                    $uploadedFiles[] = [
+                        'id' => $attachment->id,
+                        'file_name' => $attachment->file_name,
+                        'file_url' => $attachment->file_url,
+                        'file_size' => $attachment->formatted_file_size,
+                    ];
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => localize('global.files_uploaded_successfully'),
+                'files' => $uploadedFiles
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => localize('global.error_uploading_files') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete an attachment
+     */
+    public function deleteAttachment($attachmentId)
+    {
+        try {
+            $attachment = PatientTestResultAttachment::findOrFail($attachmentId);
+            
+            // Delete the physical file
+            $attachment->deleteFile();
+            
+            // Delete the database record
+            $attachment->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => localize('global.file_deleted_successfully')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => localize('global.error_deleting_file') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get attachments for a test result
+     */
+    public function getAttachments($testResultId)
+    {
+        try {
+            $testResult = PatientTestResult::with('attachments')->findOrFail($testResultId);
+            
+            $attachments = $testResult->attachments->map(function ($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'file_name' => $attachment->file_name,
+                    'file_url' => $attachment->file_url,
+                    'file_size' => $attachment->formatted_file_size,
+                    'file_type' => $attachment->file_type,
+                    'description' => $attachment->description,
+                    'created_at' => $attachment->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'attachments' => $attachments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => localize('global.error_loading_attachments') . ': ' . $e->getMessage()
             ], 500);
         }
     }

@@ -20,7 +20,6 @@ use App\Http\Controllers\LabController;
 use App\Http\Controllers\LabTypeController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserPerformanceReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\NotificationController;
@@ -122,10 +121,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update-avatar', [UserController::class, 'updateAvatar'])->name('update-avatar');
     });
 
-    // User Performance Report routes
-    Route::prefix('user-performance-report')->name('user-performance-report.')->group(function () {
-        Route::get('performance', [UserPerformanceReportController::class, 'index'])->name('performance');
-        Route::post('fetch', [UserPerformanceReportController::class, 'fetch'])->name('fetch');
+    // Doctor Performance Report routes
+    Route::prefix('doctor-performance-report')->name('doctor-performance-report.')->group(function () {
+        Route::get('performance', [\App\Http\Controllers\DoctorPerformanceReportController::class, 'index'])->name('performance');
+        Route::post('fetch', [\App\Http\Controllers\DoctorPerformanceReportController::class, 'fetch'])->name('fetch');
     });
 
     // Roles routes
@@ -302,7 +301,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('changeStatus/{appointment}', [AppointmentController::class, 'changeStatus'])->name('changeStatus');
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
         Route::get('report', [AppointmentController::class, 'report'])->name('report');
-        Route::post('report-search', [AppointmentController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [AppointmentController::class, 'exportReport'])->name('export-report');
         Route::get('{appointment}/printToken', [AppointmentController::class, 'printToken'])->name('printToken');
     });
@@ -1018,6 +1016,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('results/grouped', [TestResultController::class, 'groupedTests'])->name('results.grouped');
         Route::get('reports/print/{ref_no}', [TestResultController::class, 'printResultByRef'])->name('reports.print');
         Route::get('reports/print-group/{category_id}', [TestResultController::class, 'printGroupedTests'])->name('reports.print-group');
+        // Attachment routes
+        Route::post('results/{test_result_id}/attachments', [TestResultController::class, 'uploadAttachments'])->name('results.attachments.upload');
+        Route::get('results/{test_result_id}/attachments', [TestResultController::class, 'getAttachments'])->name('results.attachments.get');
+        Route::delete('results/attachments/{attachment_id}', [TestResultController::class, 'deleteAttachment'])->name('results.attachments.delete');
         
         // Scan routes
         Route::get('scan', [TestResultController::class, 'scanCode'])->name('scan');
@@ -1025,7 +1027,9 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     // Dentist Department routes
-    Route::prefix('dentist-registrations')->name('dentist-registrations.')->group(function () {
+    Route::prefix('dentist-registrations')
+        ->middleware(['permission:access-dentist-registrations', 'dentist'])
+        ->name('dentist-registrations.')->group(function () {
         Route::get('index', [\App\Http\Controllers\DentistRegistrationController::class, 'index'])->name('index');
         Route::get('create/{appointment}', [\App\Http\Controllers\DentistRegistrationController::class, 'create'])->name('create');
         Route::post('store/{appointment}', [\App\Http\Controllers\DentistRegistrationController::class, 'store'])->name('store');

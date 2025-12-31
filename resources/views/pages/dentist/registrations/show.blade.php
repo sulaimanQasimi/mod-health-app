@@ -147,6 +147,14 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="prescription-tab" data-bs-toggle="tab" data-bs-target="#prescription" type="button" role="tab">
+                                <i class="bx bx-notepad me-1"></i> {{ localize('global.prescription') }}
+                                @if($dentistRegistration->appointment && $dentistRegistration->appointment->prescription->count() > 0)
+                                    <span class="badge bg-success ms-1">{{ $dentistRegistration->appointment->prescription->count() }}</span>
+                                @endif
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="dental-chart-tab" data-bs-toggle="tab" data-bs-target="#dental-chart" type="button" role="tab">
                                 <i class="bx bx-grid-alt me-1"></i> {{ localize('global.dental_chart') }}
                                 @if($dentistRegistration->dentalCharts->count() > 0)
@@ -160,55 +168,23 @@
 
             <!-- Tab Content -->
             <div class="tab-content" id="dentistTabsContent">
-                <!-- Examinations Tab -->
+                <!-- Examinations Tab (Lab Test Registration Section) -->
                 <div class="tab-pane fade show active" id="examinations" role="tabpanel">
+                    @if($dentistRegistration->appointment)
+                        <x-lab-test-registration-section 
+                            :entity="$dentistRegistration->appointment"
+                            entity-type="appointment"
+                            :entity-id="$dentistRegistration->appointment->id"
+                            :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+                            :appointment-completed="$dentistRegistration->appointment->is_completed == 1"
+                        />
+                    @else
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ localize('global.dental_examinations') }}</h5>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addExaminationModal">
-                                <i class="bx bx-plus"></i> {{ localize('global.add_examination') }}
-                            </button>
-                        </div>
                         <div class="card-body">
-                            @forelse($dentistRegistration->examinations as $examination)
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h6 class="card-title">{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($examination->examination_date) }}</h6>
-                                                @if($examination->chief_complaint)
-                                                    <p><strong>{{ localize('global.chief_complaint') }}:</strong> {{ $examination->chief_complaint }}</p>
-                                                @endif
-                                                @if($examination->clinical_findings)
-                                                    <p><strong>{{ localize('global.clinical_findings') }}:</strong> {{ $examination->clinical_findings }}</p>
-                                                @endif
-                                                @if($examination->diagnosis)
-                                                    <p><strong>{{ localize('global.diagnosis') }}:</strong> {{ $examination->diagnosis }}</p>
-                                                @endif
-                                                @if($examination->treatment_plan)
-                                                    <p><strong>{{ localize('global.treatment_plan') }}:</strong> {{ $examination->treatment_plan }}</p>
-                                                @endif
-                                                @if($examination->notes)
-                                                    <p><strong>{{ localize('global.notes') }}:</strong> {{ $examination->notes }}</p>
-                                                @endif
+                                <p class="text-center text-muted">{{ localize('global.no_appointment_available') }}</p>
                                             </div>
-                                            <div>
-                                                <form action="{{ route('dental-examinations.destroy', $examination) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ localize('global.are_you_sure') }}')">
-                                                        <i class="bx bx-trash"></i>
-                                                    </button>
-                                                </form>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="text-center text-muted">{{ localize('global.no_examinations_found') }}</p>
-                            @endforelse
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Treatments Tab -->
@@ -356,6 +332,30 @@
                             @empty
                                 <p class="text-center text-muted">{{ localize('global.no_notes_found') }}</p>
                             @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prescription Tab -->
+                <div class="tab-pane fade" id="prescription" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Prescription Section Vue Component -->
+                            <div id="prescription-section-container" 
+                                 data-appointment='@json($dentistRegistration->appointment ?? null)'
+                                 data-permissions='@json([
+                                     "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                     "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                     "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                 ])'>
+                                <!-- Fallback content while Vue loads -->
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -852,6 +852,9 @@
 @endsection
 
 @section('scripts')
+    <!-- Vue.js Prescription Section -->
+    @vite(['public/assets/js/vue/appointment-prescription-app.js'])
+    
     <!-- Persian Datepicker Library -->
     <script src="{{ asset('assets/persian date2/js/persianDatepicker.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />

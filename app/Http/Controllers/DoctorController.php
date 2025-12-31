@@ -99,6 +99,7 @@ class DoctorController extends Controller
             'clinic_type' => 'nullable|in:hospital,clinic',
             'join_date' => 'nullable|string',
             'active_status' => 'nullable',
+            'is_dentist' => 'nullable',
             'department_id' => 'required',
         ]);
 
@@ -113,6 +114,9 @@ class DoctorController extends Controller
 
         // Convert active_status checkbox to boolean
         $data['active_status'] = $request->has('active_status') ? true : false;
+
+        // Convert is_dentist checkbox to boolean
+        $data['is_dentist'] = $request->has('is_dentist') ? true : false;
 
         // Convert Dari date to standard date format if provided
         if ($request->filled('join_date')) {
@@ -161,6 +165,7 @@ class DoctorController extends Controller
             'clinic_type' => 'nullable|in:hospital,clinic',
             'join_date' => 'nullable|string',
             'active_status' => 'nullable',
+            'is_dentist' => 'nullable',
             'department_id' => 'required',
             'user_id' => 'nullable|exists:users,id',
         ]);
@@ -192,6 +197,9 @@ class DoctorController extends Controller
 
         // Convert active_status checkbox to boolean
         $data['active_status'] = $request->has('active_status') ? true : false;
+
+        // Convert is_dentist checkbox to boolean
+        $data['is_dentist'] = $request->has('is_dentist') ? true : false;
 
         // Convert Dari date to standard date format if provided
         if ($request->filled('join_date')) {

@@ -178,7 +178,7 @@ class HospitalizationController extends Controller
             'remarks' => 'required',
             'room_id' => 'required',
             'patient_id' => 'required',
-            'doctor_id' => 'nullable',
+            'doctor_id' => 'nullable|exists:doctors,id',
             'bed_id' => 'required',
             'appointment_id' => 'required',
             'is_discharged' => 'nullable',
@@ -194,6 +194,30 @@ class HospitalizationController extends Controller
             'under_review_id' => 'nullable',
             'i_c_u_id' => 'nullable',
         ]);
+
+        // If doctor_id is not provided or doesn't exist, try to get it from appointment
+        if (empty($data['doctor_id'])) {
+            $appointment = \App\Models\Appointment::find($data['appointment_id']);
+            if ($appointment && $appointment->doctor_id) {
+                // Verify the doctor exists in doctors table
+                if (\App\Models\Doctor::where('id', $appointment->doctor_id)->exists()) {
+                    $data['doctor_id'] = $appointment->doctor_id;
+                }
+            }
+        }
+
+        // If still no doctor_id, try to get from authenticated user's doctor relationship
+        if (empty($data['doctor_id']) && auth()->user()) {
+            $user = auth()->user();
+            if ($user->doctor) {
+                $data['doctor_id'] = $user->doctor->id;
+            }
+        }
+
+        // If still no valid doctor_id, set to null (since it's nullable)
+        if (!empty($data['doctor_id']) && !\App\Models\Doctor::where('id', $data['doctor_id'])->exists()) {
+            $data['doctor_id'] = null;
+        }
 
         $data['food_type_id'] = json_encode($data['food_type_id']);
 
@@ -416,7 +440,7 @@ class HospitalizationController extends Controller
         'remarks' => 'required',
         'room_id' => 'required',
         'patient_id' => 'required',
-        'doctor_id' => 'nullable',
+        'doctor_id' => 'nullable|exists:doctors,id',
         'bed_id' => 'required',
         'appointment_id' => 'required',
         'is_discharged' => 'nullable',
@@ -432,6 +456,30 @@ class HospitalizationController extends Controller
         'under_review_id' => 'nullable',
         'i_c_u_id' => 'nullable',
     ]);
+
+    // If doctor_id is not provided or doesn't exist, try to get it from appointment
+    if (empty($data['doctor_id'])) {
+        $appointment = \App\Models\Appointment::find($data['appointment_id']);
+        if ($appointment && $appointment->doctor_id) {
+            // Verify the doctor exists in doctors table
+            if (\App\Models\Doctor::where('id', $appointment->doctor_id)->exists()) {
+                $data['doctor_id'] = $appointment->doctor_id;
+            }
+        }
+    }
+
+    // If still no doctor_id, try to get from authenticated user's doctor relationship
+    if (empty($data['doctor_id']) && auth()->user()) {
+        $user = auth()->user();
+        if ($user->doctor) {
+            $data['doctor_id'] = $user->doctor->id;
+        }
+    }
+
+    // If still no valid doctor_id, set to null (since it's nullable)
+    if (!empty($data['doctor_id']) && !\App\Models\Doctor::where('id', $data['doctor_id'])->exists()) {
+        $data['doctor_id'] = null;
+    }
 
     // Convert food_type_id to JSON if it exists
     if (isset($data['food_type_id'])) {

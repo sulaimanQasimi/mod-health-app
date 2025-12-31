@@ -83,7 +83,10 @@ class PatientController extends Controller
             $query->where('job_category', $request->job_category);
         }
 
-        $patients = $query->latest()->paginate(15)->withQueryString();
+        $patients = $query->latest()->paginate(15);
+        if ($request->hasAny(['name', 'father_name', 'last_name', 'nid', 'job_category'])) {
+            $patients->appends($request->query());
+        }
 
         // Get data for filters militery type, province
         $militeryTypes = MiliteryType::all();
@@ -400,86 +403,124 @@ class PatientController extends Controller
         $recipients = Recipient::all();
         return view('pages.patients.reports.index', compact('provinces', 'recipients'));
     }
+    /**
+     * Search and filter patients for reports with pagination
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
     public function reportSearch(Request $request)
     {
-        $query = DB::table('patients as p')
-            ->leftJoin('provinces as pr', 'p.province_id', '=', 'pr.id')
-            ->leftJoin('districts as d', 'p.district_id', '=', 'd.id')
-            ->leftJoin('recipients as r', 'p.referred_by', '=', 'r.id')
-            ->select(
-                'p.id',
-                'p.name as patient_name',
-                'p.nid',
-                'p.id_card',
-                'p.referral_name',
-                'p.age',
-                'p.gender',
-                'p.job_category',
-                'p.type',
-                'r.name as referred_by',
-                'pr.name_dr as province_name',
-                'd.name_dr as district_name',
-                'p.registration_date'
-            );
+        $perPage = $request->get('per_page', 15);
+        
+        $query = Patient::with(['province', 'district', 'recipient'])
+            ->select([
+                'patients.id',
+                'patients.name',
+                'patients.nid',
+                'patients.id_card',
+                'patients.referral_name',
+                'patients.age',
+                'patients.gender',
+                'patients.job_category',
+                'patients.type',
+                'patients.referred_by',
+                'patients.province_id',
+                'patients.district_id',
+                'patients.registration_date'
+            ]);
 
+        // Apply filters
+        $this->applyReportFilters($query, $request);
+
+        // Get paginated results with query string preservation
+        $items = $query->paginate($perPage);
+        
+        // Preserve query parameters in pagination links
+        if ($request->hasAny(['patient_name', 'nid', 'id_card', 'referral_name', 'job_category', 
+                              'type', 'referred_by', 'age', 'gender', 'province_id', 'district_id', 
+                              'from', 'to', 'per_page'])) {
+            $items->appends($request->query());
+        }
+
+        return view('pages.patients.reports.report', compact('items'));
+    }
+
+    /**
+     * Apply filters to the patient query
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Request $request
+     * @return void
+     */
+    private function applyReportFilters($query, Request $request)
+    {
+        // Text search filters
         if ($request->filled('patient_name')) {
-            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            $query->where('patients.name', 'like', '%' . $request->patient_name . '%');
         }
 
         if ($request->filled('nid')) {
-            $query->where('p.nid', 'like', '%' . $request->nid . '%');
+            $query->where('patients.nid', 'like', '%' . $request->nid . '%');
         }
 
         if ($request->filled('id_card')) {
-            $query->where('p.id_card', $request->id_card);
+            $query->where('patients.id_card', $request->id_card);
         }
 
         if ($request->filled('referral_name')) {
-            $query->where('p.referral_name', 'like', '%' . $request->referral_name . '%');
+            $query->where('patients.referral_name', 'like', '%' . $request->referral_name . '%');
         }
 
+        // Exact match filters
         if ($request->filled('job_category')) {
-            $query->where('p.job_category', $request->job_category);
+            $query->where('patients.job_category', $request->job_category);
         }
 
         if ($request->filled('type')) {
-            $query->where('p.type', $request->type);
+            $query->where('patients.type', $request->type);
         }
 
         if ($request->filled('referred_by')) {
-            $query->where('p.referred_by', $request->referred_by);
+            $query->where('patients.referred_by', $request->referred_by);
         }
+
         if ($request->filled('age')) {
-            $query->where('p.age', $request->age);
+            $query->where('patients.age', $request->age);
         }
 
         if ($request->filled('gender')) {
-            $query->where('p.gender', $request->gender);
+            $query->where('patients.gender', $request->gender);
         }
 
         if ($request->filled('province_id')) {
-            $query->where('p.province_id', $request->province_id);
+            $query->where('patients.province_id', $request->province_id);
         }
 
         if ($request->filled('district_id')) {
-            $query->where('p.district_id', $request->district_id);
+            $query->where('patients.district_id', $request->district_id);
         }
 
-        // Filter by date range - Convert Persian to Gregorian
+        // Date range filter - Convert Persian to Gregorian
         if ($request->filled('from') && $request->filled('to')) {
-
-            // Convert Persian dates to Gregorian
-            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
-            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
-
-            $query->whereDate('p.registration_date', '>=', $fromDate)->whereDate('p.registration_date', '<=', $toDate);
+            try {
+                $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
+                $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
+                
+                $query->whereDate('patients.registration_date', '>=', $fromDate)
+                      ->whereDate('patients.registration_date', '<=', $toDate);
+                                           $query->whereHas('appointments', function ($q) use ($fromDate, $toDate) {
+                        $q->whereDate('date', '>=', $fromDate)
+                          ->whereDate('date', '<=', $toDate);
+                    });
+     
+            } catch (\Exception $e) {
+                // Invalid date format, skip date filter
+            }
         }
 
-
-
-        $items = $query->get();
-        return view('pages.patients.reports.report', ['items' => $items]);
-
+        // Order by registration date descending
+        $query->orderBy('patients.registration_date', 'desc');
     }
 
 

@@ -37,14 +37,19 @@ class AppointmentController extends Controller
              });
          }
      
-         // Search by patient ID card
-         if ($request->filled('id_card')) {
-             $query->whereHas('patient', function($q) use ($request) {
-                 $q->where('id_card', 'like', '%' . $request->id_card . '%');
-             });
-         }
-     
-         // Filter by doctor
+        // Search by patient ID card
+        if ($request->filled('id_card')) {
+            $query->whereHas('patient', function($q) use ($request) {
+                $q->where('id_card', 'like', '%' . $request->id_card . '%');
+            });
+        }
+    
+        // Filter by patient ID
+        if ($request->filled('patient_id')) {
+            $query->where('patient_id', $request->patient_id);
+        }
+    
+        // Filter by doctor
          if ($request->filled('doctor_id')) {
              $query->where('doctor_id', $request->doctor_id);
          }
@@ -109,6 +114,8 @@ class AppointmentController extends Controller
         $now = now();
         $validatedData['date'] = $now->format('Y-m-d');
         $validatedData['time'] = $now->format('H:i:s');
+
+        $validatedData['clinic_type'] = auth()->user()->clinic_type;
 
         if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');
@@ -536,39 +543,130 @@ class AppointmentController extends Controller
             ->with('success', localize('global.department_updated_successfully'));
     }
 
-    public function report()
+    public function report(Request $request)
     {
-        return view('pages.appointments.reports.index');
+        $doctors = Doctor::where('active_status', true)->orderBy('name')->get();
+        $users = User::where('status', 1)->orderBy('name')->get();
+        
+        $items = null;
+        
+        // Only query if there are search parameters
+        if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end', 
+                              'date', 'time', 'is_completed', 'per_page'])) {
+            $perPage = $request->get('per_page', 15);
+            
+            $query = Appointment::with(['patient', 'doctor', 'processedBy', 'branch'])
+                ->select([
+                    'appointments.id',
+                    'appointments.patient_id',
+                    'appointments.doctor_id',
+                    'appointments.branch_id',
+                    'appointments.is_completed',
+                    'appointments.status_remark',
+                    'appointments.refferal_remarks',
+                    'appointments.date',
+                    'appointments.time',
+                    'appointments.processed_by'
+                ]);
+
+            // Apply filters
+            $this->applyAppointmentReportFilters($query, $request);
+
+            // Handle pagination with "all" option
+            if ($perPage === 'all') {
+                $items = $query->get();
+            } else {
+                $items = $query->paginate((int) $perPage);
+                
+                // Preserve query parameters in pagination links
+                $items->appends($request->query());
+            }
+        }
+
+        return view('pages.appointments.reports.index', compact('doctors', 'users', 'items'));
     }
-    public function reportSearch(Request $request)
+
+    /**
+     * Apply filters to the appointment query
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Request $request
+     * @return void
+     */
+    private function applyAppointmentReportFilters($query, Request $request)
     {
-        $query = DB::table('appointments as a')->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time');
-
+        // Patient name filter
         if ($request->filled('patient_name')) {
-            $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->patient_name . '%');
+            });
         }
 
-        if ($request->filled('date')) {
-            $query->where('a.date', $request->date);
+        // Doctor filter
+        if ($request->filled('doctor_id')) {
+            $query->where('appointments.doctor_id', $request->doctor_id);
         }
 
+        // Processed by filter
+        if ($request->filled('processed_by')) {
+            $query->where('appointments.processed_by', $request->processed_by);
+        }
+
+        // Date range filter - Convert Persian to Gregorian
+        if ($request->filled('start') && $request->filled('end')) {
+            try {
+                $startDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->start)->datetime();
+                $endDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->end)->datetime();
+                
+                $query->whereDate('appointments.date', '>=', $startDate)
+                      ->whereDate('appointments.date', '<=', $endDate);
+            } catch (\Exception $e) {
+                // Invalid date format, skip date filter
+            }
+        } elseif ($request->filled('date')) {
+            // Single date filter (backward compatibility)
+            $query->whereDate('appointments.date', $request->date);
+        }
+
+        // Time filter
         if ($request->filled('time')) {
-            $query->where('a.time', $request->time);
+            $query->where('appointments.time', $request->time);
         }
 
+        // Status filter
         if ($request->filled('is_completed')) {
-            $query->where('a.is_completed', $request->is_completed);
+            $query->where('appointments.is_completed', $request->is_completed);
         }
 
-        $items = $query->get();
-        return view('pages.appointments.reports.report', ['items' => $items]);
+        // Order by date and time descending
+        $query->orderBy('appointments.date', 'desc')
+              ->orderBy('appointments.time', 'desc');
     }
 
     public function exportReport(Request $request)
     {
         $data = json_decode($request->data, true);
 
-        $items = DB::table('appointments as a')->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'a.status_remark', 'a.refferal_remarks', 'a.date', 'a.time')->whereIn('a.id', $data)->get();
+        $items = DB::table('appointments as a')
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->leftJoin('users as u', 'a.processed_by', '=', 'u.id')
+            ->select(
+                'a.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'a.is_completed',
+                'a.status_remark',
+                'a.refferal_remarks',
+                'a.date',
+                'a.time',
+                'a.processed_by',
+                'u.name as processed_by_name'
+            )
+            ->whereIn('a.id', $data)
+            ->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
         $sheet = $spreadsheet->getActiveSheet();

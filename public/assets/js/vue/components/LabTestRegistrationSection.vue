@@ -182,16 +182,35 @@
                                             </td>
                                             <td dir="ltr">{{ formatDate(registration.created_at) }}</td>
                                             <td>
-                                                <!-- Print Report Button -->
-                                                <a 
-                                                    v-if="registration.status === 'completed'"
-                                                    :href="`/laboratory/reports/print/${registration.ref_no}`"
-                                                    class="btn btn-outline-info btn-sm"
-                                                    :title="localize('global.print_report')"
-                                                    target="_blank"
-                                                >
-                                                    <i class="bx bx-printer"></i>
-                                                </a>
+                                                <div class="d-flex gap-1">
+                                                    <!-- View Parameters Button -->
+                                                    <button 
+                                                        class="btn btn-outline-primary btn-sm"
+                                                        @click="viewParameters(registration.id)"
+                                                        :title="localize('global.view_test_parameters')"
+                                                    >
+                                                        <i class="bx bx-show"></i>
+                                                    </button>
+                                                    <!-- Attach Files Button (for text-based tests only) -->
+                                                    <button 
+                                                        v-if="!registration.lab_type || !registration.lab_type.direct_lab_test_parameters || registration.lab_type.direct_lab_test_parameters.length === 0"
+                                                        class="btn btn-outline-info btn-sm"
+                                                        @click="openAttachmentsModal(registration)"
+                                                        :title="localize('global.attach_files')"
+                                                    >
+                                                        <i class="bx bx-paperclip"></i>
+                                                    </button>
+                                                    <!-- Print Report Button -->
+                                                    <a 
+                                                        v-if="registration.status === 'completed'"
+                                                        :href="`/laboratory/reports/print/${registration.ref_no}`"
+                                                        class="btn btn-outline-info btn-sm"
+                                                        :title="localize('global.print_report')"
+                                                        target="_blank"
+                                                    >
+                                                        <i class="bx bx-printer"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -461,7 +480,96 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <a 
+                            v-if="selectedRegistration && selectedRegistration.ref_no"
+                            :href="`/laboratory/reports/print/${selectedRegistration.ref_no}`"
+                            class="btn btn-outline-secondary"
+                            :title="localize('global.print_report')"
+                            target="_blank"
+                        >
+                            <i class="bx bx-printer me-1"></i>
+                            {{ localize('global.print') }}
+                        </a>
                         <button type="button" class="btn btn-secondary" @click="closeParametersModal">
+                            {{ localize('global.close') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attachments Modal -->
+        <div v-if="showAttachmentsModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bx bx-paperclip me-2"></i>
+                            {{ localize('global.attached_files') }} - {{ selectedRegistrationForAttachments?.lab_type?.name || 'Test' }}
+                        </h5>
+                        <button type="button" class="btn-close" @click="closeAttachmentsModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="selectedRegistrationForAttachments">
+                            <div class="mb-3">
+                                <div class="alert alert-info">
+                                    <i class="bx bx-info-circle me-2"></i>
+                                    <strong>{{ selectedRegistrationForAttachments.lab_type?.name || 'Test' }}</strong>
+                                    <br>
+                                    <small><code>{{ selectedRegistrationForAttachments.ref_no }}</code></small>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <h6 class="mb-0">
+                                    <i class="bx bx-file me-1"></i>
+                                    {{ localize('global.attached_files') }}
+                                </h6>
+                            </div>
+                            
+                            <div v-if="loadingAttachments" class="text-center py-3 text-muted">
+                                <i class="bx bx-loader-alt bx-spin"></i>
+                                {{ localize('global.loading') }}
+                            </div>
+                            <div v-else-if="attachments.length === 0" class="text-center py-3 text-muted">
+                                <i class="bx bx-file-blank me-1"></i>
+                                {{ localize('global.no_attachments') }}
+                            </div>
+                            <div v-else class="list-group">
+                                <div 
+                                    v-for="attachment in attachments" 
+                                    :key="attachment.id"
+                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                >
+                                    <div class="d-flex align-items-center flex-grow-1">
+                                        <i :class="getFileIcon(attachment.file_type) + ' me-2 text-primary'" style="font-size: 1.5rem;"></i>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold">{{ attachment.file_name }}</div>
+                                            <small v-if="attachment.description" class="text-muted">{{ attachment.description }}</small>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="bx bx-calendar me-1"></i>{{ formatDate(attachment.created_at) }}
+                                                <span v-if="attachment.file_size"> | <i class="bx bx-data me-1"></i>{{ attachment.file_size }}</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <a 
+                                            :href="attachment.file_url" 
+                                            target="_blank" 
+                                            class="btn btn-outline-primary btn-sm" 
+                                            :title="localize('global.view')"
+                                        >
+                                            <i class="bx bx-show me-1"></i>
+                                            {{ localize('global.view') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeAttachmentsModal">
                             {{ localize('global.close') }}
                         </button>
                     </div>
@@ -653,11 +761,16 @@ export default {
             showCreateModal: false,
             showParametersModal: false,
             showParameterDetailsModal: false,
+            showAttachmentsModal: false,
             testRegistrations: [],
             allLabTypes: [],
             selectedLabTypes: [],
             selectedRegistration: null,
             selectedParameter: null,
+            selectedRegistrationForAttachments: null,
+            currentTestResultId: null,
+            attachments: [],
+            loadingAttachments: false,
             form: {
                 lab_type_ids: [],
                 priority: 'normal',
@@ -1003,7 +1116,30 @@ export default {
                 'global.failed_to_create_test_registration': 'ایجاد ثبت نام آزمایش ناموفق بود',
                 'global.assigned_to': 'مسول',
                 'global.assigned_section': 'بخش واگذار شده',
-                'global.assigned_date': 'تاریخ واگذاری'
+                'global.assigned_date': 'تاریخ واگذاری',
+                'global.print': 'چاپ',
+                'global.print_page': 'چاپ صفحه',
+                'global.attach_files': 'پیوست فایل',
+                'global.select_files': 'انتخاب فایل',
+                'global.pdf_excel_images': 'PDF، Excel، تصاویر و غیره',
+                'global.max_file_size_10mb': 'حداکثر اندازه فایل: 10 مگابایت',
+                'global.description': 'توضیحات',
+                'global.optional': 'اختیاری',
+                'global.add_description_here': 'توضیحات را اینجا اضافه کنید...',
+                'global.upload_files': 'آپلود فایل',
+                'global.attached_files': 'فایل‌های پیوست شده',
+                'global.loading': 'در حال بارگذاری...',
+                'global.no_attachments': 'هیچ فایل پیوستی وجود ندارد',
+                'global.view': 'مشاهده',
+                'global.delete': 'حذف',
+                'global.confirm_delete_file': 'آیا مطمئن هستید که می‌خواهید این فایل را حذف کنید؟',
+                'global.files_uploaded_successfully': 'فایل‌ها با موفقیت آپلود شدند',
+                'global.error_uploading_files': 'خطا در آپلود فایل‌ها',
+                'global.file_deleted_successfully': 'فایل با موفقیت حذف شد',
+                'global.error_deleting_file': 'خطا در حذف فایل',
+                'global.please_select_files': 'لطفاً فایل‌هایی را برای آپلود انتخاب کنید',
+                'global.error_loading_data': 'خطا در بارگذاری داده',
+                'global.error_loading_attachments': 'خطا در بارگذاری فایل‌های پیوست'
             };
             return translations[key] || key;
         },
@@ -1036,6 +1172,100 @@ export default {
         closeParameterDetailsModal() {
             this.showParameterDetailsModal = false;
             this.selectedParameter = null;
+        },
+
+        async openAttachmentsModal(registration) {
+            this.selectedRegistrationForAttachments = registration;
+            this.showAttachmentsModal = true;
+            this.attachments = [];
+            this.currentTestResultId = null;
+            
+            // Load test result and attachments
+            await this.loadTestResultAndAttachments(registration.id);
+        },
+
+        closeAttachmentsModal() {
+            this.showAttachmentsModal = false;
+            this.selectedRegistrationForAttachments = null;
+            this.attachments = [];
+            this.currentTestResultId = null;
+        },
+
+        async loadTestResultAndAttachments(registrationId) {
+            this.loadingAttachments = true;
+            
+            try {
+                // First, get the test result for this registration
+                const response = await fetch(`/laboratory/results/load/${registrationId}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    // Find the text-based result (no lab_parameter_id)
+                    const textResult = data.data.results?.find(r => !r.lab_parameter_id);
+                    
+                    if (textResult && textResult.id) {
+                        this.currentTestResultId = textResult.id;
+                        await this.loadAttachments(textResult.id);
+                    } else {
+                        this.currentTestResultId = null;
+                        this.attachments = [];
+                    }
+                } else {
+                    this.currentTestResultId = null;
+                    this.attachments = [];
+                }
+            } catch (error) {
+                console.error('Error loading test result:', error);
+                this.showError(this.localize('global.error_loading_data'));
+            } finally {
+                this.loadingAttachments = false;
+            }
+        },
+
+        async loadAttachments(testResultId) {
+            if (!testResultId) {
+                this.attachments = [];
+                return;
+            }
+
+            try {
+                const response = await fetch(`/laboratory/results/${testResultId}/attachments`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    this.attachments = data.attachments || [];
+                } else {
+                    this.attachments = [];
+                }
+            } catch (error) {
+                console.error('Error loading attachments:', error);
+                this.showError(this.localize('global.error_loading_attachments'));
+            }
+        },
+
+
+        getFileIcon(mimeType) {
+            if (!mimeType) return 'bx bx-file';
+            
+            if (mimeType.includes('pdf')) return 'bx bxs-file-pdf';
+            if (mimeType.includes('excel') || mimeType.includes('spreadsheet') || mimeType.includes('xls')) return 'bx bxs-file';
+            if (mimeType.includes('word') || mimeType.includes('document') || mimeType.includes('doc')) return 'bx bxs-file-doc';
+            if (mimeType.includes('image')) return 'bx bxs-image';
+            return 'bx bx-file';
         }
     }
 }

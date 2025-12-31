@@ -258,6 +258,7 @@
                                         <th>{{ localize('global.gender') }}</th>
                                         <th>{{ localize('global.clinic_type') }}</th>
                                         <th class="text-center">{{ localize('global.active_status') }}</th>
+                                        <th class="text-center">{{ localize('global.is_dentist') ?: 'Is Dentist' }}</th>
                                         <th class="text-center" style="width: 100px;">{{ localize('global.actions') }}</th>
                                     </tr>
                                 </thead>
@@ -335,6 +336,15 @@
                                                     <span class="badge bg-label-danger">
                                                         <i class="bx bx-x-circle me-1"></i>{{ localize('global.inactive') ?: 'Inactive' }}
                                                     </span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if($doctor->is_dentist)
+                                                    <span class="badge bg-label-info">
+                                                        <i class="bx bx-check me-1"></i>{{ localize('global.dentist') ?: 'Dentist' }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">

@@ -24,6 +24,7 @@ class Doctor extends Model
         'clinic_type',
         'join_date',
         'active_status',
+        'is_dentist',
         'branch_id',
         'department_id',
         'user_id'
@@ -32,6 +33,7 @@ class Doctor extends Model
     protected $casts = [
         'join_date' => 'date',
         'active_status' => 'boolean',
+        'is_dentist' => 'boolean',
     ];
 
     public static function boot()

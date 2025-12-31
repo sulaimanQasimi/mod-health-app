@@ -23,17 +23,34 @@ class Hospitalization extends Model
             $user = Auth::user();
             $model->created_by = $user->id ?? 0;
             
+            // Validate doctor_id exists in doctors table if provided
+            if (!empty($model->doctor_id) && !Doctor::where('id', $model->doctor_id)->exists()) {
+                $model->doctor_id = null;
+            }
+            
             // Automatically get doctor_id from appointment if not provided
             if (empty($model->doctor_id) && !empty($model->appointment_id)) {
                 // Try to get from relationship if already loaded, otherwise query
                 if ($model->relationLoaded('appointment') && $model->appointment) {
-                    $model->doctor_id = $model->appointment->doctor_id;
+                    $appointmentDoctorId = $model->appointment->doctor_id;
+                    // Verify the doctor exists in doctors table
+                    if ($appointmentDoctorId && Doctor::where('id', $appointmentDoctorId)->exists()) {
+                        $model->doctor_id = $appointmentDoctorId;
+                    }
                 } else {
                     $appointment = Appointment::find($model->appointment_id);
                     if ($appointment && $appointment->doctor_id) {
-                        $model->doctor_id = $appointment->doctor_id;
+                        // Verify the doctor exists in doctors table
+                        if (Doctor::where('id', $appointment->doctor_id)->exists()) {
+                            $model->doctor_id = $appointment->doctor_id;
+                        }
                     }
                 }
+            }
+            
+            // If still no doctor_id and user has a doctor relationship, use it
+            if (empty($model->doctor_id) && $user && $user->doctor) {
+                $model->doctor_id = $user->doctor->id;
             }
         });
 

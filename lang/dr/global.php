@@ -3925,6 +3925,7 @@ return [
     'treatment_history' => 'تاریخچه تداوی',
     'notes' => 'یادداشت',
     'not_available' => 'موجود نیست',
+    'role'=>'نقش',
     'na' => 'موجود نیست',
     'millimeter' => 'میلی‌متر',
     'mm' => 'میلی‌متر',

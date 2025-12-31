@@ -107,7 +107,7 @@
                     </h5>
                     <div class="row g-3 align-items-start">
                         <div class="col-md-12">
-                            <div class="filter-panel">
+                            <div class="filter-panel bg-none">
                                 <button class="btn btn-label-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
                                     <i class="bx bx-filter-alt me-1"></i>{{ localize('global.filters') ?? 'Filters' }}
                                     @if(request()->hasAny(['category_id', 'status', 'role_id', 'is_doctor', 'clinic_type', 'search']))
@@ -547,6 +547,10 @@
             border-radius: 8px;
             padding: 1rem;
             margin-bottom: 1rem;
+        }
+
+        .filter-panel.bg-none {
+            background-color: transparent;
         }
 
         .filter-panel .form-label {

@@ -7,93 +7,87 @@
             @include('components.toast')
         @endif
         <div class="container-xxl flex-grow-1 container-p-y">
+            <!-- Statistics Cards -->
             <div class="row g-4 mb-4">
                 <div class="col-sm-6 col-xl-3">
-                    <div class="card stats-card stats-card-success h-100">
+                    <div class="card bg-label-success">
                         <div class="card-body">
                             <div class="d-flex align-items-start justify-content-between">
                                 <div class="content-left">
-                                    <p class="text-muted mb-1 fw-medium">{{localize('global.active_users')}}</p>
-                                    <h3 class="mb-0 fw-bold">{{ $users->where('status', 1)->count() }}</h3>
-                                    <small class="text-success mt-1">
-                                        <i class="bx bx-trending-up"></i> Active
-                                    </small>
-                                </div>
-                                <div class="stats-icon-wrapper">
-                                    <div class="stats-icon bg-success">
-                                        <i class="bx bx-group"></i>
+                                    <span>{{ localize('global.active_users') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">
+                                            {{ $users->where('status', 1)->count() }}</h4>
                                     </div>
                                 </div>
+                                <span class="badge bg-success rounded p-2">
+                                    <i class="bx bx-group bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
-                    <div class="card stats-card stats-card-danger h-100">
+                    <div class="card bg-label-danger">
                         <div class="card-body">
                             <div class="d-flex align-items-start justify-content-between">
                                 <div class="content-left">
-                                    <p class="text-muted mb-1 fw-medium">{{localize('global.deactive_users')}}</p>
-                                    <h3 class="mb-0 fw-bold">{{ $users->where('status', 0)->count() }}</h3>
-                                    <small class="text-danger mt-1">
-                                        <i class="bx bx-trending-down"></i> Inactive
-                                    </small>
-                                </div>
-                                <div class="stats-icon-wrapper">
-                                    <div class="stats-icon bg-danger">
-                                        <i class="bx bx-user-x"></i>
+                                    <span>{{ localize('global.deactive_users') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-danger" style="font-size: xx-large;">
+                                            {{ $users->where('status', 0)->count() }}</h4>
                                     </div>
                                 </div>
+                                <span class="badge bg-danger rounded p-2">
+                                    <i class="bx bx-user-x bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
-                    <div class="card stats-card stats-card-primary h-100">
+                    <div class="card bg-label-primary">
                         <div class="card-body">
                             <div class="d-flex align-items-start justify-content-between">
                                 <div class="content-left">
-                                    <p class="text-muted mb-1 fw-medium">{{localize('global.total_users')}}</p>
-                                    <h3 class="mb-0 fw-bold">{{ $users->count() }}</h3>
-                                    <small class="text-primary mt-1">
-                                        <i class="bx bx-user"></i> All Users
-                                    </small>
-                                </div>
-                                <div class="stats-icon-wrapper">
-                                    <div class="stats-icon bg-primary">
-                                        <i class="bx bx-group"></i>
+                                    <span>{{ localize('global.total_users') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">
+                                            {{ $users->count() }}</h4>
                                     </div>
                                 </div>
+                                <span class="badge bg-primary rounded p-2">
+                                    <i class="bx bx-group bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
-                    <div class="card stats-card stats-card-info h-100">
+                    <div class="card bg-label-info">
                         <div class="card-body">
                             <div class="d-flex align-items-start justify-content-between">
                                 <div class="content-left">
-                                    <p class="text-muted mb-1 fw-medium">{{localize('global.new_users')}}</p>
-                                    @php
-                                        $currentMonth = \Carbon\Carbon::now()->format('Y-m');
-                                        $newUsersCount = $users->filter(function ($user) use ($currentMonth) {
-                                            if($user->created_at == null) {
-                                                return null;
-                                            } else {
-                                                return $user->created_at->format('Y-m') == $currentMonth;
-                                            }
-                                        })->count();
-                                    @endphp
-                                    <h3 class="mb-0 fw-bold">{{ $newUsersCount }}</h3>
-                                    <small class="text-info mt-1">
-                                        <i class="bx bx-calendar"></i> This Month
-                                    </small>
-                                </div>
-                                <div class="stats-icon-wrapper">
-                                    <div class="stats-icon bg-info">
-                                        <i class="bx bx-user-plus"></i>
+                                    <span>{{ localize('global.new_users') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        @php
+                                            $currentMonth = \Carbon\Carbon::now()->format('Y-m');
+                                            $newUsersCount = $users->filter(function ($user) use ($currentMonth) {
+                                                if($user->created_at == null) {
+                                                    return null;
+                                                } else {
+                                                    return $user->created_at->format('Y-m') == $currentMonth;
+                                                }
+                                            })->count();
+                                        @endphp
+                                        <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">
+                                            {{ $newUsersCount }}
+                                        </h4>
                                     </div>
                                 </div>
+                                <span class="badge bg-info rounded p-2">
+                                    <i class="bx bx-user-plus bx-lg"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -346,65 +340,52 @@
 
 @push('custom-css')
     <style>
-        /* Stats Cards Styling */
-        .stats-card {
-            transition: all 0.3s ease;
+        /* Statistics Cards Styling */
+        .card {
             border: none;
-            box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
-            overflow: hidden;
-            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            transition: width 0.3s ease;
+        .bg-label-success {
+            background: var(--bs-success-bg-subtle);
+            border: 1px solid var(--bs-success-border-subtle);
         }
 
-        .stats-card-success::before {
-            background: linear-gradient(135deg, #28c76f 0%, #48da89 100%);
+        .bg-label-danger {
+            background: var(--bs-danger-bg-subtle);
+            border: 1px solid var(--bs-danger-border-subtle);
         }
 
-        .stats-card-danger::before {
-            background: linear-gradient(135deg, #ea5455 0%, #f08182 100%);
+        .bg-label-primary {
+            background: var(--bs-primary-bg-subtle);
+            border: 1px solid var(--bs-primary-border-subtle);
         }
 
-        .stats-card-primary::before {
-            background: linear-gradient(135deg, #7367f0 0%, #9e95f5 100%);
+        .bg-label-info {
+            background: var(--bs-info-bg-subtle);
+            border: 1px solid var(--bs-info-border-subtle);
         }
 
-        .stats-card-info::before {
-            background: linear-gradient(135deg, #00cfe8 0%, #2bdff7 100%);
+        /* Dark mode specific adjustments */
+        [data-bs-theme="dark"] .bg-label-success {
+            background: rgba(25, 135, 84, 0.1);
+            border-color: rgba(25, 135, 84, 0.2);
         }
 
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px 0 rgba(67, 89, 113, 0.2);
+        [data-bs-theme="dark"] .bg-label-danger {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: rgba(220, 53, 69, 0.2);
         }
 
-        .stats-card:hover::before {
-            width: 100%;
-            opacity: 0.1;
+        [data-bs-theme="dark"] .bg-label-primary {
+            background: rgba(13, 110, 253, 0.1);
+            border-color: rgba(13, 110, 253, 0.2);
         }
 
-        .stats-icon-wrapper {
-            position: relative;
-        }
-
-        .stats-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        [data-bs-theme="dark"] .bg-label-info {
+            background: rgba(13, 202, 240, 0.1);
+            border-color: rgba(13, 202, 240, 0.2);
         }
 
         /* Table Styling */

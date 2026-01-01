@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DentistRegistration;
 use App\Models\DentalExamination;
 use Illuminate\Http\Request;
+use HanifHefaz\Dcter\Dcter;
 
 class DentalExaminationController extends Controller
 {
@@ -14,13 +15,25 @@ class DentalExaminationController extends Controller
     public function store(Request $request, DentistRegistration $dentistRegistration)
     {
         $validatedData = $request->validate([
-            'examination_date' => 'required|date',
+            'examination_date' => 'required|string',
             'chief_complaint' => 'nullable|string',
             'clinical_findings' => 'nullable|string',
             'diagnosis' => 'nullable|string',
             'treatment_plan' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        // Convert Persian date to Gregorian
+        if (!empty($validatedData['examination_date'])) {
+            try {
+                $validatedData['examination_date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['examination_date']));
+            } catch (\Exception $e) {
+                // If conversion fails, try to validate as Gregorian date
+                if (!strtotime($validatedData['examination_date'])) {
+                    return redirect()->back()->withErrors(['examination_date' => localize('global.invalid_date_format')])->withInput();
+                }
+            }
+        }
 
         $validatedData['dentist_registration_id'] = $dentistRegistration->id;
         $examination = DentalExamination::create($validatedData);
@@ -34,13 +47,25 @@ class DentalExaminationController extends Controller
     public function update(Request $request, DentalExamination $dentalExamination)
     {
         $validatedData = $request->validate([
-            'examination_date' => 'required|date',
+            'examination_date' => 'required|string',
             'chief_complaint' => 'nullable|string',
             'clinical_findings' => 'nullable|string',
             'diagnosis' => 'nullable|string',
             'treatment_plan' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        // Convert Persian date to Gregorian
+        if (!empty($validatedData['examination_date'])) {
+            try {
+                $validatedData['examination_date'] = Dcter::JalaliToGregorian(Dcter::Carbonize($validatedData['examination_date']));
+            } catch (\Exception $e) {
+                // If conversion fails, try to validate as Gregorian date
+                if (!strtotime($validatedData['examination_date'])) {
+                    return redirect()->back()->withErrors(['examination_date' => localize('global.invalid_date_format')])->withInput();
+                }
+            }
+        }
 
         $dentalExamination->update($validatedData);
 

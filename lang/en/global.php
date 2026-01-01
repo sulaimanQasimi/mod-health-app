@@ -1085,4 +1085,10 @@ return [
     'no_images_uploaded' => 'No images uploaded',
     'periodontal_measurements' => 'Periodontal Measurements',
     'no_measurements_recorded' => 'No measurements recorded',
+    'add_measurements' => 'Add Measurements',
+    '6_point_measurements' => '6-Point Measurements',
+    'measurement_date' => 'Measurement Date',
+    'measurement_point' => 'Measurement Point',
+    'recession' => 'Recession',
+    'plaque' => 'Plaque',
 ];

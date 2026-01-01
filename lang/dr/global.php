@@ -3925,6 +3925,8 @@ return [
     'treatment_history' => 'تاریخچه تداوی',
     'notes' => 'یادداشت',
     'not_available' => 'موجود نیست',
+    'role'=>'نقش',
+    'all_roles'=>'تمام نقش ها',
     'na' => 'موجود نیست',
     'millimeter' => 'میلی‌متر',
     'mm' => 'میلی‌متر',
@@ -3958,5 +3960,9 @@ return [
     'add_description_here' => 'اینجا توضیحات اضافه کنید',
     'attached_files' => 'فایل‌های ضمیمه‌شده',
     'no_attachments' => 'هیچ ضمیمه‌ای وجود ندارد',
-    "is_dentist"=>"ایا داکتر دندان است"
+    "is_dentist"=>"ایا داکتر دندان است",
+    'professional_details'=>'جزئیات  اطلاعاتی',
+    'security'=>'امنیت',
+    'upload_new_photo'=>'آپلود تصویر جدید',
+    'access_control'=>'کنترل دسترسی',
 ];

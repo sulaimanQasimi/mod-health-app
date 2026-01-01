@@ -661,7 +661,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="examination_date" class="form-label">{{ localize('global.examination_date') }}</label>
-                            <input type="date" class="form-control" id="examination_date" name="examination_date" value="{{ date('Y-m-d') }}" required>
+                            <input type="text" class="form-control datepicker_dari" id="examination_date" name="examination_date" 
+                                   placeholder="{{ localize('global.select_date') }}" required readonly>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -828,7 +829,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="note_date" class="form-label">{{ localize('global.note_date') }}</label>
-                            <input type="date" class="form-control" id="note_date" name="note_date" value="{{ date('Y-m-d') }}" required>
+                            <input type="text" class="form-control datepicker_dari" id="note_date" name="note_date" 
+                                   placeholder="{{ localize('global.select_date') }}" required readonly>
                         </div>
                         <div class="mb-3">
                             <label for="note_type" class="form-label">{{ localize('global.note_type') }}</label>
@@ -858,7 +860,7 @@
     <link rel="stylesheet" href="{{ asset('assets/persian date2/css/persianDatepicker-default.css') }}" type="text/css" />
     
     <script>
-        // Initialize Persian datepicker for treatment date
+        // Initialize Persian datepicker for treatment date and examination date
         $(document).ready(function() {
             // Initialize Persian date picker for treatment_date in modal
             $('#addTreatmentModal').on('shown.bs.modal', function() {
@@ -885,6 +887,86 @@
                 const treatmentDateInput = $('#treatment_date');
                 if (treatmentDateInput.length && !treatmentDateInput.data('persianDatepicker')) {
                     treatmentDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            }
+            
+            // Initialize Persian date picker for examination_date in modal
+            $('#addExaminationModal').on('shown.bs.modal', function() {
+                const examinationDateInput = $('#examination_date');
+                if (examinationDateInput.length && !examinationDateInput.data('persianDatepicker')) {
+                    examinationDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            });
+            
+            // Also initialize if modal is already shown (for page refresh scenarios)
+            if ($('#addExaminationModal').hasClass('show')) {
+                const examinationDateInput = $('#examination_date');
+                if (examinationDateInput.length && !examinationDateInput.data('persianDatepicker')) {
+                    examinationDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            }
+            
+            // Initialize Persian date picker for note_date in modal
+            $('#addNoteModal').on('shown.bs.modal', function() {
+                const noteDateInput = $('#note_date');
+                if (noteDateInput.length && !noteDateInput.data('persianDatepicker')) {
+                    noteDateInput.persianDatepicker({
+                        formatDate: 'YYYY-MM-DD',
+                        calendar: {
+                            persian: {
+                                locale: 'en',
+                                showHint: true,
+                                leapYearMode: 'algorithmic'
+                            }
+                        },
+                        checkDate: function(unix) {
+                            return true;
+                        }
+                    });
+                }
+            });
+            
+            // Also initialize if modal is already shown (for page refresh scenarios)
+            if ($('#addNoteModal').hasClass('show')) {
+                const noteDateInput = $('#note_date');
+                if (noteDateInput.length && !noteDateInput.data('persianDatepicker')) {
+                    noteDateInput.persianDatepicker({
                         formatDate: 'YYYY-MM-DD',
                         calendar: {
                             persian: {

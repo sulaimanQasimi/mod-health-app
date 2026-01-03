@@ -3965,4 +3965,5 @@ return [
     'security'=>'امنیت',
     'upload_new_photo'=>'آپلود تصویر جدید',
     'access_control'=>'کنترل دسترسی',
+    'completion' => 'اکمال',
 ];

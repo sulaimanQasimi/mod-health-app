@@ -125,7 +125,7 @@
                                     <div class="form-group mb-3">
                                         <label for="purchase_price">{{ localize('global.purchase_price') }}</label>
                                         <input type="number" step="0.01" class="form-control @error('purchase_price') is-invalid @enderror"
-                                            id="purchase_price" name="purchase_price" value="{{ old('purchase_price') }}" min="0" required>
+                                            id="purchase_price" name="purchase_price" value="{{ old('purchase_price') }}" min="0">
                                         @error('purchase_price')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>

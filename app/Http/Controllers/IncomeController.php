@@ -87,7 +87,7 @@ class IncomeController extends Controller
         }
 
         $medicines = Medicine::orderBy('name')->get();
-        $incomeTypes = ['purchase', 'return', 'donation', 'transfer'];
+        $incomeTypes = ['purchase', 'return', 'donation', 'transfer', 'completion'];
         
         return view('pages.incomes.create', compact('medicines', 'incomeTypes', 'userPharmacy'));
     }
@@ -109,9 +109,9 @@ class IncomeController extends Controller
             'batch_number' => 'nullable|string|max:255',
             'expiry_date' => 'nullable|date|after:today',
             'supplier_name' => 'nullable|string|max:255',
-            'purchase_price' => 'required|numeric|min:0',
+            'purchase_price' => 'nullable|numeric|min:0',
             'purchase_date' => 'nullable|date',
-            'income_type' => 'required|in:purchase,return,donation,transfer',
+            'income_type' => 'required|in:purchase,return,donation,transfer,completion',
             'notes' => 'nullable|string'
         ]);
 // Add pharmacy_id to the request data

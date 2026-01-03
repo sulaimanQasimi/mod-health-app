@@ -6,7 +6,7 @@
     <title>{{ localize('global.prescription_receipt') }}</title>
     <style>
         @page {
-            size: 80mm auto;
+            size: 57mm 90mm;
             margin: 0;
         }
 
@@ -14,7 +14,7 @@
             body {
                 margin: 0;
                 padding: 0;
-                width: 80mm;
+                width: 57mm;
                 font-size: 9px;
                 line-height: 1.2;
             }
@@ -26,8 +26,8 @@
 
         body {
             font-family: 'Tahoma', 'Arial', sans-serif;
-            width: 80mm;
-            max-width: 80mm;
+            width: 57mm;
+            max-width: 57mm;
             margin: 0 auto;
             padding: 5px;
             font-size: 9px;
@@ -40,7 +40,7 @@
 
         .receipt-container {
             width: 100%;
-            max-width: 80mm;
+            max-width: 57mm;
         }
 
         .header {

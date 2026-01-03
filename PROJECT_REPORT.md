@@ -72,7 +72,47 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ## Recent Major Changes & New Features
 
-### 1. Laboratory Results Interface Enhancements (NEW)
+### 1. Income Management System Enhancements (NEW)
+**Implementation Date**: January 2026
+**Contributors**: Development Team
+
+#### Income Type Expansion:
+- **New Income Type Added**: Added 'completion' (اکمال) as a new income type option
+- **Database Schema Update**: Created migration to extend `income_type` ENUM column to include 'completion'
+- **Controller Updates**: Updated `IncomeController` to support the new income type in validation and type arrays
+- **Form Enhancement**: Added 'completion' option to income creation form with proper localization
+
+#### Purchase Price Field Enhancement:
+- **Optional Purchase Price**: Made `purchase_price` field optional in income creation form
+- **Validation Update**: Changed validation rule from `required` to `nullable` for purchase price
+- **User Experience**: Improved form flexibility for different income types that may not require purchase price
+
+#### Technical Implementation:
+- **Migration**: `2026_01_03_100000_add_completion_to_income_type_enum.php`
+  - Extended ENUM column: `['purchase', 'return', 'donation', 'transfer', 'adjustment', 'completion']`
+  - Proper rollback support in migration down method
+- **Controller Changes**: 
+  - Updated `$incomeTypes` array to include 'completion'
+  - Updated validation rules to accept 'completion' as valid income type
+  - Changed `purchase_price` validation from `required` to `nullable`
+- **View Updates**: 
+  - Added 'completion' option to income type select dropdown
+  - Removed `required` attribute from purchase_price input field
+  - Proper localization support for new income type
+
+#### Files Modified:
+- **database/migrations/2026_01_03_100000_add_completion_to_income_type_enum.php**: New migration for enum extension
+- **app/Http/Controllers/IncomeController.php**: Updated income types array and validation rules
+- **resources/views/pages/incomes/create.blade.php**: Added completion option and made purchase_price optional
+- **lang/dr/global.php**: Translation key for 'completion' already exists (اکمال)
+
+#### Impact:
+- **Enhanced Income Tracking**: More comprehensive income type categorization
+- **Improved Flexibility**: Optional purchase price allows for different income scenarios
+- **Better Localization**: Proper Dari translation support for new income type
+- **Database Consistency**: Proper schema migration ensures data integrity
+
+### 2. Laboratory Results Interface Enhancements (NEW)
 **Implementation Date**: January 2025
 **Contributors**: Mohammad Rafi 10 & Sulaiman Qasimi
 
@@ -102,7 +142,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Better User Experience**: Consistent date picker implementation across laboratory modules
 - **Professional Appearance**: Optimized button layout and form styling
 
-### 2. Language Translation Improvements (NEW)
+### 3. Language Translation Improvements (NEW)
 **Implementation Date**: January 2025
 **Contributor**: Development Team
 
@@ -128,7 +168,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Enhanced User Experience**: More natural language experience for Dari speakers
 - **Professional Presentation**: Proper Persian/Dari terminology instead of English loanwords
 
-### 2. Prescription Stock Management System (NEW)
+### 4. Prescription Stock Management System (NEW)
 **Implementation Date**: August 2025
 
 #### New Models Created:
@@ -157,7 +197,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **New Tables**: `prescription_stocks`, `incomes`, `outcomes`
 - **Features**: Foreign key constraints, indexes, soft deletes, audit trails
 
-### 3. Nursing Management System (NEW)
+### 5. Nursing Management System (NEW)
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -174,7 +214,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **MedicationAdministrationRecordController** - Medication tracking
 - **NutritionCareController** - Nutrition management
 
-### 4. Physiotherapy Management System (NEW)
+### 6. Physiotherapy Management System (NEW)
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -186,7 +226,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **PhysiotherapyProcedureController** - Procedure management
 - **PhysiotherapyReportController** - Reporting system
 
-### 5. Vital Signs Management (NEW)
+### 7. Vital Signs Management (NEW)
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -199,7 +239,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **VitalSignTypeController** - Vital sign type management
 - **VitalSignScheduleController** - Scheduling system
 
-### 6. Enhanced Reporting System
+### 8. Enhanced Reporting System
 - **Operations Reports** - Comprehensive operation reporting
 - **Anesthesia Reports** - Anesthesia procedure reports
 - **ICU Reports** - Intensive care unit reporting
@@ -329,32 +369,92 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ## Database Schema Summary
 
-### Recent Migrations (2025):
-- `2025_08_16_045531_create_militery_types_table.php`
-- `2025_08_17_082749_create_prescription_alternative_items_table.php`
-- `2025_08_19_044751_create_pharmacies_table.php`
-- `2025_08_20_084735_create_prescription_stock_management_tables.php`
-- `2025_09_01_053933_create_physiotherapy_types_table.php`
-- `2025_09_01_053940_create_physiotherapy_procedures_table.php`
-- `2025_09_03_000000_create_physiotherapy_procedure_reviews_table.php`
-- `2025_09_07_040840_create_spiete_backups_table.php`
-- `2025_09_07_063935_create_jobs_table.php`
-- `2025_09_14_044542_create_nurses_table.php`
-- `2025_09_14_050137_add_user_id_to_nurses_table.php`
-- `2025_09_14_052928_add_branch_id_to_nurses_table.php`
-- `2025_09_14_060053_create_diabetes_charts_table.php`
-- `2025_09_14_092456_create_nurse_notes_table.php`
-- `2025_09_14_095018_add_note_column_to_nurse_notes_table.php`
-- `2025_09_15_043241_create_medication_administration_records_table.php`
-- `2025_09_15_043248_create_medication_administration_times_table.php`
-- `2025_09_15_060254_create_vital_sign_types_table.php`
-- `2025_09_15_060256_create_vital_signs_table.php`
-- `2025_09_15_060259_create_vital_sign_schedules_table.php`
-- `2025_09_16_050329_create_nutrition_cares_table.php`
-- `2025_09_16_051538_add_nurse_id_to_nutrition_cares_table.php`
+### Recent Migrations (2025-2026):
+- `2026_01_03_100000_add_completion_to_income_type_enum.php` (NEW - January 2026)
+- `2025_12_30_065134_create_sp_doctor_performance_dynamic_stored_procedure.php`
+- `2025_12_30_061627_add_is_dentist_to_doctors_table.php`
+- `2025_12_28_074344_create_patient_test_result_attachments_table.php`
+- `2025_12_16_050520_add_dental_chart_id_to_dental_treatments_table.php`
+- `2025_12_02_100008_create_dental_periodontal_measurements_table.php`
+- `2025_12_02_100007_create_dental_chart_images_table.php`
+- `2025_12_02_100006_create_dental_chart_measurements_table.php`
+- `2025_12_02_100005_create_dental_charts_table.php`
+- `2025_12_02_100004_create_dental_notes_table.php`
+- `2025_12_02_100003_create_dental_xrays_table.php`
+- `2025_12_02_100002_create_dental_treatments_table.php`
+- `2025_12_02_100001_create_dental_examinations_table.php`
+- `2025_12_02_100000_create_dentist_registrations_table.php`
+- `2025_12_01_045216_add_user_id_to_doctors_table.php`
+- `2025_11_17_062930_change_anesthesias_foreign_keys_to_doctors_table.php`
+- `2025_11_16_095539_change_hospitalizations_doctor_id_foreign_key_to_doctors_table.php`
+- `2025_11_15_060903_change_under_reviews_doctor_id_foreign_key_to_doctors_table.php`
+- `2025_11_15_060053_change_consultation_comments_doctor_id_foreign_key_to_doctors_table.php`
+- `2025_11_15_055445_change_advice_doctor_id_foreign_key_to_doctors_table.php`
+- `2025_11_15_053116_add_doctor_id_foreign_key_to_patient_test_registrations_table.php`
+- `2025_11_15_052514_change_prescriptions_doctor_id_foreign_key_to_doctors_table.php`
+- `2025_11_15_044522_create_doctor_stored_procedures.php`
+- `2025_11_15_043925_add_extra_fields_to_doctors_table.php`
+- `2025_11_15_042447_change_appointments_doctor_id_foreign_key_to_doctors_table.php`
+- `2025_11_12_093657_add_processed_by_to_appointments_table.php`
+- `2025_11_05_100003_create_appointment_clinic_type_trigger.php`
+- `2025_11_05_100002_create_get_doctors_by_clinic_type_stored_procedure.php`
+- `2025_11_05_100001_add_clinic_type_to_appointments_table.php`
+- `2025_11_05_100000_add_is_doctor_and_clinic_type_to_users_table.php`
+- `2025_11_04_042121_update_sp_doctor_performance_dynamic_stored_procedure.php`
+- `2025_10_27_101250_add_room_number_to_departments_table.php`
+- `2025_10_27_065457_remove_medicine_type_and_disease_fields_from_medicines_table.php`
+- `2025_10_26_061240_add_unique_constraint_to_lab_types_name.php`
+- `2025_10_26_052247_add_assignment_fields_to_patient_test_registrations.php`
+- `2025_10_26_050529_remove_section_branch_from_lab_types.php`
+- `2025_10_25_051257_add_text_and_json_columns_to_patient_test_registrations.php`
+- `2025_10_25_050941_fix_patient_test_registrations_lab_type_column.php`
+- `2025_10_25_050832_clear_old_patient_test_registrations.php`
+- `2025_10_25_044258_drop_parent_id_from_lab_types_table.php`
+- `2025_10_25_043717_make_test_id_nullable_in_lab_test_parameters_table.php`
+- `2025_10_23_061630_replace_lab_test_with_lab_type_in_patient_test_registrations.php`
+- `2025_10_23_061617_add_category_id_to_lab_types_table.php`
+- `2025_10_23_052407_add_lab_type_id_to_lab_test_parameters_table.php`
+- `2025_10_23_042009_make_lab_parameter_id_nullable_in_patient_test_results_table.php`
+- `2025_10_22_102300_drop_test_categories_table.php`
+- `2025_10_22_102257_remove_testcategory_id_from_lab_test_parameters.php`
+- `2025_10_22_101753_remove_category_id_from_lab_tests.php`
+- `2025_10_22_100510_drop_old_lab_tables.php`
+- `2025_10_21_084211_add_category_id_to_patient_test_registrations_table.php`
+- `2025_10_20_081659_add_missing_columns_to_lab_test_parameters_table.php`
+- `2025_10_20_073227_make_patient_id_nullable_in_patient_test_registrations.php`
+- `2025_10_20_072209_add_polymorphic_columns_to_patient_test_registrations_table.php`
+- `2025_10_19_054526_add_pharmacy_id_to_prescriptions_table.php`
+- `2025_10_18_085748_add_category_id_to_departments_table.php`
+- `2025_10_18_085725_add_category_id_to_users_table.php`
+- `2025_10_18_074836_create_categories_table.php`
+- `2025_10_16_061121_make_appointment_id_nullable_in_consultations_table.php`
+- `2025_10_15_100316_make_medicine_type_id_nullable_in_prescription_items_table.php`
+- `2025_10_13_074202_change_id_card_to_text_in_patients_table.php`
 - `2025_09_16_061450_create_nursing_assessments_table.php`
+- `2025_09_16_051538_add_nurse_id_to_nutrition_cares_table.php`
+- `2025_09_16_050329_create_nutrition_cares_table.php`
+- `2025_09_15_060259_create_vital_sign_schedules_table.php`
+- `2025_09_15_060256_create_vital_signs_table.php`
+- `2025_09_15_060254_create_vital_sign_types_table.php`
+- `2025_09_15_043248_create_medication_administration_times_table.php`
+- `2025_09_15_043241_create_medication_administration_records_table.php`
+- `2025_09_14_095018_add_note_column_to_nurse_notes_table.php`
+- `2025_09_14_092456_create_nurse_notes_table.php`
+- `2025_09_14_060053_create_diabetes_charts_table.php`
+- `2025_09_14_052928_add_branch_id_to_nurses_table.php`
+- `2025_09_14_050137_add_user_id_to_nurses_table.php`
+- `2025_09_14_044542_create_nurses_table.php`
+- `2025_09_07_063935_create_jobs_table.php`
+- `2025_09_07_040840_create_spiete_backups_table.php`
+- `2025_09_03_000000_create_physiotherapy_procedure_reviews_table.php`
+- `2025_09_01_053940_create_physiotherapy_procedures_table.php`
+- `2025_09_01_053933_create_physiotherapy_types_table.php`
+- `2025_08_20_084735_create_prescription_stock_management_tables.php`
+- `2025_08_19_044751_create_pharmacies_table.php`
+- `2025_08_17_082749_create_prescription_alternative_items_table.php`
+- `2025_08_16_045531_create_militery_types_table.php`
 
-### Recent Changes & Improvements (December 2024 - January 2025):
+### Recent Changes & Improvements (December 2024 - January 2026):
 
 #### 1. Modern Login Page Design Implementation (NEW)
 **Implementation Date**: January 2025
@@ -488,11 +588,12 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Integration**: Streamlined integration process with Laravel 10 medical application
 - **Testing**: Added comprehensive testing suite for custom router functionality
 
-### Recent Git Commits & Changes (January 2025):
+### Recent Git Commits & Changes (January 2025 - January 2026):
 
-#### Latest Commits (Recent 12):
-1. **Latest**: Laboratory results interface enhancements with Dari date picker integration and UI improvements
-2. **Previous**: Modern login page design implementation with Tailwind CSS and responsive layout
+#### Latest Commits (Recent 13):
+1. **Latest (January 2026)**: Income management system enhancements - Added 'completion' income type and made purchase_price optional
+2. **Previous (January 2025)**: Laboratory results interface enhancements with Dari date picker integration and UI improvements
+3. **Previous**: Modern login page design implementation with Tailwind CSS and responsive layout
 3. **9551bfc**: Refactor appointment token printing logic to use department_id directly from appointment
 4. **deff62a**: Update appointment and patient views to use null-safe operator for doctor access
 5. **54a8319**: Update appointment creation logic in PatientController and enhance appointment view
@@ -505,6 +606,9 @@ This is a comprehensive medical database application built with Laravel 10, desi
 12. **Previous**: Language translation standardization with Dari terminology improvements
 
 #### Key Changes Implemented:
+- **Income Management Enhancement (January 2026)**: Added 'completion' income type, extended database enum, made purchase_price optional
+- **Database Schema Updates**: New migration for income_type enum extension with proper rollback support
+- **Form Flexibility**: Improved income creation form with optional purchase price field
 - **Laboratory Results Interface**: Enhanced grouped results page with Dari date picker integration and improved UI
 - **Date Picker Standardization**: Converted HTML5 date inputs to Persian calendar interface for better localization
 - **Interface Optimization**: Removed background colors from accordion tables and optimized button layouts
@@ -589,6 +693,29 @@ This is a comprehensive medical database application built with Laravel 10, desi
 **Solution**: Changed to `type="text"` with `class="form-control datepicker_dari"`
 **Status**: ✅ RESOLVED
 
+##### 6. Income Type Enum Database Error (January 2026)
+**Error**: `SQLSTATE[01000]: Warning: 1265 Data truncated for column 'income_type' at row 1`
+**Error Message**: Database rejecting 'completion' value for income_type column
+**Root Cause**: ENUM column definition didn't include 'completion' as valid value
+**Files Affected**: 
+- `app/Http/Controllers/IncomeController.php`
+- `resources/views/pages/incomes/create.blade.php`
+- Database `incomes` table schema
+
+**Specific Errors**:
+- **Database Schema**: ENUM column only allowed: `['purchase', 'return', 'donation', 'transfer', 'adjustment']`
+- **Controller**: Validation and type array included 'completion' but database rejected it
+- **Form Submission**: Users unable to create income records with 'completion' type
+
+**Solution**: 
+- Created migration `2026_01_03_100000_add_completion_to_income_type_enum.php`
+- Extended ENUM column to include 'completion': `['purchase', 'return', 'donation', 'transfer', 'adjustment', 'completion']`
+- Updated controller validation rules to match database schema
+- Ensured proper rollback support in migration down method
+- Made purchase_price field optional for better form flexibility
+
+**Status**: ✅ RESOLVED
+
 #### Other Fixed Issues:
 - **Camera Integration Errors**: Resolved camera functionality issues in patient registration and medical
 - **Print Functionality**: Resolved printing issues in reports and medical documents
@@ -601,6 +728,12 @@ This is a comprehensive medical database application built with Laravel 10, desi
 The medical database application has undergone significant development with the addition of comprehensive stock management, nursing systems, enhanced reporting capabilities, and recent date format standardization. The project has benefited from contributions by Sulaiman Qasimi (custom router package development and integration) and Mohammad Rafi 10 (database seeding and geographic data management), along with recent improvements in date handling and form functionality.
 
 ### Recent Achievements (December 2024 - January 2025):
+
+#### January 2026 Achievements:
+- **Income Management System Enhancement**: Successfully added 'completion' (اکمال) as new income type option
+- **Database Schema Update**: Extended income_type ENUM column to support completion type
+- **Form Flexibility**: Made purchase_price field optional for improved user experience
+- **Validation Updates**: Updated controller validation rules to support new income type and optional purchase price
 
 #### January 2025 Achievements:
 - **Laboratory Results Interface Enhancement**: Successfully implemented Dari date picker integration in grouped results page
@@ -634,8 +767,11 @@ The medical database application has undergone significant development with the 
   - Collaborative repository synchronization and feature development
 - **Development Team**: Date standardization, form fixes, and user interface enhancements
 
-### Current Status (January 2025):
+### Current Status (January 2026):
 The application has significantly improved in terms of:
+- **Income Management**: Enhanced income tracking with new 'completion' type and optional purchase price field
+- **Database Schema**: Extended income_type enum to support additional income categorization
+- **Form Flexibility**: Improved income creation form with optional fields for better user experience
 - **Laboratory Interface**: Enhanced grouped results page with Dari date picker integration and optimized UI
 - **Date Picker Consistency**: Standardized Persian calendar implementation across laboratory modules
 - **Interface Cleanliness**: Removed distracting background colors from accordion tables for better user experience
@@ -669,4 +805,4 @@ The application has significantly improved in terms of:
    - Additional UI improvements and user experience enhancements
    - Advanced reporting features
 
-The application is now more functional with improved appointment management, enhanced frontend stability, better date handling, and standardized Dari language translations, making it more suitable for production deployment with proper Persian/Dari calendar support, dynamic department-based workflows, and improved localization for Afghan users.
+The application is now more functional with improved income management, enhanced appointment management, enhanced frontend stability, better date handling, and standardized Dari language translations, making it more suitable for production deployment with proper Persian/Dari calendar support, dynamic department-based workflows, comprehensive income tracking, and improved localization for Afghan users.

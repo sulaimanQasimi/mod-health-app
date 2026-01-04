@@ -1,21 +1,4 @@
 <div>
-    <form action="{{ route('prescriptions.export-report') }}" method="POST">
-        {{ csrf_field() }}
-        <input type="hidden" name="data" value="{{ $items->pluck('id') }}">
-
-        <div class="demo-inline-spacing">
-            {{-- <button type="button" onclick="exportExcelFile()" value="excel" class="btn btn-label-primary">
-                <span class="me-1"><i class="fa fa-file-excel"></i></span>export Excel
-            </button> --}}
-            <button type="submit" name="type" value="excel" class="btn btn-label-primary">
-                <span class="me-1"> <i class="fa fa-file-excel"></i></span>Excel
-            </button>
-            <button type="submit" name="type" value="pdf" class="btn btn-label-danger">
-                <span class="me-1"><i class="fa fa-file-pdf"></i></span>PDF
-            </button>
-        </div>
-
-    </form>
     <div class="col-md-12 mt-2">
         <table class="table table-bordered table-striped table-responsive w-100" id="print_excel_table">
             <thead>
@@ -55,5 +38,6 @@
                     </tr>
                 @endif
             </tbody>
+        </table>
     </div>
 </div>

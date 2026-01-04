@@ -352,13 +352,51 @@ class PrescriptionController extends Controller
         }
 
         if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('a.created_at', [$request->from, $request->to]);
+            $fromDate = Verta::parse($request->from)->datetime();
+            $toDate = Verta::parse($request->to)->datetime();
+            $query->whereDate('a.created_at', '>=', $fromDate)
+                  ->whereDate('a.created_at', '<=', $toDate);
         }
 
         $items = $query->get();
         return view('pages.prescriptions.reports.report', ['items' => $items]);
     }
 
+
+    /**
+     * Write HTML to mPDF in chunks to avoid pcre.backtrack_limit error
+     */
+    private function writeHtmlInChunks($mpdf, $items, $departmentCounts = [])
+    {
+        // Ensure items is a collection
+        if (!($items instanceof \Illuminate\Support\Collection)) {
+            $items = collect($items);
+        }
+        
+        // Write HTML header and opening tags with department counts
+        $header = view('pages.prescriptions.reports.pdf_report_header', [
+            'departmentCounts' => $departmentCounts
+        ])->render();
+        $mpdf->WriteHTML($header);
+        
+        // Write table rows in chunks (50 rows at a time)
+        $chunkSize = 50;
+        $chunks = $items->chunk($chunkSize);
+        $rowNumber = 0;
+        
+        foreach ($chunks as $chunk) {
+            $rowsHtml = view('pages.prescriptions.reports.pdf_report_rows', [
+                'items' => $chunk,
+                'startIndex' => $rowNumber
+            ])->render();
+            $mpdf->WriteHTML($rowsHtml);
+            $rowNumber += $chunk->count();
+        }
+        
+        // Write closing tags
+        $footer = view('pages.prescriptions.reports.pdf_report_footer')->render();
+        $mpdf->WriteHTML($footer);
+    }
 
     public function exportReport(Request $request)
     {
@@ -369,15 +407,27 @@ class PrescriptionController extends Controller
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed')
+            ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dept', 'app.department_id', '=', 'dept.id')
+            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'dept.name as department_name', 'dept.id as department_id')
             ->whereIn('a.id', $data)->get();
+        
+        // Calculate department counts
+        $departmentCounts = $items->groupBy(function ($item) {
+            return $item->department_id ?? 'unknown';
+        })->map(function ($group) {
+            return [
+                'name' => $group->first()->department_name ?? 'Unknown',
+                'count' => $group->count()
+            ];
+        })->values()->toArray();
+        
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.prescriptions.reports.pdf_report',  ['items' => $items])->render();
         if ($request->type == 'pdf') {
             $mpdf = new Mpdf(['format' => 'A4-L']);
-            $mpdf->WriteHTML($html);
+            $this->writeHtmlInChunks($mpdf, $items, $departmentCounts);
             $mpdf->Output('pdf_report.pdf', 'D');
         } else {
             $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
@@ -482,15 +532,26 @@ class PrescriptionController extends Controller
                     'doctor_name' => $prescription->doctor->name ?? '-',
                     'is_completed' => $prescription->is_completed ? '1' : '0',
                     'created_at' => $prescription->created_at,
+                    'department_name' => $prescription->appointment->department->name ?? 'Unknown',
+                    'department_id' => $prescription->appointment->department_id ?? null,
                 ];
             });
+
+            // Calculate department counts
+            $departmentCounts = $items->groupBy(function ($item) {
+                return $item->department_id ?? 'unknown';
+            })->map(function ($group) {
+                return [
+                    'name' => $group->first()->department_name ?? 'Unknown',
+                    'count' => $group->count()
+                ];
+            })->values()->toArray();
 
             $format = $request->get('format', 'excel');
             
             if ($format === 'pdf') {
-                $html = view('pages.prescriptions.reports.pdf_report', ['items' => $items])->render();
                 $mpdf = new Mpdf(['format' => 'A4-L']);
-                $mpdf->WriteHTML($html);
+                $this->writeHtmlInChunks($mpdf, $items, $departmentCounts);
                 $mpdf->Output('prescriptions_report.pdf', 'D');
             } else {
                 $reader = new Xlsx();

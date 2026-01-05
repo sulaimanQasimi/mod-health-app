@@ -57,10 +57,6 @@
                             <i class="bx bx-printer me-1"></i>
                             {{ localize('global.token') }}
                         </a>
-                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-primary btn-sm">
-                            <i class="bx bx-edit me-1"></i>
-                            {{ localize('global.edit') }}
-                        </a>
                         @endif
                         <a href="{{ route('appointments.index') }}" class="btn btn-outline-primary btn-sm">
                             <i class="bx bx-arrow-back me-1"></i>

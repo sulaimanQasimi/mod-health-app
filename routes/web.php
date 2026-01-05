@@ -296,8 +296,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('create', [AppointmentController::class, 'create'])->name('create');
         Route::get('show/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::post('store', [AppointmentController::class, 'store'])->name('store');
-        Route::get('edit/{appointment}', [AppointmentController::class, 'edit'])->name('edit');
-        Route::put('update/{appointment}', [AppointmentController::class, 'update'])->name('update');
+        // Route::get('edit/{appointment}', [AppointmentController::class, 'edit'])->name('edit');
+        // Route::put('update/{appointment}', [AppointmentController::class, 'update'])->name('update');
         Route::put('changeStatus/{appointment}', [AppointmentController::class, 'changeStatus'])->name('changeStatus');
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
         Route::get('report', [AppointmentController::class, 'report'])->name('report');

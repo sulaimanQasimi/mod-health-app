@@ -222,7 +222,7 @@ return [
     'recipients' => 'Recipients',
     'add_success_recipient' => 'Recipient add successfully',
     'show' => 'Show',
-    'system_name' => 'Documents',
+    'system_name' => 'Hospital',
     'edit_notice' => 'Edit Notice',
     'notice_update_success' => 'Notice updated successfully',
     'notice_create_success' => 'notice created successfully',

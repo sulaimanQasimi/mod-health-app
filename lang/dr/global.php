@@ -1198,7 +1198,6 @@ return [
     'outcome_records' => 'رکوردهای خروجی',
     'search_by_medicine_patient' => 'جستجو بر اساس نام مریض',
     'search_by_token_id' => 'جستجو بر اساس شناسه توکن',
-    'search_by_patient_id' => 'جستجو بر اساس شناسه مریض',
     'no_outcome_records_found' => 'هیچ رکوردی یافت نشد',
     'income_record_created_successfully' => 'رکورد وارده با موفقیت ایجاد شد',
     'outcome_record_created_successfully' => 'رکورد خروجی با موفقیت ایجاد شد',

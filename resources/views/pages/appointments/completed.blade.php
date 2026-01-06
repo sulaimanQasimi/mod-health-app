@@ -9,69 +9,6 @@
         @endif
         <div class="container-xxl flex-grow-1 container-p-y">
 
-            <!-- Filters Card -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">{{ localize('global.filters') }}</h5>
-                </div>
-                <div class="card-body">
-                    <form method="GET" action="{{ route('appointments.completedAppointments') }}" class="row g-3">
-                        <div class="col-md-3">
-                            <label for="token_id" class="form-label">{{ localize('global.token_id') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bx bx-hash"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="token_id" 
-                                       id="token_id"
-                                       placeholder="{{ localize('global.search_by_token_id') }}"
-                                       value="{{ request('token_id') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bx bx-user"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="patient_id" 
-                                       id="patient_id"
-                                       placeholder="{{ localize('global.search_by_patient_id') }}"
-                                       value="{{ request('patient_id') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
-                            </button>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <a href="{{ route('appointments.completedAppointments') }}" class="btn btn-secondary w-100">
-                                <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') }}
-                            </a>
-                        </div>
-                        @if(request('token_id') || request('patient_id'))
-                            <div class="col-12">
-                                <small class="text-muted">
-                                    <i class="bx bx-info-circle me-1"></i>
-                                    {{ localize('global.active_filters') }}: 
-                                    @if(request('token_id'))
-                                        <span class="badge bg-info">{{ localize('global.token_id') }}: {{ request('token_id') }}</span>
-                                    @endif
-                                    @if(request('patient_id'))
-                                        <span class="badge bg-info">{{ localize('global.patient_id') }}: {{ request('patient_id') }}</span>
-                                    @endif
-                                </small>
-                            </div>
-                        @endif
-                    </form>
-                </div>
-            </div>
-
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ localize('global.patients_list') }}</h5>
@@ -144,18 +81,4 @@
             text-align: right;
         }
     </style>
-@endpush
-
-@push('custom-js')
-    <script>
-        $(document).ready(function() {
-            // Allow Enter key to submit form
-            $('#token_id, #patient_id').on('keypress', function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    $(this).closest('form').submit();
-                }
-            });
-        });
-    </script>
 @endpush

@@ -9,55 +9,6 @@
         @endif
         <div class="container-xxl flex-grow-1 container-p-y">
 
-            <!-- Filters Card -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">{{ localize('global.filters') }}</h5>
-                </div>
-                <div class="card-body">
-                    <form id="filterForm" method="GET" class="row g-3">
-                        <div class="col-md-3">
-                            <label for="filter_token_id" class="form-label">{{ localize('global.token_id') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bx bx-hash"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="token_id" 
-                                       id="filter_token_id"
-                                       placeholder="{{ localize('global.search_by_token_id') }}"
-                                       value="">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filter_patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bx bx-user"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="patient_id" 
-                                       id="filter_patient_id"
-                                       placeholder="{{ localize('global.search_by_patient_id') }}"
-                                       value="">
-                            </div>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" id="applyFilters" class="btn btn-primary w-100">
-                                <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
-                            </button>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" id="resetFilters" class="btn btn-secondary w-100">
-                                <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') }}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ localize('global.patients_list') }}</h5>
@@ -117,23 +68,8 @@
                 dt_basic;
 
             if (dt_basic_table.length) {
-                // Function to get filter parameters
-                function getFilterParams() {
-                    return {
-                        token_id: $('#filter_token_id').val() || '',
-                        patient_id: $('#filter_patient_id').val() || ''
-                    };
-                }
-
                 dt_basic = dt_basic_table.DataTable({
-                    ajax: {
-                        url: "{{ route('appointments.doctorAppointments') }}",
-                        data: function(d) {
-                            var filters = getFilterParams();
-                            d.token_id = filters.token_id;
-                            d.patient_id = filters.patient_id;
-                        }
-                    },
+                    ajax: "{{ route('appointments.doctorAppointments') }}",
                     columns: [{
                             data: 'id'
                         },
@@ -266,26 +202,6 @@
                 $('.dataTables_filter .form-control').removeClass('form-control-sm');
                 $('.dataTables_length .form-select').removeClass('form-select-sm');
             }, 300);
-
-            // Apply filters button
-            $('#applyFilters').on('click', function() {
-                dt_basic.ajax.reload();
-            });
-
-            // Reset filters button
-            $('#resetFilters').on('click', function() {
-                $('#filter_token_id').val('');
-                $('#filter_patient_id').val('');
-                dt_basic.ajax.reload();
-            });
-
-            // Allow Enter key to apply filters
-            $('#filter_token_id, #filter_patient_id').on('keypress', function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    dt_basic.ajax.reload();
-                }
-            });
         });
     </script>
 @endpush

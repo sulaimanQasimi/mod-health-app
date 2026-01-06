@@ -310,11 +310,49 @@ class AppointmentController extends Controller
 
     public function completedAppointments(Request $request)
     {
-        
         $query = Appointment::where('processed_by', auth()->user()->id)
             ->where('is_completed', '1')
             ->with(['patient', 'doctor', 'referringDoctor', 'processedBy'])
             ->latest();
+
+        // Extract token_id if provided
+        $appointmentId = null;
+        if ($request->has('token_id') && $request->token_id !== null && trim($request->token_id) !== '') {
+            $tokenId = trim($request->token_id);
+            if (is_numeric($tokenId) && $tokenId > 0) {
+                $appointmentId = (int)$tokenId;
+            } else {
+                // Try to extract numeric value
+                $numericId = preg_replace('/[^0-9]/', '', $tokenId);
+                if ($numericId !== '' && is_numeric($numericId) && (int)$numericId > 0) {
+                    $appointmentId = (int)$numericId;
+                }
+            }
+        }
+
+        // Extract patient_id if provided
+        $filterPatientId = null;
+        if ($request->has('patient_id') && $request->patient_id !== null && trim($request->patient_id) !== '') {
+            $patientIdInput = trim($request->patient_id);
+            if (is_numeric($patientIdInput) && $patientIdInput > 0) {
+                $filterPatientId = (int)$patientIdInput;
+            } else {
+                // Try to extract numeric value
+                $numericId = preg_replace('/[^0-9]/', '', $patientIdInput);
+                if ($numericId !== '' && is_numeric($numericId) && (int)$numericId > 0) {
+                    $filterPatientId = (int)$numericId;
+                }
+            }
+        }
+
+        // Apply filters
+        if ($appointmentId !== null) {
+            $query->where('id', $appointmentId);
+        }
+
+        if ($filterPatientId !== null) {
+            $query->where('patient_id', $filterPatientId);
+        }
 
         $appointments = $query->paginate(25)->withQueryString();
         

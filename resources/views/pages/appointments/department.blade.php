@@ -22,7 +22,8 @@
                     <!-- Search Form -->
                     <form id="searchForm" method="GET" action="{{ route('appointments.departmentAppointments') }}" class="mb-3">
                         <div class="row g-3">
-                            <div class="col-md-10">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label">{{ localize('global.search_by_patient_name_card_phone') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="bx bx-search"></i>
@@ -36,15 +37,58 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
+                                <label for="token_id" class="form-label">{{ localize('global.token_id') }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bx bx-hash"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           name="token_id" 
+                                           id="token_id"
+                                           placeholder="{{ localize('global.search_by_token_id') }}"
+                                           value="{{ request('token_id') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bx bx-user"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           name="patient_id" 
+                                           id="patient_id"
+                                           placeholder="{{ localize('global.search_by_patient_id') }}"
+                                           value="{{ request('patient_id') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
                                 </button>
                             </div>
-                            @if(request('search'))
+                            <div class="col-md-2 d-flex align-items-end">
+                                <a href="{{ route('appointments.departmentAppointments') }}" class="btn btn-secondary w-100">
+                                    <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') }}
+                                </a>
+                            </div>
+                            @if(request('search') || request('token_id') || request('patient_id'))
                                 <div class="col-12">
-                                    <a href="{{ route('appointments.departmentAppointments') }}" class="btn btn-sm btn-outline-secondary">
-                                        <i class="bx bx-x me-1"></i>{{ localize('global.clear_search') }}
-                                    </a>
+                                    <small class="text-muted">
+                                        <i class="bx bx-info-circle me-1"></i>
+                                        {{ localize('global.active_filters') }}: 
+                                        @if(request('search'))
+                                            <span class="badge bg-info">{{ localize('global.search') }}: {{ request('search') }}</span>
+                                        @endif
+                                        @if(request('token_id'))
+                                            <span class="badge bg-info">{{ localize('global.token_id') }}: {{ request('token_id') }}</span>
+                                        @endif
+                                        @if(request('patient_id'))
+                                            <span class="badge bg-info">{{ localize('global.patient_id') }}: {{ request('patient_id') }}</span>
+                                        @endif
+                                    </small>
                                 </div>
                             @endif
                         </div>
@@ -183,6 +227,11 @@
                 const actionUrl = form.attr('action');
                 const url = actionUrl + (formData ? '?' + formData : '');
                 
+                // Debug: Log the form data to console
+                console.log('Form data:', formData);
+                console.log('Token ID value:', $('#token_id').val());
+                console.log('Patient ID value:', $('#patient_id').val());
+                
                 // Update URL without page reload
                 if (history.pushState) {
                     history.pushState(null, null, url);
@@ -190,6 +239,14 @@
                 
                 // Load appointments with search
                 loadAppointmentsTable(url);
+            });
+            
+            // Allow Enter key to submit form
+            $('#token_id, #patient_id, #searchInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $('#searchForm').submit();
+                }
             });
             
             // Handle pagination clicks with AJAX

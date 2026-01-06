@@ -1189,6 +1189,7 @@ return [
 'outcome_records' => 'خروجی ثبتونه',
 'search_by_medicine_patient' => 'د ناروغ نوم په اساس لټون',
 'search_by_token_id' => 'د توکن ID په اساس لټون',
+'search_by_patient_id' => 'د مریض ID په اساس لټون',
 'no_outcome_records_found' => 'هیڅ ثبت ونه موندل شو',
 'income_record_created_successfully' => 'وارده ثبت په بریالیتوب جوړ شو',
 'outcome_record_created_successfully' => 'خروجی ثبت په بریالیتوب جوړ شو',

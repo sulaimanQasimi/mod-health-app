@@ -940,7 +940,6 @@ return [
     'patient_name' => 'Patient Name',
     'patient_id' => 'Patient ID',
     'token_id' => 'Token ID',
-    'search_by_patient_id' => 'Search by Patient ID',
     'global' => 'Global',
     'copy_from_original' => 'Copy from Original',
     'original_not_used' => 'Original Not Used',

@@ -416,63 +416,17 @@ class AppointmentController extends Controller
 
     public function departmentAppointments(Request $request)
     {
-        // Extract token_id if provided
-        $appointmentId = null;
-        if ($request->has('token_id') && $request->token_id !== null && trim($request->token_id) !== '') {
-            $tokenId = trim($request->token_id);
-            if (is_numeric($tokenId) && $tokenId > 0) {
-                $appointmentId = (int)$tokenId;
-            } else {
-                // Try to extract numeric value
-                $numericId = preg_replace('/[^0-9]/', '', $tokenId);
-                if ($numericId !== '' && is_numeric($numericId) && (int)$numericId > 0) {
-                    $appointmentId = (int)$numericId;
-                }
-            }
-        }
+        // Build query for appointments
+        $query = Appointment::whereNull('doctor_id')
+            ->whereNull('processed_by')
+            ->when(auth()->user()->doctor, function ($query) {
+                $query->where('department_id', auth()->user()->doctor->department_id);
+            })
+            ->where('clinic_type', auth()->user()->clinic_type)
+            ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
 
-        // Extract patient_id if provided
-        $filterPatientId = null;
-        if ($request->has('patient_id') && $request->patient_id !== null && trim($request->patient_id) !== '') {
-            $patientIdInput = trim($request->patient_id);
-            if (is_numeric($patientIdInput) && $patientIdInput > 0) {
-                $filterPatientId = (int)$patientIdInput;
-            } else {
-                // Try to extract numeric value
-                $numericId = preg_replace('/[^0-9]/', '', $patientIdInput);
-                if ($numericId !== '' && is_numeric($numericId) && (int)$numericId > 0) {
-                    $filterPatientId = (int)$numericId;
-                }
-            }
-        }
 
-        // Build base query
-        if ($appointmentId !== null) {
-            // When searching by token_id, use relaxed constraints to find the appointment
-            $query = Appointment::query()
-                ->where('id', $appointmentId)
-                ->where('clinic_type', auth()->user()->clinic_type)
-                // Don't filter by department when searching by token_id - allow cross-department search
-                // Don't filter by doctor_id or processed_by - find even if assigned/processed
-                ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
-        } else {
-            // Normal constraints for regular search
-            $query = Appointment::query()
-                ->whereNull('doctor_id')
-                ->whereNull('processed_by')
-                ->where('clinic_type', auth()->user()->clinic_type)
-                ->when(auth()->user()->doctor, function ($query) {
-                    $query->where('department_id', auth()->user()->doctor->department_id);
-                })
-                ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
-        }
-
-        // Filter by patient ID if provided
-        if ($filterPatientId !== null) {
-            $query->where('patient_id', $filterPatientId);
-        }
-
-        // Search by patient name, id_card, phone, father_name (works with or without token_id)
+        // Search by patient name, id_card, phone, father_name
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('patient', function ($q) use ($search) {

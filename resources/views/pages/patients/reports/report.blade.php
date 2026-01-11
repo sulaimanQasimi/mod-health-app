@@ -159,13 +159,26 @@
                 <!-- Pagination -->
                 @if($items->hasPages())
                     <div class="card-footer border-top py-3">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                             <div class="text-muted small mb-2 mb-md-0">
                                 {{ localize('global.showing') }} {{ $items->firstItem() }} {{ localize('global.to') }} {{ $items->lastItem() }} 
                                 {{ localize('global.of') }} {{ $items->total() }} {{ localize('global.results') }}
                             </div>
-                            <div>
-                                {{ $items->links() }}
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="d-flex align-items-center gap-2">
+                                    <label for="per-page-select" class="form-label mb-0 small text-muted">{{ localize('global.show') }}:</label>
+                                    <select class="form-select form-select-sm" id="per-page-select" style="width: auto; min-width: 100px;">
+                                        <option value="10" {{ $items->perPage() == 10 ? 'selected' : '' }}>10</option>
+                                        <option value="15" {{ $items->perPage() == 15 ? 'selected' : '' }}>15</option>
+                                        <option value="25" {{ $items->perPage() == 25 ? 'selected' : '' }}>25</option>
+                                        <option value="50" {{ $items->perPage() == 50 ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ $items->perPage() == 100 ? 'selected' : '' }}>100</option>
+                                    </select>
+                                    <span class="text-muted small">{{ localize('global.per_page') }}</span>
+                                </div>
+                                <div>
+                                    {{ $items->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>

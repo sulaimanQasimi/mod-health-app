@@ -191,29 +191,85 @@
             }
         }
 
-        $('form').submit(function (e) {
-            e.preventDefault();
+        function submitSearchForm(page = null) {
+            var formData = $('form').serialize();
+            if (page) {
+                formData += '&page=' + page;
+            }
+            
             $.ajax({
                 type: 'post',
                 url: "{{ route('patients.report-search') }}",
-                data: $(this).serialize(),
+                data: formData,
                 beforeSend: function () {
-                    // setting a timeout
                     $('.search-document-data').html(
                         '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
                     );
-
                 },
                 success: function (resp) {
                     $('.search-document-data').html(resp);
                 }
+            });
+        }
 
-            })
+        $('form').submit(function (e) {
+            e.preventDefault();
+            submitSearchForm();
         });
 
         // Auto-submit when per_page changes
         $('#per_page').on('change', function() {
-            $('form').submit();
+            submitSearchForm();
+        });
+
+        // Handle per-page selector dropdown (using event delegation for dynamically loaded content)
+        $(document).on('change', '#per-page-select', function() {
+            var perPage = $(this).val();
+            var formData = $('form').serialize();
+            // Update per_page in form data
+            formData = formData.replace(/per_page=\d+/, 'per_page=' + perPage);
+            if (!formData.includes('per_page=')) {
+                formData += '&per_page=' + perPage;
+            }
+            // Reset to page 1 when changing per page
+            formData = formData.replace(/page=\d+/, '');
+            
+            $.ajax({
+                type: 'post',
+                url: "{{ route('patients.report-search') }}",
+                data: formData,
+                beforeSend: function () {
+                    $('.search-document-data').html(
+                        '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
+                    );
+                },
+                success: function (resp) {
+                    $('.search-document-data').html(resp);
+                    // Update the form's per_page value
+                    $('#per_page').val(perPage);
+                }
+            });
+            
+            // Scroll to top of results
+            $('html, body').animate({
+                scrollTop: $('.search-document-data').offset().top - 100
+            }, 500);
+        });
+
+        // Handle pagination links via AJAX
+        $(document).on('click', '.pagination a, .pagination .page-link', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            if (url) {
+                // Extract page number from URL
+                var pageMatch = url.match(/[?&]page=(\d+)/);
+                var page = pageMatch ? pageMatch[1] : 1;
+                submitSearchForm(page);
+                // Scroll to top of results
+                $('html, body').animate({
+                    scrollTop: $('.search-document-data').offset().top - 100
+                }, 500);
+            }
         });
     </script>
 @endpush

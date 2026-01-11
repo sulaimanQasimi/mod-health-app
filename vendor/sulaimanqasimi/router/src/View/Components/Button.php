@@ -11,6 +11,7 @@ class Button extends Component
     public string $variant;
     public bool $disabled;
     public ?string $href;
+    public array $attributes;
 
     /**
      * Create a new component instance.
@@ -19,12 +20,14 @@ class Button extends Component
         string $type = 'button',
         string $variant = 'primary',
         bool $disabled = false,
-        ?string $href = null
+        ?string $href = null,
+        array $attributes = []
     ) {
         $this->type = $type;
         $this->variant = $variant;
         $this->disabled = $disabled;
         $this->href = $href;
+        $this->attributes = $attributes;
     }
 
     /**

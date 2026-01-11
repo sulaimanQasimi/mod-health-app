@@ -9,16 +9,19 @@ class Label extends Component
 {
     public ?string $for;
     public bool $required;
+    public array $attributes;
 
     /**
      * Create a new component instance.
      */
     public function __construct(
         ?string $for = null,
-        bool $required = false
+        bool $required = false,
+        array $attributes = []
     ) {
         $this->for = $for;
         $this->required = $required;
+        $this->attributes = $attributes;
     }
 
     /**

@@ -9,16 +9,19 @@ class Error extends Component
 {
     public string $name;
     public ?string $message;
+    public array $attributes;
 
     /**
      * Create a new component instance.
      */
     public function __construct(
         string $name,
-        ?string $message = null
+        ?string $message = null,
+        array $attributes = []
     ) {
         $this->name = $name;
         $this->message = $message;
+        $this->attributes = $attributes;
     }
 
     /**

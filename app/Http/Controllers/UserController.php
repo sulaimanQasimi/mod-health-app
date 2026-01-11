@@ -67,13 +67,19 @@ class UserController extends Controller
             });
         }
         
-        // Use pagination instead of get()
-        $users = $query->paginate(20)->appends($request->except('page'));
+        // Get full collection for statistics (before pagination)
+        $allUsers = $query->get();
+        
+        // Get per page value from request or default to 20
+        $perPage = $request->get('per_page', 20);
+        
+        // Use pagination
+        $users = $query->paginate($perPage)->appends($request->except('page'));
         
         $categories = Category::all();
         $roles = Role::all();
         
-        return view('pages.users.index', compact('users', 'categories', 'roles'));
+        return view('pages.users.index', compact('users', 'categories', 'roles', 'allUsers'));
     }
 
 

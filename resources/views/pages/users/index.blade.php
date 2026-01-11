@@ -17,7 +17,7 @@
                                     <span>{{ localize('global.active_users') }}</span>
                                     <div class="d-flex align-items-end mt-2">
                                         <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">
-                                            {{ $users->where('status', 1)->count() }}</h4>
+                                            {{ $allUsers->where('status', 1)->count() }}</h4>
                                     </div>
                                 </div>
                                 <span class="badge bg-success rounded p-2">
@@ -35,7 +35,7 @@
                                     <span>{{ localize('global.deactive_users') }}</span>
                                     <div class="d-flex align-items-end mt-2">
                                         <h4 class="mb-0 me-2 badge badge-center bg-danger" style="font-size: xx-large;">
-                                            {{ $users->where('status', 0)->count() }}</h4>
+                                            {{ $allUsers->where('status', 0)->count() }}</h4>
                                     </div>
                                 </div>
                                 <span class="badge bg-danger rounded p-2">
@@ -53,7 +53,7 @@
                                     <span>{{ localize('global.total_users') }}</span>
                                     <div class="d-flex align-items-end mt-2">
                                         <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">
-                                            {{ $users->count() }}</h4>
+                                            {{ $allUsers->count() }}</h4>
                                     </div>
                                 </div>
                                 <span class="badge bg-primary rounded p-2">
@@ -72,7 +72,7 @@
                                     <div class="d-flex align-items-end mt-2">
                                         @php
                                             $currentMonth = \Carbon\Carbon::now()->format('Y-m');
-                                            $newUsersCount = $users->filter(function ($user) use ($currentMonth) {
+                                            $newUsersCount = $allUsers->filter(function ($user) use ($currentMonth) {
                                                 if($user->created_at == null) {
                                                     return null;
                                                 } else {
@@ -311,17 +311,28 @@
                 </div>
                 
                 <!-- Pagination -->
-                @if($users->hasPages())
+                @if($users->hasPages() || $users->total() > 0)
                     <div class="card-footer">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-muted">
-                                {{ localize('global.showing') ?? 'Showing' }} 
-                                {{ $users->firstItem() }} 
-                                {{ localize('global.to') ?? 'to' }} 
-                                {{ $users->lastItem() }} 
-                                {{ localize('global.of') ?? 'of' }} 
-                                {{ $users->total() }} 
-                                {{ localize('global.entries') ?? 'entries' }}
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-muted">
+                                    {{ localize('global.showing') ?? 'Showing' }} 
+                                    {{ $users->firstItem() }} 
+                                    {{ localize('global.to') ?? 'to' }} 
+                                    {{ $users->lastItem() }} 
+                                    {{ localize('global.of') ?? 'of' }} 
+                                    {{ $users->total() }} 
+                                    {{ localize('global.entries') ?? 'entries' }}
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-label mb-0">{{ localize('global.per_page') ?? 'Per Page' }}:</label>
+                                    <select name="per_page" id="perPageSelect" class="form-select form-select-sm" style="width: auto;">
+                                        <option value="10" {{ request('per_page', 20) == 10 ? 'selected' : '' }}>10</option>
+                                        <option value="20" {{ request('per_page', 20) == 20 ? 'selected' : '' }}>20</option>
+                                        <option value="50" {{ request('per_page', 20) == 50 ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ request('per_page', 20) == 100 ? 'selected' : '' }}>100</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 {{ $users->links() }}
@@ -578,6 +589,15 @@
                         checkbox.prop('checked', !checkbox.prop('checked'));
                     }
                 });
+            });
+
+            // Per page selector functionality
+            $('#perPageSelect').on('change', function() {
+                var perPage = $(this).val();
+                var url = new URL(window.location.href);
+                url.searchParams.set('per_page', perPage);
+                url.searchParams.delete('page'); // Reset to first page when changing per page
+                window.location.href = url.toString();
             });
 
             // Initialize tooltips

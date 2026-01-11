@@ -8,9 +8,17 @@
             @endif
         <div class="col-xl">
             <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ localize('global.view_patient') }}</h5>
+                    <div class="d-flex gap-2">
+                        @can('edit-patients')
+                        <a href="{{ route('patients.edit', $patient) }}" class="btn btn-warning btn-sm">
+                            <i class="bx bx-edit"></i> {{ localize('global.edit') }}
+                        </a>
+                        @endcan
+                    </div>
+                </div>
                 <div class="card-body">
-
-                    <h5 class="mb-4 p-3 bg-label-primary text-center">{{ localize('global.view_patient') }}</h5>
             <div class="container">
                 <div class="row">
                     <div class="col-md-8">

@@ -1,37 +1,40 @@
-<form id="patient-form-tab1" action="{{ route('patients.store') }}" method="POST">
+<form id="patient-form-tab1" action="{{ isset($patient) ? route('patients.update', $patient) : route('patients.store') }}" method="POST">
     @csrf
+    @if(isset($patient))
+        @method('PUT')
+    @endif
     <div class="row">
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="id_card">{{ localize('global.id_card') }}</label>
                 <input type="text" name="id_card" id="id_card"
-                    value="{{ old('id_card') }}" class="form-control">
+                    value="{{ old('id_card', $patient->id_card ?? '') }}" class="form-control">
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="name">{{ localize('global.name') }}</label>
-                <input type="text" name="name" id="name" required value="{{ old('name') }}" class="form-control">
+                <input type="text" name="name" id="name" required value="{{ old('name', $patient->name ?? '') }}" class="form-control">
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="last_name">{{ localize('global.last_name') }}</label>
                 <input type="text" name="last_name" id="last_name"
-                    value="{{ old('last_name') }}" class="form-control">
+                    value="{{ old('last_name', $patient->last_name ?? '') }}" class="form-control">
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="father_name">{{ localize('global.father_name') }}</label>
                 <input type="text" name="father_name" id="father_name"
-                    value="{{ old('father_name') }}" class="form-control">
+                    value="{{ old('father_name', $patient->father_name ?? '') }}" class="form-control">
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="nid">{{ localize('global.nid') }}</label>
-                <input type="text" name="nid" required id="nid" value="{{ old('nid') }}"
+                <input type="text" name="nid" required id="nid" value="{{ old('nid', $patient->nid ?? '') }}"
                     class="form-control">
             </div>
         </div>
@@ -39,7 +42,7 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="job">{{ localize('global.job') }}</label>
-                <input type="text" name="job" id="job" value="{{ old('job') }}"
+                <input type="text" name="job" id="job" value="{{ old('job', $patient->job ?? '') }}"
                     class="form-control">
             </div>
         </div>
@@ -49,8 +52,8 @@
                 <select class="form-control select2" name="job_category" required
                     id="job_category" onchange="changeType(this.value)">
 
-                    <option {{ old('job_category') == '0' ? 'selected' : ''}} value="0">{{localize('global.military')}}</option>
-                    <option {{ old('job_category') == '1' ? 'selected' : ''}} value="1">{{localize('global.civilian')}}</option>
+                    <option {{ old('job_category', $patient->job_category ?? '') == '0' ? 'selected' : ''}} value="0">{{localize('global.military')}}</option>
+                    <option {{ old('job_category', $patient->job_category ?? '') == '1' ? 'selected' : ''}} value="1">{{localize('global.civilian')}}</option>
                 </select>
             </div>
         </div>
@@ -58,31 +61,31 @@
         @php
         $militeryTypes = \App\Models\MiliteryType::all();
         @endphp
-        <div class="col-md-3" id="militery_type_div" style="display: {{ old('job_category', '0') == '0' ? 'block' : 'none' }};">
+        <div class="col-md-3" id="militery_type_div" style="display: {{ old('job_category', $patient->job_category ?? '0') == '0' ? 'block' : 'none' }};">
             <div class="mb-3">
                 <label for="militery_type_id">{{ localize('global.militery_type') }}</label>
                 <select class="form-control select2" name="militery_type_id"
                     id="militery_type_id">
                     <option value="">{{ localize('global.select') }}</option>
                     @foreach ($militeryTypes as $militeryType)
-                    <option {{ old('militery_type_id') == $militeryType->id ? 'selected' : ''}} value="{{ $militeryType->id }}">
+                    <option {{ old('militery_type_id', $patient->militery_type_id ?? '') == $militeryType->id ? 'selected' : ''}} value="{{ $militeryType->id }}">
                         {{ $militeryType->name }}
                     </option>
                     @endforeach
                 </select>
             </div>
         </div>
-        <div class="col-md-3" id="rank_div" style="display: {{ old('job_category', '0') == '1' ? 'block' : 'none' }};">
+        <div class="col-md-3" id="rank_div" style="display: {{ old('job_category', $patient->job_category ?? '0') == '1' ? 'block' : 'none' }};">
             <div class="mb-3">
                 <label for="rank" id="rank_label">{{ localize('global.rank') }}</label>
-                <input type="text" name="rank" id="rank" value="{{ old('rank') }}"
+                <input type="text" name="rank" id="rank" value="{{ old('rank', $patient->rank ?? '') }}"
                     class="form-control">
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="phone">{{ localize('global.phone') }}</label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
+                <input type="text" name="phone" id="phone" value="{{ old('phone', $patient->phone ?? '') }}"
                     class="form-control">
             </div>
         </div>
@@ -91,26 +94,26 @@
                 <label for="age_tab1">{{ localize('global.age') }}</label>
                 <div class="row g-1">
                     <div class="col-4">
-                        <input type="number" class="form-control" name="age_year" id="age_year_tab1" placeholder="{{ localize('global.year') }}" min="0" max="150" onchange="updateAgeValue('tab1')" value="{{ old('age_year') }}" style="padding: 0;">
+                        <input type="number" class="form-control" name="age_year" id="age_year_tab1" placeholder="{{ localize('global.year') }}" min="0" max="150" onchange="updateAgeValue('tab1')" value="{{ old('age_year', $ageYear ?? '') }}" style="padding: 0;">
                     </div>
                     <div class="col-4">
-                        <input type="number" class="form-control" name="age_month" id="age_month_tab1" placeholder="{{ localize('global.month') }}" min="0" max="11" onchange="updateAgeValue('tab1')" value="{{ old('age_month') }}" style="padding: 0;">
+                        <input type="number" class="form-control" name="age_month" id="age_month_tab1" placeholder="{{ localize('global.month') }}" min="0" max="11" onchange="updateAgeValue('tab1')" value="{{ old('age_month', $ageMonth ?? '') }}" style="padding: 0;">
                     </div>
                     <div class="col-4">
-                        <input type="number" class="form-control" name="age_day" id="age_day_tab1" placeholder="{{ localize('global.day') }}" min="0" max="31" onchange="updateAgeValue('tab1')" value="{{ old('age_day') }}" style="padding: 0;">
+                        <input type="number" class="form-control" name="age_day" id="age_day_tab1" placeholder="{{ localize('global.day') }}" min="0" max="31" onchange="updateAgeValue('tab1')" value="{{ old('age_day', $ageDay ?? '') }}" style="padding: 0;">
                     </div>
 
 
                 </div>
-                <input type="hidden" name="age" id="age_tab1" value="{{ old('age') }}" required>
+                <input type="hidden" name="age" id="age_tab1" value="{{ old('age', $patient->age ?? '') }}" required>
             </div>
         </div>
         <div class="col-md-3">
             <div class="mb-3">
                 <label for="gender">{{ localize('global.gender') }}</label>
                 <select class="form-control select2" name="gender" id="gender" required>
-                    <option {{ old('gender') == '0' ? 'selected' : ''}} value="0">{{localize('global.male')}}</option>
-                    <option {{ old('gender') == '1' ? 'selected' : ''}} value="1">{{localize('global.female')}}</option>
+                    <option {{ old('gender', $patient->gender ?? '') == '0' ? 'selected' : ''}} value="0">{{localize('global.male')}}</option>
+                    <option {{ old('gender', $patient->gender ?? '') == '1' ? 'selected' : ''}} value="1">{{localize('global.female')}}</option>
                 </select>
             </div>
         </div>
@@ -119,7 +122,7 @@
                 <label for="referred_by">{{ localize('global.referred_by') }}</label>
                 <select class="form-control select2" name="referred_by">
                     @foreach ($recipients as $value)
-                    <option {{ old('referred_by') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
+                    <option {{ old('referred_by', $patient->referred_by ?? '') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
                         {{ $value->name }}
                     </option>
                     @endforeach
@@ -134,7 +137,7 @@
                     <option value="">{{ localize('global.select') }}</option>
 
                     @foreach ($provinces as $value)
-                    <option {{ old('province_id') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
+                    <option {{ old('province_id', $patient->province_id ?? '') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
                         {{ $value->name_dr }}
                     </option>
                     @endforeach
@@ -148,7 +151,7 @@
                     id="district_id">
                     <option value="">{{ localize('global.select') }}</option>
                     @foreach ($districts as $value)
-                    <option {{ old('district_id') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
+                    <option {{ old('district_id', $patient->district_id ?? '') == $value->id ? 'selected' : ''}} value="{{ $value->id }}">
                         {{ $value->name_dr }}
                     </option>
                     @endforeach
@@ -160,7 +163,7 @@
             <div class="mb-3">
                 <label for="registration_date">{{ localize('global.registration_date') }}</label>
                 <input type="text" name="registration_date" id="registration_date"
-                    value="{{ old('registration_date', verta()->format('Y-m-d')) }}"
+                    value="{{ old('registration_date', isset($patient) && $patient->registration_date ? \Hekmatinasser\Verta\Facades\Verta::instance($patient->registration_date)->format('Y-m-d') : verta()->format('Y-m-d')) }}"
                     class="form-control" readonly>
             </div>
         </div>
@@ -197,7 +200,7 @@
         </div>
 
     </div>
-    <button type="submit" class="btn btn-primary">{{ localize('global.create') }}</button>
+    <button type="submit" class="btn btn-primary">{{ isset($patient) ? localize('global.update') : localize('global.create') }}</button>
 
     <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
         <span class="text-white"> <span class="d-none d-sm-inline-block  ">{{

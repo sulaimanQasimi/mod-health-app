@@ -234,6 +234,132 @@ class PatientController extends Controller
         return view('pages.patients.show', compact('patient', 'departments', 'doctors', 'previousDiagnoses'));
     }
 
+    public function edit(Patient $patient)
+    {
+        $this->authorize('edit-patients');
+        
+        $relations = Relation::query()->orderBy('name', 'asc')->get();
+        $provinces = Province::query()->orderBy('name_dr', 'asc')->get();
+        $districts = District::query()->orderBy('name_dr', 'asc')->get();
+        $recipients = Recipient::query()->orderBy('name', 'asc')->get();
+        $militeryTypes = MiliteryType::query()->orderBy('name', 'asc')->get();
+        $doctors = Doctor::query()->orderBy('name', 'asc')->get();
+        $departments = auth()->user()->category_id 
+            ? Department::where('category_id', auth()->user()->category_id)->get()
+            : Department::all();
+
+        // Parse age to extract year, month, or day if applicable
+        $ageYear = null;
+        $ageMonth = null;
+        $ageDay = null;
+        
+        if ($patient->age) {
+            if (preg_match('/(\d+)\s*ساله/', $patient->age, $matches)) {
+                $ageYear = $matches[1];
+            } elseif (preg_match('/(\d+)\s*ماه/', $patient->age, $matches)) {
+                $ageMonth = $matches[1];
+            } elseif (preg_match('/(\d+)\s*روز/', $patient->age, $matches)) {
+                $ageDay = $matches[1];
+            }
+        }
+
+        return view('pages.patients.edit', compact(
+            'patient', 
+            'relations', 
+            'provinces', 
+            'districts', 
+            'recipients', 
+            'militeryTypes',
+            'doctors',
+            'departments',
+            'ageYear',
+            'ageMonth',
+            'ageDay'
+        ));
+    }
+
+    public function update(Request $request, Patient $patient)
+    {
+        $this->authorize('edit-patients');
+        
+        $data = $request->validate([
+            'militery_type_id' => 'nullable|exists:militery_types,id',
+            'name' => 'required',
+            'last_name' => 'nullable',
+            'father_name' => 'nullable',
+            'phone' => 'nullable',
+            'age' => 'nullable',
+            'age_day' => 'nullable|integer|min:0|max:31',
+            'age_month' => 'nullable|integer|min:0|max:11',
+            'age_year' => 'nullable|integer|min:0|max:150',
+            'nid' => 'required|unique:patients,nid,' . $patient->id,
+            'province_id' => 'required',
+            'district_id' => 'required',
+            'relation_id' => 'nullable',
+            'branch_id' => 'required',
+            'job' => 'nullable',
+            'rank' => 'nullable',
+            'job_type' => 'nullable',
+            'gender' => 'required',
+            'referral_name' => 'nullable',
+            'referral_last_name' => 'nullable',
+            'referral_father_name' => 'nullable',
+            'referral_nid' => 'nullable',
+            'referral_by' => 'nullable',
+            'referral_id_card' => 'nullable',
+            'referral_phone' => 'nullable',
+            'referral_recipient' => 'nullable',
+            'type' => 'nullable',
+            'id_card' => 'nullable|string',
+            'job_category' => 'nullable',
+            'referred_by' => 'nullable',
+        ]);
+
+        // Format age from dropdowns if provided (priority: year > month > day)
+        if (!$data['age'] || empty($data['age'])) {
+            if ($request->filled('age_year') && $request->age_year !== '') {
+                $data['age'] = $request->age_year . ' ساله';
+            } elseif ($request->filled('age_month') && $request->age_month !== '') {
+                $data['age'] = $request->age_month . ' ماه';
+            } elseif ($request->filled('age_day') && $request->age_day !== '') {
+                $data['age'] = $request->age_day . ' روز';
+            }
+        }
+
+        // Ensure age is required
+        if (empty($data['age'])) {
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.validation_error'),
+                    'errors' => ['age' => ['The age field is required.']]
+                ], 422);
+            }
+            return redirect()->back()->withErrors(['age' => 'The age field is required.'])->withInput();
+        }
+
+        // Remove age_day, age_month, age_year from data as they're not in the model
+        unset($data['age_day'], $data['age_month'], $data['age_year']);
+
+        // Update patient
+        $patient->update($data);
+
+        // Handle AJAX requests
+        if ($request->ajax() || $request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.patient_updated_successfully.'),
+                'patient' => [
+                    'id' => $patient->id,
+                    'name' => $patient->name,
+                    'last_name' => $patient->last_name,
+                ]
+            ]);
+        }
+
+        return redirect()->route('patients.show', $patient->id)->with('success', localize('global.patient_updated_successfully.'));
+    }
+
     public function destroy(Patient $patient)
     {
         $patient->delete();
@@ -364,24 +490,40 @@ class PatientController extends Controller
         $tab_type = $request->tab_type;
         $patient_id = $request->patient_id;
 
+        // Parse age variables for edit mode
+        $ageYear = null;
+        $ageMonth = null;
+        $ageDay = null;
+
         if ($patient_id != '') {
             $patient = Patient::find($patient_id);
 
+            // Parse age to extract year, month, or day if applicable
+            if ($patient && $patient->age) {
+                if (preg_match('/(\d+)\s*ساله/', $patient->age, $matches)) {
+                    $ageYear = $matches[1];
+                } elseif (preg_match('/(\d+)\s*ماه/', $patient->age, $matches)) {
+                    $ageMonth = $matches[1];
+                } elseif (preg_match('/(\d+)\s*روز/', $patient->age, $matches)) {
+                    $ageDay = $matches[1];
+                }
+            }
+
             if ($tab_type == 'first') {
-                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments'));
+                return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
             } elseif ($tab_type == 'second') {
-                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments'));
+                return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
             } elseif ($tab_type == 'third') {
-                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments'));
+                return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'patient', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
             }
         }
 
         if ($tab_type == 'first') {
-            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments'));
+            return view('pages.patients.tab1', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
         } elseif ($tab_type == 'second') {
-            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments'));
+            return view('pages.patients.tab2', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
         } elseif ($tab_type == 'third') {
-            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments'));
+            return view('pages.patients.tab3', compact('recipients', 'provinces', 'districts', 'relations', 'doctors', 'departments', 'ageYear', 'ageMonth', 'ageDay'));
         }
     }
 

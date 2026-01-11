@@ -374,8 +374,14 @@
                                 aria-expanded="false" aria-controls="hospitalizationCollapse">
                                 <i class="bx bx-hard-hat me-2 text-secondary"></i>
                                 {{ localize('global.hospitalization_checkups') }}
-                                @if($appointment->hospitalization->count() > 0)
-                                    <span class="badge bg-secondary ms-2">{{ $appointment->hospitalization->count() }}</span>
+                                @php
+                                    $hospitalizationLabsCount = 0;
+                                    foreach ($appointment->hospitalization as $single_hospitalization) {
+                                        $hospitalizationLabsCount += $single_hospitalization->labs->count();
+                                    }
+                                @endphp
+                                @if($hospitalizationLabsCount > 0)
+                                    <span class="badge bg-secondary ms-2">{{ $hospitalizationLabsCount }}</span>
                                 @endif
                             </button>
                         </h2>
@@ -513,7 +519,7 @@
                                 aria-expanded="false" aria-controls="referDoctorCollapse">
                                 <i class="bx bx-transfer me-2 text-danger"></i>
                                 {{ localize('global.refer_to_another_department') }}
-                                @if($appointment->is_completed == 1)
+                                @if($appointment->is_completed == 1 && !empty($appointment->refferal_remarks))
                                     <span class="badge bg-danger ms-2">1</span>
                                 @endif
                             </button>

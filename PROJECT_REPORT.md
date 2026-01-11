@@ -72,7 +72,56 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ## Recent Major Changes & New Features
 
-### 1. Income Management System Enhancements (NEW)
+### 1. Users Management Interface Enhancements (NEW)
+**Implementation Date**: January 2026
+**Contributors**: Development Team
+
+#### Statistics Cards Accuracy Fix:
+- **Problem Identified**: Statistics cards were displaying incorrect counts when total users exceeded the pagination limit
+- **Root Cause**: Statistics were calculated using paginated collection instead of full collection
+- **Impact**: When 21 users existed, statistics showed only 20 (the paginated page size)
+- **Solution**: Separated statistics calculation from pagination to use full collection
+
+#### Per-Page Selector Implementation:
+- **New Feature**: Added per-page selector dropdown to pagination footer
+- **User Control**: Users can now select how many items to display per page (10, 20, 50, 100)
+- **Default Value**: Defaults to 20 items per page
+- **Dynamic Pagination**: Pagination links automatically preserve the selected per-page value
+
+#### Technical Implementation:
+- **Controller Changes** (`app/Http/Controllers/UserController.php`):
+  - Added full collection retrieval before pagination: `$allUsers = $query->get()`
+  - Implemented per-page parameter handling: `$perPage = $request->get('per_page', 20)`
+  - Updated pagination to use dynamic per-page value: `$query->paginate($perPage)`
+  - Passed `$allUsers` collection to view for accurate statistics
+- **View Updates** (`resources/views/pages/users/index.blade.php`):
+  - Updated all 4 statistics cards to use `$allUsers` instead of `$users`
+    - Active users count: `$allUsers->where('status', 1)->count()`
+    - Deactive users count: `$allUsers->where('status', 0)->count()`
+    - Total users count: `$allUsers->count()`
+    - New users count: `$allUsers->filter(...)->count()`
+  - Added per-page selector dropdown in pagination footer
+  - Implemented JavaScript handler for per-page selection with URL parameter preservation
+  - Enhanced pagination footer layout with flex-wrap for responsive design
+
+#### Files Modified:
+- **app/Http/Controllers/UserController.php**: 
+  - Added full collection retrieval for statistics
+  - Implemented per-page parameter handling
+  - Updated pagination logic
+- **resources/views/pages/users/index.blade.php**: 
+  - Fixed statistics cards to use full collection
+  - Added per-page selector dropdown
+  - Enhanced pagination footer with JavaScript functionality
+
+#### Impact:
+- **Accurate Statistics**: Statistics cards now display correct counts for all users regardless of pagination
+- **Improved User Experience**: Users can control how many items are displayed per page
+- **Better Performance**: Users can optimize page load by selecting appropriate per-page value
+- **Enhanced Usability**: More flexible data viewing options for different user needs
+- **Data Integrity**: Statistics reflect actual database counts, not just current page data
+
+### 2. Income Management System Enhancements (NEW)
 **Implementation Date**: January 2026
 **Contributors**: Development Team
 
@@ -590,9 +639,10 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 ### Recent Git Commits & Changes (January 2025 - January 2026):
 
-#### Latest Commits (Recent 13):
-1. **Latest (January 2026)**: Income management system enhancements - Added 'completion' income type and made purchase_price optional
-2. **Previous (January 2025)**: Laboratory results interface enhancements with Dari date picker integration and UI improvements
+#### Latest Commits (Recent 14):
+1. **Latest (January 2026)**: Users management interface enhancements - Fixed statistics cards accuracy and added per-page selector for pagination
+2. **Previous (January 2026)**: Income management system enhancements - Added 'completion' income type and made purchase_price optional
+3. **Previous (January 2025)**: Laboratory results interface enhancements with Dari date picker integration and UI improvements
 3. **Previous**: Modern login page design implementation with Tailwind CSS and responsive layout
 3. **9551bfc**: Refactor appointment token printing logic to use department_id directly from appointment
 4. **deff62a**: Update appointment and patient views to use null-safe operator for doctor access
@@ -606,6 +656,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 12. **Previous**: Language translation standardization with Dari terminology improvements
 
 #### Key Changes Implemented:
+- **Users Management Enhancement (January 2026)**: Fixed statistics cards to display accurate counts using full collection, added per-page selector (10, 20, 50, 100) for pagination control
 - **Income Management Enhancement (January 2026)**: Added 'completion' income type, extended database enum, made purchase_price optional
 - **Database Schema Updates**: New migration for income_type enum extension with proper rollback support
 - **Form Flexibility**: Improved income creation form with optional purchase price field
@@ -716,6 +767,29 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 **Status**: ✅ RESOLVED
 
+##### 7. Users Statistics Cards Inaccurate Count Issue (January 2026)
+**Error**: Statistics cards displaying incorrect user counts when total users exceeded pagination limit
+**Error Message**: Statistics showing only paginated page count instead of total database count
+**Root Cause**: Statistics were calculated using paginated collection (`$users`) instead of full collection
+**Files Affected**: 
+- `app/Http/Controllers/UserController.php`
+- `resources/views/pages/users/index.blade.php`
+
+**Specific Errors**:
+- **Active Users Count**: Showing only active users from current page (e.g., 20 instead of 21)
+- **Deactive Users Count**: Showing only deactive users from current page
+- **Total Users Count**: Showing only paginated count instead of total database count
+- **New Users Count**: Showing only new users from current page instead of all new users
+
+**Solution**: 
+- Separated statistics calculation from pagination in controller
+- Created full collection before pagination: `$allUsers = $query->get()`
+- Updated all statistics cards in view to use `$allUsers` instead of `$users`
+- Added per-page selector dropdown for better user control
+- Implemented JavaScript handler for per-page selection with URL parameter preservation
+
+**Status**: ✅ RESOLVED
+
 #### Other Fixed Issues:
 - **Camera Integration Errors**: Resolved camera functionality issues in patient registration and medical
 - **Print Functionality**: Resolved printing issues in reports and medical documents
@@ -730,6 +804,10 @@ The medical database application has undergone significant development with the 
 ### Recent Achievements (December 2024 - January 2025):
 
 #### January 2026 Achievements:
+- **Users Management Interface Enhancement**: Successfully fixed statistics cards to display accurate user counts regardless of pagination
+- **Pagination Control**: Implemented per-page selector dropdown (10, 20, 50, 100) for flexible data viewing
+- **Data Accuracy**: Separated statistics calculation from pagination to ensure correct counts for all users
+- **User Experience**: Enhanced pagination footer with responsive design and dynamic per-page selection
 - **Income Management System Enhancement**: Successfully added 'completion' (اکمال) as new income type option
 - **Database Schema Update**: Extended income_type ENUM column to support completion type
 - **Form Flexibility**: Made purchase_price field optional for improved user experience
@@ -769,6 +847,9 @@ The medical database application has undergone significant development with the 
 
 ### Current Status (January 2026):
 The application has significantly improved in terms of:
+- **Users Management**: Fixed statistics cards accuracy to display correct user counts, added per-page selector for flexible pagination control
+- **Data Accuracy**: Statistics now reflect actual database counts instead of paginated page data
+- **Pagination Control**: Users can select display options (10, 20, 50, 100 items per page) for optimized viewing
 - **Income Management**: Enhanced income tracking with new 'completion' type and optional purchase price field
 - **Database Schema**: Extended income_type enum to support additional income categorization
 - **Form Flexibility**: Improved income creation form with optional fields for better user experience

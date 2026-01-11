@@ -2,11 +2,19 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
-        vue(),
-        react(),
+        tailwindcss(),
+        vue({
+            include: /\.vue$/,
+            exclude: /\.(jsx|tsx)$/,
+        }),
+        react({
+            jsxRuntime: 'automatic',
+            jsxImportSource: 'react',
+        }),
         laravel({
             input: [
                 'resources/css/app.css', 

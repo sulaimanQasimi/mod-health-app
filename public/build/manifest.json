@@ -154,7 +154,7 @@
     ]
   },
   "public/assets/js/vue/dental-chart-app.js": {
-    "file": "assets/dental-chart-app-C6aqO_1K.js",
+    "file": "assets/dental-chart-app-nSaWGvUV.js",
     "name": "dental-chart-app",
     "src": "public/assets/js/vue/dental-chart-app.js",
     "isEntry": true,
@@ -162,7 +162,7 @@
       "__plugin-vue_export-helper-beOoQdwu.js"
     ],
     "css": [
-      "assets/dental-chart-app-BB0ufxX4.css"
+      "assets/dental-chart-app-DPPIGQiM.css"
     ]
   },
   "public/assets/js/vue/dentist-registration-section.js": {
@@ -313,7 +313,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CRdCtZzp.css",
+    "file": "assets/app-BP2amDhp.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -321,7 +321,7 @@
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-BDd2q1BZ.js",
+    "file": "assets/Example-C_etgBiH.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
@@ -331,11 +331,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CRdCtZzp.css"
+      "assets/app-BP2amDhp.css"
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-CHea5w2i.js",
+    "file": "assets/Layout-DAEQY0jg.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -345,11 +345,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CRdCtZzp.css"
+      "assets/app-BP2amDhp.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-C9uVQKwc.js",
+    "file": "assets/Welcome-CokAM-JH.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -359,7 +359,7 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CRdCtZzp.css"
+      "assets/app-BP2amDhp.css"
     ]
   },
   "resources/js/app.js": {
@@ -372,7 +372,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-BqxCIJdB.js",
+    "file": "assets/app-DCKpn62l.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -386,7 +386,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-CRdCtZzp.css"
+      "assets/app-BP2amDhp.css"
     ]
   },
   "resources/js/ckeditor.js": {

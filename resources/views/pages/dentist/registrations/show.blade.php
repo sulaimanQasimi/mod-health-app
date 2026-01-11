@@ -203,7 +203,7 @@
                                         <tr>
                                             <th>{{ localize('global.date') }}</th>
                                             <th>{{ localize('global.treatment_type') }}</th>
-                                            <th>{{ localize('global.tooth_number') }}</th>
+                                            <th>{{ localize('global.tooth_number') }} (FDI)</th>
                                             <th>{{ localize('global.description') }}</th>
                                             <th>{{ localize('global.status') }}</th>
                                             <th>{{ localize('global.cost') }}</th>
@@ -215,7 +215,7 @@
                                             <tr>
                                                 <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($treatment->treatment_date) }}</td>
                                                 <td>{{ $treatment->treatment_type }}</td>
-                                                <td>{{ $treatment->tooth_number ?? localize('global.not_available') }}</td>
+                                                <td>{{ $treatment->tooth_number ? 'FDI ' . $treatment->tooth_number : localize('global.not_available') }}</td>
                                                 <td>{{ $treatment->treatment_description }}</td>
                                                 <td>
                                                     @if($treatment->status == 'planned')
@@ -456,7 +456,7 @@
                                         <table class="table table-striped table-sm">
                                             <thead>
                                                 <tr>
-                                                    <th>{{ localize('global.tooth_number') }}</th>
+                                                    <th>{{ localize('global.tooth_number') }} (FDI)</th>
                                                     <th>{{ localize('global.condition') }}</th>
                                                     <th>{{ localize('global.gum_health') }}</th>
                                                     <th>{{ localize('global.oral_hygiene_score') }}</th>
@@ -470,7 +470,7 @@
                                             <tbody>
                                                 @forelse($latestCharts as $chart)
                                                     <tr>
-                                                        <td><strong>{{ $chart->tooth_number }}</strong></td>
+                                                        <td><strong>FDI {{ $chart->tooth_number }}</strong></td>
                                                         <td>
                                                             <span class="badge bg-{{ $chart->tooth_condition == 'healthy' ? 'success' : ($chart->tooth_condition == 'cavity' ? 'warning' : ($chart->tooth_condition == 'missing' ? 'secondary' : 'info')) }}">
                                                                 {{ localize('global.' . $chart->tooth_condition) ?: ucfirst(str_replace('_', ' ', $chart->tooth_condition)) }}
@@ -577,7 +577,7 @@
                                                     <h2 class="accordion-header" id="chartHeading{{ $chart->tooth_number }}">
                                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
                                                                 data-bs-target="#chartCollapse{{ $chart->tooth_number }}" aria-expanded="false">
-                                                            {{ localize('global.tooth') }} {{ $chart->tooth_number }} 
+                                                            {{ localize('global.tooth') }} FDI {{ $chart->tooth_number }} 
                                                             <span class="badge bg-primary ms-2">{{ $toothTreatments->count() }}</span>
                                                         </button>
                                                     </h2>
@@ -718,27 +718,27 @@
                                        placeholder="{{ localize('global.select_date') }}" required readonly>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="tooth_number" class="form-label">{{ localize('global.tooth_number') }}</label>
+                                <label for="tooth_number" class="form-label">{{ localize('global.tooth_number') }} (FDI)</label>
                                 <select class="form-select" id="tooth_number" name="tooth_number">
                                     <option value="">{{ localize('global.select') }} / {{ localize('global.none') }}</option>
-                                    <optgroup label="Upper Right (11-18)">
+                                    <optgroup label="Upper Right (FDI 11-18)">
                                         @for($i = 11; $i <= 18; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
+                                            <option value="{{ $i }}">FDI {{ $i }}</option>
                                         @endfor
                                     </optgroup>
-                                    <optgroup label="Upper Left (21-28)">
+                                    <optgroup label="Upper Left (FDI 21-28)">
                                         @for($i = 21; $i <= 28; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
+                                            <option value="{{ $i }}">FDI {{ $i }}</option>
                                         @endfor
                                     </optgroup>
-                                    <optgroup label="Lower Left (31-38)">
+                                    <optgroup label="Lower Left (FDI 31-38)">
                                         @for($i = 31; $i <= 38; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
+                                            <option value="{{ $i }}">FDI {{ $i }}</option>
                                         @endfor
                                     </optgroup>
-                                    <optgroup label="Lower Right (41-48)">
+                                    <optgroup label="Lower Right (FDI 41-48)">
                                         @for($i = 41; $i <= 48; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
+                                            <option value="{{ $i }}">FDI {{ $i }}</option>
                                         @endfor
                                     </optgroup>
                                 </select>

@@ -140,12 +140,12 @@ class DentalChartController extends Controller
 
         $dentistRegistration->load('dentalCharts.measurements', 'dentalCharts.images', 'dentalCharts.periodontalMeasurements', 'dentalCharts.treatments');
         
-        // Get all teeth data for the visual chart
+        // Get all teeth data for the visual chart (FDI notation)
         $allTeeth = [];
-        for ($i = 11; $i <= 18; $i++) $allTeeth[$i] = null; // Upper right
-        for ($i = 21; $i <= 28; $i++) $allTeeth[$i] = null; // Upper left
-        for ($i = 31; $i <= 38; $i++) $allTeeth[$i] = null; // Lower left
-        for ($i = 41; $i <= 48; $i++) $allTeeth[$i] = null; // Lower right
+        for ($i = 11; $i <= 18; $i++) $allTeeth[$i] = null; // Upper right (FDI 11-18)
+        for ($i = 21; $i <= 28; $i++) $allTeeth[$i] = null; // Upper left (FDI 21-28)
+        for ($i = 31; $i <= 38; $i++) $allTeeth[$i] = null; // Lower left (FDI 31-38)
+        for ($i = 41; $i <= 48; $i++) $allTeeth[$i] = null; // Lower right (FDI 41-48)
 
         // Get latest chart entry for each tooth
         $latestCharts = $dentistRegistration->dentalCharts()

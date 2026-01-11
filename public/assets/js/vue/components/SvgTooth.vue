@@ -11,11 +11,11 @@
     >
         <!-- Simple oval tooth representation -->
         <div class="tooth-oval" :class="conditionClass" :style="toothStyle">
-            <!-- Tooth number inside oval -->
+            <!-- FDI tooth number inside oval -->
             <span class="tooth-number-label">{{ toothNumber }}</span>
         </div>
         
-        <!-- Tooth number below oval -->
+        <!-- FDI tooth number below oval -->
         <div class="tooth-number-below">{{ toothNumber }}</div>
     </div>
 </template>
@@ -74,9 +74,9 @@ export default {
         },
         tooltipText() {
             if (this.toothData) {
-                return `Tooth ${this.toothNumber}: ${this.toothData.tooth_condition}`
+                return `FDI ${this.toothNumber}: ${this.toothData.tooth_condition}`
             }
-            return `Tooth ${this.toothNumber}: No data`
+            return `FDI ${this.toothNumber}: No data`
         }
     },
     methods: {

@@ -11,7 +11,7 @@
                 <strong>جوف فوقانی</strong>
             </div>
             
-            <!-- Upper Right Quadrant (18-11) -->
+            <!-- Upper Right Quadrant (FDI 18-11) -->
             <div class="quadrant-row d-flex justify-content-center align-items-center mb-2">
                 <svg-tooth
                     v-for="toothNum in [18, 17, 16, 15, 14, 13, 12, 11]"
@@ -24,7 +24,7 @@
                 />
             </div>
 
-            <!-- Upper Left Quadrant (21-28) -->
+            <!-- Upper Left Quadrant (FDI 21-28) -->
             <div class="quadrant-row d-flex justify-content-center align-items-center mb-2">
                 <svg-tooth
                     v-for="toothNum in [21, 22, 23, 24, 25, 26, 27, 28]"
@@ -47,7 +47,7 @@
                 <strong>جوف تحتانی</strong>
             </div>
             
-            <!-- Lower Left Quadrant (48-41) -->
+            <!-- Lower Left Quadrant (FDI 48-41) -->
             <div class="quadrant-row d-flex justify-content-center align-items-center mb-2">
                 <svg-tooth
                     v-for="toothNum in [48, 47, 46, 45, 44, 43, 42, 41]"
@@ -60,7 +60,7 @@
                 />
             </div>
 
-            <!-- Lower Right Quadrant (31-38) -->
+            <!-- Lower Right Quadrant (FDI 31-38) -->
             <div class="quadrant-row d-flex justify-content-center align-items-center mb-2">
                 <svg-tooth
                     v-for="toothNum in [31, 32, 33, 34, 35, 36, 37, 38]"
@@ -129,19 +129,19 @@ export default {
             return this.teethData[toothNumber] || null
         },
         getToothType(toothNumber) {
-            // Molars: 16-18, 26-28, 36-38, 46-48
+            // Molars: FDI 16-18, 26-28, 36-38, 46-48
             if ([16, 17, 18, 26, 27, 28, 36, 37, 38, 46, 47, 48].includes(toothNumber)) {
                 return 'molar'
             }
-            // Premolars: 14-15, 24-25, 34-35, 44-45
+            // Premolars: FDI 14-15, 24-25, 34-35, 44-45
             if ([14, 15, 24, 25, 34, 35, 44, 45].includes(toothNumber)) {
                 return 'premolar'
             }
-            // Canines: 13, 23, 33, 43
+            // Canines: FDI 13, 23, 33, 43
             if ([13, 23, 33, 43].includes(toothNumber)) {
                 return 'canine'
             }
-            // Incisors: 11-12, 21-22, 31-32, 41-42
+            // Incisors: FDI 11-12, 21-22, 31-32, 41-42
             return 'incisor'
         },
         handleToothClick(toothNumber) {

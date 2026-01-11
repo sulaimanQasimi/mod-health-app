@@ -117,46 +117,46 @@ class DentalChart extends Model
     }
 
     /**
-     * Get tooth name based on number
+     * Get tooth name based on FDI notation number
      */
     public function getToothNameAttribute()
     {
         $toothNames = [
-            11 => 'Upper Right Central Incisor',
-            12 => 'Upper Right Lateral Incisor',
-            13 => 'Upper Right Canine',
-            14 => 'Upper Right First Premolar',
-            15 => 'Upper Right Second Premolar',
-            16 => 'Upper Right First Molar',
-            17 => 'Upper Right Second Molar',
-            18 => 'Upper Right Third Molar',
-            21 => 'Upper Left Central Incisor',
-            22 => 'Upper Left Lateral Incisor',
-            23 => 'Upper Left Canine',
-            24 => 'Upper Left First Premolar',
-            25 => 'Upper Left Second Premolar',
-            26 => 'Upper Left First Molar',
-            27 => 'Upper Left Second Molar',
-            28 => 'Upper Left Third Molar',
-            31 => 'Lower Left Central Incisor',
-            32 => 'Lower Left Lateral Incisor',
-            33 => 'Lower Left Canine',
-            34 => 'Lower Left First Premolar',
-            35 => 'Lower Left Second Premolar',
-            36 => 'Lower Left First Molar',
-            37 => 'Lower Left Second Molar',
-            38 => 'Lower Left Third Molar',
-            41 => 'Lower Right Central Incisor',
-            42 => 'Lower Right Lateral Incisor',
-            43 => 'Lower Right Canine',
-            44 => 'Lower Right First Premolar',
-            45 => 'Lower Right Second Premolar',
-            46 => 'Lower Right First Molar',
-            47 => 'Lower Right Second Molar',
-            48 => 'Lower Right Third Molar',
+            11 => 'Upper Right Central Incisor', // FDI 11
+            12 => 'Upper Right Lateral Incisor', // FDI 12
+            13 => 'Upper Right Canine', // FDI 13
+            14 => 'Upper Right First Premolar', // FDI 14
+            15 => 'Upper Right Second Premolar', // FDI 15
+            16 => 'Upper Right First Molar', // FDI 16
+            17 => 'Upper Right Second Molar', // FDI 17
+            18 => 'Upper Right Third Molar', // FDI 18
+            21 => 'Upper Left Central Incisor', // FDI 21
+            22 => 'Upper Left Lateral Incisor', // FDI 22
+            23 => 'Upper Left Canine', // FDI 23
+            24 => 'Upper Left First Premolar', // FDI 24
+            25 => 'Upper Left Second Premolar', // FDI 25
+            26 => 'Upper Left First Molar', // FDI 26
+            27 => 'Upper Left Second Molar', // FDI 27
+            28 => 'Upper Left Third Molar', // FDI 28
+            31 => 'Lower Left Central Incisor', // FDI 31
+            32 => 'Lower Left Lateral Incisor', // FDI 32
+            33 => 'Lower Left Canine', // FDI 33
+            34 => 'Lower Left First Premolar', // FDI 34
+            35 => 'Lower Left Second Premolar', // FDI 35
+            36 => 'Lower Left First Molar', // FDI 36
+            37 => 'Lower Left Second Molar', // FDI 37
+            38 => 'Lower Left Third Molar', // FDI 38
+            41 => 'Lower Right Central Incisor', // FDI 41
+            42 => 'Lower Right Lateral Incisor', // FDI 42
+            43 => 'Lower Right Canine', // FDI 43
+            44 => 'Lower Right First Premolar', // FDI 44
+            45 => 'Lower Right Second Premolar', // FDI 45
+            46 => 'Lower Right First Molar', // FDI 46
+            47 => 'Lower Right Second Molar', // FDI 47
+            48 => 'Lower Right Third Molar', // FDI 48
         ];
 
-        return $toothNames[$this->tooth_number] ?? "Tooth {$this->tooth_number}";
+        return $toothNames[$this->tooth_number] ?? "FDI {$this->tooth_number}";
     }
 
     /**

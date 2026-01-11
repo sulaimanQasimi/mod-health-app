@@ -34,7 +34,7 @@ class PatientController extends Controller
     {
         // get all patients with militery type, province, district
         $query = Patient::where('branch_id', auth()->user()->branch_id)
-            ->with(['militeryType', 'province', 'district']);
+            ->with(['militeryType', 'province', 'district', 'creator']);
 
 
         // Filter by name

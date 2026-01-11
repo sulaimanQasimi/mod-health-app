@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReciptionStatisticReportController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdviceController;
 use App\Http\Controllers\AnesthesiaController;
@@ -164,6 +165,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-tab', [PatientController::class, 'getTab'])->name('get-tab');
         Route::get('get-doctors-by-department/{departmentId}', [PatientController::class, 'getDoctorsByDepartment'])->name('get-doctors-by-department');
         Route::get('report', [PatientController::class, 'report'])->name('report');
+        Route::get('reciption-statistic-report', ReciptionStatisticReportController::class         )->name('reciption-statistic-report');
         Route::post('report-search', [PatientController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [PatientController::class, 'exportReport'])->name('export-report');
         Route::get('{patientId}/printToken', [PatientController::class, 'printToken'])->name('printToken');
@@ -1200,3 +1202,6 @@ Route::middleware('auth')->prefix('api/categories')->name('api.categories.')->gr
 
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);
+Route::group(['prefix' => 'react'], function () {
+    include __DIR__ . '/react.php';
+});

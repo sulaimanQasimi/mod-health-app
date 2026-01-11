@@ -112,6 +112,7 @@
                                 <th>{{ localize('global.age') }}</th>
                                 <th>{{ localize('global.militery_type') }}</th>
                                 <th>{{ localize('global.phone') }}</th>
+                                <th>{{ localize('global.created_by') }}</th>
                                 <th>{{ localize('global.actions') }}</th>
                             </tr>
                         </thead>
@@ -133,6 +134,13 @@
                                     <td>{{ $patient->age ?? '-' }}</td>
                                     <td>{{ $patient->militeryType?->name ?? '-' }}</td>
                                     <td>{{ $patient->phone }}</td>
+                                    <td>
+                                        @if($patient->creator)
+                                            {{ $patient->creator->name }} {{ $patient->creator->last_name }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('patients.show', $patient->id) }}"
                                             class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>

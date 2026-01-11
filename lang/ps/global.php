@@ -924,6 +924,7 @@ return [
 'daily_icu_progress' => 'د ناروغ ورځنی پرمختګ',
 'icu_day' => 'د ICU ورځ',
 'created_by' => 'ثبت شوی د لخوا',
+'processed_by' => 'پروسس شوی د لخوا',
 'add_daily_progress' => 'د ICU ورځنی پرمختګ اضافه کول',
 'icu_diagnose' => 'تشخیص',
 'daily_events' => 'ورځني پېښې',

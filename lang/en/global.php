@@ -516,6 +516,7 @@ return [
     'updated_at' => 'Updated At',
     'created_by' => 'Created By',
     'updated_by' => 'Updated By',
+    'processed_by' => 'Processed By',
     'not_assigned' => 'Not Assigned',
     'not_available' => 'Not Available',
     'back_to_list' => 'Back to List',

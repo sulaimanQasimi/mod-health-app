@@ -925,6 +925,7 @@ return [
     'daily_icu_progress' => 'پیشرفت روزمره مریض',
     'icu_day' => 'روز ICU',
     'created_by' => 'ثبت شده توسط',
+    'processed_by' => 'پروسس شده توسط',
     'add_daily_progress' => 'اضافه نمودن پیشرفت روزمره ICU',
     'icu_diagnose' => 'تشخیص',
     'daily_events' => 'واقعات روزمره',

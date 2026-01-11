@@ -27,7 +27,7 @@ class AppointmentController extends Controller
      public function index(Request $request)
      {
          $query = Appointment::where('branch_id', auth()->user()->branch_id)
-             ->with(['patient', 'doctor', 'department']);
+             ->with(['patient', 'doctor', 'department', 'processedBy']);
      
          // Search by patient name
          if ($request->filled('patient_name')) {

@@ -99,6 +99,7 @@
                                 <th>{{ localize('global.date') }}</th>
                                 <th>{{ localize('global.time') }}</th>
                                 <th>{{ localize('global.status') }}</th>
+                                <th>{{ localize('global.processed_by') }}</th>
                                 <th>{{ localize('global.actions') }}</th>
                             </tr>
                         </thead>
@@ -121,6 +122,13 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @if($appointment->processedBy)
+                                            {{ $appointment->processedBy->name }} {{ $appointment->processedBy->last_name }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
                                         <a href="{{ route('appointments.show', $appointment->id) }}"
                                             class="btn btn-sm btn-icon text-primary"><i class="bx bx-expand"></i></a>
                                         @if($appointment->patient_id)
@@ -131,7 +139,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center">{{ localize('global.no_records_found') }}</td>
+                                    <td colspan="11" class="text-center">{{ localize('global.no_records_found') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

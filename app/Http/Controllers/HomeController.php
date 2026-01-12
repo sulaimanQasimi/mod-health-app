@@ -48,7 +48,7 @@ class HomeController extends Controller
 
                 // Get all counts
                 $counts = $this->getDashboardCounts($branchId, $today, $yesterday);
-                
+
                 // Today's statistics
                 $todayPatients = $counts['todayPatients'];
                 $yesterdayPatients = $counts['yesterdayPatients'];
@@ -80,6 +80,11 @@ class HomeController extends Controller
                         'totalInPatientAdmissions' => $counts['totalInPatientAdmissions'],
                         'totalPhysiotherapyProcedures' => $counts['totalPhysiotherapyProcedures'],
                         'todayPatients' => $todayPatients,
+
+                        'totalEmergencyPatients' => Appointment::where('branch_id', $branchId)
+                            ->whereDate('created_at', now())
+                            ->where("department_id", 1)
+                            ->count(),
                         'todayPatientsPercentageChange' => $todayPatientsPercentageChange,
                         'patientsTrendData' => $patientsTrendData,
                         'appointmentsTrendData' => $appointmentsTrendData,
@@ -124,11 +129,12 @@ class HomeController extends Controller
             'totalOperations' => Anesthesia::where('branch_id', $branchId)->where('is_operation_done', '1')->count(),
             'totalIcuAdmissions' => ICU::where('branch_id', $branchId)->count(),
             'totalInPatientAdmissions' => Hospitalization::where('branch_id', $branchId)->count(),
-            'totalPhysiotherapyProcedures' => PhysiotherapyProcedure::whereHas('appointment', function($query) use ($branchId) {
+            'totalPhysiotherapyProcedures' => PhysiotherapyProcedure::whereHas('appointment', function ($query) use ($branchId) {
                 $query->where('branch_id', $branchId);
             })->count(),
             'todayPatients' => Patient::where('branch_id', $branchId)->whereDate('created_at', $today)->count(),
             'yesterdayPatients' => Patient::where('branch_id', $branchId)->whereDate('created_at', $yesterday)->count(),
+
         ];
     }
 
@@ -186,8 +192,8 @@ class HomeController extends Controller
         $percentageChanges = [];
         foreach ($currentCounts as $key => $currentCount) {
             $previousCount = $previousCounts[$key];
-            $percentageChanges[$key] = $previousCount > 0 
-                ? round(($currentCount - $previousCount) / $previousCount * 100, 2) 
+            $percentageChanges[$key] = $previousCount > 0
+                ? round(($currentCount - $previousCount) / $previousCount * 100, 2)
                 : 0;
         }
 
@@ -202,17 +208,17 @@ class HomeController extends Controller
         // Get all doctors for the branch with relationship counts
         $doctors = Doctor::where('branch_id', $branchId)
             ->withCount([
-                'appointments' => function($query) use ($branchId) {
+                'appointments' => function ($query) use ($branchId) {
                     $query->where('branch_id', $branchId);
                 },
                 'consultation_comments',
-                'hospitalizations' => function($query) use ($branchId) {
+                'hospitalizations' => function ($query) use ($branchId) {
                     $query->where('branch_id', $branchId);
                 },
-                'i_c_u_s' => function($query) use ($branchId) {
+                'i_c_u_s' => function ($query) use ($branchId) {
                     $query->where('branch_id', $branchId);
                 },
-                'prescriptions' => function($query) use ($branchId) {
+                'prescriptions' => function ($query) use ($branchId) {
                     $query->where('branch_id', $branchId);
                 },
                 'visits'
@@ -240,9 +246,15 @@ class HomeController extends Controller
         // Get all anesthesias and count by various doctor fields
         $anesthesias = DB::table('anesthesias')
             ->where('branch_id', $branchId)
-            ->select('doctor_id', 'operation_assistants_id', 'operation_surgion_id', 
-                     'operation_anesthesia_log_id', 'operation_anesthesist_id', 
-                     'operation_scrub_nurse_id', 'operation_circulation_nurse_id')
+            ->select(
+                'doctor_id',
+                'operation_assistants_id',
+                'operation_surgion_id',
+                'operation_anesthesia_log_id',
+                'operation_anesthesist_id',
+                'operation_scrub_nurse_id',
+                'operation_circulation_nurse_id'
+            )
             ->get();
 
         // Build anesthesia counts map
@@ -255,11 +267,11 @@ class HomeController extends Controller
             if ($anesthesia->operation_anesthesist_id) $doctorIds[] = $anesthesia->operation_anesthesist_id;
             if ($anesthesia->operation_scrub_nurse_id) $doctorIds[] = $anesthesia->operation_scrub_nurse_id;
             if ($anesthesia->operation_circulation_nurse_id) $doctorIds[] = $anesthesia->operation_circulation_nurse_id;
-            
+
             $assistants = json_decode($anesthesia->operation_assistants_id, true) ?? [];
             $doctorIds = array_merge($doctorIds, $assistants);
             $doctorIds = array_unique($doctorIds);
-            
+
             foreach ($doctorIds as $doctorId) {
                 if (!isset($anesthesiaCountsMap[$doctorId])) {
                     $anesthesiaCountsMap[$doctorId] = 0;
@@ -273,13 +285,13 @@ class HomeController extends Controller
             $consultationsCount = $consultationCountsMap[$doctor->id] ?? 0;
             $anesthesiasCount = $anesthesiaCountsMap[$doctor->id] ?? 0;
 
-            $weight = $doctor->appointments_count 
-                + $anesthesiasCount 
-                + $consultationsCount 
-                + $doctor->consultation_comments_count 
-                + $doctor->hospitalizations_count 
-                + $doctor->i_c_u_s_count 
-                + $doctor->prescriptions_count 
+            $weight = $doctor->appointments_count
+                + $anesthesiasCount
+                + $consultationsCount
+                + $doctor->consultation_comments_count
+                + $doctor->hospitalizations_count
+                + $doctor->i_c_u_s_count
+                + $doctor->prescriptions_count
                 + $doctor->visits_count;
 
             return [
@@ -287,11 +299,11 @@ class HomeController extends Controller
                 'weight' => $weight,
             ];
         })
-        ->filter(function($item) {
-            return $item['weight'] > 0; // Only include doctors with activity
-        })
-        ->values()
-        ->toArray();
+            ->filter(function ($item) {
+                return $item['weight'] > 0; // Only include doctors with activity
+            })
+            ->values()
+            ->toArray();
     }
 
     /**

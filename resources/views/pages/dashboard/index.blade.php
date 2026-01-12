@@ -64,6 +64,26 @@
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-3">
+                            <div class="card border border-danger">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.emergency') }} {{ localize('global.today_patients') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded text-danger" id="total-emergency-patients">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.emergency') }} {{ localize('global.today_registered_patients') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-danger">
+                                                <i class="bx bx-first-aid bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -387,6 +407,7 @@
                         
                         // Update statistics cards
                         $('#today-patients').text(data.todayPatients || 0);
+                        $('#total-emergency-patients').text(data.totalEmergencyPatients || 0);
                         $('#total-patients').text(data.totalPatients || 0);
                         $('#total-appointments').text(data.totalAppointments || 0);
                         $('#total-consultations').text(data.totalConsultations || 0);

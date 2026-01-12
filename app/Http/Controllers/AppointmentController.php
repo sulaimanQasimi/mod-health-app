@@ -915,4 +915,58 @@ class AppointmentController extends Controller
 
 ]);
     }
+
+    public function departmentReport(Request $request)
+    {
+        $departments = Department::all();
+        $appointments = collect();
+        
+        // Only query if filters are provided
+        if ($request->filled('department_id')) {
+            $query = Appointment::where('branch_id', auth()->user()->branch_id)
+                ->with(['patient', 'department'])
+                ->where('department_id', $request->department_id);
+            
+            // Filter by date range on created_at
+            if ($request->filled('date_from')) {
+                try {
+                    $startDate = Verta::parse($request->date_from)->datetime();
+                    $query->whereDate('created_at', '>=', $startDate);
+                } catch (\Exception $e) {
+                    // Invalid date format, skip date filter
+                }
+            }
+            
+            if ($request->filled('date_to')) {
+                try {
+                    $endDate = Verta::parse($request->date_to)->datetime();
+                    $query->whereDate('created_at', '<=', $endDate);
+                } catch (\Exception $e) {
+                    // Invalid date format, skip date filter
+                }
+            }
+            
+            // Load all results when filters are applied (no pagination)
+            $appointments = $query->orderBy('created_at', 'desc')->get();
+            
+            // Add Persian date formatting to each appointment
+            $appointments->transform(function ($appointment) {
+                $appointment->persian_created_at = $appointment->created_at 
+                    ? Verta::instance($appointment->created_at)->format('Y/m/d H:i')
+                    : '—';
+                return $appointment;
+            });
+        }
+        
+        // Handle AJAX requests
+        if ($request->ajax() || $request->expectsJson()) {
+            $html = view('pages.appointments.department_report_table', compact('appointments'))->render();
+            return response()->json([
+                'html' => $html,
+                'count' => $appointments->count()
+            ]);
+        }
+        
+        return view('pages.appointments.department_report', compact('departments', 'appointments'));
+    }
 }

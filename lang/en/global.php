@@ -3536,4 +3536,7 @@ return [
     'upload_new_photo' => 'Upload New Photo',
     'access_control' => 'Access Control',
     'completion' => 'Completion',
+    'department_report' => 'Department Report',
+    'filter_appointments_by_department_and_date' => 'Filter Appointments By Department And Date',
+    'appointment_created_at' => 'Appointment Created At',
 ];

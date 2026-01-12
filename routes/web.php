@@ -306,6 +306,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('destroy/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
         Route::get('report', [AppointmentController::class, 'report'])->name('report');
         Route::post('export-report', [AppointmentController::class, 'exportReport'])->name('export-report');
+        Route::get('department-report', [AppointmentController::class, 'departmentReport'])->name('department-report');
         Route::get('{appointment}/printToken', [AppointmentController::class, 'printToken'])->name('printToken');
     });
 

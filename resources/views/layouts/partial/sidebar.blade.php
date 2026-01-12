@@ -34,7 +34,7 @@
         <!-- Layouts -->
         @can('show-information-menu')
             <li
-                class="menu-item {{ Route::is('patients.*') || Route::is('scanCode') || Route::is('appointments.index') || Route::is('doctor-performance-report.*') ? 'active open' : '' }}">
+                class="menu-item {{ Route::is('patients.*') || Route::is('scanCode') || Route::is('appointments.index') || Route::is('appointments.department-report') || Route::is('doctor-performance-report.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-info-circle"></i>
                     <div>{{ localize('global.reception') }}</div>
@@ -61,6 +61,11 @@
                     <li class="menu-item {{ Route::is('appointments.index') ? 'active' : '' }}">
                         <a href="{{ route('appointments.index') }}" class="menu-link">
                             <div>{{ localize('global.all_appointments') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('appointments.department-report') ? 'active' : '' }}">
+                        <a href="{{ route('appointments.department-report') }}" class="menu-link">
+                            <div>{{ localize('global.department_report') }}</div>
                         </a>
                     </li>
                     <li class="menu-item {{ Route::is('patients.report') ? 'active' : '' }}">

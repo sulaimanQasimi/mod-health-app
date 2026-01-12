@@ -3968,4 +3968,7 @@ return [
     'upload_new_photo'=>'آپلود تصویر جدید',
     'access_control'=>'کنترل دسترسی',
     'completion' => 'اکمال',
+    'department_report' => 'گزارش بخش',
+    'filter_appointments_by_department_and_date' => 'فیلتر ملاقات ها بر اساس بخش و تاریخ',
+    'appointment_created_at' => 'تاریخ ملاقات',
 ];

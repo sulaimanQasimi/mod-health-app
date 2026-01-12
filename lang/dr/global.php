@@ -574,6 +574,7 @@ return [
     'lab_type_deleted_successfully' => 'نوع لابراتوار با موفقیت حذف شد',
     'lab_type_restored_successfully' => 'نوع لابراتوار با موفقیت بازیابی شد',
     'today_patients' => 'مریضان امروز',
+    'emergency_today_patients' => 'مریضان عاجل امروز',
     'today_registered_patients' => 'مریضان ثبت شده امروز',
     'followup_validation' => [
         'required_contact_summary' => 'خلاصه تعقیب الزامی است',

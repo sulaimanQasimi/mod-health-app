@@ -393,6 +393,7 @@ return [
     ],
     'total' => 'Total',
     'today_patients' => 'Today\'s Patients',
+    'emergency_today_patients' => 'Today\'s Emergency Patients',
     'today_registered_patients' => 'Patients registered today',
     'prescription_stock' => 'Prescription Stock',
     'medicine_name' => 'Medicine Name',

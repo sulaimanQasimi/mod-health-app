@@ -573,6 +573,7 @@ return [
 'lab_type_deleted_successfully' => 'د لابراتوار ډول په بریالیتوب سره حذف شو',
 'lab_type_restored_successfully' => 'د لابراتوار ډول په بریالیتوب سره بېرته را وګرځول شو',
 'today_patients' => 'د نن ناروغان',
+'emergency_today_patients' => 'د نن عاجل ناروغان',
 'today_registered_patients' => 'د نن ثبت شوي ناروغان',
 'followup_validation' => [
     'required_contact_summary' => 'د تعقیب لنډیز اړین دی',

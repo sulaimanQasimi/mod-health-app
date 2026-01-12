@@ -68,7 +68,7 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
                                         <div class="content-left">
-                                            <h4>{{ localize('global.emergency') }} {{ localize('global.today_patients') }}</h4>
+                                            <h4>{{ localize('global.emergency_today_patients') }}</h4>
                                             <div class="d-flex align-items-end mt-2">
                                                 <h4 class="mb-0 me-2 p-1 rounded text-danger" id="total-emergency-patients">-</h4>
                                             </div>

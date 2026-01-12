@@ -24,7 +24,11 @@
                         <td>{{ $appointment->patient->age ?? '—' }}</td>
                         <td>
                             @if(isset($appointment->patient->gender))
-                                @if($appointment->patient->gender == 'male')
+                                @if($appointment->patient->gender == 0 || $appointment->patient->gender == '0')
+                                    {{ localize('global.male') }}
+                                @elseif($appointment->patient->gender == 1 || $appointment->patient->gender == '1')
+                                    {{ localize('global.female') }}
+                                @elseif($appointment->patient->gender == 'male')
                                     {{ localize('global.male') }}
                                 @elseif($appointment->patient->gender == 'female')
                                     {{ localize('global.female') }}

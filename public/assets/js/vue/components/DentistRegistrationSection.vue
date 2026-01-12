@@ -239,7 +239,7 @@ export default {
     methods: {
         async loadDentists() {
             try {
-                const response = await fetch('/doctor-api/hospital-doctors?branch_id=' + (this.appointment.branch_id || ''), {
+                const response = await fetch('/doctor-api/doctors?is_dentist=1&branch_id=' + (this.appointment.branch_id || ''), {
                     credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',

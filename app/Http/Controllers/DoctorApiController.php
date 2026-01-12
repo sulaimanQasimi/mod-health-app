@@ -12,8 +12,13 @@ class DoctorApiController extends Controller
      */
     public function getDoctors(Request $request)
     {
+        $is_dentist = $request->filled('is_dentist') ? $request->is_dentist : 0;
         try {
             $query = Doctor::with(['department', 'branch']);
+            // Dentist filter
+            $query->when($is_dentist == 1, function ($query) {
+                return $query->where('is_dentist', 1);
+            });
 
             // Branch filter (default to current user's branch if not specified)
             if ($request->filled('branch_id')) {
@@ -47,11 +52,11 @@ class DoctorApiController extends Controller
             // Search filter
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('contact_number', 'like', "%{$search}%")
-                      ->orWhere('specialization', 'like', "%{$search}%")
-                      ->orWhere('qualification', 'like', "%{$search}%");
+                        ->orWhere('contact_number', 'like', "%{$search}%")
+                        ->orWhere('specialization', 'like', "%{$search}%")
+                        ->orWhere('qualification', 'like', "%{$search}%");
                 });
             }
 
@@ -97,10 +102,10 @@ class DoctorApiController extends Controller
             // Search filter
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('contact_number', 'like', "%{$search}%")
-                      ->orWhere('specialization', 'like', "%{$search}%");
+                        ->orWhere('contact_number', 'like', "%{$search}%")
+                        ->orWhere('specialization', 'like', "%{$search}%");
                 });
             }
 
@@ -121,4 +126,3 @@ class DoctorApiController extends Controller
         }
     }
 }
-

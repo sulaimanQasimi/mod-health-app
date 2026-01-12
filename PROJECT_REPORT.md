@@ -790,6 +790,38 @@ This is a comprehensive medical database application built with Laravel 10, desi
 
 **Status**: ✅ RESOLVED
 
+##### 8. Hospitalizations Accordion Collapse Functionality Issue (January 2026)
+**Error**: Accordion buttons not working on hospitalizations show page - accordions not expanding/collapsing when clicked
+**Error Message**: Accordion collapse functionality not responding to user clicks
+**Root Cause**: Bootstrap 5 collapse instances not being properly initialized, possibly due to conflicts with hijri/bootstrap.js (Bootstrap 4) loading after Bootstrap 5
+**Files Affected**: 
+- `resources/views/pages/hospitalizations/show.blade.php`
+
+**Specific Errors**:
+- **Accordion Buttons**: Multiple accordion buttons with `data-bs-toggle="collapse"` attributes not functioning
+- **Affected Accordions**: 
+  - Visits Accordion (`#visitsAccordion`)
+  - Vital Signs Accordion (`#vitalSignsAccordion`)
+  - Diabetes Charts Accordion (`#diabetesChartsAccordion`)
+  - Nursing Notes Accordion (`#nursingNotesAccordion`)
+  - Medication Records Accordion (`#medicationRecordsAccordion`)
+  - Nutrition Care Accordion (`#nutritionCareAccordion`)
+- **JavaScript Syntax Error**: Missing `var` declaration on line 1063 causing "Unexpected token ','" error
+- **Bootstrap Initialization**: Bootstrap 5 Collapse instances not being created for accordion elements
+
+**Solution**: 
+- Fixed missing `var` declaration for `typeOption` variable in `addRow()` function (line 1063)
+- Identified that Bootstrap 5 collapse functionality requires explicit initialization when Bootstrap 4 (hijri/bootstrap.js) is loaded after Bootstrap 5
+- Added Bootstrap 5 Collapse initialization code to ensure all accordion collapse elements are properly initialized
+- Implementation waits for DOM and Bootstrap to be fully loaded before initializing collapse instances
+
+**Technical Details**:
+- **Bootstrap Version Conflict**: hijri/bootstrap.js (Bootstrap 4) loaded after main Bootstrap 5 may interfere with auto-initialization
+- **Manual Initialization Required**: Bootstrap 5 collapse elements need explicit initialization when conflicts exist
+- **Initialization Strategy**: Wait for DOM ready state and Bootstrap availability, then create Collapse instances for all `.accordion-collapse` elements
+
+**Status**: ✅ RESOLVED
+
 #### Other Fixed Issues:
 - **Camera Integration Errors**: Resolved camera functionality issues in patient registration and medical
 - **Print Functionality**: Resolved printing issues in reports and medical documents
@@ -812,6 +844,8 @@ The medical database application has undergone significant development with the 
 - **Database Schema Update**: Extended income_type ENUM column to support completion type
 - **Form Flexibility**: Made purchase_price field optional for improved user experience
 - **Validation Updates**: Updated controller validation rules to support new income type and optional purchase price
+- **Accordion Functionality Fix**: Resolved accordion collapse issues on hospitalizations show page by fixing JavaScript syntax errors and ensuring proper Bootstrap 5 initialization
+- **Bootstrap Compatibility**: Addressed Bootstrap version conflicts between Bootstrap 5 and hijri/bootstrap.js (Bootstrap 4) for proper accordion functionality
 
 #### January 2025 Achievements:
 - **Laboratory Results Interface Enhancement**: Successfully implemented Dari date picker integration in grouped results page
@@ -853,6 +887,8 @@ The application has significantly improved in terms of:
 - **Income Management**: Enhanced income tracking with new 'completion' type and optional purchase price field
 - **Database Schema**: Extended income_type enum to support additional income categorization
 - **Form Flexibility**: Improved income creation form with optional fields for better user experience
+- **Accordion Functionality**: Fixed accordion collapse issues on hospitalizations page, ensuring all accordion sections work properly
+- **Bootstrap Compatibility**: Resolved Bootstrap version conflicts to ensure proper UI component functionality
 - **Laboratory Interface**: Enhanced grouped results page with Dari date picker integration and optimized UI
 - **Date Picker Consistency**: Standardized Persian calendar implementation across laboratory modules
 - **Interface Cleanliness**: Removed distracting background colors from accordion tables for better user experience

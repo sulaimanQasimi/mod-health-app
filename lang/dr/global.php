@@ -3972,4 +3972,5 @@ return [
     'department_report' => 'گزارش بخش',
     'filter_appointments_by_department_and_date' => 'فیلتر ملاقات ها بر اساس بخش و تاریخ',
     'appointment_created_at' => 'تاریخ ملاقات',
+    'please_select_department_and_date_range'=>'لطفا بخش و تاریخ را انتخاب کنید',
 ];

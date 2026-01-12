@@ -3540,4 +3540,5 @@ return [
     'department_report' => 'Department Report',
     'filter_appointments_by_department_and_date' => 'Filter Appointments By Department And Date',
     'appointment_created_at' => 'Appointment Created At',
+    'please_select_department_and_date_range'=>'Please Select Department And Date Range',
 ];

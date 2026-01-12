@@ -3906,6 +3906,5 @@ return [
 'department_report' => 'د بخش راپور',
 'filter_appointments_by_department_and_date' => 'د بخش او نېټې له مخې ملاقاتونه فلټر کړئ',
 'appointment_created_at' => 'د ملاقات نېټه',
-
-
+'please_select_department_and_date_range'=>'تاریخ او بخش انتخاب کړئ',
 ];

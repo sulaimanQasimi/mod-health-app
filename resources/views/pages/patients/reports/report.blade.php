@@ -175,9 +175,9 @@
                                         <option value="100" {{ $items->perPage() == 100 ? 'selected' : '' }}>100</option>
                                     </select>
                                     <span class="text-muted small">{{ localize('global.per_page') }}</span>
-                                </div>
-                                <div>
-                                    {{ $items->links() }}
+                            </div>
+                            <div>
+                                {{ $items->links() }}
                                 </div>
                             </div>
                         </div>

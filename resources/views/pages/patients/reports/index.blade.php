@@ -210,7 +210,7 @@
                     $('.search-document-data').html(resp);
                 }
             });
-        }
+                }
 
         $('form').submit(function (e) {
             e.preventDefault();

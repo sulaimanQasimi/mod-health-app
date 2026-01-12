@@ -519,7 +519,7 @@
                                 aria-expanded="false" aria-controls="referDoctorCollapse">
                                 <i class="bx bx-transfer me-2 text-danger"></i>
                                 {{ localize('global.refer_to_another_department') }}
-                                @if($appointment->is_completed == 1 && !empty($appointment->refferal_remarks))
+                                @if($appointment->is_completed == 1 && !is_null($appointment->refferal_remarks) && trim($appointment->refferal_remarks) !== '')
                                     <span class="badge bg-danger ms-2">1</span>
                                 @endif
                             </button>
@@ -544,7 +544,7 @@
                                 </div>
                                 
                                 <!-- Referral Remarks Section -->
-                                @if ($appointment->is_completed == 1)
+                                @if ($appointment->is_completed == 1 && !is_null($appointment->refferal_remarks) && trim($appointment->refferal_remarks) !== '')
                                     <div class="alert alert-success">
                                         <i class="bx bx-check-circle me-2"></i>
                                         <strong>{{ localize('global.referral_remarks') }}:</strong>

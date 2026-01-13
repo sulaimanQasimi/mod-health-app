@@ -1292,6 +1292,8 @@
                     });
             }
         }
+        @if ($hospitalization->doctor_id)
+            
         // Set hospitalization data immediately (before DOM ready)
         window.hospitalizationData = {
             id: {{ $hospitalization->id }},
@@ -1300,6 +1302,7 @@
             doctor_id: {{ $hospitalization->doctor_id ?? ''}},
             branch_id: {{ $hospitalization->branch_id }}
         };
+        @endif
         
         // Function to load hospital doctors via API
         function loadHospitalDoctors(hospitalizationId) {

@@ -1297,7 +1297,7 @@
             id: {{ $hospitalization->id }},
             is_discharged: {{ $hospitalization->is_discharged ? 'true' : 'false' }},
             patient_id: {{ $hospitalization->patient_id }},
-            doctor_id: {{ $hospitalization->doctor_id }},
+            doctor_id: {{ $hospitalization->doctor_id ?? ''}},
             branch_id: {{ $hospitalization->branch_id }}
         };
         

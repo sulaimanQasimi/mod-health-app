@@ -10,11 +10,21 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.hospitalization_details') }}</h5>
-                        <div class="pt-3 pt-md-0 text-end">
-                            <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
-                                <span class="text-white"> <span
-                                        class="d-none d-sm-inline-block  ">{{ localize('global.back') }}</span></span>
-                            </a>
+                        <div class="d-flex gap-2 align-items-center">
+                            <!-- Doctor Selection Dropdown - Hidden when hospitalization is discharged -->
+                            @if ($hospitalization->is_discharged == 0 && $hospitalization->appointment)
+                            <div class="me-2">
+                                <select id="hospitalization_doctor_select" class="form-select form-select-sm" style="min-width: 200px;">
+                                    <option value="">{{ localize('global.select_doctor') }}</option>
+                                </select>
+                            </div>
+                            @endif
+                            <div class="pt-3 pt-md-0 text-end">
+                                <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
+                                    <span class="text-white"> <span
+                                            class="d-none d-sm-inline-block  ">{{ localize('global.back') }}</span></span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -1442,7 +1452,154 @@
             loadHospitalDoctors({{ $hospitalization->id }});
         });
 
+        // Function to load doctors by branch_id from appointment
+        function loadDoctorsForHospitalization() {
+            const doctorSelect = $('#hospitalization_doctor_select');
+            
+            // Check if dropdown exists
+            if (doctorSelect.length === 0) {
+                console.warn('Hospitalization doctor select dropdown not found');
+                return;
+            }
+            
+            // Get appointment branch_id from hospitalization, fallback to hospitalization branch_id or user branch_id
+            @if($hospitalization->appointment && $hospitalization->appointment->branch_id)
+                const branchId = {{ $hospitalization->appointment->branch_id }};
+            @elseif($hospitalization->branch_id)
+                const branchId = {{ $hospitalization->branch_id }};
+            @else
+                const branchId = {{ auth()->user()->branch_id }};
+            @endif
+            
+            // Get appointment department_id if available (optional filter)
+            @if($hospitalization->appointment && $hospitalization->appointment->department_id)
+                const departmentId = {{ $hospitalization->appointment->department_id }};
+            @else
+                const departmentId = null;
+            @endif
+            
+            console.log('Loading doctors for branch_id:', branchId, 'department_id:', departmentId);
+            
+            // Show loading state
+            doctorSelect.html('<option value="">{{ localize("global.loading") }}...</option>').prop('disabled', true);
+            
+            // Build request data
+            const requestData = {
+                branch_id: branchId
+            };
+            
+            const apiUrl = '{{ route("doctor-api.hospital-doctors") }}';
+            console.log('Calling API:', apiUrl, 'with data:', requestData);
+            
+            $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                data: requestData,
+                dataType: 'json',
+                success: function(response) {
+                    console.log('API Response:', response);
+                    doctorSelect.empty().append('<option value="">{{ localize("global.select_doctor") }}</option>');
+                    
+                    if (response.success && response.data && response.data.length > 0) {
+                        response.data.forEach(function(doctor) {
+                            const option = new Option(doctor.name, doctor.id, false, false);
+                            doctorSelect.append(option);
+                        });
+                        
+                        // Set current doctor if hospitalization has one
+                        @if($hospitalization->doctor_id)
+                            doctorSelect.val({{ $hospitalization->doctor_id }});
+                        @endif
+                        
+                        // Re-enable dropdown after loading doctors
+                        doctorSelect.prop('disabled', false);
+                        console.log('Doctors loaded successfully:', response.data.length);
+                    } else {
+                        console.warn('No doctors found in response:', response);
+                        doctorSelect.append('<option value="">{{ localize("global.no_doctors_available") }}</option>');
+                        doctorSelect.prop('disabled', true);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading doctors:', {
+                        status: status,
+                        error: error,
+                        response: xhr.responseJSON,
+                        statusCode: xhr.status
+                    });
+                    doctorSelect.empty().append('<option value="">{{ localize("global.error_loading_doctors") }}</option>');
+                    doctorSelect.prop('disabled', true);
+                }
+            });
+        }
+
         $(document).ready(function () {
+            // Load doctors on page load only if dropdown exists (hospitalization not discharged)
+            @if ($hospitalization->is_discharged == 0 && $hospitalization->appointment)
+            // Wait a bit to ensure DOM is fully ready
+            setTimeout(function() {
+                if ($('#hospitalization_doctor_select').length > 0) {
+                    loadDoctorsForHospitalization();
+                } else {
+                    console.warn('Doctor select dropdown not found, skipping doctor load');
+                }
+            }, 100);
+            @endif
+
+            // Handle doctor selection change
+            $('#hospitalization_doctor_select').on('change', function() {
+                const doctorId = $(this).val();
+                const hospitalizationId = {{ $hospitalization->id }};
+                
+                if (!doctorId) {
+                    return; // Don't do anything if no doctor selected
+                }
+                
+                // Update hospitalization doctor via AJAX
+                $.ajax({
+                    url: '{{ url("hospitalizations/assign-doctor") }}/' + hospitalizationId,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    data: {
+                        doctor_id: doctorId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response && response.success) {
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(response.message || '{{ localize("global.doctor_assigned_successfully") }}');
+                            }
+                            // Update the displayed doctor name in the card
+                            location.reload(); // Reload to show updated doctor name
+                        } else {
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(response.message || '{{ localize("global.error_occurred") }}');
+                            }
+                            // Reload doctors to reset selection
+                            loadDoctorsForHospitalization();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error updating doctor:', xhr);
+                        let errorMessage = '{{ localize("global.error_occurred") }}';
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        }
+                        
+                        // Reload doctors to reset selection
+                        loadDoctorsForHospitalization();
+                    }
+                });
+            });
+
             // Initialize Select2 for any existing selects on page load
             if (typeof $.fn.select2 !== 'undefined') {
                 // Initialize Select2 for selects outside modals

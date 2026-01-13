@@ -251,7 +251,7 @@ class HospitalizationController extends Controller
         $medicineUsageTypes = MedicineUsageType::all();
 
         // Load only basic hospitalization data with essential relationships
-        $hospitalization->load(['patient', 'doctor', 'room', 'bed']);
+        $hospitalization->load(['patient', 'doctor', 'room', 'bed', 'appointment']);
 
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
@@ -640,5 +640,33 @@ class HospitalizationController extends Controller
         $morphModel->load(['nutritionCares.createdBy', 'nutritionCares.updatedBy', 'nutritionCares.nurse']);
         
         return view('pages.nutrition-cares.partials.section', compact('morphableType', 'morphableId', 'morphModel'));
+    }
+
+    /**
+     * Assign a doctor to the hospitalization based on appointment's department
+     */
+    public function assignDoctor(Request $request, Hospitalization $hospitalization)
+    {
+        // Validate doctor_id is provided
+        $request->validate([
+            'doctor_id' => 'required|exists:doctors,id'
+        ]);
+$hospitalization->appointment->update([
+    'doctor_id' => $request->doctor_id
+]);
+        // Update hospitalization with doctor
+        $hospitalization->update([
+            'doctor_id' => $request->doctor_id
+        ]);
+
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => localize('global.doctor_assigned_successfully')
+            ]);
+        }
+
+        return redirect()->back()->with('success', localize('global.doctor_assigned_successfully'));
     }
 }

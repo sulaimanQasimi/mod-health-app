@@ -242,6 +242,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('report-search', [HospitalizationController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [HospitalizationController::class, 'exportReport'])->name('export-report');
         Route::put('hospitalizations/{id}', [HospitalizationController::class, 'updateHospitalization'])->name('updateHospitalization');
+        Route::post('assign-doctor/{hospitalization}', [HospitalizationController::class, 'assignDoctor'])->name('assign-doctor');
         
         // AJAX section routes
         Route::get('diabetes-charts-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'diabetesChartsSection'])->name('diabetes-charts-section');

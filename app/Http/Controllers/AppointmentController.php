@@ -768,9 +768,8 @@ class AppointmentController extends Controller
 
     public function exportReport(Request $request)
     {
-        $data = json_decode($request->data, true);
-
-        $items = DB::table('appointments as a')
+        // Build query with same filters as report method
+        $query = DB::table('appointments as a')
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
@@ -787,27 +786,91 @@ class AppointmentController extends Controller
                 'a.time',
                 'a.processed_by',
                 'u.name as processed_by_name'
-            )
-            ->whereIn('a.id', $data)
-            ->get();
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
-        $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.appointments.reports.pdf_report', ['items' => $items])->render();
-        if ($request->type == 'pdf') {
-            $mpdf = new Mpdf(['format' => 'A4-L']);
-            $mpdf->WriteHTML($html);
-            $mpdf->Output('pdf_report.pdf', 'D');
-        } else {
-            $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
-            $sheet = $spreadsheet->getActiveSheet();
-            $row = 3;
+            );
 
-            foreach ($items as $index => $item) {
-                $sheet
-                    ->getStyle('A2:G' . $sheet->getHighestRow())
-                    ->getAlignment()
-                    ->setWrapText(true);
+        // If data parameter is provided (from form submission) and valid, use it
+        $useDataFilter = false;
+        if ($request->filled('data')) {
+            $data = json_decode($request->data, true);
+            if (is_array($data) && !empty($data)) {
+                $query->whereIn('a.id', $data);
+                $useDataFilter = true;
+            }
+        }
+        
+        // If data filter wasn't used, apply the same filters as the report method
+        if (!$useDataFilter) {
+            // Patient name filter
+            if ($request->filled('patient_name')) {
+                $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            }
+
+            // Doctor filter
+            if ($request->filled('doctor_id')) {
+                $query->where('a.doctor_id', $request->doctor_id);
+            }
+
+            // Processed by filter
+            if ($request->filled('processed_by')) {
+                $query->where('a.processed_by', $request->processed_by);
+            }
+
+            // Date range filter - Convert Persian to Gregorian
+            if ($request->filled('start') && $request->filled('end')) {
+                try {
+                    $startDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->start)->datetime();
+                    $endDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->end)->datetime();
+                    
+                    $query->whereDate('a.date', '>=', $startDate)
+                          ->whereDate('a.date', '<=', $endDate);
+                } catch (\Exception $e) {
+                    // Invalid date format, skip date filter
+                }
+            } elseif ($request->filled('date')) {
+                // Single date filter (backward compatibility)
+                $query->whereDate('a.date', $request->date);
+            }
+
+            // Time filter
+            if ($request->filled('time')) {
+                $query->where('a.time', $request->time);
+            }
+
+            // Status filter
+            if ($request->filled('is_completed')) {
+                $query->where('a.is_completed', $request->is_completed);
+            }
+        }
+
+        // Order by date and time descending
+        $query->orderBy('a.date', 'desc')
+              ->orderBy('a.time', 'desc');
+
+        $items = $query->get();
+
+        // Check if there are any items to export
+        if ($items->isEmpty()) {
+            return redirect()->route('appointments.report', $request->except(['data', 'type']))
+                ->with('error', localize('global.no_item_is_found'));
+        }
+
+        try {
+            $exportType = $request->input('type');
+            
+            if ($exportType === 'pdf') {
+                $html = view('pages.appointments.reports.pdf_report', ['items' => $items])->render();
+                $mpdf = new Mpdf(['format' => 'A4-L']);
+                $mpdf->WriteHTML($html);
+                $mpdf->Output('appointments_report.pdf', 'D');
+                exit; // Mpdf handles the output, exit to prevent any further output
+            } else {
+                // Excel export
+                $reader = new Xlsx();
+                $spreadsheet = $reader->load('report_templates/appointment_report.xlsx');
+                $sheet = $spreadsheet->getActiveSheet();
+                $row = 3;
+
+                // Set column widths once (outside the loop)
                 $sheet->getColumnDimension('A')->setWidth(5);
                 $sheet->getColumnDimension('B')->setWidth(40);
                 $sheet->getColumnDimension('C')->setWidth(20);
@@ -815,31 +878,38 @@ class AppointmentController extends Controller
                 $sheet->getColumnDimension('E')->setWidth(20);
                 $sheet->getColumnDimension('F')->setWidth(20);
                 $sheet->getColumnDimension('G')->setWidth(40);
-                $styleArray = [
-                    'font' => [
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true,
-                    ],
-                ];
 
-                $status = '';
-                if ($item->is_completed == '1') {
-                    $status = 'ملاقات های تکمیل شده';
-                } else {
-                    $status = 'ملاقات های در حال اجراٰ';
+                foreach ($items as $index => $item) {
+                    $status = '';
+                    if ($item->is_completed == '1') {
+                        $status = 'ملاقات های تکمیل شده';
+                    } else {
+                        $status = 'ملاقات های در حال اجراٰ';
+                    }
+                    
+                    $sheet->setCellValue('A' . $row, $index + 1);
+                    $sheet->setCellValue('B' . $row, $item->patient_name ?? '');
+                    $sheet->setCellValue('C' . $row, $item->doctor_name ?? '');
+                    $sheet->setCellValue('D' . $row, $item->branch_name ?? '');
+                    $sheet->setCellValue('E' . $row, $status);
+                    $sheet->setCellValue('F' . $row, $item->date ?? '');
+                    $sheet->setCellValue('G' . $row, $item->time ?? '');
+                    $row++;
                 }
-                $sheet->setCellValue('A' . $row . '', ++$index);
-                $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                $sheet->setCellValue('C' . $row . '', $item->doctor_name);
-                $sheet->setCellValue('D' . $row . '', $item->branch_name);
-                $sheet->setCellValue('E' . $row . '', $status);
-                $sheet->setCellValue('F' . $row . '', $item->date);
-                $sheet->setCellValue('G' . $row . '', $item->time);
-                $row++;
-            }
 
-            return $this->exportResponse($spreadsheet);
+                // Apply text wrapping to all data rows
+                if ($row > 3) {
+                    $sheet->getStyle('A3:G' . ($row - 1))
+                        ->getAlignment()
+                        ->setWrapText(true);
+                }
+
+                return $this->exportResponse($spreadsheet);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Appointment export error: ' . $e->getMessage());
+            return redirect()->route('appointments.report', $request->except(['data', 'type']))
+                ->with('error', 'خطا در صادرات گزارش: ' . $e->getMessage());
         }
     }
 
@@ -849,8 +919,9 @@ class AppointmentController extends Controller
         $response = new StreamedResponse(function () use ($writer) {
             $writer->save('php://output');
         });
-        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
+        $filename = 'appointments_report_' . date('Y-m-d_His') . '.xlsx';
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $filename . '"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
     }

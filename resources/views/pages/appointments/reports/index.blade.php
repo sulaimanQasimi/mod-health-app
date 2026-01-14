@@ -83,7 +83,7 @@
                                             <i class="fa fa-search m-2"></i> <span>
                                                 {{ localize('global.documents.search') }}</span>
                                         </button>
-                                        <button type="reset" class="btn btn-label-secondary">
+                                        <button type="button" class="btn btn-label-secondary" id="reset-form-btn">
                                             <i class="fa fa-history m-2"></i>
                                             <span>{{ localize('global.reset') }}</span>
                                         </button>
@@ -122,6 +122,43 @@
         // Auto-submit when per_page changes
         $('#per_page').on('change', function() {
             $('form').submit();
+        });
+
+        // Handle reset button click
+        $('#reset-form-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            // Reset all input fields
+            $('form input[type="text"]').val('');
+            $('form input[type="time"]').val('');
+            
+            // Reset Select2 dropdowns
+            if ($('#doctor_id').hasClass('select2-hidden-accessible')) {
+                $('#doctor_id').val('').trigger('change');
+            } else {
+                $('#doctor_id').val('');
+            }
+            
+            if ($('#processed_by').hasClass('select2-hidden-accessible')) {
+                $('#processed_by').val('').trigger('change');
+            } else {
+                $('#processed_by').val('');
+            }
+            
+            if ($('select[name="is_completed"]').hasClass('select2-hidden-accessible')) {
+                $('select[name="is_completed"]').val('').trigger('change');
+            } else {
+                $('select[name="is_completed"]').val('');
+            }
+            
+            // Reset per_page to default
+            $('#per_page').val('15');
+            
+            // Clear date pickers
+            $('.datepicker_dari').val('');
+            
+            // Redirect to clean report URL (without query parameters)
+            window.location.href = '{{ route("appointments.report") }}';
         });
 </script>
 @endpush

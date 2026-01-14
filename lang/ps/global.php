@@ -3907,4 +3907,6 @@ return [
 'filter_appointments_by_department_and_date' => 'د بخش او نېټې له مخې ملاقاتونه فلټر کړئ',
 'appointment_created_at' => 'د ملاقات نېټه',
 'please_select_department_and_date_range'=>'تاریخ او بخش انتخاب کړئ',
+'cannot_export_empty_report' => 'خالي راپور صادر نشي کیدی',
+'doctors_directory' => 'د ډاکټرانو لارښود',
 ];

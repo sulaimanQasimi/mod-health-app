@@ -68,38 +68,103 @@
 
                     <li class="dropdown-notifications-list scrollable-container">
                         <ul class="list-group list-group-flush">
-                            @forelse (auth()->user()->unreadNotifications as $notification)
-                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                    <a href="{{ route('notification.mark_as_read', $notification->id) }}">
-                                        <div class="d-flex">
+                            @php
+                                // Group notifications by user ID
+                                $groupedNotifications = [];
+                                foreach (auth()->user()->unreadNotifications as $notification) {
+                                    // Extract user ID from message
+                                    // Check if message is numeric (just user ID) or starts with user ID
+                                    $message = $notification->data['message'];
+                                    $userId = null;
+                                    
+                                    if (is_numeric($message)) {
+                                        // Message is just the user ID
+                                        $userId = $message;
+                                    } else {
+                                        // Extract user ID from beginning of message string
+                                        preg_match('/^(\d+)/', $message, $matches);
+                                        $userId = $matches[1] ?? null;
+                                    }
+                                    
+                                    if ($userId) {
+                                        if (!isset($groupedNotifications[$userId])) {
+                                            $groupedNotifications[$userId] = [];
+                                        }
+                                        $groupedNotifications[$userId][] = $notification;
+                                    }
+                                }
+                            @endphp
+                            
+                            @forelse ($groupedNotifications as $userId => $notifications)
+                                @php
+                                    $user = \App\Models\User::find($userId);
+                                    $notificationCount = count($notifications);
+                                    $collapseId = 'notification-group-' . $userId;
+                                @endphp
+                                
+                                @if($user)
+                                    <li class="list-group-item dropdown-notifications-item">
+                                        <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="avatar">
-                                                  <img src="{{\App\Models\User::find($notification->data['message'])->avatar != null ? asset('storage/' . \App\Models\User::find($notification->data['message'])->avatar) : asset('assets/img/avatars/1.png')}}" alt="" class="w-px-40 h-px-40 rounded-circle">
+                                                    <img src="{{ $user->avatar != null ? asset('storage/' . $user->avatar) : asset('assets/img/avatars/1.png') }}" 
+                                                         alt="" class="w-px-40 h-px-40 rounded-circle">
                                                 </div>
-                                              </div>
+                                            </div>
                                             <div class="flex-grow-1">
-                                                <span
-                                                      class="text-muted">{{ \App\Models\User::find($notification->data['message'])->name }}</span>
-                                                <p class="mb-0">
-                                                    {{ preg_replace('/^\d+/','', $notification->data['message']) }}
-                                                </p>
-                                                @php
-                                                    $date = \Carbon\Carbon::parse($notification->created_at);
-                                                    $time = $date->diffForHumans(\Carbon\Carbon::now());
-                                                @endphp
-                                                <small class="text-muted" dir="ltr">{{ $time }}</small>
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <span class="fw-semibold d-block">{{ $user->name }}</span>
+                                                        <small class="text-muted">
+                                                            {{ $notificationCount }} {{ $notificationCount == 1 ? 'action' : 'actions' }}
+                                                        </small>
+                                                    </div>
+                                                    <span class="badge bg-primary rounded-pill ms-2">{{ $notificationCount }}</span>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-sm btn-link text-muted p-0 ms-2 notification-toggle-btn" 
+                                                    type="button" 
+                                                    data-bs-toggle="collapse" 
+                                                    data-bs-target="#{{ $collapseId }}" 
+                                                    aria-expanded="false" 
+                                                    aria-controls="{{ $collapseId }}">
+                                                <i class="bx bx-chevron-down notification-chevron"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Collapsible notification details -->
+                                        <div class="collapse mt-2" id="{{ $collapseId }}">
+                                            <div class="border-top pt-2">
+                                                @foreach($notifications as $notification)
+                                                    <a href="{{ route('notification.mark_as_read', $notification->id) }}" 
+                                                       class="d-block text-decoration-none mb-2 pb-2 border-bottom">
+                                                        <div class="d-flex align-items-start">
+                                                            <div class="flex-grow-1">
+                                                                <p class="mb-1 small">
+                                                                    @php
+                                                                        $messageText = preg_replace('/^\d+\s*/', '', $notification->data['message']);
+                                                                        echo $messageText ?: 'New notification';
+                                                                    @endphp
+                                                                </p>
+                                                                @php
+                                                                    $date = \Carbon\Carbon::parse($notification->created_at);
+                                                                    $time = $date->diffForHumans(\Carbon\Carbon::now());
+                                                                @endphp
+                                                                <small class="text-muted" dir="ltr">{{ $time }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                @endforeach
                                             </div>
                                         </div>
-                                    </a>
-                                </li>
-
+                                    </li>
+                                @endif
                             @empty
                                 <li class="list-group-item d-flex justify-content-center display-6">
                                     <p class="text-center badge bg-warning">
                                         <i class='bx bx-bell-off'></i>
                                     </p>&nbsp;
                                     <p class="text-center badge bg-primary">
-
                                         {{ localize('global.no_new_notifications') }}
                                     </p>
                                 </li>
@@ -174,3 +239,57 @@
         </ul>
     </div>
 </nav>
+
+<script>
+    // Handle notification group collapse/expand with chevron rotation
+    document.addEventListener('DOMContentLoaded', function() {
+        // Listen for Bootstrap collapse events on all notification collapse elements
+        document.querySelectorAll('[id^="notification-group-"]').forEach(function(collapseElement) {
+            const toggleBtn = document.querySelector('[data-bs-target="#' + collapseElement.id + '"]');
+            const chevron = toggleBtn ? toggleBtn.querySelector('.notification-chevron') : null;
+            
+            if (chevron) {
+                collapseElement.addEventListener('show.bs.collapse', function() {
+                    chevron.classList.remove('bx-chevron-down');
+                    chevron.classList.add('bx-chevron-up');
+                });
+                
+                collapseElement.addEventListener('hide.bs.collapse', function() {
+                    chevron.classList.remove('bx-chevron-up');
+                    chevron.classList.add('bx-chevron-down');
+                });
+            }
+        });
+    });
+</script>
+
+<style>
+    .notification-toggle-btn {
+        transition: opacity 0.2s ease;
+    }
+    
+    .notification-toggle-btn:hover {
+        opacity: 0.7;
+    }
+    
+    .notification-chevron {
+        transition: transform 0.3s ease;
+    }
+    
+    .dropdown-notifications-item {
+        transition: background-color 0.2s ease;
+    }
+    
+    .dropdown-notifications-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .collapse .border-top {
+        border-color: rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .collapse a:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 4px;
+    }
+</style>

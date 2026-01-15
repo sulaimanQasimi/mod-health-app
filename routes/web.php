@@ -1002,6 +1002,8 @@ Route::group(['middleware' => ['auth']], function () {
         
         // Patient Test Registration
         Route::get('registrations', [PatientTestRegistrationController::class, 'getTestList'])->name('registrations.index');
+        Route::get('registrations/report', [PatientTestRegistrationController::class, 'report'])->name('registrations.report');
+        Route::post('registrations/export-report', [PatientTestRegistrationController::class, 'exportReport'])->name('registrations.export-report');
         
         // Status update routes
         Route::post('registrations/{id}/mark-in-progress', [PatientTestRegistrationController::class, 'markInProgress'])->name('registrations.mark-in-progress');

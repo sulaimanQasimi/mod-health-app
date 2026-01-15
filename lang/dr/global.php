@@ -3978,4 +3978,17 @@ return [
     'appointment_created_at' => 'تاریخ ملاقات',
     'please_select_department_and_date_range'=>'لطفا بخش و تاریخ را انتخاب کنید',
     'doctors_directory'=>'دایرکتوری دکتران',
-];
+    'medicine_usage_statistics'=>'آمار استفاده از ادویه',
+    'usage_count'=>'تعداد استفاده',
+    'medicine'=>'ادویه',
+    'id'=>'شناسه',
+    'no_medicine_usage_found'=>'هیچ استفاده از ادویه یی برای نمایش یافت نشد',
+    'pharmacy'=>'دواخانه',
+    'all_pharmacies'=>'همه دواخانه ها',
+    'between_two_date'=>'بین دو تاریخ',
+    'from'=>'از',
+    'to'=>'تا',
+    'search_by_medicine'=>'جستجو بر اساس نام ادویه',
+    'search'=>'جستجو',
+    'clear'=>'پاک کردن',
+]; 

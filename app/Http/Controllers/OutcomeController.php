@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Outcome;
 use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Log;
-use Verta;
 
 class OutcomeController extends Controller
 {
@@ -18,8 +15,7 @@ class OutcomeController extends Controller
             ->leftJoin('prescription_alternative_items as pai', function($join) {
                 $join->on('pai.prescription_item_id', '=', 'pi.id')
                      ->on('pai.prescription_id', '=', 'pi.prescription_id')
-                     ->where('pai.is_selected', '=', 1)
-                     ->whereNull('pai.deleted_at');
+                     ->whereRaw('(pai.is_selected = 1 AND pai.deleted_at IS NULL)');
             })
             ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
             ->join('medicines as m', function($join) {
@@ -85,67 +81,6 @@ class OutcomeController extends Controller
         }
 
         return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacies'));
-    }
-
-    public function create()
-    {
-        $user = Auth::user();
-        $userPharmacy = $user->activePharmacies()->first();
-
-        // Check if user has a pharmacy assigned
-        if (!$userPharmacy) {
-            return redirect()->route('outcomes.index')
-                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
-        }
-
-        // Get data for the create form
-        $medicines = \App\Models\Medicine::orderBy('name')->get();
-        $patients = \App\Models\Patient::orderBy('name')->get();
-        $doctors = \App\Models\User::whereHas('roles', function($q) {
-            $q->where('name', 'doctor');
-        })->orderBy('name')->get();
-        $outcomeTypes = ['prescription', 'expired', 'damaged', 'lost', 'return'];
-        
-        return view('pages.outcomes.create', compact('medicines', 'patients', 'doctors', 'outcomeTypes', 'userPharmacy'));
-    }
-
-    public function store(Request $request)
-    {
-        $user = Auth::user();
-        $userPharmacy = $user->activePharmacies()->first();
-
-        // Check if user has a pharmacy assigned
-        if (!$userPharmacy) {
-            return redirect()->route('outcomes.index')
-                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
-        }
-
-        $request->validate([
-            'medicine_id' => 'required|exists:medicines,id',
-            'amount' => 'required|integer|min:1',
-            'outcome_type' => 'required|in:prescription,expired,damaged,lost,return',
-            'batch_number' => 'nullable|string|max:255',
-            'reason' => 'nullable|string',
-            'outcome_date' => 'nullable|date',
-            'patient_id' => 'nullable|exists:patients,id',
-            'doctor_id' => 'nullable|exists:users,id',
-            'prescription_item_id' => 'nullable|exists:prescription_items,id',
-            'notes' => 'nullable|string'
-        ]);
-
-        // Add pharmacy_id to the request data
-        $data = $request->all();
-        $data['pharmacy_id'] = $userPharmacy->id;
-
-        Outcome::create($data);
-
-        return redirect()->route('outcomes.index')
-            ->with('success', localize('global.outcome_record_created_successfully'));
-    }
-
-    public function report()
-    {
-        return view('pages.outcomes.reports.index');
     }
 
     public function reportSearch(Request $request)

@@ -129,6 +129,11 @@ class Pharmacy extends Model
         return $this->hasMany(Outcome::class);
     }
 
+    public function pharmacyFulfillments()
+    {
+        return $this->hasMany(PharmacyFulfillment::class);
+    }
+
     // Scope to get pharmacies accessible by a specific user
     public function scopeAccessibleBy($query, $userId)
     {

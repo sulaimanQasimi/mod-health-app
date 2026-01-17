@@ -43,4 +43,12 @@ class Medicine extends Model
     {
         return $this->hasMany(MedicationAdministrationRecord::class);
     }
+
+    /**
+     * Get the pharmacy fulfillments for this medicine.
+     */
+    public function pharmacyFulfillments()
+    {
+        return $this->hasMany(PharmacyFulfillment::class);
+    }
 }

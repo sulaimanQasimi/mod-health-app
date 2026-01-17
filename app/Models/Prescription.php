@@ -25,6 +25,12 @@ class Prescription extends Model
         self::updating(function ($model) {
             $user = Auth::user();
             $model->updated_by = $user->id ?? 0;
+
+        // Check if user belongs to a pharmacy
+        $userPharmacy = auth()->user()->activePharmacies()->first();
+        if ($userPharmacy) {
+            $model->pharmacy_id = $userPharmacy->id;
+        }
         });
 
         self::deleting(function ($model) {

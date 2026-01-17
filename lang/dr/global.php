@@ -3991,4 +3991,10 @@ return [
     'search_by_medicine'=>'جستجو بر اساس نام ادویه',
     'search'=>'جستجو',
     'clear'=>'پاک کردن',
+    'pharmacy_fulfillments'=>'اکمال دواخانه',
+    'unit_type'=>'نوع واحد',
+    'form_no'=>'شماره فرم',
+    'form'=>'فرم',
+    'search_by_medicine_form_no'=>'جستجو بر اساس شماره فرم',
+    'no_pharmacy_fulfillments_found'=>'هیچ اکمال دواخانه ای برای نمایش یافت نشد',
 ]; 

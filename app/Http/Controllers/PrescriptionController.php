@@ -240,7 +240,7 @@ class PrescriptionController extends Controller
     /**
      * Create Outcome records for prescription items and alternatives
      */
-    private function createOutcomesForPrescription($prescription)
+    private function createOutcomesForPrescription($prescription )
     {
         // Get prescription items
         $prescriptionItems = PrescriptionItem::where('prescription_id', $prescription->id)->get();

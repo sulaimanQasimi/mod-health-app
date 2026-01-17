@@ -3997,4 +3997,11 @@ return [
     'form'=>'فرم',
     'search_by_medicine_form_no'=>'جستجو بر اساس شماره فرم',
     'no_pharmacy_fulfillments_found'=>'هیچ اکمال دواخانه ای برای نمایش یافت نشد',
+    'create_pharmacy_fulfillment'=>'افزودن اکمال دواخانه',
+    'pharmacy_fulfillment_created_successfully'=>'اکمال دواخانه با موفقیت ایجاد شد',
+    'pharmacy_fulfillment_updated_successfully'=>'اکمال دواخانه با موفقیت بروزرسانی شد',
+    'pharmacy_fulfillment_deleted_successfully'=>'اکمال دواخانه با موفقیت حذف شد',
+    'pharmacy_fulfillment_not_found'=>'اکمال دواخانه یافت نشد',
+    'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
+    'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
 ]; 

@@ -34,8 +34,8 @@ class PharmacyFulfillmentController extends Controller
                 $q->whereHas('medicine', function ($medicineQuery) use ($search) {
                     $medicineQuery->where('name', 'like', "%{$search}%");
                 })
-                ->orWhere('form_no', 'like', "%{$search}%")
-                ->orWhere('unit_type', 'like', "%{$search}%");
+                    ->orWhere('form_no', 'like', "%{$search}%")
+                    ->orWhere('unit_type', 'like', "%{$search}%");
             });
         }
 
@@ -87,7 +87,7 @@ class PharmacyFulfillmentController extends Controller
         }
 
         $medicines = Medicine::orderBy('name')->get();
-        
+
         return view('pages.pharmacy_fulfillments.create', compact('medicines', 'userPharmacy'));
     }
 
@@ -124,6 +124,9 @@ class PharmacyFulfillmentController extends Controller
             $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('pharmacy_fulfillments', $filename, 'public');
             $data['form'] = $path;
+        }
+        if ($data['date']) {
+            $data['date'] = \Hekmatinasser\Verta\Facades\Verta::parse($data['date'])->datetime();
         }
 
         PharmacyFulfillment::create($data);
@@ -193,6 +196,9 @@ class PharmacyFulfillmentController extends Controller
 
         $data = $request->except(['form']);
 
+        if ($data['date']) {
+            $data['date'] = \Hekmatinasser\Verta\Facades\Verta::parse($data['date'])->datetime();
+        }
         // Handle file upload
         if ($request->hasFile('form')) {
             // Delete old file if exists

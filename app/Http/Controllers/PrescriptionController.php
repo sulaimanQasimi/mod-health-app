@@ -240,7 +240,7 @@ class PrescriptionController extends Controller
     /**
      * Create Outcome records for prescription items and alternatives
      */
-    private function createOutcomesForPrescription($prescription, $pharmacy_id = null)
+    private function createOutcomesForPrescription($prescription)
     {
         // Get prescription items
         $prescriptionItems = PrescriptionItem::where('prescription_id', $prescription->id)->get();
@@ -260,7 +260,7 @@ class PrescriptionController extends Controller
                     'prescription_item_id' => $prescriptionItem->id,
                     'patient_id' => $prescription->patient_id,
                     'doctor_id' => $prescription->doctor_id,
-                    'pharmacy_id' => $pharmacy_id,
+                    'pharmacy_id' => $prescription->pharmacy_id,
                     'outcome_type' => 'prescription',
                     'batch_number' => null, // You might want to get this from prescription stock
                     'reason' => 'Prescribed and delivered to patient',
@@ -275,7 +275,7 @@ class PrescriptionController extends Controller
                     'prescription_item_id' => $prescriptionItem->id,
                     'patient_id' => $prescription->patient_id,
                     'doctor_id' => $prescription->doctor_id,
-                    'pharmacy_id' => $pharmacy_id,
+                    'pharmacy_id' => $prescription->pharmacy_id,
                     'outcome_type' => 'prescription',
                     'batch_number' => null, // You might want to get this from prescription stock
                     'reason' => 'Prescribed and delivered to patient',
@@ -325,7 +325,7 @@ class PrescriptionController extends Controller
 
         // Update the prescription
         $prescription->update($validatedData);
-        $this->createOutcomesForPrescription($prescription, $validatedData['pharmacy_id']);
+        $this->createOutcomesForPrescription($prescription);
 
         // Redirect to the prescriptions index page with a success message
         return redirect()->route('prescriptions.delivered')->with('success', localize('global.prescription_updated_successfully'));

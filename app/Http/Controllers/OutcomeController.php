@@ -31,7 +31,6 @@ class OutcomeController extends Controller
             )
             ->groupBy('m.id', 'm.name');
 
-        dd($query->toSql());
         // Get current user's pharmacies
         $user = Auth::user();
         $userPharmacies = $user->activePharmacies;

@@ -59,12 +59,6 @@
                     <label for="bed_id">{{ localize('global.beds') }}</label>
                     <select class="form-control select2" name="bed_id" id="bed_id">
                         <option value="">{{ localize('global.select') }}</option>
-                        @foreach ($beds as $value)
-                            <option value="{{ $value->id }}"
-                                {{ $hospitalization->bed_id == $value->id ? 'selected' : '' }}>
-                                {{ $value->number }}
-                            </option>
-                        @endforeach
                     </select>
                 </div>
 
@@ -131,15 +125,19 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // Handle room change and update bed dropdown with Select2
-        $('#room_id').on('change', function () {
-            var roomId = $(this).val();
-            var $bedSelect = $('#bed_id');
-            
-            if (roomId !== '') {
+        var $bedSelect = $('#bed_id');
+        var currentBedId = {{ $hospitalization->bed_id ?? 'null' }};
+        var currentRoomId = $('#room_id').val();
+        
+        // Function to load beds via AJAX
+        function loadBeds(roomId, bedId) {
+            if (roomId && roomId !== '') {
                 $.ajax({
                     url: '/get_related_beds/' + roomId,
                     type: 'GET',
+                    data: {
+                        bed_id: bedId || currentBedId
+                    },
                     success: function (response) {
                         // Destroy existing Select2 instance
                         if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
@@ -162,6 +160,27 @@
                                 }
                             });
                         }
+                        
+                        // Ensure the bed is selected if bedId was provided
+                        if (bedId || currentBedId) {
+                            var bedToSelect = bedId || currentBedId;
+                            $bedSelect.val(bedToSelect).trigger('change');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading beds:', error);
+                        // Destroy existing Select2 instance
+                        if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                        if (typeof $.fn.select2 !== 'undefined') {
+                            $bedSelect.select2({
+                                width: '100%',
+                                placeholder: '{{ localize("global.select") }}...',
+                                allowClear: true
+                            });
+                        }
                     }
                 });
             } else {
@@ -178,6 +197,27 @@
                     });
                 }
             }
+        }
+        
+        // Load beds on page load if room is selected
+        if (currentRoomId && currentRoomId !== '') {
+            loadBeds(currentRoomId, currentBedId);
+        } else {
+            // Initialize Select2 even if no room is selected
+            if (typeof $.fn.select2 !== 'undefined') {
+                $bedSelect.select2({
+                    width: '100%',
+                    placeholder: '{{ localize("global.select") }}...',
+                    allowClear: true
+                });
+            }
+        }
+        
+        // Handle room change and update bed dropdown with Select2
+        $('#room_id').on('change', function () {
+            var roomId = $(this).val();
+            currentBedId = null; // Reset bed selection when room changes
+            loadBeds(roomId, null);
         });
     });
 </script>

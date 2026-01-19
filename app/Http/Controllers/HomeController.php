@@ -480,14 +480,16 @@ class HomeController extends Controller
         return $options;
     }
 
-    public function getRelatedBeds($roomId)
+    public function getRelatedBeds($roomId, Request $request)
     {
         $room = Room::findOrFail($roomId);
         $beds = $room->beds;
+        $selectedBedId = $request->input('bed_id', null);
         $options = '<option value = "">Select Bed</option>';
 
         foreach ($beds as $bed) {
-            $options .= '<option value = "' . $bed->id . '">' . $bed->number . '</option>';
+            $selected = ($selectedBedId && $bed->id == $selectedBedId) ? 'selected' : '';
+            $options .= '<option value = "' . $bed->id . '" ' . $selected . '>' . $bed->number . '</option>';
         }
 
         return $options;

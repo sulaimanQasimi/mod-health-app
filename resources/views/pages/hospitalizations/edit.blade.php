@@ -127,4 +127,59 @@
         </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Handle room change and update bed dropdown with Select2
+        $('#room_id').on('change', function () {
+            var roomId = $(this).val();
+            var $bedSelect = $('#bed_id');
+            
+            if (roomId !== '') {
+                $.ajax({
+                    url: '/get_related_beds/' + roomId,
+                    type: 'GET',
+                    success: function (response) {
+                        // Destroy existing Select2 instance
+                        if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        
+                        // Update bed options
+                        $bedSelect.html(response);
+                        
+                        // Reinitialize Select2 for bed dropdown
+                        if (typeof $.fn.select2 !== 'undefined') {
+                            $bedSelect.select2({
+                                width: '100%',
+                                placeholder: '{{ localize("global.select") }}...',
+                                allowClear: true,
+                                language: {
+                                    noResults: function() {
+                                        return '{{ localize("global.no_results_found") ?: "No results found" }}';
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                // Clear bed dropdown if no room selected
+                if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
+                    $bedSelect.select2('destroy');
+                }
+                $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                if (typeof $.fn.select2 !== 'undefined') {
+                    $bedSelect.select2({
+                        width: '100%',
+                        placeholder: '{{ localize("global.select") }}...',
+                        allowClear: true
+                    });
+                }
+            }
+        });
+    });
+</script>
+@endsection
 @endsection

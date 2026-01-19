@@ -83,6 +83,80 @@ class OutcomeController extends Controller
         return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacies'));
     }
 
+    public function report(Request $request)
+    {
+        $query = DB::table('prescription_items as pi')
+            ->leftJoin('prescription_alternative_items as pai', function($join) {
+                $join->on('pai.prescription_item_id', '=', 'pi.id')
+                     ->on('pai.prescription_id', '=', 'pi.prescription_id')
+                     ->whereRaw('(pai.is_selected = 1 AND pai.deleted_at IS NULL)');
+            })
+            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
+            ->join('medicines as m', function($join) {
+                $join->whereRaw('m.id = COALESCE(pai.medicine_id, pi.medicine_id)');
+            })
+            ->whereNull('pi.deleted_at')
+            ->whereNull('m.deleted_at')
+            ->whereNull('p.deleted_at')
+            ->select(
+                'm.id',
+                'm.name',
+                DB::raw('COUNT(*) as usage_count')
+            )
+            ->groupBy('m.id', 'm.name');
+
+        // Get current user's pharmacies
+        $user = Auth::user();
+        $userPharmacies = $user->activePharmacies;
+
+        // Filter by user's pharmacies if user has any
+        if ($userPharmacies->isNotEmpty()) {
+            $query->whereIn('p.pharmacy_id', $userPharmacies->pluck('id'));
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('m.name', 'like', "%{$search}%");
+        }
+
+        // Filter by pharmacy (for admin users who can see all pharmacies)
+        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
+            $query->where('p.pharmacy_id', $request->pharmacy_id);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
+            $query->whereDate('p.created_at', '>=', $fromDate);
+        }
+        if ($request->filled('date_to')) {
+            $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_to)->datetime();
+            $query->whereDate('p.created_at', '<=', $toDate);
+        }
+
+        // Sort functionality
+        $sortBy = $request->get('sort_by', 'usage_count');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Map sort_by to valid columns
+        $validSortColumns = ['id' => 'm.id', 'name' => 'm.name', 'usage_count' => 'usage_count'];
+        $sortColumn = $validSortColumns[$sortBy] ?? 'usage_count';
+        $query->orderBy($sortColumn, $sortOrder);
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $outcomes = $query->paginate($perPage);
+
+        // Get all pharmacies for admin filter
+        $pharmacies = null;
+        if ($user->hasRole('admin')) {
+            $pharmacies = Pharmacy::orderBy('name')->get();
+        }
+
+        return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacies'));
+    }
+
     public function reportSearch(Request $request)
     {
         $query = DB::table('outcomes as o')

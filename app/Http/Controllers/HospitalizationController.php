@@ -436,16 +436,16 @@ class HospitalizationController extends Controller
 {
     // Validate incoming request
     $data = $request->validate([
-        'reason' => 'required',
-        'remarks' => 'required',
-        'room_id' => 'required',
-        'patient_id' => 'required',
+        'reason' => 'nullable',
+        'remarks' => 'nullable',
+        'room_id' => 'nullable',
+        'patient_id' => 'nullable',
         'doctor_id' => 'nullable|exists:doctors,id',
-        'bed_id' => 'required',
-        'appointment_id' => 'required',
+        'bed_id' => 'nullable',
+        'appointment_id' => 'nullable',
         'is_discharged' => 'nullable',
         'discharge_remark' => 'nullable',
-        'branch_id' => 'required',
+        'branch_id' => 'nullable',
         'discharge_status' => 'nullable',
         'food_type_id' => 'nullable',
         'patinet_companion' => 'nullable',

@@ -35,85 +35,83 @@ class HospitalizationController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            $query = Hospitalization::where('branch_id', auth()->user()->branch_id)
-                ->where('is_discharged', '0')
-                ->with(['patient', 'room', 'bed', 'doctor']);
+        $branchId = auth()->user()->branch_id;
+        
+        // Base query with eager loading and select optimization
+        $query = Hospitalization::select([
+            'hospitalizations.id',
+            'hospitalizations.patient_id',
+            'hospitalizations.room_id',
+            'hospitalizations.bed_id',
+            'hospitalizations.doctor_id',
+            'hospitalizations.reason',
+            'hospitalizations.created_at',
+        ])
+            ->where('hospitalizations.branch_id', $branchId)
+            ->where('hospitalizations.is_discharged', '0')
+            ->with([
+                'patient:id,name,id_card,father_name',
+                'room:id,name',
+                'bed:id,number',
+                'doctor:id,name'
+            ]);
 
-            // Search filter
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->whereHas('patient', function($patientQuery) use ($search) {
-                        $patientQuery->where('name', 'like', "%{$search}%")
-                                     ->orWhere('id_card', 'like', "%{$search}%")
-                                     ->orWhere('father_name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('room', function($roomQuery) use ($search) {
-                        $roomQuery->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('bed', function($bedQuery) use ($search) {
-                        $bedQuery->where('number', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('doctor', function($doctorQuery) use ($search) {
-                        $doctorQuery->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhere('reason', 'like', "%{$search}%");
-                });
-            }
-
-            // Room filter
-            if ($request->filled('room_id')) {
-                $query->where('room_id', $request->room_id);
-            }
-
-            // Date from filter
-            if ($request->filled('date_from')) {
-                $query->whereDate('created_at', '>=', $request->date_from);
-            }
-
-            // Date to filter
-            if ($request->filled('date_to')) {
-                $query->whereDate('created_at', '<=', $request->date_to);
-            }
-
-            $hospitalizations = $query->get()
-                ->map(function ($hospitalization) {
-                    if ($hospitalization->created_at) {
-                        $hospitalization->jalali_date = \HanifHefaz\Dcter\Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
-                    } else {
-                        $hospitalization->jalali_date = 'Not set';
-                    }
-                    return $hospitalization;
-                });
-
-            if ($hospitalizations) {
-                return response()->json([
-                    'data' => $hospitalizations,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Internal Server Error',
-                    'code' => 500,
-                    'data' => [],
-                ]);
-            }
+        // Optimized search using joins instead of whereHas for better performance
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->leftJoin('patients', 'hospitalizations.patient_id', '=', 'patients.id')
+                ->leftJoin('rooms', 'hospitalizations.room_id', '=', 'rooms.id')
+                ->leftJoin('beds', 'hospitalizations.bed_id', '=', 'beds.id')
+                ->leftJoin('doctors', 'hospitalizations.doctor_id', '=', 'doctors.id')
+                ->where(function($q) use ($search) {
+                    $q->where('patients.name', 'like', "%{$search}%")
+                      ->orWhere('patients.id_card', 'like', "%{$search}%")
+                      ->orWhere('patients.father_name', 'like', "%{$search}%")
+                      ->orWhere('rooms.name', 'like', "%{$search}%")
+                      ->orWhere('beds.number', 'like', "%{$search}%")
+                      ->orWhere('doctors.name', 'like', "%{$search}%")
+                      ->orWhere('hospitalizations.reason', 'like', "%{$search}%");
+                })
+                ->groupBy('hospitalizations.id');
         }
 
-        // Get filter options for non-AJAX requests
-        $rooms = \App\Models\Room::where('branch_id', auth()->user()->branch_id)->get();
+        // Room filter
+        if ($request->filled('room_id')) {
+            $query->where('hospitalizations.room_id', $request->room_id);
+        }
+
+        // Date from filter - optimized
+        if ($request->filled('date_from')) {
+            $query->whereDate('hospitalizations.created_at', '>=', $request->date_from);
+        }
+
+        // Date to filter - optimized
+        if ($request->filled('date_to')) {
+            $query->whereDate('hospitalizations.created_at', '<=', $request->date_to);
+        }
+
+        // Use Laravel's default pagination
+        $hospitalizations = $query->orderBy('hospitalizations.id', 'desc')
+            ->paginate(25)
+            ->withQueryString();
+
+        // Transform data with jalali date
+        $hospitalizations->getCollection()->transform(function ($hospitalization) {
+            $hospitalization->jalali_date = $hospitalization->created_at 
+                ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'))
+                : 'Not set';
+            return $hospitalization;
+        });
+
+        // Get filter options - optimized with select
+        $rooms = \App\Models\Room::select('id', 'name')
+            // ->where('branch_id', $branchId)
+            ->orderBy('name')
+            ->get();
         
-        return view('pages.hospitalizations.index', compact('rooms'));
+        return view('pages.hospitalizations.index', compact('hospitalizations', 'rooms'));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
+    
     public function discharged(Request $request)
     {
         if ($request->ajax()) {

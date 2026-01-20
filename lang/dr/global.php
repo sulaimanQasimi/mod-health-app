@@ -4004,4 +4004,15 @@ return [
     'pharmacy_fulfillment_not_found'=>'اکمال دواخانه یافت نشد',
     'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
     'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
+    
+    // Change Room and Bed Feature
+    'change_room_and_bed' => 'تغییر اطاق و بستر',
+    'change_room_bed' => 'تغییر اطاق/بستر',
+    'current_information' => 'اطلاعات فعلی',
+    'current_room' => 'اطاق فعلی',
+    'current_bed' => 'بستر فعلی',
+    'select_room' => 'انتخاب اطاق',
+    'select_bed' => 'انتخاب بستر',
+    'changing_room_bed_note' => 'تغییر اطاق و بستر به صورت خودکار بستر فعلی را آزاد کرده و بستر جدید را اشغال می‌کند.',
+    'room_and_bed_updated_successfully' => 'اطاق و بستر با موفقیت بروزرسانی شد',
 ]; 

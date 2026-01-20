@@ -19,6 +19,17 @@
                                 </select>
                             </div>
                             @endif
+                            <!-- Change Room and Bed Button - Hidden when hospitalization is discharged -->
+                            @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
+                            <div class="me-2">
+                                <a href="{{ route('hospitalizations.changeRoomBed', $hospitalization->id) }}" 
+                                   class="btn btn-warning btn-sm" 
+                                   title="{{ localize('global.change_room_and_bed') ?: 'Change Room and Bed' }}">
+                                    <i class="bx bx-transfer me-1"></i>
+                                    <span class="d-none d-sm-inline-block">{{ localize('global.change_room_bed') ?: 'Change Room/Bed' }}</span>
+                                </a>
+                            </div>
+                            @endif
                             <div class="pt-3 pt-md-0 text-end">
                                 <a class="btn btn-danger" href="{{ url()->previous() }}" type="button">
                                     <span class="text-white"> <span

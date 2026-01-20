@@ -667,4 +667,62 @@ $hospitalization->appointment->update([
 
         return redirect()->back()->with('success', localize('global.doctor_assigned_successfully'));
     }
+
+    /**
+     * Show the form for changing room and bed.
+     */
+    public function changeRoomBed(Hospitalization $hospitalization)
+    {
+        // Check permission
+        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Load essential relationships
+        $hospitalization->load(['patient', 'room', 'bed']);
+        
+        // Get rooms for the current branch
+        $rooms = Room::select('id', 'name')
+            ->orderBy('name')
+            ->get();
+        
+        return view('pages.hospitalizations.change-room-bed', compact('hospitalization', 'rooms'));
+    }
+
+    /**
+     * Update room and bed for hospitalization.
+     */
+    public function updateRoomBed(Request $request, Hospitalization $hospitalization)
+    {
+        // Check permission
+        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'bed_id' => 'required|exists:beds,id',
+        ]);
+
+        // Get the old bed to free it
+        $oldBed = Bed::find($hospitalization->bed_id);
+        
+        // Update hospitalization with new room and bed
+        $hospitalization->update([
+            'room_id' => $data['room_id'],
+            'bed_id' => $data['bed_id'],
+        ]);
+
+        // Free the old bed
+        if ($oldBed) {
+            $oldBed->update(['is_occupied' => false]);
+        }
+
+        // Occupy the new bed
+        $newBed = Bed::findOrFail($data['bed_id']);
+        $newBed->update(['is_occupied' => true]);
+
+        return redirect()->route('hospitalizations.show', $hospitalization)
+            ->with('success', localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.');
+    }
 }

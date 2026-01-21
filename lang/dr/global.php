@@ -4013,4 +4013,14 @@ return [
     'report_results' => 'نتایج گزارش',
     'no_results_found_for_selected_filters' => 'هیچ ثبت آزمایشی برای فیلترهای انتخاب شده یافت نشد. لطفاً معیارهای جستجوی خود را تنظیم کنید و دوباره تلاش کنید.',
     'reset_filters' => 'بازنشانی فیلترها',
+    // Change Room and Bed Feature
+    'change_room_and_bed' => 'تغییر اطاق و بستر',
+    'change_room_bed' => 'تغییر اطاق/بستر',
+    'current_information' => 'اطلاعات فعلی',
+    'current_room' => 'اطاق فعلی',
+    'current_bed' => 'بستر فعلی',
+    'select_room' => 'انتخاب اطاق',
+    'select_bed' => 'انتخاب بستر',
+    'changing_room_bed_note' => 'تغییر اطاق و بستر به صورت خودکار بستر فعلی را آزاد کرده و بستر جدید را اشغال می‌کند.',
+    'room_and_bed_updated_successfully' => 'اطاق و بستر با موفقیت بروزرسانی شد',
 ]; 

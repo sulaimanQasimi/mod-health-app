@@ -73,14 +73,17 @@ class PatientTestRegistrationController extends Controller
     }
 
     /**
-     * Display test registration report grouped by test type and date
+     * Display test registration report grouped by test type (counts only, no date breakdown)
      */
     public function report(Request $request)
     {
         $items = null;
         
+        // Get all lab types for dropdown
+        $labTypes = LabType::orderBy('name')->get();
+        
         // Only query if there are search parameters
-        if ($request->hasAny(['from', 'to', 'per_page'])) {
+        if ($request->hasAny(['from', 'to', 'test_type', 'per_page'])) {
             $perPage = $request->get('per_page', 15);
             
             // Build base query
@@ -88,9 +91,12 @@ class PatientTestRegistrationController extends Controller
                 ->select([
                     'patient_test_registrations.id',
                     'patient_test_registrations.lab_type_id',
-                    'patient_test_registrations.registration_date',
-                    DB::raw('DATE(patient_test_registrations.registration_date) as date_only')
                 ]);
+
+            // Apply test type filter
+            if ($request->filled('test_type')) {
+                $query->where('lab_type_id', $request->test_type);
+            }
 
             // Apply date range filter - Convert Persian to Gregorian
             if ($request->filled('from') && $request->filled('to')) {
@@ -141,32 +147,20 @@ class PatientTestRegistrationController extends Controller
                 }
             }
 
-            // Get all results first to group them
-            $allRegistrations = $query->get();
-            
-            // Group by lab_type_id and date
-            $groupedData = $allRegistrations->groupBy(function ($item) {
-                return $item->lab_type_id . '_' . $item->date_only;
-            })->map(function ($group) {
-                $first = $group->first();
-                return [
-                    'lab_type_id' => $first->lab_type_id,
-                    'lab_type_name' => $first->labType ? $first->labType->name : 'Unknown',
-                    'date' => $first->date_only,
-                    'count' => $group->count(),
-                ];
-            })->values();
-
-            // Group by test type for pagination
-            $groupedByTestType = $groupedData->groupBy('lab_type_id')->map(function ($dates, $labTypeId) {
-                $firstDate = $dates->first();
-                return [
-                    'lab_type_id' => $labTypeId,
-                    'lab_type_name' => $firstDate['lab_type_name'],
-                    'dates' => $dates->sortBy('date')->values(),
-                    'total_count' => $dates->sum('count'),
-                ];
-            })->values();
+            // Group by lab_type_id and count (no date breakdown)
+            $groupedByTestType = $query->get()
+                ->groupBy('lab_type_id')
+                ->map(function ($group, $labTypeId) {
+                    $first = $group->first();
+                    return [
+                        'lab_type_id' => $labTypeId,
+                        'lab_type_name' => $first->labType ? $first->labType->name : 'Unknown',
+                        'total_count' => $group->count(),
+                    ];
+                })
+                ->values()
+                ->sortBy('lab_type_name')
+                ->values();
 
             // Handle pagination with "all" option
             if ($perPage === 'all') {
@@ -195,7 +189,7 @@ class PatientTestRegistrationController extends Controller
             }
         }
 
-        return view('pages.laboratory.registrations.report', compact('items'));
+        return view('pages.laboratory.registrations.report', compact('items', 'labTypes'));
     }
 
     /**
@@ -203,16 +197,17 @@ class PatientTestRegistrationController extends Controller
      */
     public function exportReport(Request $request)
     {
-        $perPage = $request->get('per_page', 'all');
-        
         // Build base query (same as report method)
         $query = PatientTestRegistration::with(['labType'])
             ->select([
                 'patient_test_registrations.id',
                 'patient_test_registrations.lab_type_id',
-                'patient_test_registrations.registration_date',
-                DB::raw('DATE(patient_test_registrations.registration_date) as date_only')
             ]);
+
+        // Apply test type filter
+        if ($request->filled('test_type')) {
+            $query->where('lab_type_id', $request->test_type);
+        }
 
         // Apply date range filter - Convert Persian to Gregorian
         if ($request->filled('from') && $request->filled('to')) {
@@ -262,36 +257,27 @@ class PatientTestRegistrationController extends Controller
             }
         }
 
-        // Get all results and group them
-        $allRegistrations = $query->get();
-        
-        // Group by lab_type_id and date
-        $groupedData = $allRegistrations->groupBy(function ($item) {
-            return $item->lab_type_id . '_' . $item->date_only;
-        })->map(function ($group) {
-            $first = $group->first();
-            return [
-                'lab_type_id' => $first->lab_type_id,
-                'lab_type_name' => $first->labType ? $first->labType->name : 'Unknown',
-                'date' => $first->date_only,
-                'count' => $group->count(),
-            ];
-        })->values();
+        // Group by lab_type_id and count (no date breakdown)
+        $groupedByTestType = $query->get()
+            ->groupBy('lab_type_id')
+            ->map(function ($group, $labTypeId) {
+                $first = $group->first();
+                return [
+                    'lab_type_id' => $labTypeId,
+                    'lab_type_name' => $first->labType ? $first->labType->name : 'Unknown',
+                    'total_count' => $group->count(),
+                ];
+            })
+            ->values()
+            ->sortBy('lab_type_name')
+            ->values();
 
-        // Flatten for export - create rows for each date entry
+        // Prepare export data - only test type and count
         $exportData = [];
-        foreach ($groupedData as $item) {
-            try {
-                $vertaDate = \Hekmatinasser\Verta\Facades\Verta::createFromFormat('Y-m-d', $item['date']);
-                $persianDate = $vertaDate->format('Y/m/d');
-            } catch (\Exception $e) {
-                $persianDate = $item['date'];
-            }
-            
+        foreach ($groupedByTestType as $item) {
             $exportData[] = [
                 'test_type' => $item['lab_type_name'],
-                'date' => $persianDate,
-                'count' => $item['count'],
+                'count' => $item['total_count'],
             ];
         }
 
@@ -319,34 +305,31 @@ class PatientTestRegistrationController extends Controller
                 // Set headers
                 $sheet->setCellValue('A1', localize('global.number'));
                 $sheet->setCellValue('B1', localize('global.test_type'));
-                $sheet->setCellValue('C1', localize('global.date'));
-                $sheet->setCellValue('D1', localize('global.count'));
+                $sheet->setCellValue('C1', localize('global.count'));
                 
                 // Style headers
-                $sheet->getStyle('A1:D1')->getFont()->setBold(true);
-                $sheet->getStyle('A1:D1')->getFill()
+                $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+                $sheet->getStyle('A1:C1')->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('FFE0E0E0');
                 
                 // Set column widths
                 $sheet->getColumnDimension('A')->setWidth(10);
                 $sheet->getColumnDimension('B')->setWidth(30);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(15);
+                $sheet->getColumnDimension('C')->setWidth(15);
                 
                 // Add data
                 $row = 2;
                 foreach ($exportData as $index => $item) {
                     $sheet->setCellValue('A' . $row, $index + 1);
                     $sheet->setCellValue('B' . $row, $item['test_type']);
-                    $sheet->setCellValue('C' . $row, $item['date']);
-                    $sheet->setCellValue('D' . $row, $item['count']);
+                    $sheet->setCellValue('C' . $row, $item['count']);
                     $row++;
                 }
                 
                 // Apply text wrapping
                 if ($row > 2) {
-                    $sheet->getStyle('A2:D' . ($row - 1))
+                    $sheet->getStyle('A2:C' . ($row - 1))
                         ->getAlignment()
                         ->setWrapText(true);
                 }

@@ -4004,4 +4004,13 @@ return [
     'pharmacy_fulfillment_not_found'=>'اکمال دواخانه یافت نشد',
     'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
     'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
+    
+    // Test Registration Report Keys
+    'view_and_export_test_registration_statistics' => 'مشاهده و صادرات آمار ثبت آزمایشات بر اساس نوع و محدوده تاریخ',
+    'test_types' => 'انواع آزمایشات',
+    'total_registrations' => 'مجموع ثبت نام ها',
+    'all_dates' => 'همه تاریخ ها',
+    'report_results' => 'نتایج گزارش',
+    'no_results_found_for_selected_filters' => 'هیچ ثبت آزمایشی برای فیلترهای انتخاب شده یافت نشد. لطفاً معیارهای جستجوی خود را تنظیم کنید و دوباره تلاش کنید.',
+    'reset_filters' => 'بازنشانی فیلترها',
 ]; 

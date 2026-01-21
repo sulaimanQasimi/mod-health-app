@@ -54,7 +54,6 @@
                 <tr>
                     <th>{{ localize('global.number') }}</th>
                     <th>{{ localize('global.test_type') }}</th>
-                    <th>{{ localize('global.date') }}</th>
                     <th>{{ localize('global.count') }}</th>
                 </tr>
             </thead>
@@ -63,7 +62,6 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $item['test_type'] }}</td>
-                        <td>{{ $item['date'] }}</td>
                         <td>{{ $item['count'] }}</td>
                     </tr>
                 @endforeach

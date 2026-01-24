@@ -102,10 +102,8 @@
                                                         <td>{{ $schedule->id }}</td>
                                                         <td>{{ $schedule->day ?? 'N/A' }}</td>
                                                         <td>{{ $schedule->date ? $schedule->date->format('Y-m-d') : 'N/A' }}</td>
-                                                        <td>{{ $schedule->morning_time ? $schedule->morning_time->format('H:i') : 'N/A' }}
-                                                        </td>
-                                                        <td>{{ $schedule->evening_time ? $schedule->evening_time->format('H:i') : 'N/A' }}
-                                                        </td>
+                                                        <td>{{ $schedule->morning_time ?? 'N/A' }}</td>
+                                                        <td>{{ $schedule->evening_time ?? 'N/A' }}</td>
                                                         <td>{{ $schedule->nurse->full_name ?? 'N/A' }}</td>
                                                         <td>{{ $schedule->created_at->format('Y-m-d H:i') }}</td>
                                                         <td>
@@ -275,8 +273,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="modal_morning_time">{{ localize('global.morning_time') }}</label>
-                                        <input type="time" class="form-control @error('morning_time') is-invalid @enderror"
-                                            id="modal_morning_time" name="morning_time" value="{{ old('morning_time') }}">
+                                        <input type="text" class="form-control @error('morning_time') is-invalid @enderror"
+                                            id="modal_morning_time" name="morning_time" value="{{ old('morning_time') }}"
+                                            placeholder="{{ localize('global.enter_morning_time') }}">
                                         @error('morning_time')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -285,8 +284,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="modal_evening_time">{{ localize('global.evening_time') }}</label>
-                                        <input type="time" class="form-control @error('evening_time') is-invalid @enderror"
-                                            id="modal_evening_time" name="evening_time" value="{{ old('evening_time') }}">
+                                        <input type="text" class="form-control @error('evening_time') is-invalid @enderror"
+                                            id="modal_evening_time" name="evening_time" value="{{ old('evening_time') }}"
+                                            placeholder="{{ localize('global.enter_evening_time') }}">
                                         @error('evening_time')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -364,9 +364,10 @@
                                         <div class="form-group mb-3">
                                             <label
                                                 for="update_morning_time{{ $schedule->id }}">{{ localize('global.morning_time') }}</label>
-                                            <input type="time" class="form-control @error('morning_time') is-invalid @enderror"
+                                            <input type="text" class="form-control @error('morning_time') is-invalid @enderror"
                                                 id="update_morning_time{{ $schedule->id }}" name="morning_time"
-                                                value="{{ old('morning_time', $schedule->morning_time ? $schedule->morning_time->format('H:i') : '') }}">
+                                                value="{{ old('morning_time', $schedule->morning_time ?? '') }}"
+                                                placeholder="{{ localize('global.enter_morning_time') }}">
                                             @error('morning_time')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -376,9 +377,10 @@
                                         <div class="form-group mb-3">
                                             <label
                                                 for="update_evening_time{{ $schedule->id }}">{{ localize('global.evening_time') }}</label>
-                                            <input type="time" class="form-control @error('evening_time') is-invalid @enderror"
+                                            <input type="text" class="form-control @error('evening_time') is-invalid @enderror"
                                                 id="update_evening_time{{ $schedule->id }}" name="evening_time"
-                                                value="{{ old('evening_time', $schedule->evening_time ? $schedule->evening_time->format('H:i') : '') }}">
+                                                value="{{ old('evening_time', $schedule->evening_time ?? '') }}"
+                                                placeholder="{{ localize('global.enter_evening_time') }}">
                                             @error('evening_time')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

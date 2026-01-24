@@ -23,8 +23,8 @@ class UpdateVitalSignScheduleRequest extends FormRequest
     {
         return [
             'vital_sign_id' => 'required|integer|exists:vital_signs,id',
-            'morning_time' => 'nullable|date_format:H:i',
-            'evening_time' => 'nullable|date_format:H:i',
+            'morning_time' => 'nullable|string|max:255',
+            'evening_time' => 'nullable|string|max:255',
             'day' => 'nullable|string|max:50', // Preserved from original
             'date' => 'nullable|date|before_or_equal:today', // Preserved from original
             'nurse_id' => 'nullable|integer|exists:nurses,id', // Preserved from original
@@ -41,8 +41,8 @@ class UpdateVitalSignScheduleRequest extends FormRequest
         return [
             'vital_sign_id.required' => 'The vital sign is required.',
             'vital_sign_id.exists' => 'The selected vital sign does not exist.',
-            'morning_time.date_format' => 'The morning time must be in HH:MM format.',
-            'evening_time.date_format' => 'The evening time must be in HH:MM format.',
+            'morning_time.max' => 'The morning time may not be greater than 255 characters.',
+            'evening_time.max' => 'The evening time may not be greater than 255 characters.',
             'day.max' => 'The day may not be greater than 50 characters.',
             'date.before_or_equal' => 'The date may not be in the future.',
             'nurse_id.exists' => 'The selected nurse does not exist.',

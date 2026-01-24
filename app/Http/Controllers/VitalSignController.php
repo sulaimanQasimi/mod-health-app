@@ -178,9 +178,7 @@ class VitalSignController extends Controller
         $vitalSigns = VitalSign::with([
             'vitalSignType',
             'schedules' => function ($query) {
-                $query->orderBy('day', 'asc')
-                    ->orderBy('morning_time', 'asc')
-                    ->orderBy('evening_time', 'asc');
+                $query->orderBy('day', 'asc');
             },
             'schedules.nurse',
             'morphable.patient'

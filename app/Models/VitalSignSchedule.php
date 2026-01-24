@@ -21,8 +21,6 @@ class VitalSignSchedule extends Model
     ];
 
     protected $casts = [
-        'morning_time' => 'datetime:H:i',
-        'evening_time' => 'datetime:H:i',
         'date' => 'date',
     ];
 

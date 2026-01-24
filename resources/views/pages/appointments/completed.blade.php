@@ -16,7 +16,7 @@
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('appointments.completedAppointments') }}" class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="token_id" class="form-label">{{ localize('global.token_id') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -30,7 +30,7 @@
                                        value="{{ request('token_id') }}">
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -44,6 +44,20 @@
                                        value="{{ request('patient_id') }}">
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bx bx-rename"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="patient_name" 
+                                       id="patient_name"
+                                       placeholder="{{ localize('global.search_by_patient_name') }}"
+                                       value="{{ request('patient_name') }}">
+                            </div>
+                        </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
@@ -54,7 +68,7 @@
                                 <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') }}
                             </a>
                         </div>
-                        @if(request('token_id') || request('patient_id'))
+                        @if(request('token_id') || request('patient_id') || request('patient_name'))
                             <div class="col-12">
                                 <small class="text-muted">
                                     <i class="bx bx-info-circle me-1"></i>
@@ -64,6 +78,9 @@
                                     @endif
                                     @if(request('patient_id'))
                                         <span class="badge bg-info">{{ localize('global.patient_id') }}: {{ request('patient_id') }}</span>
+                                    @endif
+                                    @if(request('patient_name'))
+                                        <span class="badge bg-info">{{ localize('global.patient_name') }}: {{ request('patient_name') }}</span>
                                     @endif
                                 </small>
                             </div>
@@ -150,7 +167,7 @@
     <script>
         $(document).ready(function() {
             // Allow Enter key to submit form
-            $('#token_id, #patient_id').on('keypress', function(e) {
+            $('#token_id, #patient_id, #patient_name').on('keypress', function(e) {
                 if (e.which === 13) {
                     e.preventDefault();
                     $(this).closest('form').submit();

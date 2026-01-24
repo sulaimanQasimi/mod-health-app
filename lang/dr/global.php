@@ -4023,4 +4023,5 @@ return [
     'select_bed' => 'انتخاب بستر',
     'changing_room_bed_note' => 'تغییر اطاق و بستر به صورت خودکار بستر فعلی را آزاد کرده و بستر جدید را اشغال می‌کند.',
     'room_and_bed_updated_successfully' => 'اطاق و بستر با موفقیت بروزرسانی شد',
+    'search_by_patient_room_bed' => 'جستجو بر اساس اطاق و بستر',
 ]; 

@@ -19,6 +19,7 @@ use App\Models\DiabetesChart;
 use App\Models\Nurse;
 use App\Models\NurseNote;
 use App\Models\MedicationAdministrationRecord;
+use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -80,14 +81,14 @@ class HospitalizationController extends Controller
             $query->where('hospitalizations.room_id', $request->room_id);
         }
 
-        // Date from filter - optimized
+        // Date from filter (Jalali/Dari from datepicker_dari, parsed with Verta)
         if ($request->filled('date_from')) {
-            $query->whereDate('hospitalizations.created_at', '>=', $request->date_from);
+            $query->whereDate('hospitalizations.created_at', '>=', Verta::parse($request->date_from)->datetime());
         }
 
-        // Date to filter - optimized
+        // Date to filter (Jalali/Dari from datepicker_dari, parsed with Verta)
         if ($request->filled('date_to')) {
-            $query->whereDate('hospitalizations.created_at', '<=', $request->date_to);
+            $query->whereDate('hospitalizations.created_at', '<=', Verta::parse($request->date_to)->datetime());
         }
 
         // Use Laravel's default pagination

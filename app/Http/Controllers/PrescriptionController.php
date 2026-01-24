@@ -478,7 +478,7 @@ class PrescriptionController extends Controller
     {
         try {
             $query = Prescription::where('branch_id', auth()->user()->branch_id)
-                ->with(['patient', 'doctor', 'appointment.department']);
+                ->with(['patient', 'doctor', 'appointment.doctor', 'appointment.department']);
 
             // Apply filters
             if ($request->filled('search')) {
@@ -515,21 +515,34 @@ class PrescriptionController extends Controller
                 $query->whereDate('created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
             }
 
+            // Filter by doctor_id: use prescription.doctor_id if set, otherwise appointment.doctor_id
+            if ($request->filled('doctor_id')) {
+                $query->whereRaw(
+                    'COALESCE(prescriptions.doctor_id, (SELECT doctor_id FROM appointments WHERE appointments.id = prescriptions.appointment_id LIMIT 1)) = ?',
+                    [$request->doctor_id]
+                );
+            }
+
             // If specific items are selected, filter by those IDs
             if ($request->filled('selected') && is_array($request->selected)) {
                 $query->whereIn('id', $request->selected);
             }
 
+            // Order by resolved doctor_id (from prescription or appointment)
+            $query->orderByRaw(
+                'COALESCE(prescriptions.doctor_id, (SELECT doctor_id FROM appointments WHERE appointments.id = prescriptions.appointment_id LIMIT 1)) ASC'
+            )->orderBy('prescriptions.created_at', 'desc');
+
             $prescriptions = $query->get();
 
-            // Transform data for export
+            // Transform data for export (doctor: prescription.doctor_id or appointment.doctor_id)
             $items = $prescriptions->map(function ($prescription) {
                 return (object) [
                     'id' => $prescription->id,
                     'patient_name' => $prescription->patient->name ?? '-',
                     'patient_id_card' => $prescription->patient->id_card ?? '-',
                     'father_name' => $prescription->patient->father_name ?? '-',
-                    'doctor_name' => $prescription->doctor->name ?? '-',
+                    'doctor_name' => $prescription->doctor?->name ?? $prescription->appointment?->doctor?->name ?? '-',
                     'is_completed' => $prescription->is_completed ? '1' : '0',
                     'created_at' => $prescription->created_at,
                     'department_name' => $prescription->appointment->department->name ?? 'Unknown',

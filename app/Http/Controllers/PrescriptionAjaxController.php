@@ -348,7 +348,7 @@ class PrescriptionAjaxController extends Controller
             $userClinicType = auth()->user()->clinic_type;
             
             $query = Prescription::where('branch_id', auth()->user()->branch_id)
-                ->with(['patient', 'doctor', 'appointment.department']);
+                ->with(['patient', 'doctor', 'appointment.doctor', 'appointment.department']);
 
             // Filter by appointment clinic_type matching user's clinic_type
             if ($userClinicType) {
@@ -398,6 +398,19 @@ class PrescriptionAjaxController extends Controller
                 $query->whereDate('created_at', '<=', \Hekmatinasser\Verta\Verta::parse($request->date_to)->datetime());
             }
 
+            // Filter by doctor_id: use prescription.doctor_id if set, otherwise appointment.doctor_id
+            if ($request->filled('doctor_id')) {
+                $query->whereRaw(
+                    'COALESCE(prescriptions.doctor_id, (SELECT doctor_id FROM appointments WHERE appointments.id = prescriptions.appointment_id LIMIT 1)) = ?',
+                    [$request->doctor_id]
+                );
+            }
+
+            // Order by resolved doctor_id first (from prescription or appointment), then by selected sort
+            $query->orderByRaw(
+                'COALESCE(prescriptions.doctor_id, (SELECT doctor_id FROM appointments WHERE appointments.id = prescriptions.appointment_id LIMIT 1)) ASC'
+            );
+
             // Sorting
             $sortBy = $request->get('sortBy', 'created_at');
             $sortOrder = $request->get('sortOrder', 'desc');
@@ -408,20 +421,21 @@ class PrescriptionAjaxController extends Controller
                     $query->join('patients', 'prescriptions.patient_id', '=', 'patients.id')
                           ->orderBy('patients.name', $sortOrder);
                 } elseif ($sortBy === 'doctor_name') {
-                    $query->join('doctors', 'prescriptions.doctor_id', '=', 'doctors.id')
-                          ->orderBy('doctors.name', $sortOrder);
+                    $query->leftJoin('appointments as app_doc_sort', 'prescriptions.appointment_id', '=', 'app_doc_sort.id')
+                          ->leftJoin('doctors as doc_resolved', 'doc_resolved.id', '=', DB::raw('COALESCE(prescriptions.doctor_id, app_doc_sort.doctor_id)'))
+                          ->orderBy('doc_resolved.name', $sortOrder);
                 } else {
-                    $query->orderBy($sortBy, $sortOrder);
+                    $query->orderBy('prescriptions.' . $sortBy, $sortOrder);
                 }
             } else {
-                $query->orderBy('created_at', 'desc');
+                $query->orderBy('prescriptions.created_at', 'desc');
             }
 
             // Pagination
             $perPage = $request->get('perPage', 10);
             $prescriptions = $query->paginate($perPage);
             
-            // Load token information for each prescription
+            // Load token and resolved doctor_name for each prescription
             $prescriptions->getCollection()->transform(function ($prescription) {
                 if ($prescription->appointment) {
                     $token = \App\Models\PrintedNumber::where('patient_id', $prescription->patient_id)
@@ -430,6 +444,8 @@ class PrescriptionAjaxController extends Controller
                         ->first();
                     $prescription->token = $token;
                 }
+                // Doctor: use prescription.doctor_id if set, otherwise from appointment
+                $prescription->doctor_name = $prescription->doctor?->name ?? $prescription->appointment?->doctor?->name ?? '-';
                 return $prescription;
             });
 

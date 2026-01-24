@@ -266,7 +266,7 @@
     ]
   },
   "public/assets/js/vue/prescription-index-app.js": {
-    "file": "assets/prescription-index-app-DQmslf2A.js",
+    "file": "assets/prescription-index-app-BEfFNQVZ.js",
     "name": "prescription-index-app",
     "src": "public/assets/js/vue/prescription-index-app.js",
     "isEntry": true,
@@ -278,7 +278,7 @@
       "__commonjsHelpers-DsqdWQfm.js"
     ],
     "css": [
-      "assets/prescription-index-app-CkQ-ih0a.css",
+      "assets/prescription-index-app-I9BaxgPU.css",
       "assets/vue-multiselect-DIn9qltL.css"
     ]
   },
@@ -313,7 +313,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-BP2amDhp.css",
+    "file": "assets/app-Bn460AdJ.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -321,7 +321,7 @@
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-C_etgBiH.js",
+    "file": "assets/Example-B1AV_0W-.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
@@ -331,11 +331,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-BP2amDhp.css"
+      "assets/app-Bn460AdJ.css"
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-DAEQY0jg.js",
+    "file": "assets/Layout-BhfkjfLD.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -345,11 +345,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-BP2amDhp.css"
+      "assets/app-Bn460AdJ.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-CokAM-JH.js",
+    "file": "assets/Welcome-C0FGx10b.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -359,7 +359,7 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-BP2amDhp.css"
+      "assets/app-Bn460AdJ.css"
     ]
   },
   "resources/js/app.js": {
@@ -372,7 +372,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-DCKpn62l.js",
+    "file": "assets/app-CHsoWr7A.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -386,7 +386,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-BP2amDhp.css"
+      "assets/app-Bn460AdJ.css"
     ]
   },
   "resources/js/ckeditor.js": {

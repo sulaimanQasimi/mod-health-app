@@ -48,6 +48,14 @@
               :placeholder="localize('global.search_by_token_id')"
             >
           </div>
+
+          <div class="col-md-2">
+            <label for="doctor_id" class="form-label">{{ localize('global.doctor_name') }}</label>
+            <select class="form-select" id="doctor_id" v-model="filters.doctor_id" @change="applyFilters">
+              <option value="">{{ localize('global.all') }}</option>
+              <option v-for="d in doctors" :key="d.id" :value="d.id">{{ d.name }}</option>
+            </select>
+          </div>
           
           <div class="col-md-2">
             <label for="status" class="form-label">{{ localize('global.status') }}</label>
@@ -199,7 +207,7 @@
                 <th>{{ localize('global.father_name') }}</th>
                 <th>{{ localize('global.token_id') }}</th>
                 <th @click="sortBy('doctor_name')" class="sortable">
-                  {{ localize('global.referred_to') }}
+                  {{ localize('global.doctor_name') }}
                   <i class="bx bx-sort" v-if="sorting.sortBy !== 'doctor_name'"></i>
                   <i class="bx bx-sort-up" v-else-if="sorting.sortOrder === 'asc'"></i>
                   <i class="bx bx-sort-down" v-else></i>
@@ -242,7 +250,7 @@
                   </div>
                   <span v-else class="text-muted">-</span>
                 </td>
-                <td>{{ prescription.doctor?.name || '-' }}</td>
+                <td>{{ prescription.doctor_name || prescription.doctor?.name || '-' }}</td>
                 <td>{{ formatPersianDate(prescription.created_at) }}</td>
                 <td>
                   <span 
@@ -364,10 +372,12 @@ const route = useRoute()
 const prescriptions = ref([])
 const loading = ref(false)
 const selectedPrescriptions = ref([])
+const doctors = ref([])
 
 const filters = reactive({
   search: '',
   token_filter: '',
+  doctor_id: '',
   status: ''
 })
 
@@ -399,6 +409,7 @@ const activeFiltersCount = computed(() => {
   let count = 0
   if (filters.search) count++
   if (filters.token_filter) count++
+  if (filters.doctor_id) count++
   if (filters.status) count++
   return count
 })
@@ -450,6 +461,7 @@ const fetchPrescriptions = async () => {
       sortOrder: sorting.sortOrder,
       search: filters.search,
       token_filter: filters.token_filter,
+      doctor_id: filters.doctor_id || undefined,
       status: isDeliveredRoute.value ? '1' : filters.status
     }
 
@@ -479,6 +491,7 @@ const clearFilters = () => {
   Object.assign(filters, {
     search: '',
     token_filter: '',
+    doctor_id: '',
     status: ''
   })
   
@@ -589,12 +602,24 @@ const bulkPrint = () => {
   })
 }
 
+const fetchDoctors = async () => {
+  try {
+    const res = await axios.get('/doctor-api/doctors')
+    if (res.data?.success && Array.isArray(res.data.data)) {
+      doctors.value = res.data.data
+    }
+  } catch (e) {
+    console.error('Failed to load doctors for filter:', e)
+  }
+}
+
 // Lifecycle
 onMounted(() => {
   // Seed filters from route-provided default status if present
   if (!filters.status && props.defaultStatus !== '') {
     filters.status = String(props.defaultStatus)
   }
+  fetchDoctors()
   fetchPrescriptions()
 })
 

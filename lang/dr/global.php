@@ -4004,8 +4004,6 @@ return [
     'pharmacy_fulfillment_not_found'=>'اکمال دواخانه یافت نشد',
     'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
     'pharmacy_fulfillment_not_found_in_database'=>'اکمال دواخانه در پایگاه داده یافت نشد',
-    
-    // Test Registration Report Keys
     'view_and_export_test_registration_statistics' => 'مشاهده و صادرات آمار ثبت آزمایشات بر اساس نوع و محدوده تاریخ',
     'test_types' => 'انواع آزمایشات',
     'total_registrations' => 'مجموع ثبت نام ها',
@@ -4013,7 +4011,6 @@ return [
     'report_results' => 'نتایج گزارش',
     'no_results_found_for_selected_filters' => 'هیچ ثبت آزمایشی برای فیلترهای انتخاب شده یافت نشد. لطفاً معیارهای جستجوی خود را تنظیم کنید و دوباره تلاش کنید.',
     'reset_filters' => 'بازنشانی فیلترها',
-    // Change Room and Bed Feature
     'change_room_and_bed' => 'تغییر اطاق و بستر',
     'change_room_bed' => 'تغییر اطاق/بستر',
     'current_information' => 'اطلاعات فعلی',
@@ -4023,4 +4020,5 @@ return [
     'select_bed' => 'انتخاب بستر',
     'changing_room_bed_note' => 'تغییر اطاق و بستر به صورت خودکار بستر فعلی را آزاد کرده و بستر جدید را اشغال می‌کند.',
     'room_and_bed_updated_successfully' => 'اطاق و بستر با موفقیت بروزرسانی شد',
+    'search_by_patient_room_bed' => 'جستجو بر اساس اطاق و بستر',
 ]; 

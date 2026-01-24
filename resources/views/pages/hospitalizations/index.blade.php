@@ -20,87 +20,81 @@
                 </div>
             </div>
 
-            {{-- Advanced Search and Filters --}}
+            {{-- Simple Filter (no accordion) --}}
             <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-none border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <i class="bx bx-filter-alt text-primary me-2" style="font-size: 1.2rem;"></i>
-                            <h6 class="mb-0 fw-semibold">{{ localize('global.advanced_filters') ?: 'Advanced Filters' }}</h6>
-                        </div>
-                        <i class="bx bx-chevron-down"></i>
-                    </div>
+                <div class="card-header bg-none border-0">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bx bx-filter-alt text-primary me-2"></i>{{ localize('global.filter') }}
+                    </h6>
                 </div>
-                <div class="collapse" id="filterCollapse">
-                    <div class="card-body">
-                        <form method="GET" action="{{ route('hospitalizations.index') }}" id="filterForm">
-                            <div class="row g-3">
-                                {{-- Search Input --}}
-                                <div class="col-md-4">
-                                    <label for="search" class="form-label fw-semibold">
-                                        <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search') }}
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-primary text-white">
-                                            <i class="bx bx-search"></i>
-                                        </span>
-                                        <input type="text" class="form-control" id="search" name="search" 
-                                               value="{{ request('search') }}" 
-                                               placeholder="{{ localize('global.search_by_patient_room_bed') ?: 'Search by patient, room, bed...' }}"
-                                               autocomplete="off">
-                                    </div>
-                                </div>
-
-                                {{-- Room Filter --}}
-                                <div class="col-md-3">
-                                    <label for="room_id" class="form-label fw-semibold">
-                                        <i class="bx bx-building me-1 text-info"></i>{{ localize('global.room') }}
-                                    </label>
-                                    <select class="form-select select2" id="room_id" name="room_id">
-                                        <option value="">{{ localize('global.all') ?: 'All' }}</option>
-                                        @foreach($rooms as $room)
-                                            <option value="{{ $room->id }}" {{ request('room_id') == $room->id ? 'selected' : '' }}>
-                                                {{ $room->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                {{-- Date From --}}
-                                <div class="col-md-2">
-                                    <label for="date_from" class="form-label fw-semibold">
-                                        <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_from') ?: 'Date From' }}
-                                    </label>
-                                    <input type="date" class="form-control" id="date_from" name="date_from" 
-                                           value="{{ request('date_from') }}">
-                                </div>
-
-                                {{-- Date To --}}
-                                <div class="col-md-2">
-                                    <label for="date_to" class="form-label fw-semibold">
-                                        <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_to') ?: 'Date To' }}
-                                    </label>
-                                    <input type="date" class="form-control" id="date_to" name="date_to" 
-                                           value="{{ request('date_to') }}">
-                                </div>
-
-                                {{-- Filter Buttons --}}
-                                <div class="col-md-1 d-flex align-items-end gap-2">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="bx bx-filter me-1"></i>
-                                    </button>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('hospitalizations.index') }}" id="filterForm">
+                        <div class="row g-3">
+                            {{-- Search Input --}}
+                            <div class="col-md-4">
+                                <label for="search" class="form-label fw-semibold">
+                                    <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search') }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="bx bx-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="search" name="search"
+                                           value="{{ request('search') }}"
+                                           placeholder="{{ localize('global.search_by_patient_room_bed') ?: 'Search by patient, room, bed...' }}"
+                                           autocomplete="off">
                                 </div>
                             </div>
 
-                            <div class="row g-3 mt-2">
-                                <div class="col-md-12 d-flex justify-content-end gap-2">
-                                    <a href="{{ route('hospitalizations.index') }}" class="btn btn-outline-secondary">
-                                        <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') ?: 'Reset' }}
-                                    </a>
-                                </div>
+                            {{-- Room Filter --}}
+                            <div class="col-md-3">
+                                <label for="room_id" class="form-label fw-semibold">
+                                    <i class="bx bx-building me-1 text-info"></i>{{ localize('global.room') }}
+                                </label>
+                                <select class="form-select select2" id="room_id" name="room_id">
+                                    <option value="">{{ localize('global.all') ?: 'All' }}</option>
+                                    @foreach($rooms as $room)
+                                        <option value="{{ $room->id }}" {{ request('room_id') == $room->id ? 'selected' : '' }}>
+                                            {{ $room->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                        </form>
-                    </div>
+
+                            {{-- Date From (Dari datepicker) --}}
+                            <div class="col-md-2">
+                                <label for="date_from" class="form-label fw-semibold">
+                                    <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_from') ?: 'Date From' }}
+                                </label>
+                                <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from"
+                                       value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
+                            </div>
+
+                            {{-- Date To (Dari datepicker) --}}
+                            <div class="col-md-2">
+                                <label for="date_to" class="form-label fw-semibold">
+                                    <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_to') ?: 'Date To' }}
+                                </label>
+                                <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to"
+                                       value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
+                            </div>
+
+                            {{-- Filter Buttons --}}
+                            <div class="col-md-1 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bx bx-filter me-1"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12 d-flex justify-content-end gap-2">
+                                <a href="{{ route('hospitalizations.index') }}" class="btn btn-outline-secondary">
+                                    <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') ?: 'Reset' }}
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -288,15 +282,6 @@
             border-radius: 50%;
         }
 
-        .card-header[data-bs-toggle="collapse"] {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .card-header[data-bs-toggle="collapse"]:hover {
-            background-color: #f8f9fa;
-        }
-
         .badge {
             font-weight: 500;
         }
@@ -411,20 +396,6 @@
             setTimeout(function() {
                 initSelect2();
             }, 200);
-
-            // Reinitialize Select2 when filter collapse is shown
-            $('#filterCollapse').on('shown.bs.collapse', function() {
-                setTimeout(function() {
-                    initSelect2();
-                }, 150);
-            });
-
-            // Also initialize when collapse is already shown on page load
-            if ($('#filterCollapse').hasClass('show')) {
-                setTimeout(function() {
-                    initSelect2();
-                }, 200);
-            }
         });
     </script>
 @endpush

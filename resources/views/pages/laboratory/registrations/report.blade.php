@@ -55,7 +55,7 @@
                                 <i class="bx bx-category me-1"></i>
                                 {{ localize('global.test_type') }}
                             </label>
-                            <select class="form-select" name="test_type" id="test_type">
+                            <select class="form-select select2" name="test_type" id="test_type">
                                 <option value="">{{ localize('global.all') }}</option>
                                 @if(isset($labTypes))
                                     @foreach($labTypes as $labType)
@@ -291,39 +291,73 @@
 
 @push('custom-js')
 <script>
-    // Auto-submit when per_page changes
-    $('#per_page').on('change', function() {
-        $('#search-form').submit();
-    });
+    $(document).ready(function() {
+        // Initialize or reinitialize Select2 for test_type dropdown with custom options
+        function initTestTypeSelect2() {
+            var $testType = $('#test_type');
+            
+            // Destroy existing Select2 instance if it exists
+            if ($testType.hasClass('select2-hidden-accessible')) {
+                try {
+                    $testType.select2('destroy');
+                    // Remove wrapper if exists
+                    $testType.unwrap();
+                } catch(e) {
+                    console.log('Select2 destroy error:', e);
+                }
+            }
+            
+            // Initialize Select2 with custom options
+            $testType.wrap('<div class="position-relative"></div>').select2({
+                placeholder: '{{ localize("global.all") }}',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return '{{ localize("global.no_results_found") ?? "No results found" }}';
+                    }
+                },
+                dropdownParent: $testType.parent()
+            });
+        }
+        
+        // Wait a bit for global scripts to load, then initialize
+        setTimeout(initTestTypeSelect2, 200);
 
-    // Auto-submit when test_type changes
-    $('#test_type').on('change', function() {
-        $('#search-form').submit();
-    });
+        // Auto-submit when per_page changes
+        $('#per_page').on('change', function() {
+            $('#search-form').submit();
+        });
 
-    // Handle reset button click
-    $('#reset-form-btn').on('click', function(e) {
-        e.preventDefault();
-        
-        // Reset all input fields
-        $('#search-form input[type="text"]').val('');
-        
-        // Reset per_page to default
-        $('#per_page').val('15');
-        
-        // Reset test_type to default
-        $('#test_type').val('');
-        
-        // Clear date pickers
-        $('.datepicker_dari').val('');
-        
-        // Redirect to clean report URL (without query parameters)
-        window.location.href = '{{ route("laboratory.registrations.report") }}';
-    });
+        // Auto-submit when test_type changes (works with Select2)
+        $(document).on('change', '#test_type', function() {
+            $('#search-form').submit();
+        });
 
-    // Add loading state to buttons
-    $('#search-form').on('submit', function() {
-        $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin me-1"></i>{{ localize("global.loading") ?? "Loading..." }}');
+        // Handle reset button click
+        $('#reset-form-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            // Reset all input fields
+            $('#search-form input[type="text"]').val('');
+            
+            // Reset per_page to default
+            $('#per_page').val('15');
+            
+            // Reset test_type to default (works with Select2)
+            $('#test_type').val('').trigger('change');
+            
+            // Clear date pickers
+            $('.datepicker_dari').val('');
+            
+            // Redirect to clean report URL (without query parameters)
+            window.location.href = '{{ route("laboratory.registrations.report") }}';
+        });
+
+        // Add loading state to buttons
+        $('#search-form').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin me-1"></i>{{ localize("global.loading") ?? "Loading..." }}');
+        });
     });
 </script>
 @endpush

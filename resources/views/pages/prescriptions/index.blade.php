@@ -20,6 +20,7 @@
         'global.clear_search' => localize('global.clear_search'),
         'global.token_id' => localize('global.token_id'),
         'global.search_by_token_id' => localize('global.search_by_token_id'),
+        'global.doctor_name' => localize('global.doctor_name'),
         'global.status' => localize('global.status'),
         'global.all' => localize('global.all'),
         'global.not_delivered' => localize('global.not_delivered'),

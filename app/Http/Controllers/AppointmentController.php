@@ -384,6 +384,12 @@ class AppointmentController extends Controller
             }
         }
 
+        // Extract patient_name if provided (search by name, last_name, or father_name)
+        $patientName = null;
+        if ($request->has('patient_name') && $request->patient_name !== null && trim($request->patient_name) !== '') {
+            $patientName = trim($request->patient_name);
+        }
+
         // Apply filters
         if ($appointmentId !== null) {
             $query->where('id', $appointmentId);
@@ -391,6 +397,15 @@ class AppointmentController extends Controller
 
         if ($filterPatientId !== null) {
             $query->where('patient_id', $filterPatientId);
+        }
+
+        if ($patientName !== null) {
+            $term = '%' . $patientName . '%';
+            $query->whereHas('patient', function ($q) use ($term) {
+                $q->where('name', 'like', $term)
+                    ->orWhere('last_name', 'like', $term)
+                    ->orWhere('father_name', 'like', $term);
+            });
         }
 
         $appointments = $query->paginate(25)->withQueryString();

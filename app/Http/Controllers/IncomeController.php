@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Income;
 use App\Models\Medicine;
-use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -13,15 +12,15 @@ class IncomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Income::with(['medicine', 'createdBy', 'pharmacy']);
+        $query = Income::with(['medicine', 'createdBy', 'branch']);
 
-        // Get current user's pharmacies
+        // Get current user's branch
         $user = Auth::user();
-        $userPharmacies = $user->activePharmacies;
+        $branchId = $user->branch_id;
 
-        // Filter by user's pharmacies if user has any
-        if ($userPharmacies->isNotEmpty()) {
-            $query->whereIn('pharmacy_id', $userPharmacies->pluck('id'));
+        // Filter by user's branch if user has one
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
         }
 
         // Search functionality
@@ -40,11 +39,6 @@ class IncomeController extends Controller
         // Filter by income type
         if ($request->filled('income_type')) {
             $query->where('income_type', $request->income_type);
-        }
-
-        // Filter by pharmacy (for admin users who can see all pharmacies)
-        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
-            $query->where('pharmacy_id', $request->pharmacy_id);
         }
 
         // Filter by date range
@@ -66,43 +60,19 @@ class IncomeController extends Controller
         $perPage = $request->get('per_page', 15);
         $incomes = $query->paginate($perPage);
 
-        // Get all pharmacies for admin filter
-        $pharmacies = null;
-        if ($user->hasRole('admin')) {
-            $pharmacies = Pharmacy::orderBy('name')->get();
-        }
-
-        return view('pages.incomes.index', compact('incomes', 'pharmacies', 'userPharmacies'));
+        return view('pages.incomes.index', compact('incomes'));
     }
 
     public function create()
     {
-        $user = Auth::user();
-        $userPharmacy = $user->activePharmacies()->first();
-
-        // Check if user has a pharmacy assigned
-        if (!$userPharmacy) {
-            return redirect()->route('incomes.index')
-                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
-        }
-
         $medicines = Medicine::orderBy('name')->get();
         $incomeTypes = ['purchase', 'return', 'donation', 'transfer', 'completion'];
         
-        return view('pages.incomes.create', compact('medicines', 'incomeTypes', 'userPharmacy'));
+        return view('pages.incomes.create', compact('medicines', 'incomeTypes'));
     }
 
     public function store(Request $request)
     {
-        $user = Auth::user();
-        $userPharmacy = $user->activePharmacies()->first();
-
-        // Check if user has a pharmacy assigned
-        if (!$userPharmacy) {
-            return redirect()->route('incomes.index')
-                ->with('warning', 'You are not assigned to any pharmacy. Please contact your administrator.');
-        }
-
         $request->validate([
             'medicine_id' => 'required|exists:medicines,id',
             'amount' => 'required|integer|min:1',
@@ -114,9 +84,10 @@ class IncomeController extends Controller
             'income_type' => 'required|in:purchase,return,donation,transfer,completion',
             'notes' => 'nullable|string'
         ]);
-// Add pharmacy_id to the request data
+
+        // Add branch_id to the request data
         $data = $request->all();
-        $data['pharmacy_id'] = $userPharmacy->id;
+        $data['branch_id'] = Auth::user()->branch_id;
 
         Income::create($data);
 

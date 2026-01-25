@@ -245,7 +245,7 @@
                 </td>
                 <td>{{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}</td>
                 <td>
-                  <span class="badge bg-light text-dark">{{ prescription.patient_id || prescription.patient?.id || '-' }}</span>
+                  <span>{{ prescription.patient_id || prescription.patient?.id || '-' }}</span>
                 </td>
                 <td>
                   <span class="badge bg-secondary">{{ prescription.patient?.id_card || '-' }}</span>

@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
 use App\Models\TestCategory;
+use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -98,51 +99,36 @@ class PatientTestRegistrationController extends Controller
                 $query->where('lab_type_id', $request->test_type);
             }
 
-            // Apply date range filter - Convert Persian to Gregorian
+            // Apply date range filter - Parse Jalali/Dari from datepicker_dari (Verta handles Persian numerals and common formats)
             if ($request->filled('from') && $request->filled('to')) {
                 try {
-                    $fromDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->from)
-                        ->toCarbon()
-                        ->format('Y-m-d');
-                    $toDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->to)
-                        ->toCarbon()
-                        ->format('Y-m-d');
-                    
+                    $fromDate = Verta::parse($request->from)->datetime();
+                    $toDate = Verta::parse($request->to)->datetime();
                     $query->whereDate('registration_date', '>=', $fromDate)
                           ->whereDate('registration_date', '<=', $toDate);
                 } catch (\Exception $e) {
-                    // If conversion fails, try as Gregorian date
-                    try {
+                    // If Verta parse fails, try as Gregorian Y-m-d
+                    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->from) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->to)) {
                         $query->whereDate('registration_date', '>=', $request->from)
                               ->whereDate('registration_date', '<=', $request->to);
-                    } catch (\Exception $e2) {
-                        // Invalid date format, skip date filter
                     }
                 }
             } elseif ($request->filled('from')) {
                 try {
-                    $fromDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->from)
-                        ->toCarbon()
-                        ->format('Y-m-d');
+                    $fromDate = Verta::parse($request->from)->datetime();
                     $query->whereDate('registration_date', '>=', $fromDate);
                 } catch (\Exception $e) {
-                    try {
+                    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->from)) {
                         $query->whereDate('registration_date', '>=', $request->from);
-                    } catch (\Exception $e2) {
-                        // Invalid date format, skip date filter
                     }
                 }
             } elseif ($request->filled('to')) {
                 try {
-                    $toDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->to)
-                        ->toCarbon()
-                        ->format('Y-m-d');
+                    $toDate = Verta::parse($request->to)->datetime();
                     $query->whereDate('registration_date', '<=', $toDate);
                 } catch (\Exception $e) {
-                    try {
+                    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->to)) {
                         $query->whereDate('registration_date', '<=', $request->to);
-                    } catch (\Exception $e2) {
-                        // Invalid date format, skip date filter
                     }
                 }
             }
@@ -209,50 +195,35 @@ class PatientTestRegistrationController extends Controller
             $query->where('lab_type_id', $request->test_type);
         }
 
-        // Apply date range filter - Convert Persian to Gregorian
+        // Apply date range filter - Parse Jalali/Dari from datepicker_dari (Verta handles Persian numerals and common formats)
         if ($request->filled('from') && $request->filled('to')) {
             try {
-                $fromDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->from)
-                    ->toCarbon()
-                    ->format('Y-m-d');
-                $toDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->to)
-                    ->toCarbon()
-                    ->format('Y-m-d');
-                
+                $fromDate = Verta::parse($request->from)->datetime();
+                $toDate = Verta::parse($request->to)->datetime();
                 $query->whereDate('registration_date', '>=', $fromDate)
                       ->whereDate('registration_date', '<=', $toDate);
             } catch (\Exception $e) {
-                try {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->from) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->to)) {
                     $query->whereDate('registration_date', '>=', $request->from)
                           ->whereDate('registration_date', '<=', $request->to);
-                } catch (\Exception $e2) {
-                    // Invalid date format, skip date filter
                 }
             }
         } elseif ($request->filled('from')) {
             try {
-                $fromDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->from)
-                    ->toCarbon()
-                    ->format('Y-m-d');
+                $fromDate = Verta::parse($request->from)->datetime();
                 $query->whereDate('registration_date', '>=', $fromDate);
             } catch (\Exception $e) {
-                try {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->from)) {
                     $query->whereDate('registration_date', '>=', $request->from);
-                } catch (\Exception $e2) {
-                    // Invalid date format, skip date filter
                 }
             }
         } elseif ($request->filled('to')) {
             try {
-                $toDate = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $request->to)
-                    ->toCarbon()
-                    ->format('Y-m-d');
+                $toDate = Verta::parse($request->to)->datetime();
                 $query->whereDate('registration_date', '<=', $toDate);
             } catch (\Exception $e) {
-                try {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->to)) {
                     $query->whereDate('registration_date', '<=', $request->to);
-                } catch (\Exception $e2) {
-                    // Invalid date format, skip date filter
                 }
             }
         }

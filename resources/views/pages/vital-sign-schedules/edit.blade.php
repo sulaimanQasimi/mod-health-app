@@ -97,8 +97,9 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="morning_time">{{ localize('morning_time') }}</label>
-                                    <input type="time" class="form-control @error('morning_time') is-invalid @enderror" 
-                                           id="morning_time" name="morning_time" value="{{ old('morning_time', $schedule->morning_time ? $schedule->morning_time->format('H:i') : '') }}">
+                                    <input type="text" class="form-control @error('morning_time') is-invalid @enderror" 
+                                           id="morning_time" name="morning_time" value="{{ old('morning_time', $schedule->morning_time ?? '') }}" 
+                                           placeholder="{{ localize('enter_morning_time') }}">
                                     @error('morning_time')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -107,8 +108,9 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="evening_time">{{ localize('evening_time') }}</label>
-                                    <input type="time" class="form-control @error('evening_time') is-invalid @enderror" 
-                                           id="evening_time" name="evening_time" value="{{ old('evening_time', $schedule->evening_time ? $schedule->evening_time->format('H:i') : '') }}">
+                                    <input type="text" class="form-control @error('evening_time') is-invalid @enderror" 
+                                           id="evening_time" name="evening_time" value="{{ old('evening_time', $schedule->evening_time ?? '') }}" 
+                                           placeholder="{{ localize('enter_evening_time') }}">
                                     @error('evening_time')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

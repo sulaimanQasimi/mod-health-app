@@ -313,11 +313,11 @@
                             @for($day = 1; $day <= 15; $day++)
                                 @php
                                     $daySchedules = $vitalSign->schedules->where('day', 'Day ' . $day);
-                                    $morningSchedule = $daySchedules->where('morning_time', '!=', null)->first();
-                                    $eveningSchedule = $daySchedules->where('evening_time', '!=', null)->first();
+                                    $morningSchedule = $daySchedules->filter(fn($s) => filled($s->morning_time))->first();
+                                    $eveningSchedule = $daySchedules->filter(fn($s) => filled($s->evening_time))->first();
                                 @endphp
-                                <td>{{ $morningSchedule ? $morningSchedule->morning_time->format('H:i') : '-' }}</td>
-                                <td>{{ $eveningSchedule ? $eveningSchedule->evening_time->format('H:i') : '-' }}</td>
+                                <td>{{ $morningSchedule?->morning_time ?: '-' }}</td>
+                                <td>{{ $eveningSchedule?->evening_time ?: '-' }}</td>
                             @endfor
                         </tr>
                     @endforeach

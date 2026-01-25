@@ -11,15 +11,6 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-0">{{ localize('global.income_records') }}</h5>
-                            @if($userPharmacies && $userPharmacies->isNotEmpty())
-                            <small class="text-muted">
-                                <i class="bx bx-building me-1"></i>
-                                {{ localize('global.pharmacies') }}: 
-                                @foreach($userPharmacies as $pharmacy)
-                                    <strong>{{ $pharmacy->name }}</strong>@if(!$loop->last), @endif
-                                @endforeach
-                            </small>
-                            @endif
                         </div>
                         <div class="pt-3 pt-md-0 text-end">
                             {{-- @can('create-incomes') --}}
@@ -58,19 +49,6 @@
                                     </option>
                                 </select>
                             </div>
-                            @if($pharmacies)
-                            <div class="col-md-2">
-                                <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
-                                <select class="form-select" id="pharmacy_id" name="pharmacy_id">
-                                    <option value="">{{ localize('global.all_pharmacies') }}</option>
-                                    @foreach ($pharmacies as $pharmacy)
-                                        <option value="{{ $pharmacy->id }}" {{ request('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
-                                            {{ $pharmacy->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @endif
                             <div class="col-md-3">
                                 <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                 <div class="input-group input-daterange" id="bs-datepicker-daterange">
@@ -139,7 +117,6 @@
                                     <th>{{localize('global.purchase_price')}}</th>
                                     <th>{{localize('global.purchase_date')}}</th>
                                     <th>{{localize('global.income_type')}}</th>
-                                    <th>{{localize('global.pharmacy')}}</th>
                                     <th>{{localize('global.created_by')}}</th>
                                     <th>{{localize('global.created_at')}}</th>
                                 </tr>
@@ -183,13 +160,6 @@
                                                 {{ localize('global.' . $income->income_type) }}
                                             </span>
                                         </td>
-                                        <td>
-                                            @if($income->pharmacy)
-                                                <span class="badge bg-secondary">{{ $income->pharmacy->name }}</span>
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
                                         <td>{{ $income->createdBy->name ?? 'N/A' }}</td>
                                         <td>
                                             @if($income->created_at)
@@ -201,7 +171,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="11" class="text-center">{{ localize('global.no_income_records_found') }}</td>
+                                        <td colspan="10" class="text-center">{{ localize('global.no_income_records_found') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

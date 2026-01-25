@@ -77,8 +77,8 @@
                                         </td>
                                         <td>{{ $schedule->day ?? 'N/A' }}</td>
                                         <td>{{ $schedule->date ? $schedule->date->format('Y-m-d') : 'N/A' }}</td>
-                                        <td>{{ $schedule->morning_time ? $schedule->morning_time->format('H:i') : 'N/A' }}</td>
-                                        <td>{{ $schedule->evening_time ? $schedule->evening_time->format('H:i') : 'N/A' }}</td>
+                                        <td>{{ $schedule->morning_time ?? 'N/A' }}</td>
+                                        <td>{{ $schedule->evening_time ?? 'N/A' }}</td>
                                         <td>{{ $schedule->nurse->full_name ?? 'N/A' }}</td>
                                         <td>{{ $schedule->created_at->format('Y-m-d H:i') }}</td>
                                         <td>

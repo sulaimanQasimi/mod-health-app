@@ -383,8 +383,9 @@ class PrescriptionAjaxController extends Controller
             }
 
             // Filter by patient ID (شناسه مریض)
-            if ($request->filled('patient_id')) {
-                $query->where('prescriptions.patient_id', $request->patient_id);
+            $patientIdInput = trim((string) ($request->input('patient_id', '') ?? ''));
+            if ($patientIdInput !== '' && is_numeric($patientIdInput)) {
+                $query->where('prescriptions.patient_id', (int) $patientIdInput);
             }
 
             // Filter by token ID

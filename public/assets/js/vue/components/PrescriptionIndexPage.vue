@@ -49,6 +49,7 @@
               v-model="filters.patient_id"
               :placeholder="localize('global.search_by_patient_id')"
               @keyup.enter="applyFilters"
+              @change="applyFilters"
             >
           </div>
           <div class="col-md-1">

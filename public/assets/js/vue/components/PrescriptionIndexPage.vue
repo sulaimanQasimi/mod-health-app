@@ -8,37 +8,50 @@
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-2">
-            <label for="search" class="form-label">{{ localize('global.search') }}</label>
-            <div class="input-group">
-              <input 
-                type="text" 
-                class="form-control" 
-                id="search" 
-                v-model="filters.search"
-                :placeholder="localize('global.search_by_patient_name')"
-                @keyup.enter="applyFilters"
-              >
-              <button 
-                v-if="filters.search"
-                type="button" 
-                class="btn btn-outline-danger" 
-                @click="clearSearch"
-                :title="localize('global.clear_search')"
-              >
-                <i class="bx bx-x"></i>
-              </button>
-              <button 
-                type="button" 
-                class="btn btn-outline-primary" 
-                @click="applyFilters"
-                :title="localize('global.search')"
-              >
-                <i class="bx bx-search"></i>
-              </button>
-            </div>
+            <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="patient_name" 
+              v-model="filters.patient_name"
+              :placeholder="localize('global.search_by_patient_name')"
+              @keyup.enter="applyFilters"
+            >
           </div>
-          
           <div class="col-md-2">
+            <label for="card_number" class="form-label">{{ localize('global.card_number') }}</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="card_number" 
+              v-model="filters.card_number"
+              :placeholder="localize('global.search_by_card_number')"
+              @keyup.enter="applyFilters"
+            >
+          </div>
+          <div class="col-md-1">
+            <label for="father_name" class="form-label">{{ localize('global.father_name') }}</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="father_name" 
+              v-model="filters.father_name"
+              :placeholder="localize('global.search_by_father_name')"
+              @keyup.enter="applyFilters"
+            >
+          </div>
+          <div class="col-md-1">
+            <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="patient_id" 
+              v-model="filters.patient_id"
+              :placeholder="localize('global.search_by_patient_id')"
+              @keyup.enter="applyFilters"
+            >
+          </div>
+          <div class="col-md-1">
             <label for="token_filter" class="form-label">{{ localize('global.token_id') }}</label>
             <input 
               type="text" 
@@ -56,8 +69,7 @@
               <option v-for="d in doctors" :key="d.id" :value="d.id">{{ d.name }}</option>
             </select>
           </div>
-          
-          <div class="col-md-2">
+          <div class="col-md-1">
             <label for="status" class="form-label">{{ localize('global.status') }}</label>
             <select class="form-select" id="status" v-model="filters.status" @change="applyFilters" :disabled="isDeliveredRoute">
               <option value="">{{ localize('global.all') }}</option>
@@ -65,23 +77,20 @@
               <option value="1">{{ localize('global.delivered') }}</option>
             </select>
           </div>
-          
-          <div class="col-md-1 d-flex align-items-end">
+          <div class="col-md-2 d-flex align-items-end gap-1 flex-wrap">
             <button 
               type="button" 
-              class="btn btn-primary" 
+              class="btn btn-primary flex-shrink-0" 
               @click="applyFilters"
               :disabled="loading"
+              :title="localize('global.search')"
             >
               <i class="bx bx-search" v-if="!loading"></i>
               <i class="bx bx-loader-alt bx-spin" v-else></i>
             </button>
-          </div>
-          
-          <div class="col-md-1 d-flex align-items-end">
             <button 
               type="button" 
-              class="btn btn-secondary" 
+              class="btn btn-secondary flex-shrink-0" 
               @click="clearFilters"
               :title="localize('global.clear_filters')"
             >
@@ -375,7 +384,10 @@ const selectedPrescriptions = ref([])
 const doctors = ref([])
 
 const filters = reactive({
-  search: '',
+  patient_name: '',
+  card_number: '',
+  father_name: '',
+  patient_id: '',
   token_filter: '',
   doctor_id: '',
   status: ''
@@ -407,7 +419,10 @@ const pagination = reactive({
 // Computed properties
 const activeFiltersCount = computed(() => {
   let count = 0
-  if (filters.search) count++
+  if (filters.patient_name) count++
+  if (filters.card_number) count++
+  if (filters.father_name) count++
+  if (filters.patient_id) count++
   if (filters.token_filter) count++
   if (filters.doctor_id) count++
   if (filters.status) count++
@@ -459,8 +474,11 @@ const fetchPrescriptions = async () => {
       perPage: pagination.per_page,
       sortBy: sorting.sortBy,
       sortOrder: sorting.sortOrder,
-      search: filters.search,
-      token_filter: filters.token_filter,
+      patient_name: filters.patient_name || undefined,
+      card_number: filters.card_number || undefined,
+      father_name: filters.father_name || undefined,
+      patient_id: filters.patient_id || undefined,
+      token_filter: filters.token_filter || undefined,
       doctor_id: filters.doctor_id || undefined,
       status: isDeliveredRoute.value ? '1' : filters.status
     }
@@ -489,7 +507,10 @@ const applyFilters = () => {
 
 const clearFilters = () => {
   Object.assign(filters, {
-    search: '',
+    patient_name: '',
+    card_number: '',
+    father_name: '',
+    patient_id: '',
     token_filter: '',
     doctor_id: '',
     status: ''
@@ -498,11 +519,6 @@ const clearFilters = () => {
   pagination.current_page = 1
   selectedPrescriptions.value = []
   fetchPrescriptions()
-}
-
-const clearSearch = () => {
-  filters.search = ''
-  applyFilters()
 }
 
 const sortBy = (field) => {
@@ -623,14 +639,18 @@ onMounted(() => {
   fetchPrescriptions()
 })
 
-// Watch for filter changes with debounce
+// Watch for filter changes with debounce (patient_name, card_number, father_name)
 let filterTimeout
-watch(() => filters.search, () => {
-  clearTimeout(filterTimeout)
-  filterTimeout = setTimeout(() => {
-    applyFilters()
-  }, 500)
-})
+watch(
+  () => [filters.patient_name, filters.card_number, filters.father_name, filters.patient_id],
+  () => {
+    clearTimeout(filterTimeout)
+    filterTimeout = setTimeout(() => {
+      applyFilters()
+    }, 500)
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>

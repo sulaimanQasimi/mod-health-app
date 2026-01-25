@@ -266,7 +266,7 @@
     ]
   },
   "public/assets/js/vue/prescription-index-app.js": {
-    "file": "assets/prescription-index-app-BEfFNQVZ.js",
+    "file": "assets/prescription-index-app-DteBTOkl.js",
     "name": "prescription-index-app",
     "src": "public/assets/js/vue/prescription-index-app.js",
     "isEntry": true,
@@ -278,7 +278,7 @@
       "__commonjsHelpers-DsqdWQfm.js"
     ],
     "css": [
-      "assets/prescription-index-app-I9BaxgPU.css",
+      "assets/prescription-index-app-DpqpD3Wi.css",
       "assets/vue-multiselect-DIn9qltL.css"
     ]
   },

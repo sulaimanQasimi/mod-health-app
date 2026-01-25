@@ -1179,6 +1179,7 @@ return [
 'search_by_patient_name_card_phone' => 'د ناروغ نوم، کارت او موبایل په اساس لټون',
 'search_by_medicine_name' => 'د دوا نوم په اساس لټون',
 'search_by_father_name' => 'د پلار نوم په اساس لټون',
+'search_by_card_number' => 'د کارت شمېرې په اساس لټون',
 'search_by_last_name' => 'د تخلص په اساس لټون',
 'search_by_phone' => 'د موبایل په اساس لټون',
 'income_records' => 'وارده ثبتونه',

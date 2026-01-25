@@ -357,14 +357,34 @@ class PrescriptionAjaxController extends Controller
                 });
             }
 
-            // Search by patient name or ID card
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->whereHas('patient', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('last_name', 'like', '%' . $search . '%')
-                      ->orWhere('id_card', 'like', '%' . $search . '%');
+            // Filter by patient name
+            if ($request->filled('patient_name')) {
+                $patientName = $request->patient_name;
+                $query->whereHas('patient', function ($q) use ($patientName) {
+                    $q->where('name', 'like', '%' . $patientName . '%')
+                      ->orWhere('last_name', 'like', '%' . $patientName . '%');
                 });
+            }
+
+            // Filter by patient card number (id_card)
+            if ($request->filled('card_number')) {
+                $cardNumber = $request->card_number;
+                $query->whereHas('patient', function ($q) use ($cardNumber) {
+                    $q->where('id_card', 'like', '%' . $cardNumber . '%');
+                });
+            }
+
+            // Filter by patient father's name
+            if ($request->filled('father_name')) {
+                $fatherName = $request->father_name;
+                $query->whereHas('patient', function ($q) use ($fatherName) {
+                    $q->where('father_name', 'like', '%' . $fatherName . '%');
+                });
+            }
+
+            // Filter by patient ID (شناسه مریض)
+            if ($request->filled('patient_id')) {
+                $query->where('prescriptions.patient_id', $request->patient_id);
             }
 
             // Filter by token ID

@@ -1191,6 +1191,7 @@ return [
     'search_by_patient_name_card_phone' => 'جستجو بر اساس نام مریض، شماره کارت، شماره موبایل',
     'search_by_medicine_name' => 'جستجو بر اساس نام ادویه',
     'search_by_father_name' => 'جستجو بر اساس نام پدر',
+    'search_by_card_number' => 'جستجو بر اساس شماره کارت',
     'search_by_last_name' => 'جستجو بر اساس نام خانوادگی',
     'search_by_phone' => 'جستجو بر اساس شماره تماس',
     'out_of_stock' => 'موجود نیست',

@@ -1652,6 +1652,7 @@ return [
     'search_by_patient_name_card_phone' => 'Search By Patient Name Card Phone',
     'search_by_medicine_name' => 'Search By Medicine Name',
     'search_by_father_name' => 'Search By Father Name',
+    'search_by_card_number' => 'Search By Card Number',
     'search_by_last_name' => 'Search By Last Name',
     'search_by_phone' => 'Search By Phone',
     'appointment_created_successfully' => 'Appointment Created Successfully',

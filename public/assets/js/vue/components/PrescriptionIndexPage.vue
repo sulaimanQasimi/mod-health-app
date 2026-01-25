@@ -206,6 +206,7 @@
                   <i class="bx bx-sort-up" v-else-if="sorting.sortOrder === 'asc'"></i>
                   <i class="bx bx-sort-down" v-else></i>
                 </th>
+                <th>{{ localize('global.patient_id') }}</th>
                 <th>{{ localize('global.card_number') }}</th>
                 <th @click="sortBy('patient_name')" class="sortable">
                   <span style="font-size: 17px; color: green;">{{ localize('global.patient_name') }}</span>
@@ -242,6 +243,9 @@
                   >
                 </td>
                 <td>{{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}</td>
+                <td>
+                  <span class="badge bg-light text-dark">{{ prescription.patient_id || prescription.patient?.id || '-' }}</span>
+                </td>
                 <td>
                   <span class="badge bg-secondary">{{ prescription.patient?.id_card || '-' }}</span>
                 </td>
@@ -292,7 +296,7 @@
               
               <!-- Empty State -->
               <tr v-if="prescriptions.length === 0">
-                <td colspan="10" class="text-center py-4">
+                <td colspan="11" class="text-center py-4">
                   <div class="alert alert-info">
                     <i class="bx bx-info-circle me-2"></i>
                     {{ localize('global.no_prescriptions_found') }}

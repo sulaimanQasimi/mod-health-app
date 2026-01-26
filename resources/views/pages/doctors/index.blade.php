@@ -15,10 +15,12 @@
                             <i class="bx bx-user-md me-2 text-primary"></i>
                             {{ localize('global.list_doctors') }}
                         </h4>
+                        @can('create', App\Models\Doctor::class)
                         <a class="btn btn-primary" href="{{ route('doctors.create') }}">
                             <i class="bx bx-plus me-1"></i>
                             <span class="d-none d-sm-inline-block">{{ localize('global.create') }}</span>
                         </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -349,12 +351,23 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
+                                                    @can('update', $doctor)
                                                     <a href="{{ route('doctors.edit', $doctor) }}" 
                                                        class="btn btn-sm btn-icon btn-label-primary" 
                                                        data-bs-toggle="tooltip" 
                                                        title="{{ localize('global.edit') }}">
                                                         <i class="bx bx-edit"></i>
                                                     </a>
+                                                    @endcan
+                                                    @can('delete', $doctor)
+                                                    <a href="{{ route('doctors.destroy', $doctor) }}" 
+                                                       class="btn btn-sm btn-icon btn-label-danger" 
+                                                       data-bs-toggle="tooltip" 
+                                                       title="{{ localize('global.delete') }}"
+                                                       onclick="return confirm('{{ localize('global.are_you_sure_delete') ?: 'Are you sure you want to delete this doctor?' }}')">
+                                                        <i class="bx bx-trash"></i>
+                                                    </a>
+                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -383,9 +396,11 @@
                             </div>
                             <h5 class="text-muted">{{ localize('global.no_doctors_found') ?: 'No doctors found' }}</h5>
                             <p class="text-muted mb-4">{{ localize('global.try_adjusting_filters') ?: 'Try adjusting your filters or create a new doctor.' }}</p>
+                            @can('create', App\Models\Doctor::class)
                             <a href="{{ route('doctors.create') }}" class="btn btn-primary">
                                 <i class="bx bx-plus me-1"></i>{{ localize('global.create_doctor') ?: 'Create Doctor' }}
                             </a>
+                            @endcan
                         </div>
                     @endif
                 </div>

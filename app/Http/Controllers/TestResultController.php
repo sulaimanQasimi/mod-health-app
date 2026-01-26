@@ -7,6 +7,7 @@ use App\Models\Patient;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
 use App\Models\PatientTestResultAttachment;
+use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -75,46 +76,48 @@ class TestResultController extends Controller
     }
 
     /**
-     * Convert Persian date to Gregorian
+     * Convert Persian/Jalali date to DateTime for DB comparison. Handles Persian numerals from datepicker_dari.
+     * Returns Verta::parse()->datetime() on success; Y-m-d string if input is Gregorian; null otherwise.
      */
     private function convertPersianDate($persianDate)
     {
         try {
-            return \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $persianDate)
-                ->toCarbon()
-                ->format('Y-m-d');
+            return Verta::parse($persianDate)->datetime();
         } catch (\Exception $e) {
-            return $persianDate; // Return as-is if conversion fails
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $persianDate)) {
+                return $persianDate;
+            }
+            return null;
         }
     }
 
     /**
-     * Apply date range filters to query
+     * Apply date range filters to the PatientTestRegistration query.
+     * Uses registration_date on patient_test_registrations (all testable types have it via the registration),
+     * instead of testable.date which does not exist on hospitalizations or under_reviews.
      */
-    private function applyDateFilters($query, $request, $dateField = 'date')
+    private function applyDateFilters($query, $request)
     {
+        $dateField = 'registration_date';
+
         // Date from filter
         if ($request->filled('date_from_gregorian')) {
-            $query->whereHas('testable', function($q) use ($request, $dateField) {
-                $q->whereDate($dateField, '>=', $request->date_from_gregorian);
-            });
+            $query->whereDate($dateField, '>=', $request->date_from_gregorian);
         } elseif ($request->filled('date_from')) {
             $dateFrom = $this->convertPersianDate($request->date_from);
-            $query->whereHas('testable', function($q) use ($dateFrom, $dateField) {
-                $q->whereDate($dateField, '>=', $dateFrom);
-            });
+            if ($dateFrom !== null) {
+                $query->whereDate($dateField, '>=', $dateFrom);
+            }
         }
 
         // Date to filter
         if ($request->filled('date_to_gregorian')) {
-            $query->whereHas('testable', function($q) use ($request, $dateField) {
-                $q->whereDate($dateField, '<=', $request->date_to_gregorian);
-            });
+            $query->whereDate($dateField, '<=', $request->date_to_gregorian);
         } elseif ($request->filled('date_to')) {
             $dateTo = $this->convertPersianDate($request->date_to);
-            $query->whereHas('testable', function($q) use ($dateTo, $dateField) {
-                $q->whereDate($dateField, '<=', $dateTo);
-            });
+            if ($dateTo !== null) {
+                $query->whereDate($dateField, '<=', $dateTo);
+            }
         }
 
         return $query;

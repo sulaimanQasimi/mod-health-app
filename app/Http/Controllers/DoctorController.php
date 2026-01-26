@@ -16,6 +16,8 @@ class DoctorController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Doctor::class);
+
         $query = Doctor::with(['department', 'branch']);
 
         // Search filter
@@ -73,10 +75,23 @@ class DoctorController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Doctor $doctor)
+    {
+        $this->authorize('view', $doctor);
+
+        $doctor->load(['department', 'branch', 'user']);
+        return view('pages.doctors.show', compact('doctor'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
+        $this->authorize('create', Doctor::class);
+
         $departments = Department::all();
         $users = User::where('is_doctor', true)->orderBy('name')->get();
         return view('pages.doctors.create', compact('departments', 'users'));
@@ -87,6 +102,8 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Doctor::class);
+
         $data = $request->validate([
             'name' => 'required',
             'gender' => 'required|in:Male,Female,Other',
@@ -142,6 +159,8 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor)
     {
+        $this->authorize('update', $doctor);
+
         $departments = Department::all();
         $branches = Branch::all();
         $users = User::where('is_doctor', true)->orderBy('name')->get();
@@ -153,6 +172,8 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Doctor $doctor)
     {
+        $this->authorize('update', $doctor);
+
         $data = $request->validate([
             'name' => 'required',
             'gender' => 'required|in:Male,Female,Other',
@@ -222,6 +243,10 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor)
     {
-        //
+        $this->authorize('delete', $doctor);
+
+        $doctor->delete();
+
+        return redirect()->route('doctors.index')->with('success', localize('global.doctor_deleted_successfully'));
     }
 }

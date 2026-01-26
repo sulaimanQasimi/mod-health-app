@@ -1292,6 +1292,70 @@ class PermissionSeeder extends Seeder
             'updated_at' => '2023-08-22 10:09:52'
         ]);
 
+        // Doctor Permissions
+        Permission::createOrFirst([
+            'name' => 'show-doctors-menu',
+            'name_dr' => 'نمایش مینو داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'view-doctors',
+            'name_dr' => 'نمایش داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'create-doctors',
+            'name_dr' => 'ایجاد داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'edit-doctors',
+            'name_dr' => 'تصحیح داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'delete-doctors',
+            'name_dr' => 'حذف داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'restore-doctors',
+            'name_dr' => 'بازیابی داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'force-delete-doctors',
+            'name_dr' => 'حذف دائمی داکتران',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+            'created_at' => '2023-08-22 14:05:43',
+            'updated_at' => '2023-08-22 10:09:52'
+        ]);
+
         // Diabetes Chart Permissions
         Permission::createOrFirst([
             'name' => 'show-diabetes-charts-menu',

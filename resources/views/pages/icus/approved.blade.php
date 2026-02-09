@@ -17,7 +17,7 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label">{{ localize('global.filter_by_discharge') }}</label>
-                                    <div class="d-flex flex-wrap gap-2">
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
                                         <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'all'])) }}"
                                             class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'all') ? 'btn-primary' : 'btn-outline-primary' }}">
                                             {{ localize('global.all_approved') }}
@@ -29,6 +29,20 @@
                                         <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'discharged'])) }}"
                                             class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'discharged') ? 'btn-primary' : 'btn-outline-primary' }}">
                                             {{ localize('global.discharged') }}
+                                        </a>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'recovered'])) }}"
+                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'recovered') ? 'btn-success' : 'btn-outline-success' }}">
+                                            <i class="bx bx-check-circle me-1"></i>{{ localize('global.recovered') }}
+                                        </a>
+                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'died'])) }}"
+                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'died') ? 'btn-danger' : 'btn-outline-danger' }}">
+                                            <i class="bx bx-x-circle me-1"></i>{{ localize('global.died') }}
+                                        </a>
+                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'moved'])) }}"
+                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'moved') ? 'btn-warning' : 'btn-outline-warning' }}">
+                                            <i class="bx bx-transfer me-1"></i>{{ localize('global.moved') }}
                                         </a>
                                     </div>
                                 </div>
@@ -92,7 +106,15 @@
                                         <td>{{ Str::limit($icu->description, 40) }}</td>
                                         <td>
                                             @if ($icu->is_discharged)
-                                                <span class="badge bg-secondary">{{ localize('global.discharged') }}</span>
+                                                @if ($icu->discharge_status === 'recovered')
+                                                    <span class="badge bg-success">{{ localize('global.recovered') }}</span>
+                                                @elseif ($icu->discharge_status === 'died')
+                                                    <span class="badge bg-danger">{{ localize('global.died') }}</span>
+                                                @elseif ($icu->discharge_status === 'moved')
+                                                    <span class="badge bg-warning">{{ localize('global.moved') }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ localize('global.discharged') }}</span>
+                                                @endif
                                             @else
                                                 <span class="badge bg-success">{{ localize('global.in_icu') }}</span>
                                             @endif

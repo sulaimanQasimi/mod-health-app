@@ -62,7 +62,7 @@ class ICUController extends Controller
         $query = ICU::where('status', 'approved')
             ->with('patient');
 
-        // Filter by discharge status: all | in_icu | discharged (default: in_icu)
+        // Filter by discharge status: all | in_icu | discharged | recovered | died | moved (default: in_icu)
         $dischargeFilter = $request->get('discharge_filter', 'in_icu');
         if ($dischargeFilter === 'in_icu') {
             $query->where(function ($q) {
@@ -70,6 +70,12 @@ class ICUController extends Controller
             });
         } elseif ($dischargeFilter === 'discharged') {
             $query->where('is_discharged', 1);
+        } elseif ($dischargeFilter === 'recovered') {
+            $query->where('is_discharged', 1)->where('discharge_status', 'recovered');
+        } elseif ($dischargeFilter === 'died') {
+            $query->where('is_discharged', 1)->where('discharge_status', 'died');
+        } elseif ($dischargeFilter === 'moved') {
+            $query->where('is_discharged', 1)->where('discharge_status', 'moved');
         }
 
         // Search by patient name, father name, or card number (id_card)

@@ -57,9 +57,50 @@ class ICUController extends Controller
         return view('pages.icus.new', compact('icus'));
     }
 
-    public function approved()
+    public function approved(Request $request)
     {
-        $icus = ICU::where('status', 'approved')->latest()->paginate(10);
+        $query = ICU::where('status', 'approved')
+            ->with('patient');
+
+        // Filter by discharge status: all | in_icu | discharged (default: in_icu)
+        $dischargeFilter = $request->get('discharge_filter', 'in_icu');
+        if ($dischargeFilter === 'in_icu') {
+            $query->where(function ($q) {
+                $q->where('is_discharged', 0)->orWhereNull('is_discharged');
+            });
+        } elseif ($dischargeFilter === 'discharged') {
+            $query->where('is_discharged', 1);
+        }
+
+        // Search by patient name, father name, or card number (id_card)
+        if ($request->filled('search')) {
+            $term = $request->search;
+            $query->whereHas('patient', function ($q) use ($term) {
+                $q->where('name', 'like', '%' . $term . '%')
+                    ->orWhere('father_name', 'like', '%' . $term . '%')
+                    ->orWhere('id_card', 'like', '%' . $term . '%')
+                    ->orWhere('last_name', 'like', '%' . $term . '%')
+                    ->orWhere('phone', 'like', '%' . $term . '%');
+            });
+        }
+        if ($request->filled('patient_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+            });
+        }
+        if ($request->filled('card_number')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('id_card', 'like', '%' . $request->card_number . '%');
+            });
+        }
+        if ($request->filled('father_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('father_name', 'like', '%' . $request->father_name . '%');
+            });
+        }
+
+        $icus = $query->latest()->paginate(10)->appends($request->query());
 
         return view('pages.icus.approved', compact('icus'));
     }
@@ -162,6 +203,14 @@ class ICUController extends Controller
         ]);
 
         $icu->update($data);
+
+        // When discharged (recovered, died, moved / رخصت), free the bed
+        if ($icu->is_discharged && $icu->hospitalization_id && $icu->hospitalization && $icu->hospitalization->bed_id) {
+            $bed = Bed::find($icu->hospitalization->bed_id);
+            if ($bed) {
+                $bed->update(['is_occupied' => 0]);
+            }
+        }
 
         return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
     }

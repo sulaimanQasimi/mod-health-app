@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewPrescriptionNotification;
+use App\Models\Anesthesia;
 use App\Models\Appointment;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
@@ -169,6 +170,14 @@ class PrescriptionAjaxController extends Controller
                 $query->where('i_c_u_id', $id);
             } elseif ($type === 'hospitalization') {
                 $query->where('hospitalization_id', $id);
+            } elseif ($type === 'operation') {
+                $anesthesia = Anesthesia::findOrFail($id);
+                $query->where(function ($q) use ($anesthesia) {
+                    $q->where('appointment_id', $anesthesia->appointment_id);
+                    if ($anesthesia->hospitalization_id) {
+                        $q->orWhere('hospitalization_id', $anesthesia->hospitalization_id);
+                    }
+                });
             } else {
                 $query->where('appointment_id', $id);
             }

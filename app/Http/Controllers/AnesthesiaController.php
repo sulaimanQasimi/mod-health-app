@@ -276,8 +276,14 @@ class AnesthesiaController extends Controller
      */
     public function show(Anesthesia $anesthesia)
     {
-        // Doctors will be loaded via API, no need to pass them here
-        return view('pages.anesthesias.show', compact('anesthesia'));
+        $anesthesia_prescription_count = \App\Models\Prescription::where(function ($q) use ($anesthesia) {
+            $q->where('appointment_id', $anesthesia->appointment_id);
+            if ($anesthesia->hospitalization_id) {
+                $q->orWhere('hospitalization_id', $anesthesia->hospitalization_id);
+            }
+        })->count();
+        $anesthesia_for_prescription = $anesthesia->only(['id', 'appointment_id', 'hospitalization_id', 'patient_id', 'branch_id']);
+        return view('pages.anesthesias.show', compact('anesthesia', 'anesthesia_prescription_count', 'anesthesia_for_prescription'));
     }
 
     /**

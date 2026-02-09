@@ -56,4 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         app.mount('#hospitalization-prescription-section-container');
     }
+    
+    // Check for operation/anesthesia prescription container (prescriptions by appointment_id and hospitalization_id)
+    const operationPrescriptionContainer = document.getElementById('operation-prescription-section-container');
+    if (operationPrescriptionContainer) {
+        const operation = JSON.parse(operationPrescriptionContainer.dataset.operation || '{}');
+        const permissions = JSON.parse(operationPrescriptionContainer.dataset.permissions || '{}');
+        
+        const app = createApp(PrescriptionSection, {
+            operation: operation,
+            canAddPrescription: permissions.canAddPrescription || false,
+            canEditPrescription: permissions.canEditPrescription || false,
+            canDeletePrescription: permissions.canDeletePrescription || false,
+            appointmentCompleted: false
+        });
+        
+        app.mount('#operation-prescription-section-container');
+    }
 });

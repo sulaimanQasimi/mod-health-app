@@ -279,6 +279,38 @@
                             </div>
                         </div>
 
+                        <!-- Prescription Accordion (by appointment_id and hospitalization_id) -->
+                        <div class="accordion mt-4" id="prescriptionAccordion{{ $anesthesia->id }}">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="prescriptionHeading{{ $anesthesia->id }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#prescriptionCollapse{{ $anesthesia->id }}" aria-expanded="false" aria-controls="prescriptionCollapse{{ $anesthesia->id }}">
+                                        <i class="bx bx-notepad p-1 me-2"></i>{{ localize('global.prescription') }}
+                                        <span class="badge bg-primary ms-2">{{ $anesthesia_prescription_count ?? 0 }}</span>
+                                    </button>
+                                </h2>
+                                <div id="prescriptionCollapse{{ $anesthesia->id }}" class="accordion-collapse collapse" aria-labelledby="prescriptionHeading{{ $anesthesia->id }}"
+                                    data-bs-parent="#prescriptionAccordion{{ $anesthesia->id }}">
+                                    <div class="accordion-body">
+                                        <div id="operation-prescription-section-container"
+                                             data-operation='@json($anesthesia_for_prescription ?? $anesthesia)'
+                                             data-permissions='@json([
+                                                 "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                                 "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                                 "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                             ])'>
+                                            <div class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         @if ($anesthesia->status == 'new')
                             <hr class="border border-label-primary">
                             <div class="d-flex justify-content-center mb-2 p-2">
@@ -604,6 +636,7 @@
 @endsection
 
 @section('scripts')
+    @vite('public/assets/js/vue/appointment-prescription-app.js')
     <script>
         // Load hospital doctors when anesthesia modal is opened
         $(document).on('shown.bs.modal', '#createAnasthesiaModal{{ $anesthesia->id }}', function() {

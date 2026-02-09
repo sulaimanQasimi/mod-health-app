@@ -1701,6 +1701,38 @@
                             @else
                                 <h4 class="text-center">Patient Status: {{$operation->patient_status}}</h4>
                             @endif
+
+                            <!-- Prescription Accordion (by appointment_id and hospitalization_id) -->
+                            <div class="accordion mt-4" id="prescriptionAccordion{{ $operation->id }}">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="prescriptionHeading{{ $operation->id }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#prescriptionCollapse{{ $operation->id }}" aria-expanded="false" aria-controls="prescriptionCollapse{{ $operation->id }}">
+                                            <i class="bx bx-notepad p-1 me-2"></i>{{ localize('global.prescription') }}
+                                            <span class="badge bg-primary ms-2">{{ $operation_prescription_count ?? 0 }}</span>
+                                        </button>
+                                    </h2>
+                                    <div id="prescriptionCollapse{{ $operation->id }}" class="accordion-collapse collapse" aria-labelledby="prescriptionHeading{{ $operation->id }}"
+                                        data-bs-parent="#prescriptionAccordion{{ $operation->id }}">
+                                        <div class="accordion-body">
+                                            <div id="operation-prescription-section-container"
+                                                 data-operation='@json($operation_for_prescription ?? $operation)'
+                                                 data-permissions='@json([
+                                                     "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                                     "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                                     "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                                 ])'>
+                                                <div class="text-center py-4">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                    <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -1712,6 +1744,7 @@
 @endsection
 
 @section('scripts')
+    @vite('public/assets/js/vue/appointment-prescription-app.js')
     <script>
         $(document).ready(function () {
 

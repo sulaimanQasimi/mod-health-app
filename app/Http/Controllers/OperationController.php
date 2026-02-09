@@ -8,6 +8,7 @@ use App\Models\Doctor;
 use App\Models\FoodType;
 use App\Models\Nurse;
 use App\Models\Operation;
+use App\Models\Prescription;
 use App\Models\Relation;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -92,7 +93,14 @@ class OperationController extends Controller
         $beds = Bed::all();
         $foodTypes = FoodType::all();
         $relations = Relation::all();
-        return view('pages.operations.show', compact('operation', 'operation_doctors', 'operation_nurses', 'rooms', 'beds', 'foodTypes', 'relations'));
+        $operation_prescription_count = Prescription::where(function ($q) use ($operation) {
+            $q->where('appointment_id', $operation->appointment_id);
+            if ($operation->hospitalization_id) {
+                $q->orWhere('hospitalization_id', $operation->hospitalization_id);
+            }
+        })->count();
+        $operation_for_prescription = $operation->only(['id', 'appointment_id', 'hospitalization_id', 'patient_id', 'branch_id']);
+        return view('pages.operations.show', compact('operation', 'operation_doctors', 'operation_nurses', 'rooms', 'beds', 'foodTypes', 'relations', 'operation_prescription_count', 'operation_for_prescription'));
     }
 
     /**

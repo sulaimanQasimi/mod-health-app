@@ -333,6 +333,10 @@ export default {
             type: Object,
             required: false
         },
+        operation: {
+            type: Object,
+            required: false
+        },
         underReviewId: {
             type: [String, Number],
             required: false,
@@ -383,14 +387,16 @@ export default {
     },
     computed: {
         contextData() {
-            return this.icu || this.hospitalization || this.appointment;
+            return this.operation || this.icu || this.hospitalization || this.appointment;
         },
         contextType() {
+            if (this.operation) return 'operation';
             if (this.icu) return 'icu';
             if (this.hospitalization) return 'hospitalization';
             return 'appointment';
         },
         contextId() {
+            if (this.operation) return this.operation.id;
             if (this.icu) return this.icu.id;
             if (this.hospitalization) return this.hospitalization.id;
             return this.appointment.id;
@@ -488,17 +494,17 @@ export default {
                  }));
 
                  const formData = {
-                     appointment_id: this.contextData.appointment_id || this.contextData.appointment?.id || (this.hospitalization ? this.hospitalization.appointment?.id || this.hospitalization.appointment_id : this.contextData.id),
+                     appointment_id: this.operation ? (this.contextData.appointment_id || this.contextData.appointment?.id) : (this.contextData.appointment_id || this.contextData.appointment?.id || (this.hospitalization ? this.hospitalization.appointment?.id || this.hospitalization.appointment_id : this.contextData.id)),
                      patient_id: this.contextData.patient_id,
                      branch_id: this.contextData.branch_id,
                      i_c_u_id: this.icu ? this.icu.id : null,
-                     hospitalization_id: this.hospitalization ? this.hospitalization.id : null,
+                     hospitalization_id: this.operation ? (this.contextData.hospitalization_id || null) : (this.hospitalization ? this.hospitalization.id : null),
                      under_review_id: this.underReviewId || this.appointment?.under_review_id || this.contextData.under_review_id || (this.appointment?.under_review ? this.appointment.under_review.id : null),
                      prescription_items: transformedItems
                  };
 
                  // Validate appointment_id is present (unless it's a hospitalization without appointment)
-                 if (!formData.appointment_id && !this.hospitalization) {
+                 if (!formData.appointment_id && !this.hospitalization && !this.operation) {
                      this.showToast('شناسه نوبت یافت نشد. لطفاً صفحه را مجدداً بارگذاری کنید.', 'error');
                      this.loading = false;
                      return;

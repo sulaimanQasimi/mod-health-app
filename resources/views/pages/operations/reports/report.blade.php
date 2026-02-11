@@ -71,7 +71,12 @@
                         @endif
                         </td>
                         <td>{{ $item->operation_type_name }}</td>
-                        <td>{{ \Hekmatinasser\Verta\Facades\Verta::createFromFormat('Y-m-d', $item->date)->format('Y/m/d') }}</td>
+                        <td>
+                            @php
+                                $vertaDate = $item->date ? \Hekmatinasser\Verta\Facades\Verta::createFromFormat('Y-m-d', $item->date) : false;
+                            @endphp
+                            {{ ($vertaDate !== false) ? $vertaDate->format('Y/m/d') : ($item->date ?? '-') }}
+                        </td>
                         <td>{{ $item->time }}</td>
                         
                     </tr>

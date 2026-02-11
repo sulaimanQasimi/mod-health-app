@@ -7,6 +7,9 @@ use App\Models\VitalSignType;
 use App\Models\UnderReview;
 use App\Models\Hospitalization;
 use App\Http\Requests\StoreVitalSignRequest;
+use App\Http\Requests\StoreMultipleVitalSignsRequest;
+use App\Models\VitalSignSchedule;
+use App\Models\Nurse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -72,19 +75,49 @@ class VitalSignController extends Controller
         $this->authorize('create', VitalSign::class);
 
         $vitalSignTypes = VitalSignType::orderBy('name')->get();
+        $nurses = Nurse::orderBy('first_name')->get();
         $morphableType = $request->get('morphable_type');
         $morphableId = $request->get('morphable_id');
+        $currentUserNurse = auth()->user()->nurse ?? null;
 
-        return view('pages.vital-signs.create', compact('vitalSignTypes', 'morphableType', 'morphableId'));
+        return view('pages.vital-signs.create', compact('vitalSignTypes', 'nurses', 'morphableType', 'morphableId', 'currentUserNurse'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage (single or multiple vital signs with schedules).
      */
-    public function store(StoreVitalSignRequest $request): RedirectResponse|JsonResponse
+    public function store(StoreMultipleVitalSignsRequest $request): RedirectResponse|JsonResponse
     {
         $this->authorize('create', VitalSign::class);
 
+        $morphableType = $request->input('morphable_type');
+        $morphableId = (int) $request->input('morphable_id');
+
+        if ($request->filled('vital_signs') && is_array($request->vital_signs)) {
+            $created = $this->storeMultipleVitalSignsWithSchedules($request->vital_signs, $morphableType, $morphableId);
+            $message = $created === 1
+                ? 'Vital sign and schedules created successfully.'
+                : "{$created} vital signs and their schedules created successfully.";
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 201);
+            }
+
+            $routeName = $morphableType === 'App\\Models\\Hospitalization'
+                ? 'hospitalizations.show'
+                : 'under_reviews.show';
+            $morphable = (str_contains($morphableType, 'Hospitalization'))
+                ? Hospitalization::find($morphableId)
+                : UnderReview::find($morphableId);
+
+            if ($morphable) {
+                return redirect()->route($routeName, $morphable)->with('success', $message);
+            }
+            return redirect()->route('vital-signs.index', ['morphable_type' => $morphableType, 'morphable_id' => $morphableId])
+                ->with('success', $message);
+        }
+
+        // Single vital sign (legacy)
         $vitalSign = VitalSign::create($request->validated());
 
         if ($request->expectsJson()) {
@@ -94,7 +127,6 @@ class VitalSignController extends Controller
             ], 201);
         }
 
-        // Redirect back to the morphable model's show page
         $morphable = $vitalSign->morphable;
         if ($morphable) {
             $routeName = $vitalSign->morphable_type == 'App\\Models\\Hospitalization'
@@ -107,6 +139,75 @@ class VitalSignController extends Controller
 
         return redirect()->route('vital-signs.index')
             ->with('success', 'Vital sign created successfully.');
+    }
+
+    /**
+     * Create multiple vital signs with their schedules in a single transaction.
+     *
+     * @return int Number of vital signs created
+     */
+    private function storeMultipleVitalSignsWithSchedules(array $vitalSignsData, string $morphableType, int $morphableId): int
+    {
+        $count = 0;
+
+        \DB::transaction(function () use ($vitalSignsData, $morphableType, $morphableId, &$count) {
+            foreach ($vitalSignsData as $row) {
+                $vitalSignTypeId = (int) ($row['vital_sign_type_id'] ?? 0);
+                if ($vitalSignTypeId < 1) {
+                    continue;
+                }
+
+                $vitalSign = VitalSign::create([
+                    'vital_sign_type_id' => $vitalSignTypeId,
+                    'morphable_type' => $morphableType,
+                    'morphable_id' => $morphableId,
+                ]);
+                $count++;
+
+                $schedules = $row['schedules'] ?? [];
+                if (!is_array($schedules)) {
+                    $schedules = [];
+                }
+
+                $existingDays = VitalSignSchedule::where('vital_sign_id', $vitalSign->id)
+                    ->whereNotNull('day')
+                    ->pluck('day')
+                    ->toArray();
+                $dayNumber = 1;
+                while (in_array('Day ' . $dayNumber, $existingDays, true)) {
+                    $dayNumber++;
+                }
+
+                $authNurse = auth()->user()->nurse;
+
+                foreach ($schedules as $scheduleRow) {
+                    $date = $scheduleRow['date'] ?? null;
+                    $morningTime = $scheduleRow['morning_time'] ?? null;
+                    $eveningTime = $scheduleRow['evening_time'] ?? null;
+
+                    if (!$date && !$morningTime && !$eveningTime) {
+                        continue;
+                    }
+
+                    // Backend selects nurse: use logged-in user's nurse when they have one
+                    // When user is not a nurse, nurse_id will be null (optional)
+                    $nurseId = $authNurse ? $authNurse->id : null;
+
+                    VitalSignSchedule::create([
+                        'vital_sign_id' => $vitalSign->id,
+                        'day' => 'Day ' . $dayNumber,
+                        'date' => $date ?: null,
+                        'morning_time' => $morningTime ?: null,
+                        'evening_time' => $eveningTime ?: null,
+                        'nurse_id' => $nurseId,
+                    ]);
+                    $dayNumber++;
+                    $existingDays[] = 'Day ' . ($dayNumber - 1);
+                }
+            }
+        });
+
+        return $count;
     }
 
     /**

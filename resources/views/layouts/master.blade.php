@@ -136,8 +136,8 @@
     <!-- Core JS -->
     @include('layouts.partial.js_links')
 
-
     @yield('scripts')
+    @stack('scripts')
 </body>
 
 

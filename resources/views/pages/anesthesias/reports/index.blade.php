@@ -18,7 +18,7 @@
                     </h2>
                     <div id="accordionWithIcon-1" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <form>
+                            <form id="anesthesias-report-search-form">
                                 @csrf
                                 <div class="row g-2">
                                     <div class="col-md-3">
@@ -101,7 +101,7 @@
 @push('custom-js')
 <script src="{{ asset('assets/js/vue/vue.js') }}"></script>
 <script>
-$('form').submit(function(e) {
+$('#anesthesias-report-search-form').submit(function(e) {
     e.preventDefault();
     $.ajax({
         type: 'post',
@@ -119,7 +119,18 @@ $('form').submit(function(e) {
         }
 
     })
-})
+});
+
+$('#anesthesias-report-search-form').on('reset', function() {
+    var $form = $(this);
+    $('.search-document-data').html('');
+    setTimeout(function() {
+        $form.find('select').val(null).trigger('change');
+        $form.find('input[type="text"]').val('');
+        $form.find('input[type="time"]').val('');
+        $form.find('.datepicker_dari').val('');
+    }, 0);
+});
 </script>
 @endpush
 @push('custom-css')

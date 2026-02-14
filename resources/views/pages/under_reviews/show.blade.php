@@ -1712,18 +1712,99 @@
 
             </script>
             <script>
-                $('#room_id').on('change', function () {
+                // Initialize Select2 only for the modal that is shown (fixes room/bed dropdowns not working)
+                function initSelect2InModal($modal) {
+                    if (!$modal || !$modal.length || typeof $.fn.select2 === 'undefined') return;
+                    $modal.find('select.select2').each(function () {
+                        var $select = $(this);
+                        try {
+                            if ($select.hasClass('select2-hidden-accessible')) {
+                                $select.select2('destroy');
+                            }
+                        } catch (e) {}
+                        $select.select2({
+                            dropdownParent: $modal,
+                            placeholder: '--{{ localize("global.select") }}--',
+                            width: '100%'
+                        });
+                    });
+                }
+
+                $(document).on('shown.bs.modal', '.modal', function () {
+                    var $modal = $(this);
+                    initSelect2InModal($modal);
+                    if ($modal.attr('id') && $modal.attr('id').indexOf('createHospitalizationModal') === 0) {
+                        var $roomSelect = $modal.find('select[name="room_id"]');
+                        var $bedSelect = $modal.find('select[name="bed_id"]');
+                        $roomSelect.off('change.hospitalization').on('change.hospitalization', function () {
+                            var roomId = $(this).val();
+                            if (roomId) {
+                                $.get('/get_related_beds/' + roomId, function (response) {
+                                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                        $bedSelect.select2('destroy');
+                                    }
+                                    $bedSelect.html(response);
+                                    if (typeof $.fn.select2 !== 'undefined') {
+                                        $bedSelect.select2({
+                                            dropdownParent: $modal,
+                                            placeholder: '--{{ localize("global.select") }}--',
+                                            width: '100%'
+                                        });
+                                    }
+                                });
+                            } else {
+                                $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal,
+                                        placeholder: '--{{ localize("global.select") }}--',
+                                        width: '100%'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+
+                $(document).on('change', '#room_id', function () {
                     var roomId = $(this).val();
+                    var $bedSelect = $('#bed_id');
+                    var $modal = $(this).closest('.modal');
                     if (roomId !== '') {
                         $.ajax({
                             url: '/get_related_beds/' + roomId,
                             type: 'GET',
                             success: function (response) {
-                                $('#bed_id').html(response);
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                $bedSelect.html(response);
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                        placeholder: '--{{ localize("global.select") }}--',
+                                        width: '100%'
+                                    });
+                                }
                             }
-                        })
+                        });
+                    } else {
+                        $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        if (typeof $.fn.select2 !== 'undefined') {
+                            $bedSelect.select2({
+                                dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                placeholder: '--{{ localize("global.select") }}--',
+                                width: '100%'
+                            });
+                        }
                     }
-                })
+                });
 
                 // Handle Nutrition Care form submission with AJAX
                 $(document).ready(function () {

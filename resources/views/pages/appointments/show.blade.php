@@ -2084,30 +2084,106 @@
                 return;
             }
 
-            // Initialize Select2 for elements inside modals
-            function initializeSelect2InModals() {
-                $('.modal .select2').each(function () {
+            // Initialize Select2 only for elements inside the given modal (dropdownParent = modal so options appear on top)
+            function initializeSelect2InModal($modal) {
+                if (!$modal || !$modal.length) return;
+                // Use modal (not modal-body) so dropdown is not clipped and z-index works
+                var $parent = $modal;
+                $modal.find('select.select2').each(function () {
                     var $select = $(this);
-                    var $modal = $select.closest('.modal');
-
-                    // Destroy existing Select2 instance if it exists
-                    if ($select.hasClass('select2-hidden-accessible')) {
-                        $select.select2('destroy');
-                    }
-
-                    // Initialize Select2 with proper dropdown parent
+                    try {
+                        if ($select.hasClass('select2-hidden-accessible')) {
+                            $select.select2('destroy');
+                        }
+                    } catch (e) {}
                     if (typeof $.fn.select2 !== 'undefined') {
                         $select.select2({
-                            dropdownParent: $modal.find('.modal-body'),
-                            placeholder: '--انتخاب--'
+                            dropdownParent: $parent,
+                            placeholder: '--انتخاب--',
+                            width: '100%'
                         });
                     }
                 });
             }
 
-            // Initialize Select2 when modals are shown
-            $('.modal').on('shown.bs.modal', function () {
-                initializeSelect2InModals();
+            // Initialize Select2 when modals are shown (only for the modal that opened)
+            $(document).on('shown.bs.modal', '.modal', function () {
+                var $modal = $(this);
+                initializeSelect2InModal($modal);
+
+                // Create Under Review modal: wire room -> beds with dropdownParent so options stay on top
+                if ($modal.attr('id') && $modal.attr('id').indexOf('createUnderReviewModal') === 0) {
+                    var $roomSelect = $modal.find('select#under_review_room, select[name="room_id"][id="under_review_room"]');
+                    var $bedSelect = $modal.find('select#under_review_bed_id, select[name="bed_id"][id="under_review_bed_id"]');
+                    if ($roomSelect.length && $bedSelect.length) {
+                        $roomSelect.off('change.underreview').on('change.underreview', function () {
+                            var roomId = $(this).val();
+                            if (roomId) {
+                                $.get('/get_related_beds/' + roomId, function (response) {
+                                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                        $bedSelect.select2('destroy');
+                                    }
+                                    $bedSelect.html(response);
+                                    if (typeof $.fn.select2 !== 'undefined') {
+                                        $bedSelect.select2({
+                                            dropdownParent: $modal,
+                                            placeholder: '--انتخاب--',
+                                            width: '100%'
+                                        });
+                                    }
+                                });
+                            } else {
+                                $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal,
+                                        placeholder: '--انتخاب--',
+                                        width: '100%'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // If this is the create hospitalization modal, wire room -> beds and re-init bed select after load
+                if ($modal.attr('id') && $modal.attr('id').indexOf('createHospitalizationModal') === 0) {
+                    var $roomSelect = $modal.find('select[name="room_id"]');
+                    var $bedSelect = $modal.find('select[name="bed_id"]');
+                    $roomSelect.off('change.hospitalization').on('change.hospitalization', function () {
+                        var roomId = $(this).val();
+                        if (roomId) {
+                            $.get('/get_related_beds/' + roomId, function (response) {
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                $bedSelect.html(response);
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal,
+                                        placeholder: '--انتخاب--',
+                                        width: '100%'
+                                    });
+                                }
+                            });
+                        } else {
+                            $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    dropdownParent: $modal,
+                                    placeholder: '--انتخاب--',
+                                    width: '100%'
+                                });
+                            }
+                        }
+                    });
+                }
             });
 
             // Load hospital doctors when anesthesia modal is opened
@@ -2196,33 +2272,79 @@
             })
 
 
-            $('#room_id').on('change', function () {
+            $(document).on('change', '#room_id', function () {
                 var roomId = $(this).val();
+                var $bedSelect = $('#bed_id');
+                var $modal = $(this).closest('.modal');
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
                         success: function (response) {
-
-                            $('#bed_id').html(response);
+                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            $bedSelect.html(response);
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                    placeholder: '--انتخاب--',
+                                    width: '100%'
+                                });
+                            }
                         }
-                    })
+                    });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                            placeholder: '--انتخاب--',
+                            width: '100%'
+                        });
+                    }
                 }
-            })
+            });
 
-            $('#under_review_room').on('change', function () {
+            $(document).on('change', '#under_review_room', function () {
                 var roomId = $(this).val();
+                var $bedSelect = $('#under_review_bed_id');
+                var $modal = $(this).closest('.modal');
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
                         success: function (response) {
-
-                            $('#under_review_bed_id').html(response);
+                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            $bedSelect.html(response);
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                    placeholder: '--انتخاب--',
+                                    width: '100%'
+                                });
+                            }
                         }
-                    })
+                    });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                            placeholder: '--انتخاب--',
+                            width: '100%'
+                        });
+                    }
                 }
-            })
+            });
         })
     </script>
 

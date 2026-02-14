@@ -96,6 +96,18 @@
         </style>
     @endif
 
+    <!-- Select2 in modals: ensure dropdown appears above modal (options not behind modal) -->
+    <style type="text/css">
+        .modal .select2-dropdown,
+        .modal .select2-container--open {
+            z-index: 1060 !important;
+        }
+        .modal .select2-container--default .select2-selection--single,
+        .modal .select2-container--default .select2-selection--multiple {
+            z-index: 0;
+        }
+    </style>
+
     @yield('styles')
     
 </head>

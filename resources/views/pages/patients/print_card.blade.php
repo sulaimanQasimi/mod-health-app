@@ -174,7 +174,7 @@
                                 <div class="font">
 
                                     <div class="top">
-                                        <p style="text-align: center; padding: 10%; color:white;"> {{\Auth::user()->branch->name}} </p>
+                                        <p style="text-align: center; padding: 10%; color:white;"> {{\Auth::user()->branch?->name ?? ''}} </p>
                                         <img src="{{ asset($patient->image) }}">
 
                                     </div>
@@ -186,8 +186,12 @@
                                         </div>
                                         <br>
                                         <p class="no">{{$patient->phone}}</p>
-                                        <p class="no">{{$patient->recipient->name}}</p>
-                                        <p class="no">{{$patient->district->name_dr}} - {{$patient->province->name_dr}}</p>
+                                        <p class="no">{{$patient->recipient?->name ?? ''}}</p>
+                                        <p class="no">@php
+                                            $districtName = $patient->district?->name_dr ?? '';
+                                            $provinceName = $patient->province?->name_dr ?? '';
+                                            $location = trim($districtName . ($districtName && $provinceName ? ' - ' : '') . $provinceName);
+                                        @endphp{{$location}}</p>
                                     </div>
                                 </div>
                             </div>

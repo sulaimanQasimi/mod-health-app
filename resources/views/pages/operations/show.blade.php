@@ -1819,17 +1819,42 @@
                 });
             }
 
-            $('#under_review_room').on('change', function () {
+            $(document).on('change', '#under_review_room', function () {
                 var roomId = $(this).val();
+                var $bedSelect = $('#under_review_bed_id');
+                var $modal = $(this).closest('.modal');
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
                         success: function (response) {
-
-                            $('#under_review_bed_id').html(response);
+                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            $bedSelect.html(response);
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                    placeholder: '{{ localize("global.select") }}...',
+                                    width: '100%',
+                                    allowClear: true
+                                });
+                            }
                         }
-                    })
+                    });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                            placeholder: '{{ localize("global.select") }}...',
+                            width: '100%',
+                            allowClear: true
+                        });
+                    }
                 }
             });
             // Handle room change and update bed dropdown with Select2
@@ -1883,17 +1908,142 @@
                     }
                 }
             });
-            $('#room_id').on('change', function () {
+            // Initialize Select2 for createHospitalizationModal when it is shown (fixes room/bed dropdowns)
+            function initSelect2InModal($modal) {
+                if (!$modal || !$modal.length || typeof $.fn.select2 === 'undefined') return;
+                $modal.find('select.select2').each(function () {
+                    var $select = $(this);
+                    try {
+                        if ($select.hasClass('select2-hidden-accessible')) {
+                            $select.select2('destroy');
+                        }
+                    } catch (e) {}
+                    $select.select2({
+                        dropdownParent: $modal,
+                        placeholder: '{{ localize("global.select") }}...',
+                        width: '100%',
+                        allowClear: true
+                    });
+                });
+            }
+            $(document).on('shown.bs.modal', '.modal', function () {
+                var $modal = $(this);
+                initSelect2InModal($modal);
+
+                // Create Under Review modal: wire room -> beds so options stay on top
+                if ($modal.attr('id') && $modal.attr('id').indexOf('createUnderReviewModal') === 0) {
+                    var $roomSelect = $modal.find('#under_review_room');
+                    var $bedSelect = $modal.find('#under_review_bed_id');
+                    if ($roomSelect.length && $bedSelect.length) {
+                        $roomSelect.off('change.underreview').on('change.underreview', function () {
+                            var roomId = $(this).val();
+                            if (roomId) {
+                                $.get('/get_related_beds/' + roomId, function (response) {
+                                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                        $bedSelect.select2('destroy');
+                                    }
+                                    $bedSelect.html(response);
+                                    if (typeof $.fn.select2 !== 'undefined') {
+                                        $bedSelect.select2({
+                                            dropdownParent: $modal,
+                                            placeholder: '{{ localize("global.select") }}...',
+                                            width: '100%',
+                                            allowClear: true
+                                        });
+                                    }
+                                });
+                            } else {
+                                $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal,
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        width: '100%',
+                                        allowClear: true
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if ($modal.attr('id') && $modal.attr('id').indexOf('createHospitalizationModal') === 0) {
+                    var $roomSelect = $modal.find('select[name="room_id"]');
+                    var $bedSelect = $modal.find('select[name="bed_id"]');
+                    $roomSelect.off('change.hospitalization').on('change.hospitalization', function () {
+                        var roomId = $(this).val();
+                        if (roomId) {
+                            $.get('/get_related_beds/' + roomId, function (response) {
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                $bedSelect.html(response);
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal,
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        width: '100%',
+                                        allowClear: true
+                                    });
+                                }
+                            });
+                        } else {
+                            $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    dropdownParent: $modal,
+                                    placeholder: '{{ localize("global.select") }}...',
+                                    width: '100%',
+                                    allowClear: true
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $(document).on('change', '#room_id', function () {
                 var roomId = $(this).val();
+                var $bedSelect = $('#bed_id');
+                var $modal = $(this).closest('.modal');
                 if (roomId !== '') {
                     $.ajax({
                         url: '/get_related_beds/' + roomId,
                         type: 'GET',
                         success: function (response) {
-
-                            $('#bed_id').html(response);
+                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2('destroy');
+                            }
+                            $bedSelect.html(response);
+                            if (typeof $.fn.select2 !== 'undefined') {
+                                $bedSelect.select2({
+                                    dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                    placeholder: '{{ localize("global.select") }}...',
+                                    width: '100%',
+                                    allowClear: true
+                                });
+                            }
                         }
-                    })
+                    });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                            placeholder: '{{ localize("global.select") }}...',
+                            width: '100%',
+                            allowClear: true
+                        });
+                    }
                 }
             });
         });

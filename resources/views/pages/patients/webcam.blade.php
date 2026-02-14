@@ -356,28 +356,233 @@
     </div>
 
     <script>
-        // Initialize webcam
-        Webcam.set({
-            width: 400,
-            height: 300,
-            image_format: 'jpeg',
-            jpeg_quality: 90,
-            force_flash: false
-        });
+        // Wait for webcam to be loaded
+        function initializeWebcam() {
+            // Check if Webcam is available
+            if (typeof Webcam === 'undefined') {
+                console.log('Waiting for Webcam library to load...');
+                setTimeout(initializeWebcam, 100);
+                return;
+            }
 
-        Webcam.attach('#my_camera');
+            // Check if browser supports getUserMedia
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                var errorDiv = document.querySelector('#my_camera');
+                if (errorDiv) {
+                    errorDiv.innerHTML = `
+                        <div style="background: #f8d7da; border: 2px solid #dc3545; border-radius: 10px; padding: 20px; text-align: center;">
+                            <h3 style="color: #721c24;">
+                                <i class="bx bx-error-circle" style="font-size: 2rem;"></i><br>
+                                مرورگر شما از دوربین پشتیبانی نمی‌کند
+                            </h3>
+                            <p style="color: #721c24;">
+                                لطفاً از مرورگرهای مدرن مانند Chrome، Firefox، Edge یا Safari استفاده کنید.
+                            </p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            // Wait for webcam to be ready
+            if (!Webcam.loaded) {
+                // Listen for load event if available
+                if (typeof Webcam.on === 'function') {
+                    Webcam.on('load', function() {
+                        setupWebcam();
+                    });
+                }
+                
+                // Also check periodically as fallback
+                var checkCount = 0;
+                var checkInterval = setInterval(function() {
+                    checkCount++;
+                    if (Webcam.loaded) {
+                        clearInterval(checkInterval);
+                        setupWebcam();
+                    } else if (checkCount >= 30) { // 3 seconds max wait
+                        clearInterval(checkInterval);
+                        console.warn('Webcam loading timeout, attempting to initialize anyway...');
+                        setupWebcam();
+                    }
+                }, 100);
+            } else {
+                setupWebcam();
+            }
+        }
+
+        // Function to retry webcam initialization
+        function retryWebcam() {
+            var errorDiv = document.querySelector('.webcam-permission-error');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            // Reset webcam
+            if (typeof Webcam !== 'undefined') {
+                try {
+                    Webcam.reset();
+                } catch(e) {
+                    console.log('Webcam reset:', e);
+                }
+            }
+            
+            // Reinitialize
+            setTimeout(function() {
+                initializeWebcam();
+            }, 500);
+        }
+
+        function setupWebcam() {
+            try {
+                // Set up error handler before attaching
+                if (typeof Webcam.on === 'function') {
+                    Webcam.on('error', function(err) {
+                        console.error('Webcam error:', err);
+                        handleWebcamError(err);
+                    });
+                    
+                    Webcam.on('live', function() {
+                        console.log('Webcam is live');
+                        // Hide any error messages when webcam becomes live
+                        var errorMsg = document.querySelector('.webcam-permission-error');
+                        if (errorMsg) {
+                            errorMsg.remove();
+                        }
+                    });
+                }
+
+                // Initialize webcam
+                Webcam.set({
+                    width: 400,
+                    height: 300,
+                    image_format: 'jpeg',
+                    jpeg_quality: 90,
+                    force_flash: false
+                });
+
+                Webcam.attach('#my_camera');
+                
+                // Show success message
+                console.log('Webcam initialized successfully');
+            } catch (error) {
+                console.error('Error initializing webcam:', error);
+                handleWebcamError(error);
+            }
+        }
+
+        function handleWebcamError(err) {
+            var errorMessage = '';
+            var errorName = err && err.name ? err.name : '';
+            var errorMsg = err && err.message ? err.message : String(err);
+            
+            // Check for permission errors
+            if (errorName === 'NotAllowedError' || errorMsg.includes('Permission denied') || errorMsg.includes('NotAllowedError')) {
+                errorMessage = `
+                    <div class="webcam-permission-error" style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center;">
+                        <h3 style="color: #856404; margin-bottom: 15px;">
+                            <i class="bx bx-error-circle" style="font-size: 2rem;"></i><br>
+                            دسترسی به دوربین رد شد
+                        </h3>
+                        <p style="color: #856404; margin-bottom: 15px; font-size: 1.1rem;">
+                            لطفاً دسترسی دوربین را در مرورگر خود فعال کنید:
+                        </p>
+                        <div style="text-align: right; background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <p style="margin: 8px 0;"><strong>Chrome/Edge:</strong> روی آیکون قفل یا دوربین در نوار آدرس کلیک کنید و "Allow" را انتخاب کنید</p>
+                            <p style="margin: 8px 0;"><strong>Firefox:</strong> روی آیکون قفل در نوار آدرس کلیک کنید و "Allow" را برای دوربین انتخاب کنید</p>
+                            <p style="margin: 8px 0;"><strong>Safari:</strong> Safari > Preferences > Websites > Camera و سپس "Allow" را انتخاب کنید</p>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button onclick="retryWebcam()" style="padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin: 0 5px;">
+                                <i class="bx bx-refresh"></i> تلاش مجدد
+                            </button>
+                            <button onclick="location.reload()" style="padding: 10px 25px; background: #ffc107; color: #856404; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin: 0 5px;">
+                                <i class="bx bx-refresh"></i> رفرش صفحه
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (errorName === 'NotFoundError' || errorMsg.includes('No camera') || errorMsg.includes('NotFoundError')) {
+                errorMessage = `
+                    <div class="webcam-permission-error" style="background: #f8d7da; border: 2px solid #dc3545; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center;">
+                        <h3 style="color: #721c24; margin-bottom: 15px;">
+                            <i class="bx bx-error-circle" style="font-size: 2rem;"></i><br>
+                            دوربین یافت نشد
+                        </h3>
+                        <p style="color: #721c24; margin-bottom: 15px;">
+                            لطفاً مطمئن شوید که دوربین به کامپیوتر متصل است و توسط برنامه دیگری استفاده نمی‌شود.
+                        </p>
+                        <div style="margin-top: 15px;">
+                            <button onclick="retryWebcam()" style="padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin: 0 5px;">
+                                <i class="bx bx-refresh"></i> تلاش مجدد
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                errorMessage = `
+                    <div class="webcam-permission-error" style="background: #f8d7da; border: 2px solid #dc3545; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center;">
+                        <h3 style="color: #721c24; margin-bottom: 15px;">
+                            <i class="bx bx-error-circle" style="font-size: 2rem;"></i><br>
+                            خطا در دسترسی به دوربین
+                        </h3>
+                        <p style="color: #721c24; margin-bottom: 15px;">
+                            ${errorMsg || 'خطای نامشخص در دسترسی به دوربین'}
+                        </p>
+                        <div style="margin-top: 15px;">
+                            <button onclick="retryWebcam()" style="padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin: 0 5px;">
+                                <i class="bx bx-refresh"></i> تلاش مجدد
+                            </button>
+                            <button onclick="location.reload()" style="padding: 10px 25px; background: #dc3545; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin: 0 5px;">
+                                <i class="bx bx-refresh"></i> رفرش صفحه
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Insert error message into camera container
+            var cameraContainer = document.querySelector('#my_camera').parentElement;
+            if (cameraContainer) {
+                var existingError = cameraContainer.querySelector('.webcam-permission-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                cameraContainer.insertAdjacentHTML('afterbegin', errorMessage);
+            } else {
+                showMessage('خطا در دسترسی به دوربین. لطفاً دسترسی دوربین را در مرورگر خود فعال کنید.', 'error');
+            }
+        }
 
         function take_snapshot() {
+            // Check if webcam is loaded and live
+            if (typeof Webcam === 'undefined' || !Webcam.loaded) {
+                showMessage('دوربین هنوز آماده نیست. لطفاً چند لحظه صبر کنید.', 'error');
+                return;
+            }
+
             // Show loading
             document.getElementById('results').innerHTML = '<div style="text-align: center; padding: 20px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 2rem; color: #667eea;"></i><p>در حال گرفتن عکس...</p></div>';
             
-            Webcam.snap(function(data_uri) {
-                $(".image-tag").val(data_uri);
-                document.getElementById('results').innerHTML = '<img src="' + data_uri + '" style="max-width: 100%; max-height: 100%; border-radius: 8px;"/>';
-                
-                // Show success message
-                showMessage('عکس با موفقیت گرفته شد!', 'success');
-            });
+            try {
+                Webcam.snap(function(data_uri) {
+                    // Set image value (use jQuery if available, otherwise use vanilla JS)
+                    var imageTag = document.querySelector('.image-tag');
+                    if (imageTag) {
+                        imageTag.value = data_uri;
+                    } else if (typeof $ !== 'undefined') {
+                        $(".image-tag").val(data_uri);
+                    }
+                    
+                    document.getElementById('results').innerHTML = '<img src="' + data_uri + '" style="max-width: 100%; max-height: 100%; border-radius: 8px;"/>';
+                    
+                    // Show success message
+                    showMessage('عکس با موفقیت گرفته شد!', 'success');
+                });
+            } catch (error) {
+                console.error('Error taking snapshot:', error);
+                showMessage('خطا در گرفتن عکس. لطفاً دوباره تلاش کنید.', 'error');
+            }
         }
 
         function showMessage(message, type) {
@@ -408,8 +613,11 @@
             saveBtn.disabled = true;
         });
 
-        // Add some interactive effects
+        // Initialize webcam when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize webcam
+            initializeWebcam();
+            
             // Add hover effects to camera containers
             const containers = document.querySelectorAll('.camera-container');
             containers.forEach(container => {
@@ -422,6 +630,14 @@
                 });
             });
         });
+
+        // Fallback: Also try to initialize if DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            // DOMContentLoaded has not fired yet
+        } else {
+            // DOMContentLoaded has already fired
+            initializeWebcam();
+        }
     </script>
 </body>
 </html>

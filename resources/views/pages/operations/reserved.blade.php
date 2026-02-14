@@ -11,9 +11,16 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.reserved_operations') }}</h5>
                     </div>
+                    @include('pages.operations.partials.filter', ['filterRoute' => 'operations.reserved'])
                     <div class="card-body">
-
-
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">
+                                {{ localize('global.showing') }} {{ $reservedOperations->firstItem() ?? 0 }}
+                                {{ localize('global.to') }} {{ $reservedOperations->lastItem() ?? 0 }}
+                                {{ localize('global.of') }} {{ $reservedOperations->total() }}
+                                {{ localize('global.results') }}
+                            </span>
+                        </div>
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -42,9 +49,9 @@
                                         <td>{{ $operation->operationType ? $operation->operationType->name : 'No Operation Type' }}</td>
                                         <td>
                                             @if ($operation->is_reserved == 0)
-                                                <span class="badge bg-success">{{localize('global.unreserved')}}</span>
+                                                <span class="badge bg-success">{{ localize('global.unreserved') }}</span>
                                             @else
-                                            <span class="badge bg-warning">{{localize('global.reserved')}}</span>
+                                            <span class="badge bg-warning">{{ localize('global.reserved') }}</span>
                                             @endif
                                         </td>
                                         <td>
@@ -72,9 +79,9 @@
                             </tbody>
                         </table>
                     </div>
-                    @if($reservedOperations && $reservedOperations->count() > 0)
-                    <div class="d-flex justify-content-end">
-                        {{ $reservedOperations->links('pagination::bootstrap-5') }}
+                    @if($reservedOperations && $reservedOperations->hasPages())
+                    <div class="card-footer d-flex justify-content-end">
+                        {{ $reservedOperations->appends(request()->query())->links('pagination::bootstrap-5') }}
                     </div>
                     @endif
                 </div>

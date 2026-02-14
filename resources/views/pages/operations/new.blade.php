@@ -11,9 +11,16 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ localize('global.new_operations') }}</h5>
                     </div>
+                    @include('pages.operations.partials.filter', ['filterRoute' => 'operations.new'])
                     <div class="card-body">
-
-
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">
+                                {{ localize('global.showing') }} {{ $operations->firstItem() ?? 0 }}
+                                {{ localize('global.to') }} {{ $operations->lastItem() ?? 0 }}
+                                {{ localize('global.of') }} {{ $operations->total() }}
+                                {{ localize('global.results') }}
+                            </span>
+                        </div>
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -68,9 +75,9 @@
                             </tbody>
                         </table>
                     </div>
-                    @if($operations && $operations->count() > 0)
-                    <div class="d-flex justify-content-end">
-                        {{ $operations->links('pagination::bootstrap-5') }}
+                    @if($operations && $operations->hasPages())
+                    <div class="card-footer d-flex justify-content-end">
+                        {{ $operations->appends(request()->query())->links('pagination::bootstrap-5') }}
                     </div>
                     @endif
                 </div>

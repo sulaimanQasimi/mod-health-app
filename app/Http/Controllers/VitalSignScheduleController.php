@@ -7,6 +7,7 @@ use App\Models\VitalSign;
 use App\Models\Nurse;
 use App\Http\Requests\StoreVitalSignScheduleRequest;
 use App\Http\Requests\UpdateVitalSignScheduleRequest;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -34,11 +35,19 @@ class VitalSignScheduleController extends Controller
         }
 
         if ($request->filled('date_from')) {
-            $query->whereDate('date', '>=', $request->date_from);
+            try {
+                $query->whereDate('date', '>=', Verta::parse($request->date_from)->datetime());
+            } catch (\Exception $e) {
+                // ignore invalid Persian date
+            }
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate('date', '<=', $request->date_to);
+            try {
+                $query->whereDate('date', '<=', Verta::parse($request->date_to)->datetime());
+            } catch (\Exception $e) {
+                // ignore invalid Persian date
+            }
         }
 
         if ($request->filled('day')) {

@@ -7,6 +7,7 @@ use App\Jobs\SendNewOperationNotification;
 use App\Models\Anesthesia;
 use App\Models\Doctor;
 use App\Models\OperationType;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use Illuminate\Support\Facades\DB;

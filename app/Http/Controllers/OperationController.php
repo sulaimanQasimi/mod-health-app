@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Anesthesia;
 use App\Models\Bed;
+use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\FoodType;
 use App\Models\Nurse;
@@ -11,6 +13,7 @@ use App\Models\Operation;
 use App\Models\Prescription;
 use App\Models\Relation;
 use App\Models\Room;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Excel;
@@ -26,37 +29,140 @@ class OperationController extends Controller
 
 
     /**
+     * Apply advanced filters to an operations (anesthesias) query.
+     */
+    private function applyOperationsFilters($query, Request $request)
+    {
+        if ($request->filled('search')) {
+            $term = '%' . $request->search . '%';
+            $query->whereHas('patient', function ($q) use ($term) {
+                $q->where('name', 'like', $term)
+                    ->orWhere('father_name', 'like', $term)
+                    ->orWhere('id_card', 'like', $term);
+            });
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->whereHas('operationType', function ($q) use ($request) {
+                $q->where('department_id', $request->department_id);
+            });
+        }
+
+        if ($request->filled('operation_type_id')) {
+            $query->where('operation_type_id', $request->operation_type_id);
+        }
+
+        if ($request->filled('surgeon_id')) {
+            $query->where('operation_surgion_id', $request->surgeon_id);
+        }
+
+        // Date filters: Persian (Jalali) from datepicker_dari, convert with Verta
+        if ($request->filled('date_from')) {
+            try {
+                $query->whereDate('date', '>=', Verta::parse($request->date_from)->datetime());
+            } catch (\Exception $e) {
+                // If Verta parse fails, ignore filter
+            }
+        }
+
+        if ($request->filled('date_to')) {
+            try {
+                $query->whereDate('date', '<=', Verta::parse($request->date_to)->datetime());
+            } catch (\Exception $e) {
+                // If Verta parse fails, ignore filter
+            }
+        }
+
+        $sortBy = $request->get('sort_by', 'date');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $allowedSort = ['date', 'created_at', 'time'];
+        if (!in_array($sortBy, $allowedSort)) {
+            $sortBy = 'date';
+        }
+        $query->orderBy($sortBy, $sortOrder === 'asc' ? 'asc' : 'desc');
+
+        return $query;
+    }
+
+    /**
+     * Get filter data (branches, departments, operation types, surgeons) for operations views.
+     */
+    private function getOperationsFilterData()
+    {
+        $branches = Branch::orderBy('name')->get(['id', 'name']);
+        $departments = Department::orderBy('name')->get(['id', 'name']);
+        $operationTypes = OperationType::orderBy('name')->get(['id', 'name']);
+        $surgeons = Doctor::where('active_status', true)->orderBy('name')->get(['id', 'name']);
+
+        return compact('branches', 'departments', 'operationTypes', 'surgeons');
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function new()
+    public function new(Request $request)
     {
+        $perPage = (int) $request->get('per_page', 15);
+        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
 
-        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '0')->where('is_reserved', '0')->latest()->paginate(15);
+        $query = Anesthesia::with(['patient', 'operationType'])
+            ->where('status', 'approved')
+            ->where('is_operation_approved', '0')
+            ->where('is_reserved', '0');
 
-        return view('pages.operations.new', compact('operations'));
+        $query = $this->applyOperationsFilters($query, $request);
+        $operations = $query->paginate($perPage)->withQueryString();
+
+        $filterData = $this->getOperationsFilterData();
+        return view('pages.operations.new', array_merge(compact('operations'), $filterData));
     }
 
-    public function reserved()
+    public function reserved(Request $request)
     {
+        $perPage = (int) $request->get('per_page', 15);
+        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
 
-        $reservedOperations = Anesthesia::reserved()->paginate(10);
-        return view('pages.operations.reserved', compact('reservedOperations'));
+        $query = Anesthesia::with(['patient', 'operationType'])->reserved();
+        $query = $this->applyOperationsFilters($query, $request);
+        $reservedOperations = $query->paginate($perPage)->withQueryString();
+
+        $filterData = $this->getOperationsFilterData();
+        return view('pages.operations.reserved', array_merge(compact('reservedOperations'), $filterData));
     }
 
-    public function approved()
+    public function approved(Request $request)
     {
+        $perPage = (int) $request->get('per_page', 15);
+        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
 
-        $operations = Anesthesia::with('patient')->where('status', 'approved')->where('is_operation_approved', '1')->where('is_operation_done', '0')->where('is_reserved', '0')->latest()->paginate(15);
+        $query = Anesthesia::with(['patient', 'operationType', 'scrub_nurse', 'circulation_nurse'])
+            ->where('status', 'approved')
+            ->where('is_operation_approved', '1')
+            ->where('is_operation_done', '0')
+            ->where('is_reserved', '0');
 
-        return view('pages.operations.approved', compact('operations'));
+        $query = $this->applyOperationsFilters($query, $request);
+        $operations = $query->paginate($perPage)->withQueryString();
+
+        $filterData = $this->getOperationsFilterData();
+        return view('pages.operations.approved', array_merge(compact('operations'), $filterData));
     }
 
-
-    public function completed()
+    public function completed(Request $request)
     {
-        $operations = Anesthesia::where('is_operation_done', '1')->latest()->paginate(15);
+        $perPage = (int) $request->get('per_page', 15);
+        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
 
-        return view('pages.operations.completed', compact('operations'));
+        $query = Anesthesia::with(['patient', 'operationType', 'scrub_nurse', 'circulation_nurse'])->where('is_operation_done', '1');
+        $query = $this->applyOperationsFilters($query, $request);
+        $operations = $query->paginate($perPage)->withQueryString();
+
+        $filterData = $this->getOperationsFilterData();
+        return view('pages.operations.completed', array_merge(compact('operations'), $filterData));
     }
 
     /**

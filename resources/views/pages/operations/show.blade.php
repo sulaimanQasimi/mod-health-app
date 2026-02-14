@@ -256,37 +256,6 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-6">
-                                                                <label class="mt-2 mb-2"
-                                                                    for="room_id{{ $operation->id }}">{{ localize('global.room') }}</label>
-                                                                <select class="form-control select2" name="room_id"
-                                                                    id="operation_room_id" {{ old('is_operation_approved', $operation->is_operation_approved) ? '' : 'disabled' }}>
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($rooms as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('room_id', $operation->room_id) == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->name }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="mt-2 mb-2"
-                                                                    for="bed_id{{ $operation->id }}">{{ localize('global.bed') }}</label>
-                                                                <select class="form-control select2" name="bed_id"
-                                                                    id="operation_bed_id" {{ old('is_operation_approved', $operation->is_operation_approved) ? '' : 'disabled' }}>
-                                                                    <option value="">{{ localize('global.select') }}
-                                                                    </option>
-                                                                    @foreach ($beds as $value)
-                                                                        <option value="{{ $value->id }}" {{ old('bed_id', $operation->bed_id) == $value->id ? 'selected' : '' }}>
-                                                                            {{ $value->number }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
                                                                 <label for="date"
                                                                     class="mt-2 mb-2">{{ localize('global.date') }}</label>
                                                                 <input type="text" class="form-control datepicker_dari" name="date"
@@ -303,7 +272,7 @@
                                                             <div class="form-group p-2">
                                                                 <label>
                                                                     <input type="checkbox" name="is_operation_approved"
-                                                                        value="1" {{ old('is_operation_approved', $operation->is_operation_approved) ? 'checked' : '' }} onchange="toggleRoomAndBedDropdowns(this)">
+                                                                        value="1" {{ old('is_operation_approved', $operation->is_operation_approved) ? 'checked' : '' }}>
                                                                     {{ localize('global.approve') }}
                                                                 </label>
                                                             </div>
@@ -1785,12 +1754,6 @@
 
                 // Initialize Select2 for circulation nurse dropdown
                 initSelect2($modal.find('#operation_circulation_nurse_id'));
-
-                // Initialize Select2 for room dropdown
-                initSelect2($modal.find('#operation_room_id'));
-
-                // Initialize Select2 for bed dropdown
-                initSelect2($modal.find('#operation_bed_id'));
             });
 
             // Destroy Select2 instances when modal is hidden to prevent conflicts
@@ -1799,14 +1762,12 @@
                 if (typeof $.fn.select2 !== 'undefined') {
                     $modal.find('#operation_scrub_nurse_id').select2('destroy');
                     $modal.find('#operation_circulation_nurse_id').select2('destroy');
-                    $modal.find('#operation_room_id').select2('destroy');
-                    $modal.find('#operation_bed_id').select2('destroy');
                 }
             });
 
             // Initialize Select2 for other select2 elements on page load (excluding modal dropdowns)
             if (typeof $.fn.select2 !== 'undefined') {
-                $('.select2:not(#operation_scrub_nurse_id):not(#operation_circulation_nurse_id):not(#operation_room_id):not(#operation_bed_id)').each(function() {
+                $('.select2:not(#operation_scrub_nurse_id):not(#operation_circulation_nurse_id)').each(function() {
                     var $select = $(this);
                     // Skip if inside the operation nurses modal (handled separately)
                     if (!$select.closest('#createOperationNursesModal{{ $operation->id }}').length && !$select.hasClass('select2-hidden-accessible')) {
@@ -1853,57 +1814,6 @@
                             placeholder: '{{ localize("global.select") }}...',
                             width: '100%',
                             allowClear: true
-                        });
-                    }
-                }
-            });
-            // Handle room change and update bed dropdown with Select2
-            $(document).on('change', '#operation_room_id', function () {
-                var roomId = $(this).val();
-                var $bedSelect = $('#operation_bed_id');
-                var $modal = $('#createOperationNursesModal{{ $operation->id }}');
-                
-                if (roomId !== '') {
-                    $.ajax({
-                        url: '/get_related_beds/' + roomId,
-                        type: 'GET',
-                        success: function (response) {
-                            // Destroy existing Select2 instance
-                            if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
-                                $bedSelect.select2('destroy');
-                            }
-                            
-                            // Update bed options
-                            $bedSelect.html(response);
-                            
-                            // Reinitialize Select2 for bed dropdown
-                            if (typeof $.fn.select2 !== 'undefined') {
-                                $bedSelect.select2({
-                                    width: '100%',
-                                    placeholder: '{{ localize("global.select") }}...',
-                                    allowClear: true,
-                                    dropdownParent: $modal.length ? $modal : $('body'),
-                                    language: {
-                                        noResults: function() {
-                                            return '{{ localize("global.no_results_found") ?: "No results found" }}';
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    // Clear bed dropdown if no room selected
-                    if (typeof $.fn.select2 !== 'undefined' && $bedSelect.hasClass('select2-hidden-accessible')) {
-                        $bedSelect.select2('destroy');
-                    }
-                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
-                    if (typeof $.fn.select2 !== 'undefined') {
-                        $bedSelect.select2({
-                            width: '100%',
-                            placeholder: '{{ localize("global.select") }}...',
-                            allowClear: true,
-                            dropdownParent: $modal.length ? $modal : $('body')
                         });
                     }
                 }
@@ -2047,18 +1957,5 @@
                 }
             });
         });
-
-        function toggleRoomAndBedDropdowns(checkbox) {
-            const roomDropdown = document.getElementById('operation_room_id');
-            const bedDropdown = document.getElementById('operation_bed_id');
-
-            if (checkbox.checked) {
-                roomDropdown.disabled = false;
-                bedDropdown.disabled = false;
-            } else {
-                roomDropdown.disabled = true;
-                bedDropdown.disabled = true;
-            }
-        }
     </script>
 @endsection

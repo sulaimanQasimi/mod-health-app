@@ -126,11 +126,13 @@ class OperationController extends Controller
             'date' => 'nullable',
             'time' => 'nullable',
             'operation_expense_remarks' => 'nullable',
-            'room_id' => 'nullable',
-            'bed_id' => 'nullable',
             'patient_status' => 'nullable',
 
         ]);
+
+        // Room and bed removed from operation approval form; keep DB null
+        $data['room_id'] = $request->input('room_id');
+        $data['bed_id'] = $request->input('bed_id');
 
         if (isset($data['date']) && $data['date'] > $operation->date) {
             $operation->reserve();
@@ -143,18 +145,6 @@ class OperationController extends Controller
             $operation->update($data);
             return redirect()->back()->with('success', localize('global.operation_updated_successfully.'));
         }
-
-        $data['room_id'] = $operation->room->id ?? '';
-        $data['bed_id'] = $operation->bed->id ?? '';
-
-        $occupied_bed = Bed::findOrFail($data['bed_id']);
-
-        $occupied_bed->update(['is_occupied' => true]);
-        $occupied_bed->save();
-
-        $operation->update($data);
-
-        return redirect()->route('operations.new')->with('success', localize('global.operation_updated_successfully.'));
     }
 
     /**

@@ -65,12 +65,12 @@ class Anesthesia extends Model
 
     public function scrub_nurse()
     {
-        return $this->belongsTo(Doctor::class, 'operation_scrub_nurse_id', 'id');
+        return $this->belongsTo(Nurse::class, 'operation_scrub_nurse_id', 'id');
     }
 
     public function circulation_nurse()
     {
-        return $this->belongsTo(Doctor::class, 'operation_circulation_nurse_id', 'id');
+        return $this->belongsTo(Nurse::class, 'operation_circulation_nurse_id', 'id');
     }
 
     public function appointment()

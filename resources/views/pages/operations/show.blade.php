@@ -117,24 +117,18 @@
                                             {{ $operation->anesthesist ? $operation->anesthesist->name : 'No Anesthesist' }}
                                         </div>
                                     </div>
-                                    @if (isset($operation->scrub_nurse))
-                                        <div class="col-md-3">
-                                            <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.scrub_nurse') }}</h5>
-                                            <div>
-                                                {{ $operation->scrub_nurse->full_name }}
-                                            </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.scrub_nurse') }}</h5>
+                                        <div>
+                                            {{ $operation->scrub_nurse?->full_name ?? '—' }}
                                         </div>
-                                    @endif
-                                    @if (isset($operation->circulation_nurse))
-                                        <div class="col-md-3">
-                                            <h5 class="mb-2 bg-label-primary p-1">
-                                                {{ localize('global.circulation_nurse') }}
-                                            </h5>
-                                            <div>
-                                                {{ $operation->circulation_nurse->full_name }}
-                                            </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h5 class="mb-2 bg-label-primary p-1">{{ localize('global.circulation_nurse') }}</h5>
+                                        <div>
+                                            {{ $operation->circulation_nurse?->full_name ?? '—' }}
                                         </div>
-                                    @endif
+                                    </div>
 
                                 </div>
 

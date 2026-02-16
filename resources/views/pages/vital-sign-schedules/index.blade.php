@@ -21,32 +21,38 @@
                 </div>
                 <div class="card-body">
                     <!-- Filters -->
-                    <div class="row mb-3">
+                    <form method="GET" action="{{ request()->url() }}" class="row mb-3" id="schedules-filter-form">
                         <div class="col-md-3">
-                            <select class="form-control" id="vital_sign_filter">
+                            <select class="form-control" id="vital_sign_filter" name="vital_sign_id">
                                 <option value="">{{ localize('filter_by_vital_sign') }}</option>
                                 @foreach($vitalSigns as $vitalSign)
-                                    <option value="{{ $vitalSign->id }}">
+                                    <option value="{{ $vitalSign->id }}" {{ request('vital_sign_id') == $vitalSign->id ? 'selected' : '' }}>
                                         {{ $vitalSign->vitalSignType->name ?? 'N/A' }} - {{ class_basename($vitalSign->morphable_type) }} #{{ $vitalSign->morphable_id }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-control" id="nurse_filter">
+                            <select class="form-control" id="nurse_filter" name="nurse_id">
                                 <option value="">{{ localize('filter_by_nurse') }}</option>
                                 @foreach($nurses as $nurse)
-                                    <option value="{{ $nurse->id }}">{{ $nurse->full_name }}</option>
+                                    <option value="{{ $nurse->id }}" {{ request('nurse_id') == $nurse->id ? 'selected' : '' }}>{{ $nurse->full_name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <input type="date" class="form-control" id="date_from_filter" placeholder="{{ localize('date_from') }}">
+                        <div class="col-md-2">
+                            <input type="text" class="form-control datepicker_dari" id="date_from_filter" name="date_from"
+                                   value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
                         </div>
-                        <div class="col-md-3">
-                            <input type="date" class="form-control" id="date_to_filter" placeholder="{{ localize('date_to') }}">
+                        <div class="col-md-2">
+                            <input type="text" class="form-control datepicker_dari" id="date_to_filter" name="date_to"
+                                   value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
                         </div>
-                    </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary btn-sm">{{ localize('global.search') }}</button>
+                            <a href="{{ request()->url() }}" class="btn btn-secondary btn-sm">{{ localize('global.clear') }}</a>
+                        </div>
+                    </form>
 
                     <!-- Schedules Table -->
                     <div class="table-responsive">
@@ -116,7 +122,7 @@
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center">
-                        {{ $schedules->links() }}
+                        {{ $schedules->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>
@@ -128,11 +134,7 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Filter functionality
-    $('#vital_sign_filter, #nurse_filter, #date_from_filter, #date_to_filter').on('change', function() {
-        // Implement filtering logic here
-        console.log('Filter changed');
-    });
+    // Filters submit via form GET; Persian datepicker inits from master layout for .datepicker_dari
 });
 </script>
 @endpush

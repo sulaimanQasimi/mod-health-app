@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\Visit;
 use App\Models\FoodType;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class VisitAjaxController extends Controller
             $validator = Validator::make($request->all(), [
                 'description' => 'required|string',
                 'patient_id' => 'required|exists:patients,id',
-                'doctor_id' => 'required|exists:users,id',
+                'doctor_id' => 'required|exists:doctors,id',
                 'hospitalization_id' => 'required|exists:hospitalizations,id',
                 'bp' => 'nullable|string',
                 'pr' => 'nullable|string',
@@ -66,10 +67,14 @@ class VisitAjaxController extends Controller
             DB::beginTransaction();
 
             try {
+                // visits.doctor_id stores user id; frontend sends doctors.id — resolve user_id from doctor
+                $doctor = Doctor::find($request->doctor_id);
+                $doctorUserId = $doctor && $doctor->user_id ? $doctor->user_id : auth()->id();
+
                 $visitData = [
                     'description' => $request->description,
                     'patient_id' => $request->patient_id,
-                    'doctor_id' => $request->doctor_id,
+                    'doctor_id' => $doctorUserId,
                     'hospitalization_id' => $request->hospitalization_id,
                     'bp' => $request->bp,
                     'pr' => $request->pr,

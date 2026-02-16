@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -52,6 +53,24 @@ class StoreMultipleVitalSignsRequest extends FormRequest
             $filtered = array_values(array_filter($vitalSigns, function ($row) {
                 return !empty($row['vital_sign_type_id']);
             }));
+            // Convert Persian (Jalali) schedule dates to Gregorian for validation and storage
+            foreach ($filtered as $i => &$row) {
+                $schedules = $row['schedules'] ?? [];
+                if (!is_array($schedules)) {
+                    continue;
+                }
+                foreach ($schedules as $j => &$schedule) {
+                    $date = $schedule['date'] ?? null;
+                    if ($date && is_string($date)) {
+                        try {
+                            $schedule['date'] = Verta::parse($date)->datetime()->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            // leave as-is; validation may fail
+                        }
+                    }
+                }
+            }
+            unset($row, $schedule);
             $this->merge(['vital_signs' => $filtered]);
         }
     }

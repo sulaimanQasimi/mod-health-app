@@ -1303,17 +1303,14 @@
                     });
             }
         }
-        @if ($hospitalization->doctor_id)
-            
-        // Set hospitalization data immediately (before DOM ready)
+        // Set hospitalization data for visit section (always pass doctor_id so visits can use it)
         window.hospitalizationData = {
             id: {{ $hospitalization->id }},
             is_discharged: {{ $hospitalization->is_discharged ? 'true' : 'false' }},
             patient_id: {{ $hospitalization->patient_id }},
-            doctor_id: {{ $hospitalization->doctor_id ?? ''}},
-            branch_id: {{ $hospitalization->branch_id }}
+            doctor_id: {{ $hospitalization->doctor_id ?? 'null' }},
+            branch_id: {{ $hospitalization->branch_id ?? 'null' }}
         };
-        @endif
         
         // Function to load hospital doctors via API
         function loadHospitalDoctors(hospitalizationId) {

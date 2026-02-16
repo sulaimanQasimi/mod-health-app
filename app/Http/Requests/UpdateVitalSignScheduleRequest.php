@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateVitalSignScheduleRequest extends FormRequest
@@ -29,6 +30,17 @@ class UpdateVitalSignScheduleRequest extends FormRequest
             'date' => 'nullable|date|before_or_equal:today', // Preserved from original
             'nurse_id' => 'nullable|integer|exists:nurses,id', // Preserved from original
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('date')) {
+            try {
+                $this->merge(['date' => Verta::parse($this->date)->datetime()->format('Y-m-d')]);
+            } catch (\Exception $e) {
+                // leave as-is
+            }
+        }
     }
 
     /**

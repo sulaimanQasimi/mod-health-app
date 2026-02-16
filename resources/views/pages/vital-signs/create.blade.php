@@ -115,7 +115,7 @@
                                                     <tbody class="schedule-rows">
                                                         <tr class="schedule-row">
                                                             <td>
-                                                                <input type="date" name="vital_signs[0][schedules][0][date]" class="form-control form-control-sm" max="{{ date('Y-m-d') }}">
+                                                                <input type="text" name="vital_signs[0][schedules][0][date]" class="form-control form-control-sm datepicker_dari schedule-date" placeholder="1403/01/01" autocomplete="off">
                                                             </td>
                                                             <td>
                                                                 <input type="text" name="vital_signs[0][schedules][0][morning_time]" class="form-control form-control-sm" placeholder="e.g. 08:00">
@@ -352,6 +352,7 @@
             container.appendChild(clone);
             reindexAllBlocks();
             initSelect2InContainer(clone);
+            initPersianDatepickerInContainer(clone);
         } catch (err) {
             console.error('Error in addVitalSignBlock:', err);
             alert('Error adding vital sign block. Please check console for details.');
@@ -396,10 +397,21 @@
             tbody.appendChild(newRow);
             reindexAllBlocks(); // Reindex to ensure proper numbering
             initSelect2InContainer(newRow);
+            initPersianDatepickerInContainer(newRow);
         } catch (err) {
             console.error('Error in addScheduleRow:', err);
             alert('Error adding schedule row. Please check console for details.');
         }
+    }
+
+    function initPersianDatepickerInContainer(container) {
+        if (typeof $ === 'undefined' || typeof $.fn.persianDatepicker !== 'function') return;
+        var $container = $(container);
+        $container.find('input.schedule-date, input.datepicker_dari').each(function() {
+            var $el = $(this);
+            if ($el.data('datepicker') || $el.hasClass('pdp-el')) return;
+            $el.persianDatepicker({ formatDate: 'YYYY/MM/DD', persianNumbers: true });
+        });
     }
 
     function initPageSelect2() {
@@ -491,6 +503,11 @@
         attachListeners();
         console.log('Event listeners attached');
         
+        // Initialize Persian datepicker on schedule date inputs (multi form)
+        if (typeof $ !== 'undefined' && typeof $.fn.persianDatepicker === 'function') {
+            var vsContainer = document.getElementById('vital-signs-container');
+            if (vsContainer) initPersianDatepickerInContainer(vsContainer);
+        }
         // Initialize Select2 if available
         if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
             // Small delay to ensure DOM is fully rendered

@@ -84,8 +84,9 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="date">{{ localize('date') }}</label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror" 
-                                           id="date" name="date" value="{{ old('date', $schedule->date ? $schedule->date->format('Y-m-d') : '') }}">
+                                    <input type="text" class="form-control datepicker_dari @error('date') is-invalid @enderror" 
+                                           id="date" name="date" value="{{ old('date', $schedule->date ? verta($schedule->date)->format('Y/m/d') : '') }}" 
+                                           placeholder="1403/01/01" autocomplete="off">
                                     @error('date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

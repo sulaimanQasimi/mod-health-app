@@ -26,7 +26,7 @@ class PharmacyController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $pharmacies = Pharmacy::with(['activeUsers', 'incomes', 'outcomes'])->get();
+            $pharmacies = Pharmacy::with(['activeUsers', 'outcomes'])->get();
 
             if ($pharmacies) {
                 return response()->json([
@@ -41,7 +41,7 @@ class PharmacyController extends Controller
             }
         }
 
-        $pharmacies = Pharmacy::with(['activeUsers', 'incomes', 'outcomes'])->get();
+        $pharmacies = Pharmacy::with(['activeUsers', 'outcomes'])->get();
         return view('pages.pharmacies.index', compact('pharmacies'));
     }
 
@@ -97,7 +97,7 @@ class PharmacyController extends Controller
      */
     public function show(string $id)
     {
-        $pharmacy = Pharmacy::with(['activeUsers', 'managers', 'staff', 'createdBy', 'updatedBy', 'incomes', 'outcomes'])->findOrFail($id);
+        $pharmacy = Pharmacy::with(['activeUsers', 'managers', 'staff', 'createdBy', 'updatedBy', 'outcomes'])->findOrFail($id);
         $statistics = $pharmacy->getStatistics();
         return view('pages.pharmacies.show', compact('pharmacy', 'statistics'));
     }

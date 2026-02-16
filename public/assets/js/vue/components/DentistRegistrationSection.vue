@@ -55,7 +55,6 @@
                                     v-model="form.registration_date" 
                                     class="form-control" 
                                     id="registration_date"
-                                    :value="form.registration_date"
                                     required
                                 />
                             </div>

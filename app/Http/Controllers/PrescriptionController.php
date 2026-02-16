@@ -23,16 +23,18 @@ class PrescriptionController extends Controller
      */
     public function index(Request $request)
     {
-        $userClinicType = auth()->user()->clinic_type;
+        $user = auth()->user();
         
-        $query = Prescription::where('branch_id', auth()->user()->branch_id)
+        $query = Prescription::where('branch_id', $user->branch_id)
             ->with(['patient', 'doctor', 'appointment.department']);
 
-        // Filter by appointment clinic_type matching user's clinic_type
-        if ($userClinicType) {
-            $query->whereHas('appointment', function ($q) use ($userClinicType) {
-                $q->where('clinic_type', $userClinicType);
-            });
+        // Filter by user's pharmacy - only show prescriptions for user's pharmacy
+        $userPharmacyIds = $user->activePharmacies()->pluck('pharmacies.id')->toArray();
+        if (!empty($userPharmacyIds)) {
+            $query->whereIn('pharmacy_id', $userPharmacyIds);
+        } else {
+            // If user has no pharmacy, return empty result
+            $query->whereRaw('1 = 0');
         }
 
         // Search by patient name
@@ -100,16 +102,18 @@ class PrescriptionController extends Controller
      */
     public function delivered()
     {
-        $userClinicType = auth()->user()->clinic_type;
+        $user = auth()->user();
         
-        $query = Prescription::where('branch_id', auth()->user()->branch_id)
+        $query = Prescription::where('branch_id', $user->branch_id)
             ->where('is_completed', true);
 
-        // Filter by appointment clinic_type matching user's clinic_type
-        if ($userClinicType) {
-            $query->whereHas('appointment', function ($q) use ($userClinicType) {
-                $q->where('clinic_type', $userClinicType);
-            });
+        // Filter by user's pharmacy - only show prescriptions for user's pharmacy
+        $userPharmacyIds = $user->activePharmacies()->pluck('pharmacies.id')->toArray();
+        if (!empty($userPharmacyIds)) {
+            $query->whereIn('pharmacy_id', $userPharmacyIds);
+        } else {
+            // If user has no pharmacy, return empty result
+            $query->whereRaw('1 = 0');
         }
 
         $prescriptions = $query->latest()->paginate(10);

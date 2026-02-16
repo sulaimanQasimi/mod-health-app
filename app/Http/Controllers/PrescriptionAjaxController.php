@@ -9,6 +9,7 @@ use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\Medicine;
 use App\Models\MedicineUsageType;
+use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -59,6 +60,27 @@ class PrescriptionAjaxController extends Controller
     }
 
     /**
+     * Get all pharmacies
+     */
+    public function getAllPharmacies()
+    {
+        try {
+            $pharmacies = Pharmacy::all();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $pharmacies
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => localize('global.failed_to_fetch_pharmacies'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Store a new prescription via Ajax
      */
     public function storePrescription(Request $request)
@@ -78,6 +100,7 @@ class PrescriptionAjaxController extends Controller
                 'hospitalization_id' => 'nullable|exists:hospitalizations,id',
                 'under_review_id' => 'nullable|exists:under_reviews,id',
                 'i_c_u_id' => 'nullable|exists:i_c_u_s,id',
+                'pharmacy_id' => 'nullable|exists:pharmacies,id',
             ]);
 
             if ($validator->fails()) {
@@ -104,6 +127,7 @@ class PrescriptionAjaxController extends Controller
                     'hospitalization_id' => $request->hospitalization_id,
                     'under_review_id' => $request->under_review_id,
                     'i_c_u_id' => $request->i_c_u_id,
+                    'pharmacy_id' => $request->pharmacy_id,
                     'is_completed' => false,
                     'created_by' => auth()->id(),
                 ];
@@ -354,16 +378,18 @@ class PrescriptionAjaxController extends Controller
     public function getPrescriptionsIndex(Request $request)
     {
         try {
-            $userClinicType = auth()->user()->clinic_type;
+            $user = auth()->user();
             
-            $query = Prescription::where('branch_id', auth()->user()->branch_id)
+            $query = Prescription::where('branch_id', $user->branch_id)
                 ->with(['patient', 'doctor', 'appointment.doctor', 'appointment.department']);
 
-            // Filter by appointment clinic_type matching user's clinic_type
-            if ($userClinicType) {
-                $query->whereHas('appointment', function ($q) use ($userClinicType) {
-                    $q->where('clinic_type', $userClinicType);
-                });
+            // Filter by user's pharmacy - only show prescriptions for user's pharmacy
+            $userPharmacyIds = $user->activePharmacies()->pluck('pharmacies.id')->toArray();
+            if (!empty($userPharmacyIds)) {
+                $query->whereIn('pharmacy_id', $userPharmacyIds);
+            } else {
+                // If user has no pharmacy, return empty result
+                $query->whereRaw('1 = 0');
             }
 
             // Filter by patient name

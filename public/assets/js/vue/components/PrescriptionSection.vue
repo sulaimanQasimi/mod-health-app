@@ -100,6 +100,27 @@
                     </div>
                     <div class="modal-body">
                         <form @submit.prevent="submitPrescription">
+                            <!-- Pharmacy Selection -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">داروخانه</label>
+                                    <multiselect
+                                        v-model="form.pharmacy_id"
+                                        :options="allPharmacies"
+                                        :custom-label="pharmacy => pharmacy.name"
+                                        :placeholder="'انتخاب داروخانه'"
+                                        :allow-empty="true"
+                                        :searchable="true"
+                                        :close-on-select="true"
+                                        :show-labels="false"
+                                        :class="{ 'is-invalid': validationErrors.pharmacy_id }"
+                                    ></multiselect>
+                                    <div v-if="validationErrors.pharmacy_id" class="invalid-feedback d-block">
+                                        {{ validationErrors.pharmacy_id }}
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Prescription Items Container -->
                             <div id="prescription-items">
                                 <div 
@@ -367,6 +388,7 @@ export default {
             prescriptions: [],
             medicineUsageTypes: [],
             allMedicines: [],
+            allPharmacies: [],
             selectedPrescription: null,
             validationErrors: {},
             toast: {
@@ -375,6 +397,7 @@ export default {
                 type: 'success'
             },
              form: {
+                 pharmacy_id: null,
                  prescription_items: [{
                      medicine_id: null,
                      usage_type_id: null,
@@ -405,6 +428,7 @@ export default {
     mounted() {
         this.loadMedicineUsageTypes();
         this.loadAllMedicines();
+        this.loadAllPharmacies();
         this.loadAppointmentPrescriptions();
     },
     watch: {
@@ -445,6 +469,18 @@ export default {
                 }
             } catch (error) {
                 console.error('Error loading all medicines:', error);
+            }
+        },
+
+        async loadAllPharmacies() {
+            try {
+                const response = await fetch('/prescription-ajax/all-pharmacies');
+                const data = await response.json();
+                if (data.success) {
+                    this.allPharmacies = data.data;
+                }
+            } catch (error) {
+                console.error('Error loading all pharmacies:', error);
             }
         },
 
@@ -500,6 +536,7 @@ export default {
                      i_c_u_id: this.icu ? this.icu.id : null,
                      hospitalization_id: this.operation ? (this.contextData.hospitalization_id || null) : (this.hospitalization ? this.hospitalization.id : null),
                      under_review_id: this.underReviewId || this.appointment?.under_review_id || this.contextData.under_review_id || (this.appointment?.under_review ? this.appointment.under_review.id : null),
+                     pharmacy_id: this.form.pharmacy_id?.id || this.form.pharmacy_id || null,
                      prescription_items: transformedItems
                  };
 
@@ -693,6 +730,7 @@ export default {
         },
 
          resetForm() {
+             this.form.pharmacy_id = null;
              this.form.prescription_items = [{
                  medicine_id: null,
                  usage_type_id: null,

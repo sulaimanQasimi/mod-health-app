@@ -119,10 +119,12 @@ class Pharmacy extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
-    public function incomes()
-    {
-        return $this->hasMany(Income::class);
-    }
+    // Note: Income model no longer has pharmacy_id (migrated to branch_id)
+    // Incomes are now branch-based, not pharmacy-based
+    // public function incomes()
+    // {
+    //     return $this->hasMany(Income::class);
+    // }
 
     public function outcomes()
     {
@@ -157,19 +159,19 @@ class Pharmacy extends Model
             'total_users' => $this->activeUsers()->count(),
             'managers_count' => $this->managers()->count(),
             'staff_count' => $this->staff()->count(),
-            'total_incomes' => $this->incomes()->count(),
+            'total_incomes' => 0, // Incomes are now branch-based, not pharmacy-based
             'total_outcomes' => $this->outcomes()->count(),
             'recent_activities' => $this->getRecentActivities()
         ];
     }
 
-    // Get recent activities (incomes and outcomes)
+    // Get recent activities (outcomes only - incomes are now branch-based)
     public function getRecentActivities($limit = 10)
     {
-        $incomes = $this->incomes()->latest()->limit($limit)->get();
+        // Incomes are now branch-based, not pharmacy-based, so we only return outcomes
         $outcomes = $this->outcomes()->latest()->limit($limit)->get();
         
-        return $incomes->concat($outcomes)->sortByDesc('created_at')->take($limit);
+        return $outcomes->sortByDesc('created_at')->take($limit);
     }
 
     // Check if user can perform specific action

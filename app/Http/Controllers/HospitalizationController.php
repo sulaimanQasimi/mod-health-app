@@ -36,7 +36,8 @@ class HospitalizationController extends Controller
      */
     public function index(Request $request)
     {
-        $branchId = auth()->user()->branch_id;
+        $user = auth()->user();
+        $branchId = $user->branch_id;
         
         // Base query with eager loading and select optimization
         $query = Hospitalization::select([
@@ -56,6 +57,16 @@ class HospitalizationController extends Controller
                 'bed:id,number',
                 'doctor:id,name'
             ]);
+
+        // Filter by user's department - only show hospitalizations for appointments in user's department
+        if ($user->department_id) {
+            $query->whereHas('appointment', function ($q) use ($user) {
+                $q->where('department_id', $user->department_id);
+            });
+        } else {
+            // If user has no department, return empty result
+            $query->whereRaw('1 = 0');
+        }
 
         // Optimized search using joins instead of whereHas for better performance
         if ($request->filled('search')) {
@@ -115,10 +126,23 @@ class HospitalizationController extends Controller
     
     public function discharged(Request $request)
     {
+        $user = auth()->user();
+        
         if ($request->ajax()) {
-            $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
-                ->where('is_discharged', '1')
-                ->with(['patient', 'room', 'bed', 'doctor'])
+            $query = Hospitalization::where('branch_id', $user->branch_id)
+                ->where('is_discharged', '1');
+
+            // Filter by user's department - only show hospitalizations for appointments in user's department
+            if ($user->department_id) {
+                $query->whereHas('appointment', function ($q) use ($user) {
+                    $q->where('department_id', $user->department_id);
+                });
+            } else {
+                // If user has no department, return empty result
+                $query->whereRaw('1 = 0');
+            }
+
+            $hospitalizations = $query->with(['patient', 'room', 'bed', 'doctor'])
                 ->get()
                 ->map(function ($hospitalization) {
 
@@ -143,9 +167,20 @@ class HospitalizationController extends Controller
         }
     
         // For non-AJAX requests
-        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
-            ->where('is_discharged', '1')
-            ->with(['patient', 'room', 'bed', 'doctor'])
+        $query = Hospitalization::where('branch_id', $user->branch_id)
+            ->where('is_discharged', '1');
+
+        // Filter by user's department - only show hospitalizations for appointments in user's department
+        if ($user->department_id) {
+            $query->whereHas('appointment', function ($q) use ($user) {
+                $q->where('department_id', $user->department_id);
+            });
+        } else {
+            // If user has no department, return empty result
+            $query->whereRaw('1 = 0');
+        }
+
+        $hospitalizations = $query->with(['patient', 'room', 'bed', 'doctor'])
             ->get()
             ->map(function ($hospitalization) {
 

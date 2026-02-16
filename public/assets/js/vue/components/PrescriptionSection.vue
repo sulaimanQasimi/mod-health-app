@@ -103,12 +103,12 @@
                             <!-- Pharmacy Selection -->
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label class="form-label">داروخانه</label>
+                                    <label class="form-label">دواخانه</label>
                                     <multiselect
                                         v-model="form.pharmacy_id"
                                         :options="allPharmacies"
                                         :custom-label="pharmacy => pharmacy.name"
-                                        :placeholder="'انتخاب داروخانه'"
+                                        :placeholder="'انتخاب دواخانه'"
                                         :allow-empty="true"
                                         :searchable="true"
                                         :close-on-select="true"

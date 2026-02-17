@@ -38,7 +38,18 @@
                                         </select>
 
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
+                                        <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
+                                        <select class="form-control pager-search select2" name="pharmacy_id" id="pharmacy_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach(\App\Models\Pharmacy::all() as $pharmacy)
+                                                <option value="{{ $pharmacy->id }}" {{ old('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
+                                                    {{ $pharmacy->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                         <div class="input-group input-daterange">
                                             <input type="text" name="start" placeholder="{{ localize('global.from') }}"

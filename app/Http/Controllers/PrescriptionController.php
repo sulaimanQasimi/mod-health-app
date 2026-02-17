@@ -341,7 +341,21 @@ class PrescriptionController extends Controller
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed');
+            ->leftJoin('pharmacies as ph', 'a.pharmacy_id', '=', 'ph.id')
+            ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
+            ->leftJoin('departments as dept', 'app.department_id', '=', 'dept.id')
+            ->select(
+                'a.id', 
+                'p.name as patient_name', 
+                'p.id_card as patient_id_card',
+                'd.name as doctor_name', 
+                'b.name as branch_name',
+                'ph.name as pharmacy_name',
+                'dept.name as department_name',
+                'a.is_completed',
+                'a.created_at',
+                'a.pharmacy_id'
+            );
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -351,14 +365,18 @@ class PrescriptionController extends Controller
             $query->where('a.is_completed', $request->is_completed);
         }
 
-        if ($request->filled('from') && $request->filled('to')) {
-            $fromDate = Verta::parse($request->from)->datetime();
-            $toDate = Verta::parse($request->to)->datetime();
+        if ($request->filled('pharmacy_id')) {
+            $query->where('a.pharmacy_id', $request->pharmacy_id);
+        }
+
+        if ($request->filled('start') && $request->filled('end')) {
+            $fromDate = Verta::parse($request->start)->datetime();
+            $toDate = Verta::parse($request->end)->datetime();
             $query->whereDate('a.created_at', '>=', $fromDate)
                   ->whereDate('a.created_at', '<=', $toDate);
         }
 
-        $items = $query->get();
+        $items = $query->orderBy('a.created_at', 'desc')->get();
         return view('pages.prescriptions.reports.report', ['items' => $items]);
     }
 

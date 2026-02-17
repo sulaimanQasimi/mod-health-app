@@ -118,10 +118,10 @@
                                                                 <input type="text" name="vital_signs[0][schedules][0][date]" class="form-control form-control-sm datepicker_dari schedule-date" placeholder="1403/01/01" autocomplete="off">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="vital_signs[0][schedules][0][morning_time]" class="form-control form-control-sm" placeholder="e.g. 08:00">
+                                                                <input type="text" name="vital_signs[0][schedules][0][morning_time]" class="form-control form-control-sm" placeholder="{{ localize('global.enter_morning_time') }}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="vital_signs[0][schedules][0][evening_time]" class="form-control form-control-sm" placeholder="e.g. 20:00">
+                                                                <input type="text" name="vital_signs[0][schedules][0][evening_time]" class="form-control form-control-sm" placeholder="{{ localize('global.enter_evening_time') }}">
                                                             </td>
                                                             <td>
                                                                 <button type="button" class="btn btn-sm btn-outline-danger remove-schedule-row" title="{{ localize('global.remove') }}">

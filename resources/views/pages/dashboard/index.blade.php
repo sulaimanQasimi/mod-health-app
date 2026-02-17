@@ -210,6 +210,27 @@
                         </div>
 
                         <div class="col-sm-6 col-xl-3">
+                            <div class="card border border-info">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="content-left">
+                                            <h4>{{ localize('global.all_ccu_patients') }}</h4>
+                                            <div class="d-flex align-items-end mt-2">
+                                                <h4 class="mb-0 me-2 p-1 rounded text-info" id="total-ccu-admissions">-</h4>
+                                            </div>
+                                            <p class="mb-0">{{ localize('global.all_registered_ccu') }}</p>
+                                        </div>
+                                        <div class="avatar p-4">
+                                            <span class="avatar-initial rounded-circle bg-info">
+                                                <i class="bx bx-heart-circle bx-md text-white"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-xl-3">
                             <div class="card  border ">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start justify-content-between">
@@ -414,6 +435,7 @@
                         $('#total-inpatient-admissions').text(data.totalInPatientAdmissions || 0);
                         $('#total-checkups').text(data.totalCheckups || 0);
                         $('#total-icu-admissions').text(data.totalIcuAdmissions || 0);
+                        $('#total-ccu-admissions').text(data.totalCcuAdmissions || 0);
                         $('#total-prescriptions').text(data.totalPrescriptions || 0);
                         $('#total-operations').text(data.totalOperations || 0);
                         $('#total-physiotherapy-procedures').text(data.totalPhysiotherapyProcedures || 0);

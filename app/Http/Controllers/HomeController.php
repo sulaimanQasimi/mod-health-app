@@ -77,6 +77,7 @@ class HomeController extends Controller
                         'totalConsultations' => $counts['totalConsultations'],
                         'totalOperations' => $counts['totalOperations'],
                         'totalIcuAdmissions' => $counts['totalIcuAdmissions'],
+                        'totalCcuAdmissions' => $counts['totalCcuAdmissions'],
                         'totalInPatientAdmissions' => $counts['totalInPatientAdmissions'],
                         'totalPhysiotherapyProcedures' => $counts['totalPhysiotherapyProcedures'],
                         'todayPatients' => $todayPatients,
@@ -128,6 +129,12 @@ class HomeController extends Controller
             'totalConsultations' => Consultation::where('branch_id', $branchId)->count(),
             'totalOperations' => Anesthesia::where('branch_id', $branchId)->where('is_operation_done', '1')->count(),
             'totalIcuAdmissions' => ICU::where('branch_id', $branchId)->count(),
+            'totalCcuAdmissions' => Hospitalization::where('branch_id', $branchId)
+                ->where('room_id', 212)
+                ->where(function ($q) {
+                    $q->where('is_discharged', 0)->orWhereNull('is_discharged');
+                })
+                ->count(),
             'totalInPatientAdmissions' => Hospitalization::where('branch_id', $branchId)->count(),
             'totalPhysiotherapyProcedures' => PhysiotherapyProcedure::whereHas('appointment', function ($query) use ($branchId) {
                 $query->where('branch_id', $branchId);

@@ -60,11 +60,11 @@
                                     </tr>
                                     <tr>
                                         <th>{{ localize('global.created_at') }}:</th>
-                                        <td>{{ $vitalSign->created_at->format('Y-m-d H:i:s') }}</td>
+                                        <td>{{ verta($vitalSign->created_at)->format('Y/m/d H:i') }}</td>
                                     </tr>
                                     <tr>
                                         <th>{{ localize('global.updated_at') }}:</th>
-                                        <td>{{ $vitalSign->updated_at->format('Y-m-d H:i:s') }}</td>
+                                        <td>{{ verta($vitalSign->updated_at)->format('Y/m/d H:i') }}</td>
                                     </tr>
                                     @if($vitalSign->createdBy)
                                         <tr>
@@ -101,11 +101,11 @@
                                                     <tr>
                                                         <td>{{ $schedule->id }}</td>
                                                         <td>{{ $schedule->day ?? 'N/A' }}</td>
-                                                        <td>{{ $schedule->date ? $schedule->date->format('Y-m-d') : 'N/A' }}</td>
+                                                        <td>{{ $schedule->date ? verta($schedule->date)->format('Y/m/d') : 'N/A' }}</td>
                                                         <td>{{ $schedule->morning_time ?? 'N/A' }}</td>
                                                         <td>{{ $schedule->evening_time ?? 'N/A' }}</td>
                                                         <td>{{ $schedule->nurse->full_name ?? 'N/A' }}</td>
-                                                        <td>{{ $schedule->created_at->format('Y-m-d H:i') }}</td>
+                                                        <td>{{ verta($schedule->created_at)->format('Y/m/d H:i') }}</td>
                                                         <td>
                                                             <div class="btn-group" role="group">
                                                                 @can('update', $schedule)
@@ -260,8 +260,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="modal_date">{{ localize('global.date') }}</label>
-                                        <input type="date" class="form-control @error('date') is-invalid @enderror"
-                                            id="modal_date" name="date" value="{{ old('date') }}">
+                                        <input type="text" class="form-control datepicker_dari @error('date') is-invalid @enderror"
+                                            id="modal_date" name="date" value="{{ old('date') }}"
+                                            placeholder="1403/01/01" autocomplete="off">
                                         @error('date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

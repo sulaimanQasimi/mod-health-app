@@ -47,7 +47,7 @@
                             <td>
                                 <span class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
                             </td>
-                            <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
+                            <td>{{ verta($vitalSign->created_at)->format('Y/m/d H:i') }}</td>
                             <td>
                                 <span class="badge bg-secondary">{{ $vitalSign->schedules->count() }}
                                     {{ localize('global.schedules') }}</span>

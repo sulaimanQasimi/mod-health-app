@@ -410,7 +410,22 @@
         $container.find('input.schedule-date, input.datepicker_dari').each(function() {
             var $el = $(this);
             if ($el.data('datepicker') || $el.hasClass('pdp-el')) return;
-            $el.persianDatepicker({ formatDate: 'YYYY/MM/DD', persianNumbers: true });
+            $el.persianDatepicker({
+                months: ["حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله", "میزان", "عقرب", "قوس", "جدی", "دلو", "حوت"],
+                dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
+                shortDowTitle: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
+                showGregorianDate: false,
+                persianNumbers: true,
+                formatDate: 'YYYY/MM/DD',
+                selectedBefore: false,
+                selectedDate: null,
+                startDate: null,
+                endDate: null,
+                prevArrow: '\u25c4',
+                nextArrow: '\u25ba',
+                theme: 'default',
+                alwaysShow: false
+            });
         });
     }
 

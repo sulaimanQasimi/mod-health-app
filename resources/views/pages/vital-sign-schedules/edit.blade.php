@@ -135,4 +135,25 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+$(document).ready(function() {
+    if (typeof $ !== 'undefined' && typeof $.fn.persianDatepicker === 'function') {
+        var $dateInput = $('#date.datepicker_dari');
+        if ($dateInput.length && !$dateInput.data('datepicker')) {
+            $dateInput.persianDatepicker({
+                months: ["حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله", "میزان", "عقرب", "قوس", "جدی", "دلو", "حوت"],
+                dowTitle: ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"],
+                shortDowTitle: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
+                showGregorianDate: false,
+                persianNumbers: true,
+                formatDate: 'YYYY/MM/DD',
+                selectedBefore: false,
+                theme: 'default'
+            });
+        }
+    }
+});
+</script>
+@endpush
 @endsection

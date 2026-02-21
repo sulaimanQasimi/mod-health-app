@@ -69,7 +69,7 @@
                                         <td>
                                             <span class="badge badge-info">{{ $vitalSign->schedules->count() }} {{ localize('global.schedules') }}</span>
                                         </td>
-                                        <td>{{ $vitalSign->created_at->format('Y-m-d H:i') }}</td>
+                                        <td>{{ verta($vitalSign->created_at)->format('Y/m/d H:i') }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
                                                 @can('view', $vitalSign)

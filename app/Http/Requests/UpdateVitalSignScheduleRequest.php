@@ -27,7 +27,7 @@ class UpdateVitalSignScheduleRequest extends FormRequest
             'morning_time' => 'nullable|string|max:255',
             'evening_time' => 'nullable|string|max:255',
             'day' => 'nullable|string|max:50', // Preserved from original
-            'date' => 'nullable|date|before_or_equal:today', // Preserved from original
+            'date' => 'nullable|date', // Preserved from original
             'nurse_id' => 'nullable|integer|exists:nurses,id', // Preserved from original
         ];
     }

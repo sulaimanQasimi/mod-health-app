@@ -1491,12 +1491,6 @@
                 const branchId = {{ auth()->user()->branch_id }};
             @endif
             
-            @if($hospitalization->appointment && $hospitalization->appointment->department_id)
-                const departmentId = {{ $hospitalization->appointment->department_id }};
-            @else
-                const departmentId = null;
-            @endif
-            
             // Initialize Select2 with AJAX
             if (typeof $.fn.select2 !== 'undefined') {
                 try {
@@ -1522,7 +1516,6 @@
                                 return {
                                     search: params.term || '',
                                     branch_id: branchId,
-                                    department_id: departmentId || null,
                                     page: params.page || 1
                                 };
                             },

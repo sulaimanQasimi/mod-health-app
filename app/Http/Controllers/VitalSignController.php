@@ -112,6 +112,7 @@ class VitalSignController extends Controller
                 return response()->json(['message' => $message], 201);
             }
 
+            // When creating from hospitalization/under_review, always redirect to parent—never to vital-signs.show
             $routeName = $morphableType === 'App\\Models\\Hospitalization'
                 ? 'hospitalizations.show'
                 : 'under_reviews.show';

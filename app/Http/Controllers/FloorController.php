@@ -11,10 +11,23 @@ class FloorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $floors = Floor::all();
-        return view('pages.floors.index',compact('floors'));
+        $query = Floor::query()->with('branch');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        $floors = $query->orderBy('name')->paginate(request('per_page', 25))->withQueryString();
+        $branches = Branch::orderBy('name')->get(['id', 'name']);
+
+        return view('pages.floors.index', compact('floors', 'branches'));
     }
 
     /**

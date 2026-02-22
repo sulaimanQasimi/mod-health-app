@@ -22,20 +22,68 @@
                 </div>
                 <div class="card-body">
 
+            {{-- Filter --}}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-none border-0">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bx bx-filter-alt text-primary me-2"></i>{{ localize('global.filter') }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('floors.index') }}" id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label fw-semibold">
+                                    <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search') }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white"><i class="bx bx-search"></i></span>
+                                    <input type="text" class="form-control" id="search" name="search"
+                                           value="{{ request('search') }}"
+                                           placeholder="{{ localize('global.name') }}" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="branch_id" class="form-label fw-semibold">
+                                    <i class="bx bx-building me-1 text-info"></i>{{ localize('global.branch') }}
+                                </label>
+                                <select class="form-select" id="branch_id" name="branch_id">
+                                    <option value="">{{ localize('global.all') ?: 'All' }}</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bx bx-filter me-1"></i>{{ localize('global.filter') }}
+                                </button>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <a href="{{ route('floors.index') }}" class="btn btn-outline-secondary">
+                                    <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') ?: 'Reset' }}
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>{{localize('global.number')}}</th>
             <th>{{localize('global.name')}}</th>
+            <th>{{ localize('global.branch') }}</th>
             <th>{{localize('global.actions')}}</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($floors as $floor)
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                <td>{{ $floors->firstItem() ? ($loop->iteration + $floors->firstItem() - 1) : $loop->iteration }}</td>
                 <td>{{ $floor->name }}</td>
+                <td>{{ $floor->branch->name ?? '—' }}</td>
                 <td>
                     {{-- <a href="{{ route('floors.show', $floor) }}"><i class="bx bx-show-alt"></i></a> --}}
                     @can('edit-floors')
@@ -57,6 +105,9 @@
         @endforeach
     </tbody>
 </table>
+<div class="d-flex justify-content-center mt-3">
+    {{ $floors->links() }}
+</div>
 </div>
             </div>
         </div>

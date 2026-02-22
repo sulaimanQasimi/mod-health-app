@@ -13,8 +13,13 @@
                             {{ localize('global.details') }}
                         </h3>
                         <div class="card-tools">
-                            <a href="{{ route('vital-signs.index') }}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-arrow-left"></i> {{ localize('global.back_to_list') }}
+                            @if($vitalSign->morphable)
+                                <a href="{{ $vitalSign->morphable_type == 'App\\Models\\Hospitalization' ? route('hospitalizations.show', $vitalSign->morphable) : route('under_reviews.show', $vitalSign->morphable) }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-arrow-left"></i> {{ localize('global.back') }} ({{ class_basename($vitalSign->morphable_type) }})
+                                </a>
+                            @endif
+                            <a href="{{ route('vital-signs.index', $vitalSign->morphable ? ['morphable_type' => $vitalSign->morphable_type, 'morphable_id' => $vitalSign->morphable_id] : []) }}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-list"></i> {{ localize('global.view_all_vital_signs') }}
                             </a>
                         </div>
                     </div>
@@ -462,9 +467,29 @@
                     })
                         .then(response => {
                             if (response.ok) {
-                                // Close modal
-                                const modalInstance = bootstrap.Modal.getInstance(modal);
-                                modalInstance.hide();
+                                // Close modal (Bootstrap 5 or jQuery fallback)
+                                try {
+                                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal && typeof bootstrap.Modal.getInstance === 'function') {
+                                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                                        if (modalInstance) modalInstance.hide();
+                                    } else if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+                                        window.$(modal).modal('hide');
+                                    } else {
+                                        modal.classList.remove('show');
+                                        modal.style.display = 'none';
+                                        document.body.classList.remove('modal-open');
+                                        const backdrop = document.querySelector('.modal-backdrop');
+                                        if (backdrop) backdrop.remove();
+                                    }
+                                } catch (e) {
+                                    if (typeof window.$ !== 'undefined' && window.$.fn.modal) {
+                                        window.$(modal).modal('hide');
+                                    } else {
+                                        modal.classList.remove('show');
+                                        modal.style.display = 'none';
+                                        document.body.classList.remove('modal-open');
+                                    }
+                                }
 
                                 // Show success message
                                 showAlert('success', successMessage);

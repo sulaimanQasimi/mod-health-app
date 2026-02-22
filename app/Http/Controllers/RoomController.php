@@ -13,10 +13,33 @@ class RoomController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $rooms = Room::all();
-        return view('pages.rooms.index',compact('rooms'));
+        $query = Room::query()->with(['floor', 'branch', 'department']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('floor_id')) {
+            $query->where('floor_id', $request->floor_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        $rooms = $query->orderBy('name')->paginate(request('per_page', 25))->withQueryString();
+        $branches = Branch::orderBy('name')->get(['id', 'name']);
+        $floors = Floor::orderBy('name')->get(['id', 'name']);
+        $departments = Department::orderBy('name')->get(['id', 'name']);
+
+        return view('pages.rooms.index', compact('rooms', 'branches', 'floors', 'departments'));
     }
 
     /**

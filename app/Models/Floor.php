@@ -11,4 +11,9 @@ class Floor extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = ['name','branch_id'];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }

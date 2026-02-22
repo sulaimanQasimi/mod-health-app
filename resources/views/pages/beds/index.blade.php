@@ -22,6 +22,58 @@
                 </div>
                 <div class="card-body">
 
+            {{-- Filter --}}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-none border-0">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bx bx-filter-alt text-primary me-2"></i>{{ localize('global.filter') }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('beds.index') }}" id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="search" class="form-label fw-semibold">
+                                    <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search') }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white"><i class="bx bx-search"></i></span>
+                                    <input type="text" class="form-control" id="search" name="search"
+                                           value="{{ request('search') }}"
+                                           placeholder="{{ localize('global.bed_number') }}" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
+                                <select class="form-select" id="room_id" name="room_id">
+                                    <option value="">{{ localize('global.all') ?: 'All' }}</option>
+                                    @foreach($rooms as $room)
+                                        <option value="{{ $room->id }}" {{ request('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="is_occupied" class="form-label fw-semibold">{{ localize('global.status') ?: 'Status' }}</label>
+                                <select class="form-select" id="is_occupied" name="is_occupied">
+                                    <option value="">{{ localize('global.all') ?: 'All' }}</option>
+                                    <option value="0" {{ request('is_occupied') === '0' ? 'selected' : '' }}>{{ localize('global.available') ?: 'Available' }}</option>
+                                    <option value="1" {{ request('is_occupied') === '1' ? 'selected' : '' }}>{{ localize('global.occupied') ?: 'Occupied' }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bx bx-filter me-1"></i>{{ localize('global.filter') }}
+                                </button>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <a href="{{ route('beds.index') }}" class="btn btn-outline-secondary">
+                                    <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') ?: 'Reset' }}
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
 <table class="table table-striped">
     <thead>
@@ -35,9 +87,9 @@
     <tbody>
         @foreach ($beds as $bed)
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                <td>{{ $beds->firstItem() ? ($loop->iteration + $beds->firstItem() - 1) : $loop->iteration }}</td>
                 <td>{{ $bed->number }}</td>
-                <td>{{ $bed->room->name ?? 'Null' }}</td>
+                <td>{{ $bed->room->name ?? '—' }}</td>
                 <td>
                     {{-- <a href="{{ route('beds.show', $bed) }}"><i class="bx bx-show-alt"></i></a> --}}
                     @can('edit-beds')
@@ -59,6 +111,9 @@
         @endforeach
     </tbody>
 </table>
+<div class="d-flex justify-content-center mt-3">
+    {{ $beds->links() }}
+</div>
 </div>
             </div>
         </div>

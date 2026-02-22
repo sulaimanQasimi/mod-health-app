@@ -11,10 +11,27 @@ class BedController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $beds = Bed::all();
-        return view('pages.beds.index',compact('beds'));
+        $query = Bed::query()->with('room');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('number', 'like', '%' . $search . '%');
+        }
+
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
+        }
+
+        if ($request->filled('is_occupied')) {
+            $query->where('is_occupied', $request->is_occupied);
+        }
+
+        $beds = $query->orderBy('number')->paginate(request('per_page', 25))->withQueryString();
+        $rooms = Room::orderBy('name')->get(['id', 'name']);
+
+        return view('pages.beds.index', compact('beds', 'rooms'));
     }
 
     /**

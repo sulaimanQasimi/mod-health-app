@@ -249,12 +249,23 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    @if($registration->testable && $registration->testable->date)
+                                                                    @php
+                                                                        $displayDate = ($registration->testable && $registration->testable->date)
+                                                                            ? $registration->testable->date
+                                                                            : $registration->registration_date;
+                                                                    @endphp
+                                                                    @if($displayDate)
                                                                         <span class="text-muted">
-                                                                            {{ \Verta(\Carbon\Carbon::parse($registration->testable->date))->formatJalaliDate() }}
+                                                                            {{ \Verta(\Carbon\Carbon::parse($displayDate))->formatJalaliDate() }}
                                                                         </span>
                                                                     @else
                                                                         <span class="text-muted">—</span>
+                                                                    @endif
+                                                                    @if(Route::is('laboratory.results.in-progress') && $registration->registration_date && $registration->testable && $registration->testable->date)
+                                                                        <br><small class="text-muted">{{ localize('global.registered') ?? 'ثبت' }}: {{ \Verta($registration->registration_date)->formatJalaliDate() }}</small>
+                                                                    @endif
+                                                                    @if(Route::is('laboratory.results.completed') && $registration->completed_at)
+                                                                        <br><small class="text-muted">{{ localize('global.completed_date') ?? 'تکمیل' }}: {{ \Verta($registration->completed_at)->formatJalaliDate() }}</small>
                                                                     @endif
                                                                 </td>
                                                                 <td class="text-center">

@@ -28,13 +28,11 @@
                         <div class="row align-items-end">
                             <div class="col-md-6">
                                 <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
-                                <select class="form-select select2" name="room_id" id="room_id">
+                                <select class="form-select" name="room_id" id="room_id">
                                     <option value="">{{ localize('global.select') }}...</option>
-                                    @foreach ($rooms as $room)
-                                        <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
-                                            {{ $room->name }}
-                                        </option>
-                                    @endforeach
+                                    @if ($selectedRoom)
+                                        <option value="{{ $selectedRoom->id }}" selected>{{ $selectedRoom->name }}</option>
+                                    @endif
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -147,9 +145,6 @@
                             <label for="move_room_id" class="form-label fw-semibold">{{ localize('global.select_room') ?: 'Select Room' }} <span class="text-danger">*</span></label>
                             <select class="form-select" name="room_id" id="move_room_id" required>
                                 <option value="">{{ localize('global.select') }}...</option>
-                                @foreach ($rooms as $room)
-                                    <option value="{{ $room->id }}">{{ $room->name }}</option>
-                                @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
@@ -220,15 +215,102 @@
 
 @push('custom-js')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var roomSelect = document.getElementById('room_id');
-            if (roomSelect) {
-                roomSelect.addEventListener('change', function() {
-                    document.getElementById('roomSelectForm').submit();
-                });
-            }
+        (function() {
+            var roomsApiUrl = '{{ url("/api/select/rooms") }}';
+            var bedsApiUrl = '{{ url("/get_related_beds") }}';
 
-            var unoccupyModal = document.getElementById('unoccupyBedModal');
+            document.addEventListener('DOMContentLoaded', function() {
+                var roomSelect = document.getElementById('room_id');
+                if (roomSelect) {
+                    roomSelect.addEventListener('change', function() {
+                        document.getElementById('roomSelectForm').submit();
+                    });
+                }
+
+                // Select2 AJAX for main room filter (#room_id)
+                if (typeof $ !== 'undefined' && $.fn.select2) {
+                    var $roomSelect = $('#room_id');
+                    if ($roomSelect.length) {
+                        $roomSelect.select2({
+                            placeholder: '{{ localize("global.select") }}...',
+                            allowClear: true,
+                            width: '100%',
+                            minimumInputLength: 0,
+                            ajax: {
+                                url: roomsApiUrl,
+                                dataType: 'json',
+                                delay: 250,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                                data: function(params) {
+                                    return { search: params.term || '', page: params.page || 1 };
+                                },
+                                processResults: function(data) {
+                                    if (data && data.results) {
+                                        return { results: data.results, pagination: data.pagination || { more: false } };
+                                    }
+                                    return { results: [], pagination: { more: false } };
+                                },
+                                cache: true
+                            },
+                            language: {
+                                noResults: function() { return '{{ localize("global.no_results_found") ?: "No results found" }}'; },
+                                searching: function() { return '{{ localize("global.searching") ?: "Searching" }}...'; }
+                            }
+                        });
+                    }
+
+                    // Select2 AJAX for move modal room (#move_room_id)
+                    var $moveRoomSelect = $('#move_room_id');
+                    if ($moveRoomSelect.length) {
+                        $moveRoomSelect.select2({
+                            placeholder: '{{ localize("global.select_room") ?: "Select Room" }}...',
+                            allowClear: true,
+                            width: '100%',
+                            minimumInputLength: 0,
+                            dropdownParent: $('#movePatientModal'),
+                            ajax: {
+                                url: roomsApiUrl,
+                                dataType: 'json',
+                                delay: 250,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                                data: function(params) {
+                                    return { search: params.term || '', page: params.page || 1 };
+                                },
+                                processResults: function(data) {
+                                    if (data && data.results) {
+                                        return { results: data.results, pagination: data.pagination || { more: false } };
+                                    }
+                                    return { results: [], pagination: { more: false } };
+                                },
+                                cache: true
+                            },
+                            language: {
+                                noResults: function() { return '{{ localize("global.no_results_found") ?: "No results found" }}'; },
+                                searching: function() { return '{{ localize("global.searching") ?: "Searching" }}...'; }
+                            }
+                        });
+
+                        // Load empty beds when room changes (jQuery so it fires after Select2 updates)
+                        $(document).on('change', '#move_room_id', function() {
+                            var roomId = $(this).val();
+                            var $bedSelect = $('#move_bed_id');
+                            if (roomId) {
+                                $bedSelect.prop('disabled', true).html('<option value="">{{ localize("global.searching") ?: "Loading" }}...</option>');
+                                $.get(bedsApiUrl + '/' + roomId)
+                                    .done(function(html) {
+                                        $bedSelect.html(html || '<option value="">{{ localize("global.select") }}...</option>').prop('disabled', false);
+                                    })
+                                    .fail(function() {
+                                        $bedSelect.html('<option value="">{{ localize("global.select") }}...</option>').prop('disabled', false);
+                                    });
+                            } else {
+                                $bedSelect.html('<option value="">{{ localize("global.select") }}...</option>');
+                            }
+                        });
+                    }
+                }
+
+                var unoccupyModal = document.getElementById('unoccupyBedModal');
             if (unoccupyModal) {
                 unoccupyModal.addEventListener('show.bs.modal', function(event) {
                     var button = event.relatedTarget;
@@ -261,30 +343,20 @@
                     form.action = action;
                     infoEl.textContent = (patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName + '. ') : '') +
                         (currentRoom || currentBed ? ('{{ localize("global.current_room") ?: "Current" }}: ' + currentRoom + ' / {{ localize("global.current_bed") ?: "Bed" }}: ' + currentBed) : '');
-                    document.getElementById('move_room_id').value = '';
-                    document.getElementById('move_bed_id').innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
-                });
-            }
-
-            var moveRoomSelect = document.getElementById('move_room_id');
-            if (moveRoomSelect) {
-                moveRoomSelect.addEventListener('change', function() {
-                    var roomId = this.value;
-                    var bedSelect = document.getElementById('move_bed_id');
-                    if (roomId) {
-                        fetch('/get_related_beds/' + roomId)
-                            .then(function(r) { return r.text(); })
-                            .then(function(html) {
-                                bedSelect.innerHTML = html;
-                            })
-                            .catch(function() {
-                                bedSelect.innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
-                            });
-                    } else {
-                        bedSelect.innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
+                    var moveRoomEl = document.getElementById('move_room_id');
+                    var moveBedEl = document.getElementById('move_bed_id');
+                    if (moveRoomEl) {
+                        moveRoomEl.value = '';
+                        if (typeof $ !== 'undefined' && $(moveRoomEl).hasClass('select2-hidden-accessible')) {
+                            $(moveRoomEl).val(null).trigger('change');
+                        }
+                    }
+                    if (moveBedEl) {
+                        moveBedEl.innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
                     }
                 });
             }
         });
+        })();
     </script>
 @endpush

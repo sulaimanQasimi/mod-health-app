@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Pharmacy;
 use App\Models\PhysiotherapyType;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -175,6 +176,48 @@ class SelectController extends Controller
             return response()->json([
                 'results' => [],
                 'error' => 'Failed to fetch pharmacy users'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get rooms for Select2 AJAX dropdown (e.g. room management, move patient).
+     * Filters by branch_id when user has one.
+     */
+    public function getRooms(Request $request): JsonResponse
+    {
+        try {
+            $query = Room::query()->select('id', 'name');
+
+            if (auth()->check() && auth()->user()->branch_id) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            }
+
+            if ($request->filled('search')) {
+                $searchTerm = trim($request->search);
+                $query->where('name', 'like', "%{$searchTerm}%");
+            }
+
+            $rooms = $query
+                ->orderBy('name', 'asc')
+                ->limit(50)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'text' => $item->name,
+                    ];
+                });
+
+            return response()->json([
+                'results' => $rooms,
+                'pagination' => ['more' => false],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching rooms for select: ' . $e->getMessage());
+            return response()->json([
+                'results' => [],
+                'error' => 'Failed to fetch rooms',
             ], 500);
         }
     }

@@ -827,6 +827,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('diabetes-charts', [DiabetesChartController::class, 'getDiabetesChartsForSelect'])->name('api.select.diabetes-charts');
         Route::get('branches', [BranchController::class, 'getBranchesForSelect'])->name('api.select.branches');
         Route::get('lab-types', [LabTypeController::class, 'getLabTypesForSelect'])->name('api.select.lab-types');
+        Route::get('rooms', [\App\Http\Controllers\Api\SelectController::class, 'getRooms'])->name('api.select.rooms');
     });
 
     // Physiotherapy Reports routes

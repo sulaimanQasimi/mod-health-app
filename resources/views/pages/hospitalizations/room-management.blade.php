@@ -93,12 +93,23 @@
                                                 @can('edit-hospitalizations')
                                                     <td class="text-end">
                                                         @if ($bed->active_hospitalization)
-                                                            <button type="button" class="btn btn-sm btn-outline-danger"
-                                                                data-bs-toggle="modal" data-bs-target="#unoccupyBedModal"
-                                                                data-action="{{ route('hospitalizations.unoccupyBed', $bed->active_hospitalization) }}"
-                                                                data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}">
-                                                                <i class="bx bx-log-out me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
-                                                            </button>
+                                                            <div class="btn-group btn-group-sm">
+                                                                <button type="button" class="btn btn-outline-primary"
+                                                                    data-bs-toggle="modal" data-bs-target="#movePatientModal"
+                                                                    data-move-action="{{ route('hospitalizations.updateRoomBed', $bed->active_hospitalization->id) }}"
+                                                                    data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}"
+                                                                    data-current-room="{{ $selectedRoom->name }}"
+                                                                    data-current-bed="{{ $bed->number }}"
+                                                                    data-hospitalization-id="{{ $bed->active_hospitalization->id }}">
+                                                                    <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_bed') ?: 'Move to room/bed' }}
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-danger"
+                                                                    data-bs-toggle="modal" data-bs-target="#unoccupyBedModal"
+                                                                    data-action="{{ route('hospitalizations.unoccupyBed', $bed->active_hospitalization) }}"
+                                                                    data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}">
+                                                                    <i class="bx bx-log-out me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
+                                                                </button>
+                                                            </div>
                                                         @else
                                                             <span class="text-muted">—</span>
                                                         @endif
@@ -113,6 +124,49 @@
                     </div>
                 </div>
             @endif
+        </div>
+    </div>
+
+    {{-- Move patient to another room/bed modal --}}
+    <div class="modal fade" id="movePatientModal" tabindex="-1" aria-labelledby="movePatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="movePatientModalLabel">
+                        <i class="bx bx-transfer me-2"></i>{{ localize('global.change_room_and_bed') ?: 'Move patient to another room/bed' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="movePatientForm" method="POST" action="">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="return_to_room_id" id="moveReturnToRoomId" value="{{ $selectedRoom->id ?? '' }}">
+                    <div class="modal-body">
+                        <p class="mb-3 text-muted" id="movePatientInfo"></p>
+                        <div class="mb-3">
+                            <label for="move_room_id" class="form-label fw-semibold">{{ localize('global.select_room') ?: 'Select Room' }} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="room_id" id="move_room_id" required>
+                                <option value="">{{ localize('global.select') }}...</option>
+                                @foreach ($rooms as $room)
+                                    <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="move_bed_id" class="form-label fw-semibold">{{ localize('global.select_bed') ?: 'Select Bed' }} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="bed_id" id="move_bed_id" required>
+                                <option value="">{{ localize('global.select') }}...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bx bx-check me-1"></i>{{ localize('global.update') ?: 'Update' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -191,6 +245,44 @@
                     var h = String(now.getHours()).padStart(2, '0');
                     var m = String(now.getMinutes()).padStart(2, '0');
                     form.querySelector('#discharged_at_time').value = h + ':' + m;
+                });
+            }
+
+            var moveModal = document.getElementById('movePatientModal');
+            if (moveModal) {
+                moveModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var action = button.getAttribute('data-move-action');
+                    var patientName = button.getAttribute('data-patient-name') || '';
+                    var currentRoom = button.getAttribute('data-current-room') || '';
+                    var currentBed = button.getAttribute('data-current-bed') || '';
+                    var form = document.getElementById('movePatientForm');
+                    var infoEl = document.getElementById('movePatientInfo');
+                    form.action = action;
+                    infoEl.textContent = (patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName + '. ') : '') +
+                        (currentRoom || currentBed ? ('{{ localize("global.current_room") ?: "Current" }}: ' + currentRoom + ' / {{ localize("global.current_bed") ?: "Bed" }}: ' + currentBed) : '');
+                    document.getElementById('move_room_id').value = '';
+                    document.getElementById('move_bed_id').innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
+                });
+            }
+
+            var moveRoomSelect = document.getElementById('move_room_id');
+            if (moveRoomSelect) {
+                moveRoomSelect.addEventListener('change', function() {
+                    var roomId = this.value;
+                    var bedSelect = document.getElementById('move_bed_id');
+                    if (roomId) {
+                        fetch('/get_related_beds/' + roomId)
+                            .then(function(r) { return r.text(); })
+                            .then(function(html) {
+                                bedSelect.innerHTML = html;
+                            })
+                            .catch(function() {
+                                bedSelect.innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
+                            });
+                    } else {
+                        bedSelect.innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
+                    }
                 });
             }
         });

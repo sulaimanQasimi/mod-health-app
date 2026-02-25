@@ -704,10 +704,14 @@ $hospitalization->appointment->update([
             'room_id' => 'required|exists:rooms,id',
             'bed_id' => 'required|exists:beds,id',
         ]);
+        $returnToRoomId = $request->input('return_to_room_id');
+        if ($returnToRoomId === null || $returnToRoomId === '' || !Room::where('id', $returnToRoomId)->exists()) {
+            $returnToRoomId = null;
+        }
 
         // Get the old bed to free it
         $oldBed = Bed::find($hospitalization->bed_id);
-        
+
         // Update hospitalization with new room and bed
         $hospitalization->update([
             'room_id' => $data['room_id'],
@@ -722,6 +726,11 @@ $hospitalization->appointment->update([
         // Occupy the new bed
         $newBed = Bed::findOrFail($data['bed_id']);
         $newBed->update(['is_occupied' => true]);
+
+        if ($returnToRoomId) {
+            return redirect()->route('hospitalizations.roomManagement', ['room_id' => $returnToRoomId])
+                ->with('success', localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.');
+        }
 
         return redirect()->route('hospitalizations.show', $hospitalization)
             ->with('success', localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.');

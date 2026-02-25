@@ -74,8 +74,11 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">{{ localize('global.test_results') }} - {{ localize('global.patients') }}</h5>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-wrap gap-2">
                     <span class="badge bg-primary me-2">{{ $patients->count() }} {{ localize('global.patients') }}</span>
+                    @isset($paginator)
+                        <span class="text-muted small">{{ $paginator->total() }} {{ localize('global.registrations') ?? 'registrations' }}</span>
+                    @endisset
                 </div>
             </div>
 
@@ -195,7 +198,7 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    @if($registration->labType && $registration->labType->directLabTestParameters && $registration->labType->directLabTestParameters->count() > 0)
+                                                                    @if($registration->labType && ($registration->labType->direct_lab_test_parameters_count ?? 0) > 0)
                                                                         <span class="badge bg-info">{{ localize('global.parametered') }}</span>
                                                                     @else
                                                                         <span class="badge bg-secondary">{{ localize('global.text_based') }}</span>
@@ -272,7 +275,7 @@
                                                                             <a href="{{ route('laboratory.results.show', $registration->id) }}" class="btn btn-primary btn-sm" title="{{ localize('global.enter_results') }}">
                                                                                 <i class="bx bx-edit"></i>
                                                                             </a>
-                                                                            @if(!$registration->labType || !$registration->labType->directLabTestParameters || $registration->labType->directLabTestParameters->count() == 0)
+                                                                            @if(!$registration->labType || ($registration->labType->direct_lab_test_parameters_count ?? 0) == 0)
                                                                                 <button type="button" 
                                                                                         class="btn btn-info btn-sm attach-files-btn" 
                                                                                         data-registration-id="{{ $registration->id }}"
@@ -322,6 +325,11 @@
                                 @endif
                             @endforeach
                         </div>
+                        @isset($paginator)
+                            <div class="d-flex justify-content-center mt-3">
+                                {{ $paginator->links() }}
+                            </div>
+                        @endisset
                     </div>
                 @else
                     <div class="text-center py-5">

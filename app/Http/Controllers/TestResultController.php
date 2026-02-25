@@ -150,11 +150,11 @@ class TestResultController extends Controller
      */
     public function patientList(Request $request)
     {
-        // Start query builder
+        // Start query builder – use withCount for parameters to avoid loading full collections (memory)
         $query = PatientTestRegistration::with([
             'testable.patient',
             'labType.category',
-            'labType.directLabTestParameters',
+            'labType' => fn ($q) => $q->withCount('directLabTestParameters'),
             'doctor',
             'branch',
             'assignedTo',
@@ -202,14 +202,17 @@ class TestResultController extends Controller
         // Apply date range filter
         $query = $this->applyDateFilters($query, $request);
 
-        // Get filtered results and group by patient
-        $patients = $query->latest()
-            ->get()
-            ->groupBy(function($registration) {
-                return $registration->testable->patient->id ?? 'unknown';
-            });
+        // Paginate to avoid loading all registrations into memory (fixes "Allowed memory size exhausted")
+        $perPage = (int) $request->get('per_page', 50);
+        $perPage = min(max($perPage, 15), 100);
+        $paginator = $query->latest()->paginate($perPage)->appends($request->query());
 
-        return view('pages.laboratory.results.patients', compact('patients'));
+        // Group current page results by patient for the view
+        $patients = $paginator->getCollection()->groupBy(function ($registration) {
+            return $registration->testable->patient->id ?? 'unknown';
+        });
+
+        return view('pages.laboratory.results.patients', compact('patients', 'paginator'));
     }
 
     /**

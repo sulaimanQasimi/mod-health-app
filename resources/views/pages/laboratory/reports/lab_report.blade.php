@@ -423,20 +423,20 @@
                 <table class="parameters-table">
                     <thead>
                         <tr>
-                            <th style="text-align: center; direction: ltr;">Investigation</th>
-                            <th style="text-align: center; direction: ltr;">Result</th>
-                            <th style="text-align: center; direction: ltr;">Unit</th>
                             <th style="text-align: center; direction: ltr;">Reference Value</th>
+                            <th style="text-align: center; direction: ltr;">Unit</th>
+                            <th style="text-align: center; direction: ltr;">Result</th>
+                            <th style="text-align: center; direction: ltr;">Investigation</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($results as $result)
                         @if($result->parameter)
                         <tr>
-                            <td style="text-align: center;">{{ $result->parameter->parameter_name ?? '—' }}</td>
-                            <td class="result-value" style="text-align: center;">{{ $result->result ?? '—' }}</td>
-                            <td class="unit" style="text-align: center;">{{ $result->unit ?? '—' }}</td>
                             <td class="normal-range" style="text-align: center;">{{ $result->normal_range ?? '—' }}</td>
+                            <td class="unit" style="text-align: center;">{{ $result->unit ?? '—' }}</td>
+                            <td class="result-value" style="text-align: center;">{{ $result->result ?? '—' }}</td>
+                            <td style="text-align: center;">{{ $result->parameter->parameter_name ?? '—' }}</td>
                         </tr>
                         @endif
                         @endforeach
@@ -451,19 +451,19 @@
                     <table class="parameters-table">
                         <thead>
                             <tr>
-                                <th style="text-align: center; direction: ltr;">Investigation</th>
-                                <th style="text-align: center; direction: ltr;">Unit</th>
                                 <th style="text-align: center; direction: ltr;">Reference Value</th>
+                                <th style="text-align: center; direction: ltr;">Unit</th>
+                                <th style="text-align: center; direction: ltr;">Investigation</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($testRegistration->labType->directLabTestParameters as $parameter)
                             <tr>
-                                <td style="text-align: center;">{{ $parameter->parameter_name ?? '—' }}</td>
-                                <td class="unit" style="text-align: center;">{{ $parameter->unit ?? '—' }}</td>
                                 <td class="normal-range" style="text-align: center;">
                                     {{ $parameter->normal_range ?? '—' }}
                                 </td>
+                                <td class="unit" style="text-align: center;">{{ $parameter->unit ?? '—' }}</td>
+                                <td style="text-align: center;">{{ $parameter->parameter_name ?? '—' }}</td>
                             </tr>
                             @endforeach
                         </tbody>

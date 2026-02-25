@@ -344,14 +344,16 @@ class PrescriptionController extends Controller
             ->leftJoin('pharmacies as ph', 'a.pharmacy_id', '=', 'ph.id')
             ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
             ->leftJoin('departments as dept', 'app.department_id', '=', 'dept.id')
+            ->leftJoin('users as updater', 'a.updated_by', '=', 'updater.id')
             ->select(
-                'a.id', 
-                'p.name as patient_name', 
+                'a.id',
+                'p.name as patient_name',
                 'p.id_card as patient_id_card',
-                'd.name as doctor_name', 
+                'd.name as doctor_name',
                 'b.name as branch_name',
                 'ph.name as pharmacy_name',
                 'dept.name as department_name',
+                'updater.name as updated_by_name',
                 'a.is_completed',
                 'a.created_at',
                 'a.pharmacy_id'
@@ -367,6 +369,10 @@ class PrescriptionController extends Controller
 
         if ($request->filled('pharmacy_id')) {
             $query->where('a.pharmacy_id', $request->pharmacy_id);
+        }
+
+        if ($request->filled('updated_by')) {
+            $query->where('a.updated_by', $request->updated_by);
         }
 
         if ($request->filled('start') && $request->filled('end')) {

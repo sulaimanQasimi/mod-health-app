@@ -1,0 +1,198 @@
+@extends('layouts.master')
+
+@section('content')
+    <div class="content-wrapper">
+        @if (Session::has('success') || Session::has('error'))
+            @include('components.toast')
+        @endif
+        <div class="container-xxl flex-grow-1 container-p-y">
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="fw-bold mb-0">
+                        <i class="bx bx-bed me-2 text-primary"></i>
+                        {{ localize('global.room_management') ?: 'Room Management' }}
+                    </h4>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bx bx-building me-2 text-primary"></i>
+                        {{ localize('global.select_room') ?: 'Select Room' }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('hospitalizations.roomManagement') }}" id="roomSelectForm">
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
+                                <select class="form-select select2" name="room_id" id="room_id">
+                                    <option value="">{{ localize('global.select') }}...</option>
+                                    @foreach ($rooms as $room)
+                                        <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>
+                                            {{ $room->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bx bx-show me-1"></i>{{ localize('global.show') ?: 'Show' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if ($selectedRoom)
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bx bx-door-open me-2 text-info"></i>
+                            {{ localize('global.room') }}: {{ $selectedRoom->name }}
+                        </h5>
+                        <span class="badge bg-label-primary">{{ localize('global.bed_occupancy') ?: 'Bed occupancy' }}</span>
+                    </div>
+                    <div class="card-body">
+                        @if ($bedsWithOccupation->isEmpty())
+                            <p class="text-muted mb-0">{{ localize('global.no_beds_in_room') ?: 'No beds in this room.' }}</p>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ localize('global.bed_number') ?: 'Bed number' }}</th>
+                                            <th>{{ localize('global.patient') }}</th>
+                                            <th>{{ localize('global.status') ?: 'Status' }}</th>
+                                            @can('edit-hospitalizations')
+                                                <th class="text-end">{{ localize('global.actions') ?: 'Actions' }}</th>
+                                            @endcan
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($bedsWithOccupation as $bed)
+                                            <tr>
+                                                <td class="fw-semibold">{{ $bed->number }}</td>
+                                                <td>
+                                                    @if ($bed->active_hospitalization && $bed->active_hospitalization->patient)
+                                                        {{ $bed->active_hospitalization->patient->name }}
+                                                    @else
+                                                        <span class="text-muted">—</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($bed->active_hospitalization)
+                                                        <span class="badge bg-label-warning">{{ localize('global.occupied') ?: 'Occupied' }}</span>
+                                                    @else
+                                                        <span class="badge bg-label-success">{{ localize('global.empty_bed') ?: 'Empty' }}</span>
+                                                    @endif
+                                                </td>
+                                                @can('edit-hospitalizations')
+                                                    <td class="text-end">
+                                                        @if ($bed->active_hospitalization)
+                                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                data-bs-toggle="modal" data-bs-target="#unoccupyBedModal"
+                                                                data-action="{{ route('hospitalizations.unoccupyBed', $bed->active_hospitalization) }}"
+                                                                data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}">
+                                                                <i class="bx bx-log-out me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
+                                                            </button>
+                                                        @else
+                                                            <span class="text-muted">—</span>
+                                                        @endif
+                                                    </td>
+                                                @endcan
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- Unoccupy bed modal (one form, action set by JS) --}}
+    <div class="modal fade" id="unoccupyBedModal" tabindex="-1" aria-labelledby="unoccupyBedModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unoccupyBedModalLabel">
+                        <i class="bx bx-log-out me-2"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy bed' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="unoccupyBedForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body">
+                        <p class="mb-3 text-muted" id="unoccupyPatientName"></p>
+                        <div class="mb-3">
+                            <label for="discharge_status" class="form-label fw-semibold">{{ localize('global.discharge_status') }} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="discharge_status" id="discharge_status" required>
+                                <option value="">{{ localize('global.select') }}...</option>
+                                <option value="recovered">{{ localize('global.recovered') }}</option>
+                                <option value="died">{{ localize('global.died') }}</option>
+                                <option value="moved">{{ localize('global.moved') }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="discharge_remark" class="form-label fw-semibold">{{ localize('global.discharge_remark') }} <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="discharge_remark" id="discharge_remark" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="discharged_at_date" class="form-label fw-semibold">{{ localize('global.discharged_at') ?: 'Discharged at' }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control datepicker_dari pdp-el" name="discharged_at_date" id="discharged_at_date" required placeholder="1403/01/01" autocomplete="off">
+                        </div>
+                        <div class="mb-3">
+                            <label for="discharged_at_time" class="form-label fw-semibold">{{ localize('global.time') ?: 'Time' }}</label>
+                            <input type="time" class="form-control" name="discharged_at_time" id="discharged_at_time" value="{{ date('H:i') }}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bx bx-check me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('custom-js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var roomSelect = document.getElementById('room_id');
+            if (roomSelect) {
+                roomSelect.addEventListener('change', function() {
+                    document.getElementById('roomSelectForm').submit();
+                });
+            }
+
+            var unoccupyModal = document.getElementById('unoccupyBedModal');
+            if (unoccupyModal) {
+                unoccupyModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var action = button.getAttribute('data-action');
+                    var patientName = button.getAttribute('data-patient-name') || '';
+                    var form = document.getElementById('unoccupyBedForm');
+                    var nameEl = document.getElementById('unoccupyPatientName');
+                    form.action = action;
+                    nameEl.textContent = patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName) : '';
+                    form.querySelector('#discharge_remark').value = '';
+                    form.querySelector('#discharge_status').value = '';
+                    form.querySelector('#discharged_at_date').value = '';
+                    var now = new Date();
+                    var h = String(now.getHours()).padStart(2, '0');
+                    var m = String(now.getMinutes()).padStart(2, '0');
+                    form.querySelector('#discharged_at_time').value = h + ':' + m;
+                });
+            }
+        });
+    </script>
+@endpush

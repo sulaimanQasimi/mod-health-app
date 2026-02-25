@@ -726,4 +726,78 @@ $hospitalization->appointment->update([
         return redirect()->route('hospitalizations.show', $hospitalization)
             ->with('success', localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.');
     }
+
+    /**
+     * Room management: show rooms and beds with occupancy (patient name per bed, empty beds, unoccupy button).
+     */
+    public function roomManagement(Request $request)
+    {
+        $branchId = auth()->user()->branch_id;
+        $rooms = Room::select('id', 'name')
+            ->when($branchId, function ($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            })
+            ->orderBy('name')
+            ->get();
+
+        $selectedRoom = null;
+        $bedsWithOccupation = collect();
+
+        if ($request->filled('room_id')) {
+            $roomId = $request->room_id;
+            $selectedRoom = Room::find($roomId);
+            if ($selectedRoom) {
+                $beds = $selectedRoom->allBeds()->orderBy('number')->get();
+                $bedIds = $beds->pluck('id');
+                $activeHospitalizations = Hospitalization::whereIn('bed_id', $bedIds)
+                    ->where('is_discharged', 0)
+                    ->with('patient:id,name')
+                    ->get()
+                    ->keyBy('bed_id');
+                foreach ($beds as $bed) {
+                    $bed->active_hospitalization = $activeHospitalizations->get($bed->id);
+                }
+                $bedsWithOccupation = $beds;
+            }
+        }
+
+        return view('pages.hospitalizations.room-management', compact('rooms', 'selectedRoom', 'bedsWithOccupation'));
+    }
+
+    /**
+     * Unoccupy a bed: discharge the hospitalization and free the bed.
+     */
+    public function unoccupyBed(Request $request, Hospitalization $hospitalization)
+    {
+        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'discharge_remark' => 'required|string|max:2000',
+            'discharge_status' => 'required|in:recovered,died,moved',
+            'discharged_at_date' => 'required|string',
+            'discharged_at_time' => 'nullable|date_format:H:i',
+        ]);
+
+        // Convert Persian/Jalali date to datetime using Verta
+        $dischargedAt = Verta::parse($data['discharged_at_date'])->datetime();
+        $carbon = \Carbon\Carbon::instance($dischargedAt);
+        if (!empty($data['discharged_at_time'])) {
+            $carbon->setTimeFromTimeString($data['discharged_at_time']);
+        }
+
+        $hospitalization->update([
+            'is_discharged' => 1,
+            'discharge_remark' => $data['discharge_remark'],
+            'discharge_status' => $data['discharge_status'],
+            'discharged_at' => $carbon,
+        ]);
+
+        Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => false]);
+
+        $roomId = $hospitalization->room_id;
+        return redirect()->route('hospitalizations.roomManagement', ['room_id' => $roomId])
+            ->with('success', localize('global.bed_freed_successfully') ?: 'Bed freed successfully.');
+    }
 }

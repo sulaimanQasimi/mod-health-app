@@ -323,6 +323,13 @@
                             <div>{{ localize('global.discharged_hospitalizations') }}</div>
                         </a>
                     </li>
+                    @if(auth()->user()->hasRole(['admin', 'super_admin']))
+                    <li class="menu-item {{ Route::is('hospitalizations.roomManagement') ? 'active' : '' }}">
+                        <a href="{{ route('hospitalizations.roomManagement') }}" class="menu-link">
+                            <div>{{ localize('global.room_management') }}</div>
+                        </a>
+                    </li>
+                    @endif
                     <li class="menu-item {{ Route::is('hospitalizations.report') ? 'active' : '' }}">
                         <a href="{{ route('hospitalizations.report') }}" class="menu-link">
                             <div>{{ localize('global.reports') }}</div>
@@ -553,11 +560,13 @@
                             </a>
                         </li>
                     @endcan
+                    @if(auth()->user()->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('doctors.*') ? 'active' : '' }}">
                             <a href="{{ route('doctors.index') }}" class="menu-link">
                                 <div>{{ localize('global.doctors') }}</div>
                             </a>
                         </li>
+                    @endif
                     @can('show-roles-menu')
                         <li class="menu-item {{ Route::is('roles.index') ? 'active' : '' }}">
                             <a href="{{ route('roles.index') }}" class="menu-link">

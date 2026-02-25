@@ -246,6 +246,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('assign-doctor/{hospitalization}', [HospitalizationController::class, 'assignDoctor'])->name('assign-doctor');
         Route::get('change-room-bed/{hospitalization}', [HospitalizationController::class, 'changeRoomBed'])->name('changeRoomBed');
         Route::put('update-room-bed/{hospitalization}', [HospitalizationController::class, 'updateRoomBed'])->name('updateRoomBed');
+        Route::get('room-management', [HospitalizationController::class, 'roomManagement'])->name('roomManagement')->middleware('role:admin|super_admin');
+        Route::post('{hospitalization}/unoccupy-bed', [HospitalizationController::class, 'unoccupyBed'])->name('unoccupyBed')->middleware('role:admin|super_admin');
         
         // AJAX section routes
         Route::get('diabetes-charts-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'diabetesChartsSection'])->name('diabetes-charts-section');
@@ -279,8 +281,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{visit}', [VisitController::class, 'destroyUnderReviewVisit'])->name('destroy');
     });
 
-    // Doctors routes
-    Route::prefix('doctors')->name('doctors.')->group(function () {
+    // Doctors routes (admin and super_admin only)
+    Route::prefix('doctors')->name('doctors.')->middleware('role:admin|super_admin')->group(function () {
         Route::get('index', [DoctorController::class, 'index'])->name('index');
         Route::get('create', [DoctorController::class, 'create'])->name('create');
         Route::get('show/{doctor}', [DoctorController::class, 'show'])->name('show');

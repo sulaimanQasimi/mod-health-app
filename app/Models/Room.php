@@ -18,6 +18,14 @@ class Room extends Model
         return $this->hasMany(Bed::class)->where('is_occupied',false);
     }
 
+    /**
+     * All beds in this room (for room management view), regardless of occupancy.
+     */
+    public function allBeds()
+    {
+        return $this->hasMany(Bed::class);
+    }
+
     public function floor()
     {
         return $this->belongsTo(Floor::class);

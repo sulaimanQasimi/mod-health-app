@@ -4016,4 +4016,17 @@ return [
 'changing_room_bed_note' => 'د خونې او بستر بدلول به په اوتومات ډول اوسنی بستر خالي او نوی بستر ډک کړي.',
 'room_and_bed_updated_successfully' => 'خونې او بستر په بریالیتوب سره تازه شول',
 'search_by_patient_room_bed' => 'پر خونې او بستر لټون',
+
+'swap_bed' => 'بستر بدلول',
+'swap_room' => 'خونې بدلول',
+'swap_with_bed' => 'سره بستر بدلول',
+'select_room_first' => 'لومړی خونې وټاکئ',
+'swap_room_select_occupied_bed' => 'په بلې خونې کې یو ډک بستر وټاکئ چې سره بدل کړئ.',
+'target_bed_must_be_in_same_room' => 'هدف بستر باید په ورته خونې کې وي.',
+'select_different_bed' => 'بل بستر وټاکئ.',
+'target_bed_must_be_occupied_to_swap' => 'د بدلون لپاره هدف بستر باید ډک وي.',
+'select_different_room_to_swap' => 'د بدلون لپاره بله خونې وټاکئ.',
+'bed_must_belong_to_selected_room' => 'بستر باید د ټاکل شوې خونې وي.',
+'beds_swapped_successfully' => 'بسترونه په بریالیتوب سره بدل شول.',
+'rooms_swapped_successfully' => 'خونې په بریالیتوب سره بدل شول.',
 ];

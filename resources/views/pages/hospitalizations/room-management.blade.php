@@ -91,6 +91,9 @@
                                                 @can('edit-hospitalizations')
                                                     <td class="text-end">
                                                         @if ($bed->active_hospitalization)
+                                                            @php
+                                                                $otherOccupiedBeds = $bedsWithOccupation->filter(fn($b) => $b->id != $bed->id && $b->active_hospitalization);
+                                                            @endphp
                                                             <div class="btn-group btn-group-sm">
                                                                 <button type="button" class="btn btn-outline-primary"
                                                                     data-bs-toggle="modal" data-bs-target="#movePatientModal"
@@ -100,6 +103,26 @@
                                                                     data-current-bed="{{ $bed->number }}"
                                                                     data-hospitalization-id="{{ $bed->active_hospitalization->id }}">
                                                                     <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_bed') ?: 'Move to room/bed' }}
+                                                                </button>
+                                                                @if ($otherOccupiedBeds->isNotEmpty())
+                                                                    <button type="button" class="btn btn-outline-info btn-swap-bed"
+                                                                        data-bs-toggle="modal" data-bs-target="#swapBedModal"
+                                                                        data-swap-action="{{ route('hospitalizations.swapBed', $bed->active_hospitalization) }}"
+                                                                        data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}"
+                                                                        data-current-bed="{{ $bed->number }}"
+                                                                        data-other-beds="{{ $otherOccupiedBeds->map(fn($b) => ['id' => $b->id, 'number' => $b->number, 'patient' => $b->active_hospitalization->patient->name ?? '—'])->values()->toJson() }}">
+                                                                        <i class="bx bx-swap-horizontal me-1"></i>{{ localize('global.swap_bed') ?: 'Swap bed' }}
+                                                                    </button>
+                                                                @endif
+                                                                <button type="button" class="btn btn-outline-secondary btn-swap-room"
+                                                                    data-bs-toggle="modal" data-bs-target="#swapRoomModal"
+                                                                    data-swap-action="{{ route('hospitalizations.swapRoom', $bed->active_hospitalization) }}"
+                                                                    data-patient-name="{{ $bed->active_hospitalization->patient->name ?? '' }}"
+                                                                    data-current-room-id="{{ $selectedRoom->id }}"
+                                                                    data-current-room-name="{{ $selectedRoom->name }}"
+                                                                    data-current-bed="{{ $bed->number }}"
+                                                                    data-return-room-id="{{ $selectedRoom->id }}">
+                                                                    <i class="bx bx-building me-1"></i>{{ localize('global.swap_room') ?: 'Swap room' }}
                                                                 </button>
                                                                 <button type="button" class="btn btn-outline-danger"
                                                                     data-bs-toggle="modal" data-bs-target="#unoccupyBedModal"
@@ -205,6 +228,83 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
                         <button type="submit" class="btn btn-danger">
                             <i class="bx bx-check me-1"></i>{{ localize('global.unoccupy_bed') ?: 'Unoccupy' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Swap bed (same room) modal --}}
+    <div class="modal fade" id="swapBedModal" tabindex="-1" aria-labelledby="swapBedModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="swapBedModalLabel">
+                        <i class="bx bx-swap-horizontal me-2"></i>{{ localize('global.swap_bed') ?: 'Swap bed' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="swapBedForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body">
+                        <p class="mb-3 text-muted" id="swapBedInfo"></p>
+                        <div class="mb-3">
+                            <label for="swap_bed_target_bed_id" class="form-label fw-semibold">{{ localize('global.swap_with_bed') ?: 'Swap with bed' }} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="target_bed_id" id="swap_bed_target_bed_id" required>
+                                <option value="">{{ localize('global.select') }}...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                        <button type="submit" class="btn btn-info">
+                            <i class="bx bx-swap-horizontal me-1"></i>{{ localize('global.swap_bed') ?: 'Swap bed' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Swap room modal --}}
+    <div class="modal fade" id="swapRoomModal" tabindex="-1" aria-labelledby="swapRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="swapRoomModalLabel">
+                        <i class="bx bx-building me-2"></i>{{ localize('global.swap_room') ?: 'Swap room' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="swapRoomForm" method="POST" action="">
+                    @csrf
+                    <input type="hidden" name="return_to_room_id" id="swapRoomReturnToRoomId" value="{{ $selectedRoom->id ?? '' }}">
+                    <div class="modal-body">
+                        <p class="mb-3 text-muted" id="swapRoomInfo"></p>
+                        <div class="mb-3">
+                            <label for="swap_room_target_room_id" class="form-label fw-semibold">{{ localize('global.select_room') ?: 'Select Room' }} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="target_room_id" id="swap_room_target_room_id" required>
+                                <option value="">{{ localize('global.select') }}...</option>
+                                @if (isset($selectedRoom) && isset($rooms))
+                                    @foreach ($rooms->where('id', '!=', $selectedRoom->id) as $room)
+                                        <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="swap_room_target_bed_id" class="form-label fw-semibold">{{ localize('global.select_bed') ?: 'Select Bed' }} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="target_bed_id" id="swap_room_target_bed_id" required disabled>
+                                <option value="">{{ localize('global.select_room_first') ?: 'Select room first' }}...</option>
+                            </select>
+                            <small class="text-muted">{{ localize('global.swap_room_select_occupied_bed') ?: 'Select an occupied bed in the other room to swap with.' }}</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="bx bx-building me-1"></i>{{ localize('global.swap_room') ?: 'Swap room' }}
                         </button>
                     </div>
                 </form>
@@ -356,6 +456,73 @@
                     }
                 });
             }
+
+            // Swap bed modal: set action and populate other beds dropdown
+            var swapBedModal = document.getElementById('swapBedModal');
+            if (swapBedModal) {
+                swapBedModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    if (!button || !button.classList.contains('btn-swap-bed')) return;
+                    var action = button.getAttribute('data-swap-action');
+                    var patientName = button.getAttribute('data-patient-name') || '';
+                    var currentBed = button.getAttribute('data-current-bed') || '';
+                    var otherBedsJson = button.getAttribute('data-other-beds') || '[]';
+                    var form = document.getElementById('swapBedForm');
+                    var infoEl = document.getElementById('swapBedInfo');
+                    var selectEl = document.getElementById('swap_bed_target_bed_id');
+                    form.action = action;
+                    infoEl.textContent = (patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName + '. {{ localize("global.current_bed") ?: "Current bed" }}: ' + currentBed) : '');
+                    selectEl.innerHTML = '<option value="">{{ localize("global.select") }}...</option>';
+                    try {
+                        var otherBeds = JSON.parse(otherBedsJson);
+                        otherBeds.forEach(function(b) {
+                            var opt = document.createElement('option');
+                            opt.value = b.id;
+                            opt.textContent = b.number + (b.patient && b.patient !== '—' ? ' (' + b.patient + ')' : '');
+                            selectEl.appendChild(opt);
+                        });
+                    } catch (e) {}
+                });
+            }
+
+            // Swap room modal: set action, info, and load beds when room changes
+            var swapRoomModal = document.getElementById('swapRoomModal');
+            if (swapRoomModal) {
+                swapRoomModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    if (!button || !button.classList.contains('btn-swap-room')) return;
+                    var action = button.getAttribute('data-swap-action');
+                    var patientName = button.getAttribute('data-patient-name') || '';
+                    var currentRoomName = button.getAttribute('data-current-room-name') || '';
+                    var currentBed = button.getAttribute('data-current-bed') || '';
+                    var returnRoomId = button.getAttribute('data-return-room-id') || '';
+                    var form = document.getElementById('swapRoomForm');
+                    var infoEl = document.getElementById('swapRoomInfo');
+                    var returnInput = document.getElementById('swapRoomReturnToRoomId');
+                    var bedSelect = document.getElementById('swap_room_target_bed_id');
+                    form.action = action;
+                    if (returnInput) returnInput.value = returnRoomId;
+                    infoEl.textContent = (patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName + '. {{ localize("global.current_room") ?: "Current" }}: ' + currentRoomName + ' / {{ localize("global.current_bed") ?: "Bed" }}: ' + currentBed) : '');
+                    bedSelect.innerHTML = '<option value="">{{ localize("global.select_room_first") ?: "Select room first" }}...</option>';
+                    bedSelect.disabled = true;
+                });
+            }
+            $(document).on('change', '#swap_room_target_room_id', function() {
+                var roomId = $(this).val();
+                var $bedSelect = $('#swap_room_target_bed_id');
+                if (roomId) {
+                    $bedSelect.prop('disabled', true).html('<option value="">{{ localize("global.searching") ?: "Loading" }}...</option>');
+                    $.get(bedsApiUrl + '/' + roomId)
+                        .done(function(html) {
+                            $bedSelect.html(html || '<option value="">{{ localize("global.select") }}...</option>').prop('disabled', false);
+                        })
+                        .fail(function() {
+                            $bedSelect.html('<option value="">{{ localize("global.select") }}...</option>').prop('disabled', false);
+                        });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select_room_first") ?: "Select room first" }}...</option>').prop('disabled', true);
+                }
+            });
         });
         })();
     </script>

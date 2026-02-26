@@ -248,7 +248,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update-room-bed/{hospitalization}', [HospitalizationController::class, 'updateRoomBed'])->name('updateRoomBed');
         Route::get('room-management', [HospitalizationController::class, 'roomManagement'])->name('roomManagement')->middleware('role:admin|super_admin');
         Route::post('{hospitalization}/unoccupy-bed', [HospitalizationController::class, 'unoccupyBed'])->name('unoccupyBed')->middleware('role:admin|super_admin');
-        
+        Route::post('{hospitalization}/swap-bed', [HospitalizationController::class, 'swapBed'])->name('swapBed')->middleware('role:admin|super_admin');
+        Route::post('{hospitalization}/swap-room', [HospitalizationController::class, 'swapRoom'])->name('swapRoom')->middleware('role:admin|super_admin');
+
         // AJAX section routes
         Route::get('diabetes-charts-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'diabetesChartsSection'])->name('diabetes-charts-section');
         Route::get('medication-administration-records-section/{morphable_type}/{morphable_id}', [HospitalizationController::class, 'medicationAdministrationRecordsSection'])->name('medication-administration-records-section');

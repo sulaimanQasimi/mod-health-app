@@ -4037,4 +4037,17 @@ return [
     'changing_room_bed_note' => 'تغییر اطاق و بستر به صورت خودکار بستر فعلی را آزاد کرده و بستر جدید را اشغال می‌کند.',
     'room_and_bed_updated_successfully' => 'اطاق و بستر با موفقیت بروزرسانی شد',
     'search_by_patient_room_bed' => 'جستجو بر اساس اطاق و بستر',
+
+    'swap_bed' => 'تعویض بستر',
+    'swap_room' => 'تعویض اطاق',
+    'swap_with_bed' => 'تعویض با بستر',
+    'select_room_first' => 'اول اطاق را انتخاب کنید',
+    'swap_room_select_occupied_bed' => 'یک بستر اشغال‌شده در اطاق دیگر برای تعویض انتخاب کنید.',
+    'target_bed_must_be_in_same_room' => 'بستر هدف باید در همان اطاق باشد.',
+    'select_different_bed' => 'یک بستر دیگر انتخاب کنید.',
+    'target_bed_must_be_occupied_to_swap' => 'بستر هدف باید اشغال شده باشد تا تعویض انجام شود.',
+    'select_different_room_to_swap' => 'یک اطاق دیگر برای تعویض انتخاب کنید.',
+    'bed_must_belong_to_selected_room' => 'بستر باید متعلق به اطاق انتخاب شده باشد.',
+    'beds_swapped_successfully' => 'بسترها با موفقیت تعویض شدند.',
+    'rooms_swapped_successfully' => 'اطاق‌ها با موفقیت تعویض شدند.',
 ]; 

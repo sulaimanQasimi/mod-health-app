@@ -809,4 +809,84 @@ $hospitalization->appointment->update([
         return redirect()->route('hospitalizations.roomManagement', ['room_id' => $roomId])
             ->with('success', localize('global.bed_freed_successfully') ?: 'Bed freed successfully.');
     }
+
+    /**
+     * Swap two patients' beds within the same room.
+     */
+    public function swapBed(Request $request, Hospitalization $hospitalization)
+    {
+        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'target_bed_id' => 'required|exists:beds,id',
+        ]);
+
+        $targetBed = Bed::findOrFail($data['target_bed_id']);
+        if ($targetBed->room_id != $hospitalization->room_id) {
+            return back()->with('error', localize('global.target_bed_must_be_in_same_room') ?: 'Target bed must be in the same room.');
+        }
+        if ($hospitalization->bed_id == $targetBed->id) {
+            return back()->with('error', localize('global.select_different_bed') ?: 'Select a different bed.');
+        }
+
+        $otherHospitalization = Hospitalization::where('bed_id', $targetBed->id)
+            ->where('is_discharged', 0)
+            ->first();
+        if (!$otherHospitalization) {
+            return back()->with('error', localize('global.target_bed_must_be_occupied_to_swap') ?: 'Target bed must be occupied to swap.');
+        }
+
+        $currentBedId = $hospitalization->bed_id;
+        $hospitalization->update(['bed_id' => $targetBed->id]);
+        $otherHospitalization->update(['bed_id' => $currentBedId]);
+
+        $roomId = $hospitalization->room_id;
+        return redirect()->route('hospitalizations.roomManagement', ['room_id' => $roomId])
+            ->with('success', localize('global.beds_swapped_successfully') ?: 'Beds swapped successfully.');
+    }
+
+    /**
+     * Swap two patients between different rooms (and beds).
+     */
+    public function swapRoom(Request $request, Hospitalization $hospitalization)
+    {
+        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'target_room_id' => 'required|exists:rooms,id',
+            'target_bed_id' => 'required|exists:beds,id',
+        ]);
+
+        if ($data['target_room_id'] == $hospitalization->room_id) {
+            return back()->with('error', localize('global.select_different_room_to_swap') ?: 'Select a different room to swap.');
+        }
+
+        $targetBed = Bed::findOrFail($data['target_bed_id']);
+        if ($targetBed->room_id != $data['target_room_id']) {
+            return back()->with('error', localize('global.bed_must_belong_to_selected_room') ?: 'Bed must belong to the selected room.');
+        }
+
+        $otherHospitalization = Hospitalization::where('bed_id', $targetBed->id)
+            ->where('is_discharged', 0)
+            ->first();
+        if (!$otherHospitalization) {
+            return back()->with('error', localize('global.target_bed_must_be_occupied_to_swap') ?: 'Target bed must be occupied to swap.');
+        }
+
+        $myRoomId = $hospitalization->room_id;
+        $myBedId = $hospitalization->bed_id;
+        $otherRoomId = $otherHospitalization->room_id;
+        $otherBedId = $otherHospitalization->bed_id;
+
+        $hospitalization->update(['room_id' => $otherRoomId, 'bed_id' => $otherBedId]);
+        $otherHospitalization->update(['room_id' => $myRoomId, 'bed_id' => $myBedId]);
+
+        $returnRoomId = $request->input('return_to_room_id', $myRoomId);
+        return redirect()->route('hospitalizations.roomManagement', ['room_id' => $returnRoomId])
+            ->with('success', localize('global.rooms_swapped_successfully') ?: 'Rooms swapped successfully.');
+    }
 }

@@ -28,11 +28,11 @@
                         <div class="row align-items-end">
                             <div class="col-md-6">
                                 <label for="room_id" class="form-label fw-semibold">{{ localize('global.room') }}</label>
-                                <select class="form-select" name="room_id" id="room_id">
+                                <select class="form-select select2" name="room_id">
                                     <option value="">{{ localize('global.select') }}...</option>
-                                    @if ($selectedRoom)
-                                        <option value="{{ $selectedRoom->id }}" selected>{{ $selectedRoom->name }}</option>
-                                    @endif
+                                    @foreach (\App\Models\Room::all() as $room)
+                                        <option value="{{ $room->id }}" {{ $selectedRoom && $selectedRoom->id == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">

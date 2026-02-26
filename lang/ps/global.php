@@ -3440,6 +3440,7 @@ return [
 'is_doctor' => 'آیا ډاکټر دی؟',
 'clinic_type' => 'د کلینیک ډول',
 'clinic' => 'کلینیک',
+'both' => 'دواړه',
 'hospital' => 'شفاخانه',
 'select_user' => 'کارن انتخاب کړئ',
 'assign' => 'اختصاص کول',

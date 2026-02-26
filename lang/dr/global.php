@@ -3721,6 +3721,7 @@ return [
     'is_doctor' => 'آیا دکتر است؟',
     'clinic_type' => 'نوع کلینیک',
     'clinic' => 'کلینیک',
+    'both' => 'هر دو',
     'hospital' => 'شفاخانه',
     'select_user' => 'انتخاب کاربر',
     'assign' => 'اختصاص',

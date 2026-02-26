@@ -359,8 +359,8 @@ class PrescriptionAjaxController extends Controller
             $query = Prescription::where('branch_id', auth()->user()->branch_id)
                 ->with(['patient', 'doctor', 'appointment.doctor', 'appointment.department']);
 
-            // Filter by appointment clinic_type matching user's clinic_type
-            if ($userClinicType) {
+            // Filter by appointment clinic_type matching user's clinic_type (skip when "both")
+            if ($userClinicType && $userClinicType !== 'both') {
                 $query->whereHas('appointment', function ($q) use ($userClinicType) {
                     $q->where('clinic_type', $userClinicType);
                 });

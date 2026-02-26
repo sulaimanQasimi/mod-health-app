@@ -190,6 +190,7 @@
                                                         <option value="">{{ localize('global.all_types') ?? 'All Types' }}</option>
                                                         <option value="hospital" {{ request('clinic_type') == 'hospital' ? 'selected' : '' }}>{{ localize('global.hospital') }}</option>
                                                         <option value="clinic" {{ request('clinic_type') == 'clinic' ? 'selected' : '' }}>{{ localize('global.clinic') }}</option>
+                                                        <option value="both" {{ request('clinic_type') == 'both' ? 'selected' : '' }}>{{ localize('global.both') }}</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -257,8 +258,8 @@
                                     </td>
                                     <td>
                                         @if($user->clinic_type)
-                                            <span class="badge rounded-pill {{ $user->clinic_type == 'hospital' ? 'bg-label-primary' : 'bg-label-info' }}">
-                                                {{ $user->clinic_type == 'hospital' ? localize('global.hospital') : localize('global.clinic') }}
+                                            <span class="badge rounded-pill {{ $user->clinic_type == 'hospital' ? 'bg-label-primary' : ($user->clinic_type == 'clinic' ? 'bg-label-info' : 'bg-label-warning') }}">
+                                                {{ $user->clinic_type == 'hospital' ? localize('global.hospital') : ($user->clinic_type == 'clinic' ? localize('global.clinic') : localize('global.both')) }}
                                             </span>
                                         @else
                                             -

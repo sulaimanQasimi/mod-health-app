@@ -115,7 +115,10 @@ class AppointmentController extends Controller
         $validatedData['date'] = $now->format('Y-m-d');
         $validatedData['time'] = $now->format('H:i:s');
 
-        $validatedData['clinic_type'] = auth()->user()->clinic_type;
+        $userClinicType = auth()->user()->clinic_type;
+        if ($userClinicType && $userClinicType !== 'both') {
+            $validatedData['clinic_type'] = $userClinicType;
+        }
 
         if ($request->has('current_appointment_id')) {
             $current_appointmentId = $request->input('current_appointment_id');
@@ -461,24 +464,29 @@ class AppointmentController extends Controller
             }
         }
 
+        $userClinicType = auth()->user()->clinic_type;
+        $filterByClinicType = $userClinicType && $userClinicType !== 'both';
+
         // Build base query
         if ($appointmentId !== null) {
             // When searching by token_id, use relaxed constraints to find the appointment
             $query = Appointment::query()
-                ->where('id', $appointmentId)
-                ->where('clinic_type', auth()->user()->clinic_type)
-                // Don't filter by department when searching by token_id - allow cross-department search
-                // Don't filter by doctor_id or processed_by - find even if assigned/processed
-                ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
+                ->where('id', $appointmentId);
+            if ($filterByClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+            $query->with(['patient', 'department', 'referringDoctor', 'processedBy']);
         } else {
             // Normal constraints for regular search
             $query = Appointment::query()
                 ->whereNull('doctor_id')
-                ->whereNull('processed_by')
-                ->where('clinic_type', auth()->user()->clinic_type)
-                ->when(auth()->user()->doctor, function ($query) {
-                    $query->where('department_id', auth()->user()->doctor->department_id);
-                })
+                ->whereNull('processed_by');
+            if ($filterByClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+            $query->when(auth()->user()->doctor, function ($q) {
+                $q->where('department_id', auth()->user()->doctor->department_id);
+            })
                 ->with(['patient', 'department', 'referringDoctor', 'processedBy']);
         }
 

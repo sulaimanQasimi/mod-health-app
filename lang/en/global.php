@@ -3359,6 +3359,7 @@ return [
     'is_doctor' => 'Is Doctor',
     'clinic_type' => 'Clinic Type',
     'clinic' => 'Clinic',
+    'both' => 'Both',
     'assign' => 'Assign',
     'invalid_doctor_selection' => 'Invalid Doctor Selection',
     'error_loading_doctors' => 'Error Loading Doctors',

@@ -31,7 +31,7 @@ class TestResultController extends Controller
      */
     private function applyClinicTypeFilter($query, $user)
     {
-        if (!$user->clinic_type) {
+        if (!$user->clinic_type || $user->clinic_type === 'both') {
             return $query;
         }
 
@@ -50,6 +50,27 @@ class TestResultController extends Controller
             })
             ->orWhereNull('testable_type');
         });
+    }
+
+    /**
+     * Check if the user can access this registration based on clinic_type.
+     */
+    private function userCanAccessRegistration(PatientTestRegistration $registration, \App\Models\User $user): bool
+    {
+        if (!$user->clinic_type || $user->clinic_type === 'both') {
+            return true;
+        }
+        $testable = $registration->testable;
+        if (!$testable) {
+            return true;
+        }
+        $effectiveClinicType = null;
+        if ($testable instanceof \App\Models\Appointment) {
+            $effectiveClinicType = $testable->clinic_type;
+        } elseif ($testable instanceof \App\Models\Hospitalization) {
+            $effectiveClinicType = optional($testable->appointment)->clinic_type;
+        }
+        return $effectiveClinicType === null || $effectiveClinicType === $user->clinic_type;
     }
 
     /**
@@ -353,6 +374,10 @@ class TestResultController extends Controller
             }
         }
 
+        if (!$this->userCanAccessRegistration($registration, $user)) {
+            abort(403, 'You do not have access to this test.');
+        }
+
         // Check if test is completed - redirect to print page
         if ($registration->status === 'completed') {
             return redirect()->route('laboratory.reports.print', $registration->ref_no);
@@ -465,6 +490,9 @@ class TestResultController extends Controller
             abort(404, 'No test registration found for this reference number.');
         }
 
+        if (!$this->userCanAccessRegistration($testRegistration, auth()->user())) {
+            abort(403, 'You do not have access to this test.');
+        }
 
         $patient = $testRegistration->testable->patient ?? null;
         $testName = $testRegistration->labType->name ?? '—';
@@ -579,6 +607,9 @@ class TestResultController extends Controller
             }
         }
 
+        // Apply clinic type filter (hospital/clinic/both)
+        $query = $this->applyClinicTypeFilter($query, auth()->user());
+
         // Get paginated results
         $perPage = $request->get('per_page', 15); // Default 15 items per page
         $paginatedTests = $query->latest('registration_date')->paginate($perPage);
@@ -629,8 +660,8 @@ class TestResultController extends Controller
      */
     public function printGroupedTests($category_id)
     {
-        // Load all test registrations with matching category_id
-        $testRegistrations = PatientTestRegistration::with([
+        // Load all test registrations with matching category_id, filtered by clinic type
+        $query = PatientTestRegistration::with([
             'testable.patient',
             'labType.category',
             'labType.directLabTestParameters',
@@ -638,16 +669,13 @@ class TestResultController extends Controller
             'branch',
             'assignedTo',
             'assignedSection'
-        ])->where('category_id', $category_id)->get();
+        ])->where('category_id', $category_id);
+
+        $query = $this->applyClinicTypeFilter($query, auth()->user());
+        $testRegistrations = $query->get();
 
         if ($testRegistrations->isEmpty()) {
             abort(404, 'No test registrations found for this category.');
-        }
-
-
-        // After the filter, check if any registrations remain
-        if ($testRegistrations->isEmpty()) {
-            abort(403, 'You do not have access to this test group or no tests found.');
         }
 
         // Get patient from first registration
@@ -725,6 +753,10 @@ class TestResultController extends Controller
         if (!$registration) {
             // Handle the case when the test is not found
             return redirect()->back()->with('error', localize('global.test_not_found'));
+        }
+
+        if (!$this->userCanAccessRegistration($registration, auth()->user())) {
+            return redirect()->back()->with('error', localize('global.you_do_not_have_access_to_this_test_registration'));
         }
 
         // Check the status of the test

@@ -126,6 +126,7 @@
                                             <option value="">{{ localize('global.select') }}</option>
                                             <option value="hospital" {{ old('clinic_type') == 'hospital' ? 'selected' : '' }}>{{ localize('global.hospital') }}</option>
                                             <option value="clinic" {{ old('clinic_type') == 'clinic' ? 'selected' : '' }}>{{ localize('global.clinic') }}</option>
+                                            <option value="both" {{ old('clinic_type') == 'both' ? 'selected' : '' }}>{{ localize('global.both') }}</option>
                                         </select>
                                         @error('clinic_type')
                                             <div class="text-danger small mt-1">{{ $message }}</div>

@@ -311,7 +311,7 @@
             initializeSelect2WithAutoFocus();
         }
 
-        function loadDoctorsByDepartment(departmentId) {
+        function loadDoctorsByDepartment(departmentId, form) {
             const doctorSelect = document.getElementById('appointment_doctor_id');
             
             if (departmentId === '') {
@@ -324,8 +324,16 @@
             doctorSelect.innerHTML = '<option value="">{{ localize("global.loading") }}...</option>';
             doctorSelect.disabled = true;
 
+            var url = '/patients/get-doctors-by-department/' + departmentId;
+            @if(auth()->user()->clinic_type === 'both')
+            var clinicTypeEl = form ? form.querySelector('[name="appointment_clinic_type"]') : document.querySelector('[name="appointment_clinic_type"]');
+            if (clinicTypeEl && clinicTypeEl.value) {
+                url += '?clinic_type=' + encodeURIComponent(clinicTypeEl.value);
+            }
+            @endif
+
             $.ajax({
-                url: '/patients/get-doctors-by-department/' + departmentId,
+                url: url,
                 type: 'GET',
                 success: function (response) {
                     doctorSelect.innerHTML = '<option value="">{{ localize("global.select_doctor") }}</option>';

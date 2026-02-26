@@ -100,7 +100,7 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         // Validate the input - doctor_id is optional for department referrals
-        $validatedData = $request->validate([
+        $rules = [
             'patient_id' => 'required',
             'doctor_id' => 'nullable',
             'branch_id' => 'required',
@@ -108,16 +108,22 @@ class AppointmentController extends Controller
             'is_completed' => 'nullable',
             'status_remark' => 'nullable',
             'refferal_remarks' => 'nullable',
-        ]);
+        ];
+        $userClinicType = auth()->user()->clinic_type;
+        if ($userClinicType === 'both') {
+            $rules['clinic_type'] = 'required|in:hospital,clinic';
+        }
+        $validatedData = $request->validate($rules);
 
         // Set current date and time for the appointment
         $now = now();
         $validatedData['date'] = $now->format('Y-m-d');
         $validatedData['time'] = $now->format('H:i:s');
 
-        $userClinicType = auth()->user()->clinic_type;
         if ($userClinicType && $userClinicType !== 'both') {
             $validatedData['clinic_type'] = $userClinicType;
+        } elseif ($userClinicType === 'both' && !empty($validatedData['clinic_type'])) {
+            // already set from request
         }
 
         if ($request->has('current_appointment_id')) {
@@ -192,16 +198,20 @@ class AppointmentController extends Controller
         }
 
         // Validate the input
-        $validatedData = $request->validate([
+        $rules = [
             'patient_id' => 'required',
             'doctor_id' => 'required',
             'date' => 'required|date',
             'time' => 'required',
             'branch_id' => 'required',
             'refferal_remarks' => 'nullable|string',
-            // Add any other validation rules as needed
-        ]);
-        
+        ];
+        $userClinicType = auth()->user()->clinic_type;
+        if ($userClinicType === 'both') {
+            $rules['clinic_type'] = 'required|in:hospital,clinic';
+        }
+        $validatedData = $request->validate($rules);
+
         // If appointment is processed, preserve the original doctor_id
         if ($appointment->processed_by) {
             $validatedData['doctor_id'] = $appointment->doctor_id;

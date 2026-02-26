@@ -173,6 +173,10 @@ class PatientController extends Controller
         if ($request->filled('appointment_doctor_id')
          || 
         $request->filled('appointment_department_id')) {
+            $userClinicType = auth()->user()->clinic_type;
+            if ($userClinicType === 'both') {
+                $request->validate(['appointment_clinic_type' => 'required|in:hospital,clinic']);
+            }
             $now = now();
             $appointmentData = [
                 'patient_id' => $patient->id,
@@ -183,6 +187,11 @@ class PatientController extends Controller
                 'time' => $now->format('H:i:s'),
                 'is_completed' => 0
             ];
+            if ($userClinicType === 'both' && $request->filled('appointment_clinic_type')) {
+                $appointmentData['clinic_type'] = $request->appointment_clinic_type;
+            } elseif ($userClinicType && $userClinicType !== 'both') {
+                $appointmentData['clinic_type'] = $userClinicType;
+            }
 
             $appointment = Appointment::create($appointmentData);
             
@@ -527,11 +536,22 @@ class PatientController extends Controller
         }
     }
 
-    public function getDoctorsByDepartment($departmentId)
+    public function getDoctorsByDepartment($departmentId, Request $request)
     {
-            $doctors = Doctor::where('department_id', $departmentId)
-                ->where('active_status', true)
-                ->get();
+            $query = Doctor::where('department_id', $departmentId)
+                ->where('active_status', true);
+
+            $userClinicType = auth()->user()->clinic_type;
+            if ($userClinicType === 'both') {
+                $clinicType = $request->query('clinic_type');
+                if (in_array($clinicType, ['hospital', 'clinic'], true)) {
+                    $query->where('clinic_type', $clinicType);
+                }
+            } elseif ($userClinicType) {
+                $query->where('clinic_type', $userClinicType);
+            }
+
+            $doctors = $query->get();
             
             return response()->json([
                 'success' => true,

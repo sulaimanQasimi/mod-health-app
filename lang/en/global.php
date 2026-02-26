@@ -3394,6 +3394,7 @@ return [
     'no_appointments_found' => 'No Appointments Found',
     'direct_appointment' => 'Direct Appointment',
     'select_department_first' => 'Select Department First',
+    'select_clinic_type_first' => 'Select clinic type first',
     'under_reviews' => 'Under Reviews',
     'no_doctors_found' => 'No Doctors Found',
     'try_adjusting_filters' => 'Try Adjusting Filters',

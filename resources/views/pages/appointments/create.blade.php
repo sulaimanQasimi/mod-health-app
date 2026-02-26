@@ -17,6 +17,16 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-4">
+                                    @if(auth()->user()->clinic_type === 'both')
+                                    <div class="mb-3">
+                                        <label for="clinic_type">{{ localize('global.clinic_type') }} <span class="text-danger">*</span></label>
+                                        <select class="form-control select2" name="clinic_type" id="clinic_type" required>
+                                            <option value="">{{ localize('global.select') }}...</option>
+                                            <option value="hospital">{{ localize('global.hospital') }}</option>
+                                            <option value="clinic">{{ localize('global.clinic') }}</option>
+                                        </select>
+                                    </div>
+                                    @endif
                                     <div class="mb-3">
                                         <label for="doctor_id">{{localize('global.doctor_name')}}</label>
                                         <select class="form-control select2" name="doctor_id">

@@ -3484,6 +3484,7 @@ return [
 'no_appointments_found' => 'هیڅ ملاقات ونه موندل شو',
 'direct_appointment' => 'مستقیم',
 'select_department_first' => 'لومړی د ډاکټر بخش انتخاب کړئ',
+'select_clinic_type_first' => 'لومړی د کلینیک ډول وټاکئ',
 'under_reviews' => 'تحت مشاهده',
 'no_doctors_found' => 'هیڅ ډاکټر ونه موندل شو',
 'try_adjusting_filters' => 'لطفاً فلټرونه تنظیم کړئ',

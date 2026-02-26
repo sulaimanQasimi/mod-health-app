@@ -107,10 +107,22 @@
     <div class="col-12 mt-4">
         <h5 class="mb-3 bg-label-info p-2">{{ localize('global.create_appointment') }}</h5>
         <div class="row">
+            @if(auth()->user()->clinic_type === 'both')
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="appointment_clinic_type_tab3">{{ localize('global.clinic_type') }} <span class="text-danger">*</span></label>
+                    <select class="form-control select2" name="appointment_clinic_type" id="appointment_clinic_type_tab3" onchange="loadDoctorsByDepartment(document.getElementById('appointment_department_id').value, this.form)">
+                        <option value="">{{ localize('global.select') }}...</option>
+                        <option value="hospital">{{ localize('global.hospital') }}</option>
+                        <option value="clinic">{{ localize('global.clinic') }}</option>
+                    </select>
+                </div>
+            </div>
+            @endif
             <div class="col-md-6">
                 <div class="mb-3">
                     <label for="appointment_department_id">{{ localize('global.department') }} <span class="text-danger">*</span></label>
-                    <select class="form-control select2" name="appointment_department_id" id="appointment_department_id" required onchange="loadDoctorsByDepartment(this.value)">
+                    <select class="form-control select2" name="appointment_department_id" id="appointment_department_id" required onchange="loadDoctorsByDepartment(this.value, this.form)">
                         <option value="">{{ localize('global.select_department') }}</option>
                         @foreach ($departments as $department)
                             <option value="{{ $department->id }}" {{ old('appointment_department_id') == $department->id ? 'selected' : '' }}>

@@ -577,7 +577,16 @@
                                 <input type="hidden" name="branch_id" value="{{ auth()->user()->branch_id }}">
                                 <input type="hidden" name="date" value="{{ $appointment->date }}">
                                 <input type="hidden" name="time" value="{{ $appointment->time }}">
-                                
+                                @if(auth()->user()->clinic_type === 'both')
+                                <div class="mb-3">
+                                    <label for="referral_clinic_type">{{ localize('global.clinic_type') }} <span class="text-danger">*</span></label>
+                                    <select class="form-control select2" name="clinic_type" id="referral_clinic_type" required>
+                                        <option value="">{{ localize('global.select') }}...</option>
+                                        <option value="hospital">{{ localize('global.hospital') }}</option>
+                                        <option value="clinic">{{ localize('global.clinic') }}</option>
+                                    </select>
+                                </div>
+                                @endif
                                 <label for="department_id">{{ localize('global.department') }}</label>
                                 <select class="form-control select2" name="department_id" id="referral_department_id">
                                     <option value="">{{ localize('global.select') }}</option>

@@ -247,9 +247,19 @@
                     <div class="modal-body">
                         <form id="createAppointmentForm">
                             @csrf
+                            @if(auth()->user()->clinic_type === 'both')
+                            <div class="mb-3">
+                                <label for="clinic_type">{{ localize('global.clinic_type') }} <span class="text-danger">*</span></label>
+                                <select class="form-control select2" name="clinic_type" id="create_appointment_clinic_type" required onchange="loadDoctorsByDepartmentFromSelect()">
+                                    <option value="">{{ localize('global.select') }}...</option>
+                                    <option value="hospital">{{ localize('global.hospital') }}</option>
+                                    <option value="clinic">{{ localize('global.clinic') }}</option>
+                                </select>
+                            </div>
+                            @endif
                             <div class="mb-3">
                                 <label for="department_id">{{localize('global.department')}} <span class="text-danger">*</span></label>
-                                <select class="form-control select2" name="department_id" id="department_id" required onchange="loadDoctorsByDepartment(this.value)">
+                                <select class="form-control select2" name="department_id" id="department_id" required onchange="loadDoctorsByDepartmentFromSelect()">
                                     <option value="">{{ localize('global.select_department') }}</option>
                                     @foreach($departments as $department)
                                         <option value="{{ $department->id }}">
@@ -393,6 +403,19 @@
         initializeSelect2WithAutoFocus();
     }
 
+    function loadDoctorsByDepartmentFromSelect() {
+        const departmentId = $('#department_id').val();
+        @if(auth()->user()->clinic_type === 'both')
+        const clinicType = $('#create_appointment_clinic_type').val();
+        if (!clinicType) {
+            document.getElementById('doctor_id').innerHTML = '<option value="">{{ localize("global.select_clinic_type_first") }}</option>';
+            document.getElementById('doctor_id').disabled = true;
+            return;
+        }
+        @endif
+        loadDoctorsByDepartment(departmentId);
+    }
+
     function loadDoctorsByDepartment(departmentId) {
         const doctorSelect = document.getElementById('doctor_id');
         
@@ -406,8 +429,16 @@
         doctorSelect.innerHTML = '<option value="">{{ localize("global.loading") }}...</option>';
         doctorSelect.disabled = true;
 
+        let url = '/patients/get-doctors-by-department/' + departmentId;
+        @if(auth()->user()->clinic_type === 'both')
+        const clinicType = $('#create_appointment_clinic_type').val();
+        if (clinicType) {
+            url += '?clinic_type=' + encodeURIComponent(clinicType);
+        }
+        @endif
+
         $.ajax({
-            url: '/patients/get-doctors-by-department/' + departmentId,
+            url: url,
             type: 'GET',
             success: function (response) {
                 doctorSelect.innerHTML = '<option value="">{{ localize("global.select_doctor") }}</option>';

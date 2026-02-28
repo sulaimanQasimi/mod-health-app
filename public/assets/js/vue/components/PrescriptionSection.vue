@@ -65,6 +65,15 @@
                                 <i class="bx bx-edit"></i>
                             </button>
                             <button 
+                                v-if="!appointmentCompleted && canAddPrescription"
+                                type="button" 
+                                class="btn btn-outline-info btn-sm ms-1" 
+                                @click="copyPrescription(prescription)"
+                                title="کپی نسخه">
+                                <i class="bx bx-copy me-1"></i>
+                                کپی
+                            </button>
+                            <button 
                                 v-if="canDeletePrescription"
                                 type="button" 
                                 class="btn btn-outline-danger btn-sm ms-1" 
@@ -302,6 +311,14 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button 
+                            v-if="!appointmentCompleted && canAddPrescription && selectedPrescription?.prescription_items?.length"
+                            type="button" 
+                            class="btn btn-info me-2" 
+                            @click="copyPrescriptionFromModal">
+                            <i class="bx bx-copy me-1"></i>
+                            کپی نسخه
+                        </button>
                         <button type="button" class="btn btn-secondary" @click="closePrescriptionItemsModal">
                             بستن
                         </button>
@@ -471,6 +488,60 @@ export default {
              } catch (error) {
                  console.error('Error loading prescription items:', error);
              }
+         },
+
+         async copyPrescription(prescription) {
+             try {
+                 const response = await fetch(`/prescription-ajax/prescription-items/${prescription.id}`);
+                 const data = await response.json();
+                 if (!data.success || !data.data?.prescription_items?.length) {
+                     this.showToast('نسخه مورد نظر آیتمی برای کپی ندارد', 'error');
+                     return;
+                 }
+                 const items = data.data.prescription_items;
+                 this.form.prescription_items = items.map(item => {
+                     const medicineId = item.medicine_id ?? item.medicine?.id;
+                     const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
+                     const medicineObj = this.allMedicines.find(m => m.id === medicineId);
+                     const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
+                     return {
+                         medicine_id: medicineObj || medicineId,
+                         usage_type_id: usageTypeObj || usageTypeId,
+                         dosage: String(item.dosage ?? ''),
+                         frequency: String(item.frequency ?? ''),
+                         amount: String(item.amount ?? '')
+                     };
+                 });
+                 this.showCreateModal = true;
+                 this.showToast('نسخه با داروها در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
+             } catch (error) {
+                 console.error('Error copying prescription:', error);
+                 this.showToast('خطا در کپی نسخه', 'error');
+             }
+         },
+
+         copyPrescriptionFromModal() {
+             if (!this.selectedPrescription?.prescription_items?.length) {
+                 this.showToast('نسخه مورد نظر آیتمی برای کپی ندارد', 'error');
+                 return;
+             }
+             const items = this.selectedPrescription.prescription_items;
+             this.form.prescription_items = items.map(item => {
+                 const medicineId = item.medicine_id ?? item.medicine?.id;
+                 const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
+                 const medicineObj = this.allMedicines.find(m => m.id === medicineId);
+                 const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
+                 return {
+                     medicine_id: medicineObj || medicineId,
+                     usage_type_id: usageTypeObj || usageTypeId,
+                     dosage: String(item.dosage ?? ''),
+                     frequency: String(item.frequency ?? ''),
+                     amount: String(item.amount ?? '')
+                 };
+             });
+             this.closePrescriptionItemsModal();
+             this.showCreateModal = true;
+             this.showToast('نسخه با داروها در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
          },
 
          async submitPrescription() {

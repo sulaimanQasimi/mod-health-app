@@ -106,6 +106,49 @@ class SelectController extends Controller
             ], 500);
         }
     }
+    /**
+     * Get rooms for select2 dropdown
+     */
+    public function getRooms(Request $request): JsonResponse
+    {
+        try {
+            $query = Room::query();
+
+            if ($request->filled('search')) {
+                $searchTerm = trim($request->search);
+                $query->where('name', 'like', "%{$searchTerm}%");
+            }
+
+            if (auth()->check() && auth()->user()->branch_id) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            }
+
+            $rooms = $query
+                ->orderBy('name', 'asc')
+                ->limit(50)
+                ->get(['id', 'name'])
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'text' => $item->name,
+                        'key' => $item->id,
+                        'value' => $item->name,
+                    ];
+                });
+
+            return response()->json([
+                'results' => $rooms,
+                'pagination' => ['more' => false],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching rooms: ' . $e->getMessage());
+            return response()->json([
+                'results' => [],
+                'error' => 'Failed to fetch rooms',
+            ], 500);
+        }
+    }
+
     public function users(Request $request)
     {
         $users = \App\Models\User::when($request->search, function ($query) use ($request) {

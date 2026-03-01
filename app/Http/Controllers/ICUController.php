@@ -225,14 +225,27 @@ class ICUController extends Controller
             'operation_id' => 'nullable',
             'icu_enterance_note' => 'nullable',
             'icu_reject_reason' => 'nullable',
-
+            'room_id' => 'nullable|exists:rooms,id',
+            'bed_id' => 'nullable|exists:beds,id',
         ]);
 
-        // Create a new appointment
-        $icu = ICU::create($validatedData);
+        // Create the ICU (exclude room_id/bed_id; they are for updating the hospitalization)
+        $icuData = collect($validatedData)->except(['room_id', 'bed_id'])->all();
+        $icu = ICU::create($icuData);
+
+        // If room and bed were provided with a hospitalization, update the hospitalization (free old bed, occupy new)
+        if ($icu->hospitalization_id && $request->filled('room_id') && $request->filled('bed_id')) {
+            $hospitalization = Hospitalization::find($icu->hospitalization_id);
+            if ($hospitalization) {
+                if ($hospitalization->bed_id) {
+                    Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
+                }
+                $hospitalization->update(['room_id' => $request->room_id, 'bed_id' => $request->bed_id]);
+                Bed::where('id', $request->bed_id)->update(['is_occupied' => 1]);
+            }
+        }
 
         SendNewICUNotification::dispatch($icu->created_by, $icu->id);
-        // Redirect to the appointments index page with a success message
         return redirect()->back()->with('success', localize('global.icu_created_successfully.'));
     }
 

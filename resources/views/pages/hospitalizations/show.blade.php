@@ -288,15 +288,22 @@
                                                     name="doctor_id" value="{{ auth()->user()->id }}">
                                                 <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
                                                     name="hospitalization_id" value="{{ $hospitalization->id }}">
-                                                <!-- Add other diagnosis form fields as needed -->
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label text-muted">{{ localize('global.room') }}</label>
+                                                        <div class="form-control bg-light">{{ $hospitalization->room->name ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label text-muted">{{ localize('global.bed') }}</label>
+                                                        <div class="form-control bg-light">{{ $hospitalization->bed->number ?? '—' }}</div>
+                                                    </div>
+                                                </div>
                                                 <div class="form-group">
-
                                                     <label
                                                         for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
                                                     <textarea class="form-control"
                                                         id="description{{ $hospitalization->id }}" name="description"
                                                         rows="3"></textarea>
-
                                                 </div>
                                         </div>
                                         <div class="modal-footer">
@@ -388,6 +395,69 @@
                                     <div id="icuCollapse" class="accordion-collapse collapse" aria-labelledby="icuHeading"
                                         data-bs-parent="#icuAccordion">
                                         <div class="accordion-body">
+                                            {{-- Current room and bed --}}
+                                            <div class="alert alert-info mb-3 d-flex flex-wrap align-items-center gap-3">
+                                                <div>
+                                                    <strong>{{ localize('global.room') }}:</strong>
+                                                    <span class="badge bg-label-primary">{{ $hospitalization->room->name ?? '—' }}</span>
+                                                </div>
+                                                <div>
+                                                    <strong>{{ localize('global.bed') }}:</strong>
+                                                    <span class="badge bg-label-success">{{ $hospitalization->bed->number ?? '—' }}</span>
+                                                </div>
+                                                @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
+                                                    <button type="button" class="btn btn-warning btn-sm ms-auto" data-bs-toggle="modal"
+                                                        data-bs-target="#changeRoomBedModal{{ $hospitalization->id }}">
+                                                        <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_and_bed') ?: 'Change Room and Bed' }}
+                                                    </button>
+                                                @endif
+                                            </div>
+
+                                            {{-- Change Room and Bed Modal (current bed unoccupied, hospitalization updated to new) --}}
+                                            @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
+                                            <div class="modal fade" id="changeRoomBedModal{{ $hospitalization->id }}" tabindex="-1"
+                                                aria-labelledby="changeRoomBedModalLabel{{ $hospitalization->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="changeRoomBedModalLabel{{ $hospitalization->id }}">
+                                                                <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_and_bed') ?: 'Change Room and Bed' }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <form id="changeRoomBedForm{{ $hospitalization->id }}" action="{{ route('hospitalizations.updateRoomBed', $hospitalization->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-body">
+                                                                <p class="text-muted small mb-3">{{ localize('global.current_bed_will_be_freed') ?: 'The current bed will be marked unoccupied and the hospitalization will be moved to the selected room and bed.' }}</p>
+                                                                <div class="mb-3">
+                                                                    <label for="icu_room_id{{ $hospitalization->id }}" class="form-label">{{ localize('global.room') }} <span class="text-danger">*</span></label>
+                                                                    <select class="form-select select2-change-room-bed" name="room_id" id="icu_room_id{{ $hospitalization->id }}" required data-placeholder="{{ localize('global.select_room_first') }}">
+                                                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                                                        @foreach ($roomsWithBeds ?? [] as $room)
+                                                                            <option value="{{ $room->id }}" {{ $hospitalization->room_id == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="icu_bed_id{{ $hospitalization->id }}" class="form-label">{{ localize('global.bed') }} <span class="text-danger">*</span></label>
+                                                                    <select class="form-select select2-change-room-bed" name="bed_id" id="icu_bed_id{{ $hospitalization->id }}" required data-placeholder="{{ localize('global.select_room_first') }}">
+                                                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                                <button type="submit" class="btn btn-primary" id="changeRoomBedSubmitBtn{{ $hospitalization->id }}">
+                                                                    <span class="btn-text">{{ localize('global.save') }}</span>
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+
                                             @if ($hospitalization->is_discharged == 0)
                                                 <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
                                                     data-bs-target="#createICUModal{{ $hospitalization->id }}"><span><i
@@ -419,8 +489,25 @@
                                                 <input type="hidden" id="branch_id{{ $hospitalization->id }}"
                                                     name="branch_id" value="{{ auth()->user()->branch_id }}">
 
-                                                <div class="form-group">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label for="createIcu_room_id{{ $hospitalization->id }}" class="form-label">{{ localize('global.room') }}</label>
+                                                        <select class="form-select select2-create-icu-room" name="room_id" id="createIcu_room_id{{ $hospitalization->id }}" data-placeholder="{{ localize('global.select_room_first') }}">
+                                                            <option value="">{{ localize('global.select_room_first') }}</option>
+                                                            @foreach ($roomsWithBeds ?? [] as $room)
+                                                                <option value="{{ $room->id }}" {{ $hospitalization->room_id == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="createIcu_bed_id{{ $hospitalization->id }}" class="form-label">{{ localize('global.bed') }}</label>
+                                                        <select class="form-select select2-create-icu-bed" name="bed_id" id="createIcu_bed_id{{ $hospitalization->id }}" data-placeholder="{{ localize('global.select_room_first') }}">
+                                                            <option value="">{{ localize('global.select_room_first') }}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
 
+                                                <div class="form-group">
                                                     <div class="form-group">
                                                         <label
                                                             for="description{{ $hospitalization->id }}">{{ localize('global.description') }}</label>
@@ -544,6 +631,17 @@
                                                     name="doctor_id" value="{{ auth()->user()->id }}">
                                                 <input type="hidden" id="branch_id{{ $hospitalization->id }}"
                                                     name="branch_id" value="{{ auth()->user()->branch_id }}">
+
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label text-muted">{{ localize('global.room') }}</label>
+                                                        <div class="form-control bg-light">{{ $hospitalization->room->name ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label text-muted">{{ localize('global.bed') }}</label>
+                                                        <div class="form-control bg-light">{{ $hospitalization->bed->number ?? '—' }}</div>
+                                                    </div>
+                                                </div>
 
                                                 <div class="form-group">
 
@@ -850,6 +948,16 @@
                                                 @method('PUT')
                                                 <input type="hidden" id="is_discharged{{ $hospitalization->id }}"
                                                     name="is_discharged" value="1">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label text-muted">{{ localize('global.room') }}</label>
+                                                        <div class="form-control bg-light">{{ $hospitalization->room->name ?? '—' }}</div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label text-muted">{{ localize('global.bed') }}</label>
+                                                        <div class="form-control bg-light">{{ $hospitalization->bed->number ?? '—' }}</div>
+                                                    </div>
+                                                </div>
                                                 <div class="form-group">
                                                     <label
                                                         for="discharge_status{{ $hospitalization->id }}">{{ localize('global.discharge_status') }}</label>
@@ -1697,6 +1805,166 @@
                     }
                 });
             }
+
+            // ICU Accordion: Change room/bed — Select2 dropdowns, load beds when room changes or when modal opens
+            (function() {
+                var roomSelect = document.getElementById('icu_room_id{{ $hospitalization->id }}');
+                var bedSelect = document.getElementById('icu_bed_id{{ $hospitalization->id }}');
+                if (!roomSelect || !bedSelect) return;
+                var $roomSelect = $(roomSelect);
+                var $bedSelect = $(bedSelect);
+                var modal = document.getElementById('changeRoomBedModal{{ $hospitalization->id }}');
+                if (!modal) return;
+                var $modal = $(modal);
+
+                function initSelect2ChangeRoomBed(initRoom, initBed) {
+                    if (typeof $.fn.select2 === 'undefined') return;
+                    var opts = { width: '100%', dropdownParent: $modal };
+                    var ph = '{{ localize("global.select_room_first") }}';
+                    if (initRoom !== false && !$roomSelect.hasClass('select2-hidden-accessible')) {
+                        $roomSelect.select2($.extend({}, opts, { placeholder: ph }));
+                    }
+                    if (initBed !== false && !$bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2($.extend({}, opts, { placeholder: ph }));
+                    }
+                }
+
+                function loadBedsForRoom(roomId, selectedBedId) {
+                    if (!roomId) {
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
+                        initSelect2ChangeRoomBed(false, true);
+                        return;
+                    }
+                    var url = '/get_related_beds/' + roomId;
+                    if (selectedBedId) url += '?bed_id=' + selectedBedId;
+                    $.get(url, function(html) {
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        $bedSelect.html(html);
+                        initSelect2ChangeRoomBed(false, true);
+                    });
+                }
+
+                $roomSelect.off('change.changeRoomBed').on('change.changeRoomBed', function() {
+                    loadBedsForRoom($(this).val());
+                });
+
+                $modal.on('show.bs.modal', function() {
+                    var roomId = $roomSelect.val();
+                    loadBedsForRoom(roomId, {{ $hospitalization->bed_id ?? 'null' }});
+                });
+                $modal.on('shown.bs.modal', function() {
+                    initSelect2ChangeRoomBed();
+                });
+            })();
+
+            // Change room/bed form: close modal and submit via AJAX; update displayed room/bed on success
+            (function() {
+                var form = document.getElementById('changeRoomBedForm{{ $hospitalization->id }}');
+                var modalEl = document.getElementById('changeRoomBedModal{{ $hospitalization->id }}');
+                var submitBtn = document.getElementById('changeRoomBedSubmitBtn{{ $hospitalization->id }}');
+                if (!form || !modalEl) return;
+                var $form = $(form);
+                var $modal = $(modalEl);
+                $form.on('submit', function(e) {
+                    e.preventDefault();
+                    var $btn = $(submitBtn);
+                    var btnText = $btn.find('.btn-text').text();
+                    $btn.prop('disabled', true).find('.btn-text').text('{{ localize("global.saving") ?? "Saving..." }}');
+                    $.ajax({
+                        url: $form.attr('action'),
+                        type: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        data: {
+                            room_id: $('#icu_room_id{{ $hospitalization->id }}').val(),
+                            bed_id: $('#icu_bed_id{{ $hospitalization->id }}').val(),
+                            _token: $form.find('input[name="_token"]').val(),
+                            _method: 'PUT'
+                        },
+                        dataType: 'json',
+                        success: function(res) {
+                            $modal.modal('hide');
+                            if (res.room_name !== undefined) {
+                                var $alert = $('#icuAccordion .alert-info');
+                                if ($alert.length) {
+                                    var $roomBadge = $alert.find('.badge.bg-label-primary').first();
+                                    var $bedBadge = $alert.find('.badge.bg-label-success').first();
+                                    if ($roomBadge.length) $roomBadge.text(res.room_name);
+                                    if ($bedBadge.length && res.bed_number !== undefined) $bedBadge.text(res.bed_number);
+                                }
+                            }
+                            if (typeof toastr !== 'undefined' && res.message) {
+                                toastr.success(res.message);
+                            }
+                            $btn.prop('disabled', false).find('.btn-text').text(btnText);
+                        },
+                        error: function(xhr) {
+                            $btn.prop('disabled', false).find('.btn-text').text(btnText);
+                            var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : '{{ localize("global.error_occurred") }}';
+                            if (typeof toastr !== 'undefined') toastr.error(msg);
+                            else alert(msg);
+                        }
+                    });
+                });
+            })();
+
+            // Create ICU modal: room/bed dropdowns with Select2, load beds when room changes
+            (function() {
+                var modal = document.getElementById('createICUModal{{ $hospitalization->id }}');
+                if (!modal) return;
+                var $modal = $(modal);
+                var $roomSelect = $('#createIcu_room_id{{ $hospitalization->id }}');
+                var $bedSelect = $('#createIcu_bed_id{{ $hospitalization->id }}');
+                if (!$roomSelect.length || !$bedSelect.length) return;
+
+                function initCreateIcuSelect2() {
+                    if (typeof $.fn.select2 === 'undefined') return;
+                    var opts = { width: '100%', dropdownParent: $modal };
+                    var ph = '{{ localize("global.select_room_first") }}';
+                    if (!$roomSelect.hasClass('select2-hidden-accessible')) {
+                        $roomSelect.select2($.extend({}, opts, { placeholder: ph }));
+                    }
+                    if (!$bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2($.extend({}, opts, { placeholder: ph }));
+                    }
+                }
+
+                function loadBedsForCreateIcu(roomId, selectedBedId) {
+                    if (!roomId) {
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) $bedSelect.select2('destroy');
+                        $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
+                        initCreateIcuSelect2();
+                        return;
+                    }
+                    var url = '/get_related_beds/' + roomId;
+                    if (selectedBedId) url += '?bed_id=' + selectedBedId;
+                    $.get(url, function(html) {
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) $bedSelect.select2('destroy');
+                        $bedSelect.html(html);
+                        initCreateIcuSelect2();
+                    });
+                }
+
+                $roomSelect.off('change.createIcu').on('change.createIcu', function() {
+                    loadBedsForCreateIcu($(this).val());
+                });
+
+                $modal.on('show.bs.modal', function() {
+                    var roomId = $roomSelect.val();
+                    loadBedsForCreateIcu(roomId, {{ $hospitalization->bed_id ?? 'null' }});
+                });
+                $modal.on('shown.bs.modal', function() {
+                    initCreateIcuSelect2();
+                });
+            })();
 
             // Load all sections via AJAX
             $('#nursing-assessment-section').load('{{ route('nursing-assessments.section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');

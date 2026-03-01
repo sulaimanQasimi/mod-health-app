@@ -260,6 +260,9 @@ class HospitalizationController extends Controller
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');
 
+        // Rooms with at least one unoccupied bed (for change room/bed in icuAccordion)
+        $roomsWithBeds = Room::where('branch_id', $hospitalization->branch_id)->whereHas('beds')->orderBy('name')->get(['id', 'name']);
+
         return view('pages.hospitalizations.show', compact(
             'hospitalization', 
             'operationTypes', 
@@ -268,7 +271,8 @@ class HospitalizationController extends Controller
             'medicines', 
             'foodTypes', 
             'medicineUsageTypes', 
-            'currentUser'
+            'currentUser',
+            'roomsWithBeds'
         ));
     }
 
@@ -686,12 +690,14 @@ $hospitalization->appointment->update([
 
         // Load essential relationships
         $hospitalization->load(['patient', 'room', 'bed']);
-        
-        // Get rooms for the current branch
+
+        // Get rooms that have at least one unoccupied bed (Room::beds() = unoccupied only)
         $rooms = Room::select('id', 'name')
+            ->where('branch_id', $hospitalization->branch_id)
+            ->whereHas('beds')
             ->orderBy('name')
             ->get();
-        
+
         return view('pages.hospitalizations.change-room-bed', compact('hospitalization', 'rooms'));
     }
 
@@ -732,13 +738,25 @@ $hospitalization->appointment->update([
         $newBed = Bed::findOrFail($data['bed_id']);
         $newBed->update(['is_occupied' => true]);
 
+        $message = localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.';
+
+        if ($request->ajax() || $request->wantsJson()) {
+            $hospitalization->load(['room', 'bed']);
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'room_name' => $hospitalization->room->name ?? null,
+                'bed_number' => $hospitalization->bed->number ?? null,
+            ]);
+        }
+
         if ($returnToRoomId) {
             return redirect()->route('hospitalizations.roomManagement', ['room_id' => $returnToRoomId])
-                ->with('success', localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.');
+                ->with('success', $message);
         }
 
         return redirect()->route('hospitalizations.show', $hospitalization)
-            ->with('success', localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.');
+            ->with('success', $message);
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Models\OperationType;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 use App\Models\Branch;
+use App\Models\Department;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use HanifHefaz\Dcter\Dcter;
@@ -51,9 +52,9 @@ class AnesthesiaController extends Controller
             $query->where('operation_type_id', $request->operation_type_id);
         }
 
-        // Branch filter
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
+        // Department filter (via appointment)
+        if ($request->filled('department_id')) {
+            $query->whereHas('appointment', fn($q) => $q->where('department_id', (int) $request->input('department_id')));
         }
 
         // Date from filter
@@ -80,9 +81,9 @@ class AnesthesiaController extends Controller
 
         // Get filter options
         $operationTypes = \App\Models\OperationType::where('branch_id', auth()->user()->branch_id)->get();
-        $branches = \App\Models\Branch::all();
+        $departments = Department::all();
 
-        return view('pages.anesthesias.new', compact('anesthesias', 'operationTypes', 'branches'));
+        return view('pages.anesthesias.new', compact('anesthesias', 'operationTypes', 'departments'));
     }
 
     public function approved(Request $request)
@@ -114,9 +115,9 @@ class AnesthesiaController extends Controller
             $query->where('operation_type_id', $request->operation_type_id);
         }
 
-        // Branch filter
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
+        // Department filter (via appointment)
+        if ($request->filled('department_id')) {
+            $query->whereHas('appointment', fn($q) => $q->where('department_id', (int) $request->input('department_id')));
         }
 
         // Date from filter
@@ -143,9 +144,9 @@ class AnesthesiaController extends Controller
 
         // Get filter options
         $operationTypes = \App\Models\OperationType::where('branch_id', auth()->user()->branch_id)->get();
-        $branches = \App\Models\Branch::all();
+        $departments = Department::all();
 
-        return view('pages.anesthesias.approved', compact('anesthesias', 'operationTypes', 'branches'));
+        return view('pages.anesthesias.approved', compact('anesthesias', 'operationTypes', 'departments'));
     }
 
     public function rejected(Request $request)
@@ -177,9 +178,9 @@ class AnesthesiaController extends Controller
             $query->where('operation_type_id', $request->operation_type_id);
         }
 
-        // Branch filter
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
+        // Department filter (via appointment)
+        if ($request->filled('department_id')) {
+            $query->whereHas('appointment', fn($q) => $q->where('department_id', (int) $request->input('department_id')));
         }
 
         // Date from filter
@@ -206,9 +207,9 @@ class AnesthesiaController extends Controller
 
         // Get filter options
         $operationTypes = \App\Models\OperationType::where('branch_id', auth()->user()->branch_id)->get();
-        $branches = \App\Models\Branch::all();
+        $departments = Department::all();
 
-        return view('pages.anesthesias.rejected', compact('anesthesias', 'operationTypes', 'branches'));
+        return view('pages.anesthesias.rejected', compact('anesthesias', 'operationTypes', 'departments'));
     }
 
     /**

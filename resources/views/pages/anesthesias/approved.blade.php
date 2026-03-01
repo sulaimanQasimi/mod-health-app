@@ -65,16 +65,16 @@
                                     </select>
                                 </div>
 
-                                {{-- Branch Filter --}}
+                                {{-- Department Filter --}}
                                 <div class="col-md-3">
-                                    <label for="branch_id" class="form-label fw-semibold">
-                                        <i class="bx bx-building me-1 text-info"></i>{{ localize('global.branch') }}
+                                    <label for="department_id" class="form-label fw-semibold">
+                                        <i class="bx bx-group me-1 text-secondary"></i>{{ localize('global.department') }}
                                     </label>
-                                    <select class="form-select select2" id="branch_id" name="branch_id">
+                                    <select class="form-select select2" id="department_id" name="department_id">
                                         <option value="">{{ localize('global.all') ?: 'All' }}</option>
-                                        @foreach($branches ?? [] as $branch)
-                                            <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
-                                                {{ $branch->name }}
+                                        @foreach($departments ?? [] as $department)
+                                            <option value="{{ $department->id }}" {{ request('department_id') == $department->id ? 'selected' : '' }}>
+                                                {{ $department->name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -142,7 +142,7 @@
             </div>
 
             {{-- Active Filters Display --}}
-            @if(request()->hasAny(['search', 'operation_type_id', 'branch_id', 'anesthesia_type', 'date_from', 'date_to']))
+            @if(request()->hasAny(['search', 'operation_type_id', 'department_id', 'anesthesia_type', 'date_from', 'date_to']))
                 <div class="card mb-3 shadow-sm">
                     <div class="card-body py-2">
                         <div class="d-flex align-items-center justify-content-between">
@@ -163,10 +163,10 @@
                                             <a href="{{ request()->fullUrlWithQuery(['operation_type_id' => null]) }}" class="text-white ms-1" style="text-decoration: none;">×</a>
                                         </span>
                                     @endif
-                                    @if(request('branch_id'))
+                                    @if(request('department_id'))
                                         <span class="badge bg-info">
-                                            {{ localize('global.branch') }}: {{ $branches->find(request('branch_id'))->name ?? '' }}
-                                            <a href="{{ request()->fullUrlWithQuery(['branch_id' => null]) }}" class="text-white ms-1" style="text-decoration: none;">×</a>
+                                            {{ localize('global.department') }}: {{ $departments->find(request('department_id'))->name ?? '' }}
+                                            <a href="{{ request()->fullUrlWithQuery(['department_id' => null]) }}" class="text-white ms-1" style="text-decoration: none;">×</a>
                                         </span>
                                     @endif
                                     @if(request('anesthesia_type'))

@@ -32,7 +32,7 @@ class ICUController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = ICU::where('branch_id', auth()->user()->branch_id)->with('patient');
+            $query = ICU::where('branch_id', auth()->user()->branch_id)->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
 
             if ($request->filled('search')) {
                 $term = $request->search;
@@ -73,7 +73,7 @@ class ICUController extends Controller
     {
         $query = ICU::where('status', 'new')
             ->when(auth()->user()->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
-            ->with('patient');
+            ->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
 
         if ($request->filled('search')) {
             $term = $request->search;
@@ -110,7 +110,7 @@ class ICUController extends Controller
     public function approved(Request $request)
     {
         $query = ICU::where('status', 'approved')
-            ->with('patient');
+            ->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
 
         // Filter by discharge status: all | in_icu | discharged | recovered | died | moved (default: in_icu)
         $dischargeFilter = $request->get('discharge_filter', 'in_icu');
@@ -165,7 +165,7 @@ class ICUController extends Controller
     {
         $query = ICU::where('status', 'rejected')
             ->when(auth()->user()->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
-            ->with('patient');
+            ->with(['patient', 'hospitalization.room', 'hospitalization.bed']);
 
         if ($request->filled('search')) {
             $term = $request->search;

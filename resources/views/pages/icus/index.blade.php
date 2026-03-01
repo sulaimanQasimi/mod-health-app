@@ -125,6 +125,8 @@
                                 <th>{{ localize('global.card_number') }}</th>
                                 <th>{{ localize('global.patient_name') }}</th>
                                 <th>{{ localize('global.father_name') }}</th>
+                                <th>{{ localize('global.room') }}</th>
+                                <th>{{ localize('global.bed') }}</th>
                                 <th>{{ localize('global.description') }}</th>
                                 <th>{{ localize('global.register_date') }}</th>
                                 <th></th>
@@ -214,6 +216,18 @@
                             data: 'patient',
                             render: function(data) {
                                 return data ? data.father_name : '';
+                            }
+                        },
+                        {
+                            data: 'hospitalization',
+                            render: function(data) {
+                                return (data && data.room && data.room.name) ? data.room.name : '—';
+                            }
+                        },
+                        {
+                            data: 'hospitalization',
+                            render: function(data) {
+                                return (data && data.bed && data.bed.number) ? data.bed.number : '—';
                             }
                         },
                         {

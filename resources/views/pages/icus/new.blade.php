@@ -135,6 +135,8 @@
                                     <th>{{ localize('global.card_number') }}</th>
                                     <th>{{ localize('global.patient_name') }}</th>
                                     <th>{{ localize('global.father_name') }}</th>
+                                    <th>{{ localize('global.room') }}</th>
+                                    <th>{{ localize('global.bed') }}</th>
                                     <th>{{ localize('global.description') }}</th>
                                     <th>{{ localize('global.status') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
@@ -151,6 +153,8 @@
                                         <td>
                                             <span class="text-muted">{{ $icu->patient->father_name ?? '-' }}</span>
                                         </td>
+                                        <td>{{ $icu->hospitalization && $icu->hospitalization->room ? $icu->hospitalization->room->name : '—' }}</td>
+                                        <td>{{ $icu->hospitalization && $icu->hospitalization->bed ? $icu->hospitalization->bed->number : '—' }}</td>
                                         <td>{{ $icu->description}}</td>
                                         <td>
                                             @if ($icu->status == 'new')
@@ -166,7 +170,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
+                                        <td colspan="9" class="text-center text-muted py-4">
                                             {{ localize('global.try_adjusting_your_search_criteria') }}
                                         </td>
                                     </tr>

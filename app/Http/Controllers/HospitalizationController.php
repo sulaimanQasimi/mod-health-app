@@ -752,6 +752,25 @@ $hospitalization->appointment->update([
         $selectedRoom = null;
         $bedsWithOccupation = collect();
 
+        // Rooms that have at least one occupied bed (active hospitalization) — for swap room dropdown
+        $roomIdsWithOccupiedBeds = Hospitalization::where('is_discharged', 0)
+            ->whereHas('room', function ($q) use ($branchId) {
+                if ($branchId) {
+                    $q->where('branch_id', $branchId);
+                }
+            })
+            ->pluck('room_id')
+            ->unique()
+            ->values()
+            ->toArray();
+        $roomsWithOccupiedBeds = Room::select('id', 'name')
+            ->when($branchId, function ($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            })
+            ->whereIn('id', $roomIdsWithOccupiedBeds)
+            ->orderBy('name')
+            ->get();
+
         if ($request->filled('room_id')) {
             $roomId = $request->room_id;
             $selectedRoom = Room::find($roomId);
@@ -770,7 +789,7 @@ $hospitalization->appointment->update([
             }
         }
 
-        return view('pages.hospitalizations.room-management', compact('rooms', 'selectedRoom', 'bedsWithOccupation'));
+        return view('pages.hospitalizations.room-management', compact('rooms', 'selectedRoom', 'bedsWithOccupation', 'roomsWithOccupiedBeds'));
     }
 
     /**

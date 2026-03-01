@@ -491,6 +491,15 @@ class HomeController extends Controller
     {
         $room = Room::findOrFail($roomId);
         $beds = $room->beds;
+        $occupiedOnly = $request->boolean('occupied_only');
+        if ($occupiedOnly) {
+            $occupiedBedIds = \App\Models\Hospitalization::where('is_discharged', 0)
+                ->whereIn('bed_id', $beds->pluck('id'))
+                ->pluck('bed_id')
+                ->unique()
+                ->values();
+            $beds = $beds->whereIn('id', $occupiedBedIds);
+        }
         $selectedBedId = $request->input('bed_id', null);
         $options = '<option value = "">Select Bed</option>';
 

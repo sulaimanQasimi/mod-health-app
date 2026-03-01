@@ -286,8 +286,8 @@
                             <label for="swap_room_target_room_id" class="form-label fw-semibold">{{ localize('global.select_room') ?: 'Select Room' }} <span class="text-danger">*</span></label>
                             <select class="form-select" name="target_room_id" id="swap_room_target_room_id" required>
                                 <option value="">{{ localize('global.select') }}...</option>
-                                @if (isset($selectedRoom) && isset($rooms))
-                                    @foreach ($rooms->where('id', '!=', $selectedRoom->id) as $room)
+                                @if (isset($selectedRoom) && isset($roomsWithOccupiedBeds))
+                                    @foreach ($roomsWithOccupiedBeds->where('id', '!=', $selectedRoom->id) as $room)
                                         <option value="{{ $room->id }}">{{ $room->name }}</option>
                                     @endforeach
                                 @endif
@@ -512,7 +512,7 @@
                 var $bedSelect = $('#swap_room_target_bed_id');
                 if (roomId) {
                     $bedSelect.prop('disabled', true).html('<option value="">{{ localize("global.searching") ?: "Loading" }}...</option>');
-                    $.get(bedsApiUrl + '/' + roomId)
+                    $.get(bedsApiUrl + '/' + roomId + '?occupied_only=1')
                         .done(function(html) {
                             $bedSelect.html(html || '<option value="">{{ localize("global.select") }}...</option>').prop('disabled', false);
                         })

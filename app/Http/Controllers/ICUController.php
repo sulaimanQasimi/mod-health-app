@@ -31,28 +31,77 @@ class ICUController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $icus = ICU::where('branch_id',auth()->user()->branch_id)->with('patient')->get();
+            $query = ICU::where('branch_id', auth()->user()->branch_id)->with('patient');
 
-                if ($icus) {
-                    return response()->json([
-                        'data' => $icus,
-                    ]);
-                } else {
-                    return response()->json([
-                        'message' => 'Internal Server Error',
-                        'code' => 500,
-                        'data' => [],
-                    ]);
-                }
+            if ($request->filled('search')) {
+                $term = $request->search;
+                $query->whereHas('patient', function ($q) use ($term) {
+                    $q->where('name', 'like', '%' . $term . '%')
+                        ->orWhere('father_name', 'like', '%' . $term . '%')
+                        ->orWhere('id_card', 'like', '%' . $term . '%')
+                        ->orWhere('last_name', 'like', '%' . $term . '%')
+                        ->orWhere('phone', 'like', '%' . $term . '%');
+                });
+            }
+            if ($request->filled('patient_name')) {
+                $query->whereHas('patient', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->patient_name . '%')
+                        ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+                });
+            }
+            if ($request->filled('card_number')) {
+                $query->whereHas('patient', function ($q) use ($request) {
+                    $q->where('id_card', 'like', '%' . $request->card_number . '%');
+                });
+            }
+            if ($request->filled('father_name')) {
+                $query->whereHas('patient', function ($q) use ($request) {
+                    $q->where('father_name', 'like', '%' . $request->father_name . '%');
+                });
+            }
+
+            $icus = $query->get();
+
+            return response()->json(['data' => $icus]);
         }
 
-        $icus = ICU::where('branch_id',auth()->user()->branch_id)->with(['patient'])->get();
-        return view('pages.icus.index', compact('icus'));
+        return view('pages.icus.index');
     }
 
-    public function new()
+    public function new(Request $request)
     {
-        $icus = ICU::where('status', 'new')->latest()->paginate(10);
+        $query = ICU::where('status', 'new')
+            ->when(auth()->user()->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
+            ->with('patient');
+
+        if ($request->filled('search')) {
+            $term = $request->search;
+            $query->whereHas('patient', function ($q) use ($term) {
+                $q->where('name', 'like', '%' . $term . '%')
+                    ->orWhere('father_name', 'like', '%' . $term . '%')
+                    ->orWhere('id_card', 'like', '%' . $term . '%')
+                    ->orWhere('last_name', 'like', '%' . $term . '%')
+                    ->orWhere('phone', 'like', '%' . $term . '%');
+            });
+        }
+        if ($request->filled('patient_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+            });
+        }
+        if ($request->filled('card_number')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('id_card', 'like', '%' . $request->card_number . '%');
+            });
+        }
+        if ($request->filled('father_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('father_name', 'like', '%' . $request->father_name . '%');
+            });
+        }
+
+        $icus = $query->latest()->paginate(10)->appends($request->query());
 
         return view('pages.icus.new', compact('icus'));
     }
@@ -111,9 +160,40 @@ class ICUController extends Controller
         return view('pages.icus.approved', compact('icus'));
     }
 
-    public function rejected()
+    public function rejected(Request $request)
     {
-        $icus = ICU::where('status', 'rejected')->latest()->paginate(10);
+        $query = ICU::where('status', 'rejected')
+            ->when(auth()->user()->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
+            ->with('patient');
+
+        if ($request->filled('search')) {
+            $term = $request->search;
+            $query->whereHas('patient', function ($q) use ($term) {
+                $q->where('name', 'like', '%' . $term . '%')
+                    ->orWhere('father_name', 'like', '%' . $term . '%')
+                    ->orWhere('id_card', 'like', '%' . $term . '%')
+                    ->orWhere('last_name', 'like', '%' . $term . '%')
+                    ->orWhere('phone', 'like', '%' . $term . '%');
+            });
+        }
+        if ($request->filled('patient_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+            });
+        }
+        if ($request->filled('card_number')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('id_card', 'like', '%' . $request->card_number . '%');
+            });
+        }
+        if ($request->filled('father_name')) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('father_name', 'like', '%' . $request->father_name . '%');
+            });
+        }
+
+        $icus = $query->latest()->paginate(10)->appends($request->query());
 
         return view('pages.icus.rejected', compact('icus'));
     }

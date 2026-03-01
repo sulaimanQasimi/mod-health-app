@@ -12,73 +12,134 @@
                         <h5 class="mb-0">{{ localize('global.approved_icus') }}</h5>
                     </div>
                     <div class="card-body">
-                        {{-- Filter by discharge & Search --}}
-                        <form method="GET" action="{{ route('icus.approved') }}" class="mb-4">
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label class="form-label">{{ localize('global.filter_by_discharge') }}</label>
-                                    <div class="d-flex flex-wrap gap-2 mb-2">
-                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'all'])) }}"
-                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'all') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                            {{ localize('global.all_approved') }}
-                                        </a>
-                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'in_icu'])) }}"
-                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'in_icu') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                            {{ localize('global.in_icu') }}
-                                        </a>
-                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'discharged'])) }}"
-                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'discharged') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                            {{ localize('global.discharged') }}
-                                        </a>
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'recovered'])) }}"
-                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'recovered') ? 'btn-success' : 'btn-outline-success' }}">
-                                            <i class="bx bx-check-circle me-1"></i>{{ localize('global.recovered') }}
-                                        </a>
-                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'died'])) }}"
-                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'died') ? 'btn-danger' : 'btn-outline-danger' }}">
-                                            <i class="bx bx-x-circle me-1"></i>{{ localize('global.died') }}
-                                        </a>
-                                        <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'moved'])) }}"
-                                            class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'moved') ? 'btn-warning' : 'btn-outline-warning' }}">
-                                            <i class="bx bx-transfer me-1"></i>{{ localize('global.moved') }}
-                                        </a>
-                                    </div>
+                        {{-- Advanced Filters (collapsible) --}}
+                        @php
+                            $hasActiveFilters = request()->hasAny(['discharge_filter', 'patient_name', 'card_number', 'father_name', 'search']) && (request('discharge_filter', 'in_icu') !== 'in_icu' || request()->filled('patient_name') || request()->filled('card_number') || request()->filled('father_name') || request()->filled('search'));
+                        @endphp
+                        <div class="card border-0 bg-light rounded-3 mb-4 shadow-sm">
+                            <div class="card-header bg-transparent border-0 py-3 cursor-pointer d-flex align-items-center justify-content-between" data-bs-toggle="collapse" data-bs-target="#icuApprovedFilterCollapse" aria-expanded="{{ $hasActiveFilters ? 'true' : 'false' }}" aria-controls="icuApprovedFilterCollapse" role="button">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-primary rounded-circle p-2"><i class="bx bx-filter-alt text-white"></i></span>
+                                    <h6 class="mb-0 fw-semibold">{{ localize('global.advanced_filters') ?: 'Advanced Filters' }}</h6>
+                                    @if($hasActiveFilters)
+                                        <span class="badge bg-label-primary ms-1">{{ (request('discharge_filter', 'in_icu') !== 'in_icu' ? 1 : 0) + count(array_filter(request()->only(['patient_name', 'card_number', 'father_name', 'search']))) }}</span>
+                                    @endif
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">{{ localize('global.patient_name') }}</label>
-                                    <input type="text" name="patient_name" class="form-control form-control-sm"
-                                        value="{{ request('patient_name') }}"
-                                        placeholder="{{ localize('global.search_by_patient_name') }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">{{ localize('global.card_number') }}</label>
-                                    <input type="text" name="card_number" class="form-control form-control-sm"
-                                        value="{{ request('card_number') }}"
-                                        placeholder="{{ localize('global.search_by_card_number') }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">{{ localize('global.father_name') }}</label>
-                                    <input type="text" name="father_name" class="form-control form-control-sm"
-                                        value="{{ request('father_name') }}"
-                                        placeholder="{{ localize('global.search_by_father_name') }}">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">{{ localize('global.search') }}</label>
-                                    <input type="text" name="search" class="form-control form-control-sm"
-                                        value="{{ request('search') }}"
-                                        placeholder="{{ localize('global.search_patient_placeholder') }}">
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end gap-1">
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="bx bx-search"></i> {{ localize('global.search') }}
-                                    </button>
-                                    <a href="{{ route('icus.approved') }}" class="btn btn-outline-secondary btn-sm">{{ localize('global.clear_search') }}</a>
+                                <i class="bx bx-chevron-down transition-transform collapse-icon"></i>
+                            </div>
+                            <div class="collapse {{ $hasActiveFilters ? 'show' : '' }}" id="icuApprovedFilterCollapse">
+                                <div class="card-body pt-0">
+                                    <form method="GET" action="{{ route('icus.approved') }}" id="icuApprovedFilterForm">
+                                        <input type="hidden" name="discharge_filter" value="{{ request('discharge_filter', 'in_icu') }}">
+                                        {{-- Discharge status section --}}
+                                        <div class="mb-4 pb-3 border-bottom">
+                                            <label class="form-label fw-semibold text-muted small text-uppercase mb-2">
+                                                <i class="bx bx-pie-chart-alt me-1"></i>{{ localize('global.filter_by_discharge') }}
+                                            </label>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'all'])) }}"
+                                                    class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'all') ? 'btn-primary' : 'btn-outline-primary' }}">
+                                                    {{ localize('global.all_approved') }}
+                                                </a>
+                                                <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'in_icu'])) }}"
+                                                    class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'in_icu') ? 'btn-primary' : 'btn-outline-primary' }}">
+                                                    <i class="bx bx-bed me-1"></i>{{ localize('global.in_icu') }}
+                                                </a>
+                                                <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'discharged'])) }}"
+                                                    class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'discharged') ? 'btn-primary' : 'btn-outline-primary' }}">
+                                                    {{ localize('global.discharged') }}
+                                                </a>
+                                                <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'recovered'])) }}"
+                                                    class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'recovered') ? 'btn-success' : 'btn-outline-success' }}">
+                                                    <i class="bx bx-check-circle me-1"></i>{{ localize('global.recovered') }}
+                                                </a>
+                                                <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'died'])) }}"
+                                                    class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'died') ? 'btn-danger' : 'btn-outline-danger' }}">
+                                                    <i class="bx bx-x-circle me-1"></i>{{ localize('global.died') }}
+                                                </a>
+                                                <a href="{{ route('icus.approved', array_merge(request()->except(['discharge_filter', 'page']), ['discharge_filter' => 'moved'])) }}"
+                                                    class="btn btn-sm {{ (request('discharge_filter', 'in_icu') === 'moved') ? 'btn-warning' : 'btn-outline-warning' }}">
+                                                    <i class="bx bx-transfer me-1"></i>{{ localize('global.moved') }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {{-- Search fields --}}
+                                        <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-semibold small">
+                                                    <i class="bx bx-user me-1 text-primary"></i>{{ localize('global.patient_name') }}
+                                                </label>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-primary bg-opacity-10 border-end-0"><i class="bx bx-user text-primary"></i></span>
+                                                    <input type="text" name="patient_name" class="form-control border-start-0"
+                                                        value="{{ request('patient_name') }}"
+                                                        placeholder="{{ localize('global.search_by_patient_name') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold small">
+                                                    <i class="bx bx-id-card me-1 text-info"></i>{{ localize('global.card_number') }}
+                                                </label>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-info bg-opacity-10 border-end-0"><i class="bx bx-id-card text-info"></i></span>
+                                                    <input type="text" name="card_number" class="form-control border-start-0"
+                                                        value="{{ request('card_number') }}"
+                                                        placeholder="{{ localize('global.search_by_card_number') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold small">
+                                                    <i class="bx bx-user-circle me-1 text-secondary"></i>{{ localize('global.father_name') }}
+                                                </label>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-secondary bg-opacity-10 border-end-0"><i class="bx bx-user-circle text-secondary"></i></span>
+                                                    <input type="text" name="father_name" class="form-control border-start-0"
+                                                        value="{{ request('father_name') }}"
+                                                        placeholder="{{ localize('global.search_by_father_name') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold small">
+                                                    <i class="bx bx-search me-1 text-success"></i>{{ localize('global.search') }}
+                                                </label>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-success bg-opacity-10 border-end-0"><i class="bx bx-search text-success"></i></span>
+                                                    <input type="text" name="search" class="form-control border-start-0"
+                                                        value="{{ request('search') }}"
+                                                        placeholder="{{ localize('global.search_patient_placeholder') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 d-flex align-items-end gap-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bx bx-filter me-1"></i>{{ localize('global.apply_filters') ?: 'Apply Filters' }}
+                                                </button>
+                                                <a href="{{ route('icus.approved') }}" class="btn btn-outline-secondary">
+                                                    <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') ?: 'Reset' }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
-                            <input type="hidden" name="discharge_filter" value="{{ request('discharge_filter', 'in_icu') }}">
-                        </form>
+                        </div>
+                        {{-- Active filters chips --}}
+                        @if($hasActiveFilters && (request()->filled('patient_name') || request()->filled('card_number') || request()->filled('father_name') || request()->filled('search')))
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                <span class="text-muted small fw-semibold">{{ localize('global.active_filters') ?: 'Active Filters' }}:</span>
+                                @if(request('patient_name'))
+                                    <a href="{{ request()->fullUrlWithQuery(['patient_name' => null, 'page' => null]) }}" class="badge bg-primary py-2 px-2 text-decoration-none">{{ localize('global.patient_name') }}: {{ request('patient_name') }} <i class="bx bx-x ms-1"></i></a>
+                                @endif
+                                @if(request('card_number'))
+                                    <a href="{{ request()->fullUrlWithQuery(['card_number' => null, 'page' => null]) }}" class="badge bg-info py-2 px-2 text-decoration-none">{{ localize('global.card_number') }}: {{ request('card_number') }} <i class="bx bx-x ms-1"></i></a>
+                                @endif
+                                @if(request('father_name'))
+                                    <a href="{{ request()->fullUrlWithQuery(['father_name' => null, 'page' => null]) }}" class="badge bg-secondary py-2 px-2 text-decoration-none">{{ localize('global.father_name') }}: {{ request('father_name') }} <i class="bx bx-x ms-1"></i></a>
+                                @endif
+                                @if(request('search'))
+                                    <a href="{{ request()->fullUrlWithQuery(['search' => null, 'page' => null]) }}" class="badge bg-success py-2 px-2 text-decoration-none">{{ localize('global.search') }}: {{ request('search') }} <i class="bx bx-x ms-1"></i></a>
+                                @endif
+                            </div>
+                        @endif
 
                         <table class="table table-striped">
                             <thead>
@@ -143,3 +204,17 @@
         </div>
     </div>
 @endsection
+
+@push('custom-css')
+    <style>
+        [data-bs-toggle="collapse"][aria-controls^="icu"] {
+            cursor: pointer;
+        }
+        [data-bs-toggle="collapse"][aria-expanded="true"] .collapse-icon {
+            transform: rotate(180deg);
+        }
+        .collapse-icon {
+            transition: transform 0.2s ease;
+        }
+    </style>
+@endpush

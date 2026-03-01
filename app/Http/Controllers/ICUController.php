@@ -7,6 +7,7 @@ use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\FoodType;
+use App\Models\Hospitalization;
 use App\Models\ICU;
 use App\Models\ICUProcedureType;
 use App\Models\LabType;
@@ -250,8 +251,9 @@ class ICUController extends Controller
         $medicineTypes = MedicineType::all();
         $medicines = Medicine::all();
         $procedure_types = ICUProcedureType::all();
-        $rooms = Room::all();
-        $beds = Bed::all();
+        // Only rooms that have at least one unoccupied bed (Room::beds() = unoccupied only)
+        $rooms = Room::where('branch_id', $icu->branch_id)->whereHas('beds')->orderBy('name')->get();
+        $beds = collect(); // Beds loaded via AJAX when room is selected (only unoccupied)
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
 
@@ -285,16 +287,59 @@ class ICUController extends Controller
             'is_discharged' => 'nullable',
             'transfer_date' => 'nullable',
             'brief_history' => 'nullable',
+            'transfer_room_id' => 'nullable|exists:rooms,id',
+            'transfer_bed_id' => 'nullable|exists:beds,id',
+            'recovered_room_id' => 'nullable|exists:rooms,id',
+            'recovered_bed_id' => 'nullable|exists:beds,id',
 
         ]);
 
         $icu->update($data);
 
-        // When discharged (recovered, died, moved / رخصت), free the bed
-        if ($icu->is_discharged && $icu->hospitalization_id && $icu->hospitalization && $icu->hospitalization->bed_id) {
-            $bed = Bed::find($icu->hospitalization->bed_id);
-            if ($bed) {
-                $bed->update(['is_occupied' => 0]);
+        // When discharged (recovered, died, moved / صحت یاب or transfer), free the current bed
+        if ($icu->is_discharged) {
+            $hospitalization = $icu->hospitalization_id && $icu->hospitalization
+                ? $icu->hospitalization
+                : Hospitalization::where('i_c_u_id', $icu->id)->where('is_discharged', 0)->latest()->first();
+            if ($hospitalization && $hospitalization->bed_id) {
+                Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
+                $hospitalization->update(['is_discharged' => 1]);
+            }
+
+            // When recovered, create new hospitalization in the selected room/bed and occupy it
+            if ($icu->discharge_status === 'recovered' && $request->filled('recovered_room_id') && $request->filled('recovered_bed_id')) {
+                $reason = $request->discharge_remark ?: (localize('global.recovered_from_icu') ?: 'Recovered from ICU');
+                Hospitalization::create([
+                    'patient_id' => $icu->patient_id,
+                    'branch_id' => $icu->branch_id,
+                    'appointment_id' => $icu->appointment_id,
+                    'room_id' => $request->recovered_room_id,
+                    'bed_id' => $request->recovered_bed_id,
+                    'reason' => $reason,
+                    'remarks' => $request->discharge_remark,
+                    'i_c_u_id' => $icu->id,
+                    'is_discharged' => 0,
+                    'food_type_id' => '[]',
+                ]);
+                Bed::where('id', $request->recovered_bed_id)->update(['is_occupied' => 1]);
+            }
+
+            // When moved (transfer), create new hospitalization in the selected room/bed and occupy it
+            if ($icu->discharge_status === 'moved' && $request->filled('transfer_room_id') && $request->filled('transfer_bed_id')) {
+                $newHospitalization = Hospitalization::create([
+                    'patient_id' => $icu->patient_id,
+                    'doctor_id' => $icu->patient->appointments()->latest()->first()?->doctor_id ?? auth()->id(),
+                    'branch_id' => $icu->branch_id,
+                    'appointment_id' => $icu->appointment_id,
+                    'room_id' => $request->transfer_room_id,
+                    'bed_id' => $request->transfer_bed_id,
+                    'reason' => $request->brief_history ?: (localize('global.transfer_from_icu') ?: 'Transfer from ICU'),
+                    'remarks' => $request->brief_history,
+                    'i_c_u_id' => $icu->id,
+                    'is_discharged' => 0,
+                    'food_type_id' => '[]',
+                ]);
+                Bed::where('id', $request->transfer_bed_id)->update(['is_occupied' => 1]);
             }
         }
 

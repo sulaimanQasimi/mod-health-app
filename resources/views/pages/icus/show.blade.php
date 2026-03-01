@@ -1383,7 +1383,7 @@
                                                 <div class="form-group">
                                                     <label for="bed_id{{ $icu->id }}">{{ localize('global.beds') }}</label>
                                                     <select class="form-control select2" name="bed_id" id="bed_id" required>
-                                                        <option value="">{{ localize('global.select') }}</option>
+                                                        <option value="">{{ localize('global.select_room_first') }}</option>
                                                         @foreach ($beds as $value)
                                                             <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
                                                                 {{ $value->number }}
@@ -1602,6 +1602,33 @@
                                                     class="bx bx-check-circle me-2"></i>{{ localize('global.recovery_details') }}
                                             </h6>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="recovered_room_id{{ $icu->id }}" class="form-label">
+                                                        {{ localize('global.room') }}
+                                                    </label>
+                                                    <select class="form-control select2" name="recovered_room_id"
+                                                        id="recovered_room_id{{ $icu->id }}">
+                                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                                        @foreach ($rooms as $value)
+                                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="recovered_bed_id{{ $icu->id }}" class="form-label">
+                                                        {{ localize('global.bed') }}
+                                                    </label>
+                                                    <select class="form-control select2" name="recovered_bed_id"
+                                                        id="recovered_bed_id{{ $icu->id }}">
+                                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="form-group">
                                             <label for="discharge_remark{{ $icu->id }}" class="form-label">
                                                 {{ localize('global.discharge_remark') }}
@@ -1669,6 +1696,33 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="transfer_room_id{{ $icu->id }}" class="form-label">
+                                                        {{ localize('global.room') }}
+                                                    </label>
+                                                    <select class="form-control select2" name="transfer_room_id"
+                                                        id="transfer_room_id{{ $icu->id }}">
+                                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                                        @foreach ($rooms as $value)
+                                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="transfer_bed_id{{ $icu->id }}" class="form-label">
+                                                        {{ localize('global.bed') }}
+                                                    </label>
+                                                    <select class="form-control select2" name="transfer_bed_id"
+                                                        id="transfer_bed_id{{ $icu->id }}">
+                                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label for="brief_history{{ $icu->id }}" class="form-label">
@@ -1825,14 +1879,14 @@
                                 }
                             });
                         } else {
-                            $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                            $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
                             if ($bedSelect.hasClass('select2-hidden-accessible')) {
                                 $bedSelect.select2('destroy');
                             }
                             if (typeof $.fn.select2 !== 'undefined') {
                                 $bedSelect.select2({
                                     dropdownParent: $modal,
-                                    placeholder: '{{ localize("global.select") }}...',
+                                    placeholder: '{{ localize("global.select_room_first") }}',
                                     width: '100%'
                                 });
                             }
@@ -1864,14 +1918,14 @@
                         }
                     });
                 } else {
-                    $bedSelect.html('<option value="">{{ localize("global.select") }}</option>');
+                    $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
                     if ($bedSelect.hasClass('select2-hidden-accessible')) {
                         $bedSelect.select2('destroy');
                     }
                     if (typeof $.fn.select2 !== 'undefined') {
                         $bedSelect.select2({
                             dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
-                            placeholder: '{{ localize("global.select") }}...',
+                            placeholder: '{{ localize("global.select_room_first") }}',
                             width: '100%'
                         });
                     }
@@ -1902,6 +1956,70 @@
                     movedOptionsContainer.show();
                     // Add required to move department field
                     $('#move_department_id{{ $icu->id }}').attr('required', 'required');
+                }
+            });
+
+            // When recovered room changes, load empty beds for that room
+            $('#recovered_room_id{{ $icu->id }}').on('change', function () {
+                var roomId = $(this).val();
+                var $bedSelect = $('#recovered_bed_id{{ $icu->id }}');
+                var $modal = $(this).closest('.modal');
+                if (roomId) {
+                    $.get('/get_related_beds/' + roomId, function (response) {
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        $bedSelect.html(response);
+                        if (typeof $.fn.select2 !== 'undefined') {
+                            $bedSelect.select2({
+                                dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                width: '100%'
+                            });
+                        }
+                    });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
+                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                            width: '100%'
+                        });
+                    }
+                }
+            });
+
+            // When transfer room changes, load empty beds for that room
+            $('#transfer_room_id{{ $icu->id }}').on('change', function () {
+                var roomId = $(this).val();
+                var $bedSelect = $('#transfer_bed_id{{ $icu->id }}');
+                var $modal = $(this).closest('.modal');
+                if (roomId) {
+                    $.get('/get_related_beds/' + roomId, function (response) {
+                        if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                            $bedSelect.select2('destroy');
+                        }
+                        $bedSelect.html(response);
+                        if (typeof $.fn.select2 !== 'undefined') {
+                            $bedSelect.select2({
+                                dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                                width: '100%'
+                            });
+                        }
+                    });
+                } else {
+                    $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
+                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                        $bedSelect.select2('destroy');
+                    }
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $bedSelect.select2({
+                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
+                            width: '100%'
+                        });
+                    }
                 }
             });
 

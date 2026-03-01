@@ -6,6 +6,7 @@ use App\Jobs\SendNewHospitalizationNotification;
 use App\Models\Bed;
 use App\Models\FoodType;
 use App\Models\Hospitalization;
+use App\Models\ICU;
 use App\Models\LabType;
 use App\Models\Medicine;
 use App\Models\MedicineType;
@@ -226,6 +227,10 @@ class HospitalizationController extends Controller
 
         $occupied_bed->update(['is_occupied' => true]);
         $occupied_bed->save();
+
+        if (!empty($data['i_c_u_id'])) {
+            ICU::where('id', $data['i_c_u_id'])->update(['hospitalization_id' => $hospitalization->id]);
+        }
 
         SendNewHospitalizationNotification::dispatch($hospitalization->created_by, $hospitalization->id);
 

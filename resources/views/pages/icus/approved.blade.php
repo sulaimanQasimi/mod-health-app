@@ -12,23 +12,23 @@
                         <h5 class="mb-0">{{ localize('global.approved_icus') }}</h5>
                     </div>
                     <div class="card-body">
-                        {{-- Advanced Filters (collapsible) --}}
+                        {{-- Advanced Filters (collapsible) - same design as anesthesias approved --}}
                         @php
-                            $hasActiveFilters = request()->hasAny(['discharge_filter', 'patient_name', 'card_number', 'father_name', 'search']) && (request('discharge_filter', 'in_icu') !== 'in_icu' || request()->filled('patient_name') || request()->filled('card_number') || request()->filled('father_name') || request()->filled('search'));
+                            $hasActiveFilters = request()->hasAny(['discharge_filter', 'patient_name', 'card_number', 'father_name', 'search', 'per_page']) && (request('discharge_filter', 'in_icu') !== 'in_icu' || request()->filled('patient_name') || request()->filled('card_number') || request()->filled('father_name') || request()->filled('search') || request('per_page', 15) != 15);
                         @endphp
-                        <div class="card border-0 bg-light rounded-3 mb-4 shadow-sm">
-                            <div class="card-header bg-transparent border-0 py-3 cursor-pointer d-flex align-items-center justify-content-between" data-bs-toggle="collapse" data-bs-target="#icuApprovedFilterCollapse" aria-expanded="{{ $hasActiveFilters ? 'true' : 'false' }}" aria-controls="icuApprovedFilterCollapse" role="button">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-primary rounded-circle p-2"><i class="bx bx-filter-alt text-white"></i></span>
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-header bg-none border-0 py-3 cursor-pointer d-flex align-items-center justify-content-between" data-bs-toggle="collapse" data-bs-target="#icuApprovedFilterCollapse" aria-expanded="{{ $hasActiveFilters ? 'true' : 'false' }}" aria-controls="icuApprovedFilterCollapse" role="button">
+                                <div class="d-flex align-items-center">
+                                    <i class="bx bx-filter-alt text-primary me-2" style="font-size: 1.2rem;"></i>
                                     <h6 class="mb-0 fw-semibold">{{ localize('global.advanced_filters') ?: 'Advanced Filters' }}</h6>
                                     @if($hasActiveFilters)
-                                        <span class="badge bg-label-primary ms-1">{{ (request('discharge_filter', 'in_icu') !== 'in_icu' ? 1 : 0) + count(array_filter(request()->only(['patient_name', 'card_number', 'father_name', 'search']))) }}</span>
+                                        <span class="badge bg-label-primary ms-2">{{ (request('discharge_filter', 'in_icu') !== 'in_icu' ? 1 : 0) + count(array_filter(request()->only(['patient_name', 'card_number', 'father_name', 'search']))) + (request('per_page', 15) != 15 ? 1 : 0) }}</span>
                                     @endif
                                 </div>
                                 <i class="bx bx-chevron-down transition-transform collapse-icon"></i>
                             </div>
                             <div class="collapse {{ $hasActiveFilters ? 'show' : '' }}" id="icuApprovedFilterCollapse">
-                                <div class="card-body pt-0">
+                                <div class="card-body">
                                     <form method="GET" action="{{ route('icus.approved') }}" id="icuApprovedFilterForm">
                                         <input type="hidden" name="discharge_filter" value="{{ request('discharge_filter', 'in_icu') }}">
                                         {{-- Discharge status section --}}
@@ -63,53 +63,76 @@
                                                 </a>
                                             </div>
                                         </div>
-                                        {{-- Search fields --}}
+                                        {{-- Search row (like anesthesia) --}}
                                         <div class="row g-3">
-                                            <div class="col-md-3">
-                                                <label class="form-label fw-semibold small">
-                                                    <i class="bx bx-user me-1 text-primary"></i>{{ localize('global.patient_name') }}
+                                            <div class="col-md-4">
+                                                <label for="search" class="form-label fw-semibold">
+                                                    <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search') }}
                                                 </label>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text bg-primary bg-opacity-10 border-end-0"><i class="bx bx-user text-primary"></i></span>
-                                                    <input type="text" name="patient_name" class="form-control border-start-0"
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-primary text-white">
+                                                        <i class="bx bx-search"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" id="search" name="search"
+                                                        value="{{ request('search') }}"
+                                                        placeholder="{{ localize('global.search_patient_placeholder') }}"
+                                                        autocomplete="off">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="patient_name" class="form-label fw-semibold">
+                                                    <i class="bx bx-user me-1 text-success"></i>{{ localize('global.patient_name') }}
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-success text-white">
+                                                        <i class="bx bx-user"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" id="patient_name" name="patient_name"
                                                         value="{{ request('patient_name') }}"
                                                         placeholder="{{ localize('global.search_by_patient_name') }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
-                                                <label class="form-label fw-semibold small">
+                                                <label for="card_number" class="form-label fw-semibold">
                                                     <i class="bx bx-id-card me-1 text-info"></i>{{ localize('global.card_number') }}
                                                 </label>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text bg-info bg-opacity-10 border-end-0"><i class="bx bx-id-card text-info"></i></span>
-                                                    <input type="text" name="card_number" class="form-control border-start-0"
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-info text-white">
+                                                        <i class="bx bx-id-card"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" id="card_number" name="card_number"
                                                         value="{{ request('card_number') }}"
                                                         placeholder="{{ localize('global.search_by_card_number') }}">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold small">
+                                            <div class="col-md-3">
+                                                <label for="father_name" class="form-label fw-semibold">
                                                     <i class="bx bx-user-circle me-1 text-secondary"></i>{{ localize('global.father_name') }}
                                                 </label>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text bg-secondary bg-opacity-10 border-end-0"><i class="bx bx-user-circle text-secondary"></i></span>
-                                                    <input type="text" name="father_name" class="form-control border-start-0"
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-secondary text-white">
+                                                        <i class="bx bx-user-circle"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" id="father_name" name="father_name"
                                                         value="{{ request('father_name') }}"
                                                         placeholder="{{ localize('global.search_by_father_name') }}">
                                                 </div>
                                             </div>
+                                        </div>
+                                        {{-- Per Page + Buttons row --}}
+                                        <div class="row g-3 mt-2">
                                             <div class="col-md-2">
-                                                <label class="form-label fw-semibold small">
-                                                    <i class="bx bx-search me-1 text-success"></i>{{ localize('global.search') }}
+                                                <label for="per_page" class="form-label fw-semibold">
+                                                    <i class="bx bx-list-ul me-1 text-secondary"></i>{{ localize('global.per_page') ?: 'Per Page' }}
                                                 </label>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text bg-success bg-opacity-10 border-end-0"><i class="bx bx-search text-success"></i></span>
-                                                    <input type="text" name="search" class="form-control border-start-0"
-                                                        value="{{ request('search') }}"
-                                                        placeholder="{{ localize('global.search_patient_placeholder') }}">
-                                                </div>
+                                                <select class="form-select" id="per_page" name="per_page">
+                                                    <option value="10" {{ request('per_page', 15) == 10 ? 'selected' : '' }}>10</option>
+                                                    <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                                                    <option value="25" {{ request('per_page', 15) == 25 ? 'selected' : '' }}>25</option>
+                                                    <option value="50" {{ request('per_page', 15) == 50 ? 'selected' : '' }}>50</option>
+                                                </select>
                                             </div>
-                                            <div class="col-md-3 d-flex align-items-end gap-2">
+                                            <div class="col-md-4 d-flex align-items-end gap-2">
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="bx bx-filter me-1"></i>{{ localize('global.apply_filters') ?: 'Apply Filters' }}
                                                 </button>

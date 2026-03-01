@@ -101,7 +101,7 @@ class ICUController extends Controller
             });
         }
 
-        $icus = $query->latest()->paginate(10)->appends($request->query());
+        $icus = $query->latest()->paginate($request->get('per_page', 15))->withQueryString();
 
         return view('pages.icus.new', compact('icus'));
     }
@@ -155,7 +155,7 @@ class ICUController extends Controller
             });
         }
 
-        $icus = $query->latest()->paginate(10)->appends($request->query());
+        $icus = $query->latest()->paginate($request->get('per_page', 15))->withQueryString();
 
         return view('pages.icus.approved', compact('icus'));
     }
@@ -193,7 +193,7 @@ class ICUController extends Controller
             });
         }
 
-        $icus = $query->latest()->paginate(10)->appends($request->query());
+        $icus = $query->latest()->paginate($request->get('per_page', 15))->withQueryString();
 
         return view('pages.icus.rejected', compact('icus'));
     }

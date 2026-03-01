@@ -50,12 +50,6 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="updated_by" class="form-label">{{ localize('global.updated_by') }}</label>
-                                        <select class="form-control pager-search" name="updated_by" id="updated_by" style="width: 100%;">
-                                            <option value="">{{ localize('global.select') }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                         <div class="input-group input-daterange">
                                             <input type="text" name="start" placeholder="{{ localize('global.from') }}"
@@ -97,67 +91,25 @@
 
 @push('custom-js')
     <script>
-        $(function () {
-            // Select2 with built-in AJAX for updated_by (pharmacy users)
-            var updatedBySelectUrl = "{{ route('api.select.pharmacy-users') }}";
-            $('#updated_by').select2({
-                placeholder: "{{ localize('global.select') }}",
-                allowClear: true,
-                width: '100%',
-                minimumInputLength: 0,
-                ajax: {
-                    url: updatedBySelectUrl,
-                    dataType: 'json',
-                    delay: 300,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    data: function (params) {
-                        return {
-                            search: params.term || '',
-                            page: params.page || 1,
-                            pharmacy_id: $('#pharmacy_id').val() || ''
-                        };
-                    },
-                    processResults: function (data) {
-                        if (data && data.results && Array.isArray(data.results)) {
-                            return {
-                                results: data.results.map(function (item) {
-                                    return { id: item.id, text: item.text || item.value };
-                                }),
-                                pagination: { more: (data.pagination && data.pagination.more) || false }
-                            };
-                        }
-                        return { results: [], pagination: { more: false } };
-                    },
-                    cache: true
+        $('form').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: "{{ route('prescriptions.report-search') }}",
+                data: $(this).serialize(),
+                beforeSend: function () {
+                    // setting a timeout
+                    $('.search-document-data').html(
+                        '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
+                    );
+
+                },
+                success: function (resp) {
+                    $('.search-document-data').html(resp);
                 }
-            });
 
-            // When pharmacy changes, clear updated_by selection
-            $('#pharmacy_id').on('change', function () {
-                $('#updated_by').val(null).trigger('change');
-            });
-
-            $('form').submit(function (e) {
-                e.preventDefault();
-                $.ajax({
-                    type: 'post',
-                    url: "{{ route('prescriptions.report-search') }}",
-                    data: $(this).serialize(),
-                    beforeSend: function () {
-                        $('.search-document-data').html(
-                            '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>'
-                        );
-                    },
-                    success: function (resp) {
-                        $('.search-document-data').html(resp);
-                    }
-                });
-            });
-        });
+            })
+        })
     </script>
 @endpush
 @push('custom-css')

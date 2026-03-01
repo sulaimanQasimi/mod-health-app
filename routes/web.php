@@ -824,7 +824,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('physiotherapy-types', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapyTypes'])->name('api.select.physiotherapy-types');
         Route::get('physiotherapists', [\App\Http\Controllers\Api\SelectController::class, 'getPhysiotherapists'])->name('api.select.physiotherapists');
         Route::get('users', [\App\Http\Controllers\Api\SelectController::class, 'users'])->name('api.select.users');
-        Route::get('pharmacy-users', [\App\Http\Controllers\Api\SelectController::class, 'getPharmacyUsers'])->name('api.select.pharmacy-users');
         Route::get('nurses', [NurseController::class, 'getNursesForSelect'])->name('api.select.nurses');
         Route::get('diabetes-charts', [DiabetesChartController::class, 'getDiabetesChartsForSelect'])->name('api.select.diabetes-charts');
         Route::get('branches', [BranchController::class, 'getBranchesForSelect'])->name('api.select.branches');

@@ -250,7 +250,9 @@ class AppointmentController extends Controller
         // Load appointment with necessary relationships
         $appointment->load([
             'hospitalization.labs.labType',
-            'hospitalization.labs.results'
+            'hospitalization.labs.results',
+            'icu.hospitalization.room',
+            'icu.hospitalization.bed'
         ]);
         
         $labTypes = LabType::all();

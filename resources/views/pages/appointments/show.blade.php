@@ -1600,15 +1600,32 @@
                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                 value="{{ auth()->user()->branch_id }}">
 
-                            <div class="form-group">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="createIcu_room_id_appt{{ $appointment->id }}" class="form-label">{{ localize('global.room') }}</label>
+                                    <select class="form-select select2-create-icu-room-appt" name="room_id" id="createIcu_room_id_appt{{ $appointment->id }}" data-placeholder="{{ localize('global.select_room_first') }}">
+                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                        @foreach ($rooms ?? [] as $room)
+                                            <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="createIcu_bed_id_appt{{ $appointment->id }}" class="form-label">{{ localize('global.bed') }}</label>
+                                    <select class="form-select select2-create-icu-bed-appt" name="bed_id" id="createIcu_bed_id_appt{{ $appointment->id }}" data-placeholder="{{ localize('global.select_room_first') }}">
+                                        <option value="">{{ localize('global.select_room_first') }}</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                                                <div class="form-group">
-                                                    <label
-                                                        for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
-                                                    <textarea class="form-control" id="description{{ $appointment->id }}"
-                                                        name="description" rows="3"></textarea>
-                                                </div>
-                                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label
+                                        for="description{{ $appointment->id }}">{{ localize('global.description') }}</label>
+                                    <textarea class="form-control" id="description{{ $appointment->id }}"
+                                        name="description" rows="3"></textarea>
+                                </div>
+                            </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
@@ -1630,6 +1647,8 @@
                                                     <th>{{ localize('global.number') }}</th>
                                                     <th>{{ localize('global.patient_name') }}</th>
                                                     <th>{{ localize('global.description') }}</th>
+                                                    <th>{{ localize('global.room') }}</th>
+                                                    <th>{{ localize('global.bed') }}</th>
                                                     <th>{{ localize('global.date') }}</th>
                                                     <th>{{ localize('global.actions') }}</th>
                                                 </tr>
@@ -1642,6 +1661,20 @@
                                                         </td>
                                                         <td>{{ $icu->patient->name }}</td>
                                                         <td>{{ $icu->description }}</td>
+                                                        <td>
+                                                            @if($icu->hospitalization && $icu->hospitalization->room)
+                                                                <span class="badge bg-secondary">{{ $icu->hospitalization->room->name }}</span>
+                                                            @else
+                                                                <span class="text-muted">—</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($icu->hospitalization && $icu->hospitalization->bed)
+                                                                <span class="badge bg-info">{{ $icu->hospitalization->bed->number }}</span>
+                                                            @else
+                                                                <span class="text-muted">—</span>
+                                                            @endif
+                                                        </td>
                                                         <td>{{ \HanifHefaz\Dcter\Dcter::GregorianToJalali($icu->created_at->format('Y-m-d')) }}</td>
                                                         <td>
                                                             <div class="btn-group" role="group">
@@ -2192,6 +2225,53 @@
                             }
                         }
                     });
+                }
+
+                // Create ICU modal: room/bed dropdowns, load beds when room changes
+                if ($modal.attr('id') && $modal.attr('id').indexOf('createICUModal') === 0) {
+                    var $roomSelect = $modal.find('select.select2-create-icu-room-appt, select[name="room_id"]');
+                    var $bedSelect = $modal.find('select.select2-create-icu-bed-appt, select[name="bed_id"]');
+                    if ($roomSelect.length && $bedSelect.length) {
+                        if (typeof $.fn.select2 !== 'undefined') {
+                            var ph = '{{ localize("global.select_room_first") }}';
+                            if (!$roomSelect.hasClass('select2-hidden-accessible')) {
+                                $roomSelect.select2({ width: '100%', dropdownParent: $modal, placeholder: ph });
+                            }
+                            if (!$bedSelect.hasClass('select2-hidden-accessible')) {
+                                $bedSelect.select2({ width: '100%', dropdownParent: $modal, placeholder: ph });
+                            }
+                        }
+                        $roomSelect.off('change.createIcuAppt').on('change.createIcuAppt', function () {
+                            var roomId = $(this).val();
+                            if (roomId) {
+                                $.get('/get_related_beds/' + roomId, function (response) {
+                                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                        $bedSelect.select2('destroy');
+                                    }
+                                    $bedSelect.html(response);
+                                    if (typeof $.fn.select2 !== 'undefined') {
+                                        $bedSelect.select2({
+                                            dropdownParent: $modal,
+                                            placeholder: '{{ localize("global.select_room_first") }}',
+                                            width: '100%'
+                                        });
+                                    }
+                                });
+                            } else {
+                                $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
+                                if ($bedSelect.hasClass('select2-hidden-accessible')) {
+                                    $bedSelect.select2('destroy');
+                                }
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    $bedSelect.select2({
+                                        dropdownParent: $modal,
+                                        placeholder: '{{ localize("global.select_room_first") }}',
+                                        width: '100%'
+                                    });
+                                }
+                            }
+                        });
+                    }
                 }
             });
 

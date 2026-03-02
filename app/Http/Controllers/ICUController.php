@@ -229,19 +229,46 @@ class ICUController extends Controller
             'bed_id' => 'nullable|exists:beds,id',
         ]);
 
-        // Create the ICU (exclude room_id/bed_id; they are for updating the hospitalization)
+        // Create the ICU (exclude room_id/bed_id; they are for hospitalization)
         $icuData = collect($validatedData)->except(['room_id', 'bed_id'])->all();
         $icu = ICU::create($icuData);
 
-        // If room and bed were provided with a hospitalization, update the hospitalization (free old bed, occupy new)
-        if ($icu->hospitalization_id && $request->filled('room_id') && $request->filled('bed_id')) {
-            $hospitalization = Hospitalization::find($icu->hospitalization_id);
-            if ($hospitalization) {
-                if ($hospitalization->bed_id) {
-                    Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
+        if ($request->filled('room_id') && $request->filled('bed_id')) {
+            if ($icu->hospitalization_id) {
+                // Update existing hospitalization room/bed (free old bed, occupy new)
+                $hospitalization = Hospitalization::find($icu->hospitalization_id);
+                if ($hospitalization) {
+                    if ($hospitalization->bed_id) {
+                        Bed::where('id', $hospitalization->bed_id)->update(['is_occupied' => 0]);
+                    }
+                    $hospitalization->update(['room_id' => $request->room_id, 'bed_id' => $request->bed_id]);
+                    Bed::where('id', $request->bed_id)->update(['is_occupied' => 1]);
                 }
-                $hospitalization->update(['room_id' => $request->room_id, 'bed_id' => $request->bed_id]);
+            } else {
+                // No hospitalization yet (e.g. creating ICU from appointment): create hospitalization and link to ICU
+                $appointment = $request->filled('appointment_id')
+                    ? \App\Models\Appointment::find($request->appointment_id)
+                    : null;
+                $doctorId = null;
+                if ($appointment && $appointment->doctor_id && \App\Models\Doctor::where('id', $appointment->doctor_id)->exists()) {
+                    $doctorId = $appointment->doctor_id;
+                }
+                if (!$doctorId && auth()->user() && auth()->user()->doctor) {
+                    $doctorId = auth()->user()->doctor->id;
+                }
+                $hospitalization = Hospitalization::create([
+                    'reason' => localize('global.refere_to_icu') ?: 'Referral to ICU',
+                    'remarks' => $request->filled('description') ? $request->description : (localize('global.refere_to_icu') ?: 'ICU referral'),
+                    'appointment_id' => $request->appointment_id,
+                    'patient_id' => $request->patient_id,
+                    'doctor_id' => $doctorId,
+                    'branch_id' => $request->branch_id,
+                    'room_id' => $request->room_id,
+                    'bed_id' => $request->bed_id,
+                    'is_discharged' => 0,
+                ]);
                 Bed::where('id', $request->bed_id)->update(['is_occupied' => 1]);
+                $icu->update(['hospitalization_id' => $hospitalization->id]);
             }
         }
 

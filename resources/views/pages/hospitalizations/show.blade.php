@@ -395,24 +395,6 @@
                                     <div id="icuCollapse" class="accordion-collapse collapse" aria-labelledby="icuHeading"
                                         data-bs-parent="#icuAccordion">
                                         <div class="accordion-body">
-                                            {{-- Current room and bed --}}
-                                            <div class="alert alert-info mb-3 d-flex flex-wrap align-items-center gap-3">
-                                                <div>
-                                                    <strong>{{ localize('global.room') }}:</strong>
-                                                    <span class="badge bg-label-primary">{{ $hospitalization->room->name ?? '—' }}</span>
-                                                </div>
-                                                <div>
-                                                    <strong>{{ localize('global.bed') }}:</strong>
-                                                    <span class="badge bg-label-success">{{ $hospitalization->bed->number ?? '—' }}</span>
-                                                </div>
-                                                @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
-                                                    <button type="button" class="btn btn-warning btn-sm ms-auto" data-bs-toggle="modal"
-                                                        data-bs-target="#changeRoomBedModal{{ $hospitalization->id }}">
-                                                        <i class="bx bx-transfer me-1"></i>{{ localize('global.change_room_and_bed') ?: 'Change Room and Bed' }}
-                                                    </button>
-                                                @endif
-                                            </div>
-
                                             {{-- Change Room and Bed Modal (current bed unoccupied, hospitalization updated to new) --}}
                                             @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
                                             <div class="modal fade" id="changeRoomBedModal{{ $hospitalization->id }}" tabindex="-1"
@@ -1892,15 +1874,6 @@
                         dataType: 'json',
                         success: function(res) {
                             $modal.modal('hide');
-                            if (res.room_name !== undefined) {
-                                var $alert = $('#icuAccordion .alert-info');
-                                if ($alert.length) {
-                                    var $roomBadge = $alert.find('.badge.bg-label-primary').first();
-                                    var $bedBadge = $alert.find('.badge.bg-label-success').first();
-                                    if ($roomBadge.length) $roomBadge.text(res.room_name);
-                                    if ($bedBadge.length && res.bed_number !== undefined) $bedBadge.text(res.bed_number);
-                                }
-                            }
                             if (typeof toastr !== 'undefined' && res.message) {
                                 toastr.success(res.message);
                             }

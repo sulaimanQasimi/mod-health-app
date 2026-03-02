@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendNewAppointmentNotification;
 use App\Models\{Appointment, Doctor, Patient, PrintedNumber, FoodType, LabType, Medicine, MedicineType, MedicineUsageType, OperationType, Relation, Room, User};
+use App\Models\District;
+use App\Models\Province;
 use App\Models\Bed;
 use App\Models\Branch;
 use App\Models\Department;
@@ -703,20 +705,25 @@ class AppointmentController extends Controller
     {
         $doctors = Doctor::where('active_status', true)->orderBy('name')->get();
         $users = User::where('status', 1)->orderBy('name')->get();
-        
+        $provinces = Province::orderBy('name_dr')->get();
+        $districts = District::orderBy('name_dr')->get();
+        $relations = Relation::orderBy('name')->get();
+
         $items = null;
-        
+
         // Only query if there are search parameters
-        if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end', 
-                              'date', 'time', 'is_completed', 'per_page'])) {
+        if ($request->hasAny(['patient_name', 'doctor_id', 'processed_by', 'start', 'end',
+                              'date', 'time', 'is_completed', 'per_page', 'clinic_type', 'registered_by',
+                              'job', 'job_type', 'gender', 'rank', 'relation_id', 'province_id', 'district_id'])) {
             $perPage = $request->get('per_page', 15);
             
-            $query = Appointment::with(['patient', 'doctor', 'processedBy', 'branch'])
+            $query = Appointment::with(['patient.relation', 'patient.province', 'patient.district', 'patient.creator', 'doctor', 'processedBy', 'branch'])
                 ->select([
                     'appointments.id',
                     'appointments.patient_id',
                     'appointments.doctor_id',
                     'appointments.branch_id',
+                    'appointments.clinic_type',
                     'appointments.is_completed',
                     'appointments.status_remark',
                     'appointments.refferal_remarks',
@@ -739,7 +746,7 @@ class AppointmentController extends Controller
             }
         }
 
-        return view('pages.appointments.reports.index', compact('doctors', 'users', 'items'));
+        return view('pages.appointments.reports.index', compact('doctors', 'users', 'provinces', 'districts', 'relations', 'items'));
     }
 
     /**
@@ -751,11 +758,45 @@ class AppointmentController extends Controller
      */
     private function applyAppointmentReportFilters($query, Request $request)
     {
-        // Patient name filter
-        if ($request->filled('patient_name')) {
+        // Patient filters (name, registered_by, job, job_type, gender, rank, relation, province, district)
+        $hasPatientFilter = $request->filled('patient_name') || $request->filled('registered_by') || $request->filled('job')
+            || $request->filled('job_type') || ($request->filled('gender') && $request->gender !== '')
+            || $request->filled('rank') || $request->filled('relation_id') || $request->filled('province_id') || $request->filled('district_id');
+        if ($hasPatientFilter) {
             $query->whereHas('patient', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->patient_name . '%');
+                if ($request->filled('patient_name')) {
+                    $q->where('name', 'like', '%' . $request->patient_name . '%');
+                }
+                if ($request->filled('registered_by')) {
+                    $q->where('created_by', $request->registered_by);
+                }
+                if ($request->filled('job')) {
+                    $q->where('job', 'like', '%' . $request->job . '%');
+                }
+                if ($request->filled('job_type')) {
+                    $q->where('job_type', $request->job_type);
+                }
+                if ($request->filled('gender') && $request->gender !== '') {
+                    $q->where('gender', $request->gender);
+                }
+                if ($request->filled('rank')) {
+                    $q->where('rank', 'like', '%' . $request->rank . '%');
+                }
+                if ($request->filled('relation_id')) {
+                    $q->where('relation_id', $request->relation_id);
+                }
+                if ($request->filled('province_id')) {
+                    $q->where('province_id', $request->province_id);
+                }
+                if ($request->filled('district_id')) {
+                    $q->where('district_id', $request->district_id);
+                }
             });
+        }
+
+        // Clinic type filter (appointment)
+        if ($request->filled('clinic_type')) {
+            $query->where('appointments.clinic_type', $request->clinic_type);
         }
 
         // Doctor filter
@@ -807,18 +848,31 @@ class AppointmentController extends Controller
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
             ->leftJoin('users as u', 'a.processed_by', '=', 'u.id')
+            ->leftJoin('users as uc', 'p.created_by', '=', 'uc.id')
+            ->leftJoin('relations as rel', 'p.relation_id', '=', 'rel.id')
+            ->leftJoin('provinces as prov', 'p.province_id', '=', 'prov.id')
+            ->leftJoin('districts as dist', 'p.district_id', '=', 'dist.id')
             ->select(
                 'a.id',
                 'p.name as patient_name',
                 'd.name as doctor_name',
                 'b.name as branch_name',
+                'a.clinic_type',
                 'a.is_completed',
                 'a.status_remark',
                 'a.refferal_remarks',
                 'a.date',
                 'a.time',
                 'a.processed_by',
-                'u.name as processed_by_name'
+                'u.name as processed_by_name',
+                'uc.name as registered_by_name',
+                'p.job',
+                'p.job_type',
+                'p.gender',
+                'p.rank',
+                'rel.name as relation_name',
+                'prov.name_dr as province_name',
+                'dist.name_dr as district_name'
             );
 
         // If data parameter is provided (from form submission) and valid, use it
@@ -836,6 +890,37 @@ class AppointmentController extends Controller
             // Patient name filter
             if ($request->filled('patient_name')) {
                 $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+            }
+
+            // Patient filters
+            if ($request->filled('registered_by')) {
+                $query->where('p.created_by', $request->registered_by);
+            }
+            if ($request->filled('job')) {
+                $query->where('p.job', 'like', '%' . $request->job . '%');
+            }
+            if ($request->filled('job_type')) {
+                $query->where('p.job_type', $request->job_type);
+            }
+            if ($request->filled('gender') && $request->gender !== '') {
+                $query->where('p.gender', $request->gender);
+            }
+            if ($request->filled('rank')) {
+                $query->where('p.rank', 'like', '%' . $request->rank . '%');
+            }
+            if ($request->filled('relation_id')) {
+                $query->where('p.relation_id', $request->relation_id);
+            }
+            if ($request->filled('province_id')) {
+                $query->where('p.province_id', $request->province_id);
+            }
+            if ($request->filled('district_id')) {
+                $query->where('p.district_id', $request->district_id);
+            }
+
+            // Clinic type filter
+            if ($request->filled('clinic_type')) {
+                $query->where('a.clinic_type', $request->clinic_type);
             }
 
             // Doctor filter
@@ -905,34 +990,52 @@ class AppointmentController extends Controller
 
                 // Set column widths once (outside the loop)
                 $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
+                $sheet->getColumnDimension('B')->setWidth(25);
                 $sheet->getColumnDimension('C')->setWidth(20);
                 $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
+                $sheet->getColumnDimension('E')->setWidth(12);
                 $sheet->getColumnDimension('F')->setWidth(20);
-                $sheet->getColumnDimension('G')->setWidth(40);
+                $sheet->getColumnDimension('G')->setWidth(20);
+                $sheet->getColumnDimension('H')->setWidth(15);
+                $sheet->getColumnDimension('I')->setWidth(12);
+                $sheet->getColumnDimension('J')->setWidth(10);
+                $sheet->getColumnDimension('K')->setWidth(12);
+                $sheet->getColumnDimension('L')->setWidth(15);
+                $sheet->getColumnDimension('M')->setWidth(20);
+                $sheet->getColumnDimension('N')->setWidth(20);
+                $sheet->getColumnDimension('O')->setWidth(20);
+                $sheet->getColumnDimension('P')->setWidth(20);
+                $sheet->getColumnDimension('Q')->setWidth(12);
 
                 foreach ($items as $index => $item) {
-                    $status = '';
-                    if ($item->is_completed == '1') {
-                        $status = 'ملاقات های تکمیل شده';
-                    } else {
-                        $status = 'ملاقات های در حال اجراٰ';
-                    }
-                    
+                    $status = $item->is_completed == '1' ? 'ملاقات های تکمیل شده' : 'ملاقات های در حال اجراٰ';
+                    $clinicType = $item->clinic_type === 'hospital' ? __('global.hospital') : ($item->clinic_type === 'clinic' ? __('global.clinic') : '');
+                    $jobType = $item->job_type ? __('global.' . $item->job_type) : '';
+                    $gender = isset($item->gender) ? ($item->gender == '1' ? __('global.female') : __('global.male')) : '';
+
                     $sheet->setCellValue('A' . $row, $index + 1);
                     $sheet->setCellValue('B' . $row, $item->patient_name ?? '');
                     $sheet->setCellValue('C' . $row, $item->doctor_name ?? '');
                     $sheet->setCellValue('D' . $row, $item->branch_name ?? '');
-                    $sheet->setCellValue('E' . $row, $status);
-                    $sheet->setCellValue('F' . $row, $item->date ?? '');
-                    $sheet->setCellValue('G' . $row, $item->time ?? '');
+                    $sheet->setCellValue('E' . $row, $clinicType);
+                    $sheet->setCellValue('F' . $row, $item->processed_by_name ?? '');
+                    $sheet->setCellValue('G' . $row, $item->registered_by_name ?? '');
+                    $sheet->setCellValue('H' . $row, $item->job ?? '');
+                    $sheet->setCellValue('I' . $row, $jobType);
+                    $sheet->setCellValue('J' . $row, $gender);
+                    $sheet->setCellValue('K' . $row, $item->rank ?? '');
+                    $sheet->setCellValue('L' . $row, $item->relation_name ?? '');
+                    $sheet->setCellValue('M' . $row, $item->province_name ?? '');
+                    $sheet->setCellValue('N' . $row, $item->district_name ?? '');
+                    $sheet->setCellValue('O' . $row, $status);
+                    $sheet->setCellValue('P' . $row, $item->date ?? '');
+                    $sheet->setCellValue('Q' . $row, $item->time ?? '');
                     $row++;
                 }
 
                 // Apply text wrapping to all data rows
                 if ($row > 3) {
-                    $sheet->getStyle('A3:G' . ($row - 1))
+                    $sheet->getStyle('A3:Q' . ($row - 1))
                         ->getAlignment()
                         ->setWrapText(true);
                 }

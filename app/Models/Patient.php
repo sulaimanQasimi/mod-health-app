@@ -145,6 +145,11 @@ class Patient extends Model
         return $this->belongsTo(District::class, 'district_id');
     }
 
+    public function relation()
+    {
+        return $this->belongsTo(Relation::class, 'relation_id');
+    }
+
     public function recipient()
     {
         return $this->belongsTo(Recipient::class, 'referred_by');

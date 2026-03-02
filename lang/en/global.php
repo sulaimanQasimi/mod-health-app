@@ -518,6 +518,7 @@ return [
     'created_by' => 'Created By',
     'updated_by' => 'Updated By',
     'processed_by' => 'Processed By',
+    'registered_by' => 'Registered By',
     'not_assigned' => 'Not Assigned',
     'not_available' => 'Not Available',
     'back_to_list' => 'Back to List',

@@ -56,32 +56,47 @@
                     <th>{{ localize('global.patient_name') }}</th>
                     <th>{{ localize('global.doctor_name') }}</th>
                     <th>{{ localize('global.branch') }}</th>
+                    <th>{{ localize('global.clinic_type') }}</th>
+                    <th>{{ localize('global.processed_by') }}</th>
+                    <th>{{ localize('global.registered_by') }}</th>
+                    <th>{{ localize('global.job') }}</th>
+                    <th>{{ localize('global.job_type') }}</th>
+                    <th>{{ localize('global.gender') }}</th>
+                    <th>{{ localize('global.rank') }}</th>
+                    <th>{{ localize('global.relation') }}</th>
+                    <th>{{ localize('global.province') }}</th>
+                    <th>{{ localize('global.district') }}</th>
                     <th>{{ localize('global.status') }}</th>
                     <th>{{ localize('global.date') }}</th>
                     <th>{{ localize('global.time') }}</th>
-                 
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
                 @foreach ($items as $item)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $item->patient_name }}</td>
-                        <td>{{ $item->doctor_name }}</td>
-                        <td>{{ $item->branch_name }}</td>
+                        <td>{{ $item->patient_name ?? '—' }}</td>
+                        <td>{{ $item->doctor_name ?? '—' }}</td>
+                        <td>{{ $item->branch_name ?? '—' }}</td>
+                        <td>{{ $item->clinic_type === 'hospital' ? localize('global.hospital') : ($item->clinic_type === 'clinic' ? localize('global.clinic') : '—') }}</td>
+                        <td>{{ $item->processed_by_name ?? '—' }}</td>
+                        <td>{{ $item->registered_by_name ?? '—' }}</td>
+                        <td>{{ $item->job ?? '—' }}</td>
+                        <td>{{ $item->job_type ? localize('global.' . $item->job_type) : '—' }}</td>
+                        <td>{{ isset($item->gender) ? ($item->gender == '1' ? localize('global.female') : localize('global.male')) : '—' }}</td>
+                        <td>{{ $item->rank ?? '—' }}</td>
+                        <td>{{ $item->relation_name ?? '—' }}</td>
+                        <td>{{ $item->province_name ?? '—' }}</td>
+                        <td>{{ $item->district_name ?? '—' }}</td>
                         <td>
                         @if ($item->is_completed == '0')
-                            <span class="badge rounded-pill bg-primary">
-                                {{ localize('global.ongoing_appointments') }}
-                            </span>              
+                            {{ localize('global.ongoing_appointments') }}
                         @else
-                        <span class="badge rounded-pill bg-success">
-                                {{ localize('global.completed_appointments') }}
-                            </span> 
+                            {{ localize('global.completed_appointments') }}
                         @endif
                         </td>
-                        <td>{{ $item->date }}</td>
-                        <td>{{ $item->time }}</td>
+                        <td>{{ $item->date ?? '—' }}</td>
+                        <td>{{ $item->time ?? '—' }}</td>
                     </tr>
                 @endforeach
             </tbody>

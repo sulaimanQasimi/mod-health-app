@@ -410,25 +410,50 @@
                     }
                 }
 
+                // Store action/patient when unoccupy button is clicked (so modal has them even if relatedTarget is missing)
+                document.addEventListener('click', function(e) {
+                    var btn = e.target.closest('button[data-bs-target="#unoccupyBedModal"][data-action]');
+                    if (btn) {
+                        var modal = document.getElementById('unoccupyBedModal');
+                        if (modal) {
+                            modal.dataset.pendingAction = btn.getAttribute('data-action') || '';
+                            modal.dataset.pendingPatientName = btn.getAttribute('data-patient-name') || '';
+                        }
+                    }
+                }, true);
+
                 var unoccupyModal = document.getElementById('unoccupyBedModal');
-            if (unoccupyModal) {
-                unoccupyModal.addEventListener('show.bs.modal', function(event) {
-                    var button = event.relatedTarget;
-                    var action = button.getAttribute('data-action');
-                    var patientName = button.getAttribute('data-patient-name') || '';
-                    var form = document.getElementById('unoccupyBedForm');
-                    var nameEl = document.getElementById('unoccupyPatientName');
-                    form.action = action;
-                    nameEl.textContent = patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName) : '';
-                    form.querySelector('#discharge_remark').value = '';
-                    form.querySelector('#discharge_status').value = '';
-                    form.querySelector('#discharged_at_date').value = '';
-                    var now = new Date();
-                    var h = String(now.getHours()).padStart(2, '0');
-                    var m = String(now.getMinutes()).padStart(2, '0');
-                    form.querySelector('#discharged_at_time').value = h + ':' + m;
-                });
-            }
+                if (unoccupyModal) {
+                    unoccupyModal.addEventListener('show.bs.modal', function(event) {
+                        var button = event.relatedTarget;
+                        var action = '';
+                        var patientName = '';
+                        if (button && button.getAttribute('data-action')) {
+                            action = button.getAttribute('data-action');
+                            patientName = button.getAttribute('data-patient-name') || '';
+                        } else if (unoccupyModal.dataset.pendingAction) {
+                            action = unoccupyModal.dataset.pendingAction;
+                            patientName = unoccupyModal.dataset.pendingPatientName || '';
+                        }
+                        var form = document.getElementById('unoccupyBedForm');
+                        var nameEl = document.getElementById('unoccupyPatientName');
+                        if (form && action) form.action = action;
+                        if (nameEl) nameEl.textContent = patientName ? ('{{ localize("global.patient") ?: "Patient" }}: ' + patientName) : '';
+                        if (form) {
+                            var remark = form.querySelector('#discharge_remark');
+                            var status = form.querySelector('#discharge_status');
+                            var dateEl = form.querySelector('#discharged_at_date');
+                            var timeEl = form.querySelector('#discharged_at_time');
+                            if (remark) remark.value = '';
+                            if (status) status.value = '';
+                            if (dateEl) dateEl.value = '';
+                            var now = new Date();
+                            var h = String(now.getHours()).padStart(2, '0');
+                            var m = String(now.getMinutes()).padStart(2, '0');
+                            if (timeEl) timeEl.value = h + ':' + m;
+                        }
+                    });
+                }
 
             var moveModal = document.getElementById('movePatientModal');
             if (moveModal) {

@@ -25,6 +25,15 @@
         <input type="hidden" name="start" value="{{ request('start', '') }}">
         <input type="hidden" name="end" value="{{ request('end', '') }}">
         <input type="hidden" name="time" value="{{ request('time', '') }}">
+        <input type="hidden" name="clinic_type" value="{{ request('clinic_type', '') }}">
+        <input type="hidden" name="registered_by" value="{{ request('registered_by', '') }}">
+        <input type="hidden" name="job" value="{{ request('job', '') }}">
+        <input type="hidden" name="job_type" value="{{ request('job_type', '') }}">
+        <input type="hidden" name="gender" value="{{ request('gender', '') }}">
+        <input type="hidden" name="rank" value="{{ request('rank', '') }}">
+        <input type="hidden" name="relation_id" value="{{ request('relation_id', '') }}">
+        <input type="hidden" name="province_id" value="{{ request('province_id', '') }}">
+        <input type="hidden" name="district_id" value="{{ request('district_id', '') }}">
 
         @if(isset($items) && $items->count() > 0)
         <div class="demo-inline-spacing">
@@ -46,11 +55,20 @@
         <table class="table table-bordered table-striped table-responsive w-100" id="print_excel_table">
             <thead>
                 <tr>
-                <th>{{ localize('global.number') }}</th>
+                    <th>{{ localize('global.number') }}</th>
                     <th>{{ localize('global.patient_name') }}</th>
                     <th>{{ localize('global.doctor_name') }}</th>
                     <th>{{ localize('global.branch') }}</th>
+                    <th>{{ localize('global.clinic_type') }}</th>
                     <th>{{ localize('global.processed_by') }}</th>
+                    <th>{{ localize('global.registered_by') }}</th>
+                    <th>{{ localize('global.job') }}</th>
+                    <th>{{ localize('global.job_type') }}</th>
+                    <th>{{ localize('global.gender') }}</th>
+                    <th>{{ localize('global.rank') }}</th>
+                    <th>{{ localize('global.relation') }}</th>
+                    <th>{{ localize('global.province') }}</th>
+                    <th>{{ localize('global.district') }}</th>
                     <th>{{ localize('global.status') }}</th>
                     <th>{{ localize('global.date') }}</th>
                     <th>{{ localize('global.time') }}</th>
@@ -69,7 +87,36 @@
                         <td>{{ $item->patient->name ?? '—' }}</td>
                         <td>{{ $item->doctor->name ?? '—' }}</td>
                         <td>{{ $item->branch->name ?? '—' }}</td>
+                        <td>
+                            @if($item->clinic_type === 'hospital')
+                                {{ localize('global.hospital') }}
+                            @elseif($item->clinic_type === 'clinic')
+                                {{ localize('global.clinic') }}
+                            @else
+                                —
+                            @endif
+                        </td>
                         <td>{{ $item->processedBy->name ?? '—' }}</td>
+                        <td>{{ $item->patient?->creator?->name ?? '—' }}</td>
+                        <td>{{ $item->patient?->job ?? '—' }}</td>
+                        <td>
+                            @if($item->patient && $item->patient->job_type)
+                                {{ localize('global.' . $item->patient->job_type) }}
+                            @else
+                                —
+                            @endif
+                        </td>
+                        <td>
+                            @if(isset($item->patient->gender))
+                                {{ $item->patient->gender == '1' ? localize('global.female') : localize('global.male') }}
+                            @else
+                                —
+                            @endif
+                        </td>
+                        <td>{{ $item->patient?->rank ?? '—' }}</td>
+                        <td>{{ $item->patient?->relation?->name ?? '—' }}</td>
+                        <td>{{ $item->patient?->province?->name_dr ?? $item->patient?->province?->name ?? '—' }}</td>
+                        <td>{{ $item->patient?->district?->name_dr ?? $item->patient?->district?->name ?? '—' }}</td>
                         <td>
                         @if ($item->is_completed == '0')
                             <span class="badge rounded-pill bg-primary">
@@ -97,7 +144,7 @@
                 @endforeach
                 @if ($items->count() == 0)
                     <tr>
-                        <td colspan="8" class="text-center text-danger">
+                        <td colspan="17" class="text-center text-danger">
                             {{ localize('global.no_item_is_found') }}!!
                         </td>
                     </tr>

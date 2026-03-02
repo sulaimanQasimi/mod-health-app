@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use HanifHefaz\Dcter\Dcter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\DB;
@@ -301,7 +302,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => 'required|unique:patients,nid,' . $patient->id,
+            'nid' => ['required', Rule::unique('patients', 'nid')->ignore($patient->id)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',

@@ -76,6 +76,77 @@
                                             value="{{ old('time', request('time')) }}" 
                                             placeholder="{{ localize('global.time') }}" />
                                     </div>
+                                    <div class="col-md-3">
+                                        <label for="clinic_type" class="form-label">{{ localize('global.clinic_type') }}</label>
+                                        <select class="form-control pager-search select2" name="clinic_type" id="clinic_type">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="hospital" {{ request('clinic_type') == 'hospital' ? 'selected' : '' }}>{{ localize('global.hospital') }}</option>
+                                            <option value="clinic" {{ request('clinic_type') == 'clinic' ? 'selected' : '' }}>{{ localize('global.clinic') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="registered_by" class="form-label">{{ localize('global.registered_by') }}</label>
+                                        <select class="form-control pager-search select2" name="registered_by" id="registered_by">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($users ?? [] as $user)
+                                                <option value="{{ $user->id }}" {{ request('registered_by') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="job" class="form-label">{{ localize('global.job') }}</label>
+                                        <input type="text" class="form-control pager-search" name="job"
+                                            value="{{ old('job', request('job')) }}" placeholder="{{ localize('global.job') }}" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="job_type" class="form-label">{{ localize('global.job_type') }}</label>
+                                        <select class="form-control pager-search select2" name="job_type" id="job_type">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="civilian" {{ request('job_type') == 'civilian' ? 'selected' : '' }}>{{ localize('global.civilian') }}</option>
+                                            <option value="militant" {{ request('job_type') == 'militant' ? 'selected' : '' }}>{{ localize('global.militant') }}</option>
+                                            <option value="retired" {{ request('job_type') == 'retired' ? 'selected' : '' }}>{{ localize('global.retired') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="gender" class="form-label">{{ localize('global.gender') }}</label>
+                                        <select class="form-control pager-search select2" name="gender" id="gender">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="0" {{ request('gender') === '0' ? 'selected' : '' }}>{{ localize('global.male') }}</option>
+                                            <option value="1" {{ request('gender') === '1' ? 'selected' : '' }}>{{ localize('global.female') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="rank" class="form-label">{{ localize('global.rank') }}</label>
+                                        <input type="text" class="form-control pager-search" name="rank"
+                                            value="{{ old('rank', request('rank')) }}" placeholder="{{ localize('global.rank') }}" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="relation_id" class="form-label">{{ localize('global.relation') }}</label>
+                                        <select class="form-control pager-search select2" name="relation_id" id="relation_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($relations ?? [] as $relation)
+                                                <option value="{{ $relation->id }}" {{ request('relation_id') == $relation->id ? 'selected' : '' }}>{{ $relation->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="province_id" class="form-label">{{ localize('global.province') }}</label>
+                                        <select class="form-control pager-search select2" name="province_id" id="report_province_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($provinces ?? [] as $province)
+                                                <option value="{{ $province->id }}" {{ request('province_id') == $province->id ? 'selected' : '' }}>{{ $province->name_dr ?? $province->name ?? '' }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="district_id" class="form-label">{{ localize('global.district') }}</label>
+                                        <select class="form-control pager-search select2" name="district_id" id="report_district_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($districts ?? [] as $district)
+                                                <option value="{{ $district->id }}" {{ request('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name_dr ?? $district->name ?? '' }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="row g-2 mt-2">
                                     <div class="col-md-4">

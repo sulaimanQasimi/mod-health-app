@@ -394,7 +394,7 @@
                       <div class="col-12">
                         <label class="form-label fw-semibold">
                           <i class="bx bx-pill me-1 text-primary"></i>
-                          {{ localize('global.medicine') }}
+                          اسم ادویه
                         </label>
                         <Multiselect
                           v-model="newAlternative.medicine"
@@ -480,6 +480,33 @@
                         </small>
                       </div>
                       
+                      <!-- دوز (Dosage) -->
+                      <div class="col-md-4">
+                        <label class="form-label fw-semibold">دوز</label>
+                        <input type="text"
+                               class="form-control"
+                               v-model="newAlternative.dosage"
+                               :placeholder="localize('global.dosage')">
+                      </div>
+                      <!-- فرکانس (Frequency) -->
+                      <div class="col-md-4">
+                        <label class="form-label fw-semibold">تکرار</label>
+                        <input type="text"
+                               class="form-control"
+                               v-model="newAlternative.frequency"
+                               :placeholder="localize('global.frequency')">
+                      </div>
+                      <!-- مقدار (Amount) -->
+                      <div class="col-md-4">
+                        <label class="form-label fw-semibold">مقدار</label>
+                        <input type="number"
+                               class="form-control"
+                               v-model="newAlternative.amount"
+                               :placeholder="localize('global.amount')"
+                               min="1"
+                               step="1">
+                      </div>
+                      
                       <!-- Notes Field (Optional) -->
                       <div class="col-12">
                         <label class="form-label fw-semibold">
@@ -515,7 +542,7 @@
                     <table class="table bg-none">
                       <thead class="table-none">
                         <tr>
-                          <th width="70%">{{ localize('global.medicine') }}</th>
+                          <th width="70%">اسم ادویه</th>
                           <th width="30%">{{ localize('global.actions') }}</th>
                         </tr>
                       </thead>
@@ -839,9 +866,9 @@ export default {
         medicine: item.medicine || null,
         medicine_type: medicineType,
         usage_type: usageType,
-        dosage: '',
-        frequency: '',
-        amount: '',
+        dosage: item.dosage || '',
+        frequency: item.frequency || '',
+        amount: item.amount != null ? String(item.amount) : '',
         notes: ''
       })
       
@@ -953,9 +980,9 @@ export default {
           medicine_id: newAlternative.medicine?.id != null ? Number(newAlternative.medicine.id) : null,
           medicine_type_id: medicine_type_id != null ? Number(medicine_type_id) : null,
           usage_type_id: usage_type_id != null ? Number(usage_type_id) : null,
-          dosage: currentItem.value?.dosage || null,
-          frequency: currentItem.value?.frequency || null,
-          amount: currentItem.value?.amount != null ? String(currentItem.value.amount) : null,
+          dosage: newAlternative.dosage || currentItem.value?.dosage || null,
+          frequency: newAlternative.frequency || currentItem.value?.frequency || null,
+          amount: newAlternative.amount != null && newAlternative.amount !== '' ? String(newAlternative.amount) : (currentItem.value?.amount != null ? String(currentItem.value.amount) : null),
           notes: newAlternative.notes || null
         }
 

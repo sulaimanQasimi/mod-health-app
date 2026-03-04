@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewPrescriptionNotification;
 use App\Models\Appointment;
 use App\Models\Outcome;
+use App\Models\Pharmacy;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mpdf\Mpdf;
-use Hekmatinasser\Verta\Verta;
+use Hekmatinasser\Verta\Verta; 
 
 class PrescriptionController extends Controller
 {
@@ -335,7 +336,28 @@ class PrescriptionController extends Controller
     {
         return view('pages.prescriptions.reports.index');
     }
-    public function reportSearch(Request $request)
+
+    /**
+     * Get users (processors) for a pharmacy for the report filter.
+     */
+    public function reportPharmacyUsers(Pharmacy $pharmacy)
+    {
+        $users = $pharmacy->activeUsers()
+            ->orderBy('name')
+            ->get(['users.id', 'users.name', 'users.last_name'])
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => trim($user->name . ' ' . ($user->last_name ?? '')),
+                ];
+            });
+        return response()->json($users);
+    }
+
+    /**
+     * Build the prescriptions report query with filters (shared by report search and export).
+     */
+    private function buildPrescriptionReportQuery(Request $request)
     {
         $query = DB::table('prescriptions as a')
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
@@ -344,21 +366,29 @@ class PrescriptionController extends Controller
             ->leftJoin('pharmacies as ph', 'a.pharmacy_id', '=', 'ph.id')
             ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
             ->leftJoin('departments as dept', 'app.department_id', '=', 'dept.id')
+            ->leftJoin('users as processor', 'a.updated_by', '=', 'processor.id')
             ->select(
-                'a.id', 
-                'p.name as patient_name', 
+                'a.id',
+                'p.name as patient_name',
+                'p.father_name as patient_father_name',
                 'p.id_card as patient_id_card',
-                'd.name as doctor_name', 
+                'd.name as doctor_name',
                 'b.name as branch_name',
                 'ph.name as pharmacy_name',
                 'dept.name as department_name',
+                'dept.id as department_id',
                 'a.is_completed',
                 'a.created_at',
-                'a.pharmacy_id'
+                'a.pharmacy_id',
+                DB::raw("TRIM(CONCAT(COALESCE(processor.name,''), ' ', COALESCE(processor.last_name,''))) as processor_name")
             );
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
+        }
+
+        if ($request->filled('father_name')) {
+            $query->where('p.father_name', 'like', '%' . $request->father_name . '%');
         }
 
         if ($request->filled('is_completed')) {
@@ -369,6 +399,10 @@ class PrescriptionController extends Controller
             $query->where('a.pharmacy_id', $request->pharmacy_id);
         }
 
+        if ($request->filled('processed_by_user_id')) {
+            $query->where('a.updated_by', $request->processed_by_user_id);
+        }
+
         if ($request->filled('start') && $request->filled('end')) {
             $fromDate = Verta::parse($request->start)->datetime();
             $toDate = Verta::parse($request->end)->datetime();
@@ -376,7 +410,12 @@ class PrescriptionController extends Controller
                   ->whereDate('a.created_at', '<=', $toDate);
         }
 
-        $items = $query->orderBy('a.created_at', 'desc')->get();
+        return $query->orderBy('a.created_at', 'desc');
+    }
+
+    public function reportSearch(Request $request)
+    {
+        $items = $this->buildPrescriptionReportQuery($request)->get();
         return view('pages.prescriptions.reports.report', ['items' => $items]);
     }
 
@@ -418,18 +457,9 @@ class PrescriptionController extends Controller
 
     public function exportReport(Request $request)
     {
+        // Use same filters as report search (patient_name, is_completed, pharmacy_id, processed_by_user_id, start, end)
+        $items = $this->buildPrescriptionReportQuery($request)->get();
 
-        $data = json_decode($request->data, true);
-
-        $items = DB::table('prescriptions as a')
-            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
-            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
-            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
-            ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
-            ->leftJoin('departments as dept', 'app.department_id', '=', 'dept.id')
-            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.is_completed', 'dept.name as department_name', 'dept.id as department_id')
-            ->whereIn('a.id', $data)->get();
-        
         // Calculate department counts
         $departmentCounts = $items->groupBy(function ($item) {
             return $item->department_id ?? 'unknown';
@@ -439,54 +469,53 @@ class PrescriptionController extends Controller
                 'count' => $group->count()
             ];
         })->values()->toArray();
-        
+
+        if ($request->get('type') == 'pdf') {
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $this->writeHtmlInChunks($mpdf, $items, $departmentCounts);
+            $mpdf->Output('prescriptions_report.pdf', 'D');
+            return null;
+        }
+
+        // Excel
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
-        if ($request->type == 'pdf') {
-            $mpdf = new Mpdf(['format' => 'A4-L']);
-            $this->writeHtmlInChunks($mpdf, $items, $departmentCounts);
-            $mpdf->Output('pdf_report.pdf', 'D');
-        } else {
-            $spreadsheet = $reader->load("report_templates/prescription_report.xlsx");
-            $sheet = $spreadsheet->getActiveSheet();
-            $row = 3;
+        $row = 3;
 
-            foreach ($items as $index => $item) {
+        foreach ($items as $index => $item) {
+            $sheet->getStyle('A2:L' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
+            $sheet->getColumnDimension('A')->setWidth(5);
+            $sheet->getColumnDimension('B')->setWidth(30);
+            $sheet->getColumnDimension('C')->setWidth(25);
+            $sheet->getColumnDimension('D')->setWidth(15);
+            $sheet->getColumnDimension('E')->setWidth(20);
+            $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('G')->setWidth(20);
+            $sheet->getColumnDimension('H')->setWidth(20);
+            $sheet->getColumnDimension('I')->setWidth(18);
+            $sheet->getColumnDimension('J')->setWidth(22);
+            $sheet->getColumnDimension('K')->setWidth(18);
 
+            $status = $item->is_completed == '0' ? 'نسخه های نا اجرأ' : 'نسخه های اجرأ شده';
+            $dateStr = $item->created_at ? Verta::instance($item->created_at)->format('Y/m/d H:i') : '-';
 
-                $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
-                $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
-                $styleArray = array(
-                    'font' => array(
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $item->patient_name ?? '-');
+            $sheet->setCellValue('C' . $row, $item->patient_father_name ?? '-');
+            $sheet->setCellValue('D' . $row, $item->patient_id_card ?? '-');
+            $sheet->setCellValue('E' . $row, $item->doctor_name ?? '-');
+            $sheet->setCellValue('F' . $row, $item->department_name ?? '-');
+            $sheet->setCellValue('G' . $row, $item->branch_name ?? '-');
+            $sheet->setCellValue('H' . $row, $item->pharmacy_name ?? '-');
+            $sheet->setCellValue('I' . $row, $item->processor_name ?? '-');
+            $sheet->setCellValue('J' . $row, $dateStr);
+            $sheet->setCellValue('K' . $row, $status);
 
-                    ),
-                );
-
-                $status = '';
-                if ($item->is_completed == '0') {
-                    $status = 'نسخه های نا اجرأ';
-                } else {
-                    $status = 'نسخه های اجرأ شده';
-                }
-                $sheet->setCellValue('A' . $row . '', ++$index);
-                $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                $sheet->setCellValue('C' . $row . '', $item->doctor_name);
-                $sheet->setCellValue('D' . $row . '', $item->branch_name);
-                $sheet->setCellValue('E' . $row . '', $status);
-
-                $row++;
-            }
-
-            return $this->exportResponse($spreadsheet);
+            $row++;
         }
+
+        return $this->exportResponse($spreadsheet);
     }
 
     /**

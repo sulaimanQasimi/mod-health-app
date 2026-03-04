@@ -355,6 +355,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);
         Route::put('changeStatus/{prescription}', [PrescriptionController::class, 'changeStatus'])->name('changeStatus');
         Route::get('report', [PrescriptionController::class, 'report'])->name('report');
+        Route::get('report-pharmacy-users/{pharmacy}', [PrescriptionController::class, 'reportPharmacyUsers'])->name('report-pharmacy-users');
         Route::post('report-search', [PrescriptionController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [PrescriptionController::class, 'exportReport'])->name('export-report');
         Route::post('export-prescriptions', [PrescriptionController::class, 'exportPrescriptions'])->name('export-prescriptions');

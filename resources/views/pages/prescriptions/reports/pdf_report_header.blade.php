@@ -101,10 +101,15 @@
                 <tr>
                     <th>{{ localize('global.number') }}</th>
                     <th>{{ localize('global.patient_name') }}</th>
+                    <th>{{ localize('global.father_name') }}</th>
+                    <th>{{ localize('global.patient_id_card') }}</th>
                     <th>{{ localize('global.doctor_name') }}</th>
+                    <th>{{ localize('global.department') }}</th>
                     <th>{{ localize('global.branch') }}</th>
+                    <th>{{ localize('global.pharmacy') }}</th>
+                    <th>{{ localize('global.processed_by') }}</th>
+                    <th>{{ localize('global.date') }}</th>
                     <th>{{ localize('global.status') }}</th>
-                 
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">

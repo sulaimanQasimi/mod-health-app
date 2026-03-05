@@ -1238,6 +1238,8 @@ return [
     'medicine_name' => 'نام ادویه',
     'pharmacy_name' => 'نام دواخانه',
     'pharmacy_stock' => 'موجودی دواخانه',
+    'no_pharmacy_stock_found' => 'هیچ رکورد موجودی دواخانه یافت نشد',
+    'stock' => 'موجودی',
     'total_stock' => 'موجودی کل',
     'pharmacy_income' => 'وارده دواخانه',
     'pharmacy_outcome' => 'خروجی دواخانه',

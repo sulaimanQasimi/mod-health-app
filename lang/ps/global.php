@@ -1224,6 +1224,8 @@ return [
 'pharmacy' => 'دواخانه',
 'medicine_name' => 'دوا نوم',
 'pharmacy_stock' => 'دواخانه موجودي',
+'no_pharmacy_stock_found' => 'هیڅ د دواخانې موجودي ریکارډ ونه موندل شو',
+'stock' => 'موجودي',
 'total_stock' => 'ټول موجودي',
 'pharmacy_income' => 'دواخانه وارده',
 'pharmacy_outcome' => 'دواخانه خروجی',

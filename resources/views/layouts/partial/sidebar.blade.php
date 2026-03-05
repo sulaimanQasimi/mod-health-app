@@ -239,6 +239,11 @@
                             <div>{{ localize('global.pharmacy_fulfillments') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('pharmacy_fulfillments.stock') ? 'active' : '' }}">
+                        <a href="{{ route('pharmacy_fulfillments.stock') }}" class="menu-link">
+                            <div>{{ localize('global.pharmacy_stock') }}</div>
+                        </a>
+                    </li>
                     <li class="menu-item {{ Route::is('incomes.*') ? 'active' : '' }}">
                         <a href="{{ route('incomes.index') }}" class="menu-link">
                             <div>{{ localize('global.stock_income') }}</div>

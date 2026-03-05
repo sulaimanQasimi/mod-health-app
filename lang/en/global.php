@@ -534,6 +534,8 @@ return [
     'all_pharmacies' => 'All Pharmacies',
     'current_pharmacy' => 'Current Pharmacy',
     'pharmacy_stock' => 'Pharmacy Stock',
+    'no_pharmacy_stock_found' => 'No pharmacy stock records found',
+    'stock' => 'Stock',
     'total_stock' => 'Total Stock',
     'pharmacy_income' => 'Pharmacy Income',
     'pharmacy_outcome' => 'Pharmacy Outcome',

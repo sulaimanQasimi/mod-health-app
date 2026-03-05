@@ -38,8 +38,28 @@
                                 <input type="text" class="form-control" id="search" name="search" 
                                        value="{{ request('search') }}" placeholder="{{ localize('global.search_by_medicine_form_no') }}">
                             </div>
+                            <div class="col-md-3">
+                                <label for="unit_type" class="form-label">{{ localize('global.unit_type') }}</label>
+                                <input type="text" class="form-control" id="unit_type" name="unit_type"
+                                       value="{{ request('unit_type') }}" placeholder="{{ localize('global.unit_type') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="form_no" class="form-label">{{ localize('global.form_no') }}</label>
+                                <input type="text" class="form-control" id="form_no" name="form_no"
+                                       value="{{ request('form_no') }}" placeholder="{{ localize('global.form_no') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">{{ localize('global.amount') }}</label>
+                                <div class="input-group">
+                                    <input type="number" step="1" min="0" class="form-control" name="amount_from"
+                                           value="{{ request('amount_from') }}" placeholder="{{ localize('global.from') }}">
+                                    <span class="input-group-text">-</span>
+                                    <input type="number" step="1" min="0" class="form-control" name="amount_to"
+                                           value="{{ request('amount_to') }}" placeholder="{{ localize('global.to') }}">
+                                </div>
+                            </div>
                             @if($pharmacies)
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <label for="pharmacy_id" class="form-label">{{ localize('global.pharmacy') }}</label>
                                 <select class="form-select" id="pharmacy_id" name="pharmacy_id">
                                     <option value="">{{ localize('global.all_pharmacies') }}</option>
@@ -60,6 +80,16 @@
                                     <input autocomplete="off" type="text" name="date_to" placeholder="{{ localize('global.to') }}"
                                            class="form-control datepicker_dari" value="{{ request('date_to') }}" />
                                 </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="user_name" class="form-label">{{ localize('global.user') }}</label>
+                                <input type="text" class="form-control" id="user_name" name="user_name"
+                                       value="{{ request('user_name') }}" placeholder="{{ localize('global.user') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="created_by_name" class="form-label">{{ localize('global.created_by') }}</label>
+                                <input type="text" class="form-control" id="created_by_name" name="created_by_name"
+                                       value="{{ request('created_by_name') }}" placeholder="{{ localize('global.created_by') }}">
                             </div>
                             <div class="col-md-2">
                                 <label for="per_page" class="form-label">{{ localize('global.per_page') }}</label>
@@ -104,6 +134,23 @@
                                     <option value="desc" {{ request('sort_order', 'desc') == 'desc' ? 'selected' : '' }}>{{ localize('global.descending') }}</option>
                                     <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>{{ localize('global.ascending') }}</option>
                                 </select>
+                            </div>
+                            <div>
+                                <form action="{{ route('pharmacy_fulfillments.export-report') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="search" value="{{ request('search') }}">
+                                    <input type="hidden" name="pharmacy_id" value="{{ request('pharmacy_id') }}">
+                                    <input type="hidden" name="date_from" value="{{ request('date_from') }}">
+                                    <input type="hidden" name="date_to" value="{{ request('date_to') }}">
+                                    <input type="hidden" name="sort_by" value="{{ request('sort_by', 'created_at') }}">
+                                    <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
+                                    <button type="submit" name="type" value="excel" class="btn btn-success btn-sm">
+                                        <i class="bx bx-file me-1"></i>{{ localize('global.export_excel') }}
+                                    </button>
+                                    <button type="submit" name="type" value="pdf" class="btn btn-danger btn-sm">
+                                        <i class="bx bx-file me-1"></i>{{ localize('global.export_pdf') }}
+                                    </button>
+                                </form>
                             </div>
                         </div>
 

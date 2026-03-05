@@ -751,12 +751,14 @@ Route::group(['middleware' => ['auth']], function () {
         ->middleware('permission:show-prescriptions-menu')
         ->name('pharmacy_fulfillments.')->group(function () {
             Route::get('/', [PharmacyFulfillmentController::class, 'index'])->name('index');
+            Route::get('stock', [PharmacyFulfillmentController::class, 'stock'])->name('stock');
             Route::get('create', [PharmacyFulfillmentController::class, 'create'])->name('create');
             Route::post('store', [PharmacyFulfillmentController::class, 'store'])->name('store');
             Route::get('show/{pharmacy_fulfillment}', [PharmacyFulfillmentController::class, 'show'])->name('show');
             Route::get('edit/{pharmacy_fulfillment}', [PharmacyFulfillmentController::class, 'edit'])->name('edit');
             Route::put('update/{pharmacy_fulfillment}', [PharmacyFulfillmentController::class, 'update'])->name('update');
             Route::delete('destroy/{pharmacy_fulfillment}', [PharmacyFulfillmentController::class, 'destroy'])->name('destroy');
+            Route::post('export-report', [PharmacyFulfillmentController::class, 'exportReport'])->name('export-report');
         });
 
 

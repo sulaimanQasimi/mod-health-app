@@ -103,8 +103,8 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>{{localize('global.medicine')}}</th>
-                                    <th>{{localize('global.usage_count')}}</th>
+                                    <th>{{ localize('global.medicine') }}</th>
+                                    <th>{{ localize('global.usage_count') }}</th>
                                 </tr>
                             </thead>
                             <tbody>

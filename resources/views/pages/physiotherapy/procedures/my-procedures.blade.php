@@ -336,69 +336,38 @@
 
 @section('scripts')
     @parent
-    <script>
-        // Global translation variables for JavaScript
-        window.translations = {
-            // Common labels
-            'patient_name': "{{ localize('global.patient_name') }}",
-            'physiotherapy_type': "{{ localize('global.physiotherapy_type') }}",
-            'physiotherapist': "{{ localize('global.physiotherapist') }}",
-            'type': "{{ localize('global.type') }}",
-            'duration': "{{ localize('global.duration') }}",
-            'minutes': "{{ localize('global.minutes') }}",
-            'progress': "{{ localize('global.progress') }}",
-            'status': "{{ localize('global.status') }}",
-            'start_date': "{{ localize('global.start_date') }}",
-            'end_date': "{{ localize('global.end_date') }}",
-            'description': "{{ localize('global.description') }}",
-            'notes': "{{ localize('global.notes') }}",
-            'n_a': "{{ localize('global.n_a') }}",
-            'actions': "{{ localize('global.actions') }}",
-            'cancel': "{{ localize('global.cancel') }}",
-            'save': "{{ localize('global.save') }}",
-            'saving': "{{ localize('global.saving') }}",
-            'success': "{{ localize('global.success') }}",
-            'error': "{{ localize('global.error') }}",
-            'view': "{{ localize('global.view') }}",
-            'edit': "{{ localize('global.edit') }}",
-            'delete': "{{ localize('global.delete') }}",
-            'refresh': "{{ localize('global.refresh') }}",
-            'updating': "{{ localize('global.updating') }}",
-            'days': "{{ localize('global.days') }}",
-            'created_by': "{{ localize('global.created_by') }}",
-
-            // Status values
-            'pending': "{{ localize('global.pending') }}",
-            'in_progress': "{{ localize('global.in_progress') }}",
-            'completed': "{{ localize('global.completed') }}",
-            'cancelled': "{{ localize('global.cancelled') }}",
-
-            // Messages
-            'error_loading_data': "{{ localize('global.error_loading_data') }}",
-            'request_failed': "{{ localize('global.request_failed') }}",
-            'progress_updated_successfully': "{{ localize('global.progress_updated_successfully') }}",
-            'failed_to_update_progress': "{{ localize('global.failed_to_update_progress') }}",
-            'error_loading_reviews': "{{ localize('global.error_loading_reviews') }}",
-            'no_reviews_found': "{{ localize('global.no_reviews_found') }}",
-
-            // Review related
-            'add_review': "{{ localize('global.add_review') }}",
-            'edit_review': "{{ localize('global.edit_review') }}",
-            'delete_review': "{{ localize('global.delete_review') }}",
-            'view_reviews': "{{ localize('global.view_reviews') }}",
-            'update_progress': "{{ localize('global.update_progress') }}",
-            'review_description_placeholder': "{{ localize('global.enter_review_description') }}",
-            'days_count': "{{ localize('global.days_count') }}",
-            'reviews': "{{ localize('global.reviews') }}",
-
-            // Modal titles and buttons
-            'add_review_title': "{{ localize('global.add_review') }}",
-            'save_review': "{{ localize('global.save') }}",
-            'confirm_delete': "{{ localize('global.confirm_delete') }}",
-            'are_you_sure': "{{ localize('global.are_you_sure') }}",
-            'yes_delete': "{{ localize('global.yes_delete') }}",
-            'no_cancel': "{{ localize('global.no_cancel') }}"
+    @php
+        $t = function ($key) {
+            $v = localize($key);
+            if (is_array($v)) {
+                return $v[''] ?? reset($v) ?? '';
+            }
+            return (string) $v;
         };
+        $langKey = [
+            'patient_name' => 'patient_name', 'physiotherapy_type' => 'physiotherapy_type', 'physiotherapist' => 'physiotherapist',
+            'type' => 'type', 'duration' => 'duration', 'minutes' => 'minutes', 'progress' => 'progress', 'status' => 'status',
+            'start_date' => 'start_date', 'end_date' => 'end_date', 'description' => 'description', 'notes' => 'notes',
+            'n_a' => 'n_a', 'actions' => 'actions', 'cancel' => 'cancel', 'save' => 'save', 'saving' => 'saving',
+            'success' => 'success', 'error' => 'error', 'view' => 'view', 'edit' => 'edit', 'delete' => 'delete',
+            'refresh' => 'refresh', 'updating' => 'updating', 'days' => 'days', 'created_by' => 'created_by',
+            'pending' => 'pending', 'in_progress' => 'in_progress', 'completed' => 'completed', 'cancelled' => 'cancelled',
+            'error_loading_data' => 'error_loading_data', 'request_failed' => 'request_failed',
+            'progress_updated_successfully' => 'progress_updated_successfully', 'failed_to_update_progress' => 'failed_to_update_progress',
+            'error_loading_reviews' => 'error_loading_reviews', 'no_reviews_found' => 'no_reviews_found',
+            'add_review' => 'add_review', 'edit_review' => 'edit_review', 'delete_review' => 'delete_review',
+            'view_reviews' => 'view_reviews', 'update_progress' => 'update_progress', 'days_count' => 'days_count', 'reviews' => 'reviews',
+            'confirm_delete' => 'confirm_delete', 'are_you_sure' => 'are_you_sure', 'yes_delete' => 'yes_delete', 'no_cancel' => 'no_cancel',
+            'review_description_placeholder' => 'enter_review_description', 'add_review_title' => 'add_review', 'save_review' => 'save',
+        ];
+        $translations = [];
+        foreach ($langKey as $jsKey => $lang) {
+            $translations[$jsKey] = $t('global.' . $lang);
+        }
+    @endphp
+    <script>
+        // Global translation variables for JavaScript (values normalized to string for lang entries that return arrays)
+        window.translations = @json($translations);
     </script>
     <script>
         (function () {

@@ -324,56 +324,30 @@
 
 @section('scripts')
     @parent
-    <script>
-        // Global translation variables for JavaScript
-        window.translations = {
-            // Common labels
-            'patient_name': "{{ localize('global.patient_name') }}",
-            'physiotherapy_type': "{{ localize('global.physiotherapy_type') }}",
-            'physiotherapist': "{{ localize('global.physiotherapist') }}",
-            'type': "{{ localize('global.type') }}",
-            'duration': "{{ localize('global.duration') }}",
-            'minutes': "{{ localize('global.minutes') }}",
-            'progress': "{{ localize('global.progress') }}",
-            'status': "{{ localize('global.status') }}",
-            'start_date': "{{ localize('global.start_date') }}",
-            'description': "{{ localize('global.description') }}",
-            'notes': "{{ localize('global.notes') }}",
-            'n_a': "{{ localize('global.n_a') }}",
-            'actions': "{{ localize('global.actions') }}",
-            'cancel': "{{ localize('global.cancel') }}",
-            'save': "{{ localize('global.save') }}",
-            'saving': "{{ localize('global.saving') }}",
-            'success': "{{ localize('global.success') }}",
-            'error': "{{ localize('global.error') }}",
-            'view': "{{ localize('global.view') }}",
-            'edit': "{{ localize('global.edit') }}",
-            'delete': "{{ localize('global.delete') }}",
-            'refresh': "{{ localize('global.refresh') }}",
-            'updating': "{{ localize('global.updating') }}",
-            'days': "{{ localize('global.days') }}",
-            'created_by': "{{ localize('global.created_by') }}",
-
-            // Status values
-            'pending': "{{ localize('global.pending') }}",
-            'in_progress': "{{ localize('global.in_progress') }}",
-            'completed': "{{ localize('global.completed') }}",
-            'cancelled': "{{ localize('global.cancelled') }}",
-
-            // Messages
-            'error_loading_data': "{{ localize('global.error_loading_data') }}",
-            'request_failed': "{{ localize('global.request_failed') }}",
-            'progress_updated_successfully': "{{ localize('global.progress_updated_successfully') }}",
-            'failed_to_update_progress': "{{ localize('global.failed_to_update_progress') }}",
-            'error_loading_reviews': "{{ localize('global.error_loading_reviews') }}",
-            'no_reviews_found': "{{ localize('global.no_reviews_found') }}",
-
-            // Review related
-            'view_reviews': "{{ localize('global.view_reviews') }}",
-            'update_progress': "{{ localize('global.update_progress') }}",
-            'days_count': "{{ localize('global.days_count') }}",
-            'reviews': "{{ localize('global.reviews') }}"
+    @php
+        $t = function ($key) {
+            $v = localize($key);
+            if (is_array($v)) {
+                return $v[''] ?? reset($v) ?? '';
+            }
+            return (string) $v;
         };
+        $translationKeys = [
+            'patient_name', 'physiotherapy_type', 'physiotherapist', 'type', 'duration', 'minutes',
+            'progress', 'status', 'start_date', 'description', 'notes', 'n_a', 'actions', 'cancel',
+            'save', 'saving', 'success', 'error', 'view', 'edit', 'delete', 'refresh', 'updating',
+            'days', 'created_by', 'pending', 'in_progress', 'completed', 'cancelled',
+            'error_loading_data', 'request_failed', 'progress_updated_successfully', 'failed_to_update_progress',
+            'error_loading_reviews', 'no_reviews_found', 'view_reviews', 'update_progress', 'days_count', 'reviews',
+        ];
+        $translations = [];
+        foreach ($translationKeys as $key) {
+            $translations[$key] = $t('global.' . $key);
+        }
+    @endphp
+    <script>
+        // Global translation variables for JavaScript (values normalized to string for lang entries that return arrays)
+        window.translations = @json($translations);
     </script>
     <script src="{{ asset('js/physiotherapy-procedures-index.js') }}"></script>
 @endsection

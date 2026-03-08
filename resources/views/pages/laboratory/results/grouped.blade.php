@@ -99,7 +99,7 @@
                         {{-- Combined Search and Filter Container --}}
                         <div class="row g-3">
                             {{-- Search Input --}}
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="search" class="form-label fw-semibold">
                                     <i class="bx bx-search me-1 text-primary"></i>{{ localize('global.search_patient') }}
                                 </label>
@@ -120,6 +120,20 @@
                                     <div class="dropdown-item-text">
                                         <small class="text-muted">{{ localize('global.start_typing_to_search') ?: 'Start typing to search for patients...' }}</small>
                                     </div>
+                                </div>
+                            </div>
+
+                            {{-- Patient ID --}}
+                            <div class="col-md-2">
+                                <label for="patient_id" class="form-label fw-semibold">
+                                    <i class="bx bx-user me-1 text-info"></i>{{ localize('global.patient_id') }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bx bx-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="patient_id" name="patient_id" 
+                                           value="{{ request('patient_id') }}" placeholder="{{ localize('global.search_by_patient_id') }}">
                                 </div>
                             </div>
 
@@ -171,7 +185,7 @@
         </div>
 
         {{-- Active Filters Display --}}
-        @if(request()->hasAny(['search', 'status', 'priority', 'doctor', 'date_from', 'date_to']))
+        @if(request()->hasAny(['search', 'status', 'priority', 'doctor', 'date_from', 'date_to', 'patient_id']))
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -198,6 +212,9 @@
                                         {{ localize('global.date_range') }}: 
                                         {{ request('date_from') ?: localize('global.start') }} - {{ request('date_to') ?: localize('global.end') }}
                                     </span>
+                                @endif
+                                @if(request('patient_id'))
+                                    <span class="badge bg-info">{{ localize('global.patient_id') }}: {{ request('patient_id') }}</span>
                                 @endif
                             </div>
                         </div>

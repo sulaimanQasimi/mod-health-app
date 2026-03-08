@@ -14,7 +14,7 @@
             </div>
             <div class="card-body">
                 <form method="GET" action="{{ request()->url() }}" class="row g-3" id="patient-filter-form">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="search" class="form-label">{{ localize('global.search_patient') }}</label>
                         <div class="input-group">
                             <span class="input-group-text">
@@ -27,6 +27,16 @@
                                     <i class="bx bx-x"></i>
                                 </button>
                             @endif
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bx bx-user"></i>
+                            </span>
+                            <input type="text" class="form-control" id="patient_id" name="patient_id" 
+                                value="{{ request('patient_id') }}" placeholder="{{ localize('global.search_by_patient_id') }}">
                         </div>
                     </div>
                     <div class="col-md-2">

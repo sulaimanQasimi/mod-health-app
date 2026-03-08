@@ -198,6 +198,15 @@ class TestResultController extends Controller
             });
         }
 
+        // Apply patient_id filter
+        if ($request->filled('patient_id')) {
+            $query->whereHas('testable', function($q) use ($request) {
+                $q->whereHas('patient', function($patientQ) use ($request) {
+                    $patientQ->where('id', $request->patient_id);
+                });
+            });
+        }
+
         // Apply status filter based on route or request parameter
         $statusFilter = null;
         if ($request->route()->getName() === 'laboratory.results.pending') {
@@ -534,6 +543,7 @@ class TestResultController extends Controller
             'date_to' => 'nullable|string|regex:/^\d{4}\/\d{2}\/\d{2}$/',
             'date_from_gregorian' => 'nullable|date',
             'date_to_gregorian' => 'nullable|date|after_or_equal:date_from_gregorian',
+            'patient_id' => 'nullable|exists:patients,id',
         ]);
 
         // Query test registrations with category_id
@@ -558,6 +568,15 @@ class TestResultController extends Controller
                     });
                 })
                 ->orWhere('ref_no', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Apply patient_id filter
+        if ($request->filled('patient_id')) {
+            $query->whereHas('testable', function($q) use ($request) {
+                $q->whereHas('patient', function($patientQ) use ($request) {
+                    $patientQ->where('id', $request->patient_id);
+                });
             });
         }
 

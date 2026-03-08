@@ -29,11 +29,20 @@ class PatientTestRegistrationController extends Controller
     /**
      * Get test list for display
      */
-    public function getTestList()
+    public function getTestList(Request $request)
     {
-        $tests = PatientTestRegistration::with(['testable.patient', 'labTest', 'doctor', 'branch'])
-            ->orderBy('id', 'desc')
-            ->get();
+        $query = PatientTestRegistration::with(['testable.patient', 'labTest', 'doctor', 'branch'])
+            ->orderBy('id', 'desc');
+
+        if ($request->filled('patient_id')) {
+            $query->whereHas('testable', function ($q) use ($request) {
+                $q->whereHas('patient', function ($patientQ) use ($request) {
+                    $patientQ->where('id', $request->patient_id);
+                });
+            });
+        }
+
+        $tests = $query->get();
 
         return view('pages.laboratory.registrations.index', compact('tests'));
     }
@@ -84,7 +93,7 @@ class PatientTestRegistrationController extends Controller
         $labTypes = LabType::orderBy('name')->get();
         
         // Only query if there are search parameters
-        if ($request->hasAny(['from', 'to', 'test_type', 'per_page'])) {
+        if ($request->hasAny(['from', 'to', 'test_type', 'per_page', 'patient_id'])) {
             $perPage = $request->get('per_page', 15);
             
             // Build base query
@@ -93,6 +102,15 @@ class PatientTestRegistrationController extends Controller
                     'patient_test_registrations.id',
                     'patient_test_registrations.lab_type_id',
                 ]);
+
+            // Apply patient_id filter
+            if ($request->filled('patient_id')) {
+                $query->whereHas('testable', function ($q) use ($request) {
+                    $q->whereHas('patient', function ($patientQ) use ($request) {
+                        $patientQ->where('id', $request->patient_id);
+                    });
+                });
+            }
 
             // Apply test type filter
             if ($request->filled('test_type')) {
@@ -189,6 +207,15 @@ class PatientTestRegistrationController extends Controller
                 'patient_test_registrations.id',
                 'patient_test_registrations.lab_type_id',
             ]);
+
+        // Apply patient_id filter
+        if ($request->filled('patient_id')) {
+            $query->whereHas('testable', function ($q) use ($request) {
+                $q->whereHas('patient', function ($patientQ) use ($request) {
+                    $patientQ->where('id', $request->patient_id);
+                });
+            });
+        }
 
         // Apply test type filter
         if ($request->filled('test_type')) {

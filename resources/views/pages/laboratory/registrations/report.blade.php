@@ -31,7 +31,7 @@
             <div class="card-body">
                 <form method="GET" action="{{ route('laboratory.registrations.report') }}" id="search-form">
                     <div class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label fw-semibold">
                                 <i class="bx bx-calendar me-1"></i>
                                 {{ localize('global.between_two_date') }}
@@ -50,7 +50,7 @@
                                     class="form-control datepicker_dari" />
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label fw-semibold">
                                 <i class="bx bx-category me-1"></i>
                                 {{ localize('global.test_type') }}
@@ -66,7 +66,16 @@
                                 @endif
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bx bx-user me-1"></i>
+                                {{ localize('global.patient_id') }}
+                            </label>
+                            <input type="text" class="form-control" name="patient_id" id="patient_id"
+                                value="{{ old('patient_id', request('patient_id')) }}"
+                                placeholder="{{ localize('global.search_by_patient_id') }}">
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label fw-semibold">
                                 <i class="bx bx-list-ul me-1"></i>
                                 {{ localize('global.per_page') }}
@@ -186,6 +195,7 @@
                             <input type="hidden" name="from" value="{{ request('from', '') }}">
                             <input type="hidden" name="to" value="{{ request('to', '') }}">
                             <input type="hidden" name="test_type" value="{{ request('test_type', '') }}">
+                            <input type="hidden" name="patient_id" value="{{ request('patient_id', '') }}">
                             <input type="hidden" name="per_page" value="{{ request('per_page', '') }}">
                             <button type="submit" name="type" value="excel" class="btn btn-sm btn-success me-2" id="export-excel-btn">
                                 <i class="bx bx-file me-1"></i>Excel

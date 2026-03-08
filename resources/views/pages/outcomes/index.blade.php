@@ -13,7 +13,22 @@
                             <h5 class="mb-0">{{ localize('global.medicine_usage_statistics') }}</h5>
                         </div>
                         <div>
-                            <a href="{{ route('outcomes.report') }}" class="btn btn-success">
+                            <form action="{{ route('outcomes.export-index-report') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="pharmacy_id" value="{{ request('pharmacy_id') }}">
+                                <input type="hidden" name="date_from" value="{{ request('date_from') }}">
+                                <input type="hidden" name="date_to" value="{{ request('date_to') }}">
+                                <input type="hidden" name="sort_by" value="{{ request('sort_by', 'usage_count') }}">
+                                <input type="hidden" name="sort_order" value="{{ request('sort_order', 'desc') }}">
+                                <button type="submit" name="type" value="excel" class="btn btn-success btn-sm">
+                                    <i class="bx bx-file me-1"></i>{{ localize('global.export_excel') }}
+                                </button>
+                                <button type="submit" name="type" value="pdf" class="btn btn-danger btn-sm">
+                                    <i class="bx bx-file me-1"></i>{{ localize('global.export_pdf') }}
+                                </button>
+                            </form>
+                            <a href="{{ route('outcomes.report') }}" class="btn btn-outline-secondary btn-sm">
                                 <i class="bx bx-file me-1"></i>{{ localize('global.reports') }}
                             </a>
                         </div>
@@ -91,6 +106,9 @@
                                 <select class="form-select form-select-sm" id="sort_by" name="sort_by" style="width: auto;" onchange="updateSort()">
                                     <option value="usage_count" {{ request('sort_by', 'usage_count') == 'usage_count' ? 'selected' : '' }}>{{ localize('global.usage_count') }}</option>
                                     <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>{{ localize('global.medicine') }}</option>
+                                    <option value="pharmacy_name" {{ request('sort_by') == 'pharmacy_name' ? 'selected' : '' }}>{{ localize('global.pharmacy') }}</option>
+                                    <option value="updated_by_name" {{ request('sort_by') == 'updated_by_name' ? 'selected' : '' }}>{{ localize('global.updated_by') }}</option>
+                                    <option value="prescription_updated_at" {{ request('sort_by') == 'prescription_updated_at' ? 'selected' : '' }}>{{ localize('global.prescription_completed_date') }}</option>
                                     <option value="id" {{ request('sort_by') == 'id' ? 'selected' : '' }}>{{ localize('global.id') }}</option>
                                 </select>
                                 <select class="form-select form-select-sm ms-2" id="sort_order" name="sort_order" style="width: auto;" onchange="updateSort()">
@@ -104,20 +122,32 @@
                             <thead>
                                 <tr>
                                     <th>{{ localize('global.medicine') }}</th>
+                                    <th>{{ localize('global.pharmacy') }}</th>
                                     <th>{{ localize('global.usage_count') }}</th>
+                                    <th>{{ localize('global.updated_by') }}</th>
+                                    <th>{{ localize('global.prescription_completed_date') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($outcomes as $medicine)
+                                @forelse ($outcomes as $row)
                                     <tr>
-                                        <td>{{ $medicine->name ?? 'N/A' }}</td>
+                                        <td>{{ $row->name ?? 'N/A' }}</td>
+                                        <td>{{ $row->pharmacy_name ?? '—' }}</td>
                                         <td>
-                                            <span class="badge bg-primary">{{ $medicine->usage_count ?? 0 }}</span>
+                                            <span class="badge bg-primary">{{ $row->usage_count ?? 0 }}</span>
+                                        </td>
+                                        <td>{{ $row->updated_by_name ? trim($row->updated_by_name) : '—' }}</td>
+                                        <td>
+                                            @if(!empty($row->prescription_updated_at))
+                                                {{ \Hekmatinasser\Verta\Facades\Verta::instance($row->prescription_updated_at)->format('Y/m/d H:i') }}
+                                            @else
+                                                —
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2" class="text-center">{{ localize('global.no_medicine_usage_found') }}</td>
+                                        <td colspan="5" class="text-center">{{ localize('global.no_medicine_usage_found') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

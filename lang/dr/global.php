@@ -666,6 +666,7 @@ return [
     'rooms' => 'اطاق ها',
     'beds' => 'بستر ها',
     'prescription' => 'نسخه',
+    'prescription_completed_date' => 'تاریخ تکمیل/بروزرسانی نسخه',
     'hospitalize' => 'بستر نمودن',
     'room' => 'اطاق',
     'room_number' => 'شماره اتاق',

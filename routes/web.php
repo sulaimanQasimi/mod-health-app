@@ -741,6 +741,7 @@ Route::group(['middleware' => ['auth']], function () {
         ->middleware('permission:show-prescriptions-menu')
         ->name('outcomes.')->group(function () {
             Route::get('/', [OutcomeController::class, 'index'])->name('index');
+            Route::post('export-index-report', [OutcomeController::class, 'exportIndexReport'])->name('export-index-report');
             Route::get('report', [OutcomeController::class, 'report'])->name('report');
             Route::post('report-search', [OutcomeController::class, 'reportSearch'])->name('report-search');
             Route::post('export-report', [OutcomeController::class, 'exportReport'])->name('export-report');

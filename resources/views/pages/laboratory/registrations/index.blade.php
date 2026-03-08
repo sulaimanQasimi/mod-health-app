@@ -7,6 +7,35 @@
     @endif
 
     <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Filter -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">{{ localize('global.search_and_filters') }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ route('laboratory.registrations.index') }}" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bx bx-user"></i>
+                            </span>
+                            <input type="text" class="form-control" id="patient_id" name="patient_id"
+                                value="{{ request('patient_id') }}" placeholder="{{ localize('global.search_by_patient_id') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bx bx-search me-1"></i>{{ localize('global.search') }}
+                        </button>
+                        <a href="{{ route('laboratory.registrations.index') }}" class="btn btn-outline-secondary">
+                            <i class="bx bx-refresh me-1"></i>{{ localize('global.reset') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">{{ localize('global.lab_test_registrations') }}</h5>

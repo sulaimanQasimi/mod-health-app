@@ -6,81 +6,167 @@ use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mpdf\Mpdf;
 
 class OutcomeController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Build the index query (usage per medicine/pharmacy from completed prescriptions) for index and export.
+     */
+    private function buildIndexQuery(Request $request)
     {
-        $query = DB::table('prescription_items as pi')
-            ->leftJoin('prescription_alternative_items as pai', function($join) {
-                $join->on('pai.prescription_item_id', '=', 'pi.id')
-                     ->on('pai.prescription_id', '=', 'pi.prescription_id')
-                     ->whereRaw('(pai.is_selected = 1 AND pai.deleted_at IS NULL)');
-            })
-            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
-            ->join('medicines as m', function($join) {
-                $join->whereRaw('m.id = COALESCE(pai.medicine_id, pi.medicine_id)');
-            })
-            ->whereNull('pi.deleted_at')
-            ->whereNull('m.deleted_at')
-            ->whereNull('p.deleted_at')
-            ->select(
-                'm.id',
-                'm.name',
-                DB::raw('COUNT(*) as usage_count')
-            )
-            ->groupBy('m.id', 'm.name');
-
-        // Get current user's pharmacies
         $user = Auth::user();
         $userPharmacies = $user->activePharmacies;
 
-        // Filter by user's pharmacies if user has any
+        $usageSubquery = DB::table('prescription_items as pi')
+            ->leftJoin('prescription_alternative_items as pai', function ($join) {
+                $join->on('pai.prescription_item_id', '=', 'pi.id')
+                    ->on('pai.prescription_id', '=', 'pi.prescription_id')
+                    ->whereRaw('(pai.is_selected = 1 AND pai.deleted_at IS NULL)');
+            })
+            ->join('prescriptions as p', 'pi.prescription_id', '=', 'p.id')
+            ->leftJoin('users as updater', 'p.updated_by', '=', 'updater.id')
+            ->leftJoin('pharmacies as ph', 'p.pharmacy_id', '=', 'ph.id')
+            ->whereNull('pi.deleted_at')
+            ->whereNull('p.deleted_at')
+            ->where('p.is_completed', 1)
+            ->whereNotNull('p.pharmacy_id');
+
+        // If user has no pharmacy, show all pharmacies; otherwise restrict to user's pharmacies
         if ($userPharmacies->isNotEmpty()) {
-            $query->whereIn('p.pharmacy_id', $userPharmacies->pluck('id'));
+            $usageSubquery->whereIn('p.pharmacy_id', $userPharmacies->pluck('id'));
         }
-
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('m.name', 'like', "%{$search}%");
+        if ($request->filled('pharmacy_id') && ($user->hasRole('admin') || $userPharmacies->isEmpty())) {
+            $usageSubquery->where('p.pharmacy_id', $request->pharmacy_id);
         }
-
-        // Filter by pharmacy (for admin users who can see all pharmacies)
-        if ($request->filled('pharmacy_id') && $user->hasRole('admin')) {
-            $query->where('p.pharmacy_id', $request->pharmacy_id);
-        }
-
-        // Filter by date range
         if ($request->filled('date_from')) {
             $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_from)->datetime();
-            $query->whereDate('p.created_at', '>=', $fromDate);
+            $usageSubquery->whereDate('p.created_at', '>=', $fromDate);
         }
         if ($request->filled('date_to')) {
             $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->date_to)->datetime();
-            $query->whereDate('p.created_at', '<=', $toDate);
+            $usageSubquery->whereDate('p.created_at', '<=', $toDate);
         }
 
-        // Sort functionality
+        $usageSubquery->select(
+            DB::raw('COALESCE(pai.medicine_id, pi.medicine_id) as medicine_id'),
+            'p.pharmacy_id',
+            DB::raw('MAX(ph.name) as pharmacy_name'),
+            DB::raw('COUNT(*) as usage_count'),
+            DB::raw("SUBSTRING_INDEX(GROUP_CONCAT(TRIM(CONCAT(COALESCE(updater.name,''), ' ', COALESCE(updater.last_name,''))) ORDER BY p.updated_at DESC SEPARATOR '\t'), '\t', 1) as updated_by_name"),
+            DB::raw('MAX(p.updated_at) as prescription_updated_at')
+        )->groupBy(DB::raw('COALESCE(pai.medicine_id, pi.medicine_id)'), 'p.pharmacy_id');
+
+        // Join usage (per medicine, pharmacy) to medicines
+        $usageSubqueryClone = clone $usageSubquery;
+        $query = DB::table(DB::raw('(' . $usageSubqueryClone->toSql() . ') as u'))
+            ->mergeBindings($usageSubqueryClone)
+            ->join('medicines as m', 'u.medicine_id', '=', 'm.id')
+            ->whereNull('m.deleted_at')
+            ->select(
+                'm.id',
+                'm.name',
+                'u.pharmacy_id',
+                'u.pharmacy_name',
+                'u.usage_count',
+                'u.updated_by_name',
+                'u.prescription_updated_at'
+            );
+
+        if ($request->filled('search')) {
+            $query->where('m.name', 'like', '%' . $request->search . '%');
+        }
+
         $sortBy = $request->get('sort_by', 'usage_count');
         $sortOrder = $request->get('sort_order', 'desc');
-        
-        // Map sort_by to valid columns
-        $validSortColumns = ['id' => 'm.id', 'name' => 'm.name', 'usage_count' => 'usage_count'];
-        $sortColumn = $validSortColumns[$sortBy] ?? 'usage_count';
+        $validSortColumns = [
+            'id' => 'm.id',
+            'name' => 'm.name',
+            'pharmacy_name' => 'u.pharmacy_name',
+            'usage_count' => 'u.usage_count',
+            'updated_by_name' => 'u.updated_by_name',
+            'prescription_updated_at' => 'u.prescription_updated_at',
+        ];
+        $sortColumn = $validSortColumns[$sortBy] ?? 'u.usage_count';
         $query->orderBy($sortColumn, $sortOrder);
 
-        // Pagination
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $userPharmacies = $user->activePharmacies;
+
+        $query = $this->buildIndexQuery($request);
         $perPage = $request->get('per_page', 15);
         $outcomes = $query->paginate($perPage);
 
-        // Get all pharmacies for admin filter
-        $pharmacies = null;
-        if ($user->hasRole('admin')) {
-            $pharmacies = Pharmacy::orderBy('name')->get();
-        }
+        $pharmacies = ($userPharmacies->isEmpty() || $user->hasRole('admin'))
+            ? Pharmacy::orderBy('name')->get()
+            : null;
 
         return view('pages.outcomes.index', compact('outcomes', 'pharmacies', 'userPharmacies'));
+    }
+
+    /**
+     * Export outcomes index (medicine usage statistics) to PDF or Excel.
+     */
+    public function exportIndexReport(Request $request)
+    {
+        $query = $this->buildIndexQuery($request);
+        $items = $query->get();
+
+        if ($request->get('type') === 'pdf') {
+            $html = view('pages.outcomes.index_pdf', compact('items'))->render();
+            $mpdf = new Mpdf(['format' => 'A4-L']);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('outcomes_usage_report.pdf', 'D');
+            return null;
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $headers = [
+            localize('global.number'),
+            localize('global.medicine'),
+            localize('global.pharmacy'),
+            localize('global.usage_count'),
+            localize('global.updated_by'),
+            localize('global.prescription_completed_date'),
+        ];
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . '1', $header);
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+            $col++;
+        }
+        $row = 2;
+        foreach ($items as $index => $item) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $item->name ?? '-');
+            $sheet->setCellValue('C' . $row, $item->pharmacy_name ?? '-');
+            $sheet->setCellValue('D' . $row, (int) ($item->usage_count ?? 0));
+            $sheet->setCellValue('E' . $row, $item->updated_by_name ? trim($item->updated_by_name) : '-');
+            $dateStr = '';
+            if (!empty($item->prescription_updated_at)) {
+                $dateStr = \Hekmatinasser\Verta\Facades\Verta::instance($item->prescription_updated_at)->format('Y/m/d H:i');
+            }
+            $sheet->setCellValue('F' . $row, $dateStr);
+            $row++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $response = new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="outcomes_usage_report.xlsx"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
     }
 
     public function report(Request $request)

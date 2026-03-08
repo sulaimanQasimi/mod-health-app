@@ -663,6 +663,7 @@ return [
 'rooms' => 'کوټې',
 'beds' => 'تختونه',
 'prescription' => 'نسخه',
+'prescription_completed_date' => 'د نسخې د بشپړیدو/تازه نېټه',
 'hospitalize' => 'بستر کول',
 'room' => 'کوټه',
 'room_number' => 'د کوټې شمېره',

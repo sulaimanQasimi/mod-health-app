@@ -441,6 +441,7 @@ return [
     'outcome_records' => 'Outcome Records',
     'outcome_type' => 'Outcome Type',
     'prescription' => 'Prescription',
+    'prescription_completed_date' => 'Prescription completed date',
     'damaged' => 'Damaged',
     'lost' => 'Lost',
     'patient' => 'Patient',

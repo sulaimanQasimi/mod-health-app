@@ -123,6 +123,13 @@
                             @endif
                         </div>
 
+                        @if($pacu->appointment)
+                            @can('show-physiotherapy-procedures')
+                                <!-- Physiotherapy Procedures Section (linked via appointment_id) -->
+                                @include('pages.appointments.physiotherapy_procedures_crud', ['appointment' => $pacu->appointment])
+                            @endcan
+                        @endif
+
                         <div class="modal fade" id="createPACUCompletionModal{{ $pacu->id }}" tabindex="-1"
                             aria-labelledby="createPACUCompletionModalLabel{{ $pacu->id }}" aria-hidden="true">
                             <div class="modal-dialog">

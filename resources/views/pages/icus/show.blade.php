@@ -1749,6 +1749,12 @@
                     </div>
                 </div>
 
+                @if($icu->appointment)
+                    @can('show-physiotherapy-procedures')
+                        <!-- Physiotherapy Procedures Section (linked via appointment_id) -->
+                        @include('pages.appointments.physiotherapy_procedures_crud', ['appointment' => $icu->appointment])
+                    @endcan
+                @endif
 
             </div>
         </div>

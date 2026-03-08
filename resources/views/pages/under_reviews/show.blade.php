@@ -324,6 +324,12 @@
                             </div>
                         </div>
                     </div>
+                    @if($underReview->appointment)
+                        @can('show-physiotherapy-procedures')
+                            <!-- Physiotherapy Procedures Section (linked via appointment_id) -->
+                            @include('pages.appointments.physiotherapy_procedures_crud', ['appointment' => $underReview->appointment])
+                        @endcan
+                    @endif
                     {{-- Diabetes Charts Section --}}
                     <!-- Diabetes Charts Section Accordion -->
                     <div class="col-12">

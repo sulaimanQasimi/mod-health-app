@@ -189,8 +189,7 @@
     <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
 @endpush
 
-@section('scripts')
-    @parent
+@push('scripts')
     <script>
         (function () {
             function refreshPhysioTable(html) {
@@ -1315,4 +1314,4 @@
             initPhysioDataTable({{ $appointment->id }});
         })();
     </script>
-@endsection
+@endpush

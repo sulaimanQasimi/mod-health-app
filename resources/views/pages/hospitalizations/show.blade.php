@@ -1022,6 +1022,13 @@
                             </div>
                             <!-- End Discharge Accordion -->
                             {{-- end discharge --}}
+
+                            @if($hospitalization->appointment)
+                                @can('show-physiotherapy-procedures')
+                                    <!-- Physiotherapy Procedures Section (linked via appointment_id) -->
+                                    @include('pages.appointments.physiotherapy_procedures_crud', ['appointment' => $hospitalization->appointment])
+                                @endcan
+                            @endif
                         </div>
 
                     </div>

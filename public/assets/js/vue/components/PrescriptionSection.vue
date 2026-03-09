@@ -65,7 +65,7 @@
                                 <i class="bx bx-edit"></i>
                             </button>
                             <button 
-                                v-if="!appointmentCompleted && canAddPrescription"
+                                v-if="contextType === 'appointment' && !appointmentCompleted && canAddPrescription"
                                 type="button" 
                                 class="btn btn-outline-info btn-sm ms-1" 
                                 @click="copyPrescription(prescription)"
@@ -312,7 +312,7 @@
                     </div>
                     <div class="modal-footer">
                         <button 
-                            v-if="!appointmentCompleted && canAddPrescription && selectedPrescription?.prescription_items?.length"
+                            v-if="contextType === 'appointment' && !appointmentCompleted && canAddPrescription && selectedPrescription?.prescription_items?.length"
                             type="button" 
                             class="btn btn-info me-2" 
                             @click="copyPrescriptionFromModal">
@@ -321,6 +321,54 @@
                         </button>
                         <button type="button" class="btn btn-secondary" @click="closePrescriptionItemsModal">
                             بستن
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copy to patient: select target appointment (Appointment context only) -->
+        <div
+            v-if="showCopyToPatientModal"
+            class="modal fade show d-block"
+            tabindex="-1"
+            style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">کپی نسخه به بیمار دیگر — انتخاب نوبت</h5>
+                        <button type="button" class="btn-close" @click="cancelCopyToPatientModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted small mb-2">نوبت مقصد را انتخاب کنید (بیماران نوبت‌های فعال شما).</p>
+                        <div v-if="loadingDoctorAppointments" class="text-center py-3">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            در حال بارگذاری نوبت‌ها...
+                        </div>
+                        <div v-else>
+                            <label class="form-label">نوبت / بیمار</label>
+                            <multiselect
+                                v-model="selectedTargetAppointment"
+                                :options="doctorAppointmentsForCopy"
+                                :custom-label="appointmentLabel"
+                                placeholder="انتخاب نوبت یا بیمار"
+                                :searchable="true"
+                                :close-on-select="true"
+                                :show-labels="false"
+                                :allow-empty="true">
+                            </multiselect>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="cancelCopyToPatientModal">
+                            لغو
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            :disabled="!selectedTargetAppointment"
+                            @click="confirmCopyToPatient">
+                            تایید و باز کردن فرم نسخه
                         </button>
                     </div>
                 </div>
@@ -391,6 +439,11 @@ export default {
                 message: '',
                 type: 'success'
             },
+            showCopyToPatientModal: false,
+            doctorAppointmentsList: [],
+            loadingDoctorAppointments: false,
+            copyPrescriptionSourceItems: null,
+            selectedTargetAppointment: null,
              form: {
                  prescription_items: [{
                      medicine_id: null,
@@ -416,7 +469,12 @@ export default {
             if (this.operation) return this.operation.id;
             if (this.icu) return this.icu.id;
             if (this.hospitalization) return this.hospitalization.id;
-            return this.appointment.id;
+            return this.appointment?.id;
+        },
+        doctorAppointmentsForCopy() {
+            const currentId = this.contextType === 'appointment' ? this.contextId : null;
+            if (!currentId || !Array.isArray(this.doctorAppointmentsList)) return this.doctorAppointmentsList || [];
+            return this.doctorAppointmentsList.filter(apt => apt.id !== currentId);
         }
     },
     mounted() {
@@ -477,6 +535,70 @@ export default {
             }
         },
 
+        appointmentLabel(apt) {
+            if (!apt) return '';
+            const p = apt.patient;
+            const name = p ? (p.name || p.id_card || '') : '';
+            const card = p?.id_card ? ` (${p.id_card})` : '';
+            const time = apt.time || '';
+            const id = apt.id ? ` — #${apt.id}` : '';
+            return `${name}${card} — ${time}${id}`;
+        },
+
+        async loadDoctorAppointments() {
+            this.loadingDoctorAppointments = true;
+            this.doctorAppointmentsList = [];
+            try {
+                const response = await fetch('/appointments/doctorAppointments', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                const data = await response.json();
+                if (data && Array.isArray(data.data)) {
+                    this.doctorAppointmentsList = data.data;
+                }
+            } catch (error) {
+                console.error('Error loading doctor appointments:', error);
+                this.showToast('خطا در بارگذاری نوبت‌ها', 'error');
+            } finally {
+                this.loadingDoctorAppointments = false;
+            }
+        },
+
+        closeCopyToPatientModal() {
+            this.showCopyToPatientModal = false;
+        },
+
+        cancelCopyToPatientModal() {
+            this.showCopyToPatientModal = false;
+            this.selectedTargetAppointment = null;
+            this.copyPrescriptionSourceItems = null;
+        },
+
+        confirmCopyToPatient() {
+            if (!this.selectedTargetAppointment || !this.copyPrescriptionSourceItems?.length) {
+                this.showToast('لطفاً یک نوبت انتخاب کنید', 'error');
+                return;
+            }
+            const items = this.copyPrescriptionSourceItems;
+            this.form.prescription_items = items.map(item => {
+                const medicineId = item.medicine_id ?? item.medicine?.id;
+                const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
+                const medicineObj = this.allMedicines.find(m => m.id === medicineId);
+                const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
+                return {
+                    medicine_id: medicineObj || medicineId,
+                    usage_type_id: usageTypeObj || usageTypeId,
+                    dosage: String(item.dosage ?? ''),
+                    frequency: String(item.frequency ?? ''),
+                    amount: String(item.amount ?? '')
+                };
+            });
+            this.closeCopyToPatientModal();
+            this.copyPrescriptionSourceItems = null;
+            this.showCreateModal = true;
+            this.showToast('نسخه در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
+        },
+
          async viewPrescriptionItems(prescriptionId) {
              try {
                  const response = await fetch(`/prescription-ajax/prescription-items/${prescriptionId}`);
@@ -499,6 +621,47 @@ export default {
                      return;
                  }
                  const items = data.data.prescription_items;
+                 if (this.contextType === 'appointment') {
+                     this.copyPrescriptionSourceItems = items;
+                     this.selectedTargetAppointment = null;
+                     this.showCopyToPatientModal = true;
+                     await this.loadDoctorAppointments();
+                 } else {
+                     this.form.prescription_items = items.map(item => {
+                         const medicineId = item.medicine_id ?? item.medicine?.id;
+                         const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
+                         const medicineObj = this.allMedicines.find(m => m.id === medicineId);
+                         const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
+                         return {
+                             medicine_id: medicineObj || medicineId,
+                             usage_type_id: usageTypeObj || usageTypeId,
+                             dosage: String(item.dosage ?? ''),
+                             frequency: String(item.frequency ?? ''),
+                             amount: String(item.amount ?? '')
+                         };
+                     });
+                     this.showCreateModal = true;
+                     this.showToast('نسخه با داروها در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
+                 }
+             } catch (error) {
+                 console.error('Error copying prescription:', error);
+                 this.showToast('خطا در کپی نسخه', 'error');
+             }
+         },
+
+         async copyPrescriptionFromModal() {
+             if (!this.selectedPrescription?.prescription_items?.length) {
+                 this.showToast('نسخه مورد نظر آیتمی برای کپی ندارد', 'error');
+                 return;
+             }
+             const items = this.selectedPrescription.prescription_items;
+             if (this.contextType === 'appointment') {
+                 this.copyPrescriptionSourceItems = items;
+                 this.selectedTargetAppointment = null;
+                 this.closePrescriptionItemsModal();
+                 this.showCopyToPatientModal = true;
+                 await this.loadDoctorAppointments();
+             } else {
                  this.form.prescription_items = items.map(item => {
                      const medicineId = item.medicine_id ?? item.medicine?.id;
                      const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
@@ -512,36 +675,10 @@ export default {
                          amount: String(item.amount ?? '')
                      };
                  });
+                 this.closePrescriptionItemsModal();
                  this.showCreateModal = true;
                  this.showToast('نسخه با داروها در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
-             } catch (error) {
-                 console.error('Error copying prescription:', error);
-                 this.showToast('خطا در کپی نسخه', 'error');
              }
-         },
-
-         copyPrescriptionFromModal() {
-             if (!this.selectedPrescription?.prescription_items?.length) {
-                 this.showToast('نسخه مورد نظر آیتمی برای کپی ندارد', 'error');
-                 return;
-             }
-             const items = this.selectedPrescription.prescription_items;
-             this.form.prescription_items = items.map(item => {
-                 const medicineId = item.medicine_id ?? item.medicine?.id;
-                 const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
-                 const medicineObj = this.allMedicines.find(m => m.id === medicineId);
-                 const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
-                 return {
-                     medicine_id: medicineObj || medicineId,
-                     usage_type_id: usageTypeObj || usageTypeId,
-                     dosage: String(item.dosage ?? ''),
-                     frequency: String(item.frequency ?? ''),
-                     amount: String(item.amount ?? '')
-                 };
-             });
-             this.closePrescriptionItemsModal();
-             this.showCreateModal = true;
-             this.showToast('نسخه با داروها در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
          },
 
          async submitPrescription() {
@@ -563,15 +700,29 @@ export default {
                      amount: String(item.amount || '')
                  }));
 
-                 const formData = {
-                     appointment_id: this.operation ? (this.contextData.appointment_id || this.contextData.appointment?.id) : (this.contextData.appointment_id || this.contextData.appointment?.id || (this.hospitalization ? this.hospitalization.appointment?.id || this.hospitalization.appointment_id : this.contextData.id)),
-                     patient_id: this.contextData.patient_id,
-                     branch_id: this.contextData.branch_id,
-                     i_c_u_id: this.icu ? this.icu.id : null,
-                     hospitalization_id: this.operation ? (this.contextData.hospitalization_id || null) : (this.hospitalization ? this.hospitalization.id : null),
-                     under_review_id: this.underReviewId || this.appointment?.under_review_id || this.contextData.under_review_id || (this.appointment?.under_review ? this.appointment.under_review.id : null),
-                     prescription_items: transformedItems
-                 };
+                 const target = this.selectedTargetAppointment;
+                 let formData;
+                 if (this.contextType === 'appointment' && target && target.id && target.patient_id && target.branch_id) {
+                     formData = {
+                         appointment_id: target.id,
+                         patient_id: target.patient_id,
+                         branch_id: target.branch_id,
+                         i_c_u_id: null,
+                         hospitalization_id: null,
+                         under_review_id: target.under_review_id || (target.under_review ? target.under_review.id : null) || null,
+                         prescription_items: transformedItems
+                     };
+                 } else {
+                     formData = {
+                         appointment_id: this.operation ? (this.contextData.appointment_id || this.contextData.appointment?.id) : (this.contextData.appointment_id || this.contextData.appointment?.id || (this.hospitalization ? this.hospitalization.appointment?.id || this.hospitalization.appointment_id : this.contextData.id)),
+                         patient_id: this.contextData.patient_id,
+                         branch_id: this.contextData.branch_id,
+                         i_c_u_id: this.icu ? this.icu.id : null,
+                         hospitalization_id: this.operation ? (this.contextData.hospitalization_id || null) : (this.hospitalization ? this.hospitalization.id : null),
+                         under_review_id: this.underReviewId || this.appointment?.under_review_id || this.contextData.under_review_id || (this.appointment?.under_review ? this.appointment.under_review.id : null),
+                         prescription_items: transformedItems
+                     };
+                 }
 
                  // Validate appointment_id is present (unless it's a hospitalization without appointment)
                  if (!formData.appointment_id && !this.hospitalization && !this.operation) {
@@ -592,6 +743,8 @@ export default {
                 const data = await response.json();
                  if (data.success) {
                      this.showCreateModal = false;
+                     this.selectedTargetAppointment = null;
+                     this.copyPrescriptionSourceItems = null;
                      this.loadAppointmentPrescriptions();
                      this.showToast('نسخه با موفقیت ایجاد شد', 'success');
                  } else {
@@ -754,6 +907,8 @@ export default {
 
         closeCreateModal() {
             this.showCreateModal = false;
+            this.selectedTargetAppointment = null;
+            this.copyPrescriptionSourceItems = null;
             this.clearValidationErrors();
         },
 

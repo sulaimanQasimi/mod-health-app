@@ -69,9 +69,18 @@
                                 type="button" 
                                 class="btn btn-outline-info btn-sm ms-1" 
                                 @click="copyPrescription(prescription)"
-                                title="کپی نسخه">
+                                title="کپی نسخه به بیمار دیگر">
                                 <i class="bx bx-copy me-1"></i>
-                                کپی
+                                کپی به بیمار دیگر
+                            </button>
+                            <button 
+                                v-if="!appointmentCompleted && canAddPrescription"
+                                type="button" 
+                                class="btn btn-outline-secondary btn-sm ms-1" 
+                                @click="copyPrescriptionForSamePatient(prescription)"
+                                title="کپی نسخه برای همین بیمار">
+                                <i class="bx bx-copy-alt me-1"></i>
+                                کپی برای همین بیمار
                             </button>
                             <button 
                                 v-if="canDeletePrescription"
@@ -317,7 +326,15 @@
                             class="btn btn-info me-2" 
                             @click="copyPrescriptionFromModal">
                             <i class="bx bx-copy me-1"></i>
-                            کپی نسخه
+                            کپی به بیمار دیگر
+                        </button>
+                        <button 
+                            v-if="!appointmentCompleted && canAddPrescription && selectedPrescription?.prescription_items?.length"
+                            type="button" 
+                            class="btn btn-outline-secondary me-2" 
+                            @click="copyPrescriptionFromModalForSamePatient">
+                            <i class="bx bx-copy-alt me-1"></i>
+                            کپی برای همین بیمار
                         </button>
                         <button type="button" class="btn btn-secondary" @click="closePrescriptionItemsModal">
                             بستن
@@ -679,6 +696,60 @@ export default {
                  this.showCreateModal = true;
                  this.showToast('نسخه با داروها در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
              }
+         },
+
+         async copyPrescriptionForSamePatient(prescription) {
+             try {
+                 const response = await fetch(`/prescription-ajax/prescription-items/${prescription.id}`);
+                 const data = await response.json();
+                 if (!data.success || !data.data?.prescription_items?.length) {
+                     this.showToast('نسخه مورد نظر آیتمی برای کپی ندارد', 'error');
+                     return;
+                 }
+                 const items = data.data.prescription_items;
+                 this.form.prescription_items = items.map(item => {
+                     const medicineId = item.medicine_id ?? item.medicine?.id;
+                     const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
+                     const medicineObj = this.allMedicines.find(m => m.id === medicineId);
+                     const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
+                     return {
+                         medicine_id: medicineObj || medicineId,
+                         usage_type_id: usageTypeObj || usageTypeId,
+                         dosage: String(item.dosage ?? ''),
+                         frequency: String(item.frequency ?? ''),
+                         amount: String(item.amount ?? '')
+                     };
+                 });
+                 this.showCreateModal = true;
+                 this.showToast('نسخه برای همین بیمار در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
+             } catch (error) {
+                 console.error('Error copying prescription for same patient:', error);
+                 this.showToast('خطا در کپی نسخه', 'error');
+             }
+         },
+
+         copyPrescriptionFromModalForSamePatient() {
+             if (!this.selectedPrescription?.prescription_items?.length) {
+                 this.showToast('نسخه مورد نظر آیتمی برای کپی ندارد', 'error');
+                 return;
+             }
+             const items = this.selectedPrescription.prescription_items;
+             this.form.prescription_items = items.map(item => {
+                 const medicineId = item.medicine_id ?? item.medicine?.id;
+                 const usageTypeId = item.usage_type_id ?? item.usage_type?.id;
+                 const medicineObj = this.allMedicines.find(m => m.id === medicineId);
+                 const usageTypeObj = this.medicineUsageTypes.find(u => u.id === usageTypeId);
+                 return {
+                     medicine_id: medicineObj || medicineId,
+                     usage_type_id: usageTypeObj || usageTypeId,
+                     dosage: String(item.dosage ?? ''),
+                     frequency: String(item.frequency ?? ''),
+                     amount: String(item.amount ?? '')
+                 };
+             });
+             this.closePrescriptionItemsModal();
+             this.showCreateModal = true;
+             this.showToast('نسخه برای همین بیمار در فرم کپی شد. در صورت نیاز ویرایش کرده و ذخیره کنید.', 'success');
          },
 
          async submitPrescription() {

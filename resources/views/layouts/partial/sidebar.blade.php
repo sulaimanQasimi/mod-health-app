@@ -259,6 +259,11 @@
                             <div>{{ localize('global.outcome_reports') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('medicine_types.*') ? 'active' : '' }}">
+                        <a href="{{ route('medicine_types.index') }}" class="menu-link">
+                            <div>{{ localize('global.medicine_types') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan

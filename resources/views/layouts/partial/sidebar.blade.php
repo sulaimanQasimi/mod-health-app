@@ -218,11 +218,13 @@
                             <div>{{ localize('global.delivered_prescriptions') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('prescriptions.report') ? 'active' : '' }}">
-                        <a href="{{ route('prescriptions.report') }}" class="menu-link">
-                            <div>{{ localize('global.reports') }}</div>
-                        </a>
-                    </li>
+                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                        <li class="menu-item {{ Route::is('prescriptions.report') ? 'active' : '' }}">
+                            <a href="{{ route('prescriptions.report') }}" class="menu-link">
+                                <div>{{ localize('global.reports') }}</div>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </li>
         @endif

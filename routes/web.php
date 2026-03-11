@@ -356,11 +356,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/reject/{prescription}', [PrescriptionController::class, 'reject'])->name('reject');
         Route::post('/update-status/{prescriptionId}/{key}', [PrescriptionController::class, 'updateStatus']);
         Route::put('changeStatus/{prescription}', [PrescriptionController::class, 'changeStatus'])->name('changeStatus');
-        Route::get('report', [PrescriptionController::class, 'report'])->name('report');
-        Route::get('report-pharmacy-users/{pharmacy}', [PrescriptionController::class, 'reportPharmacyUsers'])->name('report-pharmacy-users');
-        Route::post('report-search', [PrescriptionController::class, 'ReportSearch'])->name('report-search');
-        Route::post('export-report', [PrescriptionController::class, 'exportReport'])->name('export-report');
-        Route::post('export-prescriptions', [PrescriptionController::class, 'exportPrescriptions'])->name('export-prescriptions');
+        Route::get('report', [PrescriptionController::class, 'report'])->middleware('pharmacy_role:manager')->name('report');
+        Route::get('report-pharmacy-users/{pharmacy}', [PrescriptionController::class, 'reportPharmacyUsers'])->middleware('pharmacy_role:manager')->name('report-pharmacy-users');
+        Route::post('report-search', [PrescriptionController::class, 'ReportSearch'])->middleware('pharmacy_role:manager')->name('report-search');
+        Route::post('export-report', [PrescriptionController::class, 'exportReport'])->middleware('pharmacy_role:manager')->name('export-report');
+        Route::post('export-prescriptions', [PrescriptionController::class, 'exportPrescriptions'])->middleware('pharmacy_role:manager')->name('export-prescriptions');
         Route::post('bulk-update-status', [PrescriptionController::class, 'bulkUpdateStatus'])->name('bulk-update-status');
         Route::post('bulk-delete', [PrescriptionController::class, 'bulkDelete'])->name('bulk-delete');
 

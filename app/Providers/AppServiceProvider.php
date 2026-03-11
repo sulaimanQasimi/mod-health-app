@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,5 +22,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Use Bootstrap 5 for pagination
         \Illuminate\Pagination\Paginator::useBootstrapFive();
+
+        Blade::if('hasRole', function (string|array $role): bool {
+            return auth()->check() && auth()->user()->hasRole($role);
+        });
     }
 }

@@ -723,14 +723,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Prescription Stock routes
     Route::prefix('prescription_stocks')
-        ->middleware('permission:show-prescriptions-menu')
+        ->middleware(['permission:show-prescriptions-menu', 'pharmacy_role:manager'])
         ->name('prescription_stocks.')->group(function () {
             Route::get('/', [PrescriptionStockController::class, 'index'])->name('index');
         });
 
     // Income routes
     Route::prefix('incomes')
-        ->middleware('permission:show-prescriptions-menu')
+        ->middleware(['permission:show-prescriptions-menu', 'pharmacy_role:manager'])
 
         ->name('incomes.')->group(function () {
             Route::get('/', [IncomeController::class, 'index'])->name('index');
@@ -740,7 +740,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Outcome routes
     Route::prefix('outcomes')
-        ->middleware('permission:show-prescriptions-menu')
+        ->middleware(['permission:show-prescriptions-menu', 'pharmacy_role:manager'])
         ->name('outcomes.')->group(function () {
             Route::get('/', [OutcomeController::class, 'index'])->name('index');
             Route::post('export-index-report', [OutcomeController::class, 'exportIndexReport'])->name('export-index-report');

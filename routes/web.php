@@ -339,7 +339,9 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     // Prescriptions routes
-    Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
+    Route::prefix('prescriptions')
+        ->middleware('pharmacy_role:manager,staff')
+        ->name('prescriptions.')->group(function () {
         Route::get('/', [PrescriptionController::class, 'index'])->name('index');
         Route::get('delivered', [PrescriptionController::class, 'delivered'])->name('delivered');
         Route::get('create', [PrescriptionController::class, 'create'])->name('create');
@@ -749,7 +751,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Pharmacy Fulfillment routes
     Route::prefix('pharmacy_fulfillments')
-        ->middleware('permission:show-prescriptions-menu')
+        ->middleware('pharmacy_role:manager,procurement')
         ->name('pharmacy_fulfillments.')->group(function () {
             Route::get('/', [PharmacyFulfillmentController::class, 'index'])->name('index');
             Route::get('stock', [PharmacyFulfillmentController::class, 'stock'])->name('stock');
@@ -1171,7 +1173,7 @@ Route::prefix('militery_types')->name('militery_types.')->group(function () {
 });
 
 // Pharmacies routes
-Route::prefix('pharmacies')->name('pharmacies.')->group(function () {
+Route::prefix('pharmacies')->middleware(['auth', 'pharmacy_role:manager'])->name('pharmacies.')->group(function () {
     Route::get('index', [PharmacyController::class, 'index'])->name('index');
     Route::get('create', [PharmacyController::class, 'create'])->name('create');
     Route::post('store', [PharmacyController::class, 'store'])->name('store');

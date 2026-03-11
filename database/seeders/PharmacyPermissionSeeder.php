@@ -56,6 +56,14 @@ class PharmacyPermissionSeeder extends Seeder
         ]);
 
         Permission::firstOrCreate([
+            'name' => 'pharmacy.manage_users',
+            'guard_name' => 'web',
+        ], [
+            'name_dr' => 'مدیریت کاربران دواخانه',
+            'name_pa' => NULL,
+        ]);
+
+        Permission::firstOrCreate([
             'name' => 'show-pharmacy-menu',
             'guard_name' => 'web',
         ], [

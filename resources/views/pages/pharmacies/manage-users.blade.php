@@ -171,6 +171,7 @@
                                             name="role" required>
                                         <option value="staff">{{ localize('global.staff') }}</option>
                                         <option value="manager">{{ localize('global.manager') }}</option>
+                                        <option value="procurement">{{ localize('global.procurement') }}</option>
                                         <option value="viewer">{{ localize('global.viewer') }}</option>
                                     </select>
                                     @error('role')
@@ -252,6 +253,7 @@
                             <select class="form-control" name="role" id="edit_user_role" required>
                                 <option value="staff">{{ localize('global.staff') }}</option>
                                 <option value="manager">{{ localize('global.manager') }}</option>
+                                <option value="procurement">{{ localize('global.procurement') }}</option>
                                 <option value="viewer">{{ localize('global.viewer') }}</option>
                             </select>
                         </div>

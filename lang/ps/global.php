@@ -2714,6 +2714,7 @@ return [
 'add_user' => "کارونکی اضافه کړئ",
 'select_users_description' => "کارونکی انتخاب کړئ",
 'manager' => "مدیر",
+'procurement' => "تدارکات",
 'viewer' => "نندارچی",
 'pharmacy_statistics' => "د درملتون احصائیه",
 'total_incomes' => "ټول عواید",

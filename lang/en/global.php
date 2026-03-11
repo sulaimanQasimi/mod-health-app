@@ -2877,6 +2877,7 @@ return [
     'add_user' => 'Add User',
     'select_users_description' => 'Select Users Description',
     'manager' => 'Manager',
+    'procurement' => 'Procurement',
     'viewer' => 'Viewer',
     'pharmacy_statistics' => 'Pharmacy Statistics',
     'total_incomes' => 'Total Incomes',

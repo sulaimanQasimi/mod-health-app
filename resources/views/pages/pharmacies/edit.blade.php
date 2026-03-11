@@ -157,6 +157,7 @@
                                                                     <select class="form-control role-select" name="roles[]" required>
                                                                         <option value="staff" {{ $user->pivot->role == 'staff' ? 'selected' : '' }}>{{ localize('global.staff') }}</option>
                                                                         <option value="manager" {{ $user->pivot->role == 'manager' ? 'selected' : '' }}>{{ localize('global.manager') }}</option>
+                                                                        <option value="procurement" {{ $user->pivot->role == 'procurement' ? 'selected' : '' }}>{{ localize('global.procurement') }}</option>
                                                                         <option value="viewer" {{ $user->pivot->role == 'viewer' ? 'selected' : '' }}>{{ localize('global.viewer') }}</option>
                                                                     </select>
                                                                 </div>
@@ -186,6 +187,7 @@
                                                                 <select class="form-control role-select" name="roles[]" required>
                                                                     <option value="staff">{{ localize('global.staff') }}</option>
                                                                     <option value="manager">{{ localize('global.manager') }}</option>
+                                                                    <option value="procurement">{{ localize('global.procurement') }}</option>
                                                                     <option value="viewer">{{ localize('global.viewer') }}</option>
                                                                 </select>
                                                             </div>

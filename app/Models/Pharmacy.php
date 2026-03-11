@@ -218,6 +218,7 @@ class Pharmacy extends Model
         $permissions = [
             'manager' => ['view', 'create', 'update', 'delete', 'manage_users', 'view_reports'],
             'staff' => ['view', 'create', 'update'],
+            'procurement' => ['view', 'create', 'update', 'view_reports'],
             'viewer' => ['view']
         ];
 

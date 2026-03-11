@@ -2901,6 +2901,7 @@ return [
     'add_user' => "اضافه کردن کاربر",
     'select_users_description' => "کاربر را انتخاب کنید",
     'manager' => "مدیر",
+    'procurement' => "تدارکات",
     'viewer' => "نمایش دهنده",
     'pharmacy_statistics' => "آمار دواخانه",
     'total_incomes' => "درآمدها",

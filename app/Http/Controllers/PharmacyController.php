@@ -12,12 +12,8 @@ class PharmacyController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:pharmacy.index')->only('index');
-        $this->middleware('permission:pharmacy.create')->only(['create', 'store']);
-        $this->middleware('permission:pharmacy.edit')->only(['edit', 'update']);
-        $this->middleware('permission:pharmacy.delete')->only('destroy');
-        $this->middleware('permission:pharmacy.show')->only('show');
-        $this->middleware('permission:pharmacy.manage_users')->only(['manageUsers', 'addUser', 'removeUser', 'updateUserRole']);
+        // Pharmacy users access control (manager only; admins bypass via middleware)
+        $this->middleware('pharmacy_role:manager');
     }
 
     /**
@@ -66,7 +62,7 @@ class PharmacyController extends Controller
             'user_ids' => 'required|array|min:1',
             'user_ids.*' => 'exists:users,id',
             'roles' => 'required|array|min:1',
-            'roles.*' => 'in:manager,staff,viewer',
+            'roles.*' => 'in:manager,staff,procurement,viewer',
         ]);
 
         DB::beginTransaction();
@@ -124,7 +120,7 @@ class PharmacyController extends Controller
             'user_ids' => 'required|array|min:1',
             'user_ids.*' => 'exists:users,id',
             'roles' => 'required|array|min:1',
-            'roles.*' => 'in:manager,staff,viewer',
+            'roles.*' => 'in:manager,staff,procurement,viewer',
         ]);
 
         DB::beginTransaction();
@@ -185,7 +181,7 @@ class PharmacyController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'role' => 'required|in:manager,staff,viewer',
+            'role' => 'required|in:manager,staff,procurement,viewer',
             'permissions' => 'nullable|array'
         ]);
 
@@ -222,7 +218,7 @@ class PharmacyController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'role' => 'required|in:manager,staff,viewer',
+            'role' => 'required|in:manager,staff,procurement,viewer',
             'permissions' => 'nullable|array'
         ]);
 

@@ -146,6 +146,26 @@ class User extends Authenticatable
         return $pharmacy ? $pharmacy->pivot->role : null;
     }
 
+    /**
+     * Check if user has at least one active pharmacy with one of the given roles.
+     *
+     * @param  array<string>|string  $roles
+     */
+    public function hasActivePharmacyRole(array|string $roles): bool
+    {
+        $roles = is_array($roles) ? $roles : [$roles];
+        $roles = array_values(array_filter(array_map('trim', $roles)));
+
+        if (empty($roles)) {
+            return false;
+        }
+
+        return $this->pharmacies()
+            ->wherePivot('is_active', true)
+            ->wherePivotIn('role', $roles)
+            ->exists();
+    }
+
     // Legacy method for backward compatibility (returns first active pharmacy)
     public function pharmacy()
     {

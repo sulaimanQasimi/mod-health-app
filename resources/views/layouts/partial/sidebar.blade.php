@@ -185,8 +185,12 @@
         @endcan
         @php
             $sidebarUser = auth()->user();
-            $canSeePrescriptionsMenu = $sidebarUser?->can('show-prescriptions-menu') || $sidebarUser?->hasActivePharmacyRole(['manager', 'staff']);
-            $canSeePharmacyStockMenu = $sidebarUser?->can('show-prescriptions-menu') || $sidebarUser?->hasActivePharmacyRole(['manager', 'procurement']);
+            $canSeePrescriptionsMenu = $sidebarUser?->hasRole(['admin', 'super_admin'])
+                || $sidebarUser?->can('show-prescriptions-menu')
+                || $sidebarUser?->hasActivePharmacyRole(['manager', 'staff']);
+
+            $canSeePharmacyStockMenu = $sidebarUser?->hasRole(['admin', 'super_admin'])
+                || $sidebarUser?->hasActivePharmacyRole(['manager', 'procurement']);
             $isPharmacyManager = $sidebarUser?->hasActivePharmacyRole(['manager']) ?? false;
             $isPharmacyProcurement = $sidebarUser?->hasActivePharmacyRole(['procurement']) ?? false;
         @endphp
@@ -255,7 +259,7 @@
                         </li>
                     @endif
 
-                    @if($isPharmacyManager || $isPharmacyProcurement || $sidebarUser?->can('show-prescriptions-menu'))
+                    @if($isPharmacyManager || $isPharmacyProcurement || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('pharmacy_fulfillments.*') ? 'active' : '' }}">
                         <a href="{{ route('pharmacy_fulfillments.index') }}" class="menu-link">
                             <div>{{ localize('global.pharmacy_fulfillments') }}</div>
@@ -268,7 +272,7 @@
                     </li>
                     @endif
 
-                    @if($isPharmacyManager || $sidebarUser?->can('show-prescriptions-menu'))
+                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('incomes.*') ? 'active' : '' }}">
                             <a href="{{ route('incomes.index') }}" class="menu-link">
                                 <div>{{ localize('global.stock_income') }}</div>

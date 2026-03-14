@@ -68,6 +68,19 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-semibold">
+                                <i class="bx bx-check-circle me-1"></i>
+                                {{ localize('global.status') }}
+                            </label>
+                            <select class="form-select select2" name="status" id="status">
+                                <option value="">{{ localize('global.all') }}</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ localize('global.status_pending') }}</option>
+                                <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>{{ localize('global.status_in_progress') }}</option>
+                                <option value="completed" {{ request('status', 'completed') == 'completed' ? 'selected' : '' }}>{{ localize('global.status_completed') }}</option>
+                                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ localize('global.status_cancelled') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">
                                 <i class="bx bx-user me-1"></i>
                                 {{ localize('global.patient_id') }}
                             </label>
@@ -266,6 +279,7 @@
                             <input type="hidden" name="to" value="{{ request('to', '') }}">
                             <input type="hidden" name="test_type" value="{{ request('test_type', '') }}">
                             <input type="hidden" name="patient_id" value="{{ request('patient_id', '') }}">
+                            <input type="hidden" name="status" value="{{ request('status', 'completed') }}">
                             <input type="hidden" name="doctor_id" value="{{ request('doctor_id', '') }}">
                             <input type="hidden" name="branch_id" value="{{ request('branch_id', '') }}">
                             <input type="hidden" name="department_id" value="{{ request('department_id', '') }}">
@@ -413,7 +427,7 @@
 <script>
     $(document).ready(function() {
         function initFilterSelect2() {
-            var selectIds = ['#test_type', '#doctor_id', '#branch_id', '#department_id', '#created_by', '#updated_by', '#completed_by', '#assigned_to', '#assigned_section_id'];
+            var selectIds = ['#test_type', '#status', '#doctor_id', '#branch_id', '#department_id', '#created_by', '#updated_by', '#completed_by', '#assigned_to', '#assigned_section_id'];
             selectIds.forEach(function(id) {
                 var $el = $(id);
                 if ($el.length && !$el.hasClass('select2-hidden-accessible')) {
@@ -442,6 +456,7 @@
             $('#search-form input[name="patient_id"]').val('');
             $('#search-form input[name="notes"]').val('');
             $('#per_page').val('15');
+            $('#status').val('completed').trigger('change');
             $('#test_type, #doctor_id, #branch_id, #department_id, #created_by, #updated_by, #completed_by, #assigned_to, #assigned_section_id').val('').trigger('change');
             $('.datepicker_dari').val('');
             window.location.href = '{{ route("laboratory.registrations.report-detailed") }}';

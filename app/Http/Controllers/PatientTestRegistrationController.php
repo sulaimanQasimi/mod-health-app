@@ -252,7 +252,10 @@ class PatientTestRegistrationController extends Controller
             }
         }
 
-        // Detailed report filters: doctor, branch, department, created_by, updated_by, completed_by, assigned_to, assigned_section, notes, completed_at, assigned_at
+        // Detailed report filters: status, doctor, branch, department, ...
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         if ($request->filled('doctor_id')) {
             $query->where('doctor_id', $request->doctor_id);
         }
@@ -362,7 +365,9 @@ class PatientTestRegistrationController extends Controller
         $sections = Section::with('department')->orderBy('name')->get(['id', 'name', 'department_id']);
         $items = null;
 
-        $filterKeys = ['from', 'to', 'test_type', 'per_page', 'patient_id', 'doctor_id', 'branch_id', 'department_id', 'created_by', 'updated_by', 'completed_by', 'completed_at_from', 'completed_at_to', 'assigned_to', 'assigned_at_from', 'assigned_at_to', 'assigned_section_id', 'notes'];
+        $filterKeys = ['from', 'to', 'test_type', 'per_page', 'patient_id', 'status', 'doctor_id', 'branch_id', 'department_id', 'created_by', 'updated_by', 'completed_by', 'completed_at_from', 'completed_at_to', 'assigned_to', 'assigned_at_from', 'assigned_at_to', 'assigned_section_id', 'notes'];
+        // Default to "completed" only when no filters are set (so report shows only completed on first load)
+        $request->mergeIfMissing(['status' => 'completed']);
         if ($request->hasAny($filterKeys)) {
             $query = $this->reportQuery($request)
                 ->with([

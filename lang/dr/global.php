@@ -1030,7 +1030,7 @@ return [
     'hospitalizations_report_title' => 'راپور مریضان بستر',
     'lab_tests_report_title' => 'راپور معاینات',
     'test_registration_report' => 'راپور',
-    'test_registration_report_detailed' => 'راپور تفصیلی تست (همه ریکارڈها با ثبت کننده)',
+    'test_registration_report_detailed' => 'راپور عمومی',
     'view_all_test_registrations_with_who_processed' => 'مشاهده همه ثبت تست‌ها بدون گروه‌بندی با ثبت‌کننده، به‌روزرسانی‌کننده، تکمیل‌کننده و اختصاص‌یافته.',
     'no_grouping' => 'بدون گروه‌بندی',
     'completed_by' => 'تکمیل شده توسط',

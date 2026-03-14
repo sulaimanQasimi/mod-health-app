@@ -31,6 +31,7 @@
                     <th>{{ localize('global.priority') }}</th>
                     <th>{{ localize('global.doctor') }}</th>
                     <th>{{ localize('global.branch') }}</th>
+                    <th>{{ localize('global.department') }}</th>
                     <th>{{ localize('global.created_by') }}</th>
                     <th>{{ localize('global.updated_by') }}</th>
                     <th>Completed By</th>
@@ -53,6 +54,7 @@
                         <td>{{ $item['priority'] }}</td>
                         <td>{{ $item['doctor'] }}</td>
                         <td>{{ $item['branch'] }}</td>
+                        <td>{{ $item['department'] ?? '—' }}</td>
                         <td>{{ $item['created_by'] }}</td>
                         <td>{{ $item['updated_by'] }}</td>
                         <td>{{ $item['completed_by'] }}</td>

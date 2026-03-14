@@ -90,6 +90,100 @@
                             </select>
                         </div>
                     </div>
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.doctor') }}</label>
+                            <select class="form-select select2" name="doctor_id" id="doctor_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($doctors ?? [] as $d)
+                                    <option value="{{ $d->id }}" {{ request('doctor_id') == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.branch') }}</label>
+                            <select class="form-select select2" name="branch_id" id="branch_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($branches ?? [] as $b)
+                                    <option value="{{ $b->id }}" {{ request('branch_id') == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.department') }}</label>
+                            <select class="form-select select2" name="department_id" id="department_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($departments ?? [] as $dept)
+                                    <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.created_by') }}</label>
+                            <select class="form-select select2" name="created_by" id="created_by">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($users ?? [] as $u)
+                                    <option value="{{ $u->id }}" {{ request('created_by') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.updated_by') }}</label>
+                            <select class="form-select select2" name="updated_by" id="updated_by">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($users ?? [] as $u)
+                                    <option value="{{ $u->id }}" {{ request('updated_by') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.completed_by') }}</label>
+                            <select class="form-select select2" name="completed_by" id="completed_by">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($users ?? [] as $u)
+                                    <option value="{{ $u->id }}" {{ request('completed_by') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.completed_at') }}</label>
+                            <div class="input-group input-daterange">
+                                <input autocomplete="off" type="text" name="completed_at_from" value="{{ request('completed_at_from') }}" placeholder="{{ localize('global.from') }}" class="form-control datepicker_dari" />
+                                <span class="input-group-text bg-light">...</span>
+                                <input autocomplete="off" type="text" name="completed_at_to" value="{{ request('completed_at_to') }}" placeholder="{{ localize('global.to') }}" class="form-control datepicker_dari" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.assigned_to') }}</label>
+                            <select class="form-select select2" name="assigned_to" id="assigned_to">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($users ?? [] as $u)
+                                    <option value="{{ $u->id }}" {{ request('assigned_to') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.assigned_at') }}</label>
+                            <div class="input-group input-daterange">
+                                <input autocomplete="off" type="text" name="assigned_at_from" value="{{ request('assigned_at_from') }}" placeholder="{{ localize('global.from') }}" class="form-control datepicker_dari" />
+                                <span class="input-group-text bg-light">...</span>
+                                <input autocomplete="off" type="text" name="assigned_at_to" value="{{ request('assigned_at_to') }}" placeholder="{{ localize('global.to') }}" class="form-control datepicker_dari" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.assigned_section') ?? 'Assigned Section' }}</label>
+                            <select class="form-select select2" name="assigned_section_id" id="assigned_section_id">
+                                <option value="">{{ localize('global.all') }}</option>
+                                @foreach($sections ?? [] as $sec)
+                                    <option value="{{ $sec->id }}" {{ request('assigned_section_id') == $sec->id ? 'selected' : '' }}>{{ $sec->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">{{ localize('global.notes') }}</label>
+                            <input type="text" class="form-control" name="notes" id="notes" value="{{ request('notes') }}" placeholder="{{ localize('global.notes') }}">
+                        </div>
+                    </div>
                     <div class="row mt-3">
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary me-2">
@@ -166,12 +260,25 @@
                             <i class="bx bx-table me-2 fs-5"></i>
                             <h5 class="mb-0">{{ localize('global.report_results') ?? 'Report Results' }} ({{ localize('global.no_grouping') }})</h5>
                         </div>
-                        <form action="{{ route('laboratory.registrations.export-report-detailed') }}" method="POST" class="d-inline">
+                        <form action="{{ route('laboratory.registrations.export-report-detailed') }}" method="POST" class="d-inline" id="export-form-detailed">
                             @csrf
                             <input type="hidden" name="from" value="{{ request('from', '') }}">
                             <input type="hidden" name="to" value="{{ request('to', '') }}">
                             <input type="hidden" name="test_type" value="{{ request('test_type', '') }}">
                             <input type="hidden" name="patient_id" value="{{ request('patient_id', '') }}">
+                            <input type="hidden" name="doctor_id" value="{{ request('doctor_id', '') }}">
+                            <input type="hidden" name="branch_id" value="{{ request('branch_id', '') }}">
+                            <input type="hidden" name="department_id" value="{{ request('department_id', '') }}">
+                            <input type="hidden" name="created_by" value="{{ request('created_by', '') }}">
+                            <input type="hidden" name="updated_by" value="{{ request('updated_by', '') }}">
+                            <input type="hidden" name="completed_by" value="{{ request('completed_by', '') }}">
+                            <input type="hidden" name="completed_at_from" value="{{ request('completed_at_from', '') }}">
+                            <input type="hidden" name="completed_at_to" value="{{ request('completed_at_to', '') }}">
+                            <input type="hidden" name="assigned_to" value="{{ request('assigned_to', '') }}">
+                            <input type="hidden" name="assigned_at_from" value="{{ request('assigned_at_from', '') }}">
+                            <input type="hidden" name="assigned_at_to" value="{{ request('assigned_at_to', '') }}">
+                            <input type="hidden" name="assigned_section_id" value="{{ request('assigned_section_id', '') }}">
+                            <input type="hidden" name="notes" value="{{ request('notes', '') }}">
                             <button type="submit" name="type" value="excel" class="btn btn-sm btn-success me-2">
                                 <i class="bx bx-file me-1"></i>Excel
                             </button>
@@ -195,6 +302,7 @@
                                     <th>{{ localize('global.priority') }}</th>
                                     <th>{{ localize('global.doctor') }}</th>
                                     <th>{{ localize('global.branch') }}</th>
+                                    <th>{{ localize('global.department') }}</th>
                                     <th>{{ localize('global.created_by') }}</th>
                                     <th>{{ localize('global.updated_by') }}</th>
                                     <th>{{ localize('global.completed_by') ?? 'Completed By' }}</th>
@@ -241,6 +349,7 @@
                                         <td>{{ $item->priority ?? '—' }}</td>
                                         <td>{{ $item->doctor ? $item->doctor->name : '—' }}</td>
                                         <td>{{ $item->branch ? $item->branch->name : '—' }}</td>
+                                        <td>{{ $item->assignedSection && $item->assignedSection->department ? $item->assignedSection->department->name : '—' }}</td>
                                         <td>{{ $item->creator ? $item->creator->name : '—' }}</td>
                                         <td>{{ $item->updater ? $item->updater->name : '—' }}</td>
                                         <td>{{ $item->completedBy ? $item->completedBy->name : '—' }}</td>
@@ -303,23 +412,22 @@
 @push('custom-js')
 <script>
     $(document).ready(function() {
-        function initTestTypeSelect2() {
-            var $testType = $('#test_type');
-            if ($testType.hasClass('select2-hidden-accessible')) {
-                try {
-                    $testType.select2('destroy');
-                    $testType.unwrap();
-                } catch(e) {}
-            }
-            $testType.wrap('<div class="position-relative"></div>').select2({
-                placeholder: '{{ localize("global.all") }}',
-                allowClear: true,
-                width: '100%',
-                language: { noResults: function() { return '{{ localize("global.no_results_found") ?? "No results found" }}'; } },
-                dropdownParent: $testType.parent()
+        function initFilterSelect2() {
+            var selectIds = ['#test_type', '#doctor_id', '#branch_id', '#department_id', '#created_by', '#updated_by', '#completed_by', '#assigned_to', '#assigned_section_id'];
+            selectIds.forEach(function(id) {
+                var $el = $(id);
+                if ($el.length && !$el.hasClass('select2-hidden-accessible')) {
+                    $el.wrap('<div class="position-relative"></div>').select2({
+                        placeholder: '{{ localize("global.all") }}',
+                        allowClear: true,
+                        width: '100%',
+                        language: { noResults: function() { return '{{ localize("global.no_results_found") ?? "No results found" }}'; } },
+                        dropdownParent: $el.parent()
+                    });
+                }
             });
         }
-        setTimeout(initTestTypeSelect2, 200);
+        setTimeout(initFilterSelect2, 200);
 
         $('#per_page').on('change', function() {
             $('#search-form').submit();
@@ -331,8 +439,10 @@
         $('#reset-form-btn').on('click', function(e) {
             e.preventDefault();
             $('#search-form input[type="text"]').val('');
+            $('#search-form input[name="patient_id"]').val('');
+            $('#search-form input[name="notes"]').val('');
             $('#per_page').val('15');
-            $('#test_type').val('').trigger('change');
+            $('#test_type, #doctor_id, #branch_id, #department_id, #created_by, #updated_by, #completed_by, #assigned_to, #assigned_section_id').val('').trigger('change');
             $('.datepicker_dari').val('');
             window.location.href = '{{ route("laboratory.registrations.report-detailed") }}';
         });

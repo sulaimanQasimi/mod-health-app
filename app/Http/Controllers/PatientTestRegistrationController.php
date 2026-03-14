@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
+use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\LabTestParameter;
 use App\Models\LabTest;
 use App\Models\LabType;
 use App\Models\Patient;
 use App\Models\PatientTestRegistration;
 use App\Models\PatientTestResult;
+use App\Models\Section;
 use App\Models\TestCategory;
+use App\Models\User;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -247,6 +252,100 @@ class PatientTestRegistrationController extends Controller
             }
         }
 
+        // Detailed report filters: doctor, branch, department, created_by, updated_by, completed_by, assigned_to, assigned_section, notes, completed_at, assigned_at
+        if ($request->filled('doctor_id')) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+        if ($request->filled('department_id')) {
+            $query->whereHas('assignedSection', function ($q) use ($request) {
+                $q->where('department_id', $request->department_id);
+            });
+        }
+        if ($request->filled('created_by')) {
+            $query->where('created_by', $request->created_by);
+        }
+        if ($request->filled('updated_by')) {
+            $query->where('updated_by', $request->updated_by);
+        }
+        if ($request->filled('completed_by')) {
+            $query->where('completed_by', $request->completed_by);
+        }
+        if ($request->filled('assigned_to')) {
+            $query->where('assigned_to', $request->assigned_to);
+        }
+        if ($request->filled('assigned_section_id')) {
+            $query->where('assigned_section_id', $request->assigned_section_id);
+        }
+        if ($request->filled('notes')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('notes', 'like', '%' . $request->notes . '%')
+                  ->orWhere('detailed_notes', 'like', '%' . $request->notes . '%');
+            });
+        }
+        // Completed at date range
+        if ($request->filled('completed_at_from') && $request->filled('completed_at_to')) {
+            try {
+                $from = Verta::parse($request->completed_at_from)->datetime();
+                $to = Verta::parse($request->completed_at_to)->datetime();
+                $query->whereDate('completed_at', '>=', $from)->whereDate('completed_at', '<=', $to);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->completed_at_from ?? '') && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->completed_at_to ?? '')) {
+                    $query->whereDate('completed_at', '>=', $request->completed_at_from)->whereDate('completed_at', '<=', $request->completed_at_to);
+                }
+            }
+        } elseif ($request->filled('completed_at_from')) {
+            try {
+                $from = Verta::parse($request->completed_at_from)->datetime();
+                $query->whereDate('completed_at', '>=', $from);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->completed_at_from ?? '')) {
+                    $query->whereDate('completed_at', '>=', $request->completed_at_from);
+                }
+            }
+        } elseif ($request->filled('completed_at_to')) {
+            try {
+                $to = Verta::parse($request->completed_at_to)->datetime();
+                $query->whereDate('completed_at', '<=', $to);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->completed_at_to ?? '')) {
+                    $query->whereDate('completed_at', '<=', $request->completed_at_to);
+                }
+            }
+        }
+        // Assigned at date range
+        if ($request->filled('assigned_at_from') && $request->filled('assigned_at_to')) {
+            try {
+                $from = Verta::parse($request->assigned_at_from)->datetime();
+                $to = Verta::parse($request->assigned_at_to)->datetime();
+                $query->whereDate('assigned_at', '>=', $from)->whereDate('assigned_at', '<=', $to);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->assigned_at_from ?? '') && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->assigned_at_to ?? '')) {
+                    $query->whereDate('assigned_at', '>=', $request->assigned_at_from)->whereDate('assigned_at', '<=', $request->assigned_at_to);
+                }
+            }
+        } elseif ($request->filled('assigned_at_from')) {
+            try {
+                $from = Verta::parse($request->assigned_at_from)->datetime();
+                $query->whereDate('assigned_at', '>=', $from);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->assigned_at_from ?? '')) {
+                    $query->whereDate('assigned_at', '>=', $request->assigned_at_from);
+                }
+            }
+        } elseif ($request->filled('assigned_at_to')) {
+            try {
+                $to = Verta::parse($request->assigned_at_to)->datetime();
+                $query->whereDate('assigned_at', '<=', $to);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->assigned_at_to ?? '')) {
+                    $query->whereDate('assigned_at', '<=', $request->assigned_at_to);
+                }
+            }
+        }
+
         return $query;
     }
 
@@ -256,9 +355,15 @@ class PatientTestRegistrationController extends Controller
     public function reportDetailed(Request $request)
     {
         $labTypes = LabType::orderBy('name')->get();
+        $branches = Branch::orderBy('name')->get(['id', 'name']);
+        $departments = Department::orderBy('name')->get(['id', 'name']);
+        $doctors = Doctor::where('active_status', true)->orderBy('name')->get(['id', 'name']);
+        $users = User::orderBy('name')->get(['id', 'name']);
+        $sections = Section::with('department')->orderBy('name')->get(['id', 'name', 'department_id']);
         $items = null;
 
-        if ($request->hasAny(['from', 'to', 'test_type', 'per_page', 'patient_id'])) {
+        $filterKeys = ['from', 'to', 'test_type', 'per_page', 'patient_id', 'doctor_id', 'branch_id', 'department_id', 'created_by', 'updated_by', 'completed_by', 'completed_at_from', 'completed_at_to', 'assigned_to', 'assigned_at_from', 'assigned_at_to', 'assigned_section_id', 'notes'];
+        if ($request->hasAny($filterKeys)) {
             $query = $this->reportQuery($request)
                 ->with([
                     'testable.patient',
@@ -269,7 +374,7 @@ class PatientTestRegistrationController extends Controller
                     'updater',
                     'completedBy',
                     'assignedTo',
-                    'assignedSection',
+                    'assignedSection.department',
                 ])
                 ->orderBy('patient_test_registrations.registration_date', 'desc')
                 ->orderBy('patient_test_registrations.id', 'desc');
@@ -284,7 +389,7 @@ class PatientTestRegistrationController extends Controller
             }
         }
 
-        return view('pages.laboratory.registrations.report_detailed', compact('items', 'labTypes'));
+        return view('pages.laboratory.registrations.report_detailed', compact('items', 'labTypes', 'branches', 'departments', 'doctors', 'users', 'sections'));
     }
 
     /**
@@ -302,7 +407,7 @@ class PatientTestRegistrationController extends Controller
                 'updater',
                 'completedBy',
                 'assignedTo',
-                'assignedSection',
+                'assignedSection.department',
             ])
             ->orderBy('patient_test_registrations.registration_date', 'desc')
             ->orderBy('patient_test_registrations.id', 'desc');
@@ -345,6 +450,7 @@ class PatientTestRegistrationController extends Controller
                     'assigned_to' => $row->assignedTo ? $row->assignedTo->name : '—',
                     'assigned_at' => $assignedAt,
                     'assigned_section' => $row->assignedSection ? $row->assignedSection->name : '—',
+                    'department' => $row->assignedSection && $row->assignedSection->department ? $row->assignedSection->department->name : '—',
                     'notes' => $row->notes ?? '—',
                 ];
             })->toArray();
@@ -368,22 +474,21 @@ class PatientTestRegistrationController extends Controller
                 'F' => localize('global.priority') ?? 'Priority',
                 'G' => localize('global.doctor') ?? 'Doctor',
                 'H' => localize('global.branch') ?? 'Branch',
-                'I' => localize('global.created_by') ?? 'Created By',
-                'J' => localize('global.updated_by') ?? 'Updated By',
-                'K' => 'Completed By',
-                'L' => 'Completed At',
-                'M' => localize('global.assigned_to') ?? 'Assigned To',
-                'N' => 'Assigned At',
-                'O' => 'Assigned Section',
-                'P' => localize('global.notes') ?? 'Notes',
+                'I' => localize('global.department') ?? 'Department',
+                'J' => localize('global.created_by') ?? 'Created By',
+                'K' => localize('global.updated_by') ?? 'Updated By',
+                'L' => 'Completed By',
+                'M' => 'Completed At',
+                'N' => localize('global.assigned_to') ?? 'Assigned To',
+                'O' => 'Assigned At',
+                'P' => 'Assigned Section',
+                'Q' => localize('global.notes') ?? 'Notes',
             ];
-            $col = 'A';
             foreach ($headers as $key => $label) {
                 $sheet->setCellValue($key . '1', $label);
-                $col = $key;
             }
-            $sheet->getStyle('A1:P1')->getFont()->setBold(true);
-            $sheet->getStyle('A1:P1')->getFill()
+            $sheet->getStyle('A1:Q1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:Q1')->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('FFE0E0E0');
             $row = 2;
@@ -396,21 +501,22 @@ class PatientTestRegistrationController extends Controller
                 $sheet->setCellValue('F' . $row, $item['priority']);
                 $sheet->setCellValue('G' . $row, $item['doctor']);
                 $sheet->setCellValue('H' . $row, $item['branch']);
-                $sheet->setCellValue('I' . $row, $item['created_by']);
-                $sheet->setCellValue('J' . $row, $item['updated_by']);
-                $sheet->setCellValue('K' . $row, $item['completed_by']);
-                $sheet->setCellValue('L' . $row, $item['completed_at']);
-                $sheet->setCellValue('M' . $row, $item['assigned_to']);
-                $sheet->setCellValue('N' . $row, $item['assigned_at']);
-                $sheet->setCellValue('O' . $row, $item['assigned_section']);
-                $sheet->setCellValue('P' . $row, $item['notes']);
+                $sheet->setCellValue('I' . $row, $item['department']);
+                $sheet->setCellValue('J' . $row, $item['created_by']);
+                $sheet->setCellValue('K' . $row, $item['updated_by']);
+                $sheet->setCellValue('L' . $row, $item['completed_by']);
+                $sheet->setCellValue('M' . $row, $item['completed_at']);
+                $sheet->setCellValue('N' . $row, $item['assigned_to']);
+                $sheet->setCellValue('O' . $row, $item['assigned_at']);
+                $sheet->setCellValue('P' . $row, $item['assigned_section']);
+                $sheet->setCellValue('Q' . $row, $item['notes']);
                 $row++;
             }
-            foreach (range('A', 'P') as $c) {
+            foreach (range('A', 'Q') as $c) {
                 $sheet->getColumnDimension($c)->setWidth(18);
             }
             if ($row > 2) {
-                $sheet->getStyle('A2:P' . ($row - 1))->getAlignment()->setWrapText(true);
+                $sheet->getStyle('A2:Q' . ($row - 1))->getAlignment()->setWrapText(true);
             }
             return $this->exportResponseDetailed($spreadsheet);
         } catch (\Exception $e) {

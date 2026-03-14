@@ -29,11 +29,14 @@
                                             placeholder="{{ localize('global.patient_name') }}" />
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="operation_surgion_name"
+                                        <label for="surgeon_id"
                                             class="form-label">{{ localize('global.operation_surgion') }}</label>
-                                        <input type="text" class="form-control pager-search" name="operation_surgion_name"
-                                            value="{{ old('operation_surgion_name') }}"
-                                            placeholder="{{ localize('global.operation_surgion') }}" />
+                                        <select class="form-control pager-search select2" name="surgeon_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach ($surgeons ?? [] as $doctor)
+                                                <option value="{{ $doctor->id }}" {{ old('surgeon_id') == $doctor->id ? 'selected' : '' }}>{{ $doctor->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="col-md-3">
                                         <label for="operation_status"

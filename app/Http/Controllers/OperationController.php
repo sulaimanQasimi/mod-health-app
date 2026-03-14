@@ -320,10 +320,10 @@ class OperationController extends Controller
 
     public function report()
     {
-
         $operationTypes = OperationType::all();
+        $surgeons = Doctor::where('active_status', true)->orderBy('name')->get(['id', 'name']);
 
-        return view('pages.operations.reports.index', compact('operationTypes'));
+        return view('pages.operations.reports.index', compact('operationTypes', 'surgeons'));
     }
     public function reportSearch(Request $request)
     {
@@ -355,6 +355,10 @@ class OperationController extends Controller
 
         if ($request->filled('operation_surgion_name')) {
             $query->where('u.name', 'like', '%' . $request->operation_surgion_name . '%');
+        }
+
+        if ($request->filled('surgeon_id')) {
+            $query->where('a.operation_surgion_id', $request->surgeon_id);
         }
 
         if ($request->filled('operation_status')) {

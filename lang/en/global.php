@@ -3638,6 +3638,12 @@ return [
 
     'count' => 'Count',
     'test_registration_report' => 'Test registration report',
+    'test_registration_report_detailed' => 'Full Detailed Test Report',
+    'view_all_test_registrations_with_who_processed' => 'View all test registrations (no grouping) with who created, updated, completed, and assigned each record.',
+    'no_grouping' => 'no grouping',
+    'completed_by' => 'Completed By',
+    'completed_at' => 'Completed At',
+    'assigned_at' => 'Assigned At',
     'income_record_created_successfully.' => 'Income record was created successfully',
     'outcome_record_created_successfully.' => 'Outcome record was created successfully',
     'appointment_created_successfully.' => 'Appointment was created successfully',

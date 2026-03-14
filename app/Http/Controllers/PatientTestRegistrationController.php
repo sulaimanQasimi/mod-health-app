@@ -197,6 +197,243 @@ class PatientTestRegistrationController extends Controller
     }
 
     /**
+     * Build base query with filters for report (shared by report and reportDetailed).
+     */
+    private function reportQuery(Request $request)
+    {
+        $query = PatientTestRegistration::query();
+
+        if ($request->filled('patient_id')) {
+            $query->whereHas('testable', function ($q) use ($request) {
+                $q->whereHas('patient', function ($patientQ) use ($request) {
+                    $patientQ->where('id', $request->patient_id);
+                });
+            });
+        }
+
+        if ($request->filled('test_type')) {
+            $query->where('lab_type_id', $request->test_type);
+        }
+
+        if ($request->filled('from') && $request->filled('to')) {
+            try {
+                $fromDate = Verta::parse($request->from)->datetime();
+                $toDate = Verta::parse($request->to)->datetime();
+                $query->whereDate('registration_date', '>=', $fromDate)
+                      ->whereDate('registration_date', '<=', $toDate);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->from) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->to)) {
+                    $query->whereDate('registration_date', '>=', $request->from)
+                          ->whereDate('registration_date', '<=', $request->to);
+                }
+            }
+        } elseif ($request->filled('from')) {
+            try {
+                $fromDate = Verta::parse($request->from)->datetime();
+                $query->whereDate('registration_date', '>=', $fromDate);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->from)) {
+                    $query->whereDate('registration_date', '>=', $request->from);
+                }
+            }
+        } elseif ($request->filled('to')) {
+            try {
+                $toDate = Verta::parse($request->to)->datetime();
+                $query->whereDate('registration_date', '<=', $toDate);
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->to)) {
+                    $query->whereDate('registration_date', '<=', $request->to);
+                }
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Full detailed test registration report: all rows, no grouping, with who processed (created_by, updated_by, completed_by, assigned_to).
+     */
+    public function reportDetailed(Request $request)
+    {
+        $labTypes = LabType::orderBy('name')->get();
+        $items = null;
+
+        if ($request->hasAny(['from', 'to', 'test_type', 'per_page', 'patient_id'])) {
+            $query = $this->reportQuery($request)
+                ->with([
+                    'testable.patient',
+                    'labType',
+                    'doctor',
+                    'branch',
+                    'creator',
+                    'updater',
+                    'completedBy',
+                    'assignedTo',
+                    'assignedSection',
+                ])
+                ->orderBy('patient_test_registrations.registration_date', 'desc')
+                ->orderBy('patient_test_registrations.id', 'desc');
+
+            $perPage = $request->get('per_page', 15);
+            if ($perPage === 'all') {
+                $items = $query->get();
+            } else {
+                $perPageInt = (int) $perPage;
+                $perPageInt = in_array($perPageInt, [10, 15, 25, 50, 100]) ? $perPageInt : 15;
+                $items = $query->paginate($perPageInt)->withQueryString();
+            }
+        }
+
+        return view('pages.laboratory.registrations.report_detailed', compact('items', 'labTypes'));
+    }
+
+    /**
+     * Export detailed test registration report to Excel or PDF (all rows, who processed).
+     */
+    public function exportReportDetailed(Request $request)
+    {
+        $query = $this->reportQuery($request)
+            ->with([
+                'testable.patient',
+                'labType',
+                'doctor',
+                'branch',
+                'creator',
+                'updater',
+                'completedBy',
+                'assignedTo',
+                'assignedSection',
+            ])
+            ->orderBy('patient_test_registrations.registration_date', 'desc')
+            ->orderBy('patient_test_registrations.id', 'desc');
+
+        $items = $query->get();
+
+        if ($items->isEmpty()) {
+            return redirect()->route('laboratory.registrations.report-detailed', $request->except(['type']))
+                ->with('error', localize('global.no_item_is_found'));
+        }
+
+        try {
+            $exportType = $request->input('type');
+            $exportData = $items->map(function ($row) {
+                $patientName = $row->testable && method_exists($row->testable, 'patient') && $row->testable->patient
+                    ? $row->testable->patient->name
+                    : '—';
+                $regDate = $row->registration_date
+                    ? \Hekmatinasser\Verta\Verta::instance($row->registration_date)->format('Y/m/d')
+                    : '—';
+                $completedAt = $row->completed_at
+                    ? \Hekmatinasser\Verta\Verta::instance($row->completed_at)->format('Y/m/d H:i')
+                    : '—';
+                $assignedAt = $row->assigned_at
+                    ? \Hekmatinasser\Verta\Verta::instance($row->assigned_at)->format('Y/m/d H:i')
+                    : '—';
+                return [
+                    'ref_no' => $row->ref_no ?? '—',
+                    'registration_date' => $regDate,
+                    'patient_name' => $patientName,
+                    'lab_type' => $row->labType ? $row->labType->name : '—',
+                    'status' => $row->status ?? '—',
+                    'priority' => $row->priority ?? '—',
+                    'doctor' => $row->doctor ? $row->doctor->name : '—',
+                    'branch' => $row->branch ? $row->branch->name : '—',
+                    'created_by' => $row->creator ? $row->creator->name : '—',
+                    'updated_by' => $row->updater ? $row->updater->name : '—',
+                    'completed_by' => $row->completedBy ? $row->completedBy->name : '—',
+                    'completed_at' => $completedAt,
+                    'assigned_to' => $row->assignedTo ? $row->assignedTo->name : '—',
+                    'assigned_at' => $assignedAt,
+                    'assigned_section' => $row->assignedSection ? $row->assignedSection->name : '—',
+                    'notes' => $row->notes ?? '—',
+                ];
+            })->toArray();
+
+            if ($exportType === 'pdf') {
+                $html = view('pages.laboratory.registrations.pdf_report_detailed', ['items' => $exportData])->render();
+                $mpdf = new \Mpdf\Mpdf(['format' => 'A4-L']);
+                $mpdf->WriteHTML($html);
+                $mpdf->Output('test_registration_report_detailed.pdf', 'D');
+                exit;
+            }
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $headers = [
+                'A' => localize('global.ref_no') ?? 'Ref No',
+                'B' => localize('global.registration_date') ?? 'Registration Date',
+                'C' => localize('global.patient_name') ?? 'Patient',
+                'D' => localize('global.test_type') ?? 'Test Type',
+                'E' => localize('global.status') ?? 'Status',
+                'F' => localize('global.priority') ?? 'Priority',
+                'G' => localize('global.doctor') ?? 'Doctor',
+                'H' => localize('global.branch') ?? 'Branch',
+                'I' => localize('global.created_by') ?? 'Created By',
+                'J' => localize('global.updated_by') ?? 'Updated By',
+                'K' => 'Completed By',
+                'L' => 'Completed At',
+                'M' => localize('global.assigned_to') ?? 'Assigned To',
+                'N' => 'Assigned At',
+                'O' => 'Assigned Section',
+                'P' => localize('global.notes') ?? 'Notes',
+            ];
+            $col = 'A';
+            foreach ($headers as $key => $label) {
+                $sheet->setCellValue($key . '1', $label);
+                $col = $key;
+            }
+            $sheet->getStyle('A1:P1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:P1')->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('FFE0E0E0');
+            $row = 2;
+            foreach ($exportData as $item) {
+                $sheet->setCellValue('A' . $row, $item['ref_no']);
+                $sheet->setCellValue('B' . $row, $item['registration_date']);
+                $sheet->setCellValue('C' . $row, $item['patient_name']);
+                $sheet->setCellValue('D' . $row, $item['lab_type']);
+                $sheet->setCellValue('E' . $row, $item['status']);
+                $sheet->setCellValue('F' . $row, $item['priority']);
+                $sheet->setCellValue('G' . $row, $item['doctor']);
+                $sheet->setCellValue('H' . $row, $item['branch']);
+                $sheet->setCellValue('I' . $row, $item['created_by']);
+                $sheet->setCellValue('J' . $row, $item['updated_by']);
+                $sheet->setCellValue('K' . $row, $item['completed_by']);
+                $sheet->setCellValue('L' . $row, $item['completed_at']);
+                $sheet->setCellValue('M' . $row, $item['assigned_to']);
+                $sheet->setCellValue('N' . $row, $item['assigned_at']);
+                $sheet->setCellValue('O' . $row, $item['assigned_section']);
+                $sheet->setCellValue('P' . $row, $item['notes']);
+                $row++;
+            }
+            foreach (range('A', 'P') as $c) {
+                $sheet->getColumnDimension($c)->setWidth(18);
+            }
+            if ($row > 2) {
+                $sheet->getStyle('A2:P' . ($row - 1))->getAlignment()->setWrapText(true);
+            }
+            return $this->exportResponseDetailed($spreadsheet);
+        } catch (\Exception $e) {
+            \Log::error('Test registration detailed export error: ' . $e->getMessage());
+            return redirect()->route('laboratory.registrations.report-detailed', $request->except(['type']))
+                ->with('error', 'خطا در صادرات گزارش: ' . $e->getMessage());
+        }
+    }
+
+    private function exportResponseDetailed($spreadsheet)
+    {
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $response = new \Symfony\Component\HttpFoundation\StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+        $filename = 'test_registration_report_detailed_' . date('Y-m-d_His') . '.xlsx';
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $filename . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        return $response;
+    }
+
+    /**
      * Export test registration report to Excel or PDF
      */
     public function exportReport(Request $request)

@@ -439,6 +439,11 @@
                                 <div>{{ localize('global.test_registration_report') }}</div>
                             </a>
                         </li>
+                        <li class="menu-item {{ Route::is('laboratory.registrations.report-detailed') ? 'active' : '' }}">
+                            <a href="{{ route('laboratory.registrations.report-detailed') }}" class="menu-link">
+                                <div>{{ localize('global.test_registration_report_detailed') ?? 'Full Detailed Test Report' }}</div>
+                            </a>
+                        </li>
                     @endcan
                     
                     <!-- System Management -->

@@ -151,6 +151,7 @@
                                             <option value="25" {{ ($filters['per_page'] ?? 15) == 25 ? 'selected' : '' }}>25</option>
                                             <option value="50" {{ ($filters['per_page'] ?? 15) == 50 ? 'selected' : '' }}>50</option>
                                             <option value="100" {{ ($filters['per_page'] ?? 15) == 100 ? 'selected' : '' }}>100</option>
+                                            <option value="all" {{ ($filters['per_page'] ?? '') === 'all' ? 'selected' : '' }}>{{ localize('global.all') ?? 'All' }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -287,6 +288,7 @@
                                                 <option value="25" {{ $items->perPage() == 25 ? 'selected' : '' }}>25</option>
                                                 <option value="50" {{ $items->perPage() == 50 ? 'selected' : '' }}>50</option>
                                                 <option value="100" {{ $items->perPage() == 100 ? 'selected' : '' }}>100</option>
+                                                <option value="all" {{ ($filters['per_page'] ?? '') === 'all' ? 'selected' : '' }}>{{ localize('global.all') ?? 'All' }}</option>
                                             </select>
                                             <span class="small text-muted">{{ localize('global.per_page') }}</span>
                                         </form>

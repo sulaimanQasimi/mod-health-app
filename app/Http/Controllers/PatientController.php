@@ -610,8 +610,11 @@ class PatientController extends Controller
             return $this->exportReport($query, $request->type);
         }
 
-        $perPage = $request->get('per_page', 15);
         $query = $this->buildReportQuery($request);
+        $perPage = $request->get('per_page', 15);
+        if ($perPage === 'all') {
+            $perPage = max(1, $query->count());
+        }
         $items = $query->paginate($perPage);
 
         $filterKeys = [

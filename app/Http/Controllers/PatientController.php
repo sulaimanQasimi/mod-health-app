@@ -718,30 +718,29 @@ class PatientController extends Controller
     }
 
 
-    public function exportReport($query,$type)
+    public function exportReport($query, $type)
     {
-
-        $items = DB::table('patients as p')
-            ->leftJoin('provinces as pr', 'p.province_id', '=', 'pr.id')
-            ->leftJoin('districts as d', 'p.district_id', '=', 'd.id')
-            ->leftJoin('recipients as r', 'p.referred_by', '=', 'r.id')
-            ->select(
-                'p.id',
-                'p.name as patient_name',
-                'p.nid',
-                'p.id_card',
-                'p.referral_name',
-                'p.age',
-                'p.gender',
-                'p.job_category',
-                'p.type',
-                'r.name as referred_by',
-                'pr.name_dr as province_name',
-                'd.name_dr as district_name'
-            )
-            ->whereIn('p.id', $query->pluck('id')->toArray())
-            ->orderBy('p.registration_date', 'desc')
+        $patients = $query->with(['province', 'district', 'recipient'])
+            ->orderBy('patients.registration_date', 'desc')
             ->get();
+
+        // Map Eloquent models to the structure expected by pdf_report view and Excel (patient_name, referred_by, province_name, district_name)
+        $items = $patients->map(function (Patient $p) {
+            return (object) [
+                'id' => $p->id,
+                'patient_name' => $p->name,
+                'nid' => $p->nid,
+                'id_card' => $p->id_card,
+                'referral_name' => $p->referral_name,
+                'age' => $p->age,
+                'gender' => $p->gender,
+                'job_category' => $p->job_category,
+                'type' => $p->type,
+                'referred_by' => $p->recipient->name ?? null,
+                'province_name' => $p->province->name_dr ?? null,
+                'district_name' => $p->district->name_dr ?? null,
+            ];
+        });
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();

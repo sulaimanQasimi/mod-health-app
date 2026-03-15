@@ -429,11 +429,11 @@
 @push('custom-js')
     <script>
         $(document).ready(function() {
-            // Initialize Select2
-            $('.select2').select2({
-                theme: 'bootstrap-5',
+            // Initialize Select2 for user select (uses global Select2 from layout)
+            $('select[name="user_id"].select2').select2({
                 placeholder: '{{ localize("global.select_user") }}',
-                allowClear: true
+                allowClear: true,
+                width: '100%'
             });
 
             // Edit user modal

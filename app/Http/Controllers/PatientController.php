@@ -88,7 +88,6 @@ class PatientController extends Controller
         if ($request->hasAny(['name', 'father_name', 'last_name', 'nid', 'job_category'])) {
             $patients->appends($request->query());
         }
-
         // Get data for filters militery type, province
         $militeryTypes = MiliteryType::all();
         $provinces = Province::all();
@@ -98,8 +97,7 @@ class PatientController extends Controller
 
     public function create()
     {
-        $relations = Relation::all();
-        ;
+        $relations = Relation::all();;
         return view('pages.patients.create', compact('relations'));
     }
 
@@ -171,9 +169,11 @@ class PatientController extends Controller
         $appointment = null;
 
         // Create appointment if doctor and department are selected
-        if ($request->filled('appointment_doctor_id')
-         || 
-        $request->filled('appointment_department_id')) {
+        if (
+            $request->filled('appointment_doctor_id')
+            ||
+            $request->filled('appointment_department_id')
+        ) {
             $userClinicType = auth()->user()->clinic_type;
             if ($userClinicType === 'both') {
                 $request->validate(['appointment_clinic_type' => 'required|in:hospital,clinic']);
@@ -195,7 +195,7 @@ class PatientController extends Controller
             }
 
             $appointment = Appointment::create($appointmentData);
-            
+
             // Send notification for new appointment
             SendNewAppointmentNotification::dispatch($appointment->created_by, $appointment->id);
         }
@@ -236,7 +236,7 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $departments = auth()->user()->category_id 
+        $departments = auth()->user()->category_id
             ? Department::where('category_id', auth()->user()->category_id)->get()
             : Department::all();
         $doctors = Doctor::all();
@@ -247,14 +247,14 @@ class PatientController extends Controller
     public function edit(Patient $patient)
     {
         $this->authorize('edit-patients');
-        
+
         $relations = Relation::query()->orderBy('name', 'asc')->get();
         $provinces = Province::query()->orderBy('name_dr', 'asc')->get();
         $districts = District::query()->orderBy('name_dr', 'asc')->get();
         $recipients = Recipient::query()->orderBy('name', 'asc')->get();
         $militeryTypes = MiliteryType::query()->orderBy('name', 'asc')->get();
         $doctors = Doctor::query()->orderBy('name', 'asc')->get();
-        $departments = auth()->user()->category_id 
+        $departments = auth()->user()->category_id
             ? Department::where('category_id', auth()->user()->category_id)->get()
             : Department::all();
 
@@ -262,7 +262,7 @@ class PatientController extends Controller
         $ageYear = null;
         $ageMonth = null;
         $ageDay = null;
-        
+
         if ($patient->age) {
             if (preg_match('/(\d+)\s*ساله/', $patient->age, $matches)) {
                 $ageYear = $matches[1];
@@ -274,11 +274,11 @@ class PatientController extends Controller
         }
 
         return view('pages.patients.edit', compact(
-            'patient', 
-            'relations', 
-            'provinces', 
-            'districts', 
-            'recipients', 
+            'patient',
+            'relations',
+            'provinces',
+            'districts',
+            'recipients',
             'militeryTypes',
             'doctors',
             'departments',
@@ -291,7 +291,7 @@ class PatientController extends Controller
     public function update(Request $request, Patient $patient)
     {
         $this->authorize('edit-patients');
-        
+
         $data = $request->validate([
             'militery_type_id' => 'nullable|exists:militery_types,id',
             'name' => 'required',
@@ -449,7 +449,7 @@ class PatientController extends Controller
                 'labs.results.parameter',
                 'doctor'
             ])->get();
-            
+
             // Load all related data with proper error handling
             $previousDiagnoses = $patient->diagnoses()->get();
             $previousConsultations = $patient->consultations()->with('associated_departments')->get();
@@ -458,7 +458,7 @@ class PatientController extends Controller
             $previousLabs = $patient->labs; // This is an accessor, returns collection
             $previousPrescriptions = $patient->prescriptions()->with(['doctor', 'prescriptionItems.medicineType', 'prescriptionItems.medicine'])->get();
             $previousIcus = $patient->icus()->get();
-            
+
             return view('pages.patients.history', compact(
                 'patient',
                 'previousDiagnoses',
@@ -473,7 +473,7 @@ class PatientController extends Controller
         } catch (\Exception $e) {
             // Log the error and return with empty data
             \Log::error('Error loading patient history: ' . $e->getMessage());
-            
+
             return view('pages.patients.history', [
                 'patient' => $patient,
                 'previousDiagnoses' => collect(),
@@ -539,43 +539,43 @@ class PatientController extends Controller
 
     public function getDoctorsByDepartment($departmentId, Request $request)
     {
-            $query = Doctor::where('department_id', $departmentId)
-                ->where('active_status', true);
+        $query = Doctor::where('department_id', $departmentId)
+            ->where('active_status', true);
 
-            $userClinicType = auth()->user()->clinic_type;
-            if ($userClinicType === 'both') {
-                $clinicType = $request->query('clinic_type');
-                if (in_array($clinicType, ['hospital', 'clinic'], true)) {
-                    $query->where('clinic_type', $clinicType);
-                }
-            } elseif ($userClinicType) {
-                $query->where('clinic_type', $userClinicType);
+        $userClinicType = auth()->user()->clinic_type;
+        if ($userClinicType === 'both') {
+            $clinicType = $request->query('clinic_type');
+            if (in_array($clinicType, ['hospital', 'clinic'], true)) {
+                $query->where('clinic_type', $clinicType);
             }
+        } elseif ($userClinicType) {
+            $query->where('clinic_type', $userClinicType);
+        }
 
-            $doctors = $query->get();
-            
-            return response()->json([
-                'success' => true,
-                'doctors' => $doctors
-            ]);
+        $doctors = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'doctors' => $doctors
+        ]);
     }
 
     public function report()
     {
         $provinces = Province::with('districts')->get();
         $recipients = Recipient::all();
-        return view('pages.patients.reports.index', compact('provinces', 'recipients'));
+        $filters = [];
+        return view('pages.patients.reports.index', compact('provinces', 'recipients', 'filters'));
     }
+
     /**
-     * Search and filter patients for reports with pagination
+     * Build the filtered report query (shared by report view and PDF/Excel export).
      *
      * @param Request $request
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function reportSearch(Request $request)
+    private function buildReportQuery(Request $request)
     {
-        $perPage = $request->get('per_page', 15);
-        
         $query = Patient::with(['province', 'district', 'recipient'])
             ->select([
                 'patients.id',
@@ -592,21 +592,45 @@ class PatientController extends Controller
                 'patients.district_id',
                 'patients.registration_date'
             ]);
-
-        // Apply filters
         $this->applyReportFilters($query, $request);
+        return $query;
+    }
 
-        // Get paginated results with query string preservation
+    /**
+     * Search and filter patients for reports. Full page (no AJAX). Pagination via GET.
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
+    public function reportSearch(Request $request)
+    {
+        $perPage = $request->get('per_page', 15);
+        $query = $this->buildReportQuery($request);
         $items = $query->paginate($perPage);
-        
-        // Preserve query parameters in pagination links
-        if ($request->hasAny(['patient_name', 'nid', 'id_card', 'referral_name', 'job_category', 
-                              'type', 'referred_by', 'age', 'gender', 'province_id', 'district_id', 
-                              'from', 'to', 'per_page'])) {
-            $items->appends($request->query());
-        }
 
-        return view('pages.patients.reports.report', compact('items'));
+        $filterKeys = [
+            'patient_name',
+            'nid',
+            'id_card',
+            'referral_name',
+            'job_category',
+            'type',
+            'referred_by',
+            'age',
+            'gender',
+            'province_id',
+            'district_id',
+            'from',
+            'to',
+            'per_page'
+        ];
+        $filters = $request->only($filterKeys);
+        $items->appends($filters);
+
+        $provinces = Province::with('districts')->get();
+        $recipients = Recipient::all();
+
+        return view('pages.patients.reports.index', compact('items', 'filters', 'provinces', 'recipients'));
     }
 
     /**
@@ -664,19 +688,19 @@ class PatientController extends Controller
             $query->where('patients.district_id', $request->district_id);
         }
 
+      
         // Date range filter - Convert Persian to Gregorian
         if ($request->filled('from') && $request->filled('to')) {
             try {
                 $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
                 $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
-                
+
                 $query->whereDate('patients.registration_date', '>=', $fromDate)
-                      ->whereDate('patients.registration_date', '<=', $toDate);
-                                           $query->whereHas('appointments', function ($q) use ($fromDate, $toDate) {
-                        $q->whereDate('date', '>=', $fromDate)
-                          ->whereDate('date', '<=', $toDate);
-                    });
-     
+                    ->whereDate('patients.registration_date', '<=', $toDate);
+                $query->whereHas('appointments', function ($q) use ($fromDate, $toDate) {
+                    $q->whereDate('date', '>=', $fromDate)
+                        ->whereDate('date', '<=', $toDate);
+                });
             } catch (\Exception $e) {
                 // Invalid date format, skip date filter
             }
@@ -684,13 +708,18 @@ class PatientController extends Controller
 
         // Order by registration date descending
         $query->orderBy('patients.registration_date', 'desc');
+        if ($request->filled('type')) {
+            if ($request->type == 'excel') {
+                $this->exportReport($query,$request->type);
+            } else if ($request->type == 'pdf') {
+                $this->exportReport($query,$request->type);
+            }
+        }
     }
 
 
-    public function exportReport(Request $request)
+    public function exportReport($query,$type)
     {
-
-        $data = json_decode($request->data, true);
 
         $items = DB::table('patients as p')
             ->leftJoin('provinces as pr', 'p.province_id', '=', 'pr.id')
@@ -710,12 +739,14 @@ class PatientController extends Controller
                 'pr.name_dr as province_name',
                 'd.name_dr as district_name'
             )
-            ->whereIn('p.id', $data)->get();
+            ->whereIn('p.id', $query->pluck('id')->toArray())
+            ->orderBy('p.registration_date', 'desc')
+            ->get();
         $reader = new Xlsx();
         $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
         $html = view('pages.patients.reports.pdf_report', ['items' => $items])->render();
-        if ($request->type == 'pdf') {
+        if ($type == 'pdf') {
             $mpdf = new Mpdf(['format' => 'A4-L']);
             $mpdf->WriteHTML($html);
             $mpdf->Output('pdf_report.pdf', 'D');
@@ -725,8 +756,6 @@ class PatientController extends Controller
             $row = 3;
 
             foreach ($items as $index => $item) {
-
-
                 $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
                 $sheet->getColumnDimension('A')->setWidth(5);
                 $sheet->getColumnDimension('B')->setWidth(40);
@@ -804,8 +833,5 @@ class PatientController extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
-
     }
-
-
 }

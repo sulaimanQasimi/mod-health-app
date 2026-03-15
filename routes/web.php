@@ -169,8 +169,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('get-doctors-by-department/{departmentId}', [PatientController::class, 'getDoctorsByDepartment'])->name('get-doctors-by-department');
         Route::get('report', [PatientController::class, 'report'])->name('report');
         Route::get('reciption-statistic-report', ReciptionStatisticReportController::class         )->name('reciption-statistic-report');
-        Route::post('report-search', [PatientController::class, 'ReportSearch'])->name('report-search');
-        Route::post('export-report', [PatientController::class, 'exportReport'])->name('export-report');
+        Route::match(['get', 'post'], 'report-search', [PatientController::class, 'reportSearch'])->name('report-search');
+        Route::match(['get', 'post'], 'export-report', [PatientController::class, 'exportReport'])->name('export-report');
         Route::get('{patientId}/printToken', [PatientController::class, 'printToken'])->name('printToken');
     });
 

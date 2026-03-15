@@ -1,127 +1,104 @@
 @extends('layouts.master')
 
 @section('content')
+<div class="container-xxl flex-grow-1 container-p-y">
     <div class="content-wrapper">
-        <!-- Content -->
         @if (Session::has('success') || Session::has('error'))
             @include('components.toast')
         @endif
-        <div class="container-xxl flex-grow-1 container-p-y">
-            <!-- Page Header -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box bg-none border d-flex align-items-center justify-content-between">
-                        <h4 class="mb-0">{{ localize('global.pharmacy_management') }}</h4>
-                        <div class="page-title-right">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a
-                                        href="{{ route('home') }}">{{ localize('global.dashboard') }}</a></li>
-                                <li class="breadcrumb-item active">{{ localize('global.pharmacies') }}</li>
-                            </ol>
+
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-success">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.total_pharmacies') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">
+                                        {{ $pharmacies->count() }}</h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-success rounded p-2">
+                                <i class="bx bx-store bx-lg"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Statistics Cards -->
-            <div class="row g-4 mb-4">
-                <div class="col-sm-6 col-xl-3">
-                    <div class="card bg-label-success">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start justify-content-between">
-                                <div class="content-left">
-                                    <span>{{ localize('global.total_pharmacies') }}</span>
-                                    <div class="d-flex align-items-end mt-2">
-                                        <h4 class="mb-0 me-2 badge badge-center bg-success" style="font-size: xx-large;">
-                                            {{ $pharmacies->count() }}</h4>
-                                    </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-primary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.active_pharmacies') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">
+                                        {{ $pharmacies->count() }}</h4>
                                 </div>
-                                <span class="badge bg-success rounded p-2">
-                                    <i class="bx bx-store bx-lg"></i>
-                                </span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-xl-3">
-                    <div class="card bg-label-primary">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start justify-content-between">
-                                <div class="content-left">
-                                    <span>{{ localize('global.active_pharmacies') }}</span>
-                                    <div class="d-flex align-items-end mt-2">
-                                        <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">
-                                            {{ $pharmacies->count() }}</h4>
-                                    </div>
-                                </div>
-                                <span class="badge bg-primary rounded p-2">
-                                    <i class="bx bx-store-alt bx-lg"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-xl-3">
-                    <div class="card bg-label-info">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start justify-content-between">
-                                <div class="content-left">
-                                    <span>{{ localize('global.new_this_month') }}</span>
-                                    <div class="d-flex align-items-end mt-2">
-                                        @php
-                                            $currentMonth = \Carbon\Carbon::now()->format('Y-m');
-                                        @endphp
-                                        <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">
-                                            {{ $pharmacies->filter(function ($pharmacy) use ($currentMonth) {
-        if ($pharmacy->created_at == null)
-        {
-            return null;
-        } else
-            return $pharmacy->created_at->format('Y-m') == $currentMonth;
-    })->count() }}
-                                        </h4>
-                                    </div>
-                                </div>
-                                <span class="badge bg-info rounded p-2">
-                                    <i class="bx bx-plus-circle bx-lg"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-xl-3">
-                    <div class="card bg-label-warning">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start justify-content-between">
-                                <div class="content-left">
-                                    <span>{{ localize('global.total_users') }}</span>
-                                    <div class="d-flex align-items-end mt-2">
-                                        <h4 class="mb-0 me-2 badge badge-center bg-warning" style="font-size: xx-large;">
-                                            {{ $pharmacies->unique('user_id')->count() }}</h4>
-                                    </div>
-                                </div>
-                                <span class="badge bg-warning rounded p-2">
-                                    <i class="bx bx-user bx-lg"></i>
-                                </span>
-                            </div>
+                            <span class="badge bg-primary rounded p-2">
+                                <i class="bx bx-store-alt bx-lg"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Pharmacies List Table -->
-            <div class="card">
-                <div class="card-header border-bottom">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ localize('global.pharmacy_information') }}</h5>
-                        <div class="text-end">
-                            @can('pharmacy.create')
-                                <a class="btn btn-primary" href="{{ route('pharmacies.create') }}" type="button">
-                                    <i class="bx bx-plus me-sm-1"></i>
-                                    <span class="d-none d-sm-inline-block">{{ localize('global.create_pharmacy') }}</span>
-                                </a>
-                            @endcan
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-info">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.new_this_month') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    @php
+                                        $currentMonth = \Carbon\Carbon::now()->format('Y-m');
+                                    @endphp
+                                    <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">
+                                        {{ $pharmacies->filter(function ($pharmacy) use ($currentMonth) {
+                                            return $pharmacy->created_at && $pharmacy->created_at->format('Y-m') == $currentMonth;
+                                        })->count() }}
+                                    </h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-info rounded p-2">
+                                <i class="bx bx-plus-circle bx-lg"></i>
+                            </span>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card bg-label-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span>{{ localize('global.total_users') }}</span>
+                                <div class="d-flex align-items-end mt-2">
+                                    <h4 class="mb-0 me-2 badge badge-center bg-warning" style="font-size: xx-large;">
+                                        {{ $pharmacies->unique('user_id')->count() }}</h4>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning rounded p-2">
+                                <i class="bx bx-user bx-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="mb-0">{{ localize('global.pharmacy_information') }}</h5>
+                    <div class="pt-3 pt-md-0 text-end">
+                        @can('pharmacy.create')
+                            <a class="btn btn-primary btn-lg" href="{{ route('pharmacies.create') }}" type="button">
+                                <i class="bx bx-plus me-2"></i>{{ localize('global.create') }}
+                            </a>
+                        @endcan
                     </div>
                 </div>
                 <div class="card-datatable table-responsive p-2">
@@ -142,10 +119,7 @@
             </div>
         </div>
     </div>
-    <!-- / Content -->
-
-    <div class="content-backdrop fade"></div>
-    </div>
+</div>
 @endsection
 
 @push('custom-css')
@@ -156,102 +130,8 @@
         .card-datatable table.dataTable thead th {
             text-align: right;
         }
-
         .card-datatable table.dataTable tbody td {
             text-align: right;
-        }
-
-        .page-title-box {
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 24px;
-        }
-
-        .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin: 0;
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            content: ">";
-            color: #6c757d;
-        }
-
-        .breadcrumb-item a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .breadcrumb-item.active {
-            color: #6c757d;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .card-header {
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            padding: 1rem 1.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            border: none;
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-        }
-
-        .bg-label-success {
-            background: var(--bs-success-bg-subtle);
-            border: 1px solid var(--bs-success-border-subtle);
-        }
-
-        .bg-label-primary {
-            background: var(--bs-primary-bg-subtle);
-            border: 1px solid var(--bs-primary-border-subtle);
-        }
-
-        .bg-label-info {
-            background: var(--bs-info-bg-subtle);
-            border: 1px solid var(--bs-info-border-subtle);
-        }
-
-        .bg-label-warning {
-            background: var(--bs-warning-bg-subtle);
-            border: 1px solid var(--bs-warning-border-subtle);
-        }
-
-        /* Dark mode specific adjustments */
-        [data-bs-theme="dark"] .bg-label-success {
-            background: rgba(25, 135, 84, 0.1);
-            border-color: rgba(25, 135, 84, 0.2);
-        }
-
-        [data-bs-theme="dark"] .bg-label-primary {
-            background: rgba(13, 110, 253, 0.1);
-            border-color: rgba(13, 110, 253, 0.2);
-        }
-
-        [data-bs-theme="dark"] .bg-label-info {
-            background: rgba(13, 202, 240, 0.1);
-            border-color: rgba(13, 202, 240, 0.2);
-        }
-
-        [data-bs-theme="dark"] .bg-label-warning {
-            background: rgba(255, 193, 7, 0.1);
-            border-color: rgba(255, 193, 7, 0.2);
         }
     </style>
 @endpush

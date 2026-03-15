@@ -604,6 +604,12 @@ class PatientController extends Controller
      */
     public function reportSearch(Request $request)
     {
+        // If export format requested, build same filtered query (no pagination) and return PDF/Excel
+        if ($request->filled('type') && in_array($request->type, ['excel', 'pdf'], true)) {
+            $query = $this->buildReportQuery($request);
+            return $this->exportReport($query, $request->type);
+        }
+
         $perPage = $request->get('per_page', 15);
         $query = $this->buildReportQuery($request);
         $items = $query->paginate($perPage);
@@ -664,7 +670,8 @@ class PatientController extends Controller
             $query->where('patients.job_category', $request->job_category);
         }
 
-        if ($request->filled('type')) {
+        // Only filter by patient disease type when 'type' is not the export format (excel/pdf)
+        if ($request->filled('type') && !in_array($request->type, ['excel', 'pdf'], true)) {
             $query->where('patients.type', $request->type);
         }
 
@@ -708,13 +715,6 @@ class PatientController extends Controller
 
         // Order by registration date descending
         $query->orderBy('patients.registration_date', 'desc');
-        if ($request->filled('type')) {
-            if ($request->type == 'excel') {
-                $this->exportReport($query,$request->type);
-            } else if ($request->type == 'pdf') {
-                $this->exportReport($query,$request->type);
-            }
-        }
     }
 
 

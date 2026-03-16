@@ -29,42 +29,64 @@
                                             placeholder="{{ localize('global.patient_name') }}" />
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="patient_name"
+                                        <label for="report_status"
                                             class="form-label">{{ localize('global.status') }}</label>
-
-                                        <select class="form-control pager-search select2" name="status">
+                                        <select class="form-control pager-search select2" name="status" id="report_status">
                                             <option value="" selected>{{ localize('global.select') }}</option>
                                             <option value="new">{{ localize('global.new_anesthesias') }}</option>
-                                            <option value="approved">{{ localize('global.approved_anesthesias') }}
-                                            <option value="rejected">{{ localize('global.rejected_anesthesias') }}
-                                            </option>
+                                            <option value="approved">{{ localize('global.approved_anesthesias') }}</option>
+                                            <option value="rejected">{{ localize('global.rejected_anesthesias') }}</option>
                                         </select>
-
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="report_doctor_id" class="form-label">{{ localize('global.doctor_name') }}</label>
+                                        <select class="form-control select2" name="doctor_id" id="report_doctor_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach ($doctors ?? [] as $doc)
+                                                <option value="{{ $doc->id }}" {{ old('doctor_id') == $doc->id ? 'selected' : '' }}>{{ $doc->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="col-md-3">
                                         <label for="anesthesia_type">{{ localize('global.anesthesia_type') }}</label>
-                                        <select class="form-control select2" name="anesthesia_type"
-                                            id="anesthesia_type">
+                                        <select class="form-control select2" name="anesthesia_type" id="anesthesia_type">
                                             <option value="">{{ localize('global.select') }}</option>
-                                            <option value="local">{{localize('global.local')}}</option>
-                                            <option value="spinal">{{localize('global.spinal')}}</option>
-                                            <option value="general">{{localize('global.general')}}</option>
+                                            <option value="local">{{ localize('global.local') }}</option>
+                                            <option value="spinal">{{ localize('global.spinal') }}</option>
+                                            <option value="general">{{ localize('global.general') }}</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <label for="patient_name"
-                                            class="form-label">{{ localize('global.time') }}</label>
-                                        <input type="time" class="form-control pager-search" name="time"
+                                        <label for="operation_type_id" class="form-label">{{ localize('global.operation_type') }}</label>
+                                        <select class="form-control select2" name="operation_type_id" id="operation_type_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach ($operationTypes ?? [] as $type)
+                                                <option value="{{ $type->id }}" {{ old('operation_type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="department_id" class="form-label">{{ localize('global.department') }}</label>
+                                        <select class="form-control select2" name="department_id" id="department_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach ($departments ?? [] as $dept)
+                                                <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="report_time" class="form-label">{{ localize('global.time') }}</label>
+                                        <input type="time" class="form-control pager-search" name="time" id="report_time"
                                             value="{{ old('time') }}" placeholder="{{ localize('global.time') }}" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                         <div class="input-group input-daterange">
-                                            <input type="text" name="start" placeholder="{{ localize('global.from') }}"
-                                                class="form-control datepicker_dari" />
+                                            <input type="text" name="from" id="report_from" placeholder="{{ localize('global.from') }}"
+                                                class="form-control datepicker_dari pdp-el" value="{{ old('from') }}" />
                                             <span class="input-group-text">...</span>
-                                            <input type="text" name="end" placeholder="{{ localize('global.to') }}"
-                                                class="form-control datepicker_dari" />
+                                            <input type="text" name="to" id="report_to" placeholder="{{ localize('global.to') }}"
+                                                class="form-control datepicker_dari pdp-el" value="{{ old('to') }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +150,7 @@ $('#anesthesias-report-search-form').on('reset', function() {
         $form.find('select').val(null).trigger('change');
         $form.find('input[type="text"]').val('');
         $form.find('input[type="time"]').val('');
-        $form.find('.datepicker_dari').val('');
+        $form.find('.datepicker_dari.pdp-el').val('');
     }, 0);
 });
 </script>

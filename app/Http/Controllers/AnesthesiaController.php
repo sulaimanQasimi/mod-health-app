@@ -384,16 +384,21 @@ class AnesthesiaController extends Controller
 
     public function report()
     {
+        $doctors = Doctor::orderBy('name')->get();
+        $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
+        $departments = Department::all();
 
-        return view('pages.anesthesias.reports.index');
+        return view('pages.anesthesias.reports.index', compact('doctors', 'operationTypes', 'departments'));
     }
+
     public function reportSearch(Request $request)
     {
         $query = DB::table('anesthesias as a')
-        ->leftJoin('patients as p', 'a.patient_id' , '=', 'p.id')
-        ->leftJoin('doctors as d', 'a.doctor_id' , '=', 'd.id')
-        ->leftJoin('branches as b', 'a.branch_id' , '=', 'b.id')
-        ->select('a.id','p.name as patient_name', 'd.name as doctor_name','b.name as branch_name', 'a.status', 'a.anesthesia_type', 'a.date', 'a.time');
+            ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
+            ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
+            ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
+            ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
+            ->select('a.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'a.status', 'a.anesthesia_type', 'a.date', 'a.time');
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -402,25 +407,41 @@ class AnesthesiaController extends Controller
         if ($request->filled('status')) {
             $query->where('a.status', $request->status);
         }
+
+        if ($request->filled('doctor_id')) {
+            $query->where('a.doctor_id', $request->doctor_id);
+        }
+
         if ($request->filled('anesthesia_type')) {
             $query->where('a.anesthesia_type', $request->anesthesia_type);
         }
 
-        if ($request->filled('date')) {
-            $query->where('a.date', $request->date);
+        if ($request->filled('operation_type_id')) {
+            $query->where('a.operation_type_id', $request->operation_type_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('app.department_id', $request->department_id);
         }
 
         if ($request->filled('time')) {
             $query->where('a.time', $request->time);
         }
 
+        // Date range: Persian (Jalali) from/to → filter on a.date (surgery date)
         if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('a.created_at', [$request->from, $request->to]);
+            try {
+                $fromDate = Verta::parse($request->from)->datetime()->format('Y-m-d');
+                $toDate = Verta::parse($request->to)->datetime()->format('Y-m-d');
+                $query->whereDate('a.date', '>=', $fromDate)->whereDate('a.date', '<=', $toDate);
+            } catch (\Exception $e) {
+                // Invalid Persian date format, skip date filter
+            }
         }
 
-        $items = $query->get();
-    return view('pages.anesthesias.reports.report', ['items' => $items]);
+        $items = $query->orderBy('a.date', 'desc')->orderBy('a.time', 'desc')->get();
 
+        return view('pages.anesthesias.reports.report', ['items' => $items]);
     }
 
 

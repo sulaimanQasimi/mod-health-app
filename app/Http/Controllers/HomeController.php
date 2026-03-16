@@ -43,6 +43,7 @@ class HomeController extends Controller
         if ($request->ajax()) {
             try {
                 $branchId = auth()->user()->branch_id;
+                $chartBranchId = $request->input('chart_branch_id', $branchId);
                 $today = Carbon::today();
                 $yesterday = Carbon::yesterday();
 
@@ -57,6 +58,10 @@ class HomeController extends Controller
                 // Retrieve data for charts
                 $patientsTrendData = $this->getPatientsTrendData($branchId);
                 $appointmentsTrendData = $this->getAppointmentsTrendData($branchId);
+
+                // Appointments processed by user (filterable by branch)
+                $appointmentsByUserData = $this->getAppointmentsProcessedByUser($chartBranchId);
+                $branches = Branch::orderBy('name')->get(['id', 'name']);
 
                 // Get all percentage changes
                 $percentageChanges = $this->getAllPercentageChanges($branchId);
@@ -100,7 +105,10 @@ class HomeController extends Controller
                         'hospitalizationPercentageChange' => $percentageChanges['hospitalization'],
                         'occupied_beds' => $bedStats['occupied'],
                         'free_beds' => $bedStats['free'],
-                        'all_beds' => $bedStats['all']
+                        'all_beds' => $bedStats['all'],
+                        'appointmentsByUserData' => $appointmentsByUserData,
+                        'branches' => $branches,
+                        'chartBranchId' => (int) $chartBranchId
                     ]
                 ]);
             } catch (\Exception $e) {
@@ -376,6 +384,42 @@ class HomeController extends Controller
         // Prepare the data for the chart
         $labels = array_column($appointmentsTrendData, 'day');
         $data = array_column($appointmentsTrendData, 'count');
+
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
+    }
+
+    /**
+     * Get appointment counts grouped by user who processed them (processed_by), for a given branch.
+     * Returns labels (user names) and counts for a horizontal bar chart.
+     */
+    private function getAppointmentsProcessedByUser($branchId)
+    {
+        $items = Appointment::where('branch_id', $branchId)
+            ->whereNotNull('processed_by')
+            ->selectRaw('processed_by as user_id, count(*) as count')
+            ->groupBy('processed_by')
+            ->orderByDesc('count')
+            ->get();
+
+        if ($items->isEmpty()) {
+            return ['labels' => [], 'data' => []];
+        }
+
+        $userIds = $items->pluck('user_id')->unique()->values()->all();
+        $users = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+        $labels = [];
+        $data = [];
+        foreach ($items as $row) {
+            $user = $users->get($row->user_id);
+            $labels[] = $user
+                ? trim(($user->name ?? '') . ' ' . ($user->last_name ?? ''))
+                : 'User #' . $row->user_id;
+            $data[] = (int) $row->count;
+        }
 
         return [
             'labels' => $labels,

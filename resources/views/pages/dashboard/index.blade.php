@@ -377,6 +377,27 @@
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-body">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bx bx-user-check text-primary me-1"></i>
+                                        {{ localize('global.appointments_processed_by_user') }}
+                                    </h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="form-label mb-0 text-nowrap">{{ localize('global.filter_by_branch') }}:</label>
+                                        <select id="chart-branch-select" class="form-select form-select-sm" style="min-width: 180px;">
+                                            <option value="">{{ localize('global.loading') }}...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <canvas id="appointmentsByUserChart" height="280"></canvas>
+                                <p class="text-muted small mb-0 mt-2 text-center">{{ localize('global.appointments_processed_by_user_hint') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-body">
                                 <i class="bx bx-line-chart text-primary"></i>
                                 <h5 class="card-title text-center">
                                     {{ localize('global.doctors_activity_graph') }}
@@ -412,12 +433,16 @@
         let patientsTrendChart = null;
         let appointmentsTrendChart = null;
         let wordCloudChart = null;
+        let appointmentsByUserChart = null;
 
-        // Load dashboard data via AJAX
-        function loadDashboardData() {
+        // Load dashboard data via AJAX (optional: chartBranchId for appointments-by-user chart filter)
+        function loadDashboardData(chartBranchId) {
+            var params = {};
+            if (chartBranchId) params.chart_branch_id = chartBranchId;
             $.ajax({
                 url: '{{ route("home") }}',
                 type: 'GET',
+                data: params,
                 dataType: 'json',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -445,6 +470,22 @@
                         $('#all-beds').text(data.all_beds || 0);
                         $('#free-beds').text(data.free_beds || 0);
                         
+                        // Populate branch filter for appointments-by-user chart
+                        var $branchSelect = $('#chart-branch-select');
+                        $branchSelect.empty();
+                        if (data.branches && data.branches.length) {
+                            data.branches.forEach(function(b) {
+                                $branchSelect.append($('<option></option>').attr('value', b.id).text(b.name));
+                            });
+                            $branchSelect.val(data.chartBranchId || '');
+                        } else {
+                            $branchSelect.append($('<option value="">—</option>'));
+                        }
+                        $branchSelect.off('change').on('change', function() {
+                            var branchId = $(this).val();
+                            if (branchId) loadDashboardData(branchId);
+                        });
+
                         // Initialize charts
                         initializeCharts(data);
                         
@@ -570,6 +611,54 @@
                         headerFormat: '<span style="font-size: 16px"><b>{point.key}</b></span><br>'
                     }
                 });
+            }
+
+            // Appointments processed by user (horizontal bar chart – best for comparing counts per user)
+            if (appointmentsByUserChart) {
+                appointmentsByUserChart.destroy();
+            }
+            var byUserCtx = document.getElementById('appointmentsByUserChart');
+            if (byUserCtx && data.appointmentsByUserData) {
+                var labels = data.appointmentsByUserData.labels || [];
+                var counts = data.appointmentsByUserData.data || [];
+                if (labels.length && counts.length) {
+                    appointmentsByUserChart = new Chart(byUserCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: "{{ localize('global.appointments_processed') }}",
+                                data: counts,
+                                backgroundColor: 'rgba(13, 202, 240, 0.6)',
+                                borderColor: 'rgba(13, 202, 240, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            scales: {
+                                x: { beginAtZero: true },
+                                y: {
+                                    ticks: { maxRotation: 0, autoSkip: false }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        afterLabel: function(ctx) {
+                                            var total = counts.reduce(function(a, b) { return a + b; }, 0);
+                                            var pct = total ? Math.round((ctx.raw / total) * 100) : 0;
+                                            return (pct + '% of total');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
             }
         }
 

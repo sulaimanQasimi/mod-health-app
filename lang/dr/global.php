@@ -3902,6 +3902,8 @@ return [
     'content' => 'محتوا',
     'add_tooth_record' => 'افزودن چارت دندان',
     'chart' => 'چارت',
+    "nurses_activity_graph"=>"نمودار فعالیت نرس",
+    "nurse_activity_count"=>"تعداد فعالیت نرس",
     'chart_date' => 'تاریخ چارت',
     'chart_type' => 'نوع چارت',
     'chart_description' => 'توضیحات',

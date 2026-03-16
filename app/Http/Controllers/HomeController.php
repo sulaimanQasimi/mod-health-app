@@ -9,18 +9,24 @@ use App\Models\Branch;
 use App\Models\Consultation;
 use App\Models\Department;
 use App\Models\Diagnose;
+use App\Models\DiabetesChart;
 use App\Models\Hospitalization;
 use App\Models\ICU;
-use App\Models\PatientTestRegistration;
 use App\Models\LabType;
+use App\Models\MedicationAdministrationRecord;
+use App\Models\Nurse;
+use App\Models\NurseNote;
+use App\Models\NutritionCare;
+use App\Models\NursingAssessment;
 use App\Models\Operation;
 use App\Models\Patient;
-use App\Models\Prescription;
+use App\Models\PatientTestRegistration;
+use App\Models\PhysiotherapyProcedure;
 use App\Models\Province;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\Doctor;
-use App\Models\PhysiotherapyProcedure;
+use App\Models\VitalSignSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -61,6 +67,9 @@ class HomeController extends Controller
 
                 // Appointments processed by user (filterable by branch)
                 $appointmentsByUserData = $this->getAppointmentsProcessedByUser($chartBranchId);
+
+                // Nurses activity across all linked models
+                $nurseActivityData = $this->getNurseActivityData($branchId);
                 $branches = Branch::orderBy('name')->get(['id', 'name']);
 
                 // Get all percentage changes
@@ -108,7 +117,8 @@ class HomeController extends Controller
                         'all_beds' => $bedStats['all'],
                         'appointmentsByUserData' => $appointmentsByUserData,
                         'branches' => $branches,
-                        'chartBranchId' => (int) $chartBranchId
+                        'chartBranchId' => (int) $chartBranchId,
+                        'nurseActivityData' => $nurseActivityData,
                     ]
                 ]);
             } catch (\Exception $e) {
@@ -389,6 +399,114 @@ class HomeController extends Controller
             'labels' => $labels,
             'data' => $data
         ];
+    }
+
+    /**
+     * Get nurse activity counts aggregated across all nurse-linked models.
+     * Returns labels (nurse names) and data (total activity count).
+     */
+    private function getNurseActivityData($branchId)
+    {
+        // Get all nurses in this branch
+        $nurses = Nurse::where('branch_id', $branchId)->get(['id', 'first_name', 'last_name']);
+        if ($nurses->isEmpty()) {
+            return ['labels' => [], 'data' => []];
+        }
+
+        $nurseIds = $nurses->pluck('id')->all();
+
+        // Initialize activity map
+        $activity = array_fill_keys($nurseIds, 0);
+
+        // Count records in each nurse-linked model
+        $this->accumulateNurseCounts($activity, NurseNote::whereIn('nurse_id', $nurseIds)
+            ->selectRaw('nurse_id, COUNT(*) as count')
+            ->groupBy('nurse_id')
+            ->get());
+
+        $this->accumulateNurseCounts($activity, NursingAssessment::whereIn('nurse_id', $nurseIds)
+            ->selectRaw('nurse_id, COUNT(*) as count')
+            ->groupBy('nurse_id')
+            ->get());
+
+        $this->accumulateNurseCounts($activity, NutritionCare::whereIn('nurse_id', $nurseIds)
+            ->selectRaw('nurse_id, COUNT(*) as count')
+            ->groupBy('nurse_id')
+            ->get());
+
+        $this->accumulateNurseCounts($activity, MedicationAdministrationRecord::whereIn('nurse_id', $nurseIds)
+            ->selectRaw('nurse_id, COUNT(*) as count')
+            ->groupBy('nurse_id')
+            ->get());
+
+        $this->accumulateNurseCounts($activity, DiabetesChart::whereIn('nurse_id', $nurseIds)
+            ->selectRaw('nurse_id, COUNT(*) as count')
+            ->groupBy('nurse_id')
+            ->get());
+
+        $this->accumulateNurseCounts($activity, VitalSignSchedule::whereIn('nurse_id', $nurseIds)
+            ->selectRaw('nurse_id, COUNT(*) as count')
+            ->groupBy('nurse_id')
+            ->get());
+
+        // Anesthesia has two nurse-related fields (scrub and circulation)
+        $anesthesiaScrubCounts = Anesthesia::where('branch_id', $branchId)
+            ->whereNotNull('operation_scrub_nurse_id')
+            ->whereIn('operation_scrub_nurse_id', $nurseIds)
+            ->selectRaw('operation_scrub_nurse_id as nurse_id, COUNT(*) as count')
+            ->groupBy('operation_scrub_nurse_id')
+            ->get();
+
+        $this->accumulateNurseCounts($activity, $anesthesiaScrubCounts);
+
+        $anesthesiaCirculationCounts = Anesthesia::where('branch_id', $branchId)
+            ->whereNotNull('operation_circulation_nurse_id')
+            ->whereIn('operation_circulation_nurse_id', $nurseIds)
+            ->selectRaw('operation_circulation_nurse_id as nurse_id, COUNT(*) as count')
+            ->groupBy('operation_circulation_nurse_id')
+            ->get();
+
+        $this->accumulateNurseCounts($activity, $anesthesiaCirculationCounts);
+
+        // Build labels and data, keeping only nurses with activity
+        $labels = [];
+        $data = [];
+
+        foreach ($activity as $nurseId => $count) {
+            if ($count <= 0) {
+                continue;
+            }
+            $nurse = $nurses->firstWhere('id', $nurseId);
+            if (!$nurse) {
+                continue;
+            }
+            $fullName = trim(($nurse->first_name ?? '') . ' ' . ($nurse->last_name ?? ''));
+            $labels[] = $fullName !== '' ? $fullName : ('Nurse #' . $nurseId);
+            $data[] = (int) $count;
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+        ];
+    }
+
+    /**
+     * Helper to add grouped counts into the activity map.
+     *
+     * @param array $activity
+     * @param \Illuminate\Support\Collection $rows
+     * @return void
+     */
+    private function accumulateNurseCounts(array &$activity, $rows)
+    {
+        foreach ($rows as $row) {
+            $nurseId = (int) $row->nurse_id;
+            $count = (int) $row->count;
+            if (isset($activity[$nurseId])) {
+                $activity[$nurseId] += $count;
+            }
+        }
     }
 
     /**

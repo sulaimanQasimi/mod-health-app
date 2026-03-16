@@ -409,6 +409,18 @@
                         </div>
                     </div>
 
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <i class="bx bx-line-chart text-primary"></i>
+                                <h5 class="card-title text-center">
+                                    {{ localize('global.nurses_activity_graph') }}
+                                </h5>
+                                <canvas id="nurseActivityChart" height="280"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -434,6 +446,7 @@
         let appointmentsTrendChart = null;
         let wordCloudChart = null;
         let appointmentsByUserChart = null;
+        let nurseActivityChart = null;
 
         // Load dashboard data via AJAX (optional: chartBranchId for appointments-by-user chart filter)
         function loadDashboardData(chartBranchId) {
@@ -652,6 +665,55 @@
                                             var total = counts.reduce(function(a, b) { return a + b; }, 0);
                                             var pct = total ? Math.round((ctx.raw / total) * 100) : 0;
                                             return (pct + '% of total');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Nurses activity chart (horizontal bar chart – compares total activity per nurse)
+            if (nurseActivityChart) {
+                nurseActivityChart.destroy();
+            }
+
+            var nurseActivityCtx = document.getElementById('nurseActivityChart');
+            if (nurseActivityCtx && data.nurseActivityData) {
+                var nurseLabels = data.nurseActivityData.labels || [];
+                var nurseCounts = data.nurseActivityData.data || [];
+                if (nurseLabels.length && nurseCounts.length) {
+                    nurseActivityChart = new Chart(nurseActivityCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: nurseLabels,
+                            datasets: [{
+                                label: "{{ localize('global.nurse_activity_count') }}",
+                                data: nurseCounts,
+                                backgroundColor: 'rgba(32, 201, 151, 0.6)',
+                                borderColor: 'rgba(32, 201, 151, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            scales: {
+                                x: { beginAtZero: true },
+                                y: {
+                                    ticks: { maxRotation: 0, autoSkip: false }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        afterLabel: function(ctx) {
+                                            var total = nurseCounts.reduce(function(a, b) { return a + b; }, 0);
+                                            var pct = total ? Math.round((ctx.raw / total) * 100) : 0;
+                                            return (pct + '% of activity');
                                         }
                                     }
                                 }

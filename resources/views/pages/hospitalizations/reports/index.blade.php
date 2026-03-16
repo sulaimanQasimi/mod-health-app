@@ -31,26 +31,22 @@
                                     <div class="col-md-3">
                                         <label for="food_type_id">{{ localize('global.food_type') }}</label>
                                         <select class="form-control select2" name="food_type_id" id="food_type_id">
-                                            <option value="">{{ localize('global.select') }}
-                                            </option>
+                                            <option value="">{{ localize('global.select') }}</option>
                                             @foreach ($foodTypes as $value)
-                                            <option value="{{ $value->id }}"
-                                                {{ old('name') == $value->id ? 'selected' : '' }}>
-                                                {{ $value->name }}
-
-                                            </option>
+                                                <option value="{{ $value->id }}"
+                                                    {{ old('food_type_id') == $value->id ? 'selected' : '' }}>
+                                                    {{ $value->name }}
+                                                </option>
                                             @endforeach
                                         </select>
-
                                     </div>
                                     <div class="col-md-3">
                                         <label>{{ localize('global.companion_card_type') }}</label>
                                         <select class="form-control select2" name="companion_card_type">
-                                            <option value="">
-                                                {{ localize('global.select') }}</option>
-                                            <option value="12">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            <option value="12" {{ old('companion_card_type') == '12' ? 'selected' : '' }}>
                                                 {{ localize('global.12_hours') }}</option>
-                                            <option value="24">
+                                            <option value="24" {{ old('companion_card_type') == '24' ? 'selected' : '' }}>
                                                 {{ localize('global.24_hours') }}</option>
                                         </select>
                                     </div>
@@ -58,10 +54,26 @@
                                         <label for="discharge_status">{{ localize('global.discharge_status') }}</label>
                                         <select class="form-control select2" name="discharge_status">
                                             <option value="">{{ localize('global.select') }}</option>
-                                            <option value="recovered">{{ localize('global.recovered') }}
-                                            </option>
-                                            <option value="died">{{ localize('global.died') }}</option>
-                                            <option value="moved">{{ localize('global.moved') }}</option>
+                                            <option value="recovered"
+                                                {{ old('discharge_status') == 'recovered' ? 'selected' : '' }}>
+                                                {{ localize('global.recovered') }}</option>
+                                            <option value="died" {{ old('discharge_status') == 'died' ? 'selected' : '' }}>
+                                                {{ localize('global.died') }}</option>
+                                            <option value="moved"
+                                                {{ old('discharge_status') == 'moved' ? 'selected' : '' }}>
+                                                {{ localize('global.moved') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="doctor_id">{{ localize('global.doctor_name') }}</label>
+                                        <select class="form-control select2" name="doctor_id" id="doctor_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach ($doctors as $doctor)
+                                                <option value="{{ $doctor->id }}"
+                                                    {{ old('doctor_id') == $doctor->id ? 'selected' : '' }}>
+                                                    {{ $doctor->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
 

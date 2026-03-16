@@ -323,8 +323,10 @@ class HospitalizationController extends Controller
     public function report()
     {
         $foodTypes = FoodType::all();
+        // Doctors list for report filter
+        $doctors = Doctor::orderBy('name')->get(['id', 'name']);
 
-        return view('pages.hospitalizations.reports.index', compact('foodTypes'));
+        return view('pages.hospitalizations.reports.index', compact('foodTypes', 'doctors'));
     }
     public function reportSearch(Request $request)
     {
@@ -336,7 +338,15 @@ class HospitalizationController extends Controller
             ->leftJoin('food_types as f', function ($join) use ($food_type_ids) {
                 $join->on('h.food_type_id', 'like', DB::raw('concat("%", f.id, "%")'));
             })
-            ->select('h.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'h.companion_card_type', 'h.discharge_status', 'f.name as food_type_name');
+            ->select(
+                'h.id',
+                'p.name as patient_name',
+                'd.name as doctor_name',
+                'b.name as branch_name',
+                'h.companion_card_type',
+                'h.discharge_status',
+                'f.name as food_type_name'
+            );
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -357,6 +367,11 @@ class HospitalizationController extends Controller
 
         if ($request->filled('discharge_status')) {
             $query->where('h.discharge_status', $request->discharge_status);
+        }
+
+        // Doctor filter
+        if ($request->filled('doctor_id')) {
+            $query->where('h.doctor_id', $request->doctor_id);
         }
 
         if ($request->filled('from') && $request->filled('to')) {

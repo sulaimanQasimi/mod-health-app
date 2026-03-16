@@ -22,6 +22,7 @@ use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\PatientTestRegistration;
 use App\Models\PhysiotherapyProcedure;
+use App\Models\Prescription;
 use App\Models\Province;
 use App\Models\Room;
 use App\Models\User;

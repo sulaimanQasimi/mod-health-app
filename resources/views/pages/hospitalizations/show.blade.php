@@ -697,7 +697,7 @@
                                                     <div>
                                                         <label for="date"
                                                             class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                        <input type="text" class="form-control form-control datepicker_dari pdp-el" name="date" />
+                                                        <input type="text" autocomplete="off" class="form-control form-control datepicker_dari pdp-el" name="date" />
                                                     </div>
                                                     <div>
                                                         <label for="time"

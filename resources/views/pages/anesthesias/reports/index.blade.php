@@ -83,10 +83,10 @@
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                         <div class="input-group input-daterange">
                                             <input type="text" name="from" id="report_from" placeholder="{{ localize('global.from') }}"
-                                                class="form-control datepicker_dari pdp-el" value="{{ old('from') }}" />
+                                                autocomplete="off" class="form-control datepicker_dari pdp-el" value="{{ old('from') }}" />
                                             <span class="input-group-text">...</span>
                                             <input type="text" name="to" id="report_to" placeholder="{{ localize('global.to') }}"
-                                                class="form-control datepicker_dari pdp-el" value="{{ old('to') }}" />
+                                                autocomplete="off" class="form-control datepicker_dari pdp-el" value="{{ old('to') }}" />
                                         </div>
                                     </div>
                                 </div>

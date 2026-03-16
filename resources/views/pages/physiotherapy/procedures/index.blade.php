@@ -78,12 +78,12 @@
                             </div>
                             <div class="col-md-2">
                                 <label for="start_date" class="form-label">{{ localize('global.start_date') }}</label>
-                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="start_date"
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el persian-date" id="start_date"
                                     name="start_date" value="{{ request('start_date') }}">
                             </div>
                             <div class="col-md-2">
                                 <label for="end_date" class="form-label">{{ localize('global.end_date') }}</label>
-                                <input type="text" class="form-control datepicker_dari pdp-el persian-date" id="end_date"
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el persian-date" id="end_date"
                                     name="end_date" value="{{ request('end_date') }}">
                             </div>
                             <div class="col-12 d-flex gap-2">

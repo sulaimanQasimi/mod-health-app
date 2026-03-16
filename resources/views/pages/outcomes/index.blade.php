@@ -58,12 +58,12 @@
                             <div class="col-md-3">
                                 <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                 <div class="input-group input-daterange">
-                                    <input type="text" name="date_from"
+                                    <input type="text" autocomplete="off" name="date_from"
                                         placeholder="{{ localize('global.from') }}"
                                         class="form-control form-control datepicker_dari pdp-el persian-date" 
                                         value="{{ request('date_from') }}" />
                                     <span class="input-group-text">...</span>
-                                    <input type="text" name="date_to"
+                                    <input type="text" autocomplete="off" name="date_to"
                                         placeholder="{{ localize('global.to') }}"
                                         class="form-control form-control datepicker_dari pdp-el persian-date" 
                                         value="{{ request('date_to') }}" />

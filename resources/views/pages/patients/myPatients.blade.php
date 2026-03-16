@@ -49,7 +49,7 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="startDate" id="startDate" 
-                                       class="form-control datepicker_dari pdp-el" required 
+                                       autocomplete="off" class="form-control datepicker_dari pdp-el" required 
                                        value="{{ old('startDate', request('startDate')) }}">
                             </div>
                             <div class="col-md-3">
@@ -58,7 +58,7 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="endDate" id="endDate" 
-                                       class="form-control datepicker_dari pdp-el" required 
+                                       autocomplete="off" class="form-control datepicker_dari pdp-el" required 
                                        value="{{ old('endDate', request('endDate')) }}">
                             </div>
                             <div class="col-md-4 border">

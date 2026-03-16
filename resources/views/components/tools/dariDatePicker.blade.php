@@ -11,7 +11,7 @@
 ])
 
 <input name="{{ $name }}" type="text" readonly class="form-control datepicker_dari {{ $extraClasses }}"
-    {{ $dateRequired == true ? 'required' : '' }} id="{{ $withID }}" placeholder="{{ $withPlaceHolder }}"
+    autocomplete="off" {{ $dateRequired == true ? 'required' : '' }} id="{{ $withID }}" placeholder="{{ $withPlaceHolder }}"
     aria-describedby="button-addon2" value="{{ $value }}">
 @if ($withButton)
     <button class="btn btn-outline-primary btn-sm" type="button"

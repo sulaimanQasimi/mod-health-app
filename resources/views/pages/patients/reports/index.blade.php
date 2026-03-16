@@ -121,12 +121,12 @@
                                     <div class="col-md-3">
                                         <label class="form-label">{{ localize('global.between_two_date') }}</label>
                                         <div class="input-group input-daterange">
-                                            <input type="text" name="from" id="from_date"
+                                            <input type="text" autocomplete="off" name="from" id="from_date"
                                                 value="{{ $filters['from'] ?? old('from') }}"
                                                 placeholder="{{ localize('global.from') }}"
                                                 class="form-control datepicker_dari pdp-el" />
                                             <span class="input-group-text">...</span>
-                                            <input type="text" name="to" id="to_date"
+                                            <input type="text" autocomplete="off" name="to" id="to_date"
                                                 value="{{ $filters['to'] ?? old('to') }}"
                                                 placeholder="{{ localize('global.to') }}"
                                                 class="form-control datepicker_dari pdp-el" />

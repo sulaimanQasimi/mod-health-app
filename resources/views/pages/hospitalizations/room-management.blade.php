@@ -217,7 +217,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="discharged_at_date" class="form-label fw-semibold">{{ localize('global.discharged_at') ?: 'Discharged at' }} <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control datepicker_dari pdp-el" name="discharged_at_date" id="discharged_at_date" required placeholder="1403/01/01" autocomplete="off">
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" name="discharged_at_date" id="discharged_at_date" required placeholder="1403/01/01">
                         </div>
                         <div class="mb-3">
                             <label for="discharged_at_time" class="form-label fw-semibold">{{ localize('global.time') ?: 'Time' }}</label>

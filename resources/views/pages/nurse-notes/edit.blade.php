@@ -50,7 +50,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="date" class="form-label">{{ localize('global.date') }}</label>
-                                    <input type="date" name="date" id="date" class="form-control @error('date') is-invalid @enderror" 
+                                    <input type="date" autocomplete="off" name="date" id="date" class="form-control @error('date') is-invalid @enderror" 
                                            value="{{ old('date', $nurseNote->date?->format('Y-m-d')) }}" max="{{ date('Y-m-d') }}">
                                     @error('date')
                                         <div class="invalid-feedback">{{ $message }}</div>

@@ -66,7 +66,7 @@
                                 <label for="date_from" class="form-label fw-semibold">
                                     <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_from') ?: 'Date From' }}
                                 </label>
-                                <input type="text" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from"
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from"
                                        value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
                             </div>
 
@@ -75,7 +75,7 @@
                                 <label for="date_to" class="form-label fw-semibold">
                                     <i class="bx bx-calendar me-1 text-info"></i>{{ localize('global.date_to') ?: 'Date To' }}
                                 </label>
-                                <input type="text" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to"
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to"
                                        value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
                             </div>
 

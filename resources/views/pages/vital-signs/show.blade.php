@@ -265,7 +265,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="modal_date">{{ localize('global.date') }}</label>
-                                        <input type="text" class="form-control datepicker_dari @error('date') is-invalid @enderror"
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari @error('date') is-invalid @enderror"
                                             id="modal_date" name="date" value="{{ old('date') }}"
                                             placeholder="1403/01/01" autocomplete="off">
                                         @error('date')

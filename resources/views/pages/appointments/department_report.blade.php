@@ -40,7 +40,7 @@
                             <input type="text" 
                                    name="date_from" 
                                    id="date_from"
-                                   class="form-control datepicker_dari" 
+                                   autocomplete="off" class="form-control datepicker_dari" 
                                    value="{{ old('date_from', request('date_from')) }}"
                                    placeholder="{{ localize('global.from') }}" />
                         </div>
@@ -49,7 +49,7 @@
                             <input type="text" 
                                    name="date_to" 
                                    id="date_to"
-                                   class="form-control datepicker_dari" 
+                                   autocomplete="off" class="form-control datepicker_dari" 
                                    value="{{ old('date_to', request('date_to')) }}"
                                    placeholder="{{ localize('global.to') }}" />
                         </div>

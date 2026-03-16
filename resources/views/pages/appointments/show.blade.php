@@ -1348,7 +1348,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="date" class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                        <input type="text" class="form-control datepicker_dari pdp-el" name="date" id="anesthesia_date" 
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" name="date" id="anesthesia_date" 
                                             placeholder="{{ localize('global.date') }}" />
                                     </div>
                                     <div class="col-md-4">

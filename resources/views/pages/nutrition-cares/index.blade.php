@@ -59,10 +59,10 @@
                                     <input type="number" name="morphable_id" class="form-control" placeholder="Record ID" value="{{ request('morphable_id') }}">
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}" placeholder="From Date">
+                                    <input type="date" autocomplete="off" name="date_from" class="form-control" value="{{ request('date_from') }}" placeholder="From Date">
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}" placeholder="To Date">
+                                    <input type="date" autocomplete="off" name="date_to" class="form-control" value="{{ request('date_to') }}" placeholder="To Date">
                                 </div>
                                 <div class="col-md-1">
                                     <button type="submit" class="btn btn-primary">

@@ -661,7 +661,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="examination_date" class="form-label">{{ localize('global.examination_date') }}</label>
-                            <input type="text" class="form-control datepicker_dari" id="examination_date" name="examination_date" 
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari" id="examination_date" name="examination_date" 
                                    placeholder="{{ localize('global.select_date') }}" required readonly>
                         </div>
                         <div class="row">
@@ -714,7 +714,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="treatment_date" class="form-label">{{ localize('global.treatment_date') }} <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker_dari" id="treatment_date" name="treatment_date" 
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari" id="treatment_date" name="treatment_date" 
                                        placeholder="{{ localize('global.select_date') }}" required readonly>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -792,7 +792,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="xray_date" class="form-label">{{ localize('global.xray_date') }}</label>
-                            <input type="date" class="form-control" id="xray_date" name="xray_date" value="{{ date('Y-m-d') }}" required>
+                            <input type="date" autocomplete="off" class="form-control" id="xray_date" name="xray_date" value="{{ date('Y-m-d') }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="file" class="form-label">{{ localize('global.file') }}</label>
@@ -829,7 +829,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="note_date" class="form-label">{{ localize('global.note_date') }}</label>
-                            <input type="text" class="form-control datepicker_dari" id="note_date" name="note_date" 
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari" id="note_date" name="note_date" 
                                    placeholder="{{ localize('global.select_date') }}" required readonly>
                         </div>
                         <div class="mb-3">

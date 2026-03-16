@@ -44,12 +44,12 @@
         </div>
         <div class="col-md-2">
             <label for="date_from" class="form-label">{{ localize('global.date_from') }}</label>
-            <input type="text" class="form-control datepicker_dari" id="date_from" name="date_from"
+            <input type="text" autocomplete="off" class="form-control datepicker_dari" id="date_from" name="date_from"
                    value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
         </div>
         <div class="col-md-2">
             <label for="date_to" class="form-label">{{ localize('global.date_to') }}</label>
-            <input type="text" class="form-control datepicker_dari" id="date_to" name="date_to"
+            <input type="text" autocomplete="off" class="form-control datepicker_dari" id="date_to" name="date_to"
                    value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
         </div>
         <div class="col-md-2">

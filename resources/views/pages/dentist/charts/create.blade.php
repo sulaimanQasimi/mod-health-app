@@ -227,7 +227,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="treatment_date" class="form-label">{{ localize('global.treatment_date') }} <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control datepicker_dari" id="treatment_date" name="treatment_date" 
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari" id="treatment_date" name="treatment_date" 
                                        placeholder="{{ localize('global.select_date') }}" required readonly>
                             </div>
                             <div class="col-md-6 mb-3">

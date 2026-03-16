@@ -252,7 +252,7 @@
                                                             <div class="col-md-6">
                                                                 <label for="date"
                                                                     class="mt-2 mb-2">{{ localize('global.date') }}</label>
-                                                                <input type="text" class="form-control datepicker_dari" name="date"
+                                                                <input type="text" autocomplete="off" class="form-control datepicker_dari" name="date"
                                                                     value="{{ old('date', $operation->date) }}" />
                                                             </div>
                                                             <div class="col-md-6">

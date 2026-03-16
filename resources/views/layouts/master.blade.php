@@ -247,10 +247,9 @@
         onSelect: function () {},
         onRender: function () {}
     });
-
-        
-
-
+        // Disable autocomplete for all date inputs (Persian picker and native date)
+        $(".datepicker_dari").attr("autocomplete", "off");
+        $('input[type="date"]').attr("autocomplete", "off");
     });
 </script>
 

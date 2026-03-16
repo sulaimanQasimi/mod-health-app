@@ -132,7 +132,7 @@
                                         <span class="input-group-text">
                                             <i class="bx bx-calendar"></i>
                                         </span>
-                                        <input type="text" class="form-control datepicker_dari" id="join_date_from" name="join_date_from" 
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari" id="join_date_from" name="join_date_from" 
                                                value="{{ request('join_date_from') }}" placeholder="1403/01/01" autocomplete="off">
                                     </div>
                                 </div>
@@ -146,7 +146,7 @@
                                         <span class="input-group-text">
                                             <i class="bx bx-calendar"></i>
                                         </span>
-                                        <input type="text" class="form-control datepicker_dari" id="join_date_to" name="join_date_to" 
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari" id="join_date_to" name="join_date_to" 
                                                value="{{ request('join_date_to') }}" placeholder="1403/01/01" autocomplete="off">
                                     </div>
                                 </div>

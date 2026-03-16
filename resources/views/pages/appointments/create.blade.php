@@ -42,7 +42,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="date">{{localize('global.date')}}</label>
-                                        <input type="date" class="form-control" name="date"/>
+                                        <input type="date" autocomplete="off" class="form-control" name="date"/>
                                     </div>
                                     <div class="mb-3">
                                         <label for="time">{{localize('global.time')}}</label>

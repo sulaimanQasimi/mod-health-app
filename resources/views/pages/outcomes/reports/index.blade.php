@@ -51,11 +51,11 @@
                                         <div class="input-group input-daterange">
                                             <input type="text" name="from" id="from_date"
                                                 placeholder="{{ localize('global.from') }}"
-                                                class="form-control form-control datepicker_dari pdp-el" />
+                                                autocomplete="off" class="form-control form-control datepicker_dari pdp-el" />
                                             <span class="input-group-text">...</span>
                                             <input type="text" name="to" id="to_date"
                                                 placeholder="{{ localize('global.to') }}"
-                                                class="form-control form-control datepicker_dari pdp-el" />
+                                                autocomplete="off" class="form-control form-control datepicker_dari pdp-el" />
                                         </div>
                                     </div>
                                 </div>

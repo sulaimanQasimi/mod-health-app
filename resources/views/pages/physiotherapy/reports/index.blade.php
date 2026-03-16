@@ -19,7 +19,7 @@
                                     <div class="form-group mb-3">
                                         <label for="start_date" class="form-label">{{ localize('global.start_date') }} <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control datepicker_dari pdp-el persian-date @error('start_date') is-invalid @enderror"
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el persian-date @error('start_date') is-invalid @enderror"
                                             dir="ltr" id="start_date" name="start_date" value="" required readonly>
                                         @error('start_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -30,7 +30,7 @@
                                     <div class="form-group mb-3">
                                         <label for="end_date" class="form-label">{{ localize('global.end_date') }} <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control datepicker_dari pdp-el persian-date @error('end_date') is-invalid @enderror"
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el persian-date @error('end_date') is-invalid @enderror"
                                             dir="ltr" id="end_date" name="end_date" value="" required readonly>
                                         @error('end_date')
                                             <div class="invalid-feedback">{{ $message }}</div>

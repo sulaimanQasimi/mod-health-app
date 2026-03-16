@@ -92,7 +92,7 @@
 
                                 <div class="mb-3">
                                     <label for="date_of_birth" class="form-label">{{ localize('global.date_of_birth') }}</label>
-                                    <input type="text" class="form-control datepicker_dari @error('date_of_birth') is-invalid @enderror" 
+                                    <input type="text" autocomplete="off" class="form-control datepicker_dari @error('date_of_birth') is-invalid @enderror" 
                                            id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', $nurse->date_of_birth ? $nurse->date_of_birth->format('Y-m-d') : '') }}" readonly>
                                     @error('date_of_birth')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -222,7 +222,7 @@
 
                                 <div class="mb-3">
                                     <label for="date_of_joining" class="form-label">{{ localize('global.date_of_joining') }}</label>
-                                    <input type="text" class="form-control datepicker_dari @error('date_of_joining') is-invalid @enderror" 
+                                    <input type="text" autocomplete="off" class="form-control datepicker_dari @error('date_of_joining') is-invalid @enderror" 
                                            id="date_of_joining" name="date_of_joining" value="{{ old('date_of_joining', $nurse->date_of_joining ? $nurse->date_of_joining->format('Y-m-d') : '') }}">
                                     @error('date_of_joining')
                                         <div class="invalid-feedback">{{ $message }}</div>

@@ -41,11 +41,11 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" class="form-control datepicker_dari" id="date_from_filter" name="date_from"
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari" id="date_from_filter" name="date_from"
                                    value="{{ request('date_from') }}" placeholder="1403/01/01" autocomplete="off">
                         </div>
                         <div class="col-md-2">
-                            <input type="text" class="form-control datepicker_dari" id="date_to_filter" name="date_to"
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari" id="date_to_filter" name="date_to"
                                    value="{{ request('date_to') }}" placeholder="1403/01/01" autocomplete="off">
                         </div>
                         <div class="col-md-2">

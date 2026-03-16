@@ -63,10 +63,10 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="text" name="start_date" class="form-control datepicker_dari" value="{{ request('start_date') }}" placeholder="{{ localize('global.start_date') }}" readonly>
+                                    <input type="text" autocomplete="off" name="start_date" class="form-control datepicker_dari" value="{{ request('start_date') }}" placeholder="{{ localize('global.start_date') }}" readonly>
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="text" name="end_date" class="form-control datepicker_dari" value="{{ request('end_date') }}" placeholder="{{ localize('global.end_date') }}" readonly>
+                                    <input type="text" autocomplete="off" name="end_date" class="form-control datepicker_dari" value="{{ request('end_date') }}" placeholder="{{ localize('global.end_date') }}" readonly>
                                 </div>
                                 <div class="col-md-2">
                                     <select name="nurse_id" class="form-select">

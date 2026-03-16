@@ -39,7 +39,7 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <input type="text" class="form-control form-control datepicker_dari pdp-el" id="order_date_filter" placeholder="{{ localize('global.order_date') }}">
+                            <input type="text" autocomplete="off" class="form-control form-control datepicker_dari pdp-el" id="order_date_filter" placeholder="{{ localize('global.order_date') }}">
                         </div>
                         <div class="col-md-3">
                             <input type="text" class="form-control" id="search_filter" placeholder="{{ localize('global.mar_search') }}">

@@ -80,7 +80,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
                                         <label for="date">{{ localize('global.date') }} <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control datepicker_dari @error('date') is-invalid @enderror"
+                                        <input type="text" autocomplete="off" class="form-control datepicker_dari @error('date') is-invalid @enderror"
                                             id="date" name="date" value="{{ old('date') }}" required placeholder="{{ localize('global.date') }}">
                                         @error('date')
                                             <span class="invalid-feedback" role="alert">

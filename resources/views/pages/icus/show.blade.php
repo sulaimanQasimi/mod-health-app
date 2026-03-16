@@ -1663,7 +1663,7 @@
                                             </label>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <input type="text" class="form-control datepicker_dari"
+                                                    <input type="text" autocomplete="off" class="form-control datepicker_dari"
                                                         name="death_date" id="death_date{{ $icu->id }}">
                                                 </div>
                                                 <div class="col-md-6">

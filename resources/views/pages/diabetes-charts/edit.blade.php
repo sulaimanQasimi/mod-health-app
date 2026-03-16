@@ -146,7 +146,7 @@
                                 
                                 <div class="mb-3">
                                     <label for="date" class="form-label">{{ localize('global.date') }} <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror" 
+                                    <input type="date" autocomplete="off" class="form-control @error('date') is-invalid @enderror" 
                                            id="date" name="date" value="{{ old('date', $diabetesChart->date?->format('Y-m-d')) }}" required>
                                     @error('date')
                                         <div class="invalid-feedback">{{ $message }}</div>

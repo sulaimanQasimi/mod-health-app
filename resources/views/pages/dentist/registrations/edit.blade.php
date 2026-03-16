@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="registration_date" class="form-label">{{ localize('global.registration_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control @error('registration_date') is-invalid @enderror" 
+                                <input type="date" autocomplete="off" class="form-control @error('registration_date') is-invalid @enderror" 
                                     id="registration_date" name="registration_date" 
                                     value="{{ old('registration_date', $dentistRegistration->registration_date->format('Y-m-d')) }}" required>
                                 @error('registration_date')

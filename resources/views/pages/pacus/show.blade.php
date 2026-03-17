@@ -31,25 +31,25 @@
 
                                                     <h5 class="mb-2">{{ localize('global.patient_name') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->name }}
+                                                        {{ $pacu->patient?->name ?? '-' }}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.last_name') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->last_name }}
+                                                        {{ $pacu->patient?->last_name ?? '-' }}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.phone') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->phone }}
+                                                        {{ $pacu->patient?->phone ?? '-' }}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.nid') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->nid }}
+                                                        {{ $pacu->patient?->nid ?? '-' }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -59,25 +59,25 @@
 
                                                     <h5 class="mb-2">{{ localize('global.province') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->province->name_dr }}
+                                                        {{ $pacu->patient->province?->name_dr ?? '-' }}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.district') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->district->name_dr }}
+                                                        {{ $pacu->patient->district?->name_dr ?? '-' }}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.referred_by') }}</h5>
                                                     <div>
-                                                        {{ $pacu->patient->recipient->name }}
+                                                        {{ $pacu->patient->recipient?->name ?? '-' }}
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <h5 class="mb-2">{{ localize('global.creation_date') }}</h5>
                                                     <div>
-                                                        {{ \Verta::instance($pacu->patient->created_at)->format('Y/m/d H:i') }}
+                                                        {{ $pacu->patient?->created_at ? \Verta::instance($pacu->patient->created_at)->format('Y/m/d H:i') : '-' }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -87,17 +87,21 @@
                                             <!-- Left side content -->
                                             <div class="row">
                                                 <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                                    @if($pacu->patient?->id)
                                                     {!! QrCode::size(100)->generate($pacu->patient->id) !!}
+                                                    @else
+                                                    <span class="text-muted">-</span>
+                                                    @endif
                                                 </div>
                                                 <div class="col-md-6 d-flex justify-content-start align-items-center">
-                                                    @isset($pacu->patient->image)
+                                                    @if($pacu->patient?->image)
                                                         <img src="{{ asset($pacu->patient->image) }}" alt="Patient Image"
                                                             width="100" height="100">
                                                     @else
                                                         <div class=" badge bg-label-danger mt-4">
                                                             {{ localize('global.no_image') }}
                                                         </div>
-                                                    @endisset
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -190,7 +194,7 @@
                                                 <input type="hidden" id="p_a_c_u_id{{ $pacu->id }}" name="p_a_c_u_id"
                                                     value="{{ $pacu->id }}">
                                                 <input type="hidden" id="doctor_id{{ $pacu->id }}"
-                                                    name="doctor_id" value="{{ auth()->user()->id }}">
+                                                    name="doctor_id" value="{{ auth()->user()?->id ?? '' }}">
                                                 <!-- Add other diagnosis form fields as needed -->
                                                 <div class="form-group">
                                                     <label
@@ -224,9 +228,9 @@
                                         @forelse ($pacu->visits as $visit)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $visit->description }}</td>
-                                                <td>{{ $visit->doctor->department->name }}</td>
-                                                <td>{{ $visit->doctor->name }}</td>
+                                                <td>{{ $visit->description ?? '-' }}</td>
+                                                <td>{{ $visit->doctor?->department?->name ?? '-' }}</td>
+                                                <td>{{ $visit->doctor?->name ?? '-' }}</td>
                                                 <td>
                                                     <a href="{{ route('visits.edit', $visit->id) }}"><span><i
                                                                 class="bx bx-edit"></i></span></a>

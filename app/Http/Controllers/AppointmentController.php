@@ -719,7 +719,7 @@ class AppointmentController extends Controller
                               'job', 'job_type', 'gender', 'rank', 'relation_id', 'province_id', 'district_id'])) {
             $perPage = $request->get('per_page', 15);
             
-            $query = Appointment::with(['patient.relation', 'patient.province', 'patient.district', 'patient.creator', 'doctor', 'processedBy', 'branch'])
+            $query = Appointment::with(['patient.relation', 'patient.province', 'patient.district', 'creator', 'doctor', 'processedBy', 'branch'])
                 ->select([
                     'appointments.id',
                     'appointments.patient_id',
@@ -731,7 +731,8 @@ class AppointmentController extends Controller
                     'appointments.refferal_remarks',
                     'appointments.date',
                     'appointments.time',
-                    'appointments.processed_by'
+                    'appointments.processed_by',
+                    'appointments.created_by',
                 ]);
 
             // Apply filters
@@ -760,17 +761,14 @@ class AppointmentController extends Controller
      */
     private function applyAppointmentReportFilters($query, Request $request)
     {
-        // Patient filters (name, registered_by, job, job_type, gender, rank, relation, province, district)
-        $hasPatientFilter = $request->filled('patient_name') || $request->filled('registered_by') || $request->filled('job')
+        // Patient filters (name, job, job_type, gender, rank, relation, province, district)
+        $hasPatientFilter = $request->filled('patient_name') || $request->filled('job')
             || $request->filled('job_type') || ($request->filled('gender') && $request->gender !== '')
             || $request->filled('rank') || $request->filled('relation_id') || $request->filled('province_id') || $request->filled('district_id');
         if ($hasPatientFilter) {
             $query->whereHas('patient', function ($q) use ($request) {
                 if ($request->filled('patient_name')) {
                     $q->where('name', 'like', '%' . $request->patient_name . '%');
-                }
-                if ($request->filled('registered_by')) {
-                    $q->where('created_by', $request->registered_by);
                 }
                 if ($request->filled('job')) {
                     $q->where('job', 'like', '%' . $request->job . '%');
@@ -794,6 +792,11 @@ class AppointmentController extends Controller
                     $q->where('district_id', $request->district_id);
                 }
             });
+        }
+
+        // Who created this appointment (users.id)
+        if ($request->filled('registered_by')) {
+            $query->where('appointments.created_by', $request->registered_by);
         }
 
         // Clinic type filter (appointment)
@@ -850,7 +853,7 @@ class AppointmentController extends Controller
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
             ->leftJoin('branches as b', 'a.branch_id', '=', 'b.id')
             ->leftJoin('users as u', 'a.processed_by', '=', 'u.id')
-            ->leftJoin('users as uc', 'p.created_by', '=', 'uc.id')
+            ->leftJoin('users as uc', 'a.created_by', '=', 'uc.id')
             ->leftJoin('relations as rel', 'p.relation_id', '=', 'rel.id')
             ->leftJoin('provinces as prov', 'p.province_id', '=', 'prov.id')
             ->leftJoin('districts as dist', 'p.district_id', '=', 'dist.id')
@@ -896,7 +899,7 @@ class AppointmentController extends Controller
 
             // Patient filters
             if ($request->filled('registered_by')) {
-                $query->where('p.created_by', $request->registered_by);
+                $query->where('a.created_by', $request->registered_by);
             }
             if ($request->filled('job')) {
                 $query->where('p.job', 'like', '%' . $request->job . '%');

@@ -97,7 +97,7 @@
                             @endif
                         </td>
                         <td>{{ $item->processedBy->name ?? '—' }}</td>
-                        <td>{{ $item->patient?->creator?->name ?? '—' }}</td>
+                        <td>{{ $item->creator?->name ?? '—' }}</td>
                         <td>{{ $item->patient?->job ?? '—' }}</td>
                         <td>
                             @if($item->patient && $item->patient->job_type)

@@ -138,6 +138,11 @@ class Appointment extends Model
         return $this->belongsTo(User::class, 'processed_by');
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function branch()
     {
         return $this->belongsTo(Branch::class);

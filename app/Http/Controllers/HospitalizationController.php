@@ -116,56 +116,90 @@ class HospitalizationController extends Controller
     
     public function discharged(Request $request)
     {
-        if ($request->ajax()) {
-            $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
-                ->where('is_discharged', '1')
+        $rooms = Room::select('id', 'name')->orderBy('name')->get();
+        $doctors = Doctor::where('active_status', true)->orderBy('name')->get();
+
+        // DataTables sends `draw`; some clients omit X-Requested-With — still return JSON.
+        if ($request->ajax() || $request->has('draw')) {
+            $hospitalizations = $this->buildDischargedHospitalizationsQuery($request)
                 ->with(['patient', 'room', 'bed', 'doctor'])
+                ->orderByDesc('hospitalizations.discharged_at')
+                ->orderByDesc('hospitalizations.id')
                 ->get()
                 ->map(function ($hospitalization) {
-
-                    if ($hospitalization->created_at) {
-                        $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
-                    } else {
-                        $hospitalization->jalali_date = 'Not set';
-                    }
-    
-                    if ($hospitalization->discharged_at) {
-                        $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
-                    } else {
-                        $hospitalization->jalali_discharged_at = 'Not set';
-                    }
-    
-                    return $hospitalization;
+                    return $this->mapDischargedHospitalizationRow($hospitalization);
                 });
-    
+
             return response()->json([
                 'data' => $hospitalizations,
             ]);
         }
-    
-        // For non-AJAX requests
-        $hospitalizations = Hospitalization::where('branch_id', auth()->user()->branch_id)
-            ->where('is_discharged', '1')
-            ->with(['patient', 'room', 'bed', 'doctor'])
-            ->get()
-            ->map(function ($hospitalization) {
 
-                if ($hospitalization->created_at) {
-                    $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
-                } else {
-                    $hospitalization->jalali_date = 'Not set';
-                }
-    
-                if ($hospitalization->discharged_at) {
-                    $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
-                } else {
-                    $hospitalization->jalali_discharged_at = 'Not set';
-                }
-    
-                return $hospitalization;
+        return view('pages.hospitalizations.discharged', compact('rooms', 'doctors'));
+    }
+
+    /**
+     * Filters for the discharged hospitalizations DataTables endpoint.
+     */
+    private function buildDischargedHospitalizationsQuery(Request $request)
+    {
+        $branchId = auth()->user()->branch_id;
+        $query = Hospitalization::query()
+            ->where('hospitalizations.branch_id', $branchId)
+            ->where('hospitalizations.is_discharged', '1');
+
+        $patientId = (int) $request->input('patient_id', 0);
+        if ($patientId > 0) {
+            $query->where('hospitalizations.patient_id', $patientId);
+        }
+
+        $searchTerm = trim((string) $request->input('filter_search', ''));
+        if ($searchTerm !== '') {
+            $like = '%'.$searchTerm.'%';
+            $query->whereHas('patient', function ($pq) use ($like) {
+                $pq->where('name', 'like', $like);
             });
-    
-        return view('pages.hospitalizations.discharged', compact('hospitalizations'));
+        }
+
+        if ($request->filled('room_id')) {
+            $query->where('hospitalizations.room_id', $request->room_id);
+        }
+
+        if ($request->filled('doctor_id')) {
+            $query->where('hospitalizations.doctor_id', $request->doctor_id);
+        }
+
+        if ($request->filled('discharge_date_from')) {
+            try {
+                $query->whereDate('hospitalizations.discharged_at', '>=', Verta::parse($request->discharge_date_from)->datetime());
+            } catch (\Exception $e) {
+            }
+        }
+        if ($request->filled('discharge_date_to')) {
+            try {
+                $query->whereDate('hospitalizations.discharged_at', '<=', Verta::parse($request->discharge_date_to)->datetime());
+            } catch (\Exception $e) {
+            }
+        }
+
+        return $query;
+    }
+
+    private function mapDischargedHospitalizationRow(Hospitalization $hospitalization): Hospitalization
+    {
+        if ($hospitalization->created_at) {
+            $hospitalization->jalali_date = Dcter::GregorianToJalali($hospitalization->created_at->format('Y-m-d'));
+        } else {
+            $hospitalization->jalali_date = 'Not set';
+        }
+
+        if ($hospitalization->discharged_at) {
+            $hospitalization->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($hospitalization->discharged_at)->format('Y-m-d'));
+        } else {
+            $hospitalization->jalali_discharged_at = 'Not set';
+        }
+
+        return $hospitalization;
     }
 
     /**

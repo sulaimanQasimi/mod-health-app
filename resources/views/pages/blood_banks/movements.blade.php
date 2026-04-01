@@ -1,6 +1,28 @@
 @extends('layouts.master')
 
 @section('content')
+    @push('custom-css')
+        <style>
+            .blood-movements-filter-card .card-body {
+                padding: 1.25rem;
+            }
+
+            .blood-movements-filter-card .form-label {
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+
+            .blood-movements-filter-card .form-select-sm,
+            .blood-movements-filter-card .form-control-sm,
+            .blood-movements-filter-card .btn-sm {
+                font-size: 0.95rem;
+                min-height: 2.5rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+        </style>
+    @endpush
+
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
             @if (Session::has('success') || Session::has('error'))
@@ -19,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="card mb-3">
+            <div class="card mb-3 blood-movements-filter-card">
                 <div class="card-body">
                     <form method="get" class="row g-2 align-items-end">
                         <div class="col-md-2">

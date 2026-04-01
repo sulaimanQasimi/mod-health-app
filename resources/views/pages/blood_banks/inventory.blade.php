@@ -75,11 +75,6 @@
                             <form action="{{ route('blood_banks.inventory.store') }}" method="POST" class="h-100 d-flex flex-column">
                                 @csrf
                                 <div class="modal-header">
-                                    <div>
-                                        <h5 class="modal-title mb-0" id="bloodInventoryAddModalLabel">
-                                            {{ localize('global.add_blood_manually') }}</h5>
-                                        <small class="text-muted">{{ localize('global.add_blood_manually_expiry_hint') }}</small>
-                                    </div>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="{{ localize('global.close') }}"></button>
                                 </div>
@@ -94,10 +89,6 @@
                                         </div>
                                     @endif
                                     <div class="row g-3">
-                            <div class="col-12">
-                                <h6 class="mb-2 text-body-secondary">{{ localize('global.donor_phlebotomy_section') }}</h6>
-                                <p class="small text-muted mb-0">{{ localize('global.inventory_donor_hint') }}</p>
-                            </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ localize('global.blood_donor_link_patient') }}</label>
                                 <select name="patient_id" id="bloodDonorPatientId"

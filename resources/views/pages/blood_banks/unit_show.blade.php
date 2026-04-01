@@ -15,6 +15,7 @@
 
             .blood-unit-details-card .detail-tile-value {
                 background-color: var(--bs-secondary-bg);
+                border: 1px solid var(--bs-border-color);
                 padding: 0.9rem 0.75rem;
                 min-height: 58px;
                 display: flex;

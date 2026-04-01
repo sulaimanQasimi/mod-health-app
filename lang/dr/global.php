@@ -1112,7 +1112,7 @@ return [
     'compatible' => 'سازگار',
     'incompatible' => 'ناسازگار',
     'donor_type' => 'نوع دهنده',
-    'comorbidities' => 'بیماری‌های همزمان',
+    'comorbidities' => 'امراض متممه',
     'department_required_for_military_donor' => 'وقتی نوع دهنده نظامی باشد، انتخاب بخش الزامی است.',
     'issued_blood_units' => 'واحدهای صادرشده',
     'report_appointment_id' => 'نوبت',

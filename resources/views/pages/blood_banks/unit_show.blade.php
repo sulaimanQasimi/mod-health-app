@@ -1,6 +1,29 @@
 @extends('layouts.master')
 
 @section('content')
+    @push('custom-css')
+        <style>
+            .blood-unit-details-card .detail-tile-label {
+                background-color: #35365f;
+                color: #696cff;
+                padding: 0.5rem 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-weight: 600;
+            }
+
+            .blood-unit-details-card .detail-tile-value {
+                background-color: var(--bs-secondary-bg);
+                padding: 0.9rem 0.75rem;
+                min-height: 58px;
+                display: flex;
+                align-items: center;
+                font-weight: 600;
+            }
+        </style>
+    @endpush
+
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
             @if (Session::has('success') || Session::has('error'))
@@ -16,168 +39,258 @@
 
             <div class="row g-3 mb-4">
                 <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">{{ localize('global.unit_information') }}</h5>
+                    <div class="card border shadow-sm blood-unit-details-card">
+                        <div class="card-header d-flex align-items-center justify-content-between"
+                            style="background-color: #35365f !important; color: #696cff !important;">
+                            <h5 class="mb-0 d-flex align-items-center" style="color: #696cff !important;">
+                                {{ localize('global.unit_information') }}
+                            </h5>
+                            <span class="badge fs-6 ms-auto" style="background-color: #696cff !important; color: #35365f !important;">
+                                {{ $bloodUnit->status }}
+                            </span>
                         </div>
-                        <div class="card-body">
-                            <div class="row g-2">
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.blood_group') }}</span>
-                                    <div class="fw-semibold">{{ $bloodUnit->blood_group }}</div>
-                                </div>
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.rh') }}</span>
-                                    <div class="fw-semibold">{{ $bloodUnit->rh }}</div>
-                                </div>
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.component_type') }}</span>
-                                    <div class="fw-semibold">{{ $bloodUnit->component_type }}</div>
-                                </div>
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.status') }}</span>
-                                    <div class="fw-semibold">{{ $bloodUnit->status }}</div>
-                                </div>
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.screening_status') }}</span>
-                                    <div class="fw-semibold">
-                                        @php
-                                            $ts = $bloodUnit->test?->overall_status ?? 'pending';
-                                        @endphp
-                                        @if ($ts === 'passed')
-                                            <span class="badge bg-label-success">{{ localize('global.passed') }}</span>
-                                        @elseif ($ts === 'failed')
-                                            <span class="badge bg-label-danger">{{ localize('global.failed') }}</span>
-                                        @else
-                                            <span class="badge bg-label-warning">{{ localize('global.pending') }}</span>
-                                        @endif
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-droplet"></i>
+                                            <span>{{ localize('global.blood_group') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value">{{ $bloodUnit->blood_group }}</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.volume_ml') }}</span>
-                                    <div class="fw-semibold">{{ $bloodUnit->volume_ml ?? '—' }}</div>
+                                <div class="col-md-4">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-plus-medical"></i>
+                                            <span>{{ localize('global.rh') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value">{{ $bloodUnit->rh }}</div>
+                                    </div>
                                 </div>
-                                <div class="col-md-4"><span class="text-muted">{{ localize('global.collected_at') }}</span>
-                                    <div class="fw-semibold" dir="ltr">{{ $bloodUnit->collected_at?->format('Y-m-d') ?? '—' }}</div>
+                                <div class="col-md-4">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-category"></i>
+                                            <span>{{ localize('global.component_type') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value">{{ $bloodUnit->component_type }}</div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6"><span class="text-muted">{{ localize('global.expires_at') }}</span>
-                                    <div class="fw-semibold" dir="ltr">{{ $bloodUnit->expires_at?->format('Y-m-d H:i') }}</div>
+                                <div class="col-md-4">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-check-shield"></i>
+                                            <span>{{ localize('global.status') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value">{{ $bloodUnit->status }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-test-tube"></i>
+                                            <span>{{ localize('global.screening_status') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value">
+                                            @php
+                                                $ts = $bloodUnit->test?->overall_status ?? 'pending';
+                                            @endphp
+                                            @if ($ts === 'passed')
+                                                <span class="badge bg-label-success">{{ localize('global.passed') }}</span>
+                                            @elseif ($ts === 'failed')
+                                                <span class="badge bg-label-danger">{{ localize('global.failed') }}</span>
+                                            @else
+                                                <span class="badge bg-label-warning">{{ localize('global.pending') }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-flask"></i>
+                                            <span>{{ localize('global.volume_ml') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value">{{ $bloodUnit->volume_ml ?? '—' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-calendar"></i>
+                                            <span>{{ localize('global.collected_at') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value" dir="ltr">{{ $bloodUnit->collected_at?->format('Y-m-d') ?? '—' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="h-100">
+                                        <div class="detail-tile-label">
+                                            <i class="bx bx-time-five"></i>
+                                            <span>{{ localize('global.expires_at') }}</span>
+                                        </div>
+                                        <div class="detail-tile-value" dir="ltr">{{ $bloodUnit->expires_at?->format('Y-m-d H:i') }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card mt-3">
-                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <h5 class="mb-0">{{ localize('global.blood_unit_screening_results') }}</h5>
+                    <div class="card mt-3 border shadow-sm blood-unit-details-card">
+                        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2"
+                            style="background-color: #35365f !important; color: #696cff !important;">
+                            <h5 class="mb-0" style="color: #696cff !important;">{{ localize('global.blood_unit_screening_results') }}</h5>
                             @if ($bloodUnit->test?->overall_status === 'passed')
-                                <span class="badge bg-label-success">{{ localize('global.passed') }}</span>
+                                <span class="badge fs-6 ms-auto"
+                                    style="background-color: #696cff !important; color: #35365f !important;">{{ localize('global.passed') }}</span>
                             @elseif ($bloodUnit->test?->overall_status === 'failed')
-                                <span class="badge bg-label-danger">{{ localize('global.failed') }}</span>
+                                <span class="badge fs-6 ms-auto"
+                                    style="background-color: #696cff !important; color: #35365f !important;">{{ localize('global.failed') }}</span>
                             @elseif ($bloodUnit->test)
-                                <span class="badge bg-label-warning">{{ localize('global.pending') }}</span>
+                                <span class="badge fs-6 ms-auto"
+                                    style="background-color: #696cff !important; color: #35365f !important;">{{ localize('global.pending') }}</span>
                             @endif
                         </div>
-                        <div class="card-body p-0">
+                        <div class="card-body p-4">
                             @if ($bloodUnit->tests->isNotEmpty())
                                 @foreach ($bloodUnit->tests as $singleTest)
-                                    <div class="table-responsive {{ $loop->first ? '' : 'border-top' }}">
-                                        <table class="table table-sm mb-0">
-                                            <tbody>
-                                                <tr>
-                                                    <th class="text-muted w-25">{{ localize('global.abo_result') }}</th>
-                                                    <td>{{ $singleTest->abo_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.rh_result') }}</th>
-                                                    <td>{{ $singleTest->rh_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.dct') }}</th>
-                                                    <td>{{ $singleTest->dct_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.ict') }}</th>
-                                                    <td>{{ $singleTest->ict_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.hbs') }}</th>
-                                                    <td>{{ $singleTest->hbs_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.hcv') }}</th>
-                                                    <td>{{ $singleTest->hcv_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.hiv') }}</th>
-                                                    <td>{{ $singleTest->hiv_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.vdrl') }}</th>
-                                                    <td>{{ $singleTest->vdrl_result ?? '—' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th class="text-muted">{{ localize('global.status') }}</th>
-                                                    <td>{{ $singleTest->overall_status ?? '—' }}</td>
-                                                </tr>
-                                                @if ($singleTest->remarks)
-                                                    <tr>
-                                                        <th class="text-muted">{{ localize('global.remarks') }}</th>
-                                                        <td>{{ $singleTest->remarks }}</td>
-                                                    </tr>
-                                                @endif
-                                                @if ($singleTest->tested_at)
-                                                    <tr>
-                                                        <th class="text-muted">{{ localize('global.last_tested_at') }}</th>
-                                                        <td dir="ltr">{{ $singleTest->tested_at->format('Y-m-d H:i') }}
+                                    <div class="{{ $loop->first ? '' : 'border-top pt-3 mt-3' }}">
+                                        <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.abo_result') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->abo_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.rh_result') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->rh_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.dct') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->dct_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.ict') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->ict_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.hbs') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->hbs_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.hcv') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->hcv_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.hiv') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->hiv_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.vdrl') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->vdrl_result ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="h-100">
+                                                    <div class="detail-tile-label"><span>{{ localize('global.status') }}</span></div>
+                                                    <div class="detail-tile-value">{{ $singleTest->overall_status ?? '—' }}</div>
+                                                </div>
+                                            </div>
+                                            @if ($singleTest->remarks)
+                                                <div class="col-md-9">
+                                                    <div class="h-100">
+                                                        <div class="detail-tile-label"><span>{{ localize('global.remarks') }}</span></div>
+                                                        <div class="detail-tile-value">{{ $singleTest->remarks }}</div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            @if ($singleTest->tested_at)
+                                                <div class="col-md-12">
+                                                    <div class="h-100">
+                                                        <div class="detail-tile-label"><span>{{ localize('global.last_tested_at') }}</span></div>
+                                                        <div class="detail-tile-value" dir="ltr">
+                                                            {{ $singleTest->tested_at->format('Y-m-d H:i') }}
                                                             @if ($singleTest->testedBy)
                                                                 — {{ $singleTest->testedBy->name }}
                                                             @endif
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endforeach
                             @else
-                                <div class="p-3 text-muted">{{ localize('global.blood_unit_no_screening_record') }}</div>
+                                <div class="detail-tile-value">{{ localize('global.blood_unit_no_screening_record') }}</div>
                             @endif
                         </div>
                     </div>
 
-                    <div class="card mt-3">
-                        <div class="card-header">
-                            <h5 class="mb-0">{{ localize('global.donor_and_sample') }}</h5>
+                    <div class="card mt-3 border shadow-sm blood-unit-details-card">
+                        <div class="card-header d-flex align-items-center justify-content-between"
+                            style="background-color: #35365f !important; color: #696cff !important;">
+                            <h5 class="mb-0" style="color: #696cff !important;">{{ localize('global.donor_and_sample') }}</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-4">
                             @if ($bloodUnit->donation)
-                                <div class="row g-2">
+                                <div class="row g-3">
                                     <div class="col-md-4">
-                                        <div class="text-muted small">{{ localize('global.donor') }}</div>
-                                        <div class="fw-semibold">{{ $bloodUnit->donation->donor?->name ?? '—' }}</div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="text-muted small">{{ localize('global.patient') }}</div>
-                                        <div class="fw-semibold">
-                                            @if ($bloodUnit->donation->donor?->patient)
-                                                <a href="{{ route('patients.show', $bloodUnit->donation->donor->patient) }}">
-                                                    {{ trim($bloodUnit->donation->donor->patient->name.' '.($bloodUnit->donation->donor->patient->last_name ?? '')) }}
-                                                </a>
-                                            @else
-                                                —
-                                            @endif
+                                        <div class="h-100">
+                                            <div class="detail-tile-label"><span>{{ localize('global.donor') }}</span></div>
+                                            <div class="detail-tile-value">{{ $bloodUnit->donation->donor?->name ?? '—' }}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="text-muted small">{{ localize('global.department') }}</div>
-                                        <div class="fw-semibold">{{ $bloodUnit->donation->donor?->department?->name ?? '—' }}</div>
+                                        <div class="h-100">
+                                            <div class="detail-tile-label"><span>{{ localize('global.patient') }}</span></div>
+                                            <div class="detail-tile-value">
+                                                @if ($bloodUnit->donation->donor?->patient)
+                                                    <a href="{{ route('patients.show', $bloodUnit->donation->donor->patient) }}">
+                                                        {{ trim($bloodUnit->donation->donor->patient->name.' '.($bloodUnit->donation->donor->patient->last_name ?? '')) }}
+                                                    </a>
+                                                @else
+                                                    —
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="text-muted small">{{ localize('global.phlebotomy_at') }}</div>
-                                        <div class="fw-semibold" dir="ltr">{{ $bloodUnit->donation->phlebotomy_at?->format('Y-m-d H:i') ?? '—' }}</div>
+                                        <div class="h-100">
+                                            <div class="detail-tile-label"><span>{{ localize('global.department') }}</span></div>
+                                            <div class="detail-tile-value">{{ $bloodUnit->donation->donor?->department?->name ?? '—' }}</div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="text-muted small">{{ localize('global.samples') }}</div>
-                                        <div class="fw-semibold">{{ $bloodUnit->donation->samples?->count() ?? 0 }}</div>
+                                        <div class="h-100">
+                                            <div class="detail-tile-label"><span>{{ localize('global.phlebotomy_at') }}</span></div>
+                                            <div class="detail-tile-value" dir="ltr">{{ $bloodUnit->donation->phlebotomy_at?->format('Y-m-d H:i') ?? '—' }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="h-100">
+                                            <div class="detail-tile-label"><span>{{ localize('global.samples') }}</span></div>
+                                            <div class="detail-tile-value">{{ $bloodUnit->donation->samples?->count() ?? 0 }}</div>
+                                        </div>
                                     </div>
                                 </div>
                             @else
-                                <div class="text-muted">{{ localize('global.no_donation_linked') }}</div>
+                                <div class="detail-tile-value">{{ localize('global.no_donation_linked') }}</div>
                             @endif
                         </div>
                     </div>

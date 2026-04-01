@@ -21,6 +21,25 @@
                 overflow-y: auto !important;
                 -webkit-overflow-scrolling: touch;
             }
+
+            /* Larger, easier-to-read filter panel */
+            .blood-inventory-filter-card .card-body {
+                padding: 1.25rem;
+            }
+
+            .blood-inventory-filter-card .form-label {
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+
+            .blood-inventory-filter-card .form-select-sm,
+            .blood-inventory-filter-card .form-control-sm,
+            .blood-inventory-filter-card .btn-sm {
+                font-size: 0.95rem;
+                min-height: 2.5rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
         </style>
     @endpush
 
@@ -255,9 +274,13 @@
                 </div>
             @endcanany
 
-            <div class="card">
+            <div class="card mb-3 blood-inventory-filter-card">
                 <div class="card-header">
-                    <h5 class="mb-2">{{ localize('global.blood_inventory') }}</h5>
+                    <h6 class="mb-0">
+                        <i class="bx bx-filter-alt me-1"></i>{{ localize('global.filters') }}
+                    </h6>
+                </div>
+                <div class="card-body">
                     <form method="get" class="row g-2 align-items-end">
                         <div class="col-md-2">
                             <label class="form-label small mb-0">{{ localize('global.status') }}</label>
@@ -297,6 +320,12 @@
                             <a href="{{ route('blood_banks.inventory') }}" class="btn btn-sm btn-outline-secondary">{{ localize('global.reset') }}</a>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ localize('global.blood_inventory') }}</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">

@@ -57,7 +57,11 @@ class Visit extends Model
 
     public function getAssociatedFoodTypesAttribute()
     {
-        $foodTypeIds = array_map('intval', json_decode($this->food_type_id, true));
+        $decoded = json_decode($this->food_type_id ?? '[]', true);
+        $foodTypeIds = is_array($decoded) ? array_map('intval', $decoded) : [];
+        if (empty($foodTypeIds)) {
+            return collect();
+        }
         return FoodType::whereIn('id', $foodTypeIds)->get();
     }
 }

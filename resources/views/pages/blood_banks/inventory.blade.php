@@ -12,7 +12,12 @@
                 max-height: calc(100vh - 2rem);
             }
 
+            #bloodInventoryAddModal form {
+                min-height: 0;
+            }
+
             #bloodInventoryAddModal .modal-body {
+                min-height: 0;
                 overflow-y: auto !important;
                 -webkit-overflow-scrolling: touch;
             }
@@ -48,7 +53,7 @@
                     aria-labelledby="bloodInventoryAddModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
-                            <form action="{{ route('blood_banks.inventory.store') }}" method="POST">
+                            <form action="{{ route('blood_banks.inventory.store') }}" method="POST" class="h-100 d-flex flex-column">
                                 @csrf
                                 <div class="modal-header">
                                     <div>
@@ -59,7 +64,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="{{ localize('global.close') }}"></button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body overflow-auto">
                                     @if ($errors->any())
                                         <div class="alert alert-danger">
                                             <ul class="mb-0">

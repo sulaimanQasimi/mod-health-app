@@ -3,9 +3,43 @@
 @section('content')
     @push('custom-css')
         <style>
+            .blood-unit-details-card {
+                --blood-details-header-bg: var(--bs-primary-bg-subtle);
+                --blood-details-header-color: var(--bs-primary-text-emphasis, var(--bs-primary));
+                --blood-details-badge-bg: var(--bs-primary);
+                --blood-details-badge-color: #fff;
+                --blood-details-tile-label-bg: var(--bs-primary-bg-subtle);
+                --blood-details-tile-label-color: var(--bs-primary-text-emphasis, var(--bs-primary));
+                --blood-details-tile-value-bg: var(--bs-tertiary-bg, var(--bs-secondary-bg));
+            }
+
+            [data-bs-theme="dark"] .blood-unit-details-card {
+                --blood-details-header-bg: rgba(105, 108, 255, 0.18);
+                --blood-details-header-color: #b4b8ff;
+                --blood-details-badge-bg: #696cff;
+                --blood-details-badge-color: #1e1f33;
+                --blood-details-tile-label-bg: rgba(105, 108, 255, 0.2);
+                --blood-details-tile-label-color: #b4b8ff;
+                --blood-details-tile-value-bg: rgba(255, 255, 255, 0.04);
+            }
+
+            .blood-unit-details-card .blood-details-header {
+                background-color: var(--blood-details-header-bg);
+                color: var(--blood-details-header-color);
+            }
+
+            .blood-unit-details-card .blood-details-title {
+                color: var(--blood-details-header-color);
+            }
+
+            .blood-unit-details-card .blood-details-status-badge {
+                background-color: var(--blood-details-badge-bg);
+                color: var(--blood-details-badge-color);
+            }
+
             .blood-unit-details-card .detail-tile-label {
-                background-color: #35365f;
-                color: #696cff;
+                background-color: var(--blood-details-tile-label-bg);
+                color: var(--blood-details-tile-label-color);
                 padding: 0.5rem 0.75rem;
                 display: flex;
                 align-items: center;
@@ -14,7 +48,7 @@
             }
 
             .blood-unit-details-card .detail-tile-value {
-                background-color: var(--bs-secondary-bg);
+                background-color: var(--blood-details-tile-value-bg);
                 border: 1px solid var(--bs-border-color);
                 padding: 0.9rem 0.75rem;
                 min-height: 58px;
@@ -41,12 +75,11 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-8">
                     <div class="card border shadow-sm blood-unit-details-card">
-                        <div class="card-header d-flex align-items-center justify-content-between"
-                            style="background-color: #35365f !important; color: #696cff !important;">
-                            <h5 class="mb-0 d-flex align-items-center" style="color: #696cff !important;">
+                        <div class="card-header d-flex align-items-center justify-content-between blood-details-header">
+                            <h5 class="mb-0 d-flex align-items-center blood-details-title">
                                 {{ localize('global.unit_information') }}
                             </h5>
-                            <span class="badge fs-6 ms-auto" style="background-color: #696cff !important; color: #35365f !important;">
+                            <span class="badge fs-6 ms-auto blood-details-status-badge">
                                 {{ $bloodUnit->status }}
                             </span>
                         </div>
@@ -140,18 +173,14 @@
                     </div>
 
                     <div class="card mt-3 border shadow-sm blood-unit-details-card">
-                        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2"
-                            style="background-color: #35365f !important; color: #696cff !important;">
-                            <h5 class="mb-0" style="color: #696cff !important;">{{ localize('global.blood_unit_screening_results') }}</h5>
+                        <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2 blood-details-header">
+                            <h5 class="mb-0 blood-details-title">{{ localize('global.blood_unit_screening_results') }}</h5>
                             @if ($bloodUnit->test?->overall_status === 'passed')
-                                <span class="badge fs-6 ms-auto"
-                                    style="background-color: #696cff !important; color: #35365f !important;">{{ localize('global.passed') }}</span>
+                                <span class="badge fs-6 ms-auto blood-details-status-badge">{{ localize('global.passed') }}</span>
                             @elseif ($bloodUnit->test?->overall_status === 'failed')
-                                <span class="badge fs-6 ms-auto"
-                                    style="background-color: #696cff !important; color: #35365f !important;">{{ localize('global.failed') }}</span>
+                                <span class="badge fs-6 ms-auto blood-details-status-badge">{{ localize('global.failed') }}</span>
                             @elseif ($bloodUnit->test)
-                                <span class="badge fs-6 ms-auto"
-                                    style="background-color: #696cff !important; color: #35365f !important;">{{ localize('global.pending') }}</span>
+                                <span class="badge fs-6 ms-auto blood-details-status-badge">{{ localize('global.pending') }}</span>
                             @endif
                         </div>
                         <div class="card-body p-4">
@@ -244,9 +273,8 @@
                     </div>
 
                     <div class="card mt-3 border shadow-sm blood-unit-details-card">
-                        <div class="card-header d-flex align-items-center justify-content-between"
-                            style="background-color: #35365f !important; color: #696cff !important;">
-                            <h5 class="mb-0" style="color: #696cff !important;">{{ localize('global.donor_and_sample') }}</h5>
+                        <div class="card-header d-flex align-items-center justify-content-between blood-details-header">
+                            <h5 class="mb-0 blood-details-title">{{ localize('global.donor_and_sample') }}</h5>
                         </div>
                         <div class="card-body p-4">
                             @if ($bloodUnit->donation)

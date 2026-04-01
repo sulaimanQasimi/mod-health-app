@@ -26,6 +26,7 @@
                     <th>{{ localize('global.blood_group') }}</th>
                     <th>{{ localize('global.blood_rh') }}</th>
                     <th>{{ localize('global.department') }}</th>
+                    <th>{{ localize('global.report_appointment_id') }}</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -37,12 +38,12 @@
                         <td>{{ $item->group }}</td>
                         <td>{{ $item->rh }}</td>
                         <td>{{ $item->department_name }}</td>
-                        
+                        <td>{{ $item->appointment_id ?? '—' }}</td>
                     </tr>
                 @endforeach
                 @if ($items->count() == 0)
                     <tr>
-                        <td colspan="9" class="text-center text-danger">
+                        <td colspan="7" class="text-center text-danger">
                             {{ localize('global.no_item_is_found') }}!!</td>
                     </tr>
                 @endif

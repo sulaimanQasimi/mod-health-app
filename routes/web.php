@@ -33,6 +33,8 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodBankController;
+use App\Http\Controllers\BloodBranchTransferController;
+use App\Http\Controllers\BloodUnitController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ConsultationCommentController;
 use App\Http\Controllers\ConsultationController;
@@ -663,6 +665,28 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Blood bank routes
     Route::prefix('blood_banks')->name('blood_banks.')->group(function () {
+        Route::get('dashboard', [BloodBankController::class, 'dashboard'])->name('dashboard');
+        Route::get('inventory', [BloodUnitController::class, 'index'])->name('inventory');
+        Route::post('inventory', [BloodUnitController::class, 'store'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.store');
+        Route::get('inventory/{bloodUnit}', [BloodUnitController::class, 'show'])->name('inventory.show');
+        Route::post('inventory/{bloodUnit}/tests', [BloodUnitController::class, 'saveTests'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.tests.save');
+        Route::post('inventory/{bloodUnit}/approve-after-tests', [BloodUnitController::class, 'approveAfterTests'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.tests.approve');
+        Route::post('inventory/{bloodUnit}/discard', [BloodUnitController::class, 'discard'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.discard');
+        Route::post('inventory/{bloodUnit}/quarantine', [BloodUnitController::class, 'quarantine'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.quarantine');
+        Route::post('inventory/{bloodUnit}/release-quarantine', [BloodUnitController::class, 'releaseQuarantine'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('inventory.release_quarantine');
+        Route::get('movements', [BloodBankController::class, 'stockMovements'])->name('movements');
         Route::get('new', [BloodBankController::class, 'new'])->name('new');
         Route::get('approved', [BloodBankController::class, 'approved'])->name('approved');
         Route::get('rejected', [BloodBankController::class, 'rejected'])->name('rejected');
@@ -674,11 +698,34 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{bloodBank}', [BloodBankController::class, 'update'])->name('update');
         Route::delete('destroy/{bloodBank}', [BloodBankController::class, 'destroy'])->name('destroy');
         Route::get('approve/{bloodBank}', [BloodBankController::class, 'approve'])->name('approve');
-        Route::get('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
+        Route::post('deliver/{bloodBank}', [BloodBankController::class, 'deliver'])->name('deliver');
+        Route::post('{bloodBank}/crossmatch/samples', [BloodBankController::class, 'storePatientSample'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('crossmatch.samples.store');
+        Route::post('{bloodBank}/crossmatch/units/{bloodUnit}', [BloodBankController::class, 'saveCrossmatch'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('crossmatch.save');
+        Route::post('{bloodBank}/crossmatch/{crossmatch}/override', [BloodBankController::class, 'overrideCrossmatch'])
+            ->middleware('permission:manage-blood-inventory')
+            ->name('crossmatch.override');
+        Route::post('{bloodBank}/crossmatch/{crossmatch}/reserve', [BloodBankController::class, 'reserveCrossmatchUnit'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('crossmatch.reserve');
+        Route::post('{bloodBank}/crossmatch/units/{bloodUnit}/unreserve', [BloodBankController::class, 'unreserveCrossmatchUnit'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('crossmatch.unreserve');
         Route::put('reject/{bloodBank}', [BloodBankController::class, 'reject'])->name('reject');
         Route::get('report', [BloodBankController::class, 'report'])->name('report');
         Route::post('report-search', [BloodBankController::class, 'ReportSearch'])->name('report-search');
         Route::post('export-report', [BloodBankController::class, 'exportReport'])->name('export-report');
+
+        Route::get('branch-transfers', [BloodBranchTransferController::class, 'index'])->name('branch_transfers.index');
+        Route::get('branch-transfers/create', [BloodBranchTransferController::class, 'create'])->name('branch_transfers.create');
+        Route::post('branch-transfers', [BloodBranchTransferController::class, 'store'])->name('branch_transfers.store');
+        Route::get('branch-transfers/{branchTransfer}', [BloodBranchTransferController::class, 'show'])->name('branch_transfers.show');
+        Route::put('branch-transfers/{branchTransfer}/reject', [BloodBranchTransferController::class, 'reject'])->name('branch_transfers.reject');
+        Route::post('branch-transfers/{branchTransfer}/fulfill', [BloodBranchTransferController::class, 'fulfill'])->name('branch_transfers.fulfill');
+        Route::post('branch-transfers/{branchTransfer}/cancel', [BloodBranchTransferController::class, 'cancel'])->name('branch_transfers.cancel');
     });
 
 

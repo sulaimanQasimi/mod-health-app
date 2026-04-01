@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -332,6 +333,27 @@ class PermissionSeeder extends Seeder
             'guard_name' => 'web',
             'created_at' => '2023-08-22 14:05:43',
             'updated_at' => '2023-08-22 10:12:36'
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-blood-inventory',
+            'name_dr' => 'مدیریت موجودی بانک خون',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'issue-blood',
+            'name_dr' => 'صدور واحد خون',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'receive-blood-units',
+            'name_dr' => 'ثبت واحد خون ورودی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
         ]);
 
         Permission::createOrFirst([
@@ -1674,6 +1696,17 @@ class PermissionSeeder extends Seeder
         // $this->call(PhysiotherapyProcedureReviewSeeder::class);
         $this->call(VitalSignPermissionSeeder::class);
         $this->call(VitalSignRolePermissionSeeder::class);
+
+        $bloodBankRole = Role::where('name', 'blood-bank')->first();
+        if ($bloodBankRole) {
+            $bloodBankRole->givePermissionTo([
+                'show-blood-bank-menu',
+                'manage-blood-inventory',
+                'issue-blood',
+                'receive-blood-units',
+            ]);
+        }
+
         User::find(1)->givePermissionTo(Permission::all());
 
     }

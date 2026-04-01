@@ -49,6 +49,58 @@ class BloodBank extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function operation()
+    {
+        return $this->belongsTo(Operation::class);
+    }
+
+    public function hospitalization()
+    {
+        return $this->belongsTo(Hospitalization::class);
+    }
+
+    public function anesthesia()
+    {
+        return $this->belongsTo(Anesthesia::class, 'anesthesia_id');
+    }
+
+    public function icu()
+    {
+        return $this->belongsTo(ICU::class, 'i_c_u_id');
+    }
+
+    public function underReview()
+    {
+        return $this->belongsTo(UnderReview::class, 'under_review_id');
+    }
+
+    public function bloodUnits()
+    {
+        return $this->belongsToMany(BloodUnit::class, 'blood_bank_unit', 'blood_bank_id', 'blood_unit_id')
+            ->withPivot(['reserved_at', 'reserved_by', 'crossmatch_id', 'issued_at', 'issued_by'])
+            ->withTimestamps();
+    }
+
+    public function patientSamples()
+    {
+        return $this->hasMany(BloodPatientSample::class)->orderByDesc('created_at');
+    }
+
+    public function crossmatches()
+    {
+        return $this->hasMany(BloodCrossmatch::class)->orderByDesc('updated_at');
+    }
+
     public function approve()
     {
         $this->status = 'approved';

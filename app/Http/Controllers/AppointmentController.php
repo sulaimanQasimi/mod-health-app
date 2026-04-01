@@ -281,6 +281,8 @@ class AppointmentController extends Controller
         // Load dentist registrations
         $appointment->load('dentistRegistrations.dentist', 'dentistRegistrations.examinations', 'dentistRegistrations.treatments', 'dentistRegistrations.xrays', 'dentistRegistrations.dentalNotes');
 
+        $appointment->load(['bloodBanks.patient', 'bloodBanks.department']);
+
         return view('pages.appointments.show', compact('appointment', 'labTypes', 'doctors', 'rooms', 'beds', 'previousDiagnoses', 'branches', 'operationTypes', 'departments', 'medicineTypes', 'medicines', 'foodTypes', 'relations', 'medicineUsageTypes', 'physiotherapyTypes', 'physiotherapists'));
     }
 

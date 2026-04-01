@@ -32,6 +32,17 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('review', \App\Models\PhysiotherapyProcedureReview::class);
         Route::model('physiotherapyProcedure', \App\Models\PhysiotherapyProcedure::class);
 
+        Route::bind('bloodUnit', function ($value) {
+            if (! auth()->check()) {
+                abort(403);
+            }
+
+            return \App\Models\BloodUnit::query()
+                ->where('id', $value)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->firstOrFail();
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

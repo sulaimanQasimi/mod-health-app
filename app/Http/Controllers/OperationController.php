@@ -186,6 +186,8 @@ class OperationController extends Controller
      */
     public function show(Anesthesia $operation)
     {
+        $operation->load(['bloodBanks.patient', 'bloodBanks.department']);
+
         $operation_doctors = Doctor::where('branch_id', auth()->user()->branch_id)
             ->where('active_status', true)
             ->get();

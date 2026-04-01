@@ -163,4 +163,9 @@ class Appointment extends Model
     {
         return $this->hasMany(DentistRegistration::class);
     }
+
+    public function bloodBanks()
+    {
+        return $this->hasMany(BloodBank::class, 'appointment_id');
+    }
 }

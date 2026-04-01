@@ -58,7 +58,7 @@
                     <th>{{ localize('global.blood_group') }}</th>
                     <th>{{ localize('global.blood_rh') }}</th>
                     <th>{{ localize('global.department') }}</th>
-                 
+                    <th>{{ localize('global.report_appointment_id') }}</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -70,6 +70,7 @@
                         <td>{{ $item->group }}</td>
                         <td>{{ $item->rh }}</td>
                         <td>{{ $item->department_name }}</td>
+                        <td>{{ $item->appointment_id ?? '—' }}</td>
                     </tr>
                 @endforeach
             </tbody>

@@ -1,6 +1,24 @@
 @extends('layouts.master')
 
 @section('content')
+    @push('custom-css')
+        <style>
+            /* Ensure Add Blood modal always scrolls vertically on small/short screens */
+            #bloodInventoryAddModal .modal-dialog {
+                max-height: calc(100vh - 2rem);
+            }
+
+            #bloodInventoryAddModal .modal-content {
+                max-height: calc(100vh - 2rem);
+            }
+
+            #bloodInventoryAddModal .modal-body {
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+        </style>
+    @endpush
+
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="content-wrapper">
             @if (Session::has('success') || Session::has('error'))

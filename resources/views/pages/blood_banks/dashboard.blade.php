@@ -24,36 +24,83 @@
 
             <div class="row g-3 mb-4">
                 <div class="col-md-3 col-6">
-                    <div class="card h-100 border-{{ $criticalExpiryCount > 0 ? 'danger' : 'secondary' }}">
+                    <div class="card h-100 {{ $criticalExpiryCount > 0 ? 'bg-label-danger' : 'bg-label-secondary' }}">
                         <div class="card-body">
-                            <div class="text-body-secondary small">{{ localize('global.critical_expiry_alert') }}
-                                ({{ $criticalDays }} {{ localize('global.days') }})</div>
-                            <div class="fs-3 fw-semibold">{{ $criticalExpiryCount }}</div>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.critical_expiry_alert') }}
+                                        ({{ $criticalDays }} {{ localize('global.days') }})</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center {{ $criticalExpiryCount > 0 ? 'bg-danger' : 'bg-secondary' }}"
+                                            style="font-size: xx-large;">
+                                            {{ $criticalExpiryCount }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge {{ $criticalExpiryCount > 0 ? 'bg-danger' : 'bg-secondary' }} rounded p-2">
+                                    <i class="bx bx-error-circle bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
-                    <div class="card h-100">
+                    <div class="card h-100 bg-label-warning">
                         <div class="card-body">
-                            <div class="text-body-secondary small">{{ localize('global.pending_transfers_alert') }}</div>
-                            <div class="fs-3 fw-semibold">{{ $pendingTransfersCount }}</div>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.pending_transfers_alert') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-warning text-dark"
+                                            style="font-size: xx-large;">
+                                            {{ $pendingTransfersCount }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-warning text-dark rounded p-2">
+                                    <i class="bx bx-transfer-alt bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
-                    <div class="card h-100">
+                    <div class="card h-100 bg-label-info">
                         <div class="card-body">
-                            <div class="text-body-secondary small">{{ localize('global.quarantine_units_title') }}</div>
-                            <div class="fs-3 fw-semibold">{{ $quarantineCount }}</div>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.quarantine_units_title') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-info"
+                                            style="font-size: xx-large;">
+                                            {{ $quarantineCount }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-info rounded p-2">
+                                    <i class="bx bx-shield-quarter bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
-                    <div class="card h-100">
+                    <div class="card h-100 bg-label-primary">
                         <div class="card-body">
-                            <div class="text-body-secondary small">{{ localize('global.expiring_blood_units') }}
-                                ({{ $warningDays }}d)</div>
-                            <div class="fs-3 fw-semibold">{{ $expiringSoon->count() }}</div>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.expiring_blood_units') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-primary"
+                                            style="font-size: xx-large;">
+                                            {{ $expiringSoon->count() }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-primary rounded p-2">
+                                    <i class="bx bx-time-five bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,10 +122,22 @@
             <div class="row g-3 mb-4">
                 @foreach (['new', 'approved', 'rejected', 'delivered'] as $st)
                     <div class="col-md-3 col-6">
-                        <div class="card h-100">
+                        <div class="card h-100 {{ $st === 'approved' ? 'bg-label-success' : ($st === 'rejected' ? 'bg-label-danger' : ($st === 'delivered' ? 'bg-label-info' : 'bg-label-primary')) }}">
                             <div class="card-body">
-                                <div class="text-body-secondary small">{{ ucfirst($st) }}</div>
-                                <div class="fs-3 fw-semibold">{{ $statusCounts[$st] ?? 0 }}</div>
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                        <span>{{ localize('global.' . $st) ?? ucfirst($st) }}</span>
+                                        <div class="d-flex align-items-end mt-2">
+                                            <h4 class="mb-0 me-2 badge badge-center {{ $st === 'approved' ? 'bg-success' : ($st === 'rejected' ? 'bg-danger' : ($st === 'delivered' ? 'bg-info' : 'bg-primary')) }}"
+                                                style="font-size: xx-large;">
+                                                {{ $statusCounts[$st] ?? 0 }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <span class="badge {{ $st === 'approved' ? 'bg-success' : ($st === 'rejected' ? 'bg-danger' : ($st === 'delivered' ? 'bg-info' : 'bg-primary')) }} rounded p-2">
+                                        <i class="bx {{ $st === 'approved' ? 'bx-check-circle' : ($st === 'rejected' ? 'bx-x-circle' : ($st === 'delivered' ? 'bx-package' : 'bx-loader-circle')) }} bx-lg"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

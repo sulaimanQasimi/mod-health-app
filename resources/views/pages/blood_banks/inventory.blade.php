@@ -141,6 +141,34 @@
                                 @enderror
                             </div>
                             <div class="col-md-4">
+                                <label class="form-label">{{ localize('global.father_name') }}</label>
+                                <input type="text" name="donor_father_name" value="{{ old('donor_father_name') }}"
+                                    class="form-control @error('donor_father_name') is-invalid @enderror" maxlength="255"
+                                    placeholder="{{ localize('global.optional') }}">
+                                @error('donor_father_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ localize('global.age') }}</label>
+                                <input type="number" name="donor_age" value="{{ old('donor_age') }}"
+                                    class="form-control @error('donor_age') is-invalid @enderror" min="0" max="130">
+                                @error('donor_age')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ localize('global.gender') }}</label>
+                                <select name="donor_gender" class="form-select @error('donor_gender') is-invalid @enderror">
+                                    <option value="">{{ localize('global.select') }}</option>
+                                    <option value="male" @selected(old('donor_gender') === 'male')>{{ localize('global.male') }}</option>
+                                    <option value="female" @selected(old('donor_gender') === 'female')>{{ localize('global.female') }}</option>
+                                </select>
+                                @error('donor_gender')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
                                 <label class="form-label">{{ localize('global.phone') }}</label>
                                 <input type="text" name="donor_phone" value="{{ old('donor_phone') }}"
                                     class="form-control @error('donor_phone') is-invalid @enderror" maxlength="50"
@@ -154,6 +182,33 @@
                                 <input type="text" name="donor_national_id" value="{{ old('donor_national_id') }}"
                                     class="form-control @error('donor_national_id') is-invalid @enderror" maxlength="50">
                                 @error('donor_national_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ localize('global.blood_pressure') }}</label>
+                                <input type="text" name="donor_blood_pressure" value="{{ old('donor_blood_pressure') }}"
+                                    class="form-control @error('donor_blood_pressure') is-invalid @enderror" maxlength="50"
+                                    placeholder="120/80">
+                                @error('donor_blood_pressure')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ localize('global.donor_type') }}</label>
+                                <select name="donor_type" id="bloodDonorType"
+                                    class="form-select @error('donor_type') is-invalid @enderror">
+                                    <option value="civilian" @selected(old('donor_type', 'civilian') === 'civilian')>{{ localize('global.civilian') }}</option>
+                                    <option value="military" @selected(old('donor_type') === 'military')>{{ localize('global.military') }}</option>
+                                </select>
+                                @error('donor_type')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ localize('global.comorbidities') }}</label>
+                                <textarea name="donor_comorbidities" class="form-control @error('donor_comorbidities') is-invalid @enderror" rows="2">{{ old('donor_comorbidities') }}</textarea>
+                                @error('donor_comorbidities')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -380,33 +435,51 @@
                     var deptWrap = document.getElementById('bloodDonorDeptSelectWrap');
                     var chk = document.getElementById('donorRecordDepartment');
                     var deptSel = document.getElementById('bloodDonorDepartmentId');
+                    var donorTypeSel = document.getElementById('bloodDonorType');
                     if (!patientSel || !toggleRow || !deptWrap) {
                         return;
                     }
                     var hasPatient = patientSel.value && patientSel.value !== '';
+                    var isMilitary = donorTypeSel && donorTypeSel.value === 'military';
                     if (hasPatient) {
-                        toggleRow.style.display = 'none';
-                        deptWrap.style.display = 'none';
-                        if (chk) {
-                            chk.checked = false;
-                        }
-                        if (deptSel) {
-                            deptSel.value = '';
+                        if (isMilitary) {
+                            toggleRow.style.display = 'none';
+                            deptWrap.style.display = '';
+                        } else {
+                            toggleRow.style.display = 'none';
+                            deptWrap.style.display = 'none';
+                            if (chk) {
+                                chk.checked = false;
+                            }
+                            if (deptSel) {
+                                deptSel.value = '';
+                            }
                         }
                     } else {
                         toggleRow.style.display = '';
-                        deptWrap.style.display = (chk && chk.checked) ? '' : 'none';
+                        if (isMilitary) {
+                            if (chk) {
+                                chk.checked = true;
+                            }
+                            deptWrap.style.display = '';
+                        } else {
+                            deptWrap.style.display = (chk && chk.checked) ? '' : 'none';
+                        }
                     }
                 }
 
                 document.addEventListener('DOMContentLoaded', function() {
                     var patientSel = document.getElementById('bloodDonorPatientId');
                     var chk = document.getElementById('donorRecordDepartment');
+                    var donorTypeSel = document.getElementById('bloodDonorType');
                     if (patientSel) {
                         patientSel.addEventListener('change', syncBloodDonorDeptFields);
                     }
                     if (chk) {
                         chk.addEventListener('change', syncBloodDonorDeptFields);
+                    }
+                    if (donorTypeSel) {
+                        donorTypeSel.addEventListener('change', syncBloodDonorDeptFields);
                     }
                     syncBloodDonorDeptFields();
                     @if ($errors->any())

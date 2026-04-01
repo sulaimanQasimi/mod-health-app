@@ -27,7 +27,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches');
-            $table->foreign('donation_id')->references('id')->on('blood_donations')->nullOnDelete();
 
             $table->index(['branch_id', 'status', 'expires_at']);
             $table->index(['branch_id', 'blood_group', 'rh', 'component_type', 'status']);

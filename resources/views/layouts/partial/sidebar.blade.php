@@ -314,21 +314,6 @@
                             <div>{{ localize('global.blood_bank_dashboard') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('blood_banks.inventory') || Route::is('blood_banks.inventory.*') ? 'active' : '' }}">
-                        <a href="{{ route('blood_banks.inventory') }}" class="menu-link">
-                            <div>{{ localize('global.blood_inventory') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('blood_banks.movements') ? 'active' : '' }}">
-                        <a href="{{ route('blood_banks.movements') }}" class="menu-link">
-                            <div>{{ localize('global.stock_movement_audit') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('blood_banks.branch_transfers.*') ? 'active' : '' }}">
-                        <a href="{{ route('blood_banks.branch_transfers.index') }}" class="menu-link">
-                            <div>{{ localize('global.blood_branch_transfers') }}</div>
-                        </a>
-                    </li>
                     <li class="menu-item {{ Route::is('blood_banks.new') ? 'active' : '' }}">
                         <a href="{{ route('blood_banks.new') }}" class="menu-link">
                             <div>{{ localize('global.new_blood_requests') }}</div>
@@ -347,6 +332,21 @@
                     <li class="menu-item {{ Route::is('blood_banks.rejected') ? 'active' : '' }}">
                         <a href="{{ route('blood_banks.rejected') }}" class="menu-link">
                             <div>{{ localize('global.rejected_blood_requests') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.inventory') || Route::is('blood_banks.inventory.*') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.inventory') }}" class="menu-link">
+                            <div>{{ localize('global.blood_inventory') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.movements') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.movements') }}" class="menu-link">
+                            <div>{{ localize('global.stock_movement_audit') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('blood_banks.branch_transfers.*') ? 'active' : '' }}">
+                        <a href="{{ route('blood_banks.branch_transfers.index') }}" class="menu-link">
+                            <div>{{ localize('global.blood_branch_transfers') }}</div>
                         </a>
                     </li>
                     <li class="menu-item {{ Route::is('blood_banks.report') ? 'active' : '' }}">

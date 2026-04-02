@@ -3494,6 +3494,7 @@ return [
     "scan_test" => "اسکن تست",
     "please_scan_test" => "لطفا نمبر تست را اسکن کنید",
     "ref_number" => "نمبر تست",
+    "reserved" => "رزرو شده",
     "test_not_found" => "تست یافت نشد",
     "registration_modal_info" => "معلومات مدل ثبت نام آزمایش",
     "backup_management" => "مدیریت پشتیبان",

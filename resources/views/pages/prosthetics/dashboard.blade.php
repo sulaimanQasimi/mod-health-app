@@ -23,36 +23,76 @@
                 <div class="col-md-3 col-6">
                     <div class="card h-100 bg-label-warning">
                         <div class="card-body">
-                            <span class="text-muted small">{{ localize('global.prosthetics_referrals') }}</span>
-                            <h3 class="mb-0 mt-1">{{ $referralPending }}</h3>
-                            <small class="text-muted">{{ localize('global.pending') ?? 'Pending intake' }}</small>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.prosthetics_referrals') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-warning" style="font-size: xx-large;">
+                                            {{ $referralPending }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-warning rounded p-2">
+                                    <i class="bx bx-receipt bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="card h-100 bg-label-info">
                         <div class="card-body">
-                            <span class="text-muted small">{{ localize('global.prosthetics_workflow') }}</span>
-                            <h3 class="mb-0 mt-1">{{ $waitingApproval }}</h3>
-                            <small class="text-muted">{{ localize('global.approved_blood_requests') }} / approval queue</small>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.prosthetics_workflow') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-info" style="font-size: xx-large;">
+                                            {{ $waitingApproval }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-info rounded p-2">
+                                    <i class="bx bx-time-five bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="card h-100 bg-label-primary">
                         <div class="card-body">
-                            <span class="text-muted small">{{ localize('global.prosthetics_work_order') }}</span>
-                            <h3 class="mb-0 mt-1">{{ $inProduction }}</h3>
-                            <small class="text-muted">Production / trial</small>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.prosthetics_work_order') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-primary" style="font-size: xx-large;">
+                                            {{ $inProduction }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-primary rounded p-2">
+                                    <i class="bx bx-briefcase-alt bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="card h-100 bg-label-secondary">
                         <div class="card-body">
-                            <span class="text-muted small">WO active</span>
-                            <h3 class="mb-0 mt-1">{{ $workOrdersActive }}</h3>
-                            <small class="text-muted">Workshop orders</small>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>{{ localize('global.prosthetics_work_order') }}</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2 badge badge-center bg-secondary" style="font-size: xx-large;">
+                                            {{ $workOrdersActive }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <span class="badge bg-secondary rounded p-2">
+                                    <i class="bx bx-cog bx-lg"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

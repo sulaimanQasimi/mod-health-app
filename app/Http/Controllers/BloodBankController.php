@@ -28,6 +28,7 @@ class BloodBankController extends Controller
     public function dashboard()
     {
         $branchId = auth()->user()->branch_id;
+        app(BloodBankStockService::class)->archiveExpiredUnits($branchId, auth()->id());
 
         $lowThreshold = config('blood_bank.low_stock_threshold', 5);
         $criticalDays = config('blood_bank.expiry_critical_days', 3);
@@ -245,6 +246,7 @@ class BloodBankController extends Controller
     public function show(BloodBank $bloodBank)
     {
         $this->ensureBloodRequestBranch($bloodBank);
+        app(BloodBankStockService::class)->archiveExpiredUnits((int) $bloodBank->branch_id, auth()->id());
 
         $bloodBank->load([
             'patient',

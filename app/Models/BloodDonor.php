@@ -24,6 +24,8 @@ class BloodDonor extends Model
         'blood_pressure',
         'comorbidities',
         'donor_type',
+        'receiver',
+        'military_department',
         'address',
         'notes',
         'patient_id',

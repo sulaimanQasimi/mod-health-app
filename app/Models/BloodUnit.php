@@ -35,7 +35,7 @@ class BloodUnit extends Model
     ];
 
     protected $casts = [
-        'collected_at' => 'date',
+        'collected_at' => 'datetime',
         'expires_at' => 'datetime',
     ];
 

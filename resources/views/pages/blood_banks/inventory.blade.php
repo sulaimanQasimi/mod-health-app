@@ -67,6 +67,14 @@
                 </div>
             </div>
 
+            @if (($expiredArchivedCount ?? 0) > 0)
+                <div class="alert alert-warning mb-3" role="alert">
+                    <i class="bx bx-error-circle me-1"></i>
+                    {{ localize('global.blood_unit_expiry_alarm') }}:
+                    {{ $expiredArchivedCount }} {{ localize('global.blood_unit_auto_archived_count') }}
+                </div>
+            @endif
+
             @canany(['receive-blood-units', 'manage-blood-inventory'])
                 <div class="modal fade" id="bloodInventoryAddModal" tabindex="-1"
                     aria-labelledby="bloodInventoryAddModalLabel" aria-hidden="true">
@@ -205,10 +213,28 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="col-md-4" id="bloodDonorMilitaryDepartmentWrap" style="display: none;">
+                                <label class="form-label">{{ localize('global.military_department') }}</label>
+                                <input type="text" name="donor_military_department" value="{{ old('donor_military_department') }}"
+                                    class="form-control @error('donor_military_department') is-invalid @enderror"
+                                    maxlength="255">
+                                @error('donor_military_department')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                             <div class="col-12">
                                 <label class="form-label">{{ localize('global.comorbidities') }}</label>
                                 <textarea name="donor_comorbidities" class="form-control @error('donor_comorbidities') is-invalid @enderror" rows="2">{{ old('donor_comorbidities') }}</textarea>
                                 @error('donor_comorbidities')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ localize('global.receiver') }}</label>
+                                <input type="text" name="donor_receiver" value="{{ old('donor_receiver') }}"
+                                    class="form-control @error('donor_receiver') is-invalid @enderror" maxlength="255"
+                                    placeholder="{{ localize('global.optional') }}">
+                                @error('donor_receiver')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -277,7 +303,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">{{ localize('global.collected_at') }}</label>
-                                <input type="date" name="collected_at" value="{{ old('collected_at') }}"
+                                <input type="datetime-local" name="collected_at" value="{{ old('collected_at') }}"
                                     class="form-control @error('collected_at') is-invalid @enderror">
                                 @error('collected_at')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -402,7 +428,7 @@
                                         <td>{{ $unit->rh }}</td>
                                         <td>{{ $unit->component_type }}</td>
                                         <td>{{ $unit->status }}</td>
-                                        <td dir="ltr">{{ $unit->collected_at?->format('Y-m-d') ?? '—' }}</td>
+                                        <td dir="ltr">{{ $unit->collected_at?->format('Y-m-d H:i') ?? '—' }}</td>
                                         <td dir="ltr">{{ $unit->expires_at?->format('Y-m-d H:i') }}</td>
                                         <td>
                                             <a href="{{ route('blood_banks.inventory.show', $unit) }}"
@@ -436,35 +462,27 @@
                     var chk = document.getElementById('donorRecordDepartment');
                     var deptSel = document.getElementById('bloodDonorDepartmentId');
                     var donorTypeSel = document.getElementById('bloodDonorType');
+                    var militaryDeptWrap = document.getElementById('bloodDonorMilitaryDepartmentWrap');
                     if (!patientSel || !toggleRow || !deptWrap) {
                         return;
                     }
                     var hasPatient = patientSel.value && patientSel.value !== '';
                     var isMilitary = donorTypeSel && donorTypeSel.value === 'military';
+                    if (militaryDeptWrap) {
+                        militaryDeptWrap.style.display = isMilitary ? '' : 'none';
+                    }
                     if (hasPatient) {
-                        if (isMilitary) {
-                            toggleRow.style.display = 'none';
-                            deptWrap.style.display = '';
-                        } else {
-                            toggleRow.style.display = 'none';
-                            deptWrap.style.display = 'none';
-                            if (chk) {
-                                chk.checked = false;
-                            }
-                            if (deptSel) {
-                                deptSel.value = '';
-                            }
+                        toggleRow.style.display = 'none';
+                        deptWrap.style.display = 'none';
+                        if (chk) {
+                            chk.checked = false;
+                        }
+                        if (deptSel) {
+                            deptSel.value = '';
                         }
                     } else {
                         toggleRow.style.display = '';
-                        if (isMilitary) {
-                            if (chk) {
-                                chk.checked = true;
-                            }
-                            deptWrap.style.display = '';
-                        } else {
-                            deptWrap.style.display = (chk && chk.checked) ? '' : 'none';
-                        }
+                        deptWrap.style.display = (chk && chk.checked) ? '' : 'none';
                     }
                 }
 

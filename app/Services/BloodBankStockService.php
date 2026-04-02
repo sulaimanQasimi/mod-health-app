@@ -13,6 +13,54 @@ use Illuminate\Support\Facades\DB;
 class BloodBankStockService
 {
     /**
+     * Auto-archive expired units so they can never be treated as available stock.
+     */
+    public function archiveExpiredUnits(?int $branchId = null, ?int $actorId = null): int
+    {
+        return DB::transaction(function () use ($branchId, $actorId) {
+            $query = BloodUnit::query()
+                ->whereIn('status', ['available', 'reserved', 'quarantine'])
+                ->where('expires_at', '<=', now())
+                ->lockForUpdate();
+
+            if ($branchId !== null) {
+                $query->where('branch_id', $branchId);
+            }
+
+            $expiredUnits = $query->get();
+            if ($expiredUnits->isEmpty()) {
+                return 0;
+            }
+
+            foreach ($expiredUnits as $unit) {
+                if ($unit->status === 'reserved') {
+                    DB::table('blood_bank_unit')
+                        ->where('blood_unit_id', $unit->id)
+                        ->whereNotNull('reserved_at')
+                        ->update([
+                            'reserved_at' => null,
+                            'reserved_by' => null,
+                            'crossmatch_id' => null,
+                            'updated_at' => now(),
+                        ]);
+                }
+
+                $unit->status = 'discarded';
+                $unit->save();
+
+                BloodStockMovement::create([
+                    'blood_unit_id' => $unit->id,
+                    'movement_type' => 'discarded',
+                    'notes' => localize('global.blood_unit_auto_archived_expired'),
+                    'user_id' => $actorId,
+                ]);
+            }
+
+            return $expiredUnits->count();
+        });
+    }
+
+    /**
      * Register a new blood unit (intake) and record a received movement.
      *
      * @param  array<string, mixed>  $data

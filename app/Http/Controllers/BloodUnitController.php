@@ -20,6 +20,7 @@ class BloodUnitController extends Controller
     public function index(Request $request)
     {
         $branchId = auth()->user()->branch_id;
+        $expiredArchivedCount = app(BloodBankStockService::class)->archiveExpiredUnits($branchId, auth()->id());
 
         $query = BloodUnit::where('branch_id', $branchId)
             ->with(['donation.donor.department', 'donation.donor.patient']);
@@ -68,7 +69,7 @@ class BloodUnitController extends Controller
             ->limit(500)
             ->get(['id', 'name', 'last_name', 'phone', 'nid']);
 
-        return view('pages.blood_banks.inventory', compact('units', 'departments', 'patientsForDonor'));
+        return view('pages.blood_banks.inventory', compact('units', 'departments', 'patientsForDonor', 'expiredArchivedCount'));
     }
 
     public function show(BloodUnit $bloodUnit)
@@ -122,16 +123,18 @@ class BloodUnitController extends Controller
             'donor_blood_pressure' => 'nullable|string|max:50',
             'donor_comorbidities' => 'nullable|string|max:5000',
             'donor_type' => ['nullable', Rule::in(['civilian', 'military'])],
+            'donor_receiver' => 'nullable|string|max:255',
+            'donor_military_department' => 'nullable|string|max:255|required_if:donor_type,military',
             'donor_phone' => 'nullable|string|max:50',
             'donor_national_id' => 'nullable|string|max:50',
             'phlebotomy_at' => 'nullable|date',
             'patient_id' => 'nullable|integer|exists:patients,id',
-            'department_id' => 'nullable|integer|exists:departments,id|required_if:donor_type,military',
+            'department_id' => 'nullable|integer|exists:departments,id',
             'donor_record_department' => 'nullable|boolean',
         ], [
             'expires_date.required' => localize('global.expires_date_required'),
             'expires_time.date_format' => localize('global.expires_time_invalid'),
-            'department_id.required_if' => localize('global.department_required_for_military_donor'),
+            'donor_military_department.required_if' => localize('global.military_department_required_for_military_donor'),
         ]);
 
         $time = $validated['expires_time'] ?? '23:59';
@@ -158,15 +161,15 @@ class BloodUnitController extends Controller
         $donorBloodPressure = $validated['donor_blood_pressure'] ?? null;
         $donorComorbidities = $validated['donor_comorbidities'] ?? null;
         $donorType = $validated['donor_type'] ?? 'civilian';
+        $donorReceiver = $validated['donor_receiver'] ?? null;
+        $donorMilitaryDepartment = $validated['donor_military_department'] ?? null;
         $donorPhone = $validated['donor_phone'] ?? null;
         $donorNationalId = $validated['donor_national_id'] ?? null;
         $phlebotomyAt = $validated['phlebotomy_at'] ?? null;
         $patientId = isset($validated['patient_id']) ? (int) $validated['patient_id'] : null;
         $recordDepartment = $request->boolean('donor_record_department');
         $departmentId = null;
-        if ($donorType === 'military') {
-            $departmentId = $validated['department_id'] ?? null;
-        } elseif (! $patientId && $recordDepartment) {
+        if (! $patientId && $recordDepartment) {
             $departmentId = $validated['department_id'] ?? null;
         }
 
@@ -178,6 +181,8 @@ class BloodUnitController extends Controller
             $validated['donor_blood_pressure'],
             $validated['donor_comorbidities'],
             $validated['donor_type'],
+            $validated['donor_receiver'],
+            $validated['donor_military_department'],
             $validated['donor_phone'],
             $validated['donor_national_id'],
             $validated['phlebotomy_at'],
@@ -201,7 +206,7 @@ class BloodUnitController extends Controller
 
         $departmentIdForDonor = $patientId ? null : $departmentId;
 
-        DB::transaction(function () use ($validated, $donorName, $donorFatherName, $donorAge, $donorGender, $donorBloodPressure, $donorComorbidities, $donorType, $donorPhone, $donorNationalId, $phlebotomyAt, $patientId, $departmentIdForDonor) {
+        DB::transaction(function () use ($validated, $donorName, $donorFatherName, $donorAge, $donorGender, $donorBloodPressure, $donorComorbidities, $donorType, $donorReceiver, $donorMilitaryDepartment, $donorPhone, $donorNationalId, $phlebotomyAt, $patientId, $departmentIdForDonor) {
             $donationId = null;
 
             if ($donorName !== '' || $patientId) {
@@ -219,6 +224,8 @@ class BloodUnitController extends Controller
                         'blood_pressure' => $donorBloodPressure,
                         'comorbidities' => $donorComorbidities,
                         'donor_type' => $donorType,
+                        'receiver' => $donorReceiver,
+                        'military_department' => $donorType === 'military' ? $donorMilitaryDepartment : null,
                         'phone' => $donorPhone,
                         'national_id' => $donorNationalId,
                         'patient_id' => $patientId,
@@ -237,6 +244,8 @@ class BloodUnitController extends Controller
                     $donor->blood_pressure = $donorBloodPressure;
                     $donor->comorbidities = $donorComorbidities;
                     $donor->donor_type = $donorType;
+                    $donor->receiver = $donorReceiver;
+                    $donor->military_department = $donorType === 'military' ? $donorMilitaryDepartment : null;
                     $donor->patient_id = $patientId;
                     $donor->department_id = $departmentIdForDonor;
                     $donor->save();
@@ -245,7 +254,7 @@ class BloodUnitController extends Controller
                 $phlebotomy = $phlebotomyAt
                     ? Carbon::parse($phlebotomyAt, config('app.timezone'))
                     : ($validated['collected_at']
-                        ? Carbon::parse($validated['collected_at'], config('app.timezone'))->startOfDay()
+                        ? Carbon::parse($validated['collected_at'], config('app.timezone'))
                         : now());
 
                 $donation = BloodDonation::create([

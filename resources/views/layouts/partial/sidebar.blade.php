@@ -390,6 +390,11 @@
                             <div>{{ localize('global.prosthetics_stock') }}</div>
                         </a>
                     </li>
+                    <li class="menu-item {{ Route::is('prosthetics.reports.*') ? 'active' : '' }}">
+                        <a href="{{ route('prosthetics.reports.index') }}" class="menu-link">
+                            <div>{{ localize('global.reports') }}</div>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcan

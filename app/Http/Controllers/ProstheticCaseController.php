@@ -107,6 +107,7 @@ class ProstheticCaseController extends Controller
             'fittingSessions',
             'deliveries',
             'followUps',
+            'attachments',
         ]);
 
         $catalog = \App\Models\ProstheticComponentCatalog::query()

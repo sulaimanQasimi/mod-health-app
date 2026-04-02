@@ -20,7 +20,10 @@
                         <small class="text-muted">(ID {{ $prosthetic_case->patient_id }})</small>
                     </p>
                 </div>
-                <a href="{{ route('prosthetics.cases.index') }}" class="btn btn-sm btn-outline-secondary">{{ localize('global.back') }}</a>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('prosthetics.cases.index') }}" class="btn btn-sm btn-outline-secondary">{{ localize('global.back') }}</a>
+                    <a href="{{ route('prosthetics.cases.print', $prosthetic_case) }}" class="btn btn-sm btn-outline-success">Print summary</a>
+                </div>
             </div>
 
             {{-- Assessment --}}
@@ -306,6 +309,79 @@
                             <button type="submit" class="btn btn-sm btn-primary">{{ localize('global.save') }}</button>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            {{-- Attachments --}}
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Attachments</strong>
+                    <span class="text-muted small">{{ $prosthetic_case->attachments->count() }} files</span>
+                </div>
+                <div class="card-body">
+                    <form method="post"
+                          action="{{ route('prosthetics.cases.attachments.upload', $prosthetic_case) }}"
+                          enctype="multipart/form-data"
+                          class="mb-3">
+                        @csrf
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small">Category</label>
+                                <input type="text" name="category" class="form-control form-control-sm" value="general">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">Files</label>
+                                <input type="file" name="files[]" class="form-control form-control-sm" multiple>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-sm btn-primary mt-0">Upload</button>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <label class="form-label small">Description (optional)</label>
+                            <input type="text" name="description" class="form-control form-control-sm">
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>File</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($prosthetic_case->attachments->sortByDesc('created_at') as $att)
+                                    <tr>
+                                        <td style="min-width:240px">
+                                            <a href="{{ $att->file_url }}" target="_blank" class="text-primary text-decoration-underline">
+                                                {{ $att->original_name ?? basename($att->path) }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $att->category ?? 'general' }}</td>
+                                        <td>{{ $att->created_at?->format('Y-m-d') }}</td>
+                                        <td class="text-end">
+                                            <form method="post"
+                                                  action="{{ route('prosthetics.attachments.delete', $att->id) }}"
+                                                  onsubmit="return confirm('Delete this attachment?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                @if ($prosthetic_case->attachments->count() === 0)
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">No attachments yet</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

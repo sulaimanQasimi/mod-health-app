@@ -90,6 +90,9 @@ use App\Http\Controllers\ProstheticReferralController;
 use App\Http\Controllers\ProstheticCaseController;
 use App\Http\Controllers\ProstheticCatalogController;
 use App\Http\Controllers\ProstheticStockController;
+use App\Http\Controllers\ProstheticAttachmentController;
+use App\Http\Controllers\ProstheticsPdfController;
+use App\Http\Controllers\ProstheticsReportController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -759,6 +762,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('cases/{prosthetic_case}/follow-up', [ProstheticCaseController::class, 'storeFollowUp'])->name('cases.follow_up');
         Route::post('cases/{prosthetic_case}/close', [ProstheticCaseController::class, 'closeCase'])->name('cases.close');
 
+        Route::get('cases/{prosthetic_case}/attachments', [ProstheticAttachmentController::class, 'index'])->name('cases.attachments.index');
+        Route::post('cases/{prosthetic_case}/attachments/upload', [ProstheticAttachmentController::class, 'upload'])->name('cases.attachments.upload');
+        Route::delete('attachments/{attachment}', [ProstheticAttachmentController::class, 'delete'])->name('attachments.delete');
+
+        Route::get('cases/{prosthetic_case}/print', [ProstheticsPdfController::class, 'caseSummary'])->name('cases.print');
+
         Route::get('catalog', [ProstheticCatalogController::class, 'index'])->name('catalog.index');
         Route::get('catalog/create', [ProstheticCatalogController::class, 'create'])->middleware('permission:manage-prosthetics-catalog')->name('catalog.create');
         Route::post('catalog', [ProstheticCatalogController::class, 'store'])->middleware('permission:manage-prosthetics-catalog')->name('catalog.store');
@@ -767,6 +776,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('stock', [ProstheticStockController::class, 'index'])->name('stock.index');
         Route::post('stock/receive', [ProstheticStockController::class, 'receive'])->middleware('permission:manage-prosthetics-stock')->name('stock.receive');
+
+        Route::get('reports', [ProstheticsReportController::class, 'index'])->name('reports.index');
     });
 
 

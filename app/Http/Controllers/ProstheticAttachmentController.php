@@ -21,6 +21,10 @@ class ProstheticAttachmentController extends Controller
 
     public function upload(Request $request, ProstheticCase $prosthetic_case)
     {
+        if (in_array($prosthetic_case->status, [ProstheticCase::STATUS_CLOSED, ProstheticCase::STATUS_CANCELLED], true)) {
+            return back()->with('error', 'This prosthetic case is closed and attachments cannot be changed.');
+        }
+
         $data = $request->validate([
             'category' => 'nullable|string|max:64',
             'files.*' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif|max:10240', // 10MB
@@ -54,6 +58,12 @@ class ProstheticAttachmentController extends Controller
 
     public function delete(ProstheticAttachment $attachment)
     {
+        $attachable = $attachment->attachable;
+        if ($attachable instanceof ProstheticCase
+            && in_array($attachable->status, [ProstheticCase::STATUS_CLOSED, ProstheticCase::STATUS_CANCELLED], true)) {
+            return back()->with('error', 'This prosthetic case is closed and attachments cannot be changed.');
+        }
+
         // Physical delete handled by model deleting hook, but we call it explicitly for safety.
         $attachment->deleteFile();
         $attachment->delete();

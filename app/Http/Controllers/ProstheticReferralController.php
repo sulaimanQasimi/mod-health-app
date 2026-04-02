@@ -21,20 +21,63 @@ class ProstheticReferralController extends Controller
             ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
             ->orderByDesc('referral_date');
 
+        // General search (kept for backward compatibility)
+        if ($request->filled('q')) {
+            $q = trim((string) $request->q);
+            $query->where(function ($w) use ($q) {
+                $w->where('referral_number', 'like', '%' . $q . '%')
+                    ->orWhereHas('patient', function ($p) use ($q) {
+                        $p->where('name', 'like', '%' . $q . '%')
+                            ->orWhere('phone', 'like', '%' . $q . '%')
+                            ->orWhere('nid', 'like', '%' . $q . '%')
+                            ->orWhere('id_card', 'like', '%' . $q . '%');
+                    });
+            });
+        }
+
+        // Full filters
+        if ($request->filled('referral_number')) {
+            $query->where('referral_number', 'like', '%' . trim((string) $request->referral_number) . '%');
+        }
+
+        if ($request->filled('patient_id')) {
+            $query->where('patient_id', (int) $request->patient_id);
+        }
+
+        if ($request->filled('patient_name')) {
+            $query->whereHas('patient', fn ($p) => $p->where('name', 'like', '%' . trim((string) $request->patient_name) . '%'));
+        }
+
+        if ($request->filled('phone')) {
+            $query->whereHas('patient', fn ($p) => $p->where('phone', 'like', '%' . trim((string) $request->phone) . '%'));
+        }
+
+        if ($request->filled('nid')) {
+            $query->whereHas('patient', fn ($p) => $p->where('nid', 'like', '%' . trim((string) $request->nid) . '%'));
+        }
+
+        if ($request->filled('id_card')) {
+            $query->whereHas('patient', fn ($p) => $p->where('id_card', 'like', '%' . trim((string) $request->id_card) . '%'));
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('q')) {
-            $q = $request->q;
-            $query->where(function ($w) use ($q) {
-                $w->where('referral_number', 'like', '%'.$q.'%')
-                    ->orWhereHas('patient', function ($p) use ($q) {
-                        $p->where('name', 'like', '%'.$q.'%')
-                            ->orWhere('phone', 'like', '%'.$q.'%')
-                            ->orWhere('nid', 'like', '%'.$q.'%');
-                    });
-            });
+        if ($request->filled('urgency')) {
+            $query->where('urgency', $request->urgency);
+        }
+
+        if ($request->filled('requested_service_type')) {
+            $query->where('requested_service_type', 'like', '%' . trim((string) $request->requested_service_type) . '%');
+        }
+
+        if ($request->filled('from')) {
+            $query->whereDate('referral_date', '>=', $request->from);
+        }
+
+        if ($request->filled('to')) {
+            $query->whereDate('referral_date', '<=', $request->to);
         }
 
         $referrals = $query->paginate(25)->withQueryString();

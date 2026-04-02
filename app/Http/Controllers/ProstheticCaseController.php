@@ -131,8 +131,52 @@ class ProstheticCaseController extends Controller
         ));
     }
 
+    private function caseRank(string $status): int
+    {
+        // Workflow order (lower rank => earlier step)
+        $map = [
+            ProstheticCase::STATUS_NEW => 0,
+            ProstheticCase::STATUS_REFERRED => 1,
+            ProstheticCase::STATUS_UNDER_ASSESSMENT => 2,
+            ProstheticCase::STATUS_MEASUREMENT_COMPLETED => 3,
+            ProstheticCase::STATUS_PRESCRIPTION_COMPLETED => 4,
+            ProstheticCase::STATUS_WAITING_APPROVAL => 5,
+            ProstheticCase::STATUS_APPROVED => 6,
+            ProstheticCase::STATUS_IN_PRODUCTION => 7,
+            ProstheticCase::STATUS_TRIAL_FIT => 8,
+            ProstheticCase::STATUS_DELIVERED => 9,
+            ProstheticCase::STATUS_UNDER_FOLLOW_UP => 10,
+            ProstheticCase::STATUS_CLOSED => 11,
+            ProstheticCase::STATUS_CANCELLED => 12,
+        ];
+
+        return $map[$status] ?? -1;
+    }
+
+    private function guardCaseRankAtMost(ProstheticCase $prosthetic_case, int $maxRank)
+    {
+        if ($this->caseRank($prosthetic_case->status) > $maxRank) {
+            return back()->with('error', 'This prosthetic case is in a completed step and cannot be updated anymore.');
+        }
+
+        return null;
+    }
+
+    private function guardCaseRankIs(ProstheticCase $prosthetic_case, int $requiredRank)
+    {
+        if ($this->caseRank($prosthetic_case->status) !== $requiredRank) {
+            return back()->with('error', 'This prosthetic case is in a completed step and cannot be updated anymore.');
+        }
+
+        return null;
+    }
+
     public function saveAssessment(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankAtMost($prosthetic_case, 2)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'fit_outcome' => 'nullable|string|max:128',
             'history_present_condition' => 'nullable|string',
@@ -163,6 +207,10 @@ class ProstheticCaseController extends Controller
 
     public function saveMeasurements(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankAtMost($prosthetic_case, 2)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'rows' => 'required|array',
             'rows.*.name' => 'nullable|string|max:255',
@@ -218,6 +266,10 @@ class ProstheticCaseController extends Controller
 
     public function lockMeasurements(ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankAtMost($prosthetic_case, 2)) {
+            return $guard;
+        }
+
         $set = $prosthetic_case->measurementSets()->where('is_locked', false)->orderByDesc('version')->first();
         if ($set) {
             $set->is_locked = true;
@@ -231,6 +283,10 @@ class ProstheticCaseController extends Controller
 
     public function savePrescription(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankAtMost($prosthetic_case, 3)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'device_timing' => 'nullable|string|max:64',
             'target_functionality' => 'nullable|string',
@@ -317,6 +373,10 @@ class ProstheticCaseController extends Controller
 
     public function updateEstimate(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankAtMost($prosthetic_case, 4)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'estimate_id' => 'required|exists:prosthetic_estimates,id',
             'labor_total' => 'nullable|numeric|min:0',
@@ -343,6 +403,10 @@ class ProstheticCaseController extends Controller
 
     public function submitForApproval(ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 4)) {
+            return $guard;
+        }
+
         $estimate = $prosthetic_case->estimates()->orderByDesc('id')->first();
         if (! $estimate) {
             return back()->with('error', __('global.prosthetics_need_estimate'));
@@ -360,6 +424,10 @@ class ProstheticCaseController extends Controller
 
     public function approveCase(ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 5)) {
+            return $guard;
+        }
+
         $prosthetic_case->status = ProstheticCase::STATUS_APPROVED;
         $prosthetic_case->approved_at = now();
         $prosthetic_case->approved_by = Auth::id();
@@ -377,6 +445,10 @@ class ProstheticCaseController extends Controller
 
     public function createWorkOrder(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 6)) {
+            return $guard;
+        }
+
         $rx = $prosthetic_case->prescriptions()->where('status', 'final')->orderByDesc('id')->first();
         if (! $rx) {
             return back()->with('error', __('global.prosthetics_need_prescription'));
@@ -413,6 +485,17 @@ class ProstheticCaseController extends Controller
 
     public function updateWorkOrder(Request $request, ProstheticWorkOrder $prosthetic_work_order)
     {
+        $prosthetic_case = $prosthetic_work_order->prostheticCase;
+        if ($prosthetic_case) {
+            if ($guard = $this->guardCaseRankIs($prosthetic_case, 7)) {
+                return $guard;
+            }
+        }
+
+        if ($prosthetic_work_order->production_stage === 'completed') {
+            return back()->with('error', 'This prosthetic case is in a completed step and cannot be updated anymore.');
+        }
+
         $data = $request->validate([
             'production_stage' => 'nullable|string|max:64',
             'status' => 'nullable|string|max:64',
@@ -428,11 +511,19 @@ class ProstheticCaseController extends Controller
 
     public function issueStock(Request $request, ProstheticCase $prosthetic_case, ProstheticsStockService $stock)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 7)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'prosthetic_work_order_id' => 'required|exists:prosthetic_work_orders,id',
         ]);
 
         $wo = ProstheticWorkOrder::where('prosthetic_case_id', $prosthetic_case->id)->findOrFail($data['prosthetic_work_order_id']);
+        if ($wo->production_stage === 'completed') {
+            return back()->with('error', 'This prosthetic case is in a completed step and cannot be updated anymore.');
+        }
+
         $rx = $wo->prescription;
         if (! $rx) {
             return back()->with('error', __('global.prosthetics_need_prescription'));
@@ -455,6 +546,10 @@ class ProstheticCaseController extends Controller
 
     public function storeFitting(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 7)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'session_date' => 'required|date',
             'prosthetic_work_order_id' => 'nullable|exists:prosthetic_work_orders,id',
@@ -479,6 +574,10 @@ class ProstheticCaseController extends Controller
 
     public function storeDelivery(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 8)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'delivered_at' => 'required|date',
             'received_by_name' => 'nullable|string|max:255',
@@ -505,6 +604,10 @@ class ProstheticCaseController extends Controller
 
     public function storeFollowUp(Request $request, ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 9)) {
+            return $guard;
+        }
+
         $data = $request->validate([
             'follow_up_type' => 'nullable|string|max:64',
             'scheduled_at' => 'required|date',
@@ -527,6 +630,10 @@ class ProstheticCaseController extends Controller
 
     public function closeCase(ProstheticCase $prosthetic_case)
     {
+        if ($guard = $this->guardCaseRankIs($prosthetic_case, 10)) {
+            return $guard;
+        }
+
         $prosthetic_case->status = ProstheticCase::STATUS_CLOSED;
         $prosthetic_case->updated_by = Auth::id();
         $prosthetic_case->save();

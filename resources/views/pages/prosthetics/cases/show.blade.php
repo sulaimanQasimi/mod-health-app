@@ -101,12 +101,12 @@
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <span class="badge {{ $statusMetaCurrent['bg'] }} d-inline-flex align-items-center gap-1">
                                 <i class="{{ $statusMetaCurrent['icon'] }}"></i>
-                                {{ $prosthetic_case->status }}
+                                {{ localize('global.prosthetics_case_status_'.$prosthetic_case->status) }}
                             </span>
                             @if ($prosthetic_case->referral)
                                 <span class="text-muted small">
                                     <i class="bx bx-receipt me-1"></i>
-                                    Referral: {{ $prosthetic_case->referral->referral_number ?? '—' }}
+                                    {{ localize('global.prosthetics_referral') }}: {{ $prosthetic_case->referral->referral_number ?? '—' }}
                                 </span>
                             @endif
                         </div>
@@ -114,7 +114,7 @@
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
                     <a href="{{ route('prosthetics.cases.index') }}" class="btn btn-sm btn-outline-secondary">{{ localize('global.back') }}</a>
-                    <a href="{{ route('prosthetics.cases.print', $prosthetic_case) }}" class="btn btn-sm btn-outline-success">Print summary</a>
+                    <a href="{{ route('prosthetics.cases.print', $prosthetic_case) }}" class="btn btn-sm btn-outline-success">{{ localize('global.prosthetics_print_summary') }}</a>
                 </div>
             </div>
 
@@ -136,7 +136,7 @@
                                 $isDone = $stepRank <= $caseRank;
                             @endphp
                             <span class="badge rounded-pill {{ $isDone ? 'bg-primary' : 'bg-label-secondary' }}">
-                                {{ $idx + 1 }}. {{ ucwords(str_replace('_', ' ', $st)) }}
+                                {{ $idx + 1 }}. {{ localize('global.prosthetics_case_status_'.$st) }}
                             </span>
                         @endforeach
                     </div>
@@ -151,7 +151,7 @@
                         {{ localize('global.prosthetics_assessment') }}
                     </strong>
                     @if (! $canEditAssessment)
-                        <span class="badge bg-label-warning">Completed</span>
+                        <span class="badge bg-label-warning">{{ localize('global.completed') }}</span>
                     @endif
                 </div>
                 <div class="card-body">
@@ -159,21 +159,21 @@
                           {{ $canEditAssessment ? '' : 'onsubmit="return false;"' }}>
                         @csrf
                         <div class="mb-2">
-                            <label class="form-label">Fit outcome</label>
+                            <label class="form-label">{{ localize('global.prosthetics_fit_outcome_label') }}</label>
                             <select name="fit_outcome" class="form-select form-select-sm" {{ $canEditAssessment ? '' : 'disabled' }}>
                                 @foreach (['pending', 'fit_for_device', 'delay', 'not_suitable', 'temporary_device', 'permanent_device'] as $o)
-                                    <option value="{{ $o }}" @selected(old('fit_outcome', optional($prosthetic_case->assessment)->fit_outcome ?? 'pending') === $o)>{{ $o }}</option>
+                                    <option value="{{ $o }}" @selected(old('fit_outcome', optional($prosthetic_case->assessment)->fit_outcome ?? 'pending') === $o)>{{ localize('global.prosthetics_fit_outcome_'.$o) }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="mb-2">
-                            <textarea name="history_present_condition" class="form-control form-control-sm" rows="2" placeholder="History / present condition" {{ $canEditAssessment ? '' : 'disabled' }}>{{ old('history_present_condition', optional($prosthetic_case->assessment)->history_present_condition) }}</textarea>
+                            <textarea name="history_present_condition" class="form-control form-control-sm" rows="2" placeholder="{{ localize('global.prosthetics_history_present_condition_placeholder') }}" {{ $canEditAssessment ? '' : 'disabled' }}>{{ old('history_present_condition', optional($prosthetic_case->assessment)->history_present_condition) }}</textarea>
                         </div>
                         <div class="mb-2">
-                            <textarea name="skin_stump_notes" class="form-control form-control-sm" rows="2" placeholder="Skin / stump" {{ $canEditAssessment ? '' : 'disabled' }}>{{ old('skin_stump_notes', optional($prosthetic_case->assessment)->skin_stump_notes) }}</textarea>
+                            <textarea name="skin_stump_notes" class="form-control form-control-sm" rows="2" placeholder="{{ localize('global.prosthetics_skin_stump_placeholder') }}" {{ $canEditAssessment ? '' : 'disabled' }}>{{ old('skin_stump_notes', optional($prosthetic_case->assessment)->skin_stump_notes) }}</textarea>
                         </div>
                         <div class="mb-2">
-                            <textarea name="functional_goals" class="form-control form-control-sm" rows="2" placeholder="Functional goals" {{ $canEditAssessment ? '' : 'disabled' }}>{{ old('functional_goals', optional($prosthetic_case->assessment)->functional_goals) }}</textarea>
+                            <textarea name="functional_goals" class="form-control form-control-sm" rows="2" placeholder="{{ localize('global.prosthetics_functional_goals_placeholder') }}" {{ $canEditAssessment ? '' : 'disabled' }}>{{ old('functional_goals', optional($prosthetic_case->assessment)->functional_goals) }}</textarea>
                         </div>
                         @if ($canEditAssessment)
                             <button type="submit" class="btn btn-sm btn-primary">{{ localize('global.save') }}</button>
@@ -204,10 +204,10 @@
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Value</th>
-                                        <th>Unit</th>
-                                        <th>Notes</th>
+                                        <th>{{ localize('global.name') }}</th>
+                                        <th>{{ localize('global.value') }}</th>
+                                        <th>{{ localize('global.unit') }}</th>
+                                        <th>{{ localize('global.notes') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -244,7 +244,7 @@
                         {{ localize('global.prosthetics_prescription') }}
                     </strong>
                     @if (! $canEditPrescription)
-                        <span class="badge bg-label-warning">Completed</span>
+                        <span class="badge bg-label-warning">{{ localize('global.completed') }}</span>
                     @endif
                 </div>
                 <div class="card-body">
@@ -253,22 +253,22 @@
                         @csrf
                         <div class="row mb-2">
                             <div class="col-md-4">
-                                <label class="form-label small">Device timing</label>
+                                <label class="form-label small">{{ localize('global.prosthetics_device_timing_label') }}</label>
                                 <select name="device_timing" class="form-select form-select-sm" {{ $canEditPrescription ? '' : 'disabled' }}>
                                     @foreach (['definitive', 'temporary', 'preparatory'] as $t)
-                                        <option value="{{ $t }}" @selected(old('device_timing', optional($activePrescription)->device_timing ?: 'definitive') === $t)>{{ $t }}</option>
+                                        <option value="{{ $t }}" @selected(old('device_timing', optional($activePrescription)->device_timing ?: 'definitive') === $t)>{{ localize('global.prosthetics_device_timing_'.$t) }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <textarea name="special_instructions" class="form-control form-control-sm mb-2" rows="2" placeholder="Special instructions" {{ $canEditPrescription ? '' : 'disabled' }}>{{ old('special_instructions', $activePrescription->special_instructions ?? '') }}</textarea>
+                        <textarea name="special_instructions" class="form-control form-control-sm mb-2" rows="2" placeholder="{{ localize('global.prosthetics_special_instructions_placeholder') }}" {{ $canEditPrescription ? '' : 'disabled' }}>{{ old('special_instructions', $activePrescription->special_instructions ?? '') }}</textarea>
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Component</th>
-                                        <th>Qty</th>
-                                        <th>Notes</th>
+                                        <th>{{ localize('global.prosthetics_component') }}</th>
+                                        <th>{{ localize('global.quantity') }}</th>
+                                        <th>{{ localize('global.notes') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -293,7 +293,9 @@
                             </table>
                         </div>
                         @if ($canEditPrescription)
-                            <button type="submit" class="btn btn-sm btn-primary">{{ localize('global.save') }} &amp; finalize prescription</button>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                {{ localize('global.save') }} &amp; {{ localize('global.prosthetics_finalize_prescription') }}
+                            </button>
                         @endif
                     </form>
                 </div>
@@ -308,11 +310,11 @@
                             {{ localize('global.prosthetics_estimate') }}
                         </strong>
                         @if (! $canEditEstimate)
-                            <span class="badge bg-label-warning">Read-only</span>
+                            <span class="badge bg-label-warning">{{ localize('global.prosthetics_read_only_badge') }}</span>
                         @endif
                     </div>
                     <div class="card-body">
-                        <p class="mb-1">{{ localize('global.parts') ?? 'Parts' }}: <strong>{{ number_format($latestEstimate->parts_total, 2) }}</strong> {{ $latestEstimate->currency }}</p>
+                        <p class="mb-1">{{ localize('global.parts') }}: <strong>{{ number_format($latestEstimate->parts_total, 2) }}</strong> {{ $latestEstimate->currency }}</p>
                         @php
                             $estimateDisabled = ! $canEditEstimate;
                         @endphp
@@ -321,11 +323,11 @@
                             @csrf
                             <input type="hidden" name="estimate_id" value="{{ $latestEstimate->id }}">
                             <div class="col-auto">
-                                <label class="form-label small">Labor</label>
+                                <label class="form-label small">{{ localize('global.prosthetics_labor') }}</label>
                                 <input type="number" step="0.01" name="labor_total" class="form-control form-control-sm" value="{{ old('labor_total', $latestEstimate->labor_total) }}" {{ $estimateDisabled ? 'disabled' : '' }}>
                             </div>
                             <div class="col-auto">
-                                <label class="form-label small">Discount</label>
+                                <label class="form-label small">{{ localize('global.prosthetics_discount') }}</label>
                                 <input type="number" step="0.01" name="discount" class="form-control form-control-sm" value="{{ old('discount', $latestEstimate->discount) }}" {{ $estimateDisabled ? 'disabled' : '' }}>
                             </div>
                             <div class="col-auto">
@@ -334,7 +336,7 @@
                                 @endif
                             </div>
                         </form>
-                        <p class="mt-2 mb-0"><strong>Total:</strong> {{ number_format($latestEstimate->total, 2) }} {{ $latestEstimate->currency }} ({{ $latestEstimate->status }})</p>
+                        <p class="mt-2 mb-0"><strong>{{ localize('global.total') }}:</strong> {{ number_format($latestEstimate->total, 2) }} {{ $latestEstimate->currency }} ({{ $latestEstimate->status }})</p>
                     </div>
                 </div>
             @endif
@@ -350,19 +352,19 @@
                     @if ($canSubmitForApproval)
                         <form method="post" action="{{ route('prosthetics.cases.submit_approval', $prosthetic_case) }}">
                             @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-primary">Submit for approval</button>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">{{ localize('global.prosthetics_submit_for_approval') }}</button>
                         </form>
                     @endif
 
                     @if ($canApproveCase)
                         <form method="post" action="{{ route('prosthetics.cases.approve', $prosthetic_case) }}">
                             @csrf
-                            <button type="submit" class="btn btn-sm btn-success">Approve case</button>
+                            <button type="submit" class="btn btn-sm btn-success">{{ localize('global.prosthetics_approve_case') }}</button>
                         </form>
                     @endif
 
                     @if (! $canSubmitForApproval && ! $canApproveCase)
-                        <span class="text-muted small mt-1">Workflow actions are locked for this step.</span>
+                        <span class="text-muted small mt-1">{{ localize('global.prosthetics_workflow_actions_locked') }}</span>
                     @endif
                 </div>
             </div>
@@ -379,7 +381,7 @@
                     @if ($activeWorkOrder)
                         <p class="mb-2">
                             <code>{{ $activeWorkOrder->work_order_number }}</code>
-                            <span class="text-muted">— {{ $activeWorkOrder->status }} / {{ $activeWorkOrder->production_stage }}</span>
+                                <span class="text-muted">— {{ $activeWorkOrder->status }} / {{ localize('global.prosthetics_work_order_stage_'.$activeWorkOrder->production_stage) }}</span>
                         </p>
 
                         @php
@@ -395,7 +397,7 @@
                                 <div class="col-auto">
                                     <select name="production_stage" class="form-select form-select-sm" {{ $workOrderStageDisabled ? 'disabled' : '' }}>
                                         @foreach (['pending', 'materials_issued', 'socket_fabrication', 'assembly', 'trial_fit_ready', 'quality_control', 'ready_for_delivery', 'completed'] as $st)
-                                            <option value="{{ $st }}" @selected($activeWorkOrder->production_stage === $st)>{{ $st }}</option>
+                                        <option value="{{ $st }}" @selected($activeWorkOrder->production_stage === $st)>{{ localize('global.prosthetics_work_order_stage_'.$st) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -413,18 +415,18 @@
                                 <button type="submit" class="btn btn-sm btn-outline-danger">{{ localize('global.prosthetics_issue_components') }}</button>
                             </form>
                         @else
-                            <div class="text-muted small mt-2">Stock issuing is locked for this step.</div>
+                            <div class="text-muted small mt-2">{{ localize('global.prosthetics_stock_issue_locked') }}</div>
                         @endif
                     @else
                         @if ($canCreateWorkOrder)
                             <form method="post" action="{{ route('prosthetics.cases.work_order', $prosthetic_case) }}" class="row g-2">
                                 @csrf
                                 <div class="col-auto">
-                                    <button type="submit" class="btn btn-sm btn-primary">Create work order</button>
+                                    <button type="submit" class="btn btn-sm btn-primary">{{ localize('global.prosthetics_create_work_order') }}</button>
                                 </div>
                             </form>
                         @else
-                            <div class="text-muted small">Work order will be available after approval.</div>
+                            <div class="text-muted small">{{ localize('global.prosthetics_work_order_available_after_approval') }}</div>
                         @endif
                     @endif
                 </div>
@@ -438,7 +440,7 @@
                         {{ localize('global.prosthetics_fitting') }}
                     </strong>
                     @if (! $canStoreFitting)
-                        <span class="badge bg-label-warning">Read-only</span>
+                        <span class="badge bg-label-warning">{{ localize('global.prosthetics_read_only_badge') }}</span>
                     @endif
                 </div>
                 <div class="card-body">
@@ -453,12 +455,12 @@
                         <div class="col-md-3">
                             <select name="outcome" class="form-select form-select-sm" {{ $canStoreFitting ? '' : 'disabled' }}>
                                 @foreach (['pending', 'passed', 'minor_adjustment', 'major_rework', 'remake'] as $o)
-                                    <option value="{{ $o }}">{{ $o }}</option>
+                                    <option value="{{ $o }}">{{ localize('global.prosthetics_fitting_outcome_'.$o) }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="notes" class="form-control form-control-sm" placeholder="Notes" {{ $canStoreFitting ? '' : 'disabled' }}>
+                            <input type="text" name="notes" class="form-control form-control-sm" placeholder="{{ localize('global.notes') }}" {{ $canStoreFitting ? '' : 'disabled' }}>
                         </div>
                         <div class="col-auto">
                             @if ($canStoreFitting)
@@ -477,7 +479,7 @@
                         {{ localize('global.prosthetics_delivery') }}
                     </strong>
                     @if (! $canStoreDelivery)
-                        <span class="badge bg-label-warning">Read-only</span>
+                        <span class="badge bg-label-warning">{{ localize('global.prosthetics_read_only_badge') }}</span>
                     @endif
                 </div>
                 <div class="card-body">
@@ -486,21 +488,21 @@
                         @csrf
                         <div class="row g-2">
                             <div class="col-md-3">
-                                <label class="form-label small">Delivery date</label>
+                                <label class="form-label small">{{ localize('global.prosthetics_delivery_date') }}</label>
                                 <input type="date" name="delivered_at" class="form-control form-control-sm" value="{{ now()->format('Y-m-d') }}" required {{ $canStoreDelivery ? '' : 'disabled' }}>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small">Received by</label>
+                                <label class="form-label small">{{ localize('global.prosthetics_received_by') }}</label>
                                 <input type="text" name="received_by_name" class="form-control form-control-sm" {{ $canStoreDelivery ? '' : 'disabled' }}>
                             </div>
                             <div class="col-md-3 d-flex align-items-end">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="handover_signed" value="1" id="handover_signed" {{ $canStoreDelivery ? '' : 'disabled' }}>
-                                    <label class="form-check-label" for="handover_signed">Handover signed</label>
+                                    <label class="form-check-label" for="handover_signed">{{ localize('global.prosthetics_handover_signed') }}</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <textarea name="notes" class="form-control form-control-sm" rows="2" placeholder="Notes" {{ $canStoreDelivery ? '' : 'disabled' }}></textarea>
+                                <textarea name="notes" class="form-control form-control-sm" rows="2" placeholder="{{ localize('global.notes') }}" {{ $canStoreDelivery ? '' : 'disabled' }}></textarea>
                             </div>
                             <div class="col-12">
                                 @if ($canStoreDelivery)
@@ -520,7 +522,7 @@
                         {{ localize('global.prosthetics_follow_up') }}
                     </strong>
                     @if (! $canStoreFollowUp)
-                        <span class="badge bg-label-warning">Read-only</span>
+                        <span class="badge bg-label-warning">{{ localize('global.prosthetics_read_only_badge') }}</span>
                     @endif
                 </div>
                 <div class="card-body">
@@ -533,7 +535,7 @@
                         <div class="col-md-3">
                             <select name="follow_up_type" class="form-select form-select-sm" {{ $canStoreFollowUp ? '' : 'disabled' }}>
                                 @foreach (['1_week', '1_month', '3_month', '6_month', 'annual', 'unscheduled'] as $t)
-                                    <option value="{{ $t }}">{{ $t }}</option>
+                                    <option value="{{ $t }}">{{ localize('global.prosthetics_follow_up_type_'.$t) }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -551,9 +553,9 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong class="d-inline-flex align-items-center gap-2">
                         <i class="bx bx-paperclip"></i>
-                        Attachments
+                        {{ localize('global.prosthetics_attachments') }}
                     </strong>
-                    <span class="text-muted small">{{ $prosthetic_case->attachments->count() }} files</span>
+                    <span class="text-muted small">{{ $prosthetic_case->attachments->count() }} {{ localize('global.prosthetics_files') }}</span>
                 </div>
                 <div class="card-body">
                     @php
@@ -567,26 +569,26 @@
                         @csrf
                         <div class="row g-2 align-items-end">
                             <div class="col-md-4">
-                                <label class="form-label small">Category</label>
+                                <label class="form-label small">{{ localize('global.category') }}</label>
                                 <input type="text" name="category" class="form-control form-control-sm" value="general" {{ $attachmentsDisabled ? 'disabled' : '' }}>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small">Files</label>
+                                <label class="form-label small">{{ localize('global.prosthetics_files') }}</label>
                                 <input type="file" name="files[]" class="form-control form-control-sm" multiple {{ $attachmentsDisabled ? 'disabled' : '' }}>
                             </div>
                             <div class="col-auto">
                                 @if (! $attachmentsDisabled)
-                                    <button type="submit" class="btn btn-sm btn-primary mt-0">Upload</button>
+                                    <button type="submit" class="btn btn-sm btn-primary mt-0">{{ localize('global.prosthetics_upload') }}</button>
                                 @endif
                             </div>
                         </div>
                         <div class="mt-2">
-                            <label class="form-label small">Description (optional)</label>
+                            <label class="form-label small">{{ localize('global.prosthetics_description_optional') }}</label>
                             <input type="text" name="description" class="form-control form-control-sm" {{ $attachmentsDisabled ? 'disabled' : '' }}>
                         </div>
                         @if ($attachmentsDisabled)
                             <div class="text-muted small mt-2 d-flex align-items-center gap-2">
-                                <i class="bx bx-lock-alt"></i> Attachments are read-only for this case.
+                                <i class="bx bx-lock-alt"></i> {{ localize('global.prosthetics_attachments_readonly_notice') }}
                             </div>
                         @endif
                     </form>
@@ -595,9 +597,9 @@
                         <table class="table table-sm mb-0">
                             <thead>
                                 <tr>
-                                    <th>File</th>
-                                    <th>Category</th>
-                                    <th>Date</th>
+                                    <th>{{ localize('global.file') }}</th>
+                                    <th>{{ localize('global.category') }}</th>
+                                    <th>{{ localize('global.date') }}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -615,10 +617,10 @@
                                             @if (! $attachmentsDisabled)
                                                 <form method="post"
                                                       action="{{ route('prosthetics.attachments.delete', $att->id) }}"
-                                                      onsubmit="return confirm('Delete this attachment?');">
+                                                      onsubmit="return confirm('{{ addslashes(localize('global.prosthetics_delete_attachment_confirm')) }}');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ localize('global.delete') }}</button>
                                                 </form>
                                             @endif
                                         </td>
@@ -626,7 +628,7 @@
                                 @endforeach
                                 @if ($prosthetic_case->attachments->count() === 0)
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-3">No attachments yet</td>
+                                        <td colspan="4" class="text-center text-muted py-3">{{ localize('global.no_attachments') }}</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -636,9 +638,9 @@
             </div>
 
             @if ($canCloseCase)
-                <form method="post" action="{{ route('prosthetics.cases.close', $prosthetic_case) }}" onsubmit="return confirm('Close case?');">
+                <form method="post" action="{{ route('prosthetics.cases.close', $prosthetic_case) }}" onsubmit="return confirm('{{ addslashes(localize('global.prosthetics_close_case_confirm')) }}');">
                     @csrf
-                    <button type="submit" class="btn btn-outline-secondary">Close case</button>
+                    <button type="submit" class="btn btn-outline-secondary">{{ localize('global.prosthetics_close_case') }}</button>
                 </form>
             @endif
         </div>

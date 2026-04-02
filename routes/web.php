@@ -85,6 +85,11 @@ use App\Http\Controllers\DentalChartController;
 use App\Http\Controllers\DentalChartAjaxController;
 use App\Http\Controllers\DentalChartImageController;
 use App\Http\Controllers\DentalPeriodontalController;
+use App\Http\Controllers\ProstheticsDashboardController;
+use App\Http\Controllers\ProstheticReferralController;
+use App\Http\Controllers\ProstheticCaseController;
+use App\Http\Controllers\ProstheticCatalogController;
+use App\Http\Controllers\ProstheticStockController;
 Route::group(['middleware' => ['auth']], function () {
 
     // Home default route
@@ -726,6 +731,42 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('branch-transfers/{branchTransfer}/reject', [BloodBranchTransferController::class, 'reject'])->name('branch_transfers.reject');
         Route::post('branch-transfers/{branchTransfer}/fulfill', [BloodBranchTransferController::class, 'fulfill'])->name('branch_transfers.fulfill');
         Route::post('branch-transfers/{branchTransfer}/cancel', [BloodBranchTransferController::class, 'cancel'])->name('branch_transfers.cancel');
+    });
+
+    // Prosthetics & orthotics (artificial parts) module
+    Route::prefix('prosthetics')->name('prosthetics.')->middleware('permission:show-prosthetics-menu')->group(function () {
+        Route::get('dashboard', [ProstheticsDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('referrals/patients/search', [ProstheticReferralController::class, 'searchPatients'])->name('referrals.patients.search');
+        Route::post('referrals/{referral}/accept', [ProstheticReferralController::class, 'accept'])->name('referrals.accept');
+        Route::post('referrals/{referral}/reject', [ProstheticReferralController::class, 'reject'])->name('referrals.reject');
+        Route::post('referrals/{referral}/convert', [ProstheticReferralController::class, 'convertToCase'])->name('referrals.convert');
+        Route::resource('referrals', ProstheticReferralController::class);
+
+        Route::resource('cases', ProstheticCaseController::class)->parameters(['cases' => 'prosthetic_case'])->only(['index', 'create', 'store', 'show']);
+        Route::post('cases/{prosthetic_case}/assessment', [ProstheticCaseController::class, 'saveAssessment'])->name('cases.assessment');
+        Route::post('cases/{prosthetic_case}/measurements', [ProstheticCaseController::class, 'saveMeasurements'])->name('cases.measurements');
+        Route::post('cases/{prosthetic_case}/measurements/lock', [ProstheticCaseController::class, 'lockMeasurements'])->name('cases.measurements.lock');
+        Route::post('cases/{prosthetic_case}/prescription', [ProstheticCaseController::class, 'savePrescription'])->name('cases.prescription');
+        Route::post('cases/{prosthetic_case}/estimate', [ProstheticCaseController::class, 'updateEstimate'])->name('cases.estimate');
+        Route::post('cases/{prosthetic_case}/submit-approval', [ProstheticCaseController::class, 'submitForApproval'])->name('cases.submit_approval');
+        Route::post('cases/{prosthetic_case}/approve', [ProstheticCaseController::class, 'approveCase'])->name('cases.approve');
+        Route::post('cases/{prosthetic_case}/work-order', [ProstheticCaseController::class, 'createWorkOrder'])->name('cases.work_order');
+        Route::put('work-orders/{prosthetic_work_order}', [ProstheticCaseController::class, 'updateWorkOrder'])->name('work_orders.update');
+        Route::post('cases/{prosthetic_case}/issue-stock', [ProstheticCaseController::class, 'issueStock'])->name('cases.issue_stock');
+        Route::post('cases/{prosthetic_case}/fitting', [ProstheticCaseController::class, 'storeFitting'])->name('cases.fitting');
+        Route::post('cases/{prosthetic_case}/delivery', [ProstheticCaseController::class, 'storeDelivery'])->name('cases.delivery');
+        Route::post('cases/{prosthetic_case}/follow-up', [ProstheticCaseController::class, 'storeFollowUp'])->name('cases.follow_up');
+        Route::post('cases/{prosthetic_case}/close', [ProstheticCaseController::class, 'closeCase'])->name('cases.close');
+
+        Route::get('catalog', [ProstheticCatalogController::class, 'index'])->name('catalog.index');
+        Route::get('catalog/create', [ProstheticCatalogController::class, 'create'])->middleware('permission:manage-prosthetics-catalog')->name('catalog.create');
+        Route::post('catalog', [ProstheticCatalogController::class, 'store'])->middleware('permission:manage-prosthetics-catalog')->name('catalog.store');
+        Route::get('catalog/{item}/edit', [ProstheticCatalogController::class, 'edit'])->middleware('permission:manage-prosthetics-catalog')->name('catalog.edit');
+        Route::put('catalog/{item}', [ProstheticCatalogController::class, 'update'])->middleware('permission:manage-prosthetics-catalog')->name('catalog.update');
+
+        Route::get('stock', [ProstheticStockController::class, 'index'])->name('stock.index');
+        Route::post('stock/receive', [ProstheticStockController::class, 'receive'])->middleware('permission:manage-prosthetics-stock')->name('stock.receive');
     });
 
 

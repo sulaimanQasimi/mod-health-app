@@ -357,6 +357,43 @@
                 </ul>
             </li>
         @endcan
+
+        @can('show-prosthetics-menu')
+            <li class="menu-item {{ Route::is('prosthetics.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-body"></i>
+                    <div>{{ localize('global.prosthetics_module') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('prosthetics.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('prosthetics.dashboard') }}" class="menu-link">
+                            <div>{{ localize('global.prosthetics_dashboard') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('prosthetics.referrals.*') ? 'active' : '' }}">
+                        <a href="{{ route('prosthetics.referrals.index') }}" class="menu-link">
+                            <div>{{ localize('global.prosthetics_referrals') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('prosthetics.cases.*') ? 'active' : '' }}">
+                        <a href="{{ route('prosthetics.cases.index') }}" class="menu-link">
+                            <div>{{ localize('global.prosthetics_cases') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('prosthetics.catalog.*') ? 'active' : '' }}">
+                        <a href="{{ route('prosthetics.catalog.index') }}" class="menu-link">
+                            <div>{{ localize('global.prosthetics_catalog') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('prosthetics.stock.*') ? 'active' : '' }}">
+                        <a href="{{ route('prosthetics.stock.index') }}" class="menu-link">
+                            <div>{{ localize('global.prosthetics_stock') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
+
         @can('show-under-review-menu')
             <li class="menu-item {{ Route::is('under_reviews.index') ? 'active' : '' }}">
                 <a href="{{ route('under_reviews.index') }}" class="menu-link">

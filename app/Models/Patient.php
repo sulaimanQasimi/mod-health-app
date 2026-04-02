@@ -179,4 +179,14 @@ class Patient extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function prostheticReferrals()
+    {
+        return $this->hasMany(ProstheticReferral::class);
+    }
+
+    public function prostheticCases()
+    {
+        return $this->hasMany(ProstheticCase::class);
+    }
 }

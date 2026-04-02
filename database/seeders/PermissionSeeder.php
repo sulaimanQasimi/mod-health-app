@@ -327,6 +327,27 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::createOrFirst([
+            'name' => 'show-prosthetics-menu',
+            'name_dr' => 'نمایش مینو اندام مصنوعی و ارتزیک',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-prosthetics-catalog',
+            'name_dr' => 'مدیریت کاتالوگ قطعات اندام مصنوعی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'manage-prosthetics-stock',
+            'name_dr' => 'مدیریت انبار اندام مصنوعی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
             'name' => 'show-blood-bank-menu',
             'name_dr' => 'نمایش مینو بانک خون',
             'name_pa' => NULL,

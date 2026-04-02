@@ -630,8 +630,8 @@ class ProstheticCaseController extends Controller
 
     public function closeCase(ProstheticCase $prosthetic_case)
     {
-        if ($guard = $this->guardCaseRankIs($prosthetic_case, 10)) {
-            return $guard;
+        if (in_array($prosthetic_case->status, [ProstheticCase::STATUS_CLOSED, ProstheticCase::STATUS_CANCELLED], true)) {
+            return back()->with('error', 'This prosthetic case is closed and cannot be changed.');
         }
 
         $prosthetic_case->status = ProstheticCase::STATUS_CLOSED;

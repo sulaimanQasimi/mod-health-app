@@ -45,7 +45,7 @@
         $canStoreDelivery = ! $isCaseReadOnly && $caseRank === 8;
         $canStoreFollowUp = ! $isCaseReadOnly && $caseRank === 9;
 
-        $canCloseCase = ! $isCaseReadOnly && $caseRank === 10;
+        $canCloseCase = ! $isCaseReadOnly;
         $canManageAttachments = ! $isCaseReadOnly;
 
         $statusMeta = [

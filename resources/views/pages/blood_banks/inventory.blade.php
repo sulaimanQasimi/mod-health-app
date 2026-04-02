@@ -89,6 +89,8 @@
                                         </div>
                                     @endif
                                     <div class="row g-3">
+                            {{-- Temporarily hidden: link blood donor to patient --}}
+                            {{--
                             <div class="col-md-6">
                                 <label class="form-label">{{ localize('global.blood_donor_link_patient') }}</label>
                                 <select name="patient_id" id="bloodDonorPatientId"
@@ -107,6 +109,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            --}}
                             <div class="col-12" id="bloodDonorDeptToggleRow">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" name="donor_record_department"
@@ -436,10 +439,10 @@
                     var chk = document.getElementById('donorRecordDepartment');
                     var deptSel = document.getElementById('bloodDonorDepartmentId');
                     var donorTypeSel = document.getElementById('bloodDonorType');
-                    if (!patientSel || !toggleRow || !deptWrap) {
+                    if (!toggleRow || !deptWrap) {
                         return;
                     }
-                    var hasPatient = patientSel.value && patientSel.value !== '';
+                    var hasPatient = patientSel && patientSel.value && patientSel.value !== '';
                     var isMilitary = donorTypeSel && donorTypeSel.value === 'military';
                     if (hasPatient) {
                         if (isMilitary) {

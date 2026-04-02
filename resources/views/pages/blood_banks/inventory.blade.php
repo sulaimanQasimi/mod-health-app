@@ -97,6 +97,8 @@
                                         </div>
                                     @endif
                                     <div class="row g-3">
+                            {{-- Temporarily hidden: link blood donor to patient --}}
+                            {{--
                             <div class="col-md-6">
                                 <label class="form-label">{{ localize('global.blood_donor_link_patient') }}</label>
                                 <select name="patient_id" id="bloodDonorPatientId"
@@ -115,6 +117,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            --}}
                             <div class="col-12" id="bloodDonorDeptToggleRow">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" name="donor_record_department"
@@ -139,6 +142,8 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="col-12 @if (! old('department_id')) d-none @endif" id="bloodDonorDetailsWrap">
+                                <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">{{ localize('global.donor_name') }}</label>
                                 <input type="text" name="donor_name" value="{{ old('donor_name') }}"
@@ -246,6 +251,8 @@
                                 @error('phlebotomy_at')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+                                </div>
                             </div>
                             <div class="col-12">
                                 <hr class="my-2">
@@ -462,11 +469,11 @@
                     var chk = document.getElementById('donorRecordDepartment');
                     var deptSel = document.getElementById('bloodDonorDepartmentId');
                     var donorTypeSel = document.getElementById('bloodDonorType');
-                    var militaryDeptWrap = document.getElementById('bloodDonorMilitaryDepartmentWrap');
-                    if (!patientSel || !toggleRow || !deptWrap) {
+                    if (!toggleRow || !deptWrap) {
+                        syncBloodDonorDetailsVisibility();
                         return;
                     }
-                    var hasPatient = patientSel.value && patientSel.value !== '';
+                    var hasPatient = patientSel && patientSel.value && patientSel.value !== '';
                     var isMilitary = donorTypeSel && donorTypeSel.value === 'military';
                     if (militaryDeptWrap) {
                         militaryDeptWrap.style.display = isMilitary ? '' : 'none';
@@ -484,6 +491,30 @@
                         toggleRow.style.display = '';
                         deptWrap.style.display = (chk && chk.checked) ? '' : 'none';
                     }
+                    syncBloodDonorDetailsVisibility();
+                }
+
+                function syncBloodDonorDetailsVisibility() {
+                    var detailsWrap = document.getElementById('bloodDonorDetailsWrap');
+                    var deptSelectWrap = document.getElementById('bloodDonorDeptSelectWrap');
+                    var deptSel = document.getElementById('bloodDonorDepartmentId');
+                    if (!detailsWrap) {
+                        return;
+                    }
+                    var deptWrapVisible = deptSelectWrap &&
+                        window.getComputedStyle(deptSelectWrap).display !== 'none';
+                    var hasDepartment = deptSel && deptSel.value && deptSel.value !== '';
+                    // Show donor fields whenever department dropdown is hidden (toggle off / not in record-dept flow).
+                    // When department dropdown is visible (toggle on or military), hide donor fields until a department is chosen.
+                    var show = !deptWrapVisible || hasDepartment;
+                    detailsWrap.classList.toggle('d-none', !show);
+                    detailsWrap.querySelectorAll('input, select, textarea').forEach(function(el) {
+                        if (show) {
+                            el.removeAttribute('disabled');
+                        } else {
+                            el.setAttribute('disabled', 'disabled');
+                        }
+                    });
                 }
 
                 document.addEventListener('DOMContentLoaded', function() {
@@ -499,7 +530,12 @@
                     if (donorTypeSel) {
                         donorTypeSel.addEventListener('change', syncBloodDonorDeptFields);
                     }
+                    var deptSel = document.getElementById('bloodDonorDepartmentId');
+                    if (deptSel) {
+                        deptSel.addEventListener('change', syncBloodDonorDetailsVisibility);
+                    }
                     syncBloodDonorDeptFields();
+                    syncBloodDonorDetailsVisibility();
                     @if ($errors->any())
                         var _bloodAddModalEl = document.getElementById('bloodInventoryAddModal');
                         if (_bloodAddModalEl && typeof bootstrap !== 'undefined') {

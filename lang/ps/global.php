@@ -4311,4 +4311,10 @@ return [
 'bed_must_belong_to_selected_room' => 'بستر باید د ټاکل شوې خونې وي.',
 'beds_swapped_successfully' => 'بسترونه په بریالیتوب سره بدل شول.',
 'rooms_swapped_successfully' => 'خونې په بریالیتوب سره بدل شول.',
+
+// Synced from lang/dr/global.php (top-level keys missing in PS)
+'samples' => 'نمونې',
+'nurses_activity_graph' => 'د نرسانو د فعالیت ګراف',
+'nurse_activity_count' => 'د نرسانو د فعالیت شمېر',
+'urgency' => 'لومړیتوب',
 ];

@@ -122,28 +122,92 @@ class BloodBankController extends Controller
      * Display a listing of the resource.
      */
 
-    public function new()
+    public function new(Request $request)
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'new')->paginate(15);
-        return view('pages.blood_banks.new', compact('bloodRequests'));
+        $bloodRequests = $this->paginateBloodRequests($request, 'new');
+        $departments = $this->departmentsForCurrentBranch();
+
+        return view('pages.blood_banks.new', compact('bloodRequests', 'departments'));
     }
 
-    public function approved()
+    public function approved(Request $request)
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'approved')->paginate(15);
-        return view('pages.blood_banks.approved', compact('bloodRequests'));
+        $bloodRequests = $this->paginateBloodRequests($request, 'approved');
+        $departments = $this->departmentsForCurrentBranch();
+
+        return view('pages.blood_banks.approved', compact('bloodRequests', 'departments'));
     }
 
-    public function rejected()
+    public function rejected(Request $request)
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'rejected')->paginate(15);
-        return view('pages.blood_banks.rejected', compact('bloodRequests'));
+        $bloodRequests = $this->paginateBloodRequests($request, 'rejected');
+        $departments = $this->departmentsForCurrentBranch();
+
+        return view('pages.blood_banks.rejected', compact('bloodRequests', 'departments'));
     }
 
-    public function delivered()
+    /**
+     * Blood request list filters (new / approved / rejected / delivered).
+     */
+    protected function paginateBloodRequests(Request $request, string $status)
     {
-        $bloodRequests = BloodBank::where('branch_id', auth()->user()->branch_id)->where('status', 'delivered')->paginate(15);
-        return view('pages.blood_banks.delivered', compact('bloodRequests'));
+        $branchId = auth()->user()->branch_id;
+
+        $query = BloodBank::query()
+            ->with(['patient', 'department'])
+            ->where('branch_id', $branchId)
+            ->where('status', $status);
+
+        if ($request->filled('q')) {
+            $term = $request->q;
+            $query->whereHas('patient', function ($p) use ($term) {
+                $p->where('name', 'like', '%'.$term.'%')
+                    ->orWhere('id_card', 'like', '%'.$term.'%')
+                    ->orWhere('father_name', 'like', '%'.$term.'%')
+                    ->orWhere('phone', 'like', '%'.$term.'%');
+            });
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        if ($request->filled('group')) {
+            $query->where('group', $request->group);
+        }
+
+        if ($request->filled('rh')) {
+            $query->where('rh', $request->rh);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->from);
+        }
+
+        if ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->to);
+        }
+
+        return $query->orderByDesc('created_at')->paginate(15)->withQueryString();
+    }
+
+    protected function departmentsForCurrentBranch()
+    {
+        $branchId = auth()->user()->branch_id;
+
+        return Department::where('branch_id', $branchId)->orderBy('name')->get();
+    }
+
+    public function delivered(Request $request)
+    {
+        $bloodRequests = $this->paginateBloodRequests($request, 'delivered');
+        $departments = $this->departmentsForCurrentBranch();
+
+        return view('pages.blood_banks.delivered', compact('bloodRequests', 'departments'));
     }
 
     public function approve($bloodBank)

@@ -993,7 +993,7 @@ return [
     'prosthetics_referrals' => 'ارجاعات',
     'prosthetics_cases' => 'دوسیه مریض',
     'prosthetics_catalog' => 'کاتالوگ قطعات',
-    'prosthetics_stock' => 'موجودی و گردش انبار',
+    'prosthetics_stock' => 'موجودی',
     'prosthetics_case_detail' => 'پرونده',
     'prosthetics_new_referral' => 'ارجاع جدید',
     'prosthetics_new_case' => 'ایجاد دوسیه',

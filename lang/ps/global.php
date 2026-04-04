@@ -996,6 +996,8 @@ return [
 'prosthetics_new_case' => 'نوې قضیه',
 'prosthetics_patient_id' => 'د ناروغ پېژند',
 'prosthetics_referral_number' => 'د حوالې شمېره',
+'prosthetics_requested_service_type' => 'د غوښتل شوي خدمت ډول',
+'prosthetics_service_type' => 'د خدمت ډول',
 'prosthetics_case_number' => 'د قضیې شمېره',
 'prosthetics_work_order' => 'د کار ورکوونه',
 'prosthetics_production_trial' => 'تولید / پروب',

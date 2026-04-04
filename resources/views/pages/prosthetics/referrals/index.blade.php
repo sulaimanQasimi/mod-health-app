@@ -89,7 +89,7 @@
                                    placeholder="routine / urgent / ...">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small">Requested service type</label>
+                            <label class="form-label small">{{ localize('global.prosthetics_requested_service_type') }}</label>
                             <input type="text"
                                    name="requested_service_type"
                                    value="{{ request('requested_service_type') }}"
@@ -130,9 +130,9 @@
                                 <tr>
                                     <th>{{ localize('global.prosthetics_referral_number') }}</th>
                                     <th>{{ localize('global.patient_name') }}</th>
-                                    <th>NID</th>
-                                    <th>Urgency</th>
-                                    <th>Service type</th>
+                                    <th>{{ localize('global.nid') }}</th>
+                                    <th>{{ localize('global.urgency') }}</th>
+                                    <th>{{ localize('global.prosthetics_service_type') }}</th>
                                     <th>{{ localize('global.status') }}</th>
                                     <th>{{ localize('global.date') }}</th>
                                     <th class="text-end">{{ localize('global.actions') }}</th>

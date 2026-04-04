@@ -121,6 +121,74 @@
             </div>
         </div>
 
+
+
+        <!-- Patient History Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-body-secondary text-body">
+                        <h5 class="mb-0 text-center">
+                            <i class="bx bx-history me-2 text-info"></i>
+                            {{ localize('global.patient_history') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @php
+                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
+                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
+                        @endphp
+
+                        <div class="container">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
+                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            @foreach ($primaryDiagnoses as $diagnose)
+                                                <li
+                                                    class="m-1 p-2 border-start border-warning border-3 bg-none border p-2 rounded">
+                                                    <span
+                                                        class="badge bg-warning text-dark me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
+                                                    {{ $diagnose->description }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled">
+                                            @foreach ($finalDiagnoses as $diagnose)
+                                                <li
+                                                    class="m-1 p-2 border-start border-success border-3 bg-none border p-2 rounded">
+                                                    <span
+                                                        class="badge bg-success text-white me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
+                                                    {{ $diagnose->description }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Blood bank requests (linked to this appointment) -->
         <div class="row mb-4">
             <div class="col-12">
@@ -260,74 +328,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Patient History Card -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-body-secondary text-body">
-                        <h5 class="mb-0 text-center">
-                            <i class="bx bx-history me-2 text-info"></i>
-                            {{ localize('global.patient_history') }}
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        @php
-                            $primaryDiagnoses = $previousDiagnoses->where('type', 0);
-                            $finalDiagnoses = $previousDiagnoses->where('type', 1);
-                        @endphp
-
-                        <div class="container">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="col-md-12">
-                                            <h5 class="mb-4 p-1 bg-label-warning text-center"><i
-                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.primary_diagnoses') }}
-                                            </h5>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="col-md-12">
-                                            <h5 class="mb-4 p-1 bg-label-success text-center"><i
-                                                    class="bx bx-popsicle p-1"></i>{{ localize('global.final_diagnoses') }}
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <ul class="list-unstyled">
-                                            @foreach ($primaryDiagnoses as $diagnose)
-                                                <li
-                                                    class="m-1 p-2 border-start border-warning border-3 bg-none border p-2 rounded">
-                                                    <span
-                                                        class="badge bg-warning text-dark me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
-                                                    {{ $diagnose->description }}
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <ul class="list-unstyled">
-                                            @foreach ($finalDiagnoses as $diagnose)
-                                                <li
-                                                    class="m-1 p-2 border-start border-success border-3 bg-none border p-2 rounded">
-                                                    <span
-                                                        class="badge bg-success text-white me-2">{{$diagnose->created_at? verta($diagnose->created_at)->format('Y-m-d') : 'N/A' }}</span>
-                                                    {{ $diagnose->description }}
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Complete Appointment Modal -->
         @can('update-appointment-status')
             <div class="modal fade" id="createStatusChangeModal{{ $appointment->id }}" tabindex="-1"

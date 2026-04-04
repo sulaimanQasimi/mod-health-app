@@ -469,6 +469,7 @@
                     var chk = document.getElementById('donorRecordDepartment');
                     var deptSel = document.getElementById('bloodDonorDepartmentId');
                     var donorTypeSel = document.getElementById('bloodDonorType');
+                    var militaryDeptWrap = document.getElementById('bloodDonorMilitaryDepartmentWrap');
                     if (!toggleRow || !deptWrap) {
                         syncBloodDonorDetailsVisibility();
                         return;

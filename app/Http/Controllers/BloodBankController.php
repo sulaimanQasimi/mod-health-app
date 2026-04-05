@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\SendNewBloodBankNotification;
 use App\Models\BloodBank;
 use App\Models\BloodBranchTransfer;
+use App\Models\BloodCheckRecord;
 use App\Models\BloodCrossmatch;
 use App\Models\BloodPatientSample;
 use App\Models\BloodStockMovement;
@@ -323,6 +324,7 @@ class BloodBankController extends Controller
             'crossmatches.patientSample',
             'crossmatches.testedBy',
             'crossmatches.overriddenBy',
+            'bloodCheckRecord.verifiedBy',
         ]);
 
         $availableUnits = collect();
@@ -356,7 +358,6 @@ class BloodBankController extends Controller
             ->limit(12)
             ->get();
 
-        $crossmatchService = app(BloodCrossmatchService::class);
         $crossmatchesByUnit = $bloodBank->crossmatches->keyBy('blood_unit_id');
         $reservedUnitIds = $bloodBank->bloodUnits
             ->filter(fn ($u) => ! is_null($u->pivot?->reserved_at))
@@ -378,7 +379,6 @@ class BloodBankController extends Controller
             'availableUnits',
             'inventoryUrl',
             'inventoryPreviewUnits',
-            'crossmatchService',
             'crossmatchesByUnit',
             'reservedUnitIds',
             'requestedQty',
@@ -409,6 +409,71 @@ class BloodBankController extends Controller
         ]);
 
         return back()->with('success', localize('global.crossmatch_sample_saved'));
+    }
+
+    /**
+     * Save or update persisted blood check (lab typing / verification) for an approved request.
+     */
+    public function storeBloodCheck(Request $request, BloodBank $bloodBank)
+    {
+        $this->ensureBloodRequestBranch($bloodBank);
+        $this->ensureCanManageCrossmatch($request);
+
+        if ($bloodBank->status !== 'approved') {
+            return back()->with('error', localize('global.blood_check_only_when_approved'));
+        }
+
+        $componentTypes = BloodCheckRecord::COMPONENT_TYPES;
+
+        $validated = $request->validate([
+            'abo_group' => ['required', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'rh' => ['required', 'string', Rule::in(['+', '-'])],
+            'component_type' => ['required', 'string', Rule::in($componentTypes)],
+            'quantity' => ['required', 'integer', 'min:0'],
+            'notes' => ['nullable', 'string', 'max:5000'],
+            'patient_typed_group' => ['nullable', 'string', Rule::in(['A', 'B', 'AB', 'O'])],
+            'patient_typed_rh' => ['nullable', 'string', Rule::in(['+', '-'])],
+        ]);
+
+        $userId = (int) auth()->id();
+        $verify = $request->boolean('verify_lab_typing');
+
+        $payload = [
+            'branch_id' => $bloodBank->branch_id,
+            'appointment_id' => $bloodBank->appointment_id,
+            'patient_id' => $bloodBank->patient_id,
+            'department_id' => $bloodBank->department_id,
+            'operation_id' => $bloodBank->operation_id,
+            'hospitalization_id' => $bloodBank->hospitalization_id,
+            'anesthesia_id' => $bloodBank->anesthesia_id,
+            'i_c_u_id' => $bloodBank->i_c_u_id,
+            'under_review_id' => $bloodBank->under_review_id,
+            'abo_group' => $validated['abo_group'],
+            'rh' => $validated['rh'],
+            'component_type' => $validated['component_type'],
+            'quantity' => (int) $validated['quantity'],
+            'status' => $bloodBank->status,
+            'notes' => $validated['notes'] ?? null,
+            'patient_typed_group' => $validated['patient_typed_group'] ?? null,
+            'patient_typed_rh' => $validated['patient_typed_rh'] ?? null,
+            'updated_by' => $userId,
+        ];
+
+        if ($verify) {
+            $payload['verified_at'] = now();
+            $payload['verified_by'] = $userId;
+        }
+
+        $existing = BloodCheckRecord::where('blood_bank_id', $bloodBank->id)->first();
+
+        BloodCheckRecord::updateOrCreate(
+            ['blood_bank_id' => $bloodBank->id],
+            array_merge($payload, [
+                'created_by' => $existing?->created_by ?? $userId,
+            ])
+        );
+
+        return back()->with('success', localize('global.blood_check_saved'));
     }
 
     public function saveCrossmatch(Request $request, BloodBank $bloodBank, BloodUnit $bloodUnit)
@@ -507,13 +572,13 @@ class BloodBankController extends Controller
                     throw new \RuntimeException(localize('global.crossmatch_unit_not_reservable'));
                 }
 
-                $isReservedElsewhere = DB::table('blood_bank_unit')
+                // Pivot table has a global unique on blood_unit_id: a unit may appear only once in blood_bank_unit.
+                $pivotForUnit = DB::table('blood_bank_unit')
                     ->where('blood_unit_id', $unit->id)
-                    ->whereNotNull('reserved_at')
-                    ->where('blood_bank_id', '!=', $bloodBank->id)
-                    ->exists();
-                if ($isReservedElsewhere) {
-                    throw new \RuntimeException(localize('global.crossmatch_unit_already_reserved'));
+                    ->first();
+
+                if ($pivotForUnit && (int) $pivotForUnit->blood_bank_id !== (int) $bloodBank->id) {
+                    throw new \RuntimeException(localize('global.crossmatch_unit_linked_to_other_request'));
                 }
 
                 $bloodBank->bloodUnits()->syncWithoutDetaching([

@@ -710,6 +710,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('{bloodBank}/crossmatch/samples', [BloodBankController::class, 'storePatientSample'])
             ->middleware('permission:receive-blood-units|manage-blood-inventory')
             ->name('crossmatch.samples.store');
+        Route::post('{bloodBank}/blood-check', [BloodBankController::class, 'storeBloodCheck'])
+            ->middleware('permission:receive-blood-units|manage-blood-inventory')
+            ->name('blood_check.store');
         Route::post('{bloodBank}/crossmatch/units/{bloodUnit}', [BloodBankController::class, 'saveCrossmatch'])
             ->middleware('permission:receive-blood-units|manage-blood-inventory')
             ->name('crossmatch.save');

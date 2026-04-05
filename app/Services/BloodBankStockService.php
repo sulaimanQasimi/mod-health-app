@@ -9,6 +9,7 @@ use App\Models\BloodStockMovement;
 use App\Models\BloodUnit;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BloodBankStockService
 {
@@ -154,7 +155,7 @@ class BloodBankStockService
             ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
             ->orderBy('expires_at')
             ->lockForUpdate();
-
+// dd($base->get()->toArray());
         if ($unitIds !== null && count($unitIds) > 0) {
             if (count($unitIds) !== $qty) {
                 throw new \RuntimeException(localize('global.blood_delivery_unit_count_mismatch'));
@@ -218,6 +219,7 @@ class BloodBankStockService
             ->lockForUpdate();
 
         if ($unitIds !== null && count($unitIds) > 0) {
+            Log::info('unitIds', $unitIds);
             if (count($unitIds) !== $qty) {
                 throw new \RuntimeException(localize('global.blood_delivery_unit_count_mismatch'));
             }

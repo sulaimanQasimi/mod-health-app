@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Blood\BloodCheck;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -99,6 +100,22 @@ class BloodBank extends Model
     public function crossmatches()
     {
         return $this->hasMany(BloodCrossmatch::class)->orderByDesc('updated_at');
+    }
+
+    /**
+     * Optional persisted lab blood check (typing / verification) linked to this request.
+     */
+    public function bloodCheckRecord()
+    {
+        return $this->hasOne(BloodCheckRecord::class, 'blood_bank_id');
+    }
+
+    /**
+     * Rich snapshot of this blood request for UI and services (patient need, ABO/Rh, component, linked IDs).
+     */
+    public function bloodCheck(): BloodCheck
+    {
+        return BloodCheck::fromBloodBank($this);
     }
 
     public function approve()

@@ -9,7 +9,6 @@ use App\Models\BloodStockMovement;
 use App\Models\BloodUnit;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class BloodBankStockService
 {
@@ -106,9 +105,27 @@ class BloodBankStockService
             throw new \RuntimeException(localize('global.blood_request_must_be_approved_to_deliver'));
         }
 
-        $qty = max(1, (int) $request->quantity);
+        DB::transaction(function () use ($request, $unitIds) {
+            $requestedQty = max(1, (int) $request->quantity);
+            $issuedCount = (int) DB::table('blood_bank_unit')
+                ->where('blood_bank_id', $request->id)
+                ->whereNotNull('issued_at')
+                ->count();
+            $remainingQty = max(0, $requestedQty - $issuedCount);
 
-        DB::transaction(function () use ($request, $unitIds, $qty) {
+            if ($remainingQty < 1) {
+                throw new \RuntimeException(localize('global.blood_delivery_nothing_remaining'));
+            }
+
+            if ($unitIds !== null && count($unitIds) > 0) {
+                $qty = count($unitIds);
+                if ($qty > $remainingQty) {
+                    throw new \RuntimeException(localize('global.blood_delivery_unit_count_mismatch'));
+                }
+            } else {
+                $qty = $remainingQty;
+            }
+
             $units = $this->resolveUnitsForDelivery($request, $unitIds, $qty);
 
             foreach ($units as $unit) {
@@ -131,7 +148,10 @@ class BloodBankStockService
                 ]);
             }
 
-            $request->status = 'delivered';
+            $totalIssuedAfter = $issuedCount + $units->count();
+            if ($totalIssuedAfter >= $requestedQty) {
+                $request->status = 'delivered';
+            }
             $request->save();
         });
     }
@@ -155,12 +175,7 @@ class BloodBankStockService
             ->whereHas('test', fn ($q) => $q->where('overall_status', 'passed'))
             ->orderBy('expires_at')
             ->lockForUpdate();
-// dd($base->get()->toArray());
         if ($unitIds !== null && count($unitIds) > 0) {
-            if (count($unitIds) !== $qty) {
-                throw new \RuntimeException(localize('global.blood_delivery_unit_count_mismatch'));
-            }
-
             $units = (clone $base)->whereIn('id', $unitIds)->get();
 
             if ($units->count() !== $qty) {
@@ -219,11 +234,6 @@ class BloodBankStockService
             ->lockForUpdate();
 
         if ($unitIds !== null && count($unitIds) > 0) {
-            Log::info('unitIds', $unitIds);
-            if (count($unitIds) !== $qty) {
-                throw new \RuntimeException(localize('global.blood_delivery_unit_count_mismatch'));
-            }
-
             $units = (clone $query)->whereIn('blood_units.id', $unitIds)->get();
             if ($units->count() !== $qty) {
                 throw new \RuntimeException(localize('global.crossmatch_delivery_requires_reserved_units'));

@@ -106,19 +106,6 @@
                 </div>
             </div>
 
-            @if ($lowStockRows->isNotEmpty())
-                <div class="alert alert-warning mb-4">
-                    <strong>{{ localize('global.low_stock_alert') }}</strong>
-                    ({{ localize('global.threshold') }}: {{ $lowThreshold }})
-                    <ul class="mb-0 mt-2">
-                        @foreach ($lowStockRows as $row)
-                            <li>{{ $row->blood_group }} {{ $row->rh }} — {{ $row->component_type }}:
-                                <strong>{{ $row->c }}</strong></li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <div class="row g-3 mb-4">
                 @foreach (['new', 'approved', 'rejected', 'delivered'] as $st)
                     <div class="col-md-3 col-6">
@@ -143,6 +130,19 @@
                     </div>
                 @endforeach
             </div>
+
+            @if ($lowStockRows->isNotEmpty())
+                <div class="alert alert-warning mb-4">
+                    <strong>{{ localize('global.low_stock_alert') }}</strong>
+                    ({{ localize('global.threshold') }}: {{ $lowThreshold }})
+                    <ul class="mb-0 mt-2">
+                        @foreach ($lowStockRows as $row)
+                            <li>{{ $row->blood_group }} {{ $row->rh }} — {{ $row->component_type }}:
+                                <strong>{{ $row->c }}</strong></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="row g-3 mb-4">
                 <div class="col-12">

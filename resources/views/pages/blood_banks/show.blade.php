@@ -131,7 +131,7 @@
 
                             {{-- Step 1: Blood check (request / patient need) --}}
                             <div
-                                class="card mb-3 @if ($wfCurrentStep === 1) border-primary border-2 shadow-sm @endif">
+                                class="card mb-3 border @if ($wfCurrentStep === 1) border-primary shadow-sm @else border-secondary @endif">
                                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-primary rounded-pill">1</span>
@@ -273,7 +273,7 @@
 
                             {{-- Step 2: Patient sample --}}
                             <div
-                                class="card mb-3 @if ($wfCurrentStep === 2) border-primary border-2 shadow-sm @endif">
+                                class="card mb-3 border @if ($wfCurrentStep === 2) border-primary shadow-sm @else border-secondary @endif">
                                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-primary rounded-pill">2</span>
@@ -315,15 +315,33 @@
 
                                     @if ($bloodBank->patientSamples->isNotEmpty())
                                         <div>
-                                            <div class="small text-muted mb-1">{{ localize('global.patient_samples') }}</div>
-                                            @foreach ($bloodBank->patientSamples as $sample)
-                                                <span class="badge bg-label-secondary me-1 mb-1">
-                                                    {{ $sample->sample_id ?: '#'.$sample->id }}
-                                                    @if ($sample->collected_at)
-                                                        — {{ $sample->collected_at->format('Y-m-d H:i') }}
-                                                    @endif
-                                                </span>
-                                            @endforeach
+                                            <div class="fw-semibold small mb-2">{{ localize('global.patient_samples') }}</div>
+                                            <div class="table-responsive border rounded">
+                                                <table class="table table-sm table-striped table-hover align-middle mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th scope="col">{{ localize('global.crossmatch_sample_id') }}</th>
+                                                            <th scope="col">{{ localize('global.collected_at') }}</th>
+                                                            <th scope="col">{{ localize('global.notes') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($bloodBank->patientSamples as $sample)
+                                                            <tr>
+                                                                <td class="font-monospace">{{ $sample->sample_id ?: '#'.$sample->id }}</td>
+                                                                <td dir="ltr">
+                                                                    @if ($sample->collected_at)
+                                                                        {{ $sample->collected_at->format('Y-m-d H:i') }}
+                                                                    @else
+                                                                        —
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $sample->notes ? $sample->notes : '—' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     @else
                                         <div class="alert alert-warning mb-0 py-2 small">
@@ -335,7 +353,7 @@
 
                             {{-- Step 3: Crossmatch & reserve --}}
                             <div
-                                class="card mb-3 border @if ($wfCurrentStep === 3) border-primary border-2 shadow-sm @endif">
+                                class="card mb-3 border @if ($wfCurrentStep === 3) border-primary shadow-sm @else border-secondary @endif">
                                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-primary rounded-pill">3</span>
@@ -500,7 +518,7 @@
 
                             {{-- Step 4: Inventory preview & issue / complete --}}
                             <div
-                                class="card mb-3 @if ($wfCurrentStep === 4) border-primary border-2 shadow-sm @endif">
+                                class="card mb-3 border @if ($wfCurrentStep === 4) border-primary shadow-sm @else border-secondary @endif">
                                 <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-primary rounded-pill">4</span>

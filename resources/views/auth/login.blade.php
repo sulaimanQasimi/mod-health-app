@@ -43,17 +43,15 @@
 
     <style>
         :root {
-            --bg-1: #07122b;
-            --bg-2: #0d1f40;
-            --bg-3: #0f766e;
-            --accent: #10b981;
-            --accent-strong: #059669;
-            --text-main: #e5ecff;
-            --text-soft: #b6c4e5;
-            --card-bg: rgba(255, 255, 255, 0.88);
-            --card-border: rgba(255, 255, 255, 0.42);
-            --field-bg: rgba(255, 255, 255, 0.85);
-            --field-border: #cfd9ec;
+            --page-bg: #eef1f6;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --field-border: #cbd5e1;
+            --field-bg: #f8fafc;
+            --accent: #0d9488;
+            --accent-hover: #0f766e;
             --danger: #dc2626;
         }
 
@@ -65,207 +63,138 @@
 
         body {
             min-height: 100vh;
-            color: var(--text-main);
+            color: var(--text);
             background:
-                radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.18), transparent 32%),
-                radial-gradient(circle at 88% 82%, rgba(59, 130, 246, 0.22), transparent 28%),
-                linear-gradient(125deg, var(--bg-1) 0%, var(--bg-2) 52%, var(--bg-3) 100%);
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(13, 148, 136, 0.07), transparent 55%),
+                radial-gradient(ellipse 70% 45% at 100% 100%, rgba(100, 116, 139, 0.06), transparent 50%),
+                var(--page-bg);
             overflow-x: hidden;
         }
 
-        .scene-overlay {
+        .login-bg-icons {
             position: fixed;
             inset: 0;
+            z-index: 0;
             pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 95%);
-            opacity: 0.35;
-        }
-
-        .login-shell {
-            position: relative;
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
-            padding: clamp(1rem, 1.3vw, 1.6rem);
-            gap: clamp(1rem, 1.8vw, 2rem);
-        }
-
-        .hero-panel {
-            position: relative;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: linear-gradient(155deg, rgba(6, 20, 48, 0.68), rgba(15, 118, 110, 0.26));
-            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.28);
             overflow: hidden;
-            padding: clamp(2rem, 3vw, 3rem);
-            display: flex;
-            align-items: center;
         }
 
-        .hero-panel::before,
-        .hero-panel::after {
-            content: '';
+        .login-bg-icons .bg-icon {
             position: absolute;
-            border-radius: 999px;
-            filter: blur(3px);
+            color: var(--accent);
+            opacity: 0.11;
+            line-height: 1;
+            animation: bgFloat 14s ease-in-out infinite;
         }
 
-        .hero-panel::before {
-            width: 420px;
-            height: 420px;
-            top: -170px;
-            {{ $isRtl ? 'right' : 'left' }}: -120px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.35), rgba(56, 189, 248, 0));
-            animation: driftA 12s infinite alternate ease-in-out;
+        .login-bg-icons .bg-icon:nth-child(odd) {
+            animation-duration: 18s;
+            animation-delay: -2s;
         }
 
-        .hero-panel::after {
-            width: 360px;
-            height: 360px;
-            bottom: -160px;
-            {{ $isRtl ? 'left' : 'right' }}: -95px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.35), rgba(16, 185, 129, 0));
-            animation: driftB 10s infinite alternate ease-in-out;
+        .login-bg-icons .bg-icon:nth-child(3n) {
+            color: #64748b;
+            opacity: 0.09;
         }
 
-        @keyframes driftA {
-            from { transform: translateY(0) scale(1); }
-            to { transform: translateY(16px) scale(1.08); }
+        @keyframes bgFloat {
+            0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+            50% { transform: translateY(-10px) rotate(var(--r, 0deg)); }
         }
 
-        @keyframes driftB {
-            from { transform: translateY(0) scale(1); }
-            to { transform: translateY(-20px) scale(1.1); }
+        .bg-icon.i1 { --r: -12deg; top: 8%; left: 6%; font-size: clamp(2.5rem, 6vw, 4rem); }
+        .bg-icon.i2 { --r: 8deg; top: 18%; right: 10%; font-size: clamp(2rem, 4.5vw, 3.2rem); animation-delay: -4s; }
+        .bg-icon.i3 { --r: 15deg; top: 42%; left: 3%; font-size: clamp(1.75rem, 4vw, 2.75rem); animation-delay: -1s; }
+        .bg-icon.i4 { --r: -6deg; top: 55%; right: 5%; font-size: clamp(2.25rem, 5vw, 3.5rem); animation-delay: -6s; }
+        .bg-icon.i5 { --r: 22deg; bottom: 28%; left: 12%; font-size: clamp(1.5rem, 3.5vw, 2.5rem); }
+        .bg-icon.i6 { --r: -18deg; bottom: 12%; right: 18%; font-size: clamp(2rem, 4vw, 3rem); animation-delay: -3s; }
+        .bg-icon.i7 { --r: -5deg; top: 65%; left: 22%; font-size: clamp(1.35rem, 3vw, 2rem); animation-delay: -5s; }
+        .bg-icon.i8 { --r: 10deg; top: 12%; left: 38%; font-size: clamp(1.25rem, 2.8vw, 1.85rem); opacity: 0.08; }
+        .bg-icon.i9 { --r: -14deg; bottom: 38%; right: 28%; font-size: clamp(1.6rem, 3.2vw, 2.4rem); animation-delay: -2.5s; }
+        .bg-icon.i10 { --r: 6deg; top: 32%; right: 22%; font-size: clamp(1.4rem, 3vw, 2.1rem); }
+        .bg-icon.i11 { --r: -20deg; bottom: 8%; left: 35%; font-size: clamp(1.8rem, 3.8vw, 2.8rem); animation-delay: -7s; }
+        .bg-icon.i12 { --r: 4deg; top: 48%; right: 38%; font-size: clamp(1.2rem, 2.5vw, 1.75rem); opacity: 0.07; }
+
+        @media (max-width: 640px) {
+            .bg-icon.i8,
+            .bg-icon.i12 {
+                display: none;
+            }
         }
 
-        .hero-content {
+        .login-page {
             position: relative;
-            z-index: 2;
-            max-width: 560px;
-            animation: intro 650ms ease-out;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 1px solid rgba(226, 232, 240, 0.25);
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 999px;
-            padding: 0.5rem 0.95rem;
-            font-size: 0.82rem;
-            color: #d9e7ff;
-            margin-bottom: 1.25rem;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        .hero-title {
-            font-size: clamp(1.8rem, 3vw, 3rem);
-            line-height: 1.17;
-            font-weight: 800;
-            margin-bottom: 0.95rem;
-            text-wrap: balance;
-        }
-
-        .hero-subtitle {
-            color: var(--text-soft);
-            font-size: clamp(0.95rem, 1.3vw, 1.1rem);
-            line-height: 1.72;
-            max-width: 48ch;
-        }
-
-        .hero-stats {
-            margin-top: 1.8rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .hero-chip {
-            padding: 0.65rem 0.9rem;
-            border-radius: 14px;
-            background: rgba(15, 23, 42, 0.35);
-            border: 1px solid rgba(226, 232, 240, 0.22);
-            color: #d8e5ff;
-            font-size: 0.87rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-        }
-
-        .form-panel {
+            z-index: 1;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+            padding: 1.5rem 1rem;
         }
 
-        .form-card {
+        .login-card {
             width: 100%;
-            max-width: 470px;
+            max-width: 400px;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 28px;
-            box-shadow: 0 28px 60px rgba(2, 10, 32, 0.24);
-            backdrop-filter: blur(20px);
-            padding: clamp(1.4rem, 2.3vw, 2.5rem);
-            color: #12213f;
-            animation: intro 550ms ease-out;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+            padding: 2rem 1.75rem 1.75rem;
+            animation: fadeUp 420ms ease-out;
         }
 
-        @keyframes intro {
+        @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(26px) scale(0.985);
+                transform: translateY(12px);
             }
-
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
-        .brand-row {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.25rem;
+        .brand-block {
+            text-align: center;
+            margin-bottom: 1.75rem;
         }
 
         .brand-mark {
-            width: 45px;
-            height: 45px;
-            border-radius: 13px;
-            background: linear-gradient(145deg, #0f766e, #10b981);
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 0.85rem;
+            border-radius: 12px;
+            background: var(--accent);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.32);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.35rem;
         }
 
         .brand-name {
-            font-size: 1.05rem;
+            font-size: 1.125rem;
             font-weight: 700;
-            color: #0f1d3e;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .form-head {
+            margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         .form-head h1 {
-            font-size: clamp(1.6rem, 2vw, 2rem);
-            color: #0c1b3c;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
             margin-bottom: 0.35rem;
         }
 
         .form-head p {
-            color: #506287;
-            margin-bottom: 1.35rem;
-            font-size: 0.93rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.5;
         }
 
         .field {
@@ -281,113 +210,112 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            {{ $isRtl ? 'right' : 'left' }}: 0.95rem;
-            color: #6680af;
-            font-size: 1.1rem;
+            {{ $isRtl ? 'right' : 'left' }}: 0.85rem;
+            color: #94a3b8;
+            font-size: 1.05rem;
             pointer-events: none;
-            transition: color 180ms ease;
+            transition: color 160ms ease;
         }
 
         .form-input {
             width: 100%;
-            height: 54px;
-            border-radius: 14px;
+            height: 48px;
+            border-radius: 8px;
             border: 1px solid var(--field-border);
             background: var(--field-bg);
-            color: #0f1f43;
-            font-size: 0.95rem;
-            padding: 0.95rem 2.7rem;
-            transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+            color: var(--text);
+            font-size: 0.9375rem;
+            padding: 0.75rem 2.6rem;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #21a8a0;
-            box-shadow: 0 0 0 4px rgba(33, 168, 160, 0.16);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
             background: #fff;
         }
 
         .form-input:focus + .input-icon,
         .field.has-value .input-icon {
-            color: #0f766e;
+            color: var(--accent);
         }
 
         .password-toggle {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            {{ $isRtl ? 'left' : 'right' }}: 0.65rem;
-            width: 34px;
-            height: 34px;
+            {{ $isRtl ? 'left' : 'right' }}: 0.5rem;
+            width: 36px;
+            height: 36px;
             border: none;
-            border-radius: 10px;
+            border-radius: 6px;
             background: transparent;
-            color: #6680af;
+            color: #94a3b8;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: background 180ms ease, color 180ms ease;
+            transition: background 160ms ease, color 160ms ease;
         }
 
         .password-toggle:hover {
-            background: rgba(15, 118, 110, 0.1);
-            color: #0f766e;
+            background: rgba(13, 148, 136, 0.08);
+            color: var(--accent);
         }
 
         .meta-row {
-            margin: 0.5rem 0 1.3rem;
+            margin: 0.25rem 0 1.25rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 0.6rem;
-            flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         .remember {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            color: #44597f;
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
             cursor: pointer;
             user-select: none;
         }
 
         .remember input {
-            width: 18px;
-            height: 18px;
-            accent-color: #0f766e;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
             cursor: pointer;
         }
 
         .btn-login {
             width: 100%;
             border: none;
-            border-radius: 14px;
-            height: 52px;
-            font-size: 0.98rem;
-            font-weight: 700;
+            border-radius: 8px;
+            height: 46px;
+            font-size: 0.9375rem;
+            font-weight: 600;
             cursor: pointer;
             color: #fff;
-            background: linear-gradient(130deg, var(--accent-strong), var(--accent));
-            box-shadow: 0 12px 28px rgba(5, 150, 105, 0.34);
+            background: var(--accent);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.55rem;
-            transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+            gap: 0.45rem;
+            transition: background 160ms ease, transform 160ms ease;
             position: relative;
         }
 
         .btn-login:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.03);
-            box-shadow: 0 16px 32px rgba(5, 150, 105, 0.4);
+            background: var(--accent-hover);
         }
 
         .btn-login:active {
-            transform: translateY(0);
+            transform: translateY(1px);
         }
 
         .btn-login.loading {
@@ -400,10 +328,10 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.9);
             border-top-color: transparent;
             position: absolute;
-            animation: spin 700ms linear infinite;
+            animation: spin 650ms linear infinite;
         }
 
         @keyframes spin {
@@ -413,163 +341,113 @@
         .invalid-feedback {
             display: block;
             color: var(--danger);
-            font-size: 0.82rem;
-            margin-top: 0.45rem;
-            padding-inline: 0.2rem;
+            font-size: 0.8125rem;
+            margin-top: 0.4rem;
+            padding-inline: 0.15rem;
         }
 
         .form-input.is-invalid {
-            border-color: rgba(220, 38, 38, 0.68);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+            border-color: rgba(220, 38, 38, 0.65);
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
         }
 
-        .secure-row {
-            margin-top: 0.9rem;
-            font-size: 0.8rem;
-            color: #61759e;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            justify-content: center;
-        }
-
-        @media (max-width: 1080px) {
-            .login-shell {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-panel {
-                min-height: 230px;
-                order: 2;
-            }
-
-            .form-panel {
-                order: 1;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .login-shell {
-                padding: 0.7rem;
-                gap: 0.85rem;
-            }
-
-            .hero-panel {
-                min-height: 200px;
-                border-radius: 24px;
-            }
-
-            .hero-title {
-                font-size: 1.55rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.9rem;
-            }
-
-            .form-card {
-                border-radius: 22px;
-                padding: 1.15rem;
+        @media (max-width: 400px) {
+            .login-card {
+                padding: 1.5rem 1.25rem 1.35rem;
             }
         }
     </style>
 </head>
 
 <body dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-    <div class="scene-overlay" aria-hidden="true"></div>
+    <div class="login-bg-icons" aria-hidden="true">
+        <i class='bx bx-plus-medical bg-icon i1'></i>
+        <i class='bx bx-heart bg-icon i2'></i>
+        <i class='bx bx-clipboard bg-icon i3'></i>
+        <i class='bx bx-shield-quarter bg-icon i4'></i>
+        <i class='bx bx-pulse bg-icon i5'></i>
+        <i class='bx bx-user-circle bg-icon i6'></i>
+        <i class='bx bx-band-aid bg-icon i7'></i>
+        <i class='bx bx-capsule bg-icon i8'></i>
+        <i class='bx bx-first-aid bg-icon i9'></i>
+        <i class='bx bx-injection bg-icon i10'></i>
+        <i class='bx bx-health bg-icon i11'></i>
+        <i class='bx bx-donate-heart bg-icon i12'></i>
+    </div>
 
-    <main class="login-shell">
-        <section class="hero-panel">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <i class='bx bx-shield-quarter'></i>
-                    <span>{{ localize('global.system_name') }}</span>
+    <main class="login-page">
+        <article class="login-card">
+            <div class="brand-block">
+                <div class="brand-mark" aria-hidden="true">
+                    <i class='bx bx-plus-medical'></i>
                 </div>
-                <h2 class="hero-title">{{ localize('global.system_name') }}</h2>
-                {{-- <p class="hero-subtitle">
-                    Streamlined access for care teams with secure sign-in and fast workflows across departments.
-                </p>
-
-                <div class="hero-stats">
-                    <span class="hero-chip"><i class='bx bx-lock-alt'></i> Encrypted Access</span>
-                    <span class="hero-chip"><i class='bx bx-pulse'></i> Clinical Workflow</span>
-                    <span class="hero-chip"><i class='bx bx-time-five'></i> Real-Time Updates</span> --}}
-                {{-- </div> --}}
+                <div class="brand-name">{{ localize('global.system_name') }}</div>
             </div>
-        </section>
 
-        <section class="form-panel">
-            <article class="form-card">
-                <div class="brand-row">
-                    <span class="brand-mark"><i class='bx bx-plus-medical'></i></span>
-                    <div class="brand-name">{{ localize('global.system_name') }}</div>
+            <div class="form-head">
+                <h1>{{ localize('global.sign_in') }}</h1>
+                <p>{{ localize('global.login') }}</p>
+            </div>
+
+            <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
+                @csrf
+
+                <div class="field {{ old('email') ? 'has-value' : '' }}">
+                    <div class="input-wrap">
+                        <input
+                            id="email"
+                            type="email"
+                            class="form-input @error('email') is-invalid @enderror"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required
+                            autocomplete="email"
+                            autofocus
+                            placeholder="{{ localize('global.email') }}">
+                        <i class='bx bx-envelope input-icon'></i>
+                    </div>
+                    @if ($errors->has('email'))
+                        <span class="invalid-feedback">
+                            <strong>{{ $errors->first('email') }}</strong>
+                        </span>
+                    @endif
                 </div>
 
-                <div class="form-head">
-                    <h1>{{ localize('global.sign_in') }}</h1>
-                    <p>{{ localize('global.login') }}</p>
+                <div class="field">
+                    <div class="input-wrap">
+                        <input
+                            id="password"
+                            type="password"
+                            class="form-input @error('password') is-invalid @enderror"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="{{ localize('global.password') }}">
+                        <i class='bx bx-lock-alt input-icon'></i>
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password">
+                            <i class='bx bx-hide' id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    @if ($errors->has('password'))
+                        <span class="invalid-feedback">
+                            <strong>{{ $errors->first('password') }}</strong>
+                        </span>
+                    @endif
                 </div>
 
-                <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
-                    @csrf
+                <div class="meta-row">
+                    <label class="remember" for="remember-me">
+                        <input type="checkbox" id="remember-me" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <span>{{ localize('global.remember_me') }}</span>
+                    </label>
+                </div>
 
-                    <div class="field {{ old('email') ? 'has-value' : '' }}">
-                        <div class="input-wrap">
-                            <input
-                                id="email"
-                                type="email"
-                                class="form-input @error('email') is-invalid @enderror"
-                                name="email"
-                                value="{{ old('email') }}"
-                                required
-                                autocomplete="email"
-                                autofocus
-                                placeholder="{{ localize('global.email') }}">
-                            <i class='bx bx-envelope input-icon'></i>
-                        </div>
-                        @if ($errors->has('email'))
-                            <span class="invalid-feedback">
-                                <strong>{{ $errors->first('email') }}</strong>
-                            </span>
-                        @endif
-                    </div>
-
-                    <div class="field">
-                        <div class="input-wrap">
-                            <input
-                                id="password"
-                                type="password"
-                                class="form-input @error('password') is-invalid @enderror"
-                                name="password"
-                                required
-                                autocomplete="current-password"
-                                placeholder="{{ localize('global.password') }}">
-                            <i class='bx bx-lock-alt input-icon'></i>
-                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password">
-                                <i class='bx bx-hide' id="toggleIcon"></i>
-                            </button>
-                        </div>
-                        @if ($errors->has('password'))
-                            <span class="invalid-feedback">
-                                <strong>{{ $errors->first('password') }}</strong>
-                            </span>
-                        @endif
-                    </div>
-
-                    <div class="meta-row">
-                        <label class="remember" for="remember-me">
-                            <input type="checkbox" id="remember-me" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <span>{{ localize('global.remember_me') }}</span>
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn-login">
-                        <span>{{ localize('global.sign_in') }}</span>
-                        <i class='bx bx-right-arrow-alt'></i>
-                    </button>
-                </form>
-            </article>
-        </section>
+                <button type="submit" class="btn-login">
+                    <span>{{ localize('global.sign_in') }}</span>
+                    <i class='bx bx-log-in'></i>
+                </button>
+            </form>
+        </article>
     </main>
 
     <script>

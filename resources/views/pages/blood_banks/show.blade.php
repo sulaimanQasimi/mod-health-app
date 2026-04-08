@@ -433,14 +433,14 @@
                                                                     <div class="col-6">
                                                                         <select name="major_result" class="form-select form-select-sm" required>
                                                                             @foreach (\App\Models\BloodCrossmatch::RESULT_VALUES as $val)
-                                                                                <option value="{{ $val }}" @selected(($cx->major_result ?? 'pending') === $val)>{{ $val }}</option>
+                                                                                <option value="{{ $val }}" @selected(($cx?->major_result ?? 'pending') === $val)>{{ $val }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
                                                                     <div class="col-6">
                                                                         <select name="minor_result" class="form-select form-select-sm" required>
                                                                             @foreach (\App\Models\BloodCrossmatch::RESULT_VALUES as $val)
-                                                                                <option value="{{ $val }}" @selected(($cx->minor_result ?? 'pending') === $val)>{{ $val }}</option>
+                                                                                <option value="{{ $val }}" @selected(($cx?->minor_result ?? 'pending') === $val)>{{ $val }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
@@ -448,7 +448,7 @@
                                                                         <select name="patient_sample_id" class="form-select form-select-sm">
                                                                             <option value="">{{ localize('global.select_sample') }}</option>
                                                                             @foreach ($bloodBank->patientSamples as $sample)
-                                                                                <option value="{{ $sample->id }}" @selected(($cx->patient_sample_id ?? null) == $sample->id)>{{ $sample->sample_id ?: '#'.$sample->id }}</option>
+                                                                                <option value="{{ $sample->id }}" @selected(($cx?->patient_sample_id ?? null) == $sample->id)>{{ $sample->sample_id ?: '#'.$sample->id }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>

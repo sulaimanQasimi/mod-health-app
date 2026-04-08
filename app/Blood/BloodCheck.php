@@ -49,7 +49,7 @@ final class BloodCheck
             aboGroup: (string) $bloodBank->group,
             rh: (string) $bloodBank->rh,
             componentType: (string) $bloodBank->type,
-            quantity: max(0, (int) $bloodBank->quantity),
+            quantity: max(0, $bloodBank->orderedUnitsForWorkflow()),
             status: (string) $bloodBank->status,
             rejectReason: $bloodBank->reject_reason,
             patientName: $bloodBank->patient?->name,

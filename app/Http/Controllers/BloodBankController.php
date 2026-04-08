@@ -362,7 +362,11 @@ class BloodBankController extends Controller
             ->pluck('id')
             ->values();
 
-        $requestedQty = max(0, (int) $bloodBank->quantity);
+        $requestedQty = $bloodBank->orderedUnitsForWorkflow();
+        $quantityInferredFromVolumeMl = $bloodBank->bloodCheckRecord === null
+            && (int) $bloodBank->quantity > (int) config('blood_bank.max_unit_order_before_volume_assumption', 100)
+            && BloodBank::normalizeRawQuantityToUnits((int) $bloodBank->quantity) !== (int) $bloodBank->quantity;
+
         $reservedCompatibleQty = $bloodBank->crossmatches
             ->filter(fn ($cx) => in_array($cx->status, ['compatible', 'overridden'], true))
             ->filter(fn ($cx) => $reservedUnitIds->contains($cx->blood_unit_id))
@@ -382,7 +386,8 @@ class BloodBankController extends Controller
             'requestedQty',
             'reservedCompatibleQty',
             'issuedQty',
-            'remainingQty'
+            'remainingQty',
+            'quantityInferredFromVolumeMl'
         ));
     }
 

@@ -70,6 +70,12 @@
                             </div>
                         </div>
 
+                        @if (! empty($quantityInferredFromVolumeMl))
+                            <div class="alert alert-warning py-2 small mb-3">
+                                {{ \Illuminate\Support\Facades\Lang::get('global.quantity_inferred_from_volume_hint', ['raw' => (int) $bloodBank->quantity, 'units' => $requestedQty], session()->has('language') ? session('language') : 'dr') }}
+                            </div>
+                        @endif
+
                         @if ($bloodBank->status === 'approved')
                             {{-- Visual workflow stepper --}}
                             <div class="card bg-label-secondary bg-opacity-10 border mb-4">
@@ -180,7 +186,7 @@
                                     $bcAbo = old('abo_group', $bcr->abo_group ?? $bloodBank->group);
                                     $bcRh = old('rh', $bcr->rh ?? $bloodBank->rh);
                                     $bcType = old('component_type', $bcr->component_type ?? $bloodBank->type);
-                                    $bcQty = old('quantity', $bcr->quantity ?? $bloodBank->quantity);
+                                    $bcQty = old('quantity', $bcr && (int) $bcr->quantity >= 1 ? \App\Models\BloodBank::normalizeRawQuantityToUnits((int) $bcr->quantity) : $requestedQty);
                                 @endphp
                                 <div class="modal fade" id="bloodCheckModal{{ $bloodBank->id }}" tabindex="-1"
                                     aria-labelledby="bloodCheckModalLabel{{ $bloodBank->id }}" aria-hidden="true">
@@ -370,16 +376,14 @@
                                 <div class="card-body">
                                     <p class="small text-muted mb-3">{{ localize('global.blood_bank_workflow_step_3_hint') }}</p>
 
-                                    @php
-                                        $reservedCompatible = $bloodBank->crossmatches
-                                            ->filter(fn ($cx) => in_array($cx->status, ['compatible', 'overridden'], true))
-                                            ->filter(fn ($cx) => $reservedUnitIds->contains($cx->blood_unit_id))
-                                            ->count();
-                                    @endphp
                                     <div class="alert alert-info py-2 mb-3">
-                                        {{ localize('global.crossmatch_reserved_compatible_summary') }}:
-                                        <strong>{{ $reservedCompatible }}</strong> /
-                                        <strong>{{ (int) $bloodBank->quantity }}</strong>
+                                        <div class="fw-semibold mb-1">{{ localize('global.crossmatch_reserve_progress_title') }}</div>
+                                        @if ($remainingQty < 1)
+                                            <span class="text-success">{{ localize('global.crossmatch_no_units_left_to_reserve') }}</span>
+                                        @else
+                                            <span dir="ltr"><strong>{{ $reservedCompatibleQty }}</strong> / <strong>{{ $remainingQty }}</strong></span>
+                                            <span class="text-muted small ms-1">({{ localize('global.crossmatch_reserved_vs_remaining_caption') }})</span>
+                                        @endif
                                     </div>
 
                                     <div class="table-responsive">

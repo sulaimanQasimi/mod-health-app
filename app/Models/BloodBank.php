@@ -118,6 +118,39 @@ class BloodBank extends Model
         return BloodCheck::fromBloodBank($this);
     }
 
+    /**
+     * Convert a stored quantity value to a number of blood units (bags).
+     * Large values are assumed to be total ml (common data-entry mistake).
+     */
+    public static function normalizeRawQuantityToUnits(?int $raw): int
+    {
+        if ($raw === null || $raw < 1) {
+            return 0;
+        }
+
+        $maxUnitBeforeMl = (int) config('blood_bank.max_unit_order_before_volume_assumption', 100);
+        $mlPerBag = max(1, (int) config('blood_bank.ml_per_bag_for_qty_inference', 450));
+
+        if ($raw > $maxUnitBeforeMl) {
+            return max(1, (int) ceil($raw / $mlPerBag));
+        }
+
+        return $raw;
+    }
+
+    /**
+     * Bag count for workflow, delivery, and crossmatch progress. Prefers lab blood-check
+     * quantity when set; otherwise normalizes {@see $quantity} (ml heuristic).
+     */
+    public function orderedUnitsForWorkflow(): int
+    {
+        if ($this->bloodCheckRecord && (int) $this->bloodCheckRecord->quantity >= 1) {
+            return self::normalizeRawQuantityToUnits((int) $this->bloodCheckRecord->quantity);
+        }
+
+        return self::normalizeRawQuantityToUnits((int) $this->quantity);
+    }
+
     public function approve()
     {
         $this->status = 'approved';

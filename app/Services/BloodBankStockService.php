@@ -106,7 +106,10 @@ class BloodBankStockService
         }
 
         DB::transaction(function () use ($request, $unitIds) {
-            $requestedQty = max(1, (int) $request->quantity);
+            $requestedQty = $request->orderedUnitsForWorkflow();
+            if ($requestedQty < 1) {
+                throw new \RuntimeException(localize('global.blood_delivery_invalid_ordered_quantity'));
+            }
             $issuedCount = (int) DB::table('blood_bank_unit')
                 ->where('blood_bank_id', $request->id)
                 ->whereNotNull('issued_at')

@@ -139,16 +139,24 @@ class BloodBank extends Model
     }
 
     /**
-     * Bag count for workflow, delivery, and crossmatch progress. Prefers lab blood-check
-     * quantity when set; otherwise normalizes {@see $quantity} (ml heuristic).
+     * Bag count for workflow, delivery, and crossmatch progress.
+     * Uses the main request line ({@see $quantity}) first — that is the clinical order and
+     * drives when the request is marked delivered. Lab blood-check quantity is only used
+     * when the main line has no usable value (avoids delivery never completing because the
+     * lab row was left higher than the real order).
      */
     public function orderedUnitsForWorkflow(): int
     {
+        $rawMain = (int) $this->quantity;
+        if ($rawMain >= 1) {
+            return self::normalizeRawQuantityToUnits($rawMain);
+        }
+
         if ($this->bloodCheckRecord && (int) $this->bloodCheckRecord->quantity >= 1) {
             return self::normalizeRawQuantityToUnits((int) $this->bloodCheckRecord->quantity);
         }
 
-        return self::normalizeRawQuantityToUnits((int) $this->quantity);
+        return 0;
     }
 
     public function approve()

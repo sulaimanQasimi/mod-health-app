@@ -151,7 +151,11 @@ class BloodBankStockService
                 ]);
             }
 
-            $totalIssuedAfter = $issuedCount + $units->count();
+            $totalIssuedAfter = (int) DB::table('blood_bank_unit')
+                ->where('blood_bank_id', $request->id)
+                ->whereNotNull('issued_at')
+                ->count();
+
             if ($totalIssuedAfter >= $requestedQty) {
                 $request->status = 'delivered';
             }

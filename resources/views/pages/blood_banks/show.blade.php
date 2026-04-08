@@ -74,7 +74,7 @@
 
                         @if (! empty($quantityInferredFromVolumeMl))
                             <div class="alert alert-warning py-2 small mb-3">
-                                {{ \Illuminate\Support\Facades\Lang::get('global.quantity_inferred_from_volume_hint', ['raw' => (int) $bloodBank->quantity, 'units' => $requestedQty], session()->has('language') ? session('language') : 'dr') }}
+                                {{ \Illuminate\Support\Facades\Lang::get('global.quantity_inferred_from_volume_hint', ['raw' => (int) $bloodBank->quantity], session()->has('language') ? session('language') : 'dr') }}
                             </div>
                         @endif
 
@@ -614,6 +614,45 @@
                                         @csrf
                                         <h6 class="mb-2">{{ localize('global.blood_bank_delivery_select_units') }}</h6>
                                         <p class="small text-muted mb-2">
+                                            {{ localize('global.blood_bank_delivery_receiver_hint') }}</p>
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label"
+                                                    for="blood_receiver_department_{{ $bloodBank->id }}">{{ localize('global.blood_bank_receiver_department') }}
+                                                    <span class="text-danger">*</span></label>
+                                                <select name="receiver_department_id"
+                                                    id="blood_receiver_department_{{ $bloodBank->id }}"
+                                                    class="form-select @error('receiver_department_id') is-invalid @enderror"
+                                                    required>
+                                                    <option value="">{{ localize('global.select') }}</option>
+                                                    @foreach ($receiverDepartments as $d)
+                                                        <option value="{{ $d->id }}"
+                                                            @selected(old('receiver_department_id', $bloodBank->receiver_department_id) == $d->id)>
+                                                            {{ $d->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('receiver_department_id')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label"
+                                                    for="blood_receiver_nurse_{{ $bloodBank->id }}">{{ localize('global.blood_bank_receiver_nurse') }}
+                                                    <span class="text-danger">*</span></label>
+                                                <select name="receiver_nurse_id"
+                                                    id="blood_receiver_nurse_{{ $bloodBank->id }}"
+                                                    class="form-select @error('receiver_nurse_id') is-invalid @enderror"
+                                                    required
+                                                    data-initial-nurse="{{ old('receiver_nurse_id', $bloodBank->receiver_nurse_id) }}">
+                                                    <option value="">{{ localize('global.select_receiver_nurse_first') }}
+                                                    </option>
+                                                </select>
+                                                @error('receiver_nurse_id')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <p class="small text-muted mb-2">
                                             {{ localize('global.deliver_blood_fifo_hint') }}</p>
                                         @if ($hasCrossmatchFlow)
                                             <p class="small text-danger mb-2">
@@ -681,6 +720,20 @@
                                         {{ localize('global.blood_request_details') }}</h5>
                                     @include('pages.blood_banks.partials.request_summary')
                                 </div>
+                            </div>
+                        @endif
+
+                        @if ($bloodBank->status === 'delivered' && ($bloodBank->receiverDepartment || $bloodBank->receiverNurse))
+                            <div class="col-md-12 mt-3">
+                                <h6 class="mb-2">{{ localize('global.blood_bank_receiver_summary') }}</h6>
+                                <p class="mb-1 small">
+                                    <span class="text-muted">{{ localize('global.blood_bank_receiver_department') }}:</span>
+                                    {{ $bloodBank->receiverDepartment?->name ?? '—' }}
+                                </p>
+                                <p class="mb-0 small">
+                                    <span class="text-muted">{{ localize('global.blood_bank_receiver_nurse') }}:</span>
+                                    {{ $bloodBank->receiverNurse?->full_name ?? '—' }}
+                                </p>
                             </div>
                         @endif
 
@@ -768,3 +821,60 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    @if ($bloodBank->status === 'approved')
+        @php
+            $nursesFetchBase = url('blood_banks/nurses-by-department');
+        @endphp
+        <script>
+            (function() {
+                const depSel = document.getElementById('blood_receiver_department_{{ $bloodBank->id }}');
+                const nurseSel = document.getElementById('blood_receiver_nurse_{{ $bloodBank->id }}');
+                if (!depSel || !nurseSel) return;
+
+                const baseUrl = @json($nursesFetchBase);
+                const initialNurse = nurseSel.getAttribute('data-initial-nurse');
+                const placeholderOpt = @json(localize('global.select_receiver_nurse_first'));
+
+                function fillNurses(departmentId, preselectId) {
+                    nurseSel.innerHTML = '<option value="">' + placeholderOpt + '</option>';
+                    if (!departmentId) return;
+                    fetch(baseUrl + '/' + encodeURIComponent(departmentId), {
+                            method: 'GET',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(function(r) {
+                            if (!r.ok) throw new Error('fetch');
+                            return r.json();
+                        })
+                        .then(function(data) {
+                            const nurses = data.nurses || [];
+                            nurses.forEach(function(n) {
+                                const opt = document.createElement('option');
+                                opt.value = n.id;
+                                opt.textContent = n.name;
+                                if (preselectId && String(n.id) === String(preselectId)) opt.selected = true;
+                                nurseSel.appendChild(opt);
+                            });
+                        })
+                        .catch(function() {
+                            nurseSel.innerHTML = '<option value="">' + placeholderOpt + '</option>';
+                        });
+                }
+
+                depSel.addEventListener('change', function() {
+                    fillNurses(this.value, null);
+                });
+
+                if (depSel.value) {
+                    fillNurses(depSel.value, initialNurse || null);
+                }
+            })();
+        </script>
+    @endif
+@endpush

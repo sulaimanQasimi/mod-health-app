@@ -13,7 +13,7 @@ class BloodBank extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'type', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','department_id','reject_reason','created_by','updated_by','deleted_by'];
+    protected $fillable = ['group','branch_id', 'appointment_id', 'patient_id', 'rh', 'type', 'under_review_id', 'operation_id','i_c_u_id','anesthesia_id','hospitalization_id','status','quantity','department_id','receiver_department_id','receiver_nurse_id','reject_reason','created_by','updated_by','deleted_by'];
 
     public static function boot()
     {
@@ -43,6 +43,16 @@ class BloodBank extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function receiverDepartment()
+    {
+        return $this->belongsTo(Department::class, 'receiver_department_id');
+    }
+
+    public function receiverNurse()
+    {
+        return $this->belongsTo(Nurse::class, 'receiver_nurse_id');
     }
 
     public function createdBy()
@@ -160,9 +170,9 @@ class BloodBank extends Model
     }
 
     /**
-     * Raw request line vs workflow bags, for UI labels (e.g. show "1000 ml" not only "3" bags).
+     * Raw request line for UI: show ml when the stored value looks like volume, else unit count.
      *
-     * @return array{mode: 'empty'|'units'|'volume_ml', ml?: int, bags?: int, units?: int}
+     * @return array{mode: 'empty'|'units'|'volume_ml', ml?: int, units?: int}
      */
     public function orderQuantityDisplayParts(): array
     {
@@ -176,7 +186,6 @@ class BloodBank extends Model
             return [
                 'mode' => 'volume_ml',
                 'ml' => $raw,
-                'bags' => self::normalizeRawQuantityToUnits($raw),
             ];
         }
 

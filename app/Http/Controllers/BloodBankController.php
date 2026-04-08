@@ -11,6 +11,7 @@ use App\Models\BloodPatientSample;
 use App\Models\BloodStockMovement;
 use App\Models\BloodUnit;
 use App\Models\Department;
+use App\Models\Nurse;
 use App\Services\BloodCrossmatchService;
 use App\Services\BloodBankStockService;
 use Illuminate\Http\Request;
@@ -209,6 +210,30 @@ class BloodBankController extends Controller
         return view('pages.blood_banks.delivered', compact('bloodRequests', 'departments'));
     }
 
+    /**
+     * Nurses in a department (same branch as current user) for blood bank receiver selection.
+     */
+    public function nursesByDepartment(Department $department)
+    {
+        if ((int) $department->branch_id !== (int) auth()->user()->branch_id) {
+            abort(404);
+        }
+
+        $nurses = Nurse::query()
+            ->where('department_id', $department->id)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get(['id', 'first_name', 'last_name']);
+
+        return response()->json([
+            'nurses' => $nurses->map(fn (Nurse $n) => [
+                'id' => $n->id,
+                'name' => trim($n->first_name.' '.$n->last_name),
+            ])->values(),
+        ]);
+    }
+
     public function approve($bloodBank)
     {
         $bloodBank = BloodBank::findOrFail($bloodBank);
@@ -231,8 +256,30 @@ class BloodBankController extends Controller
         $bloodBank = BloodBank::findOrFail($bloodBank);
         $this->ensureBloodRequestBranch($bloodBank);
 
+        $validated = $request->validate([
+            'receiver_department_id' => [
+                'required',
+                'integer',
+                Rule::exists('departments', 'id')->where(fn ($q) => $q->where('branch_id', auth()->user()->branch_id)),
+            ],
+            'receiver_nurse_id' => ['required', 'integer', 'exists:nurses,id'],
+        ]);
+
+        $nurse = Nurse::query()
+            ->where('id', $validated['receiver_nurse_id'])
+            ->where('department_id', $validated['receiver_department_id'])
+            ->where('branch_id', $bloodBank->branch_id)
+            ->first();
+        if (! $nurse) {
+            return redirect()->back()->withInput()->with('error', localize('global.blood_bank_receiver_nurse_invalid'));
+        }
+
+        $bloodBank->receiver_department_id = $validated['receiver_department_id'];
+        $bloodBank->receiver_nurse_id = $validated['receiver_nurse_id'];
+
         if (! BloodUnit::where('branch_id', $bloodBank->branch_id)->exists()) {
             $bloodBank->deliver();
+
             return redirect()->back()->with('success', localize('global.blood_request_delivered_successfully'));
         }
 
@@ -242,7 +289,7 @@ class BloodBankController extends Controller
         try {
             app(BloodBankStockService::class)->deliverRequest($bloodBank, count($unitIds) > 0 ? $unitIds : null);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
 
         return redirect()->back()->with('success', localize('global.blood_request_delivered_successfully'));
@@ -314,6 +361,8 @@ class BloodBankController extends Controller
         $bloodBank->load([
             'patient',
             'department',
+            'receiverDepartment',
+            'receiverNurse',
             'createdBy',
             'bloodUnits',
             'appointment',
@@ -376,6 +425,8 @@ class BloodBankController extends Controller
             ->count();
         $remainingQty = max(0, $requestedQty - $issuedQty);
 
+        $receiverDepartments = $this->departmentsForCurrentBranch();
+
         return view('pages.blood_banks.show', compact(
             'bloodBank',
             'availableUnits',
@@ -387,7 +438,8 @@ class BloodBankController extends Controller
             'reservedCompatibleQty',
             'issuedQty',
             'remainingQty',
-            'quantityInferredFromVolumeMl'
+            'quantityInferredFromVolumeMl',
+            'receiverDepartments'
         ));
     }
 

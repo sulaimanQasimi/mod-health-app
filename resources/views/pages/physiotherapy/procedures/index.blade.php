@@ -217,11 +217,10 @@
                                             <td>
                                                 <strong>{{ $procedure->appointment->patient->id_card ?? 'N/A' }}</strong>
                                             </td>
-                                            <td></td>
+                                            <td>
                                                 <strong>{{ $procedure->appointment->patient->name ?? 'N/A' }}</strong>
                                                 <br>
-                                                <small
-                                                    class="text-muted">{{ $procedure->appointment->patient->phone ?? 'N/A' }}</small>
+                                                <small class="text-muted">{{ $procedure->appointment->patient->phone ?? 'N/A' }}</small>
                                             </td>
                                             <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
                                             <td>

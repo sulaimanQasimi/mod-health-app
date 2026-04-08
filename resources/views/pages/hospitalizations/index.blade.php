@@ -159,6 +159,7 @@
                                     <th>{{localize('global.card_number')}}</th>
                                     <th>{{localize('global.patient_name')}}</th>
                                     <th>{{localize('global.father_name')}}</th>
+                                    <th>{{ localize('global.department') ?: 'Department' }}</th>
                                     <th>{{localize('global.room')}}</th>
                                     <th>{{localize('global.bed')}}</th>
                                     <th>{{localize('global.doctor')}}</th>
@@ -192,6 +193,15 @@
                                                 <span class="text-muted">{{ $hospitalization->patient->father_name ?? '-' }}</span>
                                             @else
                                                 -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($hospitalization->appointment && $hospitalization->appointment->department)
+                                                <span class="badge bg-label-primary">
+                                                    <i class="bx bx-buildings me-1"></i>{{ $hospitalization->appointment->department->name }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
@@ -236,7 +246,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-4">
+                                        <td colspan="10" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="bx bx-inbox me-2"></i>
                                                 {{ localize('global.no_data_found') ?: 'No data found' }}

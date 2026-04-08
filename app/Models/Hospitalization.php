@@ -16,6 +16,52 @@ class Hospitalization extends Model
     'food_type_id','is_discharged','branch_id','discharge_remark','discharge_status',
     'patinet_companion','companion_father_name','relation_to_patient','companion_card_type','discharged_at','under_review_id','i_c_u_id'];
 
+    /**
+     * Limit hospitalizations to the appointment linked to the authenticated user's department.
+     * When the user has a department_id, filtering always applies (including for admin roles).
+     * Admin/super_admin with no department_id on their profile still see all in-branch rows (legacy).
+     */
+    public function scopeVisibleForAuthUserDepartment($query)
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return $query->whereRaw('0 = 1');
+        }
+        $departmentId = $user->department_id;
+        if ($departmentId !== null) {
+            return $query->whereHas('appointment', function ($q) use ($departmentId) {
+                $q->where('department_id', $departmentId);
+            });
+        }
+        if ($user->hasRole(['admin', 'super_admin'])) {
+            return $query;
+        }
+
+        return $query->whereRaw('0 = 1');
+    }
+
+    /**
+     * Whether the given user may view this hospitalization (same branch; appointment department matches user's department when set).
+     */
+    public function userCanView(?User $user = null): bool
+    {
+        $user = $user ?? Auth::user();
+        if (! $user) {
+            return false;
+        }
+        if ((int) $this->branch_id !== (int) $user->branch_id) {
+            return false;
+        }
+        if ($user->department_id !== null) {
+            $this->loadMissing('appointment');
+
+            return $this->appointment
+                && (int) $this->appointment->department_id === (int) $user->department_id;
+        }
+
+        return $user->hasRole(['admin', 'super_admin']);
+    }
+
     public static function boot()
     {
         parent::boot();

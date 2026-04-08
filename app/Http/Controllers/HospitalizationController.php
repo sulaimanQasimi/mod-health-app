@@ -42,6 +42,7 @@ class HospitalizationController extends Controller
         // Base query with eager loading and select optimization
         $query = Hospitalization::select([
             'hospitalizations.id',
+            'hospitalizations.appointment_id',
             'hospitalizations.patient_id',
             'hospitalizations.room_id',
             'hospitalizations.bed_id',
@@ -51,11 +52,14 @@ class HospitalizationController extends Controller
         ])
             ->where('hospitalizations.branch_id', $branchId)
             ->where('hospitalizations.is_discharged', '0')
+            ->visibleForAuthUserDepartment()
             ->with([
                 'patient:id,name,id_card,father_name',
                 'room:id,name',
                 'bed:id,number',
-                'doctor:id,name'
+                'doctor:id,name',
+                'appointment:id,department_id',
+                'appointment.department:id,name',
             ]);
 
         // Optimized search using joins instead of whereHas for better performance
@@ -146,7 +150,8 @@ class HospitalizationController extends Controller
         $branchId = auth()->user()->branch_id;
         $query = Hospitalization::query()
             ->where('hospitalizations.branch_id', $branchId)
-            ->where('hospitalizations.is_discharged', '1');
+            ->where('hospitalizations.is_discharged', '1')
+            ->visibleForAuthUserDepartment();
 
         $patientId = (int) $request->input('patient_id', 0);
         if ($patientId > 0) {
@@ -276,6 +281,10 @@ class HospitalizationController extends Controller
      */
     public function show(Hospitalization $hospitalization, Request $request)
     {
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         // Load only essential data for the main page - heavy data is now loaded via AJAX
         $operationTypes = OperationType::where('branch_id', auth()->user()->branch_id)->get();
         $labTypes = LabType::all();
@@ -315,6 +324,10 @@ class HospitalizationController extends Controller
      */
     public function edit(Hospitalization $hospitalization)
     {
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         $rooms = Room::all();
         $beds = Bed::all();
         $foodTypes = FoodType::all();
@@ -327,6 +340,10 @@ class HospitalizationController extends Controller
      */
     public function update(Request $request, Hospitalization $hospitalization)
     {
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         $data = $request->validate([
             'is_discharged' => 'required',
             'discharge_remark' => 'required',
@@ -348,7 +365,10 @@ class HospitalizationController extends Controller
      */
     public function destroy(Hospitalization $hospitalization)
     {
-        
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         $hospitalization->delete();
 
         return redirect()->back()->with('success', localize('global.hospitalization_deleted_successfully.') );
@@ -491,6 +511,11 @@ class HospitalizationController extends Controller
 
     public function updateHospitalization(Request $request, $id)
 {
+    $hospitalization = Hospitalization::findOrFail($id);
+    if (! $hospitalization->userCanView()) {
+        abort(403);
+    }
+
     // Validate incoming request
     $data = $request->validate([
         'reason' => 'nullable',
@@ -542,9 +567,6 @@ class HospitalizationController extends Controller
     if (isset($data['food_type_id'])) {
         $data['food_type_id'] = json_encode($data['food_type_id']);
     }
-
-    // Find the existing hospitalization record
-    $hospitalization = Hospitalization::findOrFail($id);
 
     // Update the record with validated data
     $hospitalization->update($data);
@@ -704,6 +726,10 @@ class HospitalizationController extends Controller
      */
     public function assignDoctor(Request $request, Hospitalization $hospitalization)
     {
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         // Validate doctor_id is provided
         $request->validate([
             'doctor_id' => 'required|exists:doctors,id'
@@ -732,6 +758,10 @@ $hospitalization->appointment->update([
      */
     public function changeRoomBed(Hospitalization $hospitalization)
     {
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         // Check permission
         if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
             abort(403, 'Unauthorized action.');
@@ -755,6 +785,10 @@ $hospitalization->appointment->update([
      */
     public function updateRoomBed(Request $request, Hospitalization $hospitalization)
     {
+        if (! $hospitalization->userCanView()) {
+            abort(403);
+        }
+
         // Check permission
         if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
             abort(403, 'Unauthorized action.');

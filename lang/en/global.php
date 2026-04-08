@@ -1753,6 +1753,8 @@ return [
     'crossmatch_reserved_vs_remaining_caption' => 'reserved compatible bags / units still to issue',
     'crossmatch_no_units_left_to_reserve' => 'No units left to issue for this request.',
     'quantity_inferred_from_volume_hint' => 'The quantity entered on the request line (:raw) looks like total volume (ml). It was converted to about :units bag(s) for this workflow (one bag = one crossmatch). Prefer entering the number of bags (1–100) for new requests.',
+    'unit_volume_ml' => 'ml',
+    'blood_qty_estimated_bags_line' => '≈ :count bag(s) for stock / crossmatch',
     'blood_delivery_invalid_ordered_quantity' => 'This blood request has no valid ordered unit count. Set quantity or complete the lab blood check.',
     'crossmatch_auto_check' => 'Auto ABO/Rh check',
     'crossmatch_status' => 'Crossmatch status',

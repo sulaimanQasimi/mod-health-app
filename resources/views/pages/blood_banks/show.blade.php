@@ -40,7 +40,9 @@
                                 <div class="card bg-label-primary h-100">
                                     <div class="card-body py-2">
                                         <div class="small text-muted">{{ localize('global.requested_quantity') }}</div>
-                                        <div class="fs-5 fw-bold">{{ $requestedQty }}</div>
+                                        <div class="fs-5 fw-bold">
+                                            @include('pages.blood_banks.partials.order_quantity_display', ['bloodBank' => $bloodBank])
+                                        </div>
                                     </div>
                                 </div>
                             </div>

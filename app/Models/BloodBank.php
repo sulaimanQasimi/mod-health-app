@@ -159,6 +159,30 @@ class BloodBank extends Model
         return 0;
     }
 
+    /**
+     * Raw request line vs workflow bags, for UI labels (e.g. show "1000 ml" not only "3" bags).
+     *
+     * @return array{mode: 'empty'|'units'|'volume_ml', ml?: int, bags?: int, units?: int}
+     */
+    public function orderQuantityDisplayParts(): array
+    {
+        $raw = (int) $this->quantity;
+        if ($raw < 1) {
+            return ['mode' => 'empty'];
+        }
+
+        $threshold = (int) config('blood_bank.max_unit_order_before_volume_assumption', 100);
+        if ($raw > $threshold) {
+            return [
+                'mode' => 'volume_ml',
+                'ml' => $raw,
+                'bags' => self::normalizeRawQuantityToUnits($raw),
+            ];
+        }
+
+        return ['mode' => 'units', 'units' => $raw];
+    }
+
     public function approve()
     {
         $this->status = 'approved';

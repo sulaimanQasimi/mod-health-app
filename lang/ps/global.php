@@ -1132,6 +1132,8 @@ return [
     'crossmatch_reserved_vs_remaining_caption' => 'رزرف سازګار کڅوړې / د صادرولو لپاره پاتې کڅوړې',
     'crossmatch_no_units_left_to_reserve' => 'د دې غوښتنې لپاره پاتې واحد نشته.',
     'quantity_inferred_from_volume_hint' => 'په غوښتنه کې ثبت شوی مقدار (:raw) د ټول حجم (میلي‌لېتر) په څېر دی او په دې بهیر کې نږدې :units کڅوړو ته بدل شو (هره کڅوړه = یو کراس مېچ). نوې غوښتنې کې د کڅوړو شمېر ولیکئ.',
+    'unit_volume_ml' => 'میلي‌لیتر',
+    'blood_qty_estimated_bags_line' => 'نږدې :count کڅوړې د موجودي / کراس مېچ لپاره',
     'blood_delivery_invalid_ordered_quantity' => 'د دې غوښتنې لپاره معتبر واحد شمېر نشته؛ مقدار یا لاب بررسی بشپړ کړئ.',
     'crossmatch_auto_check' => 'اتومات ABO/Rh ارزونه',
     'crossmatch_status' => 'د کراس مېچ حالت',

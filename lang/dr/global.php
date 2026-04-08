@@ -1133,6 +1133,8 @@ return [
     'crossmatch_reserved_vs_remaining_caption' => 'کیسه‌های سازگار رزروشده / کیسه‌های باقی‌مانده برای صدور',
     'crossmatch_no_units_left_to_reserve' => 'واحد باقی‌مانده‌ای برای این درخواست نیست.',
     'quantity_inferred_from_volume_hint' => 'مقدار ثبت‌شده در خط درخواست (:raw) شبیه حجم کل (میلی‌لیتر) است و برای این فرایند به حدود :units کیسه تبدیل شد (هر کیسه = یک کراس‌مچ). برای درخواست‌های جدید تعداد کیسه را وارد کنید.',
+    'unit_volume_ml' => 'میلی‌لیتر',
+    'blood_qty_estimated_bags_line' => 'حدود :count کیسه برای موجودی / کراس‌مچ',
     'blood_delivery_invalid_ordered_quantity' => 'تعداد واحد معتبری برای این درخواست ثبت نشده؛ مقدار یا بررسی آزمایشگاه را تکمیل کنید.',
     'crossmatch_auto_check' => 'بررسی خودکار ABO/Rh',
     'crossmatch_status' => 'وضعیت کراس‌مچ',

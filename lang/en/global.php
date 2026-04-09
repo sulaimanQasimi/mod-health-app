@@ -1695,7 +1695,6 @@ return [
     'blood_bank_receiver_department' => 'Receiving department',
     'blood_bank_receiver_nurse' => 'Receiving nurse',
     'select_receiver_nurse_first' => 'Select department first, then nurse',
-    'blood_bank_receiver_nurse_invalid' => 'Selected nurse must belong to the chosen department and branch.',
     'blood_bank_delivery_receiver_hint' => 'Select the ward/department and nurse who will receive the blood before completing.',
     'blood_bank_receiver_summary' => 'Received by',
     'blood_inventory' => 'Blood inventory',

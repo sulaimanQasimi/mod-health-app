@@ -1075,7 +1075,6 @@ return [
     'blood_bank_receiver_department' => 'بخش گیرنده',
     'blood_bank_receiver_nurse' => 'پرستار گیرنده',
     'select_receiver_nurse_first' => 'ابتدا بخش را انتخاب کنید، سپس پرستار',
-    'blood_bank_receiver_nurse_invalid' => 'پرستار انتخاب‌شده باید متعلق به همان بخش و شعبه باشد.',
     'blood_bank_delivery_receiver_hint' => 'قبل از تکمیل، بخش و پرستار گیرنده خون را انتخاب کنید.',
     'blood_bank_receiver_summary' => 'تحویل گیرنده',
     'blood_inventory' => 'موجودی خون',

@@ -824,23 +824,27 @@
 
 @push('scripts')
     @if ($bloodBank->status === 'approved')
-        @php
-            $nursesFetchBase = url('blood_banks/nurses-by-department');
-        @endphp
         <script>
             (function() {
                 const depSel = document.getElementById('blood_receiver_department_{{ $bloodBank->id }}');
                 const nurseSel = document.getElementById('blood_receiver_nurse_{{ $bloodBank->id }}');
                 if (!depSel || !nurseSel) return;
 
-                const baseUrl = @json($nursesFetchBase);
                 const initialNurse = nurseSel.getAttribute('data-initial-nurse');
                 const placeholderOpt = @json(localize('global.select_receiver_nurse_first'));
+
+                /** Same host/path as this page — avoids broken fetches when APP_URL differs from the browser URL. */
+                function nursesEndpointUrl(departmentId) {
+                    return new URL(
+                        '../nurses-by-department/' + encodeURIComponent(departmentId),
+                        window.location.href
+                    ).href;
+                }
 
                 function fillNurses(departmentId, preselectId) {
                     nurseSel.innerHTML = '<option value="">' + placeholderOpt + '</option>';
                     if (!departmentId) return;
-                    fetch(baseUrl + '/' + encodeURIComponent(departmentId), {
+                    fetch(nursesEndpointUrl(departmentId), {
                             method: 'GET',
                             credentials: 'same-origin',
                             headers: {

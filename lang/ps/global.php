@@ -1074,7 +1074,6 @@ return [
     'blood_bank_receiver_department' => 'ترلاسه کوونکی څانګه',
     'blood_bank_receiver_nurse' => 'ترلاسه کوونکی نرس',
     'select_receiver_nurse_first' => 'لومړی څانګه وټاکئ، بیا نرس',
-    'blood_bank_receiver_nurse_invalid' => 'ټاکل شوی نرس باید همدې څانګې او څانګې پورې اړونده وي.',
     'blood_bank_delivery_receiver_hint' => 'د بشپړولو دمخه د وینې ترلاسه کوونکی څانګه او نرس وټاکئ.',
     'blood_bank_receiver_summary' => 'ترلاسه کوونکی',
     'blood_inventory' => 'د وینې موجودي',

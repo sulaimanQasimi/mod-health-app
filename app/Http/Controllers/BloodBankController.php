@@ -221,7 +221,6 @@ class BloodBankController extends Controller
 
         $nurses = Nurse::query()
             ->where('department_id', $department->id)
-            ->where('branch_id', auth()->user()->branch_id)
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get(['id', 'first_name', 'last_name']);
@@ -264,15 +263,6 @@ class BloodBankController extends Controller
             ],
             'receiver_nurse_id' => ['required', 'integer', 'exists:nurses,id'],
         ]);
-
-        $nurse = Nurse::query()
-            ->where('id', $validated['receiver_nurse_id'])
-            ->where('department_id', $validated['receiver_department_id'])
-            ->where('branch_id', $bloodBank->branch_id)
-            ->first();
-        if (! $nurse) {
-            return redirect()->back()->withInput()->with('error', localize('global.blood_bank_receiver_nurse_invalid'));
-        }
 
         $bloodBank->receiver_department_id = $validated['receiver_department_id'];
         $bloodBank->receiver_nurse_id = $validated['receiver_nurse_id'];

@@ -27,16 +27,16 @@ class Hospitalization extends Model
         if (! $user) {
             return $query->whereRaw('0 = 1');
         }
+          if ($user->hasRole(['admin', 'super_admin'])) {
+            return $query;
+        }else{
         $departmentId = $user->department_id;
         if ($departmentId !== null) {
             return $query->whereHas('appointment', function ($q) use ($departmentId) {
                 $q->where('department_id', $departmentId);
             });
         }
-        if ($user->hasRole(['admin', 'super_admin'])) {
-            return $query;
-        }
-
+          }
         return $query->whereRaw('0 = 1');
     }
 

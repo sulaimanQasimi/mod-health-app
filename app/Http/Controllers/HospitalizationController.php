@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendNewHospitalizationNotification;
+use App\Models\Appointment;
 use App\Models\Bed;
+use App\Models\Department;
 use App\Models\FoodType;
 use App\Models\Hospitalization;
 use App\Models\ICU;
@@ -23,6 +25,7 @@ use App\Models\MedicationAdministrationRecord;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Excel;
 use HanifHefaz\Dcter\Dcter;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -768,16 +771,55 @@ $hospitalization->appointment->update([
         }
 
         // Load essential relationships
-        $hospitalization->load(['patient', 'room', 'bed']);
+        $hospitalization->load(['patient', 'room', 'bed', 'appointment.department']);
 
-        // Get rooms that have at least one unoccupied bed (Room::beds() = unoccupied only)
-        $rooms = Room::select('id', 'name')
+        $currentDepartmentId = $hospitalization->appointment?->department_id;
+
+        $departments = Department::query()
             ->where('branch_id', $hospitalization->branch_id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        // Rooms with at least one unoccupied bed, limited to current admission department by default
+        $rooms = Room::select('id', 'name', 'department_id')
+            ->where('branch_id', $hospitalization->branch_id)
+            ->when($currentDepartmentId, fn ($q) => $q->where('department_id', $currentDepartmentId))
             ->whereHas('beds')
             ->orderBy('name')
             ->get();
 
-        return view('pages.hospitalizations.change-room-bed', compact('hospitalization', 'rooms'));
+        return view('pages.hospitalizations.change-room-bed', compact(
+            'hospitalization',
+            'rooms',
+            'departments',
+            'currentDepartmentId'
+        ));
+    }
+
+    /**
+     * Rooms with available beds for a department (change room/bed + department transfer UI).
+     */
+    public function roomsByDepartment(Request $request)
+    {
+        if (! auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'department_id' => [
+                'required',
+                Rule::exists('departments', 'id')->where(fn ($q) => $q->where('branch_id', auth()->user()->branch_id)),
+            ],
+        ]);
+
+        $rooms = Room::select('id', 'name')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('department_id', $data['department_id'])
+            ->whereHas('beds')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['rooms' => $rooms]);
     }
 
     /**
@@ -797,10 +839,144 @@ $hospitalization->appointment->update([
         $data = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'bed_id' => 'required|exists:beds,id',
+            'change_department' => 'nullable|boolean',
+            'target_department_id' => [
+                'nullable',
+                Rule::requiredIf($request->boolean('change_department')),
+                Rule::exists('departments', 'id')->where(fn ($q) => $q->where('branch_id', auth()->user()->branch_id)),
+            ],
         ]);
+
         $returnToRoomId = $request->input('return_to_room_id');
-        if ($returnToRoomId === null || $returnToRoomId === '' || !Room::where('id', $returnToRoomId)->exists()) {
+        if ($returnToRoomId === null || $returnToRoomId === '' || ! Room::where('id', $returnToRoomId)->exists()) {
             $returnToRoomId = null;
+        }
+
+        $hospitalization->loadMissing('appointment');
+        $currentDeptId = $hospitalization->appointment?->department_id;
+
+        $newRoom = Room::query()
+            ->where('branch_id', $hospitalization->branch_id)
+            ->findOrFail($data['room_id']);
+
+        $newBed = Bed::findOrFail($data['bed_id']);
+        if ((int) $newBed->room_id !== (int) $newRoom->id) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', localize('global.bed_must_belong_to_selected_room') ?: 'Bed must belong to the selected room.');
+        }
+
+        $bedTaken = Hospitalization::where('bed_id', $data['bed_id'])
+            ->where('is_discharged', 0)
+            ->where('id', '!=', $hospitalization->id)
+            ->exists();
+        if ($bedTaken) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', localize('global.selected_bed_already_occupied') ?: 'The selected bed is already occupied.');
+        }
+
+        $changeDepartment = $request->boolean('change_department');
+        $targetDepartmentId = $data['target_department_id'] ? (int) $data['target_department_id'] : null;
+        $transferToOtherDepartment = $changeDepartment && $targetDepartmentId !== null
+            && $currentDeptId !== null
+            && $targetDepartmentId !== (int) $currentDeptId;
+
+        if ($transferToOtherDepartment) {
+            if ((int) $newRoom->department_id !== $targetDepartmentId) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', localize('global.room_must_match_selected_department') ?: 'The selected room must belong to the chosen department.');
+            }
+
+            $dischargeRemark = localize('global.department_transfer_discharge_remark')
+                ?: 'Transferred to another department (room/bed change).';
+
+            $newHospitalization = DB::transaction(function () use ($hospitalization, $data, $newBed, $dischargeRemark) {
+                $oldBed = Bed::find($hospitalization->bed_id);
+
+                $hospitalization->update([
+                    'is_discharged' => 1,
+                    'discharge_status' => 'moved',
+                    'discharge_remark' => $dischargeRemark,
+                    'discharged_at' => now(),
+                ]);
+
+                if ($oldBed) {
+                    $oldBed->update(['is_occupied' => false]);
+                }
+
+                $oldAppointment = $hospitalization->appointment;
+                if (! $oldAppointment) {
+                    throw new \RuntimeException('Hospitalization has no appointment.');
+                }
+
+                $now = now();
+                $newAppointment = Appointment::create([
+                    'patient_id' => $oldAppointment->patient_id,
+                    'doctor_id' => $oldAppointment->doctor_id,
+                    'department_id' => (int) $data['target_department_id'],
+                    'branch_id' => $oldAppointment->branch_id,
+                    'date' => $now->format('Y-m-d'),
+                    'time' => $now->format('H:i:s'),
+                    'is_completed' => '0',
+                    'clinic_type' => $oldAppointment->clinic_type,
+                ]);
+
+                $created = Hospitalization::create([
+                    'reason' => $hospitalization->reason,
+                    'remarks' => $hospitalization->remarks,
+                    'appointment_id' => $newAppointment->id,
+                    'doctor_id' => $newAppointment->doctor_id ?? $hospitalization->doctor_id,
+                    'patient_id' => $hospitalization->patient_id,
+                    'room_id' => $data['room_id'],
+                    'bed_id' => $data['bed_id'],
+                    'food_type_id' => $hospitalization->food_type_id,
+                    'is_discharged' => 0,
+                    'branch_id' => $hospitalization->branch_id,
+                    'discharge_remark' => null,
+                    'discharge_status' => null,
+                    'patinet_companion' => $hospitalization->patinet_companion,
+                    'companion_father_name' => $hospitalization->companion_father_name,
+                    'relation_to_patient' => $hospitalization->relation_to_patient,
+                    'companion_card_type' => $hospitalization->companion_card_type,
+                    'discharged_at' => null,
+                    'under_review_id' => null,
+                    'i_c_u_id' => null,
+                ]);
+
+                $newBed->update(['is_occupied' => true]);
+
+                SendNewHospitalizationNotification::dispatch($created->created_by, $created->id);
+
+                return $created;
+            });
+
+            $message = localize('global.department_transfer_success')
+                ?: 'Patient was transferred; a new appointment and hospitalization were created.';
+
+            if ($request->ajax() || $request->wantsJson()) {
+                $newHospitalization->load(['room', 'bed']);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'hospitalization_id' => $newHospitalization->id,
+                    'redirect_url' => route('hospitalizations.show', $newHospitalization),
+                    'room_name' => $newHospitalization->room->name ?? null,
+                    'bed_number' => $newHospitalization->bed->number ?? null,
+                ]);
+            }
+
+            return redirect()->route('hospitalizations.show', $newHospitalization)
+                ->with('success', $message);
+        }
+
+        // Same department: only allow rooms in the current admission department
+        if ($currentDeptId && (int) $newRoom->department_id !== (int) $currentDeptId) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', localize('global.room_must_match_current_department') ?: 'Selected room must belong to the same department as this admission, or enable department transfer.');
         }
 
         // Get the old bed to free it
@@ -813,18 +989,18 @@ $hospitalization->appointment->update([
         ]);
 
         // Free the old bed
-        if ($oldBed) {
+        if ($oldBed && (int) $oldBed->id !== (int) $newBed->id) {
             $oldBed->update(['is_occupied' => false]);
         }
 
         // Occupy the new bed
-        $newBed = Bed::findOrFail($data['bed_id']);
         $newBed->update(['is_occupied' => true]);
 
         $message = localize('global.room_and_bed_updated_successfully') ?: 'Room and bed updated successfully.';
 
         if ($request->ajax() || $request->wantsJson()) {
             $hospitalization->load(['room', 'bed']);
+
             return response()->json([
                 'success' => true,
                 'message' => $message,

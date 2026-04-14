@@ -22,6 +22,7 @@ use App\Models\DiabetesChart;
 use App\Models\Nurse;
 use App\Models\NurseNote;
 use App\Models\MedicationAdministrationRecord;
+use Carbon\Carbon;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -380,30 +381,38 @@ class HospitalizationController extends Controller
     public function report()
     {
         $foodTypes = FoodType::all();
-        // Doctors list for report filter
         $doctors = Doctor::orderBy('name')->get(['id', 'name']);
+        $branchId = auth()->user()->branch_id;
+        $rooms = Room::where('branch_id', $branchId)->orderBy('name')->get(['id', 'name']);
 
-        return view('pages.hospitalizations.reports.index', compact('foodTypes', 'doctors'));
+        return view('pages.hospitalizations.reports.index', compact('foodTypes', 'doctors', 'rooms'));
     }
-    public function reportSearch(Request $request)
+
+    /**
+     * Base query for hospitalization report list / export (branch, department visibility, filters).
+     */
+    private function hospitalizationReportBaseQuery(Request $request)
     {
-        $food_type_ids = DB::table('food_types')->pluck('id')->toArray();
+        $user = auth()->user();
+
         $query = DB::table('hospitalizations as h')
+            ->join('appointments as appt', 'h.appointment_id', '=', 'appt.id')
             ->leftJoin('patients as p', 'h.patient_id', '=', 'p.id')
             ->leftJoin('branches as b', 'h.branch_id', '=', 'b.id')
             ->leftJoin('doctors as d', 'h.doctor_id', '=', 'd.id')
-            ->leftJoin('food_types as f', function ($join) use ($food_type_ids) {
+            ->leftJoin('rooms as rm', 'h.room_id', '=', 'rm.id')
+            ->leftJoin('food_types as f', function ($join) {
                 $join->on('h.food_type_id', 'like', DB::raw('concat("%", f.id, "%")'));
             })
-            ->select(
-                'h.id',
-                'p.name as patient_name',
-                'd.name as doctor_name',
-                'b.name as branch_name',
-                'h.companion_card_type',
-                'h.discharge_status',
-                'f.name as food_type_name'
-            );
+            ->where('h.branch_id', $user->branch_id);
+
+        if (! $user->hasRole(['admin', 'super_admin'])) {
+            if ($user->department_id !== null) {
+                $query->where('appt.department_id', $user->department_id);
+            } else {
+                $query->whereRaw('0 = 1');
+            }
+        }
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -411,9 +420,9 @@ class HospitalizationController extends Controller
 
         if ($request->filled('food_type_id')) {
             $foodTypeIds = [$request->food_type_id];
-            $query->where(function ($query) use ($foodTypeIds) {
+            $query->where(function ($q) use ($foodTypeIds) {
                 foreach ($foodTypeIds as $foodTypeId) {
-                    $query->orWhere('h.food_type_id', 'like', '%' . $foodTypeId . '%');
+                    $q->orWhere('h.food_type_id', 'like', '%' . $foodTypeId . '%');
                 }
             });
         }
@@ -426,33 +435,90 @@ class HospitalizationController extends Controller
             $query->where('h.discharge_status', $request->discharge_status);
         }
 
-        // Doctor filter
         if ($request->filled('doctor_id')) {
             $query->where('h.doctor_id', $request->doctor_id);
         }
 
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('h.created_at', [$request->from, $request->to]);
+        if ($request->filled('room_id')) {
+            $query->where('h.room_id', $request->room_id);
         }
 
-        $items = $query->get();
+        if ($request->filled('is_discharged') && $request->is_discharged !== '') {
+            $query->where('h.is_discharged', (int) $request->is_discharged);
+        }
+
+        $dateFrom = $request->input('start', $request->input('from'));
+        $dateTo = $request->input('end', $request->input('to'));
+
+        if (filled($dateFrom)) {
+            $query->whereDate('h.created_at', '>=', Verta::parse($dateFrom)->datetime());
+        }
+        if (filled($dateTo)) {
+            $query->whereDate('h.created_at', '<=', Verta::parse($dateTo)->datetime());
+        }
+
+        if ($request->filled('discharge_start')) {
+            $query->whereDate('h.discharged_at', '>=', Verta::parse($request->discharge_start)->datetime());
+        }
+        if ($request->filled('discharge_end')) {
+            $query->whereDate('h.discharged_at', '<=', Verta::parse($request->discharge_end)->datetime());
+        }
+
+        return $query->select(
+            'h.id',
+            'h.created_at',
+            'h.discharged_at',
+            'h.is_discharged',
+            'p.name as patient_name',
+            'd.name as doctor_name',
+            'b.name as branch_name',
+            'rm.name as room_name',
+            'h.companion_card_type',
+            'h.discharge_status',
+            'f.name as food_type_name'
+        );
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Collection  $items
+     */
+    private function decorateHospitalizationReportRows($items)
+    {
+        return $items->map(function ($row) {
+            if (! empty($row->created_at)) {
+                $row->jalali_created_at = Dcter::GregorianToJalali(Carbon::parse($row->created_at)->format('Y-m-d'));
+            } else {
+                $row->jalali_created_at = '—';
+            }
+            if (! empty($row->discharged_at)) {
+                $row->jalali_discharged_at = Dcter::GregorianToJalali(Dcter::Carbonize($row->discharged_at)->format('Y-m-d'));
+            } else {
+                $row->jalali_discharged_at = '—';
+            }
+
+            return $row;
+        });
+    }
+
+    public function reportSearch(Request $request)
+    {
+        $items = $this->decorateHospitalizationReportRows(
+            $this->hospitalizationReportBaseQuery($request)->get()->unique('id')
+        );
+
         return view('pages.hospitalizations.reports.report', ['items' => $items]);
     }
 
     public function exportReport(Request $request)
     {
         $data = json_decode($request->data, true);
-        $food_type_ids = DB::table('food_types')->pluck('id')->toArray();
-        $items = DB::table('hospitalizations as h')
-            ->leftJoin('patients as p', 'h.patient_id', '=', 'p.id')
-            ->leftJoin('branches as b', 'h.branch_id', '=', 'b.id')
-            ->leftJoin('doctors as d', 'h.doctor_id', '=', 'd.id')
-            ->leftJoin('food_types as f', function ($join) use ($food_type_ids) {
-                $join->on('h.food_type_id', '=', 'f.id')->whereIn('f.id', $food_type_ids);
-            })
-            ->select('h.id', 'p.name as patient_name', 'd.name as doctor_name', 'b.name as branch_name', 'h.companion_card_type', 'h.discharge_status', 'f.name as food_type_name')
-            ->whereIn('h.id', $data)
-            ->get();
+        if (! is_array($data) || $data === []) {
+            abort(422, 'No rows to export.');
+        }
+
+        $items = $this->decorateHospitalizationReportRows(
+            $this->hospitalizationReportBaseQuery($request)->whereIn('h.id', $data)->get()->unique('id')
+        );
         $reader = new Xlsx();
         $spreadsheet = $reader->load('report_templates/hospitalizations_report.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
@@ -464,37 +530,28 @@ class HospitalizationController extends Controller
         } else {
             $spreadsheet = $reader->load('report_templates/hospitalizations_report.xlsx');
             $sheet = $spreadsheet->getActiveSheet();
+            foreach (['A' => 5, 'B' => 36, 'C' => 18, 'D' => 18, 'E' => 18, 'F' => 18, 'G' => 22, 'H' => 22, 'I' => 18, 'J' => 18] as $col => $w) {
+                $sheet->getColumnDimension($col)->setWidth($w);
+            }
             $row = 3;
+            $lineNo = 0;
 
-            foreach ($items as $index => $item) {
-                $sheet
-                    ->getStyle('A2:G' . $sheet->getHighestRow())
-                    ->getAlignment()
-                    ->setWrapText(true);
-                $sheet->getColumnDimension('A')->setWidth(5);
-                $sheet->getColumnDimension('B')->setWidth(40);
-                $sheet->getColumnDimension('C')->setWidth(20);
-                $sheet->getColumnDimension('D')->setWidth(20);
-                $sheet->getColumnDimension('E')->setWidth(20);
-                $sheet->getColumnDimension('F')->setWidth(20);
-                $sheet->getColumnDimension('G')->setWidth(20);
-                $styleArray = [
-                    'font' => [
-                        'name' => 'B Nazanin',
-                        'color' => 15,
-                        'bold' => true,
-                    ],
-                ];
-                $sheet->setCellValue('A' . $row . '', ++$index);
-                $sheet->setCellValue('B' . $row . '', $item->patient_name);
-                $sheet->setCellValue('C' . $row . '', $item->food_type_name);
-                $sheet->setCellValue('D' . $row . '', $item->companion_card_type);
-                $sheet->setCellValue('E' . $row . '', $item->discharge_status);
-                $sheet->setCellValue('F' . $row . '', $item->doctor_name);
-                $sheet->setCellValue('G' . $row . '', $item->branch_name);
-
+            foreach ($items as $item) {
+                $lineNo++;
+                $sheet->setCellValue('A' . $row, $lineNo);
+                $sheet->setCellValue('B' . $row, $item->patient_name);
+                $sheet->setCellValue('C' . $row, $item->room_name);
+                $sheet->setCellValue('D' . $row, $item->food_type_name);
+                $sheet->setCellValue('E' . $row, $item->companion_card_type);
+                $sheet->setCellValue('F' . $row, $item->discharge_status);
+                $sheet->setCellValue('G' . $row, $item->doctor_name);
+                $sheet->setCellValue('H' . $row, $item->branch_name);
+                $sheet->setCellValue('I' . $row, $item->jalali_created_at);
+                $sheet->setCellValue('J' . $row, $item->jalali_discharged_at);
                 $row++;
             }
+
+            $sheet->getStyle('A2:J' . max(2, $row - 1))->getAlignment()->setWrapText(true);
 
             return $this->exportResponse($spreadsheet);
         }
@@ -765,8 +822,7 @@ $hospitalization->appointment->update([
             abort(403);
         }
 
-        // Check permission
-        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+        if (! $this->userCanEditHospitalizationRooms()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -801,7 +857,7 @@ $hospitalization->appointment->update([
      */
     public function roomsByDepartment(Request $request)
     {
-        if (! auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+        if (! $this->userCanEditHospitalizationRooms()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -831,8 +887,7 @@ $hospitalization->appointment->update([
             abort(403);
         }
 
-        // Check permission
-        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+        if (! $this->userCanEditHospitalizationRooms()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1075,11 +1130,25 @@ $hospitalization->appointment->update([
     }
 
     /**
+     * Room/bed edits (change room, swaps, room management). Super admin and admin match branch-wide listing; others need the permission.
+     */
+    protected function userCanEditHospitalizationRooms(?User $user = null): bool
+    {
+        $user = $user ?? auth()->user();
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole(['super_admin', 'admin'])
+            || $user->hasPermissionTo('edit-hospitalizations');
+    }
+
+    /**
      * Unoccupy a bed: discharge the hospitalization and free the bed.
      */
     public function unoccupyBed(Request $request, Hospitalization $hospitalization)
     {
-        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+        if (! $this->userCanEditHospitalizationRooms()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1116,7 +1185,7 @@ $hospitalization->appointment->update([
      */
     public function swapBed(Request $request, Hospitalization $hospitalization)
     {
-        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+        if (! $this->userCanEditHospitalizationRooms()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -1153,7 +1222,7 @@ $hospitalization->appointment->update([
      */
     public function swapRoom(Request $request, Hospitalization $hospitalization)
     {
-        if (!auth()->user()->hasPermissionTo('edit-hospitalizations')) {
+        if (! $this->userCanEditHospitalizationRooms()) {
             abort(403, 'Unauthorized action.');
         }
 

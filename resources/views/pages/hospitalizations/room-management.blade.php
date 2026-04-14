@@ -65,9 +65,9 @@
                                             <th>{{ localize('global.bed_number') ?: 'Bed number' }}</th>
                                             <th>{{ localize('global.patient') }}</th>
                                             <th>{{ localize('global.status') ?: 'Status' }}</th>
-                                            @can('edit-hospitalizations')
+                                            @if (auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations'))
                                                 <th class="text-end">{{ localize('global.actions') ?: 'Actions' }}</th>
-                                            @endcan
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -88,7 +88,7 @@
                                                         <span class="badge bg-label-success">{{ localize('global.empty_bed') ?: 'Empty' }}</span>
                                                     @endif
                                                 </td>
-                                                @can('edit-hospitalizations')
+                                                @if (auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations'))
                                                     <td class="text-end">
                                                         @if ($bed->active_hospitalization)
                                                             @php
@@ -135,7 +135,7 @@
                                                             <span class="text-muted">—</span>
                                                         @endif
                                                     </td>
-                                                @endcan
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>

@@ -41,7 +41,7 @@ class Hospitalization extends Model
     }
 
     /**
-     * Whether the given user may view this hospitalization (same branch; appointment department matches user's department when set).
+     * Whether the given user may view this hospitalization (same branch; super_admin/admin see all in branch; others match department when set).
      */
     public function userCanView(?User $user = null): bool
     {
@@ -52,6 +52,9 @@ class Hospitalization extends Model
         if ((int) $this->branch_id !== (int) $user->branch_id) {
             return false;
         }
+        if ($user->hasRole(['super_admin', 'admin'])) {
+            return true;
+        }
         if ($user->department_id !== null) {
             $this->loadMissing('appointment');
 
@@ -59,7 +62,7 @@ class Hospitalization extends Model
                 && (int) $this->appointment->department_id === (int) $user->department_id;
         }
 
-        return $user->hasRole(['admin', 'super_admin']);
+        return false;
     }
 
     public static function boot()

@@ -20,7 +20,7 @@
                             </div>
                             @endif
                             <!-- Change Room and Bed Button - Hidden when hospitalization is discharged -->
-                            @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
+                            @if ($hospitalization->is_discharged == 0 && (auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations')))
                             <div class="me-2">
                                 <a href="{{ route('hospitalizations.changeRoomBed', $hospitalization->id) }}" 
                                    class="btn btn-warning btn-sm" 
@@ -396,7 +396,7 @@
                                         data-bs-parent="#icuAccordion">
                                         <div class="accordion-body">
                                             {{-- Change Room and Bed Modal (current bed unoccupied, hospitalization updated to new) --}}
-                                            @if ($hospitalization->is_discharged == 0 && auth()->user()->can('edit-hospitalizations'))
+                                            @if ($hospitalization->is_discharged == 0 && (auth()->user()->hasRole(['super_admin', 'admin']) || auth()->user()->can('edit-hospitalizations')))
                                             <div class="modal fade" id="changeRoomBedModal{{ $hospitalization->id }}" tabindex="-1"
                                                 aria-labelledby="changeRoomBedModalLabel{{ $hospitalization->id }}" aria-hidden="true">
                                                 <div class="modal-dialog">

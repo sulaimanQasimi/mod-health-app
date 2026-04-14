@@ -76,14 +76,54 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="col-md-3">
+                                        <label for="room_id">{{ localize('global.room') }}</label>
+                                        <select class="form-control select2" name="room_id" id="room_id">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach ($rooms as $room)
+                                                <option value="{{ $room->id }}"
+                                                    {{ old('room_id') == $room->id ? 'selected' : '' }}>
+                                                    {{ $room->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="is_discharged">{{ localize('global.status') }}</label>
+                                        <select class="form-control select2" name="is_discharged" id="is_discharged">
+                                            <option value="">{{ localize('global.all') }}</option>
+                                            <option value="0" {{ old('is_discharged') === '0' ? 'selected' : '' }}>
+                                                {{ localize('global.active') }}</option>
+                                            <option value="1" {{ old('is_discharged') === '1' ? 'selected' : '' }}>
+                                                {{ localize('global.discharged') }}</option>
+                                        </select>
+                                    </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label">{{ localize('global.between_two_date') }}</label>
+                                        <label class="form-label">{{ localize('global.hospitalization_date') }}</label>
                                         <div class="input-group input-daterange">
-                                            <input type="text" autocomplete="off" name="start" placeholder="{{ localize('global.from') }}"
+                                            <input type="text" autocomplete="off" name="start"
+                                                value="{{ old('start') }}"
+                                                placeholder="{{ localize('global.from') }}"
                                                 class="form-control form-control datepicker_dari pdp-el" />
                                             <span class="input-group-text">...</span>
-                                            <input type="text" autocomplete="off" name="end" placeholder="{{ localize('global.to') }}"
+                                            <input type="text" autocomplete="off" name="end"
+                                                value="{{ old('end') }}"
+                                                placeholder="{{ localize('global.to') }}"
+                                                class="form-control form-control datepicker_dari pdp-el" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ localize('global.discharge_date') }}</label>
+                                        <div class="input-group input-daterange">
+                                            <input type="text" autocomplete="off" name="discharge_start"
+                                                value="{{ old('discharge_start') }}"
+                                                placeholder="{{ localize('global.from') }}"
+                                                class="form-control form-control datepicker_dari pdp-el" />
+                                            <span class="input-group-text">...</span>
+                                            <input type="text" autocomplete="off" name="discharge_end"
+                                                value="{{ old('discharge_end') }}"
+                                                placeholder="{{ localize('global.to') }}"
                                                 class="form-control form-control datepicker_dari pdp-el" />
                                         </div>
                                     </div>

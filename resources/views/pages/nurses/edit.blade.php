@@ -37,7 +37,7 @@
                                 
                                 <div class="mb-3">
                                     <label for="user_id" class="form-label">{{ localize('global.link_to_user_account') }}</label>
-                                    <select class="form-select @error('user_id') is-invalid @enderror" id="user_id" name="user_id">
+                                    <select class="form-select select2 @error('user_id') is-invalid @enderror" id="user_id" name="user_id">
                                         <option value="">{{ localize('global.nurse_without_login_access') }}</option>
                                         @foreach($users as $user)
                                             <option value="{{ $user->id }}" {{ old('user_id', $nurse->user_id) == $user->id ? 'selected' : '' }}>
@@ -166,7 +166,7 @@
 
                                 <div class="mb-3">
                                     <label for="department_id" class="form-label">{{ localize('global.department') }}</label>
-                                    <select class="form-select @error('department_id') is-invalid @enderror" id="department_id" name="department_id">
+                                    <select class="form-select select2 @error('department_id') is-invalid @enderror" id="department_id" name="department_id">
                                         <option value="">{{ localize('global.select_department') }}</option>
                                         @foreach($departments as $department)
                                             <option value="{{ $department->id }}" {{ old('department_id', $nurse->department_id) == $department->id ? 'selected' : '' }}>

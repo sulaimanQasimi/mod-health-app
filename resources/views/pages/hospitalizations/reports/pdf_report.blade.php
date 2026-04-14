@@ -63,12 +63,14 @@
                 <tr>
                     <th>{{ localize('global.number') }}</th>
                     <th>{{ localize('global.patient_name') }}</th>
+                    <th>{{ localize('global.room') }}</th>
                     <th>{{ localize('global.food_type') }}</th>
                     <th>{{ localize('global.companion_card_type') }}</th>
                     <th>{{ localize('global.discharge_status') }}</th>
                     <th>{{ localize('global.doctor_name') }}</th>
                     <th>{{ localize('global.branch') }}</th>
-                 
+                    <th>{{ localize('global.hospitalization_date') }}</th>
+                    <th>{{ localize('global.discharge_date') }}</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -76,11 +78,14 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->patient_name }}</td>
+                        <td>{{ $item->room_name }}</td>
                         <td>{{ $item->food_type_name }}</td>
                         <td>{{ $item->companion_card_type }}</td>
                         <td>{{ $item->discharge_status }}</td>
                         <td>{{ $item->doctor_name }}</td>
                         <td>{{ $item->branch_name }}</td>
+                        <td>{{ $item->jalali_created_at }}</td>
+                        <td>{{ $item->jalali_discharged_at }}</td>
                     </tr>
                 @endforeach
             </tbody>

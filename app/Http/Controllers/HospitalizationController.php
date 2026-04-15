@@ -836,11 +836,10 @@ $hospitalization->appointment->update([
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        // Rooms with at least one unoccupied bed, limited to current admission department by default
+        // Rooms in the same branch (not restricted by department)
         $rooms = Room::select('id', 'name', 'department_id')
             ->where('branch_id', $hospitalization->branch_id)
-            ->when($currentDepartmentId, fn ($q) => $q->where('department_id', $currentDepartmentId))
-            ->whereHas('beds')
+            // ->whereHas('beds')
             ->orderBy('name')
             ->get();
 
@@ -863,14 +862,13 @@ $hospitalization->appointment->update([
 
         $data = $request->validate([
             'department_id' => [
-                'required',
+                'nullable',
                 Rule::exists('departments', 'id')->where(fn ($q) => $q->where('branch_id', auth()->user()->branch_id)),
             ],
         ]);
 
         $rooms = Room::select('id', 'name')
             ->where('branch_id', auth()->user()->branch_id)
-            ->where('department_id', $data['department_id'])
             ->whereHas('beds')
             ->orderBy('name')
             ->get();

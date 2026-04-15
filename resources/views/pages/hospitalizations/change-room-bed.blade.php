@@ -326,10 +326,6 @@
             });
 
             function loadRoomsForDepartment(departmentId, keepRoomId, keepBedId) {
-                if (!departmentId) {
-                    fillRoomOptions([], null);
-                    return;
-                }
                 $.get(roomsByDeptUrl, { department_id: departmentId })
                     .done(function (res) {
                         fillRoomOptions(res.rooms || [], keepRoomId);
@@ -349,6 +345,7 @@
             $('#target_department_id').on('change', function () {
                 if (!transferMode) return;
                 currentBedId = null;
+                // Room list is branch-wide; department selection does not filter rooms.
                 loadRoomsForDepartment($(this).val(), null, null);
             });
 

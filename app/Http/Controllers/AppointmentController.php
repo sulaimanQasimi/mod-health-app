@@ -276,7 +276,12 @@ class AppointmentController extends Controller
         
         // Add physiotherapy data
         $physiotherapyTypes = \App\Models\PhysiotherapyType::all();
-        $physiotherapists = User::where('branch_id', auth()->user()->branch_id)->get();
+        $physiotherapists = Doctor::query()
+            ->where('active_status', true)
+            ->where('branch_id', auth()->user()->branch_id)
+         
+            ->orderBy('name')
+            ->get();
 
         // Load dentist registrations
         $appointment->load('dentistRegistrations.dentist', 'dentistRegistrations.examinations', 'dentistRegistrations.treatments', 'dentistRegistrations.xrays', 'dentistRegistrations.dentalNotes');

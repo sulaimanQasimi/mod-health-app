@@ -121,4 +121,9 @@ class Doctor extends Model
         return $this->hasMany(DentistRegistration::class, 'dentist_id');
     }
 
+    public function physiotherapyProcedures()
+    {
+        return $this->hasMany(PhysiotherapyProcedure::class, 'doctor_id');
+    }
+
 }

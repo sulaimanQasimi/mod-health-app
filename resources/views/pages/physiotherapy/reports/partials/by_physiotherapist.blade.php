@@ -1,7 +1,12 @@
+@php
+    $byPhysioRows = isset($data['by_physiotherapist']['physiotherapists'])
+        ? $data['by_physiotherapist']['physiotherapists']
+        : collect();
+@endphp
 <div class="by-physiotherapist-report">
     <h6>{{ localize('global.procedures_by_physiotherapist') }}</h6>
     
-    @if(isset($data['physiotherapists']) && $data['physiotherapists']->count() > 0)
+    @if($byPhysioRows->count() > 0)
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -18,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($data['physiotherapists'] as $physiotherapist)
+                @foreach($byPhysioRows as $physiotherapist)
                 <tr>
                     <td>
                         <strong>{{ $physiotherapist['name'] ?? 'N/A' }}</strong>
@@ -65,7 +70,7 @@
                     <h6 class="card-title">{{ localize('global.top_performers') }}</h6>
                     <div class="table-responsive">
                         <table class="table table-borderless">
-                            @foreach($data['physiotherapists']->sortByDesc('performance_score')->take(5) as $physiotherapist)
+                            @foreach($byPhysioRows->sortByDesc('performance_score')->take(5) as $physiotherapist)
                             <tr>
                                 <td>{{ $physiotherapist['name'] ?? 'N/A' }}</td>
                                 <td class="text-end">{{ number_format($physiotherapist['performance_score'] ?? 0, 1) }}</td>
@@ -83,7 +88,7 @@
                     <h6 class="card-title">{{ localize('global.completion_by_physiotherapist') }}</h6>
                     <div class="table-responsive">
                         <table class="table table-borderless">
-                            @foreach($data['physiotherapists']->sortByDesc('completion_rate')->take(5) as $physiotherapist)
+                            @foreach($byPhysioRows->sortByDesc('completion_rate')->take(5) as $physiotherapist)
                             <tr>
                                 <td>{{ $physiotherapist['name'] ?? 'N/A' }}</td>
                                 <td class="text-end">{{ number_format($physiotherapist['completion_rate'] ?? 0, 1) }}%</td>
@@ -98,7 +103,7 @@
 
     <div class="mt-4">
         <h6>{{ localize('global.recent_procedures_by_physiotherapist') }}</h6>
-        @foreach($data['physiotherapists']->take(3) as $physiotherapist)
+        @foreach($byPhysioRows->take(3) as $physiotherapist)
             @if(isset($physiotherapist['recent_procedures']) && $physiotherapist['recent_procedures']->count() > 0)
             <div class="card mb-3">
                 <div class="card-header">
@@ -142,11 +147,7 @@
     <div class="text-center py-4">
         <i class="bx bx-info-circle text-muted" style="font-size: 3rem;"></i>
         <p class="text-muted mt-2">
-            @if(isset($data['physiotherapists']) && $data['physiotherapists']->count() == 0)
-                {{ localize('global.no_procedures_found_for_selected_period') }}
-            @else
-                {{ localize('global.no_physiotherapist_data_available') }}
-            @endif
+            {{ localize('global.no_physiotherapist_data_available') }}
         </p>
     </div>
     @endif

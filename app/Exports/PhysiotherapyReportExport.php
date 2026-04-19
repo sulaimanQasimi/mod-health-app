@@ -134,7 +134,7 @@ class DetailedSheet implements FromArray, WithTitle, WithStyles, WithColumnWidth
                 $procedure->id,
                 $procedure->appointment->patient->name ?? 'N/A',
                 $procedure->physiotherapyType->name ?? 'N/A',
-                $procedure->physiotherapist->name ?? 'N/A',
+                $procedure->doctor->name ?? 'N/A',
                 ucfirst(str_replace('_', ' ', $procedure->status)),
                 $procedure->counter . '/' . $procedure->days_count,
                 $procedure->start_date ? $procedure->start_date->format('Y-m-d') : 'N/A',

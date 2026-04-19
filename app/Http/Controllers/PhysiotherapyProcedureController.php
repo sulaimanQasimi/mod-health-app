@@ -6,11 +6,12 @@ use App\Models\PhysiotherapyProcedure;
 use App\Models\PhysiotherapyProcedureReview;
 use App\Models\PhysiotherapyType;
 use App\Models\Appointment;
-use App\Models\User;
+use App\Models\Doctor;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
-use Morilog\Jalali\Jalalian;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+use Morilog\Jalali\Jalalian;
 
 class PhysiotherapyProcedureController extends Controller
 {
@@ -25,9 +26,15 @@ class PhysiotherapyProcedureController extends Controller
         $query = PhysiotherapyProcedure::with([
             'appointment.patient',
             'physiotherapyType',
-            'physiotherapist',
-            'reviews'
+            'doctor',
+            'reviews',
         ]);
+
+        if (auth()->user()?->branch_id) {
+            $query->whereHas('appointment', function ($q) {
+                $q->where('branch_id', auth()->user()->branch_id);
+            });
+        }
 
         // Search functionality
         if ($request->filled('search')) {
@@ -51,9 +58,8 @@ class PhysiotherapyProcedureController extends Controller
             $query->where('physiotherapy_type_id', $request->physiotherapy_type_id);
         }
 
-        // Physiotherapist filter
-        if ($request->filled('physiotherapist_id')) {
-            $query->where('physiotherapist_id', $request->physiotherapist_id);
+        if ($request->filled('doctor_id')) {
+            $query->where('doctor_id', $request->doctor_id);
         }
 
         // Date range filter
@@ -77,7 +83,7 @@ class PhysiotherapyProcedureController extends Controller
                     'id' => $p->id,
                     'patient_name' => $p->appointment->patient->name ?? 'N/A',
                     'physiotherapy_type' => $p->physiotherapyType->name ?? 'N/A',
-                    'physiotherapist' => $p->physiotherapist->name ?? 'N/A',
+                    'physiotherapist' => $p->doctor->name ?? 'N/A',
                     'type' => $p->type,
                     'duration' => $p->duration,
                     'progress_counter' => $p->counter,
@@ -95,9 +101,7 @@ class PhysiotherapyProcedureController extends Controller
         // For non-AJAX requests, get paginated results
         $physiotherapyProcedures = $query->paginate(15);
         $physiotherapyTypes = PhysiotherapyType::all();
-        $physiotherapists = User::whereHas('roles', function ($q) {
-            $q->where('name', 'physiotherapist');
-        })->get();
+        $physiotherapists = $this->physiotherapistDoctorsForFilters();
 
         return view('pages.physiotherapy.procedures.index', compact('physiotherapyProcedures', 'physiotherapyTypes', 'physiotherapists'));
     }
@@ -113,9 +117,17 @@ class PhysiotherapyProcedureController extends Controller
         $query = PhysiotherapyProcedure::with([
             'appointment.patient',
             'physiotherapyType',
-            'physiotherapist',
-            'reviews'
-        ])->where('physiotherapist_id', auth()->id());
+            'doctor',
+            'reviews',
+        ])->whereHas('doctor', function ($q) {
+            $q->where('user_id', auth()->id());
+        });
+
+        if (auth()->user()?->branch_id) {
+            $query->whereHas('appointment', function ($q) {
+                $q->where('branch_id', auth()->user()->branch_id);
+            });
+        }
 
         // Search functionality
         if ($request->filled('search')) {
@@ -184,10 +196,17 @@ class PhysiotherapyProcedureController extends Controller
         // Check if user has permission to create physiotherapy procedures
         $this->authorize('create', PhysiotherapyProcedure::class);
 
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'physiotherapy_type_id' => 'required|exists:physiotherapy_types,id',
-            'physiotherapist_id' => 'required|exists:users,id',
+            'doctor_id' => [
+                'required',
+                Rule::exists('doctors', 'id')->where(function ($q) use ($appointment) {
+                    $q->where('branch_id', $appointment->branch_id);
+                }),
+            ],
             'type' => 'required|string|max:255',
             'duration' => 'required|integer|min:1',
             'days_count' => 'required|integer|min:1',
@@ -201,7 +220,7 @@ class PhysiotherapyProcedureController extends Controller
         $procedure = PhysiotherapyProcedure::create([
             'appointment_id' => $request->appointment_id,
             'physiotherapy_type_id' => $request->physiotherapy_type_id,
-            'physiotherapist_id' => $request->physiotherapist_id,
+            'doctor_id' => $request->doctor_id,
             'type' => $request->type,
             'duration' => $request->duration,
             'counter' => 0,
@@ -210,7 +229,9 @@ class PhysiotherapyProcedureController extends Controller
             'notes' => $request->notes,
             'status' => 'pending',
             'start_date' => Verta::parse($request->start_date)->datetime(),
-            'end_date' => Verta::parse($request->end_date)->datetime(),
+            'end_date' => $request->filled('end_date')
+                ? Verta::parse($request->end_date)->datetime()
+                : null,
         ]);
 
         if ($request->ajax()) {
@@ -232,9 +253,9 @@ class PhysiotherapyProcedureController extends Controller
         $physiotherapyProcedure->load([
             'appointment.patient',
             'physiotherapyType',
-            'physiotherapist',
+            'doctor',
             'createdBy',
-            'updatedBy'
+            'updatedBy',
         ]);
 
         if (request()->ajax()) {
@@ -244,7 +265,7 @@ class PhysiotherapyProcedureController extends Controller
                     'id' => $physiotherapyProcedure->id,
                     'appointment_id' => $physiotherapyProcedure->appointment_id,
                     'physiotherapy_type_id' => $physiotherapyProcedure->physiotherapy_type_id,
-                    'physiotherapist_id' => $physiotherapyProcedure->physiotherapist_id,
+                    'doctor_id' => $physiotherapyProcedure->doctor_id,
                     'type' => $physiotherapyProcedure->type,
                     'duration' => $physiotherapyProcedure->duration,
                     'days_count' => $physiotherapyProcedure->days_count,
@@ -253,9 +274,12 @@ class PhysiotherapyProcedureController extends Controller
                     'notes' => $physiotherapyProcedure->notes,
                     'status' => $physiotherapyProcedure->status,
                     'start_date' => verta($physiotherapyProcedure->start_date)->format('Y-m-d'),
-                    'end_date' => verta($physiotherapyProcedure->end_date)->format('Y-m-d'),
+                    'end_date' => $physiotherapyProcedure->end_date
+                        ? verta($physiotherapyProcedure->end_date)->format('Y-m-d')
+                        : null,
                     'physiotherapy_type_name' => $physiotherapyProcedure->physiotherapyType->name ?? 'N/A',
-                    'physiotherapist_name' => $physiotherapyProcedure->physiotherapist->name ?? 'N/A',
+                    'physiotherapist_name' => $physiotherapyProcedure->doctor->name ?? 'N/A',
+                    'patient_name' => $physiotherapyProcedure->appointment->patient->name ?? 'N/A',
                     'created_by_name' => $physiotherapyProcedure->createdBy->name ?? 'N/A',
                     'created_at' => $physiotherapyProcedure->created_at->format('Y-m-d H:i'),
                 ]
@@ -274,10 +298,14 @@ class PhysiotherapyProcedureController extends Controller
         $this->authorize('update', $physiotherapyProcedure);
 
         $physiotherapyTypes = PhysiotherapyType::all();
-        $physiotherapists = User::whereHas('roles', function ($query) {
-            $query->where('name', 'physiotherapist');
-        })->get();
-        $appointments = Appointment::with('patient')->get();
+        $physiotherapists = $this->physiotherapistDoctorsForFilters();
+        $physiotherapyProcedure->loadMissing('appointment');
+        $branchId = $physiotherapyProcedure->appointment?->branch_id;
+        $appointments = Appointment::with('patient')
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->get();
 
         return view('pages.physiotherapy.procedures.edit', compact('physiotherapyProcedure', 'physiotherapyTypes', 'physiotherapists', 'appointments'));
     }
@@ -290,10 +318,17 @@ class PhysiotherapyProcedureController extends Controller
         // Check if user has permission to update this physiotherapy procedure
         $this->authorize('update', $physiotherapyProcedure);
 
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
             'physiotherapy_type_id' => 'required|exists:physiotherapy_types,id',
-            'physiotherapist_id' => 'required|exists:users,id',
+            'doctor_id' => [
+                'required',
+                Rule::exists('doctors', 'id')->where(function ($q) use ($appointment) {
+                    $q->where('branch_id', $appointment->branch_id);
+                }),
+            ],
             'type' => 'required|string|max:255',
             'duration' => 'required|integer|min:1',
             'days_count' => 'required|integer|min:1',
@@ -307,7 +342,7 @@ class PhysiotherapyProcedureController extends Controller
         $physiotherapyProcedure->update([
             'appointment_id' => $request->appointment_id,
             'physiotherapy_type_id' => $request->physiotherapy_type_id,
-            'physiotherapist_id' => $request->physiotherapist_id,
+            'doctor_id' => $request->doctor_id,
             'type' => $request->type,
             'duration' => $request->duration,
             'days_count' => $request->days_count,
@@ -315,7 +350,9 @@ class PhysiotherapyProcedureController extends Controller
             'notes' => $request->notes,
             'status' => $request->status,
             'start_date' => Verta::parse($request->start_date)->datetime(),
-            'end_date' => Verta::parse($request->end_date)->datetime(),
+            'end_date' => $request->filled('end_date')
+                ? Verta::parse($request->end_date)->datetime()
+                : null,
         ]);
 
         if ($request->ajax()) {
@@ -371,7 +408,7 @@ class PhysiotherapyProcedureController extends Controller
         $this->authorize('viewAny', PhysiotherapyProcedure::class);
 
         $physiotherapyProcedures = $appointment->physiotherapyProcedures()
-            ->with(['physiotherapyType', 'physiotherapist'])
+            ->with(['physiotherapyType', 'doctor'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -381,7 +418,7 @@ class PhysiotherapyProcedureController extends Controller
                 return [
                     'id' => $p->id,
                     'physiotherapy_type' => $p->physiotherapyType->name ?? 'N/A',
-                    'physiotherapist' => $p->physiotherapist->name ?? 'N/A',
+                    'physiotherapist' => $p->doctor->name ?? 'N/A',
                     'type' => $p->type,
                     'duration' => $p->duration,
                     'progress_counter' => $p->counter,
@@ -545,5 +582,31 @@ class PhysiotherapyProcedureController extends Controller
         }
 
         return redirect()->back()->with('success', 'Review deleted successfully');
+    }
+
+    /**
+     * Active doctors linked to physiotherapist users, scoped to the current branch when set.
+     */
+    private function physiotherapistDoctorsForFilters()
+    {
+        $roleQuery = Doctor::query()
+            ->where('active_status', true)
+            ->whereHas('user.roles', function ($r) {
+                $r->where('name', 'physiotherapist');
+            });
+        if (auth()->user()?->branch_id) {
+            $roleQuery->where('branch_id', auth()->user()->branch_id);
+        }
+        $doctors = $roleQuery->orderBy('name')->get();
+        if ($doctors->isNotEmpty()) {
+            return $doctors;
+        }
+
+        $fallback = Doctor::query()->where('active_status', true);
+        if (auth()->user()?->branch_id) {
+            $fallback->where('branch_id', auth()->user()->branch_id);
+        }
+
+        return $fallback->orderBy('name')->get();
     }
 }

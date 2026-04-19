@@ -67,7 +67,7 @@
                                                         <tr>
                                                             <td>{{ $procedure->id }}</td>
                                                             <td>{{ $procedure->appointment->patient->name ?? 'N/A' }}</td>
-                                                            <td>{{ $procedure->physiotherapist->name ?? 'N/A' }}</td>
+                                                            <td>{{ $procedure->doctor->name ?? 'N/A' }}</td>
                                                             <td>
                                                                 <span class="badge bg-{{ $procedure->status === 'completed' ? 'success' : ($procedure->status === 'in_progress' ? 'warning' : 'info') }}">
                                                                     {{ ucfirst(str_replace('_', ' ', $procedure->status)) }}

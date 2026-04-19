@@ -65,12 +65,12 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label for="physiotherapist_id"
+                                <label for="doctor_id"
                                     class="form-label">{{ localize('global.physiotherapist') }}</label>
-                                <select class="form-control" id="physiotherapist_id" name="physiotherapist_id">
+                                <select class="form-control" id="doctor_id" name="doctor_id">
                                     <option value="">{{ localize('global.all_physiotherapists') }}</option>
                                     @foreach($physiotherapists as $physio)
-                                        <option value="{{ $physio->id }}" {{ request('physiotherapist_id') == $physio->id ? 'selected' : '' }}>
+                                        <option value="{{ $physio->id }}" {{ request('doctor_id') == $physio->id ? 'selected' : '' }}>
                                             {{ $physio->name }}
                                         </option>
                                     @endforeach
@@ -225,7 +225,7 @@
                                             <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
                                             <td>
                                                 <span class="badge bg-secondary">
-                                                    {{ $procedure->physiotherapist->name ?? 'N/A' }}
+                                                    {{ $procedure->doctor->name ?? 'N/A' }}
                                                 </span>
                                             </td>
                                             <td>{{ $procedure->type }}</td>

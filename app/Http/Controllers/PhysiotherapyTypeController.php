@@ -71,7 +71,7 @@ class PhysiotherapyTypeController extends Controller
      */
     public function show(PhysiotherapyType $physiotherapyType)
     {
-        $physiotherapyType->load(['createdBy', 'updatedBy', 'physiotherapyProcedures']);
+        $physiotherapyType->load(['createdBy', 'updatedBy', 'physiotherapyProcedures.doctor']);
         return view('pages.physiotherapy.types.show', compact('physiotherapyType'));
     }
 

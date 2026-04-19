@@ -307,7 +307,7 @@
                     <td>{{ $procedure->id }}</td>
                     <td>{{ $procedure->appointment->patient->name ?? 'N/A' }}</td>
                     <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
-                    <td>{{ $procedure->physiotherapist->name ?? 'N/A' }}</td>
+                    <td>{{ $procedure->doctor->name ?? 'N/A' }}</td>
                     <td>{{ ucfirst(str_replace('_', ' ', $procedure->status)) }}</td>
                     <td>{{ $procedure->counter }}/{{ $procedure->days_count }}</td>
                     <td>{{ $procedure->start_date ? $procedure->start_date->format('Y-m-d') : 'N/A' }}</td>

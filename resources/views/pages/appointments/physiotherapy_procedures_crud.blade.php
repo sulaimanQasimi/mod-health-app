@@ -89,10 +89,10 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="physiotherapist_id" class="form-label">{{ localize('global.physiotherapist') }}
+                            <label for="doctor_id" class="form-label">{{ localize('global.physiotherapist') }}
                                 <span class="text-danger">*</span></label>
-                            <select class="form-control select2-ajax physio-custom-select2" id="physiotherapist_id"
-                                name="physiotherapist_id" data-url="/api/select/physiotherapists"
+                            <select class="form-control select2-ajax physio-custom-select2" id="doctor_id"
+                                name="doctor_id" data-url="/api/select/physiotherapists"
                                 data-placeholder="{{ localize('global.select_physiotherapist') }}" required>
                                 <option value="">{{ localize('global.select_physiotherapist') }}</option>
                             </select>
@@ -380,7 +380,7 @@
                 }
 
                 // Find all select elements in the create modal
-                $modal.find('select[name="physiotherapy_type_id"], select[name="physiotherapist_id"]').each(function () {
+                $modal.find('select[name="physiotherapy_type_id"], select[name="doctor_id"]').each(function () {
                     const $select = $(this);
                     const fieldName = $select.attr('name');
                     let placeholder = '';
@@ -388,7 +388,7 @@
                     // Set appropriate placeholder based on field
                     if (fieldName === 'physiotherapy_type_id') {
                         placeholder = "{{ localize('global.select_physiotherapy_type') }}";
-                    } else if (fieldName === 'physiotherapist_id') {
+                    } else if (fieldName === 'doctor_id') {
                         placeholder = "{{ localize('global.select_physiotherapist') }}";
                     }
 
@@ -396,7 +396,7 @@
                     let data = [];
                     if (fieldName === 'physiotherapy_type_id') {
                         data = DATA_CONFIG.physiotherapyTypes;
-                    } else if (fieldName === 'physiotherapist_id') {
+                    } else if (fieldName === 'doctor_id') {
                         data = DATA_CONFIG.physiotherapists;
                     }
 
@@ -788,7 +788,7 @@
             function renderAddReviewForm(data) {
                 var html = '<div class="row mb-3">'
                     + '<div class="col-md-6"><label class="form-label fw-bold">{{ localize('global.physiotherapy_type') }}:</label><p class="form-control-plaintext">' + (data.physiotherapy_type_name || 'N/A') + '</p></div>'
-                    + '<div class="col-md-6"><label class="form-label fw-bold">{{ localize('global.physiotherapist') }}:</label><p class="form-control-plaintext">' + (data.physiotherapist_name || 'N/A') + '</p></div>'
+                    + '<div class="col-md-6"><label class="form-label fw-bold">{{ localize('global.physiotherapist') }}:</label><p class="form-control-plaintext">' + (data.physiotherapist_name || data.doctor_name || 'N/A') + '</p></div>'
                     + '</div>'
                     + '<hr class="my-3">'
                     + '<form class="review-form" data-procedure-id="' + data.id + '">'
@@ -830,7 +830,7 @@
                 var percentage = data.days_count > 0 ? (data.counter / data.days_count) * 100 : 0;
                 var html = '<div class="row">'
                     + '<div class="col-md-6 mb-3"><label class="form-label fw-bold">{{ localize('global.physiotherapy_type') }}:</label><p class="form-control-plaintext">' + (data.physiotherapy_type_name || 'N/A') + '</p></div>'
-                    + '<div class="col-md-6 mb-3"><label class="form-label fw-bold">{{ localize('global.physiotherapist') }}:</label><p class="form-control-plaintext">' + (data.physiotherapist_name || 'N/A') + '</p></div>'
+                    + '<div class="col-md-6 mb-3"><label class="form-label fw-bold">{{ localize('global.physiotherapist') }}:</label><p class="form-control-plaintext">' + (data.physiotherapist_name || data.doctor_name || 'N/A') + '</p></div>'
                     + '</div><div class="row">'
                     + '<div class="col-md-6 mb-3"><label class="form-label fw-bold">{{ localize('global.type') }}:</label><p class="form-control-plaintext">' + (data.type || '') + '</p></div>'
                     + '<div class="col-md-6 mb-3"><label class="form-label fw-bold">{{ localize('global.duration') }}:</label><p class="form-control-plaintext">' + (data.duration || '') + ' {{ localize('global.minutes') }}</p></div>'
@@ -889,9 +889,9 @@
                     + '</div>'
                     + '<div class="col-md-6 mb-3">'
                     + '<label class="form-label">{{ localize('global.physiotherapist') }} <span class="text-danger">*</span></label>'
-                    + '<select class="form-control select2-ajax physio-custom-select2" name="physiotherapist_id" data-url="/api/select/physiotherapists" data-placeholder="{{ localize('global.select_physiotherapist') }}" data-current="' + (data.physiotherapist_id || '') + '" required>'
+                    + '<select class="form-control select2-ajax physio-custom-select2" name="doctor_id" data-url="/api/select/physiotherapists" data-placeholder="{{ localize('global.select_physiotherapist') }}" data-current="' + (data.doctor_id || '') + '" required>'
                     + '<option value="">{{ localize('global.select_physiotherapist') }}</option>'
-                    + (data.physiotherapist_id && data.physiotherapist_name ? '<option value="' + data.physiotherapist_id + '" selected>' + data.physiotherapist_name + '</option>' : '')
+                    + (data.doctor_id && (data.physiotherapist_name || data.doctor_name) ? '<option value="' + data.doctor_id + '" selected>' + (data.physiotherapist_name || data.doctor_name) + '</option>' : '')
                     + '</select>'
                     + '</div>'
                     + '</div><div class="row">'
@@ -953,7 +953,7 @@
                         let optionsData = [];
                         if (fieldName === 'physiotherapy_type_id') {
                             optionsData = DATA_CONFIG.physiotherapyTypes;
-                        } else if (fieldName === 'physiotherapist_id') {
+                        } else if (fieldName === 'doctor_id') {
                             optionsData = DATA_CONFIG.physiotherapists;
                         }
 

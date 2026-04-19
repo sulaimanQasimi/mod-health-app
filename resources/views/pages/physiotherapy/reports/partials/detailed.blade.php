@@ -25,7 +25,7 @@
                     <td>{{ $procedure->id }}</td>
                     <td>{{ $procedure->appointment->patient->name ?? 'N/A' }}</td>
                     <td>{{ $procedure->physiotherapyType->name ?? 'N/A' }}</td>
-                    <td>{{ $procedure->physiotherapist->name ?? 'N/A' }}</td>
+                    <td>{{ $procedure->doctor->name ?? 'N/A' }}</td>
                     <td>{{ $procedure->type }}</td>
                     <td>{{ $procedure->duration }} {{ localize('global.minutes') }}</td>
                     <td>

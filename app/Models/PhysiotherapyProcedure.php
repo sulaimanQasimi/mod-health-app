@@ -15,7 +15,7 @@ class PhysiotherapyProcedure extends Model
     protected $fillable = [
         'appointment_id',
         'physiotherapy_type_id',
-        'physiotherapist_id',
+        'doctor_id',
         'type',
         'duration',
         'counter',
@@ -62,9 +62,9 @@ class PhysiotherapyProcedure extends Model
         return $this->belongsTo(PhysiotherapyType::class);
     }
 
-    public function physiotherapist()
+    public function doctor()
     {
-        return $this->belongsTo(User::class, 'physiotherapist_id');
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
     public function createdBy()

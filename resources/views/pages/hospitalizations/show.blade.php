@@ -206,6 +206,20 @@
                             </div>
                             <!-- End Nursing Notes Accordion -->
 
+                            @if ($hospitalization->appointment)
+                                @can('show-physiotherapy-procedures')
+                                    @php
+                                        $appointment = $hospitalization->appointment;
+                                        $forceReadonlyPhysioProcedures = (bool) $hospitalization->is_discharged;
+                                        // On hospitalization show we allow creating procedures based on permission,
+                                        // even if the linked appointment is marked completed.
+                                        $allowPhysioOnCompletedAppointment = true;
+                                    @endphp
+                                    @include('pages.appointments.physiotherapy_procedures_crud')
+                                    @php unset($appointment, $forceReadonlyPhysioProcedures, $allowPhysioOnCompletedAppointment); @endphp
+                                @endcan
+                            @endif
+
                             <!-- Medication Administration Records Accordion -->
                             <div class="accordion mt-4" id="medicationRecordsAccordion">
                                 <div class="accordion-item">
@@ -1023,12 +1037,6 @@
                             <!-- End Discharge Accordion -->
                             {{-- end discharge --}}
 
-                            @if($hospitalization->appointment)
-                                @can('show-physiotherapy-procedures')
-                                    <!-- Physiotherapy Procedures Section (linked via appointment_id) -->
-                                    @include('pages.appointments.physiotherapy_procedures_crud', ['appointment' => $hospitalization->appointment])
-                                @endcan
-                            @endif
                         </div>
 
                     </div>

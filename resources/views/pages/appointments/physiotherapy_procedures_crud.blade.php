@@ -1,3 +1,9 @@
+@php
+    $allowPhysioOnCompletedAppointment = !empty($allowPhysioOnCompletedAppointment);
+    $physioProceduresEditable =
+        empty($forceReadonlyPhysioProcedures)
+        && ($allowPhysioOnCompletedAppointment || ($appointment->is_completed == 0));
+@endphp
 <!-- Physiotherapy Procedures Section Accordion -->
 <div class="row mb-4">
     <div class="col-12">
@@ -18,7 +24,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div></div> <!-- Empty div for spacing -->
                             <div>
-                                @if ($appointment->is_completed == 0)
+                                @if ($physioProceduresEditable)
                                     @can('create-physiotherapy-procedures')
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                             data-bs-target="#createPhysiotherapyProcedureModal{{ $appointment->id }}">
@@ -192,6 +198,13 @@
 @push('scripts')
     <script>
         (function () {
+            const APPOINTMENT_ID = {{ (int) $appointment->id }};
+            const __guardKey = `__physio_procedures_table_init_${APPOINTMENT_ID}`;
+            if (window[__guardKey]) {
+                return;
+            }
+            window[__guardKey] = true;
+
             function refreshPhysioTable(html) {
                 $('#physio_procedures_table_container').html(html);
             }
@@ -589,7 +602,7 @@
                 },
                 urls: {
                     base: '{{ url('physiotherapy-procedures') }}',
-                    canEdit: {{ $appointment->is_completed == 0 ? 'true' : 'false' }}
+                    canEdit: {{ $physioProceduresEditable ? 'true' : 'false' }}
                     }
             };
 
@@ -629,6 +642,14 @@
             let physioTable;
 
             const initPhysioDataTable = appointmentId => {
+                // Prevent "Cannot reinitialise DataTable" when this script executes twice
+                // (e.g. hospitalization show page loads sections dynamically).
+                if ($.fn.dataTable && $.fn.dataTable.isDataTable && $.fn.dataTable.isDataTable('#physio_procedures_table')) {
+                    physioTable = $('#physio_procedures_table').DataTable();
+                    physioTable.ajax?.reload?.(null, false);
+                    return;
+                }
+
                 if (physioTable) {
                     physioTable.ajax.reload();
                     return;
@@ -1311,7 +1332,7 @@
             }
 
             // Initial load with appointment id
-            initPhysioDataTable({{ $appointment->id }});
+            initPhysioDataTable(APPOINTMENT_ID);
         })();
     </script>
 @endpush

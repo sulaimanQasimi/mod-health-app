@@ -1962,6 +1962,27 @@
                     movedOptionsContainer.show();
                     // Add required to move department field
                     $('#move_department_id{{ $icu->id }}').attr('required', 'required');
+                    // Keep appointment department in sync with move department (if present)
+                    var moveDept = $('#move_department_id{{ $icu->id }}').val();
+                    if (moveDept) {
+                        syncAppointmentDepartment(moveDept);
+                    }
+                }
+            });
+
+            function syncAppointmentDepartment(departmentId) {
+                var $appointmentDept = $('#department');
+                if (!$appointmentDept.length) return;
+
+                $appointmentDept.val(departmentId);
+                // Trigger change so dependent fields (e.g. doctors) reload, and Select2 UI updates.
+                $appointmentDept.trigger('change');
+            }
+
+            $('#move_department_id{{ $icu->id }}').on('change', function () {
+                var departmentId = $(this).val();
+                if (departmentId) {
+                    syncAppointmentDepartment(departmentId);
                 }
             });
 

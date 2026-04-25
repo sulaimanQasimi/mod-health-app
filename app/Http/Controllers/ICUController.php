@@ -323,7 +323,7 @@ class ICUController extends Controller
             'cause_of_death' => 'nullable',
             'death_date' => 'nullable',
             'death_time' => 'nullable',
-            'move_department_id' => 'nullable',
+            'move_department_id' => 'nullable|exists:departments,id',
             'is_discharged' => 'nullable',
             'transfer_date' => 'nullable',
             'brief_history' => 'nullable',
@@ -347,6 +347,17 @@ class ICUController extends Controller
 
         if (!$hospitalization) {
             return redirect()->back()->with('success', localize('global.icu_updated_successfully.'));
+        }
+
+        // If moved: also update the linked hospitalization appointment department
+        // (Hospitalizations table has no department_id column; department is on appointment.)
+        if ($icu->discharge_status === 'moved' && $request->filled('move_department_id')) {
+            $hospitalization->loadMissing('appointment');
+            if ($hospitalization->appointment) {
+                $hospitalization->appointment->update([
+                    'department_id' => $request->move_department_id,
+                ]);
+            }
         }
 
         if ($icu->discharge_status === 'died') {

@@ -27,50 +27,13 @@ class TestResultController extends Controller
     }
 
     /**
-     * Apply clinic type filter based on user's clinic
+     * Base registration scope for branch and creator clinic visibility.
      */
-    private function applyClinicTypeFilter($query, $user)
+    private function scopedRegistrationQuery($user)
     {
-        if (!$user->clinic_type || $user->clinic_type === 'both') {
-            return $query;
-        }
-
-        return $query->where(function($q) use ($user) {
-            $q->whereHasMorph('testable', [\App\Models\Appointment::class], function($appointmentQ) use ($user) {
-                $appointmentQ->where('clinic_type', $user->clinic_type);
-            })
-            ->orWhereHasMorph('testable', [\App\Models\Hospitalization::class], function($hospitalizationQ) use ($user) {
-                $hospitalizationQ->whereHas('appointment', function($appointmentQ) use ($user) {
-                    $appointmentQ->where('clinic_type', $user->clinic_type);
-                });
-            })
-            ->orWhere(function($subQ) {
-                $subQ->where('testable_type', '!=', 'App\Models\Appointment')
-                     ->where('testable_type', '!=', 'App\Models\Hospitalization');
-            })
-            ->orWhereNull('testable_type');
-        });
-    }
-
-    /**
-     * Check if the user can access this registration based on clinic_type.
-     */
-    private function userCanAccessRegistration(PatientTestRegistration $registration, \App\Models\User $user): bool
-    {
-        if (!$user->clinic_type || $user->clinic_type === 'both') {
-            return true;
-        }
-        $testable = $registration->testable;
-        if (!$testable) {
-            return true;
-        }
-        $effectiveClinicType = null;
-        if ($testable instanceof \App\Models\Appointment) {
-            $effectiveClinicType = $testable->clinic_type;
-        } elseif ($testable instanceof \App\Models\Hospitalization) {
-            $effectiveClinicType = optional($testable->appointment)->clinic_type;
-        }
-        return $effectiveClinicType === null || $effectiveClinicType === $user->clinic_type;
+        return PatientTestRegistration::query()
+            ->where('branch_id', $user->branch_id)
+            ->visibleToClinicType($user->clinic_type);
     }
 
     /**
@@ -172,7 +135,9 @@ class TestResultController extends Controller
     public function patientList(Request $request)
     {
         // Start query builder – use withCount for parameters to avoid loading full collections (memory)
-        $query = PatientTestRegistration::with([
+        $user = auth()->user();
+
+        $query = $this->scopedRegistrationQuery($user)->with([
             'testable.patient',
             'labType.category',
             'labType' => fn ($q) => $q->withCount('directLabTestParameters'),
@@ -183,8 +148,6 @@ class TestResultController extends Controller
         ]);
 
         // Apply filters
-        $user = auth()->user();
-        $query = $this->applyClinicTypeFilter($query, $user);
         $query = $this->applyAccessControl($query, $user, $request->route()->getName());
 
         // Apply search filter (patient name)
@@ -260,7 +223,9 @@ class TestResultController extends Controller
 
         try {
             // Check if test is already completed
-            $test = PatientTestRegistration::with('labType.directLabTestParameters')->find($request->test_registration_id);
+            $test = $this->scopedRegistrationQuery(auth()->user())
+                ->with('labType.directLabTestParameters')
+                ->findOrFail($request->test_registration_id);
             if ($test->status === 'completed') {
                 return response()->json([
                     'status' => 'error',
@@ -357,7 +322,9 @@ class TestResultController extends Controller
      */
     public function showTestResults($registration_id)
     {
-        $registration = PatientTestRegistration::with([
+        $user = auth()->user();
+
+        $registration = $this->scopedRegistrationQuery($user)->with([
             'testable.patient',
             'labType.category',
             'labType.directLabTestParameters',
@@ -368,7 +335,6 @@ class TestResultController extends Controller
         ])->findOrFail($registration_id);
 
         // Check assignment access
-        $user = auth()->user();
         if (!$user->hasRole('admin') && !$user->can('view-all-sections')) {
             // If test is assigned to someone else, deny access
             if ($registration->assigned_to && $registration->assigned_to != $user->id) {
@@ -381,10 +347,6 @@ class TestResultController extends Controller
                 $registration->assigned_to != $user->id) {
                 abort(403, 'You do not have access to this completed test.');
             }
-        }
-
-        if (!$this->userCanAccessRegistration($registration, $user)) {
-            abort(403, 'You do not have access to this test.');
         }
 
         // Check if test is completed - redirect to print page
@@ -400,12 +362,14 @@ class TestResultController extends Controller
 
         // Get all registrations for this patient to show in the side panels
         $patientId = $patient->id;
-        $completedTests = PatientTestRegistration::where('patient_id', $patientId)
+        $completedTests = $this->scopedRegistrationQuery($user)
+            ->where('patient_id', $patientId)
             ->where('status', 'completed')
             ->with(['labType', 'testable.patient'])
             ->get();
 
-        $pendingTests = PatientTestRegistration::where('patient_id', $patientId)
+        $pendingTests = $this->scopedRegistrationQuery($user)
+            ->where('patient_id', $patientId)
             ->where('status', 'pending')
             ->with(['labType', 'testable.patient'])
             ->get();
@@ -441,7 +405,9 @@ class TestResultController extends Controller
     public function ajaxLoadTestResult($test_registration_id)
     {
         try {
-            $test = PatientTestRegistration::with(['labType.directLabTestParameters', 'testable.patient'])->findOrFail($test_registration_id);
+            $test = $this->scopedRegistrationQuery(auth()->user())
+                ->with(['labType.directLabTestParameters', 'testable.patient'])
+                ->findOrFail($test_registration_id);
 
 
             $results = PatientTestResult::where('test_registration_id', $test_registration_id)
@@ -491,16 +457,13 @@ class TestResultController extends Controller
     public function printResultByRef($ref_no)
     {
         // Load test registration with all necessary relationships
-        $testRegistration = PatientTestRegistration::where('ref_no', $ref_no)
+        $testRegistration = $this->scopedRegistrationQuery(auth()->user())
+            ->where('ref_no', $ref_no)
             ->with(['labType.directLabTestParameters', 'testable.patient'])
             ->first();
 
         if (!$testRegistration) {
             abort(404, 'No test registration found for this reference number.');
-        }
-
-        if (!$this->userCanAccessRegistration($testRegistration, auth()->user())) {
-            abort(403, 'You do not have access to this test.');
         }
 
         $patient = $testRegistration->testable->patient ?? null;
@@ -547,7 +510,7 @@ class TestResultController extends Controller
         ]);
 
         // Query test registrations with category_id
-        $query = PatientTestRegistration::with([
+        $query = $this->scopedRegistrationQuery(auth()->user())->with([
             'testable.patient',
             'labType.category',
             'doctor',
@@ -626,9 +589,6 @@ class TestResultController extends Controller
             }
         }
 
-        // Apply clinic type filter (hospital/clinic/both)
-        $query = $this->applyClinicTypeFilter($query, auth()->user());
-
         // Get paginated results
         $perPage = $request->get('per_page', 15); // Default 15 items per page
         $paginatedTests = $query->latest('registration_date')->paginate($perPage);
@@ -680,7 +640,7 @@ class TestResultController extends Controller
     public function printGroupedTests($category_id)
     {
         // Load all test registrations with matching category_id, filtered by clinic type
-        $query = PatientTestRegistration::with([
+        $query = $this->scopedRegistrationQuery(auth()->user())->with([
             'testable.patient',
             'labType.category',
             'labType.directLabTestParameters',
@@ -690,7 +650,6 @@ class TestResultController extends Controller
             'assignedSection'
         ])->where('category_id', $category_id);
 
-        $query = $this->applyClinicTypeFilter($query, auth()->user());
         $testRegistrations = $query->get();
 
         if ($testRegistrations->isEmpty()) {
@@ -764,18 +723,14 @@ class TestResultController extends Controller
         $ref_no = $request->input('ref_no');
 
         // Find the test registration based on the reference number
-        $registration = PatientTestRegistration::where('ref_no', $ref_no)
-            ->where('branch_id', auth()->user()->branch_id)
+        $registration = $this->scopedRegistrationQuery(auth()->user())
+            ->where('ref_no', $ref_no)
             ->with(['labType', 'testable.patient'])
             ->first();
 
         if (!$registration) {
             // Handle the case when the test is not found
             return redirect()->back()->with('error', localize('global.test_not_found'));
-        }
-
-        if (!$this->userCanAccessRegistration($registration, auth()->user())) {
-            return redirect()->back()->with('error', localize('global.you_do_not_have_access_to_this_test_registration'));
         }
 
         // Check the status of the test
@@ -794,7 +749,7 @@ class TestResultController extends Controller
     public function acceptTest($registration_id)
     {
         try {
-            $registration = PatientTestRegistration::findOrFail($registration_id);
+            $registration = $this->scopedRegistrationQuery(auth()->user())->findOrFail($registration_id);
             
             // Check if test is already assigned
             if ($registration->assigned_to) {
@@ -844,7 +799,7 @@ class TestResultController extends Controller
             $tests = [];
 
             foreach ($registrationIds as $registrationId) {
-                $registration = PatientTestRegistration::with([
+                $registration = $this->scopedRegistrationQuery(auth()->user())->with([
                     'labType.directLabTestParameters',
                     'results'
                 ])->find($registrationId);
@@ -931,7 +886,18 @@ class TestResultController extends Controller
             $groupId = 'GRP_' . time() . '_' . rand(1000, 9999);
 
             // Get all registrations
-            $registrations = PatientTestRegistration::whereIn('id', $registrationIds)->get();
+            $registrations = $this->scopedRegistrationQuery(auth()->user())
+                ->whereIn('id', $registrationIds)
+                ->get();
+
+            if ($registrations->count() !== count(array_unique($registrationIds))) {
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => localize('global.you_do_not_have_access_to_this_test_registration')
+                ], 403);
+            }
 
             // Update all registrations with the same category_id (using it as group_id)
             // If category_id doesn't exist, we'll use a new approach - store group_id in metadata
@@ -945,7 +911,8 @@ class TestResultController extends Controller
             }
 
             // Update all registrations with the same category_id
-            PatientTestRegistration::whereIn('id', $registrationIds)
+            $this->scopedRegistrationQuery(auth()->user())
+                ->whereIn('id', $registrationIds)
                 ->update(['category_id' => $categoryId]);
 
             $results = $request->results ?? [];
@@ -953,7 +920,8 @@ class TestResultController extends Controller
 
             // Process results for each registration
             foreach ($registrationIds as $registrationId) {
-                $registration = PatientTestRegistration::with('labType.directLabTestParameters')
+                $registration = $this->scopedRegistrationQuery(auth()->user())
+                    ->with('labType.directLabTestParameters')
                     ->find($registrationId);
 
                 if (!$registration) {
@@ -1080,7 +1048,7 @@ class TestResultController extends Controller
             // If testResultId is 0 or empty, try to create a test result from registration_id
             if (!$testResultId || $testResultId == 0) {
                 if ($request->has('registration_id')) {
-                    $registration = PatientTestRegistration::findOrFail($request->registration_id);
+                    $registration = $this->scopedRegistrationQuery(auth()->user())->findOrFail($request->registration_id);
                     
                     // Create a text-based result if it doesn't exist
                     $testResult = PatientTestResult::firstOrCreate(

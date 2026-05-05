@@ -30,6 +30,13 @@ class PatientTestRegistrationController extends Controller
         $this->middleware('permission:register-patient-tests');
     }
 
+    private function scopedRegistrationQuery()
+    {
+        return PatientTestRegistration::query()
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType(auth()->user()->clinic_type);
+    }
+
 
     /**
      * Get test list for display
@@ -59,7 +66,7 @@ class PatientTestRegistrationController extends Controller
      */
     public function markInProgress($id)
     {
-        $registration = PatientTestRegistration::findOrFail($id);
+        $registration = $this->scopedRegistrationQuery()->findOrFail($id);
         $registration->markInProgress();
         
         return redirect()->back()->with('success', localize('global.test_registration_marked_in_progress'));
@@ -70,7 +77,7 @@ class PatientTestRegistrationController extends Controller
      */
     public function markCompleted($id)
     {
-        $registration = PatientTestRegistration::findOrFail($id);
+        $registration = $this->scopedRegistrationQuery()->findOrFail($id);
         $registration->markCompleted();
         
         return redirect()->back()->with('success', localize('global.test_registration_marked_completed'));
@@ -81,7 +88,7 @@ class PatientTestRegistrationController extends Controller
      */
     public function cancel($id)
     {
-        $registration = PatientTestRegistration::findOrFail($id);
+        $registration = $this->scopedRegistrationQuery()->findOrFail($id);
         $registration->cancel();
         
         return redirect()->back()->with('success', localize('global.test_registration_cancelled'));

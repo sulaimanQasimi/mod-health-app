@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -285,5 +286,21 @@ class PatientTestRegistration extends Model
         
         $resultCount = $this->results()->count();
         return round(($resultCount / $parameterCount) * 100, 2);
+    }
+
+    
+
+
+    public function scopeVisibleToClinicType(Builder $query, ?string $viewerClinicType): Builder
+    {
+        if (!$viewerClinicType || $viewerClinicType === 'both') {
+            return $query;
+        }
+
+        // Only lab test registrations created by a user with the same clinic_type, or by a "both" user.
+        // Registrations with missing/orphaned creator are excluded by default (privacy-safe).
+        return $query->whereHas('creator', function (Builder $q) use ($viewerClinicType) {
+            $q->whereIn('clinic_type', [$viewerClinicType, 'both']);
+        });
     }
 }

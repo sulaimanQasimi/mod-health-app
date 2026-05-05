@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class Prescription extends Model
 {
@@ -63,6 +64,24 @@ class Prescription extends Model
     public function pharmacy()
     {
         return $this->belongsTo(Pharmacy::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function scopeVisibleToClinicType(Builder $query, ?string $viewerClinicType): Builder
+    {
+        if (!$viewerClinicType || $viewerClinicType === 'both') {
+            return $query;
+        }
+
+        // Only prescriptions created by a user with the same clinic_type, or by a "both" user.
+        // Prescriptions with missing/orphaned creator are excluded by default (privacy-safe).
+        return $query->whereHas('creator', function (Builder $q) use ($viewerClinicType) {
+            $q->whereIn('clinic_type', [$viewerClinicType, 'both']);
+        });
     }
 
 }

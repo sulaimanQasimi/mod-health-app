@@ -1736,7 +1736,7 @@
                             <input type="hidden" id="appointment_id{{ $appointment->id }}" name="appointment_id"
                                 value="{{ $appointment->id }}">
                             <input type="hidden" id="doctor_id{{ $appointment->id }}" name="doctor_id"
-                                value="{{ auth()->user()->id }}">
+                                value="{{ $appointment->doctor_id ?? auth()->user()->doctor?->id }}">
                             <input type="hidden" id="branch_id{{ $appointment->id }}" name="branch_id"
                                 value="{{ auth()->user()->branch_id }}">
 

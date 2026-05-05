@@ -68,7 +68,9 @@ class HospitalizationPrescriptionAjaxController extends Controller
     public function getHospitalizationPrescriptions($hospitalizationId)
     {
         try {
+            $viewerClinicType = auth()->user()->clinic_type;
             $prescriptions = Prescription::where('hospitalization_id', $hospitalizationId)
+                ->visibleToClinicType($viewerClinicType)
                 ->with(['patient', 'doctor', 'prescriptionItems.medicine', 'prescriptionItems.medicineType', 'prescriptionItems.usageType'])
                 ->orderBy('created_at', 'desc')
                 ->get();
@@ -89,13 +91,17 @@ class HospitalizationPrescriptionAjaxController extends Controller
     public function getPrescriptionItems($prescriptionId)
     {
         try {
+            $viewerClinicType = auth()->user()->clinic_type;
             $prescription = Prescription::with([
                 'patient',
                 'doctor',
                 'prescriptionItems.medicine',
                 'prescriptionItems.medicineType',
                 'prescriptionItems.usageType'
-            ])->findOrFail($prescriptionId);
+            ])
+                ->whereKey($prescriptionId)
+                ->visibleToClinicType($viewerClinicType)
+                ->firstOrFail();
 
             return response()->json([
                 'success' => true,

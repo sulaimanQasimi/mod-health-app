@@ -35,7 +35,11 @@ class PrescriptionShowApiController extends Controller
                 'prescriptionItems.alternativeItems.medicine',
                 'prescriptionItems.alternativeItems.medicineType',
                 'prescriptionItems.alternativeItems.usageType'
-            ])->findOrFail($id);
+            ])
+                ->whereKey($id)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->visibleToClinicType(auth()->user()->clinic_type)
+                ->firstOrFail();
 
             \Log::info('PrescriptionShowApiController: Prescription found: ' . $prescription->id);
 
@@ -60,7 +64,11 @@ class PrescriptionShowApiController extends Controller
     public function updatePrescriptionStatus(Request $request, $id)
     {
         try {
-            $prescription = Prescription::findOrFail($id);
+            $prescription = Prescription::query()
+                ->whereKey($id)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->visibleToClinicType(auth()->user()->clinic_type)
+                ->firstOrFail();
             
             $validator = Validator::make($request->all(), [
                 'is_completed' => 'required|in:0,1',
@@ -101,7 +109,13 @@ class PrescriptionShowApiController extends Controller
     public function updateItemStatus(Request $request, $itemId)
     {
         try {
-            $item = PrescriptionItem::findOrFail($itemId);
+            $item = PrescriptionItem::query()
+                ->whereKey($itemId)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
             
             $validator = Validator::make($request->all(), [
                 'is_delivered' => 'required|in:0,1'
@@ -138,7 +152,13 @@ class PrescriptionShowApiController extends Controller
     public function updateItemAmount(Request $request, $itemId)
     {
         try {
-            $item = PrescriptionItem::findOrFail($itemId);
+            $item = PrescriptionItem::query()
+                ->whereKey($itemId)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
             
             $validator = Validator::make($request->all(), [
                 'amount' => 'required|max:255'
@@ -179,7 +199,13 @@ class PrescriptionShowApiController extends Controller
                 'alternativeItems.medicine',
                 'alternativeItems.medicineType',
                 'alternativeItems.usageType'
-            ])->findOrFail($itemId);
+            ])
+                ->whereKey($itemId)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
 
             return response()->json([
                 'success' => true,
@@ -221,6 +247,22 @@ class PrescriptionShowApiController extends Controller
                 ], 422);
             }
 
+            // Ensure user can access the prescription and the item belongs to it.
+            Prescription::query()
+                ->whereKey($request->prescription_id)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->visibleToClinicType(auth()->user()->clinic_type)
+                ->firstOrFail();
+
+            PrescriptionItem::query()
+                ->whereKey($request->prescription_item_id)
+                ->where('prescription_id', $request->prescription_id)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
+
             $alternative = PrescriptionAlternativeItem::create([
                 'prescription_id' => $request->prescription_id,
                 'prescription_item_id' => $request->prescription_item_id,
@@ -261,7 +303,13 @@ class PrescriptionShowApiController extends Controller
     public function selectAlternative(Request $request, $alternativeId)
     {
         try {
-            $alternative = PrescriptionAlternativeItem::findOrFail($alternativeId);
+            $alternative = PrescriptionAlternativeItem::query()
+                ->whereKey($alternativeId)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
             
             // Toggle selection
             $alternative->is_selected = $alternative->is_selected ? '0' : '1';
@@ -294,7 +342,13 @@ class PrescriptionShowApiController extends Controller
     public function updateAlternativeStatus(Request $request, $alternativeId)
     {
         try {
-            $alternative = PrescriptionAlternativeItem::findOrFail($alternativeId);
+            $alternative = PrescriptionAlternativeItem::query()
+                ->whereKey($alternativeId)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
             
             $validator = Validator::make($request->all(), [
                 'is_delivered' => 'required|in:0,1'
@@ -331,7 +385,13 @@ class PrescriptionShowApiController extends Controller
     public function deleteAlternative($alternativeId)
     {
         try {
-            $alternative = PrescriptionAlternativeItem::findOrFail($alternativeId);
+            $alternative = PrescriptionAlternativeItem::query()
+                ->whereKey($alternativeId)
+                ->whereHas('prescription', function ($q) {
+                    $q->where('branch_id', auth()->user()->branch_id)
+                      ->visibleToClinicType(auth()->user()->clinic_type);
+                })
+                ->firstOrFail();
             $alternative->delete();
 
             return response()->json([

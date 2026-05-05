@@ -37,7 +37,7 @@
 
         /* Improve modal styling */
         .modal-xl .modal-dialog {
-            max-width: 90%;
+            max-width: min(1200px, 95vw);
         }
 
         .form-group {
@@ -56,6 +56,61 @@
 
         .select2-container {
             width: 100% !important;
+        }
+
+        /* Keep Select2 dropdown above Bootstrap modals */
+        .modal .select2-container,
+        .modal .select2-dropdown,
+        .modal .select2-container--open {
+            z-index: 1065 !important;
+        }
+
+        /* Match Select2 control height with Bootstrap inputs */
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 38px;
+            padding-left: 0.75rem;
+            padding-right: 2rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+            right: 0.5rem;
+        }
+        .select2-container--default .select2-selection--multiple {
+            min-height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        /* Accordion + table spacing consistency */
+        .accordion-button {
+            gap: 0.5rem;
+        }
+        .accordion-body {
+            overflow-x: auto;
+        }
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+        .table thead th {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .modal-xl .modal-dialog {
+                max-width: 98vw;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .btn-success.btn-sm {
+                width: 38px;
+                height: 38px;
+            }
         }
     </style>
     <div class="content-wrapper">
@@ -438,7 +493,7 @@
                                                         <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
                                                             value="{{ $icu->id }}">
                                                         <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                                            value="{{ $icu->doctor->id }}">
+                                                            value="{{ $icu->appointment?->doctor?->user_id ?? $icu->doctor?->user_id ?? auth()->id() }}">
 
                                                         <div class="form-group">
                                                             <label
@@ -671,7 +726,7 @@
                                 data-bs-parent="#adviceAccordion">
                                 <div class="accordion-body p-0">
                                     <!-- Add Advice Button -->
-                                    @if ($icu->is_discharged == '0')
+                                    @if ($icu->is_discharged == '0' && $icu->appointment_id)
                                         <div class="p-3 border-bottom">
                                             <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#createAdviceModal{{ $icu->id }}"
@@ -681,6 +736,7 @@
                                         </div>
                                     @endif
                                     <!-- Create Diagnose Modal -->
+                                    @if ($icu->appointment_id)
                                     <div class="modal fade" id="createAdviceModal{{ $icu->id }}" tabindex="-1"
                                         aria-labelledby="createAdviceModalLabel{{ $icu->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -698,10 +754,8 @@
                                                         <input type="hidden" id="patient_id{{ $icu->patient_id }}"
                                                             name="patient_id" value="{{ $icu->patient_id }}">
                                                         <input type="hidden"
-                                                            id="appointment_id{{ $icu->appointment->id ?? '' }}"
-                                                            name="appointment_id" value="{{ $icu->id }}">
-                                                        <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                                            value="{{ auth()->user()->id }}">
+                                                            id="appointment_id{{ $icu->appointment_id }}"
+                                                            name="appointment_id" value="{{ $icu->appointment_id }}">
                                                         <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id"
                                                             value="{{ $icu->id }}">
                                                         <!-- Add other diagnosis form fields as needed -->
@@ -724,6 +778,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                     <!-- End Create Diagnose Modal -->
                                     <table class="table mb-0">
                                         <thead class="table-light">
@@ -1333,7 +1388,7 @@
                                             value="{{ $icu->appointment->id ?? '' }}">
                                         <input type="hidden" id="i_c_u_id{{ $icu->id }}" name="i_c_u_id" value="{{ $icu->id }}">
                                         <input type="hidden" id="doctor_id{{ $icu->id }}" name="doctor_id"
-                                            value="{{ auth()->user()->id }}">
+                                            value="{{ auth()->user()->doctor?->id ?? $icu->appointment?->doctor_id }}">
                                         <input type="hidden" id="branch_id{{ $icu->id }}" name="branch_id"
                                             value="{{ auth()->user()->branch_id }}">
                                         <input type="hidden" id="is_discharged{{ $icu->id }}" name="is_discharged" value="0">
@@ -1369,7 +1424,7 @@
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="room_id{{ $icu->id }}">{{ localize('global.rooms') }}</label>
-                                                    <select class="form-control select2" name="room_id" id="room_id" required>
+                                                    <select class="form-control select2" name="room_id" id="room_id{{ $icu->id }}" required>
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($rooms as $value)
                                                             <option value="{{ $value->id }}" {{ old('name') == $value->id ? 'selected' : '' }}>
@@ -1382,7 +1437,7 @@
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="bed_id{{ $icu->id }}">{{ localize('global.beds') }}</label>
-                                                    <select class="form-control select2" name="bed_id" id="bed_id" required>
+                                                    <select class="form-control select2" name="bed_id" id="bed_id{{ $icu->id }}" required>
                                                         <option value="">{{ localize('global.select_room_first') }}</option>
                                                         @foreach ($beds as $value)
                                                             <option value="{{ $value->id }}" {{ old('number') == $value->id ? 'selected' : '' }}>
@@ -1396,7 +1451,7 @@
                                                 <div class="form-group">
                                                     <label
                                                         for="food_type_id{{ $icu->id }}">{{ localize('global.food_type') }}</label>
-                                                    <select class="form-control select2" name="food_type_id[]" id="food_type_id"
+                                                    <select class="form-control select2" name="food_type_id[]" id="food_type_id{{ $icu->id }}"
                                                         multiple>
                                                         <option value="">{{ localize('global.select') }}</option>
                                                         @foreach ($foodTypes as $value)
@@ -1901,42 +1956,6 @@
                 }
             });
 
-            $(document).on('change', '#room_id', function () {
-                var roomId = $(this).val();
-                var $bedSelect = $('#bed_id');
-                var $modal = $(this).closest('.modal');
-                if (roomId !== '') {
-                    $.ajax({
-                        url: '/get_related_beds/' + roomId,
-                        type: 'GET',
-                        success: function (response) {
-                            if ($bedSelect.hasClass('select2-hidden-accessible')) {
-                                $bedSelect.select2('destroy');
-                            }
-                            $bedSelect.html(response);
-                            if (typeof $.fn.select2 !== 'undefined') {
-                                $bedSelect.select2({
-                                    dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
-                                    placeholder: '{{ localize("global.select") }}...',
-                                    width: '100%'
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    $bedSelect.html('<option value="">{{ localize("global.select_room_first") }}</option>');
-                    if ($bedSelect.hasClass('select2-hidden-accessible')) {
-                        $bedSelect.select2('destroy');
-                    }
-                    if (typeof $.fn.select2 !== 'undefined') {
-                        $bedSelect.select2({
-                            dropdownParent: $modal.length ? $modal : $bedSelect.parent(),
-                            placeholder: '{{ localize("global.select_room_first") }}',
-                            width: '100%'
-                        });
-                    }
-                }
-            });
             $('#discharge_status{{ $icu->id }}').on('change', function () {
                 var selectedDischargeStatus = $(this).val();
                 var dischargeOptionsContainer = $('#discharge_options{{ $icu->id }}');

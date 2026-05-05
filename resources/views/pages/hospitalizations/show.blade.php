@@ -481,7 +481,7 @@
                                                 <input type="hidden" id="hospitalization_id{{ $hospitalization->id }}"
                                                     name="hospitalization_id" value="{{ $hospitalization->id }}">
                                                 <input type="hidden" id="doctor_id{{ $hospitalization->id }}"
-                                                    name="doctor_id" value="{{ auth()->user()->id }}">
+                                                    name="doctor_id" value="{{ $hospitalization->appointment?->doctor_id ?? auth()->user()->doctor?->id }}">
                                                 <input type="hidden" id="branch_id{{ $hospitalization->id }}"
                                                     name="branch_id" value="{{ auth()->user()->branch_id }}">
 

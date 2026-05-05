@@ -217,7 +217,7 @@ class ICUController extends Controller
         // Validate the input
         $validatedData = $request->validate([
             'patient_id' => 'required',
-            'doctor_id' => 'required',
+            'doctor_id' => 'required|exists:doctors,id',
             'branch_id' => 'required',
             'appointment_id' => 'nullable',
             'hospitalization_id' => 'nullable',
@@ -296,6 +296,8 @@ class ICUController extends Controller
         $beds = collect(); // Beds loaded via AJAX when room is selected (only unoccupied)
         $relations = Relation::all();
         $medicineUsageTypes = MedicineUsageType::all();
+
+        $icu->load(['doctor', 'patient', 'appointment', 'appointment.doctor']);
 
         return view('pages.icus.show',compact('icu','previousDiagnoses','previousLabs','labTypes','branches','departments','doctors','foodTypes','medicineTypes','medicines','procedure_types','rooms','beds','relations','medicineUsageTypes'));
     }

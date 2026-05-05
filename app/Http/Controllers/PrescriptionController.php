@@ -29,12 +29,7 @@ class PrescriptionController extends Controller
         $query = Prescription::where('branch_id', auth()->user()->branch_id)
             ->with(['patient', 'doctor', 'appointment.department']);
 
-        // Filter by appointment clinic_type matching user's clinic_type (skip when "both")
-        if ($userClinicType && $userClinicType !== 'both') {
-            $query->whereHas('appointment', function ($q) use ($userClinicType) {
-                $q->where('clinic_type', $userClinicType);
-            });
-        }
+        $query->visibleToClinicType($userClinicType);
 
         // Search by patient name
         if ($request->filled('search')) {
@@ -106,12 +101,7 @@ class PrescriptionController extends Controller
         $query = Prescription::where('branch_id', auth()->user()->branch_id)
             ->where('is_completed', true);
 
-        // Filter by appointment clinic_type matching user's clinic_type (skip when "both")
-        if ($userClinicType && $userClinicType !== 'both') {
-            $query->whereHas('appointment', function ($q) use ($userClinicType) {
-                $q->where('clinic_type', $userClinicType);
-            });
-        }
+        $query->visibleToClinicType($userClinicType);
 
         $prescriptions = $query->latest()->paginate(10);
         return view('pages.prescriptions.delivered', compact('prescriptions'));
@@ -181,13 +171,25 @@ class PrescriptionController extends Controller
      */
     public function show(Prescription $prescription)
     {
+        $viewerClinicType = auth()->user()->clinic_type;
+        $canView = Prescription::query()
+            ->whereKey($prescription->id)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType($viewerClinicType)
+            ->exists();
+        abort_unless($canView, 403);
+
         return view('pages.prescriptions.show', compact('prescription'));
     }
 
     public function printCard($appointmentId, $prescriptionId)
     {
         $appointment = Appointment::findOrFail($appointmentId);
-        $prescription = Prescription::findOrFail($prescriptionId);
+        $prescription = Prescription::query()
+            ->whereKey($prescriptionId)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType(auth()->user()->clinic_type)
+            ->firstOrFail();
 
         $prescriptionItems = PrescriptionItem::where('prescription_id', $prescriptionId)->get();
 
@@ -198,6 +200,14 @@ class PrescriptionController extends Controller
 
     public function printThermalReceipt(Prescription $prescription)
     {
+        $viewerClinicType = auth()->user()->clinic_type;
+        $canView = Prescription::query()
+            ->whereKey($prescription->id)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType($viewerClinicType)
+            ->exists();
+        abort_unless($canView, 403);
+
         // Load prescription with all necessary relationships
         $prescription->load([
             'patient',
@@ -221,7 +231,11 @@ class PrescriptionController extends Controller
     public function updateStatus($prescriptionId, $key)
     {
         // Find the prescription by ID
-        $prescription = Prescription::findOrFail($prescriptionId);
+        $prescription = Prescription::query()
+            ->whereKey($prescriptionId)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType(auth()->user()->clinic_type)
+            ->firstOrFail();
 
         // Update the status of the specified key
         $statuses = is_array($prescription->is_delivered) ? $prescription->is_delivered : json_decode($prescription->is_delivered, true);
@@ -293,7 +307,11 @@ class PrescriptionController extends Controller
         $qrCodeData = $request->input('qrCodeData');
 
         // Find the patient based on the QR code data
-        $prescription = Prescription::where('id', $qrCodeData)->where('branch_id', auth()->user()->branch_id)->first();
+        $prescription = Prescription::query()
+            ->where('id', $qrCodeData)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType(auth()->user()->clinic_type)
+            ->first();
 
         if ($prescription) {
             // Redirect to the patient's show page
@@ -311,6 +329,14 @@ class PrescriptionController extends Controller
 
     public function changeStatus(Request $request, Prescription $prescription)
     {
+        $viewerClinicType = auth()->user()->clinic_type;
+        $canView = Prescription::query()
+            ->whereKey($prescription->id)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->visibleToClinicType($viewerClinicType)
+            ->exists();
+        abort_unless($canView, 403);
+
         // Check if user belongs to a pharmacy
         $userPharmacy = auth()->user()->activePharmacies()->first();
 
@@ -359,6 +385,8 @@ class PrescriptionController extends Controller
      */
     private function buildPrescriptionReportQuery(Request $request)
     {
+        $viewerClinicType = auth()->user()->clinic_type;
+
         $query = DB::table('prescriptions as a')
             ->leftJoin('patients as p', 'a.patient_id', '=', 'p.id')
             ->leftJoin('doctors as d', 'a.doctor_id', '=', 'd.id')
@@ -367,6 +395,7 @@ class PrescriptionController extends Controller
             ->leftJoin('appointments as app', 'a.appointment_id', '=', 'app.id')
             ->leftJoin('departments as dept', 'app.department_id', '=', 'dept.id')
             ->leftJoin('users as processor', 'a.updated_by', '=', 'processor.id')
+            ->leftJoin('users as creator', 'a.created_by', '=', 'creator.id')
             ->select(
                 'a.id',
                 'p.name as patient_name',
@@ -382,6 +411,10 @@ class PrescriptionController extends Controller
                 'a.pharmacy_id',
                 DB::raw("TRIM(CONCAT(COALESCE(processor.name,''), ' ', COALESCE(processor.last_name,''))) as processor_name")
             );
+
+        if ($viewerClinicType && $viewerClinicType !== 'both') {
+            $query->whereIn('creator.clinic_type', [$viewerClinicType, 'both']);
+        }
 
         if ($request->filled('patient_name')) {
             $query->where('p.name', 'like', '%' . $request->patient_name . '%');
@@ -526,6 +559,8 @@ class PrescriptionController extends Controller
         try {
             $query = Prescription::where('branch_id', auth()->user()->branch_id)
                 ->with(['patient', 'doctor', 'appointment.doctor', 'appointment.department']);
+
+            $query->visibleToClinicType(auth()->user()->clinic_type);
 
             // Apply filters
             if ($request->filled('search')) {

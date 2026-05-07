@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepotController;
 use App\Http\Controllers\ReciptionStatisticReportController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdviceController;
@@ -1343,4 +1344,14 @@ Route::middleware('auth')->prefix('api/categories')->name('api.categories.')->gr
 Auth::routes(['register' => false]);
 Route::group(['prefix' => 'react'], function () {
     include __DIR__ . '/react.php';
+});
+// Depots routes
+Route::prefix('depots')->name('depots.')->group(function () {
+    Route::get('/', [DepotController::class, 'index'])->name('index');
+    Route::get('/create', [DepotController::class, 'create'])->name('create');
+    Route::post('/store', [DepotController::class, 'store'])->name('store');
+    Route::get('/show/{depot}', [DepotController::class, 'show'])->name('show');
+    Route::get('/edit/{depot}', [DepotController::class, 'edit'])->name('edit');
+    Route::put('/update/{depot}', [DepotController::class, 'update'])->name('update');
+    Route::delete('/destroy/{depot}', [DepotController::class, 'destroy'])->name('destroy');
 });

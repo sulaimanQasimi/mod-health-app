@@ -8,8 +8,8 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">{{ localize('global.depot.title') }}</h5>
-                        <div class="pt-3 pt-md-0 text-end">
-                            <a class="btn btn-primary btn-lg" href="{{ route('depots.create') }}">
+                        <div class="pt- pt-md-0 text-end">
+                            <a class="btn btn-primary btn-md" href="{{ route('depots.create') }}">
                                 <i class="bx bx-plus me-2"></i>{{ localize('global.depot.create') }}
                             </a>
                         </div>
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="col-12">
-                <div class="card">
+                <div class="card mt-2">
                     <div class="card-body">
                         <table class="table table-striped">
                             <thead>

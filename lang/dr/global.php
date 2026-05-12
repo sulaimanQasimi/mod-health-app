@@ -4422,5 +4422,6 @@ return [
         "is_base"=>"base",
         "depots"=>"دیپو ها",
         "depots_title"=>"مدیریت دیپو ها",
+        "depot.select_department"=>"انتخاب دواخانه",
     ]
 ]; 

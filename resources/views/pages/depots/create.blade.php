@@ -47,7 +47,7 @@
                                 <label for="department_id" class="form-label">{{ localize('global.depot.department') }}</label>
                                 <select name="department_id" id="department_id"
                                     class="form-select {{ $errors->has('department_id') ? 'is-invalid' : '' }}">
-                                    <option value="">{{ localize('global.depot.select_department') }}</option>
+                                    <option value="">{{ localize('global.depot.department') }}</option>
                                     @foreach($departments as $department)
                                         <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
                                             {{ $department->name }}
@@ -60,10 +60,10 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="pharmacy_id" class="form-label">{{ localize('global.depot.select_pharmacy') }}</label>
+                                <label for="pharmacy_id" class="form-label">{{ localize('global.depot.pharmacy') }}</label>
                                 <select name="pharmacy_id" id="pharmacy_id"
                                     class="form-select select2 {{ $errors->has('pharmacy_id') ? 'is-invalid' : '' }}">
-                                    <option value="">{{ localize('global.depot.select_pharmacy') }}</option>
+                                    <option value="">{{ localize('global.depot.pharmacy') }}</option>
                                     @foreach($pharmacies as $pharmacy)
                                         <option value="{{ $pharmacy->id }}" {{ old('pharmacy_id') == $pharmacy->id ? 'selected' : '' }}>
                                             {{ $pharmacy->name }}

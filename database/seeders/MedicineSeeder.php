@@ -23,8 +23,7 @@ class MedicineSeeder extends Seeder
             $medicines[] = [
                 'id' => $i,
                 'name' => $faker->medicine,
-                'medicine_type_id' => $faker->numberBetween(1, 5),
-                'disease_id' => '["1"]',
+                // 'disease_id' => '["1"]',
                 'created_at' => '2020-06-20 06:44:57',
                 'updated_at' => '2020-06-20 06:44:57',
             ];

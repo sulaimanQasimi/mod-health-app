@@ -3,6 +3,8 @@
 use App\Models\Depot;
 use App\Models\Medicine;
 use App\Models\MedicineType;
+use App\Models\Tool;
+use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->foreignIdFor(MedicineType::class, 'medicine_type_id')->nullable();
             $table->foreignIdFor(Medicine::class, 'medicine_id')->nullable();
             $table->foreignIdFor(Tool::class, 'tool_id')->nullable();
+            $table->foreignIdFor(Unit::class, 'unit_id')->nullable();
             $table->string('batch_number')->nullable();
 
             // Transaction and relation info

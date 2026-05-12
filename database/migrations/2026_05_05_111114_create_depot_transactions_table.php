@@ -22,6 +22,8 @@ return new class extends Migration
 
             // Basic medicine and batch info
             $table->foreignIdFor(MedicineType::class, 'medicine_type_id')->nullable();
+            $table->foreignIdFor(Medicine::class, 'medicine_id')->nullable();
+            $table->foreignIdFor(Tool::class, 'tool_id')->nullable();
             $table->string('batch_number')->nullable();
 
             // Transaction and relation info

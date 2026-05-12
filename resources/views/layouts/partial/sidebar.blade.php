@@ -299,7 +299,19 @@
                 </ul>
             </li>
         @endif
-
+<li class="menu-item {{ Route::is('depots.*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-pill"></i>
+        <div>{{ localize('global.depots') }}</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item {{ Route::is('depots.index') ? 'active' : '' }}">
+            <a href="{{ route('depots.index') }}" class="menu-link">
+                <div>{{ localize('global.depots') }}</div>
+            </a>
+        </li>
+    </ul>
+</li>
 
         @can('show-blood-bank-menu')
             <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">

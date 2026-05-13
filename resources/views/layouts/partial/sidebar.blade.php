@@ -301,13 +301,13 @@
         @endif
 <li class="menu-item {{ Route::is('depots.*') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-pill"></i>
-        <div>{{ localize('global.depots') }}</div>
+        <i class="menu-icon tf-icons bx bx-store"></i>
+        <div>{{ localize('global.depot.title') }}</div>
     </a>
     <ul class="menu-sub">
         <li class="menu-item {{ Route::is('depots.index') ? 'active' : '' }}">
             <a href="{{ route('depots.index') }}" class="menu-link">
-                <div>{{ localize('global.depots') }}</div>
+                <div>{{ localize('global.depot.list') }}</div>
             </a>
         </li>
     </ul>

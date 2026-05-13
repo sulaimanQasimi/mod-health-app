@@ -4409,5 +4409,8 @@ return [
         "depots" => "دیپو ها",
         "depots_title" => "مدیریت دیپو ها",
         "depot.select_department" => "انتخاب دواخانه",
+        "depot_transfer" => "انتقال به دیپو",
+        "pharmacy_transfer" => "انتقال به دواخانه",
+        "transactions" => "تراکنش ها",
     ]
 ];

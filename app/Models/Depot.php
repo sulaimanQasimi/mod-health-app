@@ -10,7 +10,27 @@ class Depot extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'address', 'is_active', 'is_base', 'parent_depot_id', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = [
+        'name',
+        'address',
+        'is_active',
+        'is_base',
+        'department_id',
+        'branch_id',
+        'pharmacy_id',
+        'parent_depot_id',
+        'created_by',
+        'updated_by',
+        'deleted_by',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_base' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
     public function parentDepot()
     {
@@ -31,6 +51,18 @@ class Depot extends Model
     public function all_transfers()
     {
         return $this->hasMany(DepotTransaction::class, 'depot_id')->where('transaction_type', 'transfer');
+    }
+    public function outgoingTransfers()
+    {
+        return $this->hasMany(DepotTransaction::class, 'from_depot_id');
+    }
+    public function incomingTransfers()
+    {
+        return $this->hasMany(DepotTransaction::class, 'to_depot_id');
+    }
+    public function stockForMedicine(int $medicineId): int
+    {
+        return DepotTransaction::availableStock($this->id, $medicineId);
     }
     public function childrenDepots()
     {

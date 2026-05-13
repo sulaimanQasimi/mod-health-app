@@ -13,7 +13,7 @@ class DepotController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Depot::query();
+        $query = Depot::query()->with(['department', 'branch', 'pharmacy', 'parentDepot']);
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -36,8 +36,6 @@ class DepotController extends Controller
             $query->where('is_base', $request->is_base);
         }
         $depots = $query->paginate(15);
-        $branches = Branch::all();
-        $departments = Department::all();
         return view('pages.depots.index', compact('depots'));
     }
     public function create()

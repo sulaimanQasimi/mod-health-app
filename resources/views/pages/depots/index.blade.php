@@ -9,6 +9,15 @@
                     <div class="card-header">
                         <h5 class="mb-0">{{ localize('global.depot.title') }}</h5>
                         <div class="pt-3 pt-md-0 text-end">
+                            <a class="btn btn-outline-primary btn-lg" href="{{ route('depots.transactions.index') }}">
+                                <i class="bx bx-list-ul me-2"></i>Transactions
+                            </a>
+                            <a class="btn btn-outline-primary btn-lg" href="{{ route('depots.movements.depot_to_depot') }}">
+                                <i class="bx bx-transfer me-2"></i>Depot Transfer
+                            </a>
+                            <a class="btn btn-outline-primary btn-lg" href="{{ route('depots.movements.depot_to_pharmacy') }}">
+                                <i class="bx bx-clinic me-2"></i>Pharmacy Transfer
+                            </a>
                             <a class="btn btn-primary btn-lg" href="{{ route('depots.create') }}">
                                 <i class="bx bx-plus me-2"></i>{{ localize('global.depot.create') }}
                             </a>

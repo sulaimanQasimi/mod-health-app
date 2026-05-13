@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepotController;
+use App\Http\Controllers\DepotTransactionController;
 use App\Http\Controllers\ReciptionStatisticReportController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdviceController;
@@ -1354,4 +1355,39 @@ Route::prefix('depots')->name('depots.')->group(function () {
     Route::get('/edit/{depot}', [DepotController::class, 'edit'])->name('edit');
     Route::put('/update/{depot}', [DepotController::class, 'update'])->name('update');
     Route::delete('/destroy/{depot}', [DepotController::class, 'destroy'])->name('destroy');
+
+    Route::get('transactions', [DepotTransactionController::class, 'index'])
+        ->middleware('permission:depot.transaction.view')
+        ->name('transactions.index');
+    Route::get('transactions/create', [DepotTransactionController::class, 'create'])
+        ->middleware('permission:depot.transaction.create')
+        ->name('transactions.create');
+    Route::post('transactions', [DepotTransactionController::class, 'store'])
+        ->middleware('permission:depot.transaction.create')
+        ->name('transactions.store');
+    Route::get('transactions/{depotTransaction}', [DepotTransactionController::class, 'show'])
+        ->middleware('permission:depot.transaction.view')
+        ->name('transactions.show');
+    Route::delete('transactions/{depotTransaction}', [DepotTransactionController::class, 'destroy'])
+        ->middleware('permission:depot.transaction.create')
+        ->name('transactions.destroy');
+    Route::patch('transactions/{depotTransaction}/cancel', [DepotTransactionController::class, 'cancel'])
+        ->middleware('permission:depot.transaction.create')
+        ->name('transactions.cancel');
+
+    Route::get('movements/depot-to-depot', [DepotTransactionController::class, 'depotToDepot'])
+        ->middleware('permission:depot.movement.depot_to_depot')
+        ->name('movements.depot_to_depot');
+    Route::post('movements/depot-to-depot', [DepotTransactionController::class, 'storeDepotToDepot'])
+        ->middleware('permission:depot.movement.depot_to_depot')
+        ->name('movements.depot_to_depot.store');
+    Route::get('movements/depot-to-pharmacy', [DepotTransactionController::class, 'depotToPharmacy'])
+        ->middleware('permission:depot.movement.depot_to_pharmacy')
+        ->name('movements.depot_to_pharmacy');
+    Route::post('movements/depot-to-pharmacy', [DepotTransactionController::class, 'storeDepotToPharmacy'])
+        ->middleware('permission:depot.movement.depot_to_pharmacy')
+        ->name('movements.depot_to_pharmacy.store');
+    Route::get('stock/available', [DepotTransactionController::class, 'stock'])
+        ->middleware('permission:depot.transaction.view')
+        ->name('stock.available');
 });

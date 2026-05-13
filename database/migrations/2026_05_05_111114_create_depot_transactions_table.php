@@ -18,10 +18,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('depot_transactions');
         Schema::create('depot_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('transaction_number')->unique();
-            $table->foreignIdFor(Depot::class, 'depot_id')->nullable()->constrained('depots')->nullOnDelete();
+            $table->foreignIdFor(Depot::class, 'depot_id')->constrained('depots');
             $table->foreignIdFor(User::class, 'user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignIdFor(Pharmacy::class, 'pharmacy_id')->nullable()->constrained('pharmacies')->nullOnDelete();
 
@@ -58,7 +59,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->index('transaction_number');
             $table->index('depot_id');
             $table->index('from_depot_id');
             $table->index('to_depot_id');

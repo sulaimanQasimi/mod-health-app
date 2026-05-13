@@ -348,6 +348,34 @@ class PermissionSeeder extends Seeder
         ]);
 
         Permission::createOrFirst([
+            'name' => 'depot.transaction.view',
+            'name_dr' => 'نمایش تراکنش های دیپو',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'depot.transaction.create',
+            'name_dr' => 'ثبت تراکنش دیپو',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'depot.movement.depot_to_depot',
+            'name_dr' => 'انتقال از دیپو به دیپو',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
+            'name' => 'depot.movement.depot_to_pharmacy',
+            'name_dr' => 'انتقال از دیپو به دواخانه',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
+        Permission::createOrFirst([
             'name' => 'show-blood-bank-menu',
             'name_dr' => 'نمایش مینو بانک خون',
             'name_pa' => NULL,

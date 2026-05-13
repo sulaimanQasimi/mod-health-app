@@ -4426,4 +4426,7 @@ return [
     'depot.source_depot' => 'دیپوی منبع',
     'depot.move_stock_from_depot_to_pharmacy' => 'انتقال موجودی از دیپو به دواخانه؟',
     'depot.back' => 'بازگشت',
+    'depot.depot_to_depot_movement' => 'انتقال دیپو به دیپو',
+    'depot.destination_depot' => 'دیپو مقصد',
+    'move_stock_between_depots' => 'انتقال موجودی بین دیپو ها؟',
 ];

@@ -183,8 +183,11 @@ class DepotTransactionController extends Controller
         DB::transaction(function () use ($data) {
             Depot::whereKey($data['from_depot_id'])->lockForUpdate()->firstOrFail();
             Depot::whereKey($data['to_depot_id'])->lockForUpdate()->firstOrFail();
-            $this->lockDepotMedicineLedger((int) $data['from_depot_id'], (int) $data['medicine_id']);
-            $this->ensureAvailableStock((int) $data['from_depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
+
+            if (!empty($data['medicine_id'])) {
+                $this->lockDepotMedicineLedger((int) $data['from_depot_id'], (int) $data['medicine_id']);
+                $this->ensureAvailableStock((int) $data['from_depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
+            }
 
             DepotTransaction::create([
                 ...$data,

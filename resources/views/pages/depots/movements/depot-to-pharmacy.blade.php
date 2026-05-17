@@ -61,16 +61,6 @@
                             </select>
                             @error('unit_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="tool_id">Tool</label>
-                            <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
-                                <option value="">Select tool</option>
-                                @foreach($tools as $tool)
-                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
-                                @endforeach
-                            </select>
-                            @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
-                        </div>
                         <div class="col-12">
                             <div id="available-stock" class="alert alert-info py-2 d-none"></div>
                         </div>

@@ -38,13 +38,23 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="medicine_id">Medicine</label>
-                            <select name="medicine_id" id="medicine_id" class="form-select select2 @error('medicine_id') is-invalid @enderror" required>
+                            <select name="medicine_id" id="medicine_id" class="form-select select2 @error('medicine_id') is-invalid @enderror">
                                 <option value="">Select medicine</option>
                                 @foreach($medicines as $medicine)
                                     <option value="{{ $medicine->id }}" @selected(old('medicine_id') == $medicine->id)>{{ $medicine->name }}</option>
                                 @endforeach
                             </select>
                             @error('medicine_id')<small class="text-danger">{{ $message }}</small>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="tool_id">Tool</label>
+                            <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
+                                <option value="">Select tool</option>
+                                @foreach($tools as $tool)
+                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
+                                @endforeach
+                            </select>
+                            @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-3">
                             <label class="form-label" for="quantity">Quantity</label>
@@ -60,16 +70,6 @@
                                 @endforeach
                             </select>
                             @error('unit_id')<small class="text-danger">{{ $message }}</small>@enderror
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="tool_id">Tool</label>
-                            <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
-                                <option value="">Select tool</option>
-                                @foreach($tools as $tool)
-                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
-                                @endforeach
-                            </select>
-                            @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-12">
                             <div id="available-stock" class="alert alert-info py-2 d-none"></div>
@@ -109,6 +109,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const depot = document.getElementById('from_depot_id');
     const medicine = document.getElementById('medicine_id');
+    const tool = document.getElementById('tool_id');
     const box = document.getElementById('available-stock');
 
     function refreshStock() {
@@ -126,7 +127,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     depot.addEventListener('change', refreshStock);
-    medicine.addEventListener('change', refreshStock);
+    medicine.addEventListener('change', function () {
+        if (medicine.value) {
+            tool.value = '';
+            if (window.jQuery) {
+                $('#tool_id').trigger('change.select2');
+            }
+        }
+        refreshStock();
+    });
+    tool.addEventListener('change', function () {
+        if (tool.value) {
+            medicine.value = '';
+            box.classList.add('d-none');
+            if (window.jQuery) {
+                $('#medicine_id').trigger('change.select2');
+            }
+        }
+    });
     refreshStock();
 });
 </script>

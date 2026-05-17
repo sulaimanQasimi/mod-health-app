@@ -41,6 +41,10 @@
                         <div>{{ $depotTransaction->medicine?->name ?? '-' }}</div>
                     </div>
                     <div class="col-md-6">
+                        <div class="text-muted small">Tool</div>
+                        <div>{{ $depotTransaction->tool ? 'Tool #' . $depotTransaction->tool->id : '-' }}</div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="text-muted small">Quantity</div>
                         <div>{{ number_format($depotTransaction->quantity) }} {{ $depotTransaction->unit?->symbol ?? $depotTransaction->unit?->name }}</div>
                     </div>

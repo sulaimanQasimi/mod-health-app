@@ -61,6 +61,16 @@
                             @error('unit_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label" for="tool_id">Tool</label>
+                            <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
+                                <option value="">Select tool</option>
+                                @foreach($tools as $tool)
+                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
+                                @endforeach
+                            </select>
+                            @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label" for="batch_number">Batch Number</label>
                             <input type="text" name="batch_number" id="batch_number" value="{{ old('batch_number') }}" class="form-control @error('batch_number') is-invalid @enderror">
                             @error('batch_number')<small class="text-danger">{{ $message }}</small>@enderror

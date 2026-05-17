@@ -9,6 +9,7 @@ use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
 use App\Models\PharmacyFulfillment;
+use App\Models\Tool;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,7 @@ class DepotTransactionController extends Controller
             'toDepot',
             'pharmacy',
             'medicine',
+            'tool',
             'unit',
             'createdBy',
         ]);
@@ -37,6 +39,9 @@ class DepotTransactionController extends Controller
         }
         if ($request->filled('medicine_id')) {
             $query->where('medicine_id', $request->medicine_id);
+        }
+        if ($request->filled('tool_id')) {
+            $query->where('tool_id', $request->tool_id);
         }
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -56,6 +61,7 @@ class DepotTransactionController extends Controller
                 $q->where('transaction_number', 'like', "%{$search}%")
                     ->orWhere('batch_number', 'like', "%{$search}%")
                     ->orWhereHas('medicine', fn ($medicine) => $medicine->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('tool', fn ($tool) => $tool->where('id', $search))
                     ->orWhereHas('fromDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('toDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('pharmacy', fn ($pharmacy) => $pharmacy->where('name', 'like', "%{$search}%"));
@@ -87,6 +93,7 @@ class DepotTransactionController extends Controller
         $data = $request->validate([
             'depot_id' => ['required', 'exists:depots,id'],
             'medicine_id' => ['required', 'exists:medicines,id'],
+            'tool_id' => ['nullable', 'exists:tools,id'],
             'unit_id' => ['nullable', 'exists:units,id'],
             'batch_number' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'in:stock_in,stock_out,adjustment'],
@@ -126,6 +133,7 @@ class DepotTransactionController extends Controller
             'toDepot',
             'pharmacy',
             'medicine',
+            'tool',
             'unit',
             'createdBy',
             'updatedBy',
@@ -254,6 +262,7 @@ class DepotTransactionController extends Controller
             'depots' => Depot::query()->where('is_active', true)->orderBy('name')->get(),
             'pharmacies' => Pharmacy::query()->orderBy('name')->get(),
             'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(),
+            'tools' => Tool::query()->orderBy('id')->get(),
             'units' => Unit::query()->where('is_active', true)->orderBy('name')->get(),
         ];
     }

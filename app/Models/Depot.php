@@ -92,4 +92,43 @@ class Depot extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
     
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'depot_users', 'depot_id', 'user_id')
+                    ->withPivot(['role', 'permissions', 'is_active', 'joined_at'])
+                    ->withTimestamps();
+    }
+
+    public function depotUsers()
+    {
+        return $this->hasMany(DepotUser::class, 'depot_id');
+    }
+
+    public function activeUsers()
+    {
+        return $this->users()->wherePivot('is_active', true);
+    }
+
+    public function addUser($userId, string $role = 'staff', ?array $permissions = null): DepotUser
+    {
+        return $this->depotUsers()->updateOrCreate(
+            ['user_id' => $userId],
+            [
+                'role' => $role,
+                'permissions' => $permissions,
+                'is_active' => true,
+                'joined_at' => now(),
+            ]
+        );
+    }
+
+    public function syncUsers(array $userIds, array $roles = []): void
+    {
+        $userIds = array_values(array_filter($userIds));
+        $this->depotUsers()->whereNotIn('user_id', $userIds ?: [0])->delete();
+
+        foreach ($userIds as $index => $userId) {
+            $this->addUser($userId, $roles[$index] ?? 'staff');
+        }
+    }
 }

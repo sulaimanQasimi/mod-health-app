@@ -50,6 +50,14 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-2">
+                    <select name="tool_id" class="form-select select2">
+                        <option value="">All tools</option>
+                        @foreach($tools as $tool)
+                            <option value="{{ $tool->id }}" @selected(request('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="col-md-1">
                     <select name="type" class="form-select">
                         <option value="">Type</option>
@@ -92,6 +100,7 @@
                         <th>Source</th>
                         <th>Destination</th>
                         <th>Item</th>
+                        <th>Tool</th>
                         <th>Quantity</th>
                         <th>Status</th>
                         <th>Created By</th>
@@ -107,6 +116,7 @@
                             <td>{{ $transaction->fromDepot?->name ?? $transaction->depot?->name ?? '-' }}</td>
                             <td>{{ $transaction->toDepot?->name ?? $transaction->pharmacy?->name ?? '-' }}</td>
                             <td>{{ $transaction->medicine?->name ?? '-' }}</td>
+                            <td>{{ $transaction->tool ? 'Tool #' . $transaction->tool->id : '-' }}</td>
                             <td>{{ number_format($transaction->quantity) }} {{ $transaction->unit?->symbol ?? $transaction->unit?->name }}</td>
                             <td>
                                 <span class="badge bg-{{ $transaction->status === 'completed' ? 'success' : ($transaction->status === 'cancelled' ? 'danger' : 'warning') }}">
@@ -132,7 +142,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center py-4">{{ localize('global.no_data_found') }}</td>
+                            <td colspan="11" class="text-center py-4">{{ localize('global.no_data_found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

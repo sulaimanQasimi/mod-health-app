@@ -37,6 +37,7 @@
                                     <th>{{ localize('global.depot.branch') }}</th>
                                     <th>{{ localize('global.depot.pharmacy') }}</th>
                                     <th>{{ localize('global.depot.parent_depot') }}</th>
+                                    <th>Users</th>
                                     <th>{{ localize('global.depot.is_active') }}</th>
                                     <th>{{ localize('global.depot.is_base') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
@@ -50,7 +51,17 @@
                                     <td>{{ $depot->department?->name }}</td>
                                     <td>{{ $depot->branch?->name }}</td>
                                     <td>{{ $depot->pharmacy?->name }}</td>
-                                    <td>{{ $depot->parent_depot?->name }}</td>
+                                    <td>{{ $depot->parentDepot?->name }}</td>
+                                    <td>
+                                        @forelse($depot->activeUsers->take(2) as $user)
+                                            <span class="badge bg-label-primary">{{ $user->name }}</span>
+                                        @empty
+                                            -
+                                        @endforelse
+                                        @if($depot->activeUsers->count() > 2)
+                                            <span class="badge bg-label-secondary">+{{ $depot->activeUsers->count() - 2 }}</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $depot->is_active ? 'فعال' : 'غیرفعال' }}</td>
                                     <td>{{ $depot->is_base ? 'base' : 'child' }}</td>
                                     <td>
@@ -71,7 +82,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">{{ localize('global.no_data_found') }}</td>
+                                    <td colspan="10" class="text-center">{{ localize('global.no_data_found') }}</td>
                                 </tr>
                                 @endforelse
                            

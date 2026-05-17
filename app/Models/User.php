@@ -127,6 +127,18 @@ class User extends Authenticatable
         return $this->pharmacies()->wherePivot('is_active', true);
     }
 
+    public function depots()
+    {
+        return $this->belongsToMany(Depot::class, 'depot_users', 'user_id', 'depot_id')
+                    ->withPivot(['role', 'permissions', 'is_active', 'joined_at'])
+                    ->withTimestamps();
+    }
+
+    public function activeDepots()
+    {
+        return $this->depots()->wherePivot('is_active', true);
+    }
+
     // Get pharmacies where user is manager
     public function managedPharmacies()
     {

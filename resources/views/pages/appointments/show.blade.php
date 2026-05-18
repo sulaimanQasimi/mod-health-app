@@ -2198,6 +2198,92 @@
                 }
             });
         }
+
+        // Load hospital doctors for appointment anesthesia modal
+        function loadHospitalDoctorsForAppointment(appointmentId) {
+            const surgionSelect = $(`#operation_surgion_id${appointmentId}`);
+            const assistantsSelect = $(`#operation_assistants_id${appointmentId}`);
+            const modal = $(`#createAnasthesiaModal${appointmentId}`);
+            const dropdownParent = modal.length ? modal : $('body');
+
+            if (surgionSelect.length) {
+                surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+            }
+            if (assistantsSelect.length) {
+                assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
+            }
+
+            $.ajax({
+                url: '{{ route("doctor-api.hospital-doctors") }}',
+                method: 'GET',
+                data: {
+                    branch_id: {{ auth()->user()->branch_id }}
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        let surgionOptions = '<option value="">{{ localize("global.select") }}...</option>';
+                        let assistantsOptions = '<option value="">{{ localize("global.select") }}...</option>';
+
+                        response.data.forEach(function(doctor) {
+                            const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor.specialization : '');
+                            surgionOptions += `<option value="${doctor.id}">${optionText}</option>`;
+                            assistantsOptions += `<option value="${doctor.id}">${optionText}</option>`;
+                        });
+
+                        if (surgionSelect.length) {
+                            surgionSelect.html(surgionOptions);
+                            if (surgionSelect.hasClass('select2-hidden-accessible')) {
+                                surgionSelect.select2('destroy');
+                            }
+                            setTimeout(function() {
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    surgionSelect.select2({
+                                        dropdownParent: dropdownParent,
+                                        width: '100%',
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        allowClear: true
+                                    });
+                                }
+                            }, 100);
+                        }
+
+                        if (assistantsSelect.length) {
+                            assistantsSelect.html(assistantsOptions);
+                            if (assistantsSelect.hasClass('select2-hidden-accessible')) {
+                                assistantsSelect.select2('destroy');
+                            }
+                            setTimeout(function() {
+                                if (typeof $.fn.select2 !== 'undefined') {
+                                    assistantsSelect.select2({
+                                        dropdownParent: dropdownParent,
+                                        width: '100%',
+                                        placeholder: '{{ localize("global.select") }}...',
+                                        allowClear: true
+                                    });
+                                }
+                            }, 100);
+                        }
+                    } else {
+                        console.error('Failed to load doctors:', response.message);
+                        if (surgionSelect.length) {
+                            surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                        }
+                        if (assistantsSelect.length) {
+                            assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading doctors:', error);
+                    if (surgionSelect.length) {
+                        surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                    }
+                    if (assistantsSelect.length) {
+                        assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
+                    }
+                }
+            });
+        }
         
         $(document).ready(function () {
             // Load doctors on page load only if dropdown exists (appointment not completed)
@@ -2842,99 +2928,6 @@
                 format: 'YYYY/MM/DD',
                 observer: true,
             });
-
-            // Function to load hospital doctors for appointment anesthesia modal
-            function loadHospitalDoctorsForAppointment(appointmentId) {
-                const surgionSelect = $(`#operation_surgion_id${appointmentId}`);
-                const assistantsSelect = $(`#operation_assistants_id${appointmentId}`);
-                const modal = $(`#createAnasthesiaModal${appointmentId}`);
-                const dropdownParent = modal.length ? modal : $('body');
-                
-                // Show loading state
-                if (surgionSelect.length) {
-                    surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
-                }
-                if (assistantsSelect.length) {
-                    assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="loading" disabled>{{ localize("global.loading") }}...</option>');
-                }
-                
-                // Load doctors from API
-                $.ajax({
-                    url: '{{ route("doctor-api.hospital-doctors") }}',
-                    method: 'GET',
-                    data: {
-                        branch_id: {{ auth()->user()->branch_id }}
-                    },
-                    success: function(response) {
-                        if (response.success && response.data) {
-                            // Clear loading option
-                            let surgionOptions = '<option value="">{{ localize("global.select") }}...</option>';
-                            let assistantsOptions = '<option value="">{{ localize("global.select") }}...</option>';
-                            
-                            // Add doctors to options
-                            response.data.forEach(function(doctor) {
-                                const optionText = doctor.name + (doctor.specialization ? ' - ' + doctor.specialization : '');
-                                surgionOptions += `<option value="${doctor.id}">${optionText}</option>`;
-                                assistantsOptions += `<option value="${doctor.id}">${optionText}</option>`;
-                            });
-                            
-                            // Update selects
-                            if (surgionSelect.length) {
-                                surgionSelect.html(surgionOptions);
-                                // Reinitialize Select2
-                                if (surgionSelect.hasClass('select2-hidden-accessible')) {
-                                    surgionSelect.select2('destroy');
-                                }
-                                setTimeout(function() {
-                                    if (typeof $.fn.select2 !== 'undefined') {
-                                        surgionSelect.select2({
-                                            dropdownParent: dropdownParent,
-                                            width: '100%',
-                                            placeholder: '{{ localize("global.select") }}...',
-                                            allowClear: true
-                                        });
-                                    }
-                                }, 100);
-                            }
-                            
-                            if (assistantsSelect.length) {
-                                assistantsSelect.html(assistantsOptions);
-                                // Reinitialize Select2
-                                if (assistantsSelect.hasClass('select2-hidden-accessible')) {
-                                    assistantsSelect.select2('destroy');
-                                }
-                                setTimeout(function() {
-                                    if (typeof $.fn.select2 !== 'undefined') {
-                                        assistantsSelect.select2({
-                                            dropdownParent: dropdownParent,
-                                            width: '100%',
-                                            placeholder: '{{ localize("global.select") }}...',
-                                            allowClear: true
-                                        });
-                                    }
-                                }, 100);
-                            }
-                        } else {
-                            console.error('Failed to load doctors:', response.message);
-                            if (surgionSelect.length) {
-                                surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
-                            }
-                            if (assistantsSelect.length) {
-                                assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.failed_to_load_doctors") }}</option>');
-                            }
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error loading doctors:', error);
-                        if (surgionSelect.length) {
-                            surgionSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
-                        }
-                        if (assistantsSelect.length) {
-                            assistantsSelect.html('<option value="">{{ localize("global.select") }}...</option><option value="" disabled>{{ localize("global.error_loading_doctors") }}</option>');
-                        }
-                    }
-                });
-            }
         });
     </script>
         </div>

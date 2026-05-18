@@ -4434,4 +4434,8 @@ return [
     'depot.destination_depot' => 'دیپو مقصد',
     'move_stock_between_depots' => 'انتقال موجودی بین دیپو ها؟',
     "new"=>"جدید",
+    "move_stock_from_depot_to_pharmacy"=>"انتقال موجودی از دیپو به دواخانه؟",
+    "move_stock_from_depot_to_depot"=>"انتقال موجودی از دیپو به دیپو؟",
+    "move_stock_from_depot_to_pharmacy"=>"انتقال موجودی از دیپو به دواخانه؟",
+    "move_stock_from_depot_to_pharmacy"=>"انتقال موجودی از دیپو به دواخانه؟",
 ];

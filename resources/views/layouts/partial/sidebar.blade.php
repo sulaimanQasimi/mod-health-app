@@ -241,7 +241,7 @@
                         <li class="menu-item {{ Route::is('pharmacies.*') ? 'active' : '' }}">
                             <a href="{{ route('pharmacies.index') }}" class="menu-link">
                                 <div>{{ localize('global.pharmacies') }}</div>
-                            </a>
+                            </a>    
                         </li>
                     @endif
 

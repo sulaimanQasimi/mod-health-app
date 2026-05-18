@@ -8,17 +8,18 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
-            <h5 class="mb-0">Depot Transactions</h5>
+            <h5 class="mb-0">{{ localize('global.depot.depot_transactions') }}</h5>
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route('depots.movements.depot_to_depot') }}" class="btn btn-outline-primary">
-                    <i class="bx bx-transfer me-1"></i>Depot to Depot
+                    <i class="bx bx-transfer me-1"></i>{{ localize('global.depot.depot_to_depot') }}
                 </a>
                 <a href="{{ route('depots.movements.depot_to_pharmacy') }}" class="btn btn-outline-primary">
-                    <i class="bx bx-clinic me-1"></i>Depot to Pharmacy
+                    <i class="bx bx-clinic me-1"></i>{{ localize('global.depot.depot_to_pharmacy') }}
                 </a>
                 <a href="{{ route('depots.transactions.create') }}" class="btn btn-primary">
-                    <i class="bx bx-plus me-1"></i>New Transaction
+                    <i class="bx bx-plus me-1"></i>{{ localize('global.depot.new') }}
                 </a>
+           
             </div>
         </div>
         <div class="card-body">

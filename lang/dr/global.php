@@ -4412,6 +4412,10 @@ return [
         "depot_transfer" => "انتقال به دیپو",
         "pharmacy_transfer" => "انتقال به دواخانه",
         "transactions" => "تراکنش ها",
+        "depot_transactions" => "تراکنش های دیپو",
+        "depot_to_depot" => "انتقال به دیپو",
+        "depot_to_pharmacy" => "انتقال به دواخانه",
+        "new" => "جدید",
     ],
     "transaction_date" => "تاریخ تراکنش",
     "expiry_date" => "تاریخ انقضا",
@@ -4429,4 +4433,5 @@ return [
     'depot.depot_to_depot_movement' => 'انتقال دیپو به دیپو',
     'depot.destination_depot' => 'دیپو مقصد',
     'move_stock_between_depots' => 'انتقال موجودی بین دیپو ها؟',
+    "new"=>"جدید",
 ];

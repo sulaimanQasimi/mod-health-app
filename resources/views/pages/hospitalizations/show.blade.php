@@ -1211,6 +1211,7 @@
         #anesthesiaAccordion .accordion-item { border: 2px solid #157347; }
         #complaintAccordion .accordion-item { border: 2px solid #b02a37; }
         #dischargeAccordion .accordion-item { border: 2px solid #6c757d; }
+        #physiotherapyAccordion .accordion-item { border: 2px solid #0dcaf0; margin-top:10px !important; }
 
         /* Select2 styles for anesthesia modal */
         #createAnasthesiaModal{{ $hospitalization->id }} .select2-container {

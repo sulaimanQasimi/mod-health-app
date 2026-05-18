@@ -2,45 +2,37 @@
 
 namespace App\Http\Requests;
 
+use App\Services\VitalSignManageService;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreMultipleVitalSignsRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $morphableRules = $this->isMorphableManageRequest()
+            ? ['required']
+            : ['nullable'];
+
         return [
-            // Single vital sign (legacy)
             'vital_sign_type_id' => 'nullable|integer|exists:vital_sign_types,id',
-            'morphable_id' => 'required|integer|min:1',
-            'morphable_type' => [
-                'required',
+            'morphable_id' => array_merge($morphableRules, ['integer', 'min:1']),
+            'morphable_type' => array_merge($morphableRules, [
                 'string',
-                Rule::in(['App\\Models\\UnderReview', 'App\\Models\\Hospitalization'])
-            ],
-            // Multiple vital signs with schedules
+                Rule::in(['App\\Models\\UnderReview', 'App\\Models\\Hospitalization']),
+            ]),
             'vital_signs' => 'nullable|array',
             'vital_signs.*.vital_sign_type_id' => 'nullable|integer|exists:vital_sign_types,id',
             'vital_signs.*.schedules' => 'nullable|array',
             'vital_signs.*.schedules.*.date' => 'nullable|date|before_or_equal:today',
             'vital_signs.*.schedules.*.morning_time' => 'nullable|string|max:255',
             'vital_signs.*.schedules.*.evening_time' => 'nullable|string|max:255',
-            'vital_signs.*.schedules.*.nurse_id' => 'nullable|integer|exists:nurses,id',
-            // Existing vital signs (edit on manage page)
             'existing_vital_signs' => 'nullable|array',
             'existing_vital_signs.*.id' => 'required|integer|exists:vital_signs,id',
             'existing_vital_signs.*.vital_sign_type_id' => 'required|integer|exists:vital_sign_types,id',
@@ -56,23 +48,72 @@ class StoreMultipleVitalSignsRequest extends FormRequest
         ];
     }
 
-    /**
-     * Filter out vital sign entries with no type selected so validation and controller see only filled rows.
-     */
     protected function prepareForValidation(): void
     {
+        if ($this->has('morphable_type') && !$this->filled('morphable_type')) {
+            $this->merge(['morphable_type' => null, 'morphable_id' => null]);
+        }
+
         $vitalSigns = $this->input('vital_signs', []);
-        if (is_array($vitalSigns) && count($vitalSigns) > 0) {
-            $filtered = array_values(array_filter($vitalSigns, function ($row) {
-                return !empty($row['vital_sign_type_id']);
-            }));
-            $this->merge(['vital_signs' => $this->convertScheduleDates($filtered)]);
+        if (is_array($vitalSigns)) {
+            $this->merge([
+                'vital_signs' => $this->convertScheduleDates(
+                    array_values(array_filter($vitalSigns, fn ($row) => !empty($row['vital_sign_type_id'])))
+                ),
+            ]);
         }
 
         $existing = $this->input('existing_vital_signs', []);
-        if (is_array($existing) && count($existing) > 0) {
+        if (is_array($existing)) {
+            $deleteIds = array_map('intval', $this->input('delete_vital_sign_ids', []));
+            $deleteSet = array_flip($deleteIds);
+
+            $existing = array_values(array_filter($existing, function ($row) use ($deleteSet) {
+                $id = (int) ($row['id'] ?? 0);
+
+                return $id > 0 && !isset($deleteSet[$id]);
+            }));
+
             $this->merge(['existing_vital_signs' => $this->convertScheduleDates($existing)]);
         }
+    }
+
+    public function withValidator($validator): void
+    {
+        if (!$this->isMorphableManageRequest()) {
+            return;
+        }
+
+        $validator->after(function ($validator) {
+            $service = new VitalSignManageService();
+            $type = (string) $this->input('morphable_type');
+
+            if (!$service->isAllowedMorphableType($type)) {
+                $validator->errors()->add('morphable_type', 'Invalid related record type.');
+
+                return;
+            }
+
+            if (!$service->resolveMorphable($type, (int) $this->input('morphable_id'))) {
+                $validator->errors()->add('morphable_id', 'Related record was not found.');
+
+                return;
+            }
+
+            $hasNew = count($this->input('vital_signs', [])) > 0;
+            $hasExisting = count($this->input('existing_vital_signs', [])) > 0;
+            $hasDeletes = count($this->input('delete_vital_sign_ids', [])) > 0;
+            $hasScheduleDeletes = count($this->input('delete_schedule_ids', [])) > 0;
+
+            if (!$hasNew && !$hasExisting && !$hasDeletes && !$hasScheduleDeletes) {
+                $validator->errors()->add('vital_signs', __('global.at_least_one_vital_sign_type_required'));
+            }
+        });
+    }
+
+    public function isMorphableManageRequest(): bool
+    {
+        return $this->filled('morphable_type') && $this->filled('morphable_id');
     }
 
     /**
@@ -92,7 +133,7 @@ class StoreMultipleVitalSignsRequest extends FormRequest
                     try {
                         $schedule['date'] = Verta::parse($date)->datetime()->format('Y-m-d');
                     } catch (\Exception $e) {
-                        // leave as-is; validation may fail
+                        // validation will catch invalid dates
                     }
                 }
             }
@@ -102,48 +143,11 @@ class StoreMultipleVitalSignsRequest extends FormRequest
         return $vitalSigns;
     }
 
-    /**
-     * Configure the validator to require either single or multiple structure,
-     * and require nurse for each schedule when user is not a nurse.
-     */
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            $hasSingle = $this->filled('vital_sign_type_id');
-            $vitalSigns = $this->input('vital_signs', []);
-            $hasMultiple = is_array($vitalSigns) && collect($vitalSigns)->contains(fn ($row) => !empty($row['vital_sign_type_id']));
-
-            $hasExisting = is_array($this->input('existing_vital_signs')) && count($this->input('existing_vital_signs')) > 0;
-            $hasDeletes = is_array($this->input('delete_vital_sign_ids')) && count($this->input('delete_vital_sign_ids')) > 0;
-            $hasScheduleDeletes = is_array($this->input('delete_schedule_ids')) && count($this->input('delete_schedule_ids')) > 0;
-
-            if (!$hasSingle && !$hasMultiple && !$hasExisting && !$hasDeletes && !$hasScheduleDeletes) {
-                $validator->errors()->add('vital_signs', __('global.at_least_one_vital_sign_type_required'));
-            }
-        });
-    }
-
     public function messages(): array
     {
         return [
-            'vital_signs.*.vital_sign_type_id.required_with' => 'Each vital sign must have a type selected.',
-            'vital_signs.*.vital_sign_type_id.exists' => 'The selected vital sign type does not exist.',
             'vital_signs.*.schedules.*.date.before_or_equal' => 'Schedule date may not be in the future.',
-            'vital_signs.*.schedules.*.nurse_id.exists' => 'The selected nurse does not exist.',
-        ];
-    }
-
-    public function attributes(): array
-    {
-        return [
-            'vital_sign_type_id' => 'vital sign type',
-            'morphable_id' => 'related record ID',
-            'morphable_type' => 'related record type',
-            'vital_signs.*.vital_sign_type_id' => 'vital sign type',
-            'vital_signs.*.schedules.*.date' => 'date',
-            'vital_signs.*.schedules.*.morning_time' => 'morning time',
-            'vital_signs.*.schedules.*.evening_time' => 'evening time',
-            'vital_signs.*.schedules.*.nurse_id' => 'nurse',
+            'existing_vital_signs.*.schedules.*.date.before_or_equal' => 'Schedule date may not be in the future.',
         ];
     }
 }

@@ -128,10 +128,7 @@ class VitalSignScheduleController extends Controller
             ], 201);
         }
 
-        // Redirect to the vital sign show page
-        $vitalSign = $schedule->vitalSign;
-        return redirect()->route('vital-signs.show', $vitalSign)
-            ->with('success', 'Vital sign schedule created successfully.');
+        return $this->redirectToManagePage($schedule->vitalSign, 'Vital sign schedule created successfully.');
     }
 
     /**
@@ -197,10 +194,7 @@ class VitalSignScheduleController extends Controller
             ]);
         }
 
-        // Redirect to the vital sign show page
-        $vitalSign = $vitalSignSchedule->vitalSign;
-        return redirect()->route('vital-signs.show', $vitalSign)
-            ->with('success', 'Vital sign schedule updated successfully.');
+        return $this->redirectToManagePage($vitalSignSchedule->vitalSign, 'Vital sign schedule updated successfully.');
     }
 
     /**
@@ -218,9 +212,22 @@ class VitalSignScheduleController extends Controller
             ]);
         }
 
-        // Redirect to the vital sign show page
-        $vitalSign = $vitalSignSchedule->vitalSign;
-        return redirect()->route('vital-signs.show', $vitalSign)
-            ->with('success', 'Vital sign schedule deleted successfully.');
+        return $this->redirectToManagePage($vitalSignSchedule->vitalSign, 'Vital sign schedule deleted successfully.');
+    }
+
+    private function redirectToManagePage(VitalSign $vitalSign, string $message): RedirectResponse
+    {
+        if ($vitalSign->morphable_type && $vitalSign->morphable_id) {
+            return redirect()
+                ->route('vital-signs.create', [
+                    'morphable_type' => $vitalSign->morphable_type,
+                    'morphable_id' => $vitalSign->morphable_id,
+                ])
+                ->with('success', $message);
+        }
+
+        return redirect()
+            ->route('vital-signs.index')
+            ->with('success', $message);
     }
 }

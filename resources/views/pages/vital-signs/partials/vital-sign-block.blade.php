@@ -14,7 +14,7 @@
     <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
         <span class="fw-semibold">
             <i class="fas fa-heartbeat text-primary me-1"></i>
-            <span class="vital-sign-label">{{ localize('global.vital_sign') }} {{ $index + 1 }}</span>
+            <span class="vital-sign-label">{{ localize('global.vital_sign') }}</span>
             @if($isExisting)
                 <span class="badge bg-secondary ms-2">#{{ $vitalSignId }}</span>
             @endif
@@ -34,7 +34,8 @@
                 <label class="form-label">{{ localize('global.vital_sign_type_id') }} <span class="text-danger">*</span></label>
                 <select name="{{ $prefix }}[vital_sign_type_id]"
                     class="form-select vital-sign-type-select"
-                    data-placeholder="{{ localize('global.select_vital_sign_type') }}" required>
+                    data-placeholder="{{ localize('global.select_vital_sign_type') }}"
+                    @if($isExisting) required @endif>
                     <option value="">{{ localize('global.select_vital_sign_type') }}</option>
                     @foreach($vitalSignTypes as $type)
                         <option value="{{ $type->id }}"

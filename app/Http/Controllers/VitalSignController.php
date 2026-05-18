@@ -88,8 +88,23 @@ class VitalSignController extends Controller
         $morphableType = $request->get('morphable_type');
         $morphableId = $request->get('morphable_id');
         $currentUserNurse = auth()->user()->nurse ?? null;
+        $morphModel = null;
 
-        return view('pages.vital-signs.create', compact('vitalSignTypes', 'nurses', 'morphableType', 'morphableId', 'currentUserNurse'));
+        if ($morphableType && $morphableId && class_exists($morphableType)) {
+            $morphModel = $morphableType::with([
+                'vitalSigns.vitalSignType',
+                'vitalSigns.schedules' => fn ($q) => $q->orderBy('day'),
+            ])->find($morphableId);
+        }
+
+        return view('pages.vital-signs.create', compact(
+            'vitalSignTypes',
+            'nurses',
+            'morphableType',
+            'morphableId',
+            'currentUserNurse',
+            'morphModel'
+        ));
     }
 
     /**
@@ -101,6 +116,26 @@ class VitalSignController extends Controller
 
         $morphableType = $request->input('morphable_type');
         $morphableId = (int) $request->input('morphable_id');
+dd($morphableType, $morphableId, $request->all());
+        if ($morphableType && $morphableId) {
+            \DB::transaction(function () use ($request, $morphableType, $morphableId) {
+                if ($request->filled('vital_signs') && is_array($request->vital_signs)) {
+                    $this->storeMultipleVitalSignsWithSchedules($request->vital_signs, $morphableType, $morphableId);
+                }
+                $this->syncMorphableVitalSigns($request, $morphableType, $morphableId);
+            });
+
+            $message = 'Vital signs and schedules saved successfully.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 201);
+            }
+
+            return redirect()->route('vital-signs.create', [
+                'morphable_type' => $morphableType,
+                'morphable_id' => $morphableId,
+            ])->with('success', $message);
+        }
 
         if ($request->filled('vital_signs') && is_array($request->vital_signs)) {
             $created = $this->storeMultipleVitalSignsWithSchedules($request->vital_signs, $morphableType, $morphableId);
@@ -112,17 +147,6 @@ class VitalSignController extends Controller
                 return response()->json(['message' => $message], 201);
             }
 
-            // When creating from hospitalization/under_review, always redirect to parent—never to vital-signs.show
-            $routeName = $morphableType === 'App\\Models\\Hospitalization'
-                ? 'hospitalizations.show'
-                : 'under_reviews.show';
-            $morphable = (str_contains($morphableType, 'Hospitalization'))
-                ? Hospitalization::find($morphableId)
-                : UnderReview::find($morphableId);
-
-            if ($morphable) {
-                return redirect()->route($routeName, $morphable)->with('success', $message);
-            }
             return redirect()->route('vital-signs.index', ['morphable_type' => $morphableType, 'morphable_id' => $morphableId])
                 ->with('success', $message);
         }
@@ -160,8 +184,7 @@ class VitalSignController extends Controller
     {
         $count = 0;
 
-        \DB::transaction(function () use ($vitalSignsData, $morphableType, $morphableId, &$count) {
-            foreach ($vitalSignsData as $row) {
+        foreach ($vitalSignsData as $row) {
                 $vitalSignTypeId = (int) ($row['vital_sign_type_id'] ?? 0);
                 if ($vitalSignTypeId < 1) {
                     continue;
@@ -215,9 +238,119 @@ class VitalSignController extends Controller
                     $existingDays[] = 'Day ' . ($dayNumber - 1);
                 }
             }
-        });
 
         return $count;
+    }
+
+    /**
+     * Update existing vital signs and schedules, and process deletions for a morphable record.
+     */
+    private function syncMorphableVitalSigns(StoreMultipleVitalSignsRequest $request, string $morphableType, int $morphableId): void
+    {
+        $deleteScheduleIds = array_map('intval', $request->input('delete_schedule_ids', []));
+            if ($deleteScheduleIds !== []) {
+                VitalSignSchedule::query()
+                    ->whereIn('id', $deleteScheduleIds)
+                    ->whereHas('vitalSign', fn ($q) => $q->where('morphable_type', $morphableType)->where('morphable_id', $morphableId))
+                    ->each(function (VitalSignSchedule $schedule) {
+                        $this->authorize('delete', $schedule);
+                        $schedule->delete();
+                    });
+            }
+
+            $deleteVitalSignIds = array_map('intval', $request->input('delete_vital_sign_ids', []));
+            foreach ($deleteVitalSignIds as $vitalSignId) {
+                $vitalSign = VitalSign::where('id', $vitalSignId)
+                    ->where('morphable_type', $morphableType)
+                    ->where('morphable_id', $morphableId)
+                    ->first();
+                if (!$vitalSign) {
+                    continue;
+                }
+                $this->authorize('delete', $vitalSign);
+                $vitalSign->schedules()->delete();
+                $vitalSign->delete();
+            }
+
+            $existingRows = $request->input('existing_vital_signs', []);
+            if (!is_array($existingRows)) {
+                $existingRows = [];
+            }
+
+            $authNurse = auth()->user()->nurse;
+
+            foreach ($existingRows as $row) {
+                $vitalSignId = (int) ($row['id'] ?? 0);
+                if ($vitalSignId < 1) {
+                    continue;
+                }
+
+                $vitalSign = VitalSign::where('id', $vitalSignId)
+                    ->where('morphable_type', $morphableType)
+                    ->where('morphable_id', $morphableId)
+                    ->first();
+
+                if (!$vitalSign) {
+                    continue;
+                }
+
+                $this->authorize('update', $vitalSign);
+                $vitalSign->update([
+                    'vital_sign_type_id' => (int) $row['vital_sign_type_id'],
+                ]);
+
+                $schedules = $row['schedules'] ?? [];
+                if (!is_array($schedules)) {
+                    continue;
+                }
+
+                $existingDays = VitalSignSchedule::where('vital_sign_id', $vitalSign->id)
+                    ->whereNotNull('day')
+                    ->pluck('day')
+                    ->toArray();
+
+                foreach ($schedules as $scheduleRow) {
+                    $scheduleId = isset($scheduleRow['id']) ? (int) $scheduleRow['id'] : 0;
+                    $date = $scheduleRow['date'] ?? null;
+                    $morningTime = $scheduleRow['morning_time'] ?? null;
+                    $eveningTime = $scheduleRow['evening_time'] ?? null;
+
+                    if ($scheduleId > 0) {
+                        $schedule = VitalSignSchedule::where('id', $scheduleId)
+                            ->where('vital_sign_id', $vitalSign->id)
+                            ->first();
+                        if (!$schedule) {
+                            continue;
+                        }
+                        $this->authorize('update', $schedule);
+                        $schedule->update([
+                            'date' => $date ?: null,
+                            'morning_time' => $morningTime ?: null,
+                            'evening_time' => $eveningTime ?: null,
+                        ]);
+                        continue;
+                    }
+
+                    if (!$date && !$morningTime && !$eveningTime) {
+                        continue;
+                    }
+
+                    $dayNumber = 1;
+                    while (in_array('Day ' . $dayNumber, $existingDays, true)) {
+                        $dayNumber++;
+                    }
+
+                    VitalSignSchedule::create([
+                        'vital_sign_id' => $vitalSign->id,
+                        'day' => 'Day ' . $dayNumber,
+                        'date' => $date ?: null,
+                        'morning_time' => $morningTime ?: null,
+                        'evening_time' => $eveningTime ?: null,
+                        'nurse_id' => $authNurse ? $authNurse->id : null,
+                    ]);
+                    $existingDays[] = 'Day ' . $dayNumber;
+                }
+            }
     }
 
     /**

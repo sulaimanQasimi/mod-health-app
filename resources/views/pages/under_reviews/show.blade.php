@@ -988,108 +988,11 @@
                             <div id="vitalSignsCollapse" class="accordion-collapse collapse"
                                 aria-labelledby="vitalSignsHeading" data-bs-parent="#vitalSignsAccordion">
                                 <div class="accordion-body">
-                                    <div class="row mb-3">
-                                        <div class="col-md-4">
-                                            @can('create', App\Models\VitalSign::class)
-                                                <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                    class="btn btn-primary">
-                                                    <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
-                                                </a>
-                                            @endcan
-                                        </div>
-                                        <div class="col-md-4 text-center">
-                                            @if($vitalCount > 0)
-                                                <a href="{{ route('vital-signs.print', ['App\\Models\\UnderReview', $underReview->id]) }}"
-                                                    class="btn btn-info" target="_blank">
-                                                    <i class="fas fa-print"></i>
-                                                    {{ localize('global.print_vital_signs_chart') }}
-                                                </a>
-                                            @endif
-                                        </div>
-                                        <div class="col-md-4 text-end">
-                                            <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                class="btn btn-outline-primary">
-                                                <i class="bx bx-list-ul"></i>
-                                                {{ localize('global.view_all_vital_signs') }}
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    @if($vitalCount > 0)
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ localize('id') }}</th>
-                                                        <th>{{ localize('vital_sign_type') }}</th>
-                                                        <th>{{ localize('created_at') }}</th>
-                                                        <th>{{ localize('schedules') }}</th>
-                                                        <th>{{ localize('actions') }}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($underReview->vitalSigns->take(5) as $vitalSign)
-                                                        <tr>
-                                                            <td>{{ $vitalSign->id }}</td>
-                                                            <td>
-                                                                <span
-                                                                    class="badge bg-info">{{ $vitalSign->vitalSignType->name ?? 'N/A' }}</span>
-                                                            </td>
-                                                            <td>{{ $vitalSign->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
-                                                            <td>
-                                                                <span class="badge bg-secondary">
-                                                                    {{ $vitalSign->schedules ? $vitalSign->schedules->count() : 0 }}
-                                                                    {{ localize('schedules') }}
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="btn-group" role="group">
-                                                                    @can('view', $vitalSign)
-                                                                        <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                                                            class="btn btn-info btn-sm"
-                                                                            title="{{ localize('global.view') }}">
-                                                                            <i class="bx bx-show"></i>
-                                                                        </a>
-                                                                    @endcan
-                                                                    @can('create', App\Models\VitalSignSchedule::class)
-                                                                        <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                                                            class="btn btn-success btn-sm"
-                                                                            title="{{ localize('global.add_schedule') }}">
-                                                                            <i class="bx bx-time"></i>
-                                                                        </a>
-                                                                    @endcan
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                            @if($vitalCount > 5)
-                                                <div class="text-center mt-3">
-                                                    <a href="{{ route('vital-signs.index', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                        class="btn btn-outline-primary">
-                                                        {{ localize('global.view_all') }}
-                                                        ({{ $vitalCount }}
-                                                        {{ localize('global.vital_signs') }})
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <div class="text-center py-4">
-                                            <div class="mb-3">
-                                                <i class="bx bx-heart bx-lg text-muted"></i>
-                                            </div>
-                                            <h5 class="text-muted">{{ localize('global.no_vital_signs_found') }}</h5>
-                                            <p class="text-muted">{{ localize('global.add_first_vital_sign') }}</p>
-                                            @can('create', App\Models\VitalSign::class)
-                                                <a href="{{ route('vital-signs.create', ['morphable_type' => 'App\\Models\\UnderReview', 'morphable_id' => $underReview->id]) }}"
-                                                    class="btn btn-primary">
-                                                    <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
-                                                </a>
-                                            @endcan
-                                        </div>
-                                    @endif
+                                    @include('pages.vital-signs.partials.section', [
+                                        'morphableType' => 'App\\Models\\UnderReview',
+                                        'morphableId' => $underReview->id,
+                                        'morphModel' => $underReview,
+                                    ])
                                 </div>
                             </div>
                         </div>

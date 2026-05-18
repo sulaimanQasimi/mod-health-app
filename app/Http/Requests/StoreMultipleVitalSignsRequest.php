@@ -40,6 +40,19 @@ class StoreMultipleVitalSignsRequest extends FormRequest
             'vital_signs.*.schedules.*.morning_time' => 'nullable|string|max:255',
             'vital_signs.*.schedules.*.evening_time' => 'nullable|string|max:255',
             'vital_signs.*.schedules.*.nurse_id' => 'nullable|integer|exists:nurses,id',
+            // Existing vital signs (edit on manage page)
+            'existing_vital_signs' => 'nullable|array',
+            'existing_vital_signs.*.id' => 'required|integer|exists:vital_signs,id',
+            'existing_vital_signs.*.vital_sign_type_id' => 'required|integer|exists:vital_sign_types,id',
+            'existing_vital_signs.*.schedules' => 'nullable|array',
+            'existing_vital_signs.*.schedules.*.id' => 'nullable|integer|exists:vital_sign_schedules,id',
+            'existing_vital_signs.*.schedules.*.date' => 'nullable|date|before_or_equal:today',
+            'existing_vital_signs.*.schedules.*.morning_time' => 'nullable|string|max:255',
+            'existing_vital_signs.*.schedules.*.evening_time' => 'nullable|string|max:255',
+            'delete_vital_sign_ids' => 'nullable|array',
+            'delete_vital_sign_ids.*' => 'integer|exists:vital_signs,id',
+            'delete_schedule_ids' => 'nullable|array',
+            'delete_schedule_ids.*' => 'integer|exists:vital_sign_schedules,id',
         ];
     }
 
@@ -53,26 +66,40 @@ class StoreMultipleVitalSignsRequest extends FormRequest
             $filtered = array_values(array_filter($vitalSigns, function ($row) {
                 return !empty($row['vital_sign_type_id']);
             }));
-            // Convert Persian (Jalali) schedule dates to Gregorian for validation and storage
-            foreach ($filtered as $i => &$row) {
-                $schedules = $row['schedules'] ?? [];
-                if (!is_array($schedules)) {
-                    continue;
-                }
-                foreach ($schedules as $j => &$schedule) {
-                    $date = $schedule['date'] ?? null;
-                    if ($date && is_string($date)) {
-                        try {
-                            $schedule['date'] = Verta::parse($date)->datetime()->format('Y-m-d');
-                        } catch (\Exception $e) {
-                            // leave as-is; validation may fail
-                        }
+            $this->merge(['vital_signs' => $this->convertScheduleDates($filtered)]);
+        }
+
+        $existing = $this->input('existing_vital_signs', []);
+        if (is_array($existing) && count($existing) > 0) {
+            $this->merge(['existing_vital_signs' => $this->convertScheduleDates($existing)]);
+        }
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $vitalSigns
+     * @return array<int, array<string, mixed>>
+     */
+    private function convertScheduleDates(array $vitalSigns): array
+    {
+        foreach ($vitalSigns as &$row) {
+            $schedules = $row['schedules'] ?? [];
+            if (!is_array($schedules)) {
+                continue;
+            }
+            foreach ($schedules as &$schedule) {
+                $date = $schedule['date'] ?? null;
+                if ($date && is_string($date)) {
+                    try {
+                        $schedule['date'] = Verta::parse($date)->datetime()->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        // leave as-is; validation may fail
                     }
                 }
             }
-            unset($row, $schedule);
-            $this->merge(['vital_signs' => $filtered]);
         }
+        unset($row, $schedule);
+
+        return $vitalSigns;
     }
 
     /**
@@ -86,10 +113,13 @@ class StoreMultipleVitalSignsRequest extends FormRequest
             $vitalSigns = $this->input('vital_signs', []);
             $hasMultiple = is_array($vitalSigns) && collect($vitalSigns)->contains(fn ($row) => !empty($row['vital_sign_type_id']));
 
-            if (!$hasSingle && !$hasMultiple) {
+            $hasExisting = is_array($this->input('existing_vital_signs')) && count($this->input('existing_vital_signs')) > 0;
+            $hasDeletes = is_array($this->input('delete_vital_sign_ids')) && count($this->input('delete_vital_sign_ids')) > 0;
+            $hasScheduleDeletes = is_array($this->input('delete_schedule_ids')) && count($this->input('delete_schedule_ids')) > 0;
+
+            if (!$hasSingle && !$hasMultiple && !$hasExisting && !$hasDeletes && !$hasScheduleDeletes) {
                 $validator->errors()->add('vital_signs', __('global.at_least_one_vital_sign_type_required'));
             }
-
         });
     }
 

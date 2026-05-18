@@ -1,14 +1,10 @@
-<div class="col-md-12 mt-4">
-    <h5 class="mb-4 p-3 bg-label-primary">
-        <i class="bx bx-heart p-1"></i>{{ localize('global.vital_signs') }}
-    </h5>
-
+<div class="col-md-12 mt-2">
     <div class="row mb-3">
         <div class="col-md-4">
             @can('create', App\Models\VitalSign::class)
                 <a href="{{ route('vital-signs.create', ['morphable_type' => $morphableType, 'morphable_id' => $morphableId]) }}"
                     class="btn btn-primary">
-                    <i class="bx bx-plus"></i> {{ localize('global.add_vital_sign') }}
+                    <i class="bx bx-plus"></i> {{ localize('global.manage_vital_signs') }}
                 </a>
             @endcan
         </div>
@@ -36,7 +32,7 @@
                         <th>{{ localize('global.id') }}</th>
                         <th>{{ localize('global.vital_sign_type') }}</th>
                         <th>{{ localize('global.created_at') }}</th>
-                        <th>{{ localize('schedules') }}</th>
+                        <th>{{ localize('global.schedules') }}</th>
                         <th>{{ localize('global.actions') }}</th>
                     </tr>
                 </thead>
@@ -53,21 +49,12 @@
                                     {{ localize('global.schedules') }}</span>
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    @can('view', $vitalSign)
-                                        <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                            class="btn btn-info btn-sm" title="{{ localize('global.view') }}">
-                                            <i class="bx bx-show"></i>
-                                        </a>
-                                    @endcan
-                                    @can('create', App\Models\VitalSignSchedule::class)
-                                        <a href="{{ route('vital-signs.show', $vitalSign) }}"
-                                            class="btn btn-success btn-sm"
-                                            title="{{ localize('global.add_schedule') }}">
-                                            <i class="bx bx-time"></i>
-                                        </a>
-                                    @endcan
-                                </div>
+                                @can('update', $vitalSign)
+                                    <a href="{{ route('vital-signs.create', ['morphable_type' => $morphableType, 'morphable_id' => $morphableId]) }}"
+                                        class="btn btn-warning btn-sm" title="{{ localize('global.edit') }}">
+                                        <i class="bx bx-edit"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
@@ -76,10 +63,10 @@
 
             @if($morphModel->vitalSigns->count() > 5)
                 <div class="text-center mt-3">
-                    <a href="{{ route('vital-signs.index', ['morphable_type' => $morphableType, 'morphable_id' => $morphableId]) }}"
+                    <a href="{{ route('vital-signs.create', ['morphable_type' => $morphableType, 'morphable_id' => $morphableId]) }}"
                         class="btn btn-outline-primary">
-                        {{ localize('global.view_all') }} ({{ $morphModel->vitalSigns->count() }}
-                        {{ localize('global.vital_signs') }})
+                        {{ localize('global.manage_vital_signs') }}
+                        ({{ $morphModel->vitalSigns->count() }})
                     </a>
                 </div>
             @endif

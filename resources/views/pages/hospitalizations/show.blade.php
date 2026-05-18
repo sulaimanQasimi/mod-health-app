@@ -271,7 +271,11 @@
                                     <div id="vitalSignsCollapse" class="accordion-collapse collapse" aria-labelledby="vitalSignsHeading"
                                         data-bs-parent="#vitalSignsAccordion">
                                         <div class="accordion-body">
-                                            <div id="vital-signs-section"></div>
+                                            @include('pages.vital-signs.partials.section', [
+                                                'morphableType' => 'App\\Models\\Hospitalization',
+                                                'morphableId' => $hospitalization->id,
+                                                'morphModel' => $hospitalization,
+                                            ])
                                         </div>
                                     </div>
                                 </div>
@@ -2107,7 +2111,6 @@
             $('#nursing-note-section').load('{{ route('nurse-notes.section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#diabetes-charts-section').load('{{ route('hospitalizations.diabetes-charts-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#medication-administration-records-section').load('{{ route('hospitalizations.medication-administration-records-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
-            $('#vital-signs-section').load('{{ route('hospitalizations.vital-signs-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
             $('#nutrition-care-section').load('{{ route('hospitalizations.nutrition-care-section', ['morphable_type' => 'App\\Models\\Hospitalization', 'morphable_id' => $hospitalization->id]) }}');
         });
 

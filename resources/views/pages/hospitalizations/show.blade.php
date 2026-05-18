@@ -90,7 +90,7 @@
                             </div>
 
                             <!-- Blood bank requests (linked to this hospitalization) -->
-                            <div class="accordion mt-4" id="bloodBankAccordion{{ $hospitalization->id }}">
+                            <div class="accordion mt-4 border border-danger rounded mb-4" id="bloodBankAccordion{{ $hospitalization->id }}">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="bloodBankHeading{{ $hospitalization->id }}">
                                         <button class="accordion-button collapsed" type="button"

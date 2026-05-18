@@ -103,12 +103,20 @@ class VitalSignController extends Controller
             $this->authorize('create', VitalSign::class);
         }
 
+        $schedulesByDate = ($morphableType && $morphableId)
+            ? $this->vitalSignManage->schedulesGroupedByPersianDate($morphableType, $morphableId)
+            : [];
+
+        $defaultScheduleDate = old('schedule_date', verta()->format('Y/m/d'));
+
         return view('pages.vital-signs.create', compact(
             'vitalSignTypes',
             'morphableType',
             'morphableId',
             'currentUserNurse',
-            'morphModel'
+            'morphModel',
+            'schedulesByDate',
+            'defaultScheduleDate'
         ));
     }
 
@@ -138,24 +146,52 @@ class VitalSignController extends Controller
 
         $this->authorizeManagePage($morphableType, $morphableId);
 
-        foreach ($request->input('vital_signs', []) as $row) {
-            if (!empty($row['vital_sign_type_id'])) {
-                $this->authorize('create', VitalSign::class);
-                break;
-            }
-        }
+        if ($request->isDailyScheduleRequest()) {
+            foreach ($request->input('schedule_rows', []) as $row) {
+                if (empty($row['vital_sign_type_id'])) {
+                    continue;
+                }
 
-        $this->vitalSignManage->syncMorphable(
-            $morphableType,
-            $morphableId,
-            $request->input('vital_signs', []),
-            $request->input('existing_vital_signs', []),
-            $request->input('delete_vital_sign_ids', []),
-            $request->input('delete_schedule_ids', []),
-            auth()->user()->nurse,
-            fn (VitalSign|VitalSignSchedule $model) => $this->authorize('update', $model),
-            fn (VitalSign|VitalSignSchedule $model) => $this->authorize('delete', $model),
-        );
+                $exists = VitalSign::query()
+                    ->where('morphable_type', $morphableType)
+                    ->where('morphable_id', $morphableId)
+                    ->where('vital_sign_type_id', (int) $row['vital_sign_type_id'])
+                    ->exists();
+
+                if (!$exists) {
+                    $this->authorize('create', VitalSign::class);
+                    break;
+                }
+            }
+
+            $this->vitalSignManage->syncDailyScheduleRows(
+                $morphableType,
+                $morphableId,
+                $request->input('schedule_date'),
+                $request->input('schedule_rows', []),
+                auth()->user()->nurse,
+                fn (VitalSign|VitalSignSchedule $model) => $this->authorize('update', $model),
+            );
+        } else {
+            foreach ($request->input('vital_signs', []) as $row) {
+                if (!empty($row['vital_sign_type_id'])) {
+                    $this->authorize('create', VitalSign::class);
+                    break;
+                }
+            }
+
+            $this->vitalSignManage->syncMorphable(
+                $morphableType,
+                $morphableId,
+                $request->input('vital_signs', []),
+                $request->input('existing_vital_signs', []),
+                $request->input('delete_vital_sign_ids', []),
+                $request->input('delete_schedule_ids', []),
+                auth()->user()->nurse,
+                fn (VitalSign|VitalSignSchedule $model) => $this->authorize('update', $model),
+                fn (VitalSign|VitalSignSchedule $model) => $this->authorize('delete', $model),
+            );
+        }
 
         $message = 'Vital signs and schedules saved successfully.';
 

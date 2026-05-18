@@ -49,6 +49,120 @@ class VitalSignManageService
     }
 
     /**
+     * Save schedule rows for one date: reuse existing vital signs by type, upsert schedules by date.
+     *
+     * @param  array<int, array<string, mixed>>  $rows
+     */
+    public function syncDailyScheduleRows(
+        string $morphableType,
+        int $morphableId,
+        string $dateYmd,
+        array $rows,
+        ?Nurse $authNurse,
+        callable $authorizeUpdate
+    ): void {
+        $rows = array_values(array_filter($rows, function ($row) {
+            return (int) ($row['vital_sign_type_id'] ?? 0) > 0;
+        }));
+
+        DB::transaction(function () use ($morphableType, $morphableId, $dateYmd, $rows, $authNurse, $authorizeUpdate) {
+            foreach ($rows as $row) {
+                $typeId = (int) $row['vital_sign_type_id'];
+
+                $vitalSign = VitalSign::query()
+                    ->where('morphable_type', $morphableType)
+                    ->where('morphable_id', $morphableId)
+                    ->where('vital_sign_type_id', $typeId)
+                    ->first();
+
+                if (!$vitalSign) {
+                    $vitalSign = VitalSign::create([
+                        'vital_sign_type_id' => $typeId,
+                        'morphable_type' => $morphableType,
+                        'morphable_id' => $morphableId,
+                    ]);
+                }
+
+                $payload = [
+                    'date' => $dateYmd,
+                    'morning_time' => !empty($row['morning_time']) ? $row['morning_time'] : null,
+                    'evening_time' => !empty($row['evening_time']) ? $row['evening_time'] : null,
+                ];
+
+                if ($this->scheduleIsEmpty($payload)) {
+                    continue;
+                }
+
+                $scheduleId = (int) ($row['schedule_id'] ?? 0);
+
+                if ($scheduleId > 0) {
+                    $schedule = VitalSignSchedule::query()
+                        ->where('id', $scheduleId)
+                        ->where('vital_sign_id', $vitalSign->id)
+                        ->first();
+
+                    if ($schedule) {
+                        $authorizeUpdate($schedule);
+                        $schedule->update($payload);
+                        continue;
+                    }
+                }
+
+                $existing = VitalSignSchedule::query()
+                    ->where('vital_sign_id', $vitalSign->id)
+                    ->whereDate('date', $dateYmd)
+                    ->first();
+
+                if ($existing) {
+                    $authorizeUpdate($existing);
+                    $existing->update($payload);
+                    continue;
+                }
+
+                $existingDays = $this->existingDayLabels($vitalSign->id);
+                $dayNumber = $this->nextDayNumber($existingDays);
+
+                VitalSignSchedule::create([
+                    'vital_sign_id' => $vitalSign->id,
+                    'day' => 'Day ' . $dayNumber,
+                    'date' => $payload['date'],
+                    'morning_time' => $payload['morning_time'],
+                    'evening_time' => $payload['evening_time'],
+                    'nurse_id' => $authNurse?->id,
+                ]);
+            }
+        });
+    }
+
+    /**
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    public function schedulesGroupedByPersianDate(string $morphableType, int $morphableId): array
+    {
+        $grouped = [];
+
+        foreach ($this->loadVitalSignsForMorphable($morphableType, $morphableId) as $vitalSign) {
+            foreach ($vitalSign->schedules as $schedule) {
+                if (!$schedule->date) {
+                    continue;
+                }
+
+                $dateKey = verta($schedule->date)->format('Y/m/d');
+
+                $grouped[$dateKey][] = [
+                    'vital_sign_id' => $vitalSign->id,
+                    'schedule_id' => $schedule->id,
+                    'vital_sign_type_id' => $vitalSign->vital_sign_type_id,
+                    'morning_time' => $schedule->morning_time,
+                    'evening_time' => $schedule->evening_time,
+                ];
+            }
+        }
+
+        return $grouped;
+    }
+
+    /**
      * Persist creates, updates, and deletions for one morphable record.
      */
     public function syncMorphable(

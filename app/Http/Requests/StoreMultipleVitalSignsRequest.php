@@ -45,6 +45,13 @@ class StoreMultipleVitalSignsRequest extends FormRequest
             'delete_vital_sign_ids.*' => 'integer|exists:vital_signs,id',
             'delete_schedule_ids' => 'nullable|array',
             'delete_schedule_ids.*' => 'integer|exists:vital_sign_schedules,id',
+            'schedule_date' => 'nullable|string',
+            'schedule_rows' => 'nullable|array',
+            'schedule_rows.*.vital_sign_type_id' => 'nullable|integer|exists:vital_sign_types,id',
+            'schedule_rows.*.morning_time' => 'nullable|string|max:255',
+            'schedule_rows.*.evening_time' => 'nullable|string|max:255',
+            'schedule_rows.*.schedule_id' => 'nullable|integer|exists:vital_sign_schedules,id',
+            'schedule_rows.*.vital_sign_id' => 'nullable|integer|exists:vital_signs,id',
         ];
     }
 
@@ -76,6 +83,24 @@ class StoreMultipleVitalSignsRequest extends FormRequest
 
             $this->merge(['existing_vital_signs' => $this->convertScheduleDates($existing)]);
         }
+
+        if ($this->isDailyScheduleRequest()) {
+            $scheduleDate = $this->input('schedule_date');
+            if ($scheduleDate && is_string($scheduleDate)) {
+                try {
+                    $this->merge(['schedule_date' => Verta::parse($scheduleDate)->datetime()->format('Y-m-d')]);
+                } catch (\Exception $e) {
+                    // validation will catch invalid dates
+                }
+            }
+
+            $rows = $this->input('schedule_rows', []);
+            if (is_array($rows)) {
+                $this->merge([
+                    'schedule_rows' => array_values(array_filter($rows, fn ($row) => !empty($row['vital_sign_type_id']))),
+                ]);
+            }
+        }
     }
 
     public function withValidator($validator): void
@@ -100,6 +125,34 @@ class StoreMultipleVitalSignsRequest extends FormRequest
                 return;
             }
 
+            if ($this->isDailyScheduleRequest()) {
+                if (!$this->filled('schedule_date')) {
+                    $validator->errors()->add('schedule_date', __('global.date') . ' ' . __('validation.required'));
+                }
+
+                $rows = $this->input('schedule_rows', []);
+                if (count($rows) === 0) {
+                    $validator->errors()->add('schedule_rows', __('global.at_least_one_vital_sign_type_required'));
+                }
+
+                $typeIds = [];
+                foreach ($rows as $index => $row) {
+                    $typeId = (int) ($row['vital_sign_type_id'] ?? 0);
+                    if ($typeId < 1) {
+                        continue;
+                    }
+                    if (isset($typeIds[$typeId])) {
+                        $validator->errors()->add(
+                            "schedule_rows.{$index}.vital_sign_type_id",
+                            'Each vital sign type may only be selected once per date.'
+                        );
+                    }
+                    $typeIds[$typeId] = true;
+                }
+
+                return;
+            }
+
             $hasNew = count($this->input('vital_signs', [])) > 0;
             $hasExisting = count($this->input('existing_vital_signs', [])) > 0;
             $hasDeletes = count($this->input('delete_vital_sign_ids', [])) > 0;
@@ -114,6 +167,12 @@ class StoreMultipleVitalSignsRequest extends FormRequest
     public function isMorphableManageRequest(): bool
     {
         return $this->filled('morphable_type') && $this->filled('morphable_id');
+    }
+
+    public function isDailyScheduleRequest(): bool
+    {
+        return $this->isMorphableManageRequest()
+            && ($this->has('schedule_rows') || $this->filled('schedule_date'));
     }
 
     /**

@@ -302,7 +302,7 @@ class HospitalizationController extends Controller
         $medicineUsageTypes = MedicineUsageType::all();
 
         // Load only basic hospitalization data with essential relationships
-        $hospitalization->load(['patient', 'doctor', 'room', 'bed', 'appointment']);
+        $hospitalization->load(['patient', 'doctor', 'room', 'bed', 'appointment', 'bloodBanks.patient', 'bloodBanks.department']);
 
         // Load current user's nurse relationship for auto-selection
         $currentUser = auth()->user()->load('nurse');

@@ -145,6 +145,11 @@ class Hospitalization extends Model
         return $this->belongsTo(Appointment::class);
     }
 
+    public function bloodBanks()
+    {
+        return $this->hasMany(BloodBank::class, 'hospitalization_id');
+    }
+
     public function labs()
     {
         return $this->morphMany(PatientTestRegistration::class, 'testable');

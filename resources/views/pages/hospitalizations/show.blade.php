@@ -89,6 +89,153 @@
                                 </div>
                             </div>
 
+                            <!-- Blood bank requests (linked to this hospitalization) -->
+                            <div class="accordion mt-4" id="bloodBankAccordion{{ $hospitalization->id }}">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="bloodBankHeading{{ $hospitalization->id }}">
+                                        <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#bloodBankCollapse{{ $hospitalization->id }}"
+                                            aria-expanded="false" aria-controls="bloodBankCollapse{{ $hospitalization->id }}">
+                                            <i class="bx bx-donate-blood p-1 me-2 text-danger"></i>
+                                            {{ localize('global.request_blood') }}
+                                            @if ($hospitalization->bloodBanks->count() > 0)
+                                                <span class="badge bg-danger ms-2">{{ $hospitalization->bloodBanks->count() }}</span>
+                                            @endif
+                                        </button>
+                                    </h2>
+                                    <div id="bloodBankCollapse{{ $hospitalization->id }}" class="accordion-collapse collapse"
+                                        aria-labelledby="bloodBankHeading{{ $hospitalization->id }}"
+                                        data-bs-parent="#bloodBankAccordion{{ $hospitalization->id }}">
+                                        <div class="accordion-body">
+                                            @if ($hospitalization->is_discharged == 0)
+                                                <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#requestBloodModalHospitalization{{ $hospitalization->id }}">
+                                                    <i class="bx bx-plus"></i>
+                                                </button>
+                                                <div class="modal fade" id="requestBloodModalHospitalization{{ $hospitalization->id }}"
+                                                    tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">{{ localize('global.request_blood') }}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form action="{{ route('blood_banks.store') }}" method="POST">
+                                                                    @csrf
+                                                                    <input type="hidden" name="patient_id"
+                                                                        value="{{ $hospitalization->patient_id }}">
+                                                                    <input type="hidden" name="hospitalization_id"
+                                                                        value="{{ $hospitalization->id }}">
+                                                                    @if ($hospitalization->appointment_id)
+                                                                        <input type="hidden" name="appointment_id"
+                                                                            value="{{ $hospitalization->appointment_id }}">
+                                                                    @endif
+                                                                    @if ($hospitalization->appointment?->department_id)
+                                                                        <input type="hidden" name="department_id"
+                                                                            value="{{ $hospitalization->appointment->department_id }}">
+                                                                    @endif
+                                                                    <input type="hidden" name="branch_id"
+                                                                        value="{{ $hospitalization->branch_id }}">
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">{{ localize('global.blood_group') }}</label>
+                                                                        <select class="form-select" name="group" required>
+                                                                            <option value="">{{ localize('global.select') }}</option>
+                                                                            <option value="A">A</option>
+                                                                            <option value="B">B</option>
+                                                                            <option value="AB">AB</option>
+                                                                            <option value="O">O</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">{{ localize('global.blood_rh') }}</label>
+                                                                        <select class="form-select" name="rh" required>
+                                                                            <option value="">{{ localize('global.select') }}</option>
+                                                                            <option value="+">+</option>
+                                                                            <option value="-">-</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">{{ localize('global.blood_type') }}</label>
+                                                                        <select class="form-select" name="type" required>
+                                                                            <option value="">{{ localize('global.select') }}</option>
+                                                                            <option value="RBC">RBC</option>
+                                                                            <option value="PRBC">PRBC</option>
+                                                                            <option value="Fresh">Fresh</option>
+                                                                            <option value="Platelets">Platelets</option>
+                                                                            <option value="Plasma">Plasma</option>
+                                                                            <option value="Whole Blood">Whole Blood</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">{{ localize('global.quantity') }}</label>
+                                                                        <input type="number" min="1" class="form-control" name="quantity"
+                                                                            required>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                                                                        <button type="submit"
+                                                                            class="btn btn-primary">{{ localize('global.save') }}</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ localize('global.blood_group') }}</th>
+                                                            <th>{{ localize('global.rh') }}</th>
+                                                            <th>{{ localize('global.blood_type') }}</th>
+                                                            <th>{{ localize('global.quantity') }}</th>
+                                                            <th>{{ localize('global.status') }}</th>
+                                                            <th>{{ localize('global.actions') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @forelse ($hospitalization->bloodBanks as $bloodBank)
+                                                            <tr>
+                                                                <td>{{ $bloodBank->group }}</td>
+                                                                <td>{{ $bloodBank->rh }}</td>
+                                                                <td>{{ $bloodBank->type }}</td>
+                                                                <td>{{ $bloodBank->quantity }}</td>
+                                                                <td>{{ $bloodBank->status }}</td>
+                                                                <td>
+                                                                    <a href="{{ route('blood_banks.show', $bloodBank->id) }}"
+                                                                        class="btn btn-sm btn-outline-primary"><i
+                                                                            class="bx bx-expand"></i></a>
+                                                                    @if ($hospitalization->is_discharged == 0)
+                                                                        <form action="{{ route('blood_banks.destroy', $bloodBank->id) }}"
+                                                                            method="POST" class="d-inline"
+                                                                            onsubmit="return confirm('{{ localize('global.are_you_sure_delete') }}');">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i
+                                                                                    class="bx bx-trash"></i></button>
+                                                                        </form>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="6" class="text-center text-muted">
+                                                                    {{ localize('global.not_referred_to_bloodBank') }}</td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Blood bank requests -->
+
                             <!-- Visits Accordion -->
                             <div class="accordion" id="visitsAccordion">
                                 <div class="accordion-item">

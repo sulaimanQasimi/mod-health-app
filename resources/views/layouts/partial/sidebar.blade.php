@@ -237,7 +237,7 @@
                 </a>
 
                 <ul class="menu-sub">
-                    @if($isPharmacyManager)
+                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('pharmacies.*') ? 'active' : '' }}">
                             <a href="{{ route('pharmacies.index') }}" class="menu-link">
                                 <div>{{ localize('global.pharmacies') }}</div>
@@ -245,15 +245,7 @@
                         </li>
                     @endif
 
-                    @hasRole("super_admin")
-                        <li class="menu-item {{ Route::is('pharmacies.*') ? 'active' : '' }}">
-                            <a href="{{ route('pharmacies.index') }}" class="menu-link">
-                                <div>{{ localize('global.pharmacies') }}</div>
-                            </a>
-                        </li>
-                    @endhasRole
-
-                    @if($isPharmacyManager)
+                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('prescription_stocks.index') ? 'active' : '' }}">
                             <a href="{{ route('prescription_stocks.index') }}" class="menu-link">
                                 <div>{{ localize('global.stock_overview') }}</div>

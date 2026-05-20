@@ -165,13 +165,13 @@
                     @if(isset($items))
                         {{-- Export --}}
                         <div class="card-body border-bottom">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1 text-primary fw-semibold">
-                                        <i class="fas fa-download me-2"></i>{{ localize('global.export_report') }}
-                                    </h5>
-                                    <p class="text-muted mb-0 small">{{ localize('global.select_export_format') }}</p>
-                                </div>
+                            <div>
+                                <h5 class="mb-1 text-primary fw-semibold">
+                                    <i class="fas fa-download me-2"></i>{{ localize('global.export_report') }}
+                                </h5>
+                                <p class="text-muted mb-0 small">{{ localize('global.select_export_format') }}</p>
+                            </div>
+                            <div class="d-flex justify-content-end align-items-end">
                                 <a href="{{ route('patients.report-search', array_merge($reportExportParams ?? [], ['export' => 'excel'])) }}" class="btn btn-success btn-lg px-4">
                                     <i class="fas fa-file-excel me-2"></i>
                                     <span class="fw-medium">Excel</span>

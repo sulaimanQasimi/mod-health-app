@@ -38,7 +38,7 @@
                                     <th>{{ localize('global.depot.branch') }}</th>
                                     <th>{{ localize('global.depot.pharmacy') }}</th>
                                     <th>{{ localize('global.depot.parent_depot') }}</th>
-                                    <th>Users</th>
+                                    <th>{{localize('global.users') }}</th>
                                     <th>{{ localize('global.depot.is_active') }}</th>
                                     <th>{{ localize('global.depot.is_base') }}</th>
                                     <th>{{ localize('global.actions') }}</th>

@@ -31,6 +31,23 @@ use App\Jobs\SendNewAppointmentNotification;
 
 class PatientController extends Controller
 {
+    /** Query keys used for patient report search and export (server-side filtering only). */
+    private const REPORT_FILTER_KEYS = [
+        'patient_name',
+        'nid',
+        'id_card',
+        'referral_name',
+        'age',
+        'gender',
+        'job_category',
+        'type',
+        'referred_by',
+        'province_id',
+        'district_id',
+        'from',
+        'to',
+    ];
+
     public function index(Request $request)
     {
         // get all patients with militery type, province, district
@@ -565,7 +582,30 @@ class PatientController extends Controller
         $provinces = Province::with('districts')->get();
         $recipients = Recipient::all();
         $filters = [];
-        return view('pages.patients.reports.index', compact('provinces', 'recipients', 'filters'));
+        $reportExportParams = [];
+        return view('pages.patients.reports.index', compact('provinces', 'recipients', 'filters', 'reportExportParams'));
+    }
+
+    /**
+     * Collect active report filters from the request (including 0 for gender, job_category, type).
+     */
+    private function reportFilterParams(Request $request): array
+    {
+        return collect(self::REPORT_FILTER_KEYS)
+            ->mapWithKeys(fn (string $key) => [$key => $request->input($key)])
+            ->reject(fn ($value) => $value === null || $value === '')
+            ->all();
+    }
+
+    private function hasReportFilter(Request $request, string $key): bool
+    {
+        if (!$request->has($key)) {
+            return false;
+        }
+
+        $value = $request->input($key);
+
+        return $value !== null && $value !== '';
     }
 
     /**
@@ -604,10 +644,13 @@ class PatientController extends Controller
      */
     public function reportSearch(Request $request)
     {
-        // If export format requested, build same filtered query (no pagination) and return PDF/Excel
-        if ($request->filled('type') && in_array($request->type, ['excel', 'pdf'], true)) {
+        $reportExportParams = $this->reportFilterParams($request);
+
+        // Export: same GET filters as search; server builds query — no record payload in request
+        if ($request->filled('export') && in_array($request->export, ['excel', 'pdf'], true)) {
             $query = $this->buildReportQuery($request);
-            return $this->exportReport($query, $request->type);
+
+            return $this->downloadPatientReport($query, $request->export);
         }
 
         $query = $this->buildReportQuery($request);
@@ -617,29 +660,16 @@ class PatientController extends Controller
         }
         $items = $query->paginate($perPage);
 
-        $filterKeys = [
-            'patient_name',
-            'nid',
-            'id_card',
-            'referral_name',
-            'job_category',
-            'type',
-            'referred_by',
-            'age',
-            'gender',
-            'province_id',
-            'district_id',
-            'from',
-            'to',
-            'per_page'
-        ];
-        $filters = $request->only($filterKeys);
+        $filters = array_merge($reportExportParams, array_filter(
+            ['per_page' => $request->input('per_page')],
+            fn ($value) => $value !== null && $value !== ''
+        ));
         $items->appends($filters);
 
         $provinces = Province::with('districts')->get();
         $recipients = Recipient::all();
 
-        return view('pages.patients.reports.index', compact('items', 'filters', 'provinces', 'recipients'));
+        return view('pages.patients.reports.index', compact('items', 'filters', 'reportExportParams', 'provinces', 'recipients'));
     }
 
     /**
@@ -651,56 +681,51 @@ class PatientController extends Controller
      */
     private function applyReportFilters($query, Request $request)
     {
-        // Text search filters
-        if ($request->filled('patient_name')) {
+        if ($this->hasReportFilter($request, 'patient_name')) {
             $query->where('patients.name', 'like', '%' . $request->patient_name . '%');
         }
 
-        if ($request->filled('nid')) {
+        if ($this->hasReportFilter($request, 'nid')) {
             $query->where('patients.nid', 'like', '%' . $request->nid . '%');
         }
 
-        if ($request->filled('id_card')) {
+        if ($this->hasReportFilter($request, 'id_card')) {
             $query->where('patients.id_card', $request->id_card);
         }
 
-        if ($request->filled('referral_name')) {
+        if ($this->hasReportFilter($request, 'referral_name')) {
             $query->where('patients.referral_name', 'like', '%' . $request->referral_name . '%');
         }
 
-        // Exact match filters
-        if ($request->filled('job_category')) {
+        if ($this->hasReportFilter($request, 'job_category')) {
             $query->where('patients.job_category', $request->job_category);
         }
 
-        // Only filter by patient disease type when 'type' is not the export format (excel/pdf)
-        if ($request->filled('type') && !in_array($request->type, ['excel', 'pdf'], true)) {
+        if ($this->hasReportFilter($request, 'type')) {
             $query->where('patients.type', $request->type);
         }
 
-        if ($request->filled('referred_by')) {
+        if ($this->hasReportFilter($request, 'referred_by')) {
             $query->where('patients.referred_by', $request->referred_by);
         }
 
-        if ($request->filled('age')) {
+        if ($this->hasReportFilter($request, 'age')) {
             $query->where('patients.age', $request->age);
         }
 
-        if ($request->filled('gender')) {
+        if ($this->hasReportFilter($request, 'gender')) {
             $query->where('patients.gender', $request->gender);
         }
 
-        if ($request->filled('province_id')) {
+        if ($this->hasReportFilter($request, 'province_id')) {
             $query->where('patients.province_id', $request->province_id);
         }
 
-        if ($request->filled('district_id')) {
+        if ($this->hasReportFilter($request, 'district_id')) {
             $query->where('patients.district_id', $request->district_id);
         }
 
-      
-        // Date range filter - Convert Persian to Gregorian
-        if ($request->filled('from') && $request->filled('to')) {
+        if ($this->hasReportFilter($request, 'from') && $this->hasReportFilter($request, 'to')) {
             try {
                 $fromDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->from)->datetime();
                 $toDate = \Hekmatinasser\Verta\Facades\Verta::parse($request->to)->datetime();
@@ -721,7 +746,21 @@ class PatientController extends Controller
     }
 
 
-    public function exportReport($query, $type)
+    /**
+     * Export report via GET query filters (same as report-search).
+     */
+    public function exportReport(Request $request)
+    {
+        if (!$request->filled('export') || !in_array($request->export, ['excel', 'pdf'], true)) {
+            abort(422, 'Invalid export format');
+        }
+
+        $query = $this->buildReportQuery($request);
+
+        return $this->downloadPatientReport($query, $request->export);
+    }
+
+    private function downloadPatientReport($query, string $type)
     {
         $patients = $query->with(['province', 'district', 'recipient'])
             ->orderBy('patients.registration_date', 'desc')

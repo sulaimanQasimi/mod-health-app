@@ -172,11 +172,11 @@
                                     </h5>
                                     <p class="text-muted mb-0 small">{{ localize('global.select_export_format') }}</p>
                                 </div>
-                                <a href="{{ request()->url() }}?type=excel" class="btn btn-success btn-lg px-4">
+                                <a href="{{ route('patients.report-search', array_merge($reportExportParams ?? [], ['export' => 'excel'])) }}" class="btn btn-success btn-lg px-4">
                                     <i class="fas fa-file-excel me-2"></i>
                                     <span class="fw-medium">Excel</span>
                                 </a>
-                                <a href="{{ request()->url() }}?type=pdf" class="btn btn-danger btn-lg px-4">
+                                <a href="{{ route('patients.report-search', array_merge($reportExportParams ?? [], ['export' => 'pdf'])) }}" class="btn btn-danger btn-lg px-4">
                                     <i class="fas fa-file-pdf me-2"></i>
                                     <span class="fw-medium">PDF</span>
                                 </a>
@@ -276,10 +276,8 @@
                                     </div>
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <form method="GET" action="{{ route('patients.report-search') }}" class="d-inline-flex align-items-center gap-2" id="report-per-page-form">
-                                            @foreach($filters as $key => $val)
-                                                @if($val !== null && $val !== '' && $key !== 'page')
-                                                    <input type="hidden" name="{{ $key }}" value="{{ $val }}">
-                                                @endif
+                                            @foreach($reportExportParams ?? [] as $key => $val)
+                                                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                                             @endforeach
                                             <label for="per-page-select" class="form-label mb-0 small">{{ localize('global.show') }}:</label>
                                             <select class="form-select form-select-sm" name="per_page" id="per-page-select" style="width: auto;" onchange="document.getElementById('report-per-page-form').submit()">

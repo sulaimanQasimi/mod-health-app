@@ -176,9 +176,9 @@
                                     <i class="fas fa-file-excel me-2"></i>
                                     <span class="fw-medium">Excel</span>
                                 </a>
-                                <a href="{{ route('patients.report-search', array_merge($reportExportParams ?? [], ['export' => 'pdf'])) }}" class="btn btn-danger btn-lg px-4">
-                                    <i class="fas fa-file-pdf me-2"></i>
-                                    <span class="fw-medium">PDF</span>
+                                <a href="{{ route('patients.report-search', array_merge($reportExportParams ?? [], ['export' => 'print'])) }}" class="btn btn-danger btn-lg px-4" target="_blank">
+                                    <i class="fas fa-print me-2"></i>
+                                    <span class="fw-medium">{{ localize('global.print') }}</span>
                                 </a>
                             </div>
                         </div>

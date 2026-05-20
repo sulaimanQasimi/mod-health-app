@@ -26,7 +26,6 @@ use Excel;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Mpdf\Mpdf;
 use App\Jobs\SendNewAppointmentNotification;
 
 class PatientController extends Controller
@@ -647,7 +646,7 @@ class PatientController extends Controller
         $reportExportParams = $this->reportFilterParams($request);
 
         // Export: same GET filters as search; server builds query — no record payload in request
-        if ($request->filled('export') && in_array($request->export, ['excel', 'pdf'], true)) {
+        if ($request->filled('export') && in_array($request->export, ['excel', 'print'], true)) {
             $query = $this->buildReportQuery($request);
 
             return $this->downloadPatientReport($query, $request->export);
@@ -751,7 +750,7 @@ class PatientController extends Controller
      */
     public function exportReport(Request $request)
     {
-        if (!$request->filled('export') || !in_array($request->export, ['excel', 'pdf'], true)) {
+        if (!$request->filled('export') || !in_array($request->export, ['excel', 'print'], true)) {
             abort(422, 'Invalid export format');
         }
 
@@ -766,7 +765,6 @@ class PatientController extends Controller
             ->orderBy('patients.registration_date', 'desc')
             ->get();
 
-        // Map Eloquent models to the structure expected by pdf_report view and Excel (patient_name, referred_by, province_name, district_name)
         $items = $patients->map(function (Patient $p) {
             return (object) [
                 'id' => $p->id,
@@ -778,23 +776,27 @@ class PatientController extends Controller
                 'gender' => $p->gender,
                 'job_category' => $p->job_category,
                 'type' => $p->type,
+                'gender_label' => $p->gender == '0' ? localize('global.male') : localize('global.female'),
+                'job_category_label' => $p->job_category == '0' ? localize('global.military') : localize('global.civilian'),
+                'type_label' => match ((string) $p->type) {
+                    '0' => localize('global.mod'),
+                    '1' => localize('global.recipient'),
+                    default => localize('global.family'),
+                },
                 'referred_by' => $p->recipient->name ?? null,
                 'province_name' => $p->province->name_dr ?? null,
                 'district_name' => $p->district->name_dr ?? null,
             ];
         });
+
+        if ($type === 'print') {
+            return view('pages.patients.reports.print', compact('items'));
+        }
+
         $reader = new Xlsx();
-        $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
+        $spreadsheet = $reader->load('report_templates/reception_report.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
-        $html = view('pages.patients.reports.pdf_report', ['items' => $items])->render();
-        if ($type == 'pdf') {
-            $mpdf = new Mpdf(['format' => 'A4-L']);
-            $mpdf->WriteHTML($html);
-            $mpdf->Output('pdf_report.pdf', 'D');
-        } else {
-            $spreadsheet = $reader->load("report_templates/reception_report.xlsx");
-            $sheet = $spreadsheet->getActiveSheet();
-            $row = 3;
+        $row = 3;
 
             foreach ($items as $index => $item) {
                 $sheet->getStyle('A2:G' . $sheet->getHighestRow())->getAlignment()->setWrapText(true);
@@ -857,8 +859,7 @@ class PatientController extends Controller
                 $row++;
             }
 
-            return $this->exportResponse($spreadsheet);
-        }
+        return $this->exportResponse($spreadsheet);
     }
 
 

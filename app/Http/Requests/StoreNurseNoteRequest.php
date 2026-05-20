@@ -26,7 +26,7 @@ class StoreNurseNoteRequest extends FormRequest
             'time_am' => 'nullable|date_format:H:i',
             'time_pm' => 'nullable|date_format:H:i',
             'note' => 'nullable|string|max:5000',
-            'date' => 'nullable|date|before_or_equal:today',
+            'date' => 'nullable',
             'morphable_id' => 'required|integer|min:1',
             'morphable_type' => [
                 'required',

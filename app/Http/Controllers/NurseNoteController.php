@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
+use Hekmatinasser\Verta\Facades\Verta;
 
 class NurseNoteController extends Controller
 {
@@ -126,7 +127,17 @@ class NurseNoteController extends Controller
             $data = $request->validated();
             $data['nurse_id'] = $nurse->id; // Automatically set nurse ID from authenticated user
             
-            $nurseNote = NurseNote::create($data);
+            $nurseNote = NurseNote::create([
+                
+            'time_am' => $data['time_am'],
+            'time_pm' => $data['time_pm'],
+            'note' => $data['note'],
+            'date' => Verta::parse($data['date'])->datetime()->format('Y-m-d'),
+            'morphable_id' => $data['morphable_id'],
+            'morphable_type' => $data['morphable_type'],
+            'nurse_id' => $data['nurse_id'],
+        
+            ]);
 
             if ($request->expectsJson()) {
                 return response()->json([

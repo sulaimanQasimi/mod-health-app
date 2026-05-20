@@ -27,12 +27,12 @@
         @enderror
     </td>
     <td>
-        <input type="time" data-field="morning_time" name="schedule_rows[{{ $index }}][morning_time]"
+        <input type="text" data-field="morning_time" name="schedule_rows[{{ $index }}][morning_time]"
             class="form-control @error("schedule_rows.{$index}.morning_time") is-invalid @enderror"
             value="{{ $morning }}">
     </td>
     <td class="d-flex align-items-center gap-1">
-        <input type="time" data-field="evening_time" name="schedule_rows[{{ $index }}][evening_time]"
+        <input type="text" data-field="evening_time" name="schedule_rows[{{ $index }}][evening_time]"
             class="form-control @error("schedule_rows.{$index}.evening_time") is-invalid @enderror"
             value="{{ $evening }}">
         <button type="button" class="btn btn-sm btn-outline-danger remove-schedule-row flex-shrink-0"

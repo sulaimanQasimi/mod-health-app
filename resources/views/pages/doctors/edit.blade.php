@@ -181,6 +181,22 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="is_nephrologist">{{ localize('global.is_nephrologist') ?: 'Is Nephrologist' }}</label>
+                                        <div class="form-check form-switch">
+                                            @php
+                                                $isNephrologist = old('is_nephrologist') !== null
+                                                    ? (bool) old('is_nephrologist')
+                                                    : ($doctor->is_nephrologist ?? false);
+                                            @endphp
+                                            <input class="form-check-input" type="checkbox" name="is_nephrologist" id="is_nephrologist" value="1" {{ $isNephrologist ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_nephrologist">
+                                                {{ localize('global.nephrology') ?: 'Nephrologist' }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('doctors.index') }}" class="btn btn-secondary">{{localize('global.cancel')}}</a>

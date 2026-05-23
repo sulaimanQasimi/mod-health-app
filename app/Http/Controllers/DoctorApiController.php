@@ -13,11 +13,16 @@ class DoctorApiController extends Controller
     public function getDoctors(Request $request)
     {
         $is_dentist = $request->filled('is_dentist') ? $request->is_dentist : 0;
+        $is_nephrologist = $request->filled('is_nephrologist') ? $request->is_nephrologist : 0;
         try {
             $query = Doctor::with(['department', 'branch']);
             // Dentist filter
             $query->when($is_dentist == 1, function ($query) {
                 return $query->where('is_dentist', 1);
+            });
+
+            $query->when($is_nephrologist == 1, function ($query) {
+                return $query->where('is_nephrologist', 1);
             });
 
             // Branch filter (default to current user's branch if not specified)

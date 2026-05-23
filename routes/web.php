@@ -1267,6 +1267,29 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('measurements/{dentalChart}', [\App\Http\Controllers\DentalPeriodontalController::class, 'getMeasurements'])->name('measurements');
     });
 
+    // Nephrology Department routes
+    Route::prefix('nephrology-registrations')
+        ->middleware(['permission:access-nephrology-registrations', 'nephrologist'])
+        ->name('nephrology-registrations.')->group(function () {
+        Route::get('index', [\App\Http\Controllers\NephrologyRegistrationController::class, 'index'])->name('index');
+        Route::get('open/{appointment}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'open'])->name('open');
+        Route::get('create/{appointment}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'create'])->name('create');
+        Route::post('store/{appointment}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'store'])->name('store');
+        Route::get('show/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'show'])->name('show');
+        Route::get('edit/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'edit'])->name('edit');
+        Route::put('update/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'update'])->name('update');
+        Route::delete('destroy/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'destroy'])->name('destroy');
+        Route::post('mark-completed/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('mark-in-progress/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'markInProgress'])->name('mark-in-progress');
+        Route::post('cancel/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'cancel'])->name('cancel');
+    });
+
+    // Nephrology AJAX routes
+    Route::prefix('nephrology-ajax')->name('nephrology-ajax.')->group(function () {
+        Route::get('registrations/{appointmentId}', [\App\Http\Controllers\NephrologyAjaxController::class, 'getRegistrations'])->name('registrations');
+        Route::put('update/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyAjaxController::class, 'updateRegistration'])->name('update');
+    });
+
 });
 
 // Routes outside the main auth group

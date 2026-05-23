@@ -25,6 +25,7 @@ class Doctor extends Model
         'join_date',
         'active_status',
         'is_dentist',
+        'is_nephrologist',
         'branch_id',
         'department_id',
         'user_id'
@@ -34,6 +35,7 @@ class Doctor extends Model
         'join_date' => 'date',
         'active_status' => 'boolean',
         'is_dentist' => 'boolean',
+        'is_nephrologist' => 'boolean',
     ];
 
     public static function boot()
@@ -119,6 +121,11 @@ class Doctor extends Model
     public function dentistRegistrations()
     {
         return $this->hasMany(DentistRegistration::class, 'dentist_id');
+    }
+
+    public function nephrologyRegistrations()
+    {
+        return $this->hasMany(NephrologyRegistration::class, 'doctor_id');
     }
 
     public function physiotherapyProcedures()

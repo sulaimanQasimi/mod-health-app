@@ -1737,6 +1737,13 @@ class PermissionSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
+        Permission::createOrFirst([
+            'name' => 'access-nephrology-registrations',
+            'name_dr' => 'دسترسی به بخش نفرولوژی',
+            'name_pa' => NULL,
+            'guard_name' => 'web',
+        ]);
+
         $this->call(PhysiotherapyPermissionSeeder::class);
         $this->call(PharmacyPermissionSeeder::class);
         $this->call(NursingAssessmentPermissionSeeder::class);

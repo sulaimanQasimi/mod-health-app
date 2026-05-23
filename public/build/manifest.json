@@ -237,6 +237,15 @@
       "assets/vue-multiselect-DIn9qltL.css"
     ]
   },
+  "public/assets/js/vue/nephrology-registration-section.js": {
+    "file": "assets/nephrology-registration-section-DEYO__xx.js",
+    "name": "nephrology-registration-section",
+    "src": "public/assets/js/vue/nephrology-registration-section.js",
+    "isEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-beOoQdwu.js"
+    ]
+  },
   "public/assets/js/vue/nursing-note-app.js": {
     "file": "assets/nursing-note-app-Dm2ulmEA.js",
     "name": "nursing-note-app",
@@ -313,7 +322,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-Bn460AdJ.css",
+    "file": "assets/app-Dq9qSZ7v.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -321,7 +330,7 @@
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-B1AV_0W-.js",
+    "file": "assets/Example-DP8Sg7zC.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
@@ -331,11 +340,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-Bn460AdJ.css"
+      "assets/app-Dq9qSZ7v.css"
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-BhfkjfLD.js",
+    "file": "assets/Layout-DHX4wV-v.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -345,11 +354,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-Bn460AdJ.css"
+      "assets/app-Dq9qSZ7v.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-C0FGx10b.js",
+    "file": "assets/Welcome-CErNZSDo.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -359,7 +368,7 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-Bn460AdJ.css"
+      "assets/app-Dq9qSZ7v.css"
     ]
   },
   "resources/js/app.js": {
@@ -372,7 +381,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-CHsoWr7A.js",
+    "file": "assets/app-DIk2IXBD.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -386,7 +395,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-Bn460AdJ.css"
+      "assets/app-Dq9qSZ7v.css"
     ]
   },
   "resources/js/ckeditor.js": {

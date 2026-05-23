@@ -24,6 +24,7 @@ export default defineConfig({
                 'public/assets/js/vue/lab-section.js',
                 'public/assets/js/vue/lab-test-registration-section.js',
                 'public/assets/js/vue/dentist-registration-section.js',
+                'public/assets/js/vue/nephrology-registration-section.js',
                 'public/assets/js/vue/dental-chart-app.js',
                 'public/assets/js/vue/dental-chart-advanced-app.js',
                 'public/assets/js/vue/prescription-app.js',

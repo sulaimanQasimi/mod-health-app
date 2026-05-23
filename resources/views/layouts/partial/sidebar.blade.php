@@ -162,13 +162,39 @@
         @can('access-dentist-registrations')
             <li class="menu-item {{ Route::is('dentist-registrations.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-plus-medical"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            d="M19.03 2.13a4.75 4.75 0 0 0-5.54 1.55l-.68.91c-.38.5-1.23.5-1.6 0l-.68-.91a4.72 4.72 0 0 0-5.54-1.55 4.7 4.7 0 0 0-2.97 4.39c0 1.72.21 3.44.63 5.12l2.04 8.18A2.88 2.88 0 0 0 7.48 22h.12c1.28 0 2.41-.86 2.76-2.08l1.2-4.2c.12-.42.51-.72.95-.72s.83.29.95.72l1.2 4.2A2.88 2.88 0 0 0 17.42 22c1.41 0 2.6-1.01 2.83-2.4l1.33-7.99c.28-1.67.42-3.38.42-5.08 0-1.95-1.17-3.67-2.97-4.39Zm.58 9.14-1.33 7.99a.87.87 0 0 1-.86.73c-.39 0-.73-.26-.84-.63l-1.2-4.2c-.37-1.28-1.55-2.17-2.87-2.17s-2.51.89-2.87 2.17l-1.2 4.2c-.11.37-.45.63-.84.63h-.12c-.4 0-.75-.27-.85-.66l-2.04-8.18c-.38-1.51-.57-3.07-.57-4.63 0-1.12.67-2.12 1.72-2.54 1.15-.46 2.46-.09 3.2.9l.69.91c.56.75 1.46 1.2 2.4 1.2s1.84-.45 2.4-1.2l.68-.91c.74-.99 2.05-1.36 3.2-.9 1.04.42 1.72 1.41 1.72 2.54 0 1.59-.13 3.18-.39 4.75Z">
+                        </path>
+                    </svg>
                     <div>{{ localize('global.dentist_department') }}</div>
                 </a>
                 <ul class="menu-sub">
                     <li class="menu-item {{ Route::is('dentist-registrations.index') ? 'active' : '' }}">
                         <a href="{{ route('dentist-registrations.index') }}" class="menu-link">
                             <div>{{ localize('global.dentist_registrations') }}</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
+
+        @can('access-nephrology-registrations')
+            <li class="menu-item {{ Route::is('nephrology-registrations.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                            d="M8 22h8c1.1 0 2-.9 2-2V8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v12c0 1.1.9 2 2 2M6 4h12v2H6zm10 4v3h-5v6h5v3H8V8z">
+                        </path>
+                    </svg>
+                    <div>{{ localize('global.nephrology_department') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ Route::is('nephrology-registrations.index') ? 'active' : '' }}">
+                        <a href="{{ route('nephrology-registrations.index') }}" class="menu-link">
+                            <div>{{ localize('global.nephrology_registrations') }}</div>
                         </a>
                     </li>
                 </ul>
@@ -185,17 +211,19 @@
         @endcan
         @php
             $sidebarUser = auth()->user();
-            $canSeePrescriptionsMenu = $sidebarUser?->hasRole(['admin', 'super_admin'])
-                || $sidebarUser?->can('show-prescriptions-menu')
-                || $sidebarUser?->hasActivePharmacyRole(['manager', 'staff']);
+            $canSeePrescriptionsMenu =
+                $sidebarUser?->hasRole(['admin', 'super_admin']) ||
+                $sidebarUser?->can('show-prescriptions-menu') ||
+                $sidebarUser?->hasActivePharmacyRole(['manager', 'staff']);
 
-            $canSeePharmacyStockMenu = $sidebarUser?->hasRole(['admin', 'super_admin'])
-                || $sidebarUser?->hasActivePharmacyRole(['manager', 'procurement']);
+            $canSeePharmacyStockMenu =
+                $sidebarUser?->hasRole(['admin', 'super_admin']) ||
+                $sidebarUser?->hasActivePharmacyRole(['manager', 'procurement']);
             $isPharmacyManager = $sidebarUser?->hasActivePharmacyRole(['manager']) ?? false;
             $isPharmacyProcurement = $sidebarUser?->hasActivePharmacyRole(['procurement']) ?? false;
         @endphp
 
-        @if($canSeePrescriptionsMenu)
+        @if ($canSeePrescriptionsMenu)
             <li class="menu-item {{ Route::is('prescriptions.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-receipt"></i>
@@ -218,7 +246,7 @@
                             <div>{{ localize('global.delivered_prescriptions') }}</div>
                         </a>
                     </li>
-                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                    @if ($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('prescriptions.report') ? 'active' : '' }}">
                             <a href="{{ route('prescriptions.report') }}" class="menu-link">
                                 <div>{{ localize('global.reports') }}</div>
@@ -229,23 +257,24 @@
             </li>
         @endif
 
-        @if($canSeePharmacyStockMenu)
-            <li class="menu-item {{ Route::is('prescription_stocks.*') || Route::is('pharmacy_fulfillments.*') || Route::is('pharmacies.*') ? 'active open' : '' }}">
+        @if ($canSeePharmacyStockMenu)
+            <li
+                class="menu-item {{ Route::is('prescription_stocks.*') || Route::is('pharmacy_fulfillments.*') || Route::is('pharmacies.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-package"></i>
                     <div>{{ localize('global.prescription_stocks') }}</div>
                 </a>
 
                 <ul class="menu-sub">
-                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                    @if ($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('pharmacies.*') ? 'active' : '' }}">
                             <a href="{{ route('pharmacies.index') }}" class="menu-link">
                                 <div>{{ localize('global.pharmacies') }}</div>
-                            </a>    
+                            </a>
                         </li>
                     @endif
 
-                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                    @if ($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('prescription_stocks.index') ? 'active' : '' }}">
                             <a href="{{ route('prescription_stocks.index') }}" class="menu-link">
                                 <div>{{ localize('global.stock_overview') }}</div>
@@ -253,20 +282,20 @@
                         </li>
                     @endif
 
-                    @if($isPharmacyManager || $isPharmacyProcurement || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                    @if ($isPharmacyManager || $isPharmacyProcurement || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('pharmacy_fulfillments.*') ? 'active' : '' }}">
-                        <a href="{{ route('pharmacy_fulfillments.index') }}" class="menu-link">
-                            <div>{{ localize('global.pharmacy_fulfillments') }}</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::is('pharmacy_fulfillments.stock') ? 'active' : '' }}">
-                        <a href="{{ route('pharmacy_fulfillments.stock') }}" class="menu-link">
-                            <div>{{ localize('global.pharmacy_stock') }}</div>
-                        </a>
-                    </li>
+                            <a href="{{ route('pharmacy_fulfillments.index') }}" class="menu-link">
+                                <div>{{ localize('global.pharmacy_fulfillments') }}</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {{ Route::is('pharmacy_fulfillments.stock') ? 'active' : '' }}">
+                            <a href="{{ route('pharmacy_fulfillments.stock') }}" class="menu-link">
+                                <div>{{ localize('global.pharmacy_stock') }}</div>
+                            </a>
+                        </li>
                     @endif
 
-                    @if($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
+                    @if ($isPharmacyManager || $sidebarUser?->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('incomes.*') ? 'active' : '' }}">
                             <a href="{{ route('incomes.index') }}" class="menu-link">
                                 <div>{{ localize('global.stock_income') }}</div>
@@ -291,19 +320,19 @@
                 </ul>
             </li>
         @endif
-<li class="menu-item {{ Route::is('depots.*') ? 'active open' : '' }}">
-    <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-store"></i>
-        <div>{{ localize('global.depot.title') }}</div>
-    </a>
-    <ul class="menu-sub">
-        <li class="menu-item {{ Route::is('depots.index') ? 'active' : '' }}">
-            <a href="{{ route('depots.index') }}" class="menu-link">
-                <div>{{ localize('global.depot.list') }}</div>
+        <li class="menu-item {{ Route::is('depots.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-store"></i>
+                <div>{{ localize('global.depot.title') }}</div>
             </a>
+            <ul class="menu-sub">
+                <li class="menu-item {{ Route::is('depots.index') ? 'active' : '' }}">
+                    <a href="{{ route('depots.index') }}" class="menu-link">
+                        <div>{{ localize('global.depot.list') }}</div>
+                    </a>
+                </li>
+            </ul>
         </li>
-    </ul>
-</li>
 
         @can('show-blood-bank-menu')
             <li class="menu-item {{ Route::is('blood_banks.*') ? 'active open' : '' }}">
@@ -338,7 +367,8 @@
                             <div>{{ localize('global.rejected_blood_requests') }}</div>
                         </a>
                     </li>
-                    <li class="menu-item {{ Route::is('blood_banks.inventory') || Route::is('blood_banks.inventory.*') ? 'active' : '' }}">
+                    <li
+                        class="menu-item {{ Route::is('blood_banks.inventory') || Route::is('blood_banks.inventory.*') ? 'active' : '' }}">
                         <a href="{{ route('blood_banks.inventory') }}" class="menu-link">
                             <div>{{ localize('global.blood_inventory') }}</div>
                         </a>
@@ -431,12 +461,12 @@
                             <div>{{ localize('global.discharged_hospitalizations') }}</div>
                         </a>
                     </li>
-                    @if(auth()->user()->hasRole(['admin', 'super_admin']))
-                    <li class="menu-item {{ Route::is('hospitalizations.roomManagement') ? 'active' : '' }}">
-                        <a href="{{ route('hospitalizations.roomManagement') }}" class="menu-link">
-                            <div>{{ localize('global.room_management') }}</div>
-                        </a>
-                    </li>
+                    @if (auth()->user()->hasRole(['admin', 'super_admin']))
+                        <li class="menu-item {{ Route::is('hospitalizations.roomManagement') ? 'active' : '' }}">
+                            <a href="{{ route('hospitalizations.roomManagement') }}" class="menu-link">
+                                <div>{{ localize('global.room_management') }}</div>
+                            </a>
+                        </li>
                     @endif
                     <li class="menu-item {{ Route::is('hospitalizations.report') ? 'active' : '' }}">
                         <a href="{{ route('hospitalizations.report') }}" class="menu-link">
@@ -464,7 +494,8 @@
         @endcan
 
         @can('show-labs-menu')
-            <li class="menu-item {{ Route::is('lab_tests.completed') || Route::is('lab_tests.report') || Route::is('laboratory.*') ? 'active open' : '' }}">
+            <li
+                class="menu-item {{ Route::is('lab_tests.completed') || Route::is('lab_tests.report') || Route::is('laboratory.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-hard-hat"></i>
                     <div>{{ localize('global.checkups') }}</div>
@@ -487,7 +518,7 @@
                             <div>{{ localize('global.completed_tests') }}</div>
                         </a>
                     </li>
-                    
+
                     <!-- Test Tools and Reports -->
                     @can('show-laboratory-menu')
                         <li class="menu-item {{ Route::is('laboratory.scan') ? 'active' : '' }}">
@@ -507,11 +538,12 @@
                         </li>
                         <li class="menu-item {{ Route::is('laboratory.registrations.report-detailed') ? 'active' : '' }}">
                             <a href="{{ route('laboratory.registrations.report-detailed') }}" class="menu-link">
-                                <div>{{ localize('global.test_registration_report_detailed') ?? 'Full Detailed Test Report' }}</div>
+                                <div>{{ localize('global.test_registration_report_detailed') ?? 'Full Detailed Test Report' }}
+                                </div>
                             </a>
                         </li>
                     @endcan
-                    
+
                     <!-- System Management -->
                     @can('show-categories-menu')
                         <li class="menu-item {{ Route::is('categories.index') ? 'active' : '' }}">
@@ -673,7 +705,7 @@
                             </a>
                         </li>
                     @endcan
-                    @if(auth()->user()->hasRole(['admin', 'super_admin']))
+                    @if (auth()->user()->hasRole(['admin', 'super_admin']))
                         <li class="menu-item {{ Route::is('doctors.*') ? 'active' : '' }}">
                             <a href="{{ route('doctors.index') }}" class="menu-link">
                                 <div>{{ localize('global.doctors') }}</div>
@@ -695,14 +727,13 @@
                         </li>
                     @endcan
                     @role('admin')
-                    <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
-                        <a href="{{ route('backups.index') }}" class="menu-link">
-                            <div>{{ __('Backups') }}</div>
-                        </a>
-                    </li>
+                        <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
+                            <a href="{{ route('backups.index') }}" class="menu-link">
+                                <div>{{ __('Backups') }}</div>
+                            </a>
+                        </li>
                     @endrole
                     @can('show-recipients-menu')
-
                         <li class="menu-item {{ Route::is('recipients.index') ? 'active' : '' }}">
                             <a href="{{ route('recipients.index') }}" class="menu-link">
                                 <div>{{ localize('global.recipients') }}</div>
@@ -840,11 +871,11 @@
 
 
                     @role('super_admin')
-                    <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
-                        <a href="{{ route('backups.index') }}" class="menu-link">
-                            <div>{{ localize('global.backups') }}</div>
-                        </a>
-                    </li>
+                        <li class="menu-item {{ Route::is('backups.*') ? 'active' : '' }}">
+                            <a href="{{ route('backups.index') }}" class="menu-link">
+                                <div>{{ localize('global.backups') }}</div>
+                            </a>
+                        </li>
                     @endrole
                 </ul>
             </li>

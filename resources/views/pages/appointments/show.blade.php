@@ -1960,11 +1960,19 @@
         @endcan
 
         <!-- Dentist Registration Section Component -->
-        <x-dentist-registration-section 
+        <x-dentist-registration-section
             :entity="$appointment"
             entity-type="appointment"
             :entity-id="$appointment->id"
             :can-add-dentist-registration="true"
+            :appointment-completed="$appointment->is_completed == 1"
+        />
+
+        <x-nephrology-registration-section
+            :entity="$appointment"
+            entity-type="appointment"
+            :entity-id="$appointment->id"
+            :can-open-nephrology="true"
             :appointment-completed="$appointment->is_completed == 1"
         />
 

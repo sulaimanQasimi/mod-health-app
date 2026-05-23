@@ -189,4 +189,14 @@ class Patient extends Model
     {
         return $this->hasMany(ProstheticCase::class);
     }
+
+    public function hemodialysisSessions()
+    {
+        return $this->hasMany(HemodialysisSession::class);
+    }
+
+    public function nephrologyRegistrations()
+    {
+        return $this->hasMany(NephrologyRegistration::class);
+    }
 }

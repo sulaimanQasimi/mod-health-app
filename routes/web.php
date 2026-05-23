@@ -1290,6 +1290,19 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('update/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyAjaxController::class, 'updateRegistration'])->name('update');
     });
 
+    // Hemodialysis sessions (Nephrology)
+    Route::prefix('hemodialysis-sessions')
+        ->middleware(['permission:access-nephrology-registrations', 'nephrologist'])
+        ->name('hemodialysis-sessions.')->group(function () {
+        Route::get('index', [\App\Http\Controllers\HemodialysisSessionController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\HemodialysisSessionController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\HemodialysisSessionController::class, 'store'])->name('store');
+        Route::get('show/{hemodialysisSession}', [\App\Http\Controllers\HemodialysisSessionController::class, 'show'])->name('show');
+        Route::get('edit/{hemodialysisSession}', [\App\Http\Controllers\HemodialysisSessionController::class, 'edit'])->name('edit');
+        Route::put('update/{hemodialysisSession}', [\App\Http\Controllers\HemodialysisSessionController::class, 'update'])->name('update');
+        Route::delete('destroy/{hemodialysisSession}', [\App\Http\Controllers\HemodialysisSessionController::class, 'destroy'])->name('destroy');
+    });
+
 });
 
 // Routes outside the main auth group

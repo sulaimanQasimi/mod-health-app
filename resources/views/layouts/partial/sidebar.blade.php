@@ -181,7 +181,7 @@
         @endcan
 
         @can('access-nephrology-registrations')
-            <li class="menu-item {{ Route::is('nephrology-registrations.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::is('nephrology-registrations.*') || Route::is('hemodialysis-sessions.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                         viewBox="0 0 24 24">
@@ -192,9 +192,14 @@
                     <div>{{ localize('global.nephrology_department') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    <li class="menu-item {{ Route::is('nephrology-registrations.index') ? 'active' : '' }}">
+                    <li class="menu-item {{ Route::is('nephrology-registrations.*') ? 'active' : '' }}">
                         <a href="{{ route('nephrology-registrations.index') }}" class="menu-link">
                             <div>{{ localize('global.nephrology_registrations') }}</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::is('hemodialysis-sessions.*') ? 'active' : '' }}">
+                        <a href="{{ route('hemodialysis-sessions.index') }}" class="menu-link">
+                            <div>{{ localize('global.hemodialysis') }}</div>
                         </a>
                     </li>
                 </ul>

@@ -163,6 +163,88 @@
                         @endforeach
                     </tbody>
                 </table>
+                @can('access-nephrology-registrations')
+                <hr>
+                <h5 class="mb-0 p-3 bg-label-primary d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span>{{ localize('global.nephrology_history') }}</span>
+                    <a href="{{ route('hemodialysis-sessions.create', ['patient_id' => $patient->id]) }}" class="btn btn-sm btn-primary">
+                        <i class="bx bx-plus"></i> {{ localize('global.add_hemodialysis_session') }}
+                    </a>
+                </h5>
+                <div class="p-3">
+                    <h6 class="text-muted">{{ localize('global.nephrology_registrations') }}</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm border-top">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.ref_no') }}</th>
+                                    <th>{{ localize('global.visit_date') }}</th>
+                                    <th>{{ localize('global.doctor') }}</th>
+                                    <th>{{ localize('global.diagnosis') }}</th>
+                                    <th>{{ localize('global.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($nephrologyRegistrations ?? [] as $registration)
+                                    <tr>
+                                        <td>{{ $registration->ref_no }}</td>
+                                        <td>{{ $registration->visit_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($registration->visit_date) : '—' }}</td>
+                                        <td>{{ $registration->doctor->name ?? '—' }}</td>
+                                        <td>{{ Str::limit($registration->diagnosis, 50) ?: '—' }}</td>
+                                        <td>
+                                            <a href="{{ route('nephrology-registrations.show', $registration) }}" class="btn btn-sm btn-primary">
+                                                <i class="bx bx-show"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">{{ localize('global.no_registrations_found') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <h6 class="text-muted">{{ localize('global.hemodialysis_sessions') }}</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm border-top">
+                            <thead>
+                                <tr>
+                                    <th>{{ localize('global.ref_no') }}</th>
+                                    <th>{{ localize('global.session_date') }}</th>
+                                    <th>{{ localize('global.duration_minutes') }}</th>
+                                    <th>{{ localize('global.status') }}</th>
+                                    <th>{{ localize('global.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($hemodialysisSessions ?? [] as $hdSession)
+                                    <tr>
+                                        <td>{{ $hdSession->ref_no }}</td>
+                                        <td>{{ $hdSession->session_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($hdSession->session_date) : '—' }}</td>
+                                        <td>{{ $hdSession->duration_minutes ?? '—' }}</td>
+                                        <td><span class="badge bg-info">{{ localize('global.' . $hdSession->status) }}</span></td>
+                                        <td>
+                                            <a href="{{ route('hemodialysis-sessions.show', $hdSession) }}" class="btn btn-sm btn-primary">
+                                                <i class="bx bx-show"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">{{ localize('global.no_hemodialysis_sessions_found') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    @if(($hemodialysisSessions ?? collect())->isNotEmpty())
+                        <a href="{{ route('hemodialysis-sessions.index', ['patient_id' => $patient->id]) }}" class="btn btn-sm btn-outline-primary">
+                            {{ localize('global.view_all_hemodialysis_sessions') }}
+                        </a>
+                    @endif
+                </div>
+                @endcan
                 <hr>
                 <h5 class="mb-0 p-3 bg-label-primary">{{ localize('global.all_diagnoses') }}</h5>
                 <div class="row p-4">

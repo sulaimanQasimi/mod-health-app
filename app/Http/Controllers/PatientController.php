@@ -257,7 +257,25 @@ class PatientController extends Controller
             : Department::all();
         $doctors = Doctor::all();
         $previousDiagnoses = $patient->diagnoses;
-        return view('pages.patients.show', compact('patient', 'departments', 'doctors', 'previousDiagnoses'));
+        $nephrologyRegistrations = $patient->nephrologyRegistrations()
+            ->with('doctor')
+            ->latest('visit_date')
+            ->limit(10)
+            ->get();
+        $hemodialysisSessions = $patient->hemodialysisSessions()
+            ->with('doctor')
+            ->latest('session_date')
+            ->limit(10)
+            ->get();
+
+        return view('pages.patients.show', compact(
+            'patient',
+            'departments',
+            'doctors',
+            'previousDiagnoses',
+            'nephrologyRegistrations',
+            'hemodialysisSessions'
+        ));
     }
 
     public function edit(Patient $patient)

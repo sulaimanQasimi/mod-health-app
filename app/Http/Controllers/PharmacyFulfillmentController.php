@@ -167,10 +167,9 @@ class PharmacyFulfillmentController extends Controller
             'unit_type' => 'nullable|string|max:255',
             'amount' => 'required|string|max:191',
             'form_no' => 'required|string|max:191',
-            'date' => 'required|date',
+            'date' => 'required|string',
             'form' => 'nullable|file|mimes:pdf,PDF|max:10240',
         ]);
-
         $data = $request->all();
         $data['pharmacy_id'] = $userPharmacy->id;
         $data['user_id'] = $user->id;
@@ -247,12 +246,11 @@ class PharmacyFulfillmentController extends Controller
             'unit_type' => 'nullable|string|max:255',
             'amount' => 'required|string|max:191',
             'form_no' => 'required|string|max:191',
-            'date' => 'required|date',
+            'date' => 'required|string',
             'form' => 'nullable|file|mimes:pdf,PDF|max:10240',
         ]);
 
         $data = $request->except(['form']);
-
         if ($data['date']) {
             $data['date'] = \Hekmatinasser\Verta\Facades\Verta::parse($data['date'])->datetime();
         }

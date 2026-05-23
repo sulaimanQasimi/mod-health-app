@@ -63,7 +63,12 @@
                         <thead>
                             <tr>
                                 <th>{{ localize('global.ref_no') }}</th>
+                                <th>{{ localize('global.patient_id') }}</th>
                                 <th>{{ localize('global.patient_name') }}</th>
+                                <th>{{ localize('global.father_name') }}</th>
+                                <th>{{ localize('global.phone_number') }}</th>
+                                <th>{{ localize('global.old') }}</th>
+                                <th>{{ localize('global.gender') }}</th>
                                 <th>{{ localize('global.visit_date') }}</th>
                                 <th>{{ localize('global.doctor') }}</th>
                                 <th>{{ localize('global.status') }}</th>
@@ -75,7 +80,28 @@
                             @forelse($registrations as $registration)
                                 <tr>
                                     <td>{{ $registration->ref_no }}</td>
+                                    <td>{{ $registration->patient->patient_id ?? '—' }}</td>
                                     <td>{{ $registration->patient->name ?? '' }} {{ $registration->patient->last_name ?? '' }}</td>
+                                    <td>{{ $registration->patient->father_name ?? '—' }}</td>
+                                    <td>{{ $registration->patient->phone ?? '—' }}</td>
+                                    <td>{{ $registration->patient->age ?? '—' }}</td>
+                                    <td>
+                                        @if(isset($registration->patient->gender))
+                                            @if($registration->patient->gender == 0 || $registration->patient->gender == '0')
+                                                {{ localize('global.male') }}
+                                            @elseif($registration->patient->gender == 1 || $registration->patient->gender == '1')
+                                                {{ localize('global.female') }}
+                                            @elseif($registration->patient->gender == 'male')
+                                                {{ localize('global.male') }}
+                                            @elseif($registration->patient->gender == 'female')
+                                                {{ localize('global.female') }}
+                                            @else
+                                                {{ $registration->patient->gender }}
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
                                     <td>{{ $registration->visit_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($registration->visit_date) : '—' }}</td>
                                     <td>{{ $registration->doctor->name ?? 'N/A' }}</td>
                                     <td><span class="badge bg-info">{{ localize('global.' . $registration->status) }}</span></td>
@@ -88,11 +114,12 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">{{ localize('global.no_registrations_found') }}</td>
+                                    <td colspan="12" class="text-center">{{ localize('global.no_registrations_found') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+               
                 </div>
                 <div class="card-footer">
                     {{ $registrations->links() }}

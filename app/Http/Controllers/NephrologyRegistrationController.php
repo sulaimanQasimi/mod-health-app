@@ -107,14 +107,17 @@ class NephrologyRegistrationController extends Controller
     {
         $nephrologyRegistration->load([
             'appointment.patient',
+            'appointment.prescription',
+            'appointment.patientTestRegistrations',
             'patient',
             'doctor',
             'branch',
         ]);
 
         $doctors = Doctor::where('active_status', true)->get();
+        $appointment = $nephrologyRegistration->appointment;
 
-        return view('pages.nephrology.registrations.show', compact('nephrologyRegistration', 'doctors'));
+        return view('pages.nephrology.registrations.show', compact('nephrologyRegistration', 'doctors', 'appointment'));
     }
 
     public function edit(NephrologyRegistration $nephrologyRegistration)

@@ -57,6 +57,64 @@
                 </div>
             </div>
 
+            @if($appointment)
+                <!-- Prescription (from appointment) -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="accordion" id="nephrologyPrescriptionAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="nephrologyPrescriptionHeading">
+                                    <button class="accordion-button collapsed bg-body-secondary text-body" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#nephrologyPrescriptionCollapse"
+                                        aria-expanded="false" aria-controls="nephrologyPrescriptionCollapse">
+                                        <i class="bx bx-notepad me-2 text-success"></i>
+                                        {{ localize('global.prescription') }}
+                                        @if($appointment->prescription->count() > 0)
+                                            <span class="badge bg-success ms-2">{{ $appointment->prescription->count() }}</span>
+                                        @endif
+                                    </button>
+                                </h2>
+                                <div id="nephrologyPrescriptionCollapse" class="accordion-collapse collapse"
+                                    aria-labelledby="nephrologyPrescriptionHeading" data-bs-parent="#nephrologyPrescriptionAccordion">
+                                    <div class="accordion-body">
+                                        <div id="prescription-section-container"
+                                             data-appointment='@json($appointment)'
+                                             data-permissions='@json([
+                                                 "canAddPrescription" => auth()->user()->can("add-prescription"),
+                                                 "canEditPrescription" => auth()->user()->can("edit-prescriptions"),
+                                                 "canDeletePrescription" => auth()->user()->can("delete-prescriptions")
+                                             ])'>
+                                            <div class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p class="mt-2">{{ localize('global.loading_prescription_section') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lab test registrations / معاینات (from appointment) -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <x-lab-test-registration-section
+                            :entity="$appointment"
+                            entity-type="appointment"
+                            :entity-id="$appointment->id"
+                            :can-add-test-registration="auth()->user()->can('register-patient-tests')"
+                            :appointment-completed="$appointment->is_completed == 1"
+                            accordion-id="nephrologyLabTestRegistrationsAccordion"
+                            collapse-id="nephrologyLabTestRegistrationsCollapse"
+                            header-id="nephrologyLabTestRegistrationsHeader"
+                        />
+                    </div>
+                </div>
+            @endif
+
             @php
                 $hemodialysisSessions = $nephrologyRegistration->hemodialysisSessions()
                     ->with('doctor')
@@ -131,4 +189,10 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    @if($appointment ?? null)
+        @vite(['public/assets/js/vue/appointment-prescription-app.js'])
+    @endif
 @endsection

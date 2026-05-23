@@ -2825,7 +2825,7 @@ return [
     "feeding" => "تغذیه",
     "pain_scale" => "مقیاس درد",
     "signature" => "امضا",
-    "no" => "شماره",
+    "no" => "نخیر",
     "all_medicines" => "همه ادویه ها",
     "nutrition_care" => "مراقبت تغذیه",
     "nutrition_care_form" => "فرم مراقبت تغذیه",

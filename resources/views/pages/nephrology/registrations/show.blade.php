@@ -33,27 +33,26 @@
                             <h5 class="mb-0">{{ localize('global.registration_information') }}</h5>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <small class="text-muted">{{ localize('global.ref_no') }}</small>
-                                    <div class="fw-bold">{{ $nephrologyRegistration->ref_no }}</div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <small class="text-muted">{{ localize('global.patient_name') }}</small>
-                                    <div class="fw-bold">
-                                        {{ $nephrologyRegistration->patient->name }} {{ $nephrologyRegistration->patient->last_name }}
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <small class="text-muted">{{ localize('global.doctor') }}</small>
-                                    <div class="fw-bold">{{ $nephrologyRegistration->doctor->name ?? localize('global.not_available') }}</div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <small class="text-muted">{{ localize('global.status') }}</small>
-                                    <div><span class="badge bg-info">{{ localize('global.' . $nephrologyRegistration->status) }}</span></div>
-                                </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th class="bg-body-tertiary" style="width: 20%;">{{ localize('global.ref_no') }}</th>
+                                            <td>{{ $nephrologyRegistration->ref_no }}</td>
+                                            <th class="bg-body-tertiary" style="width: 20%;">{{ localize('global.patient_name') }}</th>
+                                            <td>{{ $nephrologyRegistration->patient->name }} {{ $nephrologyRegistration->patient->last_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-body-tertiary">{{ localize('global.doctor') }}</th>
+                                            <td>{{ $nephrologyRegistration->doctor->name ?? localize('global.not_available') }}</td>
+                                            <th class="bg-body-tertiary">{{ localize('global.status') }}</th>
+                                            <td><span class="badge bg-info">{{ localize('global.' . $nephrologyRegistration->status) }}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                   
                     </div>
                 </div>
             </div>

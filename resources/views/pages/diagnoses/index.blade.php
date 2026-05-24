@@ -18,6 +18,7 @@
                                 <tr>
                                     <th>{{localize('global.number')}}</th>
                                     <th>{{localize('global.patient_name')}}</th>
+                                    <th>{{ localize('global.department') }}</th>
                                     <th>{{localize('global.description')}}</th>
                                     <th>{{localize('global.actions')}}</th>
                                 </tr>
@@ -27,6 +28,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $diagnose->patient->name }}</td>
+                                        <td>{{ $diagnose->department->name ?? '—' }}</td>
                                         <td>{{ $diagnose->description }}</td>
                                         <td>
                                             <a href="{{ route('diagnoses.show', $diagnose) }}"><i class="bx bx-show-alt"></i></a>

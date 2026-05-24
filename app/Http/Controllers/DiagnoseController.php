@@ -13,8 +13,9 @@ class DiagnoseController extends Controller
      */
     public function index()
     {
-        $diagnoses = Diagnose::all();
-        return view('pages.diagnoses.index',compact('diagnoses'));
+        $diagnoses = Diagnose::with(['patient', 'department'])->get();
+
+        return view('pages.diagnoses.index', compact('diagnoses'));
     }
 
     /**
@@ -35,6 +36,7 @@ class DiagnoseController extends Controller
             'description' => 'required',
             'patient_id' => 'required',
             'appointment_id' => 'required',
+            'department_id' => 'nullable|exists:departments,id',
             'type' => 'required',
             'bp' => 'nullable',
             'pr' => 'nullable',
@@ -43,6 +45,8 @@ class DiagnoseController extends Controller
             'spo2' => 'nullable',
             'pain' => 'nullable',
         ]);
+
+        $data['department_id'] = $this->resolveDepartmentId($data);
 
         Diagnose::create($data);
 
@@ -74,6 +78,7 @@ class DiagnoseController extends Controller
             'description' => 'required',
             'patient_id' => 'required',
             'appointment_id' => 'required',
+            'department_id' => 'nullable|exists:departments,id',
             'type' => 'required',
             'bp' => 'nullable',
             'pr' => 'nullable',
@@ -82,6 +87,8 @@ class DiagnoseController extends Controller
             'spo2' => 'nullable',
             'pain' => 'nullable',
         ]);
+
+        $data['department_id'] = $this->resolveDepartmentId($data);
 
         $diagnose->update($data);
 
@@ -112,6 +119,7 @@ class DiagnoseController extends Controller
     {
         try {
             $diagnoses = Diagnose::where('appointment_id', $appointment->id)
+                ->with('department')
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -138,6 +146,7 @@ class DiagnoseController extends Controller
                 'description' => 'required|string',
                 'patient_id' => 'required|exists:patients,id',
                 'appointment_id' => 'required|exists:appointments,id',
+                'department_id' => 'nullable|exists:departments,id',
                 'type' => 'required|in:0,1',
                 'bp' => 'nullable|string',
                 'pr' => 'nullable|string',
@@ -146,6 +155,8 @@ class DiagnoseController extends Controller
                 'spo2' => 'nullable|string',
                 'pain' => 'nullable|string',
             ]);
+
+            $data['department_id'] = $this->resolveDepartmentId($data);
 
             $diagnose = Diagnose::create($data);
 
@@ -177,6 +188,7 @@ class DiagnoseController extends Controller
         try {
             $data = $request->validate([
                 'description' => 'required|string',
+                'department_id' => 'nullable|exists:departments,id',
                 'type' => 'required|in:0,1',
                 'bp' => 'nullable|string',
                 'pr' => 'nullable|string',
@@ -185,6 +197,10 @@ class DiagnoseController extends Controller
                 'spo2' => 'nullable|string',
                 'pain' => 'nullable|string',
             ]);
+
+            if (empty($data['department_id'])) {
+                unset($data['department_id']);
+            }
 
             $diagnose->update($data);
 
@@ -227,5 +243,20 @@ class DiagnoseController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    protected function resolveDepartmentId(array $data): ?int
+    {
+        if (!empty($data['department_id'])) {
+            return (int) $data['department_id'];
+        }
+
+        if (empty($data['appointment_id'])) {
+            return null;
+        }
+
+        $appointment = Appointment::find($data['appointment_id']);
+
+        return $appointment?->department_id;
     }
 }

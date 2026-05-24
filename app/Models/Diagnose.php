@@ -12,7 +12,7 @@ class Diagnose extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['description','patient_id','appointment_id','type','bp', 'pr', 'weight', 't', 'spo2', 'pain'];
+    protected $fillable = ['description', 'patient_id', 'appointment_id', 'department_id', 'type', 'bp', 'pr', 'weight', 't', 'spo2', 'pain'];
 
     public static function boot()
     {
@@ -20,6 +20,13 @@ class Diagnose extends Model
         self::creating(function ($model) {
             $user = Auth::user();
             $model->created_by = $user->id ?? 0;
+
+            if (empty($model->department_id) && !empty($model->appointment_id)) {
+                $appointment = Appointment::find($model->appointment_id);
+                if ($appointment?->department_id) {
+                    $model->department_id = $appointment->department_id;
+                }
+            }
         });
 
         self::updating(function ($model) {
@@ -47,5 +54,20 @@ class Diagnose extends Model
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function scopeForDepartmentName($query, string $name)
+    {
+        return $query->whereHas('department', fn ($q) => $q->where('name', $name));
+    }
+
+    public static function forNephrology()
+    {
+        return static::forDepartmentName(Disease::NEPHROLOGY_DEPARTMENT_NAME)->orderBy('created_at', 'desc');
     }
 }

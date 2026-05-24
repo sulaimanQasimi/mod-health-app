@@ -48,7 +48,7 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="disease_id" class="form-label">{{ localize('global.disease') }}</label>
+        <label for="disease_id" class="form-label">{{ localize('global.diseases') }}</label>
         <select class="form-select @error('disease_id') is-invalid @enderror" id="disease_id" name="disease_id">
             <option value="">{{ localize('global.select') }}</option>
             @foreach($nephrologyDiseases ?? [] as $disease)

@@ -93,7 +93,7 @@
                                         <td>{{ registration.doctor ? registration.doctor.name : '—' }}</td>
                                         <td dir="ltr">{{ formatDate(registration.visit_date) }}</td>
                                         <td><span :class="getStatusClass(registration.status)">{{ getStatusText(registration.status) }}</span></td>
-                                        <td>{{ registration.diagnosis || '—' }}</td>
+                                        <td>{{ registration.disease ? registration.disease.name : (registration.diagnosis || '—') }}</td>
                                         <td>
                                             <a :href="registration.open_url" class="btn btn-outline-primary btn-sm">
                                                 <i class="bx bx-show"></i>

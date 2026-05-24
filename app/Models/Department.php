@@ -63,4 +63,9 @@ class Department extends Model
     {
         return $this->hasMany(Disease::class);
     }
+
+    public function diagnoses()
+    {
+        return $this->hasMany(Diagnose::class);
+    }
 }

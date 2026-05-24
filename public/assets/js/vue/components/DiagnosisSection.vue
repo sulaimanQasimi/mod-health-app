@@ -413,6 +413,7 @@ export default {
                 const formData = {
                     appointment_id: this.appointment.id,
                     patient_id: this.appointment.patient_id,
+                    department_id: this.appointment.department_id || null,
                     type: this.form.type ? this.form.type.value : '',
                     description: this.form.description,
                     bp: this.form.bp,

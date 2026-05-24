@@ -21,6 +21,7 @@
                                         @method('PUT')
                                         <input type="hidden" id="patient_id{{ $diagnose->appointment->patient_id }}" name="patient_id" value="{{ $diagnose->appointment->patient_id }}">
                                         <input type="hidden" id="appointment_id{{ $diagnose->appointment->id }}" name="appointment_id" value="{{ $diagnose->appointment->id }}">
+                                        <input type="hidden" name="department_id" value="{{ old('department_id', $diagnose->department_id ?? $diagnose->appointment->department_id) }}">
 
                                         <div class="form-group">
                                             <label for="type{{ $diagnose->appointment->id }}">{{ localize('global.diagnose_type') }}</label>

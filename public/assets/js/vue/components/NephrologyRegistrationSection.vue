@@ -9,16 +9,6 @@
                             {{ localize('global.nephrology_registrations') }}
                         </h5>
                         <div class="d-flex gap-2" v-if="!appointmentCompleted && canOpenNephrology">
-                            <a
-                                :href="openUrl"
-                                class="btn btn-success btn-sm"
-                                :class="{ disabled: opening }"
-                                @click.prevent="openNephrology"
-                            >
-                                <span v-if="opening" class="spinner-border spinner-border-sm me-1"></span>
-                                <i v-else class="bx bx-play-circle me-1"></i>
-                                {{ localize('global.open_nephrology') }}
-                            </a>
                             <button type="button" class="btn btn-primary btn-sm" @click="openCreateModal">
                                 <i class="bx bx-plus me-1"></i>
                                 {{ localize('global.start_nephrology_visit') }}
@@ -292,28 +282,30 @@ export default {
 
         localize(key) {
             const translations = {
-                'global.nephrology_registrations': 'Nephrology visits',
-                'global.open_nephrology': 'Open Nephrology',
-                'global.start_nephrology_visit': 'Start Nephrology Visit',
-                'global.doctor': 'Doctor',
-                'global.select_doctor': 'Select doctor',
-                'global.visit_date': 'Visit date',
-                'global.notes': 'Notes',
-                'global.cancel': 'Cancel',
-                'global.create_and_continue': 'Create and continue',
-                'global.ref_no': 'Ref no',
-                'global.patient': 'Patient',
-                'global.status': 'Status',
-                'global.diagnosis': 'Diagnosis',
-                'global.actions': 'Actions',
-                'global.no_nephrology_registrations_found': 'No nephrology visits found for this appointment.',
-                'global.failed_to_load_registrations': 'Failed to load nephrology visits.',
-                'global.failed_to_create_registration': 'Failed to create nephrology visit.',
-                'global.please_select_visit_date': 'Please select a visit date.',
-                'global.status_pending': 'Pending',
-                'global.status_in_progress': 'In progress',
-                'global.status_completed': 'Completed',
-                'global.status_cancelled': 'Cancelled',
+                'global.nephrology_registrations': 'بخش راجستر نفرولوژی',
+                'global.open_nephrology': 'باز کردن نفرولوژی',
+                'global.start_nephrology_visit': 'شروع بازدید نفرولوژی',
+                'global.doctor': 'داکتر',
+                'global.select_doctor': 'انتخاب داکتر',
+                'global.visit_date': 'تاریخ بازدید',
+                'global.notes': 'یادداشت‌ها',
+                'global.cancel': 'لغو',
+                'global.create_and_continue': 'ایجاد و ادامه',
+                'global.ref_no': 'شماره مرجع',
+                'global.patient': 'مریض',
+                'global.status': 'وضعیت',
+                'global.diagnosis': 'تشخیص',
+                'global.actions': 'عملیات',
+                'global.no_nephrology_registrations_found': 'هیچ ثبت نفرولوژی برای این وقت ملاقات یافت نشد.',
+                'global.failed_to_load_registrations': 'بارگذاری ثبت‌های نفرولوژی ناکام ماند.',
+                'global.failed_to_create_registration': 'ایجاد ثبت نفرولوژی ناکام شد.',
+                'global.please_select_visit_date': 'لطفاً تاریخ بازدید را انتخاب کنید.',
+                'global.status_pending': 'درانتظار',
+                'global.status_in_progress': 'در حال اجرا',
+                'global.status_completed': 'تکمیل شده',
+                'global.status_cancelled': 'لغو شده',
+           
+                'global.start_nephrology_visit': 'شروع بازدید نفرولوژی',
             };
             return translations[key] || key;
         },

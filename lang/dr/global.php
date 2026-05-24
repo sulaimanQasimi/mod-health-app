@@ -4527,4 +4527,5 @@ return [
     "pulse" => "نبض",
     "optional" => "اختیاری",
     "view_all_hemodialysis_sessions" => "مشاهده همه جلسات هیمودیالیز",
+    "start_nephrology_visit" => "شروع بازدید نفرولوژی",
 ];

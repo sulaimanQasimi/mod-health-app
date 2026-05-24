@@ -13,7 +13,7 @@ class NephrologyRegistrationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = NephrologyRegistration::with(['appointment.patient', 'doctor', 'patient', 'branch']);
+        $query = NephrologyRegistration::with(['appointment.patient', 'doctor', 'patient', 'branch', 'disease']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -109,18 +109,31 @@ class NephrologyRegistrationController extends Controller
         $nephrologyRegistration->load([
             'appointment.patient',
             'appointment.prescription',
+            'appointment.diagnose',
             'appointment.patientTestRegistrations',
             'patient',
             'doctor',
             'branch',
             'disease',
+            'hemodialysisSessions',
         ]);
 
         $doctors = Doctor::where('active_status', true)->get();
         $appointment = $nephrologyRegistration->appointment;
         $nephrologyDiseases = Disease::forNephrology()->get();
+        $hemodialysisSessions = $nephrologyRegistration->hemodialysisSessions()
+            ->with('doctor')
+            ->latest('session_date')
+            ->limit(10)
+            ->get();
 
-        return view('pages.nephrology.registrations.show', compact('nephrologyRegistration', 'doctors', 'appointment', 'nephrologyDiseases'));
+        return view('pages.nephrology.registrations.show', compact(
+            'nephrologyRegistration',
+            'doctors',
+            'appointment',
+            'nephrologyDiseases',
+            'hemodialysisSessions'
+        ));
     }
 
     public function edit(NephrologyRegistration $nephrologyRegistration)
@@ -144,11 +157,6 @@ class NephrologyRegistrationController extends Controller
             'dialysis_required' => 'nullable|boolean',
             'dialysis_type' => 'nullable|in:HD,PD,CRRT',
             'access_type' => 'nullable|in:av_fistula,graft,catheter',
-            'lab_creatinine' => 'nullable|numeric|min:0',
-            'lab_urea' => 'nullable|numeric|min:0',
-            'lab_potassium' => 'nullable|numeric|min:0',
-            'lab_sodium' => 'nullable|numeric|min:0',
-            'lab_hb' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'follow_up_plan' => 'nullable|string',
         ]);
@@ -216,11 +224,6 @@ class NephrologyRegistrationController extends Controller
             'dialysis_required' => 'nullable|boolean',
             'dialysis_type' => 'nullable|in:HD,PD,CRRT',
             'access_type' => 'nullable|in:av_fistula,graft,catheter',
-            'lab_creatinine' => 'nullable|numeric|min:0',
-            'lab_urea' => 'nullable|numeric|min:0',
-            'lab_potassium' => 'nullable|numeric|min:0',
-            'lab_sodium' => 'nullable|numeric|min:0',
-            'lab_hb' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'follow_up_plan' => 'nullable|string',
         ];

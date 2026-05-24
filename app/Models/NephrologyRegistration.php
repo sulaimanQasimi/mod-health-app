@@ -27,11 +27,6 @@ class NephrologyRegistration extends Model
         'dialysis_required',
         'dialysis_type',
         'access_type',
-        'lab_creatinine',
-        'lab_urea',
-        'lab_potassium',
-        'lab_sodium',
-        'lab_hb',
         'notes',
         'follow_up_plan',
         'branch_id',
@@ -40,11 +35,6 @@ class NephrologyRegistration extends Model
     protected $casts = [
         'visit_date' => 'date',
         'dialysis_required' => 'boolean',
-        'lab_creatinine' => 'decimal:2',
-        'lab_urea' => 'decimal:2',
-        'lab_potassium' => 'decimal:2',
-        'lab_sodium' => 'decimal:2',
-        'lab_hb' => 'decimal:2',
     ];
 
     public static function boot()

@@ -72,7 +72,7 @@
                                 <th>{{ localize('global.visit_date') }}</th>
                                 <th>{{ localize('global.doctor') }}</th>
                                 <th>{{ localize('global.status') }}</th>
-                                <th>{{ localize('global.diagnosis') }}</th>
+                                <th>{{ localize('global.diseases') }}</th>
                                 <th>{{ localize('global.actions') }}</th>
                             </tr>
                         </thead>
@@ -105,7 +105,7 @@
                                     <td>{{ $registration->visit_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($registration->visit_date) : '—' }}</td>
                                     <td>{{ $registration->doctor->name ?? 'N/A' }}</td>
                                     <td><span class="badge bg-info">{{ localize('global.' . $registration->status) }}</span></td>
-                                    <td>{{ Str::limit($registration->diagnosis, 40) ?: '—' }}</td>
+                                    <td>{{ $registration->disease->name ?? '—' }}</td>
                                     <td>
                                         <a href="{{ route('nephrology-registrations.show', $registration) }}" class="btn btn-sm btn-primary">
                                             <i class="bx bx-show"></i>

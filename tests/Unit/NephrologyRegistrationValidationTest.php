@@ -19,8 +19,8 @@ class NephrologyRegistrationValidationTest extends TestCase
         $this->assertArrayHasKey('dialysis_required', $rules);
         $this->assertArrayHasKey('dialysis_type', $rules);
         $this->assertArrayHasKey('access_type', $rules);
-        $this->assertArrayHasKey('lab_creatinine', $rules);
         $this->assertArrayHasKey('follow_up_plan', $rules);
+        $this->assertArrayNotHasKey('lab_creatinine', $rules);
         $this->assertStringContainsString('HD,PD,CRRT', $rules['dialysis_type']);
         $this->assertStringContainsString('av_fistula', $rules['access_type']);
     }

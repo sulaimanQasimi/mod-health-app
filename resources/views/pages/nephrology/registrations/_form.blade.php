@@ -1,6 +1,10 @@
 @php
     $registration = $nephrologyRegistration;
 @endphp
+
+<h6 class="text-primary border-bottom pb-2 mb-3">
+    <i class="bx bx-calendar me-1"></i> {{ localize('global.registration_information') }}
+</h6>
 <div class="row">
     <div class="col-md-6 mb-3">
         <label for="doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
@@ -39,6 +43,9 @@
     </div>
 </div>
 
+<h6 class="text-primary border-bottom pb-2 mb-3 mt-2">
+    <i class="bx bx-health me-1"></i> {{ localize('global.clinical_findings') }}
+</h6>
 <div class="row">
     <div class="col-md-12 mb-3">
         <label for="chief_complaint" class="form-label">{{ localize('global.chief_complaint') }}</label>
@@ -62,13 +69,6 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="diagnosis" class="form-label">{{ localize('global.diagnosis') }}</label>
-        <textarea class="form-control @error('diagnosis') is-invalid @enderror" id="diagnosis" name="diagnosis" rows="2">{{ old('diagnosis', $registration->diagnosis) }}</textarea>
-        @error('diagnosis')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-    <div class="col-md-4 mb-3">
         <label for="ckd_aki_stage" class="form-label">{{ localize('global.ckd_aki_stage') }}</label>
         <input type="text" class="form-control @error('ckd_aki_stage') is-invalid @enderror" id="ckd_aki_stage" name="ckd_aki_stage"
             value="{{ old('ckd_aki_stage', $registration->ckd_aki_stage) }}" placeholder="e.g. CKD 3, AKI 2">
@@ -76,6 +76,12 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+</div>
+
+<h6 class="text-primary border-bottom pb-2 mb-3 mt-2">
+    <i class="bx bx-water me-1"></i> {{ localize('global.hemodialysis') }}
+</h6>
+<div class="row">
     <div class="col-md-4 mb-3">
         <label class="form-label d-block">{{ localize('global.dialysis_required') }}</label>
         <div class="form-check form-check-inline">
@@ -115,28 +121,9 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12 mb-2">
-        <h6 class="text-muted">{{ localize('global.labs') }}</h6>
-    </div>
-    @foreach([
-        'lab_creatinine' => 'creatinine',
-        'lab_urea' => 'urea',
-        'lab_potassium' => 'potassium',
-        'lab_sodium' => 'sodium',
-        'lab_hb' => 'hb',
-    ] as $field => $label)
-        <div class="col-md-2 mb-3">
-            <label for="{{ $field }}" class="form-label">{{ localize('global.' . $label) }}</label>
-            <input type="number" step="0.01" min="0" class="form-control @error($field) is-invalid @enderror"
-                id="{{ $field }}" name="{{ $field }}" value="{{ old($field, $registration->$field) }}">
-            @error($field)
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-    @endforeach
-</div>
-
+<h6 class="text-primary border-bottom pb-2 mb-3 mt-2">
+    <i class="bx bx-note me-1"></i> {{ localize('global.notes') }}
+</h6>
 <div class="row">
     <div class="col-md-12 mb-3">
         <label for="notes" class="form-label">{{ localize('global.notes') }}</label>
@@ -145,7 +132,7 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div class="col-md-12 mb-3">
+    <div class="col-md-12 mb-0">
         <label for="follow_up_plan" class="form-label">{{ localize('global.follow_up_plan') }}</label>
         <textarea class="form-control @error('follow_up_plan') is-invalid @enderror" id="follow_up_plan" name="follow_up_plan" rows="3">{{ old('follow_up_plan', $registration->follow_up_plan) }}</textarea>
         @error('follow_up_plan')

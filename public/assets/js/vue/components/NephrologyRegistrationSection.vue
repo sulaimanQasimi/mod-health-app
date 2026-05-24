@@ -234,13 +234,11 @@ export default {
 
                 const data = await response.json();
 
-                if (data.success && data.redirect) {
-                    window.location.href = data.redirect;
-                    return;
-                }
-
-                if (response.ok) {
-                    window.location.reload();
+                if (data.success) {
+                    this.showSuccess(data.message || this.localize('global.nephrology_registration_created_successfully'));
+                    await this.loadRegistrations();
+                    this.resetForm();
+                    this.closeCreateModal();
                     return;
                 }
 
@@ -259,6 +257,31 @@ export default {
         closeCreateModal() {
             this.showCreateModal = false;
             this.formError = '';
+            this.resetForm();
+        },
+
+        resetForm() {
+            this.form = {
+                doctor_id: '',
+                visit_date: new Date().toISOString().split('T')[0],
+                notes: '',
+            };
+        },
+
+        showSuccess(message) {
+            if (typeof toastr !== 'undefined') {
+                toastr.success(message);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: this.localize('global.success'),
+                    text: message,
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
+            } else {
+                alert(message);
+            }
         },
 
         formatDate(dateString) {
@@ -300,6 +323,8 @@ export default {
                 'global.failed_to_load_registrations': 'بارگذاری ثبت‌های نفرولوژی ناکام ماند.',
                 'global.failed_to_create_registration': 'ایجاد ثبت نفرولوژی ناکام شد.',
                 'global.please_select_visit_date': 'لطفاً تاریخ بازدید را انتخاب کنید.',
+                'global.nephrology_registration_created_successfully': 'سرویس نفرولوژی با موفقیت ایجاد شد',
+                'global.success': 'موفقیت',
                 'global.status_pending': 'درانتظار',
                 'global.status_in_progress': 'در حال اجرا',
                 'global.status_completed': 'تکمیل شده',

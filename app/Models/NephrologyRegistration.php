@@ -22,6 +22,7 @@ class NephrologyRegistration extends Model
         'status',
         'chief_complaint',
         'diagnosis',
+        'disease_id',
         'ckd_aki_stage',
         'dialysis_required',
         'dialysis_type',
@@ -92,6 +93,11 @@ class NephrologyRegistration extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function disease()
+    {
+        return $this->belongsTo(Disease::class);
     }
 
     public function creator()

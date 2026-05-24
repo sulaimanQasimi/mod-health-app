@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Doctor;
+use App\Models\Disease;
 use App\Models\NephrologyRegistration;
 use Illuminate\Http\Request;
 
@@ -112,19 +113,22 @@ class NephrologyRegistrationController extends Controller
             'patient',
             'doctor',
             'branch',
+            'disease',
         ]);
 
         $doctors = Doctor::where('active_status', true)->get();
         $appointment = $nephrologyRegistration->appointment;
+        $nephrologyDiseases = Disease::forNephrology()->get();
 
-        return view('pages.nephrology.registrations.show', compact('nephrologyRegistration', 'doctors', 'appointment'));
+        return view('pages.nephrology.registrations.show', compact('nephrologyRegistration', 'doctors', 'appointment', 'nephrologyDiseases'));
     }
 
     public function edit(NephrologyRegistration $nephrologyRegistration)
     {
         $doctors = Doctor::where('active_status', true)->get();
+        $nephrologyDiseases = Disease::forNephrology()->get();
 
-        return view('pages.nephrology.registrations.edit', compact('nephrologyRegistration', 'doctors'));
+        return view('pages.nephrology.registrations.edit', compact('nephrologyRegistration', 'doctors', 'nephrologyDiseases'));
     }
 
     public function update(Request $request, NephrologyRegistration $nephrologyRegistration)
@@ -135,6 +139,7 @@ class NephrologyRegistrationController extends Controller
             'status' => 'required|in:pending,in_progress,completed,cancelled',
             'chief_complaint' => 'nullable|string',
             'diagnosis' => 'nullable|string',
+            'disease_id' => 'nullable|exists:diseases,id',
             'ckd_aki_stage' => 'nullable|string|max:50',
             'dialysis_required' => 'nullable|boolean',
             'dialysis_type' => 'nullable|in:HD,PD,CRRT',
@@ -206,6 +211,7 @@ class NephrologyRegistrationController extends Controller
             'status' => 'required|in:pending,in_progress,completed,cancelled',
             'chief_complaint' => 'nullable|string',
             'diagnosis' => 'nullable|string',
+            'disease_id' => 'nullable|exists:diseases,id',
             'ckd_aki_stage' => 'nullable|string|max:50',
             'dialysis_required' => 'nullable|boolean',
             'dialysis_type' => 'nullable|in:HD,PD,CRRT',

@@ -11,5 +11,27 @@ class Disease extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name','description'];
+    public const NEPHROLOGY_DEPARTMENT_NAME = 'نفرولوژی';
+
+    protected $fillable = ['name', 'description', 'department_id'];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function nephrologyRegistrations()
+    {
+        return $this->hasMany(NephrologyRegistration::class);
+    }
+
+    public function scopeForDepartmentName($query, string $name)
+    {
+        return $query->whereHas('department', fn ($q) => $q->where('name', $name));
+    }
+
+    public static function forNephrology()
+    {
+        return static::forDepartmentName(static::NEPHROLOGY_DEPARTMENT_NAME)->orderBy('name');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Disease;
 use App\Models\NephrologyRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -12,7 +13,7 @@ class NephrologyAjaxController extends Controller
     {
         try {
             $registrations = NephrologyRegistration::where('appointment_id', $appointmentId)
-                ->with(['appointment.patient', 'doctor', 'patient'])
+                ->with(['appointment.patient', 'doctor', 'patient', 'disease'])
                 ->latest()
                 ->get()
                 ->map(function ($registration) {
@@ -22,6 +23,11 @@ class NephrologyAjaxController extends Controller
                         'status' => $registration->status,
                         'visit_date' => $registration->visit_date,
                         'diagnosis' => $registration->diagnosis,
+                        'disease_id' => $registration->disease_id,
+                        'disease' => $registration->disease ? [
+                            'id' => $registration->disease->id,
+                            'name' => $registration->disease->name,
+                        ] : null,
                         'appointment' => [
                             'patient' => $registration->appointment->patient ?? $registration->patient,
                         ],
@@ -71,6 +77,24 @@ class NephrologyAjaxController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update nephrology registration',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getDiseases()
+    {
+        try {
+            $diseases = Disease::forNephrology()->get(['id', 'name']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $diseases,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch nephrology diseases',
                 'error' => $e->getMessage(),
             ], 500);
         }

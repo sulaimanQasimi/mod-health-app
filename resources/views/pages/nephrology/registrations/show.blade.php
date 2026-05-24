@@ -178,7 +178,7 @@
                     <form action="{{ route('nephrology-registrations.update', $nephrologyRegistration) }}" method="POST" id="nephrology-clinical-form">
                         @csrf
                         @method('PUT')
-                        @include('pages.nephrology.registrations._form', ['nephrologyRegistration' => $nephrologyRegistration, 'doctors' => $doctors])
+                        @include('pages.nephrology.registrations._form', ['nephrologyRegistration' => $nephrologyRegistration, 'doctors' => $doctors, 'nephrologyDiseases' => $nephrologyDiseases])
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bx bx-save"></i> {{ localize('global.save') }}

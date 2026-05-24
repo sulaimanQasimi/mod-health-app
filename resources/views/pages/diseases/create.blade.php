@@ -22,6 +22,15 @@
                                         <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control">
                                     </div>
                                     <div class="mb-3">
+                                        <label for="department_id">{{ localize('global.department') }} <span class="text-danger">*</span></label>
+                                        <select name="department_id" id="department_id" class="form-select" required>
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($departments as $department)
+                                                <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="description">{{localize('global.description')}}</label>
                                         <textarea class="form-control"  name="description" rows="3"></textarea>
                                     </div>

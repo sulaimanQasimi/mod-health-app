@@ -58,4 +58,9 @@ class Department extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function diseases()
+    {
+        return $this->hasMany(Disease::class);
+    }
 }

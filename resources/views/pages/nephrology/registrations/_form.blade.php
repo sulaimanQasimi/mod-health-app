@@ -47,7 +47,21 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div class="col-md-12 mb-3">
+    <div class="col-md-6 mb-3">
+        <label for="disease_id" class="form-label">{{ localize('global.disease') }}</label>
+        <select class="form-select @error('disease_id') is-invalid @enderror" id="disease_id" name="disease_id">
+            <option value="">{{ localize('global.select') }}</option>
+            @foreach($nephrologyDiseases ?? [] as $disease)
+                <option value="{{ $disease->id }}" {{ old('disease_id', $registration->disease_id) == $disease->id ? 'selected' : '' }}>
+                    {{ $disease->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('disease_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+    <div class="col-md-6 mb-3">
         <label for="diagnosis" class="form-label">{{ localize('global.diagnosis') }}</label>
         <textarea class="form-control @error('diagnosis') is-invalid @enderror" id="diagnosis" name="diagnosis" rows="2">{{ old('diagnosis', $registration->diagnosis) }}</textarea>
         @error('diagnosis')

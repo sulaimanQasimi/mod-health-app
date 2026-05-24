@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Disease;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DiseaseController extends Controller
 {
@@ -14,7 +16,7 @@ class DiseaseController extends Controller
      */
     public function index()
     {
-        $diseases = Disease::paginate(5);
+        $diseases = Disease::with('department')->paginate(5);
         return view('pages.diseases.index', compact('diseases'));
     }
 
@@ -25,7 +27,9 @@ class DiseaseController extends Controller
      */
     public function create()
     {
-        return view('pages.diseases.create');
+        $departments = Department::orderBy('name')->get();
+
+        return view('pages.diseases.create', compact('departments'));
     }
 
     /**
@@ -37,11 +41,16 @@ class DiseaseController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|unique:diseases|max:255',
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('diseases')->where(fn ($query) => $query->where('department_id', $request->department_id)),
+            ],
             'description' => 'nullable',
+            'department_id' => 'required|exists:departments,id',
         ]);
 
-        $disease = Disease::create($validatedData);
+        Disease::create($validatedData);
 
         return redirect()->route('diseases.index')->with('success', localize('global.disease_created_successfully.'));
     }
@@ -54,6 +63,8 @@ class DiseaseController extends Controller
      */
     public function show(Disease $disease)
     {
+        $disease->load('department');
+
         return view('pages.diseases.show', compact('disease'));
     }
 
@@ -65,7 +76,9 @@ class DiseaseController extends Controller
      */
     public function edit(Disease $disease)
     {
-        return view('pages.diseases.edit', compact('disease'));
+        $departments = Department::orderBy('name')->get();
+
+        return view('pages.diseases.edit', compact('disease', 'departments'));
     }
 
     /**
@@ -78,8 +91,13 @@ class DiseaseController extends Controller
     public function update(Request $request, Disease $disease)
     {
         $validatedData = $request->validate([
-            'name' => 'required|unique:diseases,name,' . $disease->id . '|max:255',
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('diseases')->where(fn ($query) => $query->where('department_id', $request->department_id))->ignore($disease->id),
+            ],
             'description' => 'nullable',
+            'department_id' => 'required|exists:departments,id',
         ]);
 
         $disease->update($validatedData);

@@ -23,6 +23,7 @@
                                 <tr>
                                     <th>{{ localize('global.number') }}</th>
                                     <th>{{ localize('global.name') }}</th>
+                                    <th>{{ localize('global.department') }}</th>
                                     <th>{{ localize('global.description') }}</th>
                                     <th>{{ localize('global.actions') }}</th>
                                 </tr>
@@ -32,6 +33,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $disease->name }}</td>
+                                        <td>{{ $disease->department->name ?? '—' }}</td>
                                         <td dir="ltr">{{ $disease->description }}</td>
                                         <td>
                                             <div class="d-flex">

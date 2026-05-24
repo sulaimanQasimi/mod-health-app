@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Doctor;
 use App\Models\Disease;
 use App\Models\NephrologyRegistration;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
 
 class NephrologyRegistrationController extends Controller
@@ -52,9 +53,17 @@ class NephrologyRegistrationController extends Controller
     {
         $validatedData = $request->validate([
             'doctor_id' => 'nullable|exists:doctors,id',
-            'visit_date' => 'required|date',
+            'visit_date' => 'required|string',
             'notes' => 'nullable|string',
         ]);
+
+        try {
+            $validatedData['visit_date'] = self::normalizeVisitDate($validatedData['visit_date']);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['visit_date' => 'Invalid date format. Please use Persian date format.']);
+        }
 
         $validatedData['appointment_id'] = $appointment->id;
         $validatedData['patient_id'] = $appointment->patient_id;
@@ -148,7 +157,7 @@ class NephrologyRegistrationController extends Controller
     {
         $validatedData = $request->validate([
             'doctor_id' => 'nullable|exists:doctors,id',
-            'visit_date' => 'required|date',
+            'visit_date' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed,cancelled',
             'chief_complaint' => 'nullable|string',
             'diagnosis' => 'nullable|string',
@@ -160,6 +169,14 @@ class NephrologyRegistrationController extends Controller
             'notes' => 'nullable|string',
             'follow_up_plan' => 'nullable|string',
         ]);
+
+        try {
+            $validatedData['visit_date'] = self::normalizeVisitDate($validatedData['visit_date']);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['visit_date' => 'Invalid date format. Please use Persian date format.']);
+        }
 
         $validatedData['dialysis_required'] = $request->boolean('dialysis_required');
 
@@ -215,7 +232,7 @@ class NephrologyRegistrationController extends Controller
     {
         return [
             'doctor_id' => 'nullable|exists:doctors,id',
-            'visit_date' => 'required|date',
+            'visit_date' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed,cancelled',
             'chief_complaint' => 'nullable|string',
             'diagnosis' => 'nullable|string',
@@ -227,5 +244,10 @@ class NephrologyRegistrationController extends Controller
             'notes' => 'nullable|string',
             'follow_up_plan' => 'nullable|string',
         ];
+    }
+
+    public static function normalizeVisitDate(string $visitDate): string
+    {
+        return Verta::parse($visitDate)->datetime()->format('Y-m-d');
     }
 }

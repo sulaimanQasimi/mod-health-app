@@ -24,8 +24,8 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="visit_date" class="form-label">{{ localize('global.visit_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="visit_date" name="visit_date"
-                                    value="{{ old('visit_date', $appointment->date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}" required>
+                                <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="visit_date" name="visit_date"
+                                    value="{{ old('visit_date', $appointment->date ? verta($appointment->date)->format('Y/m/d') : verta()->format('Y/m/d')) }}" required>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="notes" class="form-label">{{ localize('global.notes') }}</label>

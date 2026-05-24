@@ -55,6 +55,16 @@ class NephrologyAjaxController extends Controller
             $validatedData = $request->validate(NephrologyRegistrationController::clinicalValidationRules());
             $validatedData['dialysis_required'] = $request->boolean('dialysis_required');
 
+            try {
+                $validatedData['visit_date'] = NephrologyRegistrationController::normalizeVisitDate($validatedData['visit_date']);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid date format. Please use Persian date format.',
+                    'errors' => ['visit_date' => ['Invalid date format. Please use Persian date format.']],
+                ], 422);
+            }
+
             if (!$validatedData['dialysis_required']) {
                 $validatedData['dialysis_type'] = null;
                 $validatedData['access_type'] = null;

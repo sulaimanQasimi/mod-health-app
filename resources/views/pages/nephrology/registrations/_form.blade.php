@@ -22,8 +22,8 @@
     </div>
     <div class="col-md-3 mb-3">
         <label for="visit_date" class="form-label">{{ localize('global.visit_date') }} <span class="text-danger">*</span></label>
-        <input type="date" class="form-control @error('visit_date') is-invalid @enderror" id="visit_date" name="visit_date"
-            value="{{ old('visit_date', $registration->visit_date?->format('Y-m-d')) }}" required>
+        <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el @error('visit_date') is-invalid @enderror" id="visit_date" name="visit_date"
+            value="{{ old('visit_date', $registration->visit_date ? verta($registration->visit_date)->format('Y/m/d') : verta()->format('Y/m/d')) }}" required>
         @error('visit_date')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror

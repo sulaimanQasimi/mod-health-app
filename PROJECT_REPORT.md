@@ -14,65 +14,150 @@ This is a comprehensive medical database application built with Laravel 10, desi
   - MPDF (PDF generation)
   - Verta (Persian date handling)
   - Laravel Backup (data backup)
-  - **Sulaiman Qasimi / mohammadrafi10 Router** (custom routing package)
+  - **Sulaiman Qasimi / mohammadrafi10 Router** (custom routing package — [sulaimanQasimi/router](https://github.com/sulaimanQasimi/router))
 
 ## Developers Contributions
 
-### Sulaiman Qasimi and Mohammad Rafi 10 Contributions
-**GitHub Repository (Sulaiman Qasimi)**: https://github.com/sulaimanQasimi/
-**GitHub Repository (Mohammad Rafi 10)**: https://github.com/mohhamdrafi10/
-**Main Project Repository**: https://github.com/sulaimanQasimi/mod-health-app
-**Collaborative Repository**: https://github.com/mohhamdrafi10/mod-health-app
+**Report last updated**: May 2026  
+**Primary Git remote**: `https://github.com/sulaimanQasimi/mod-health-app.git`  
+**Total commits (local history)**: 1,446
 
-#### Custom Router Package Integration
-- **Package**: `sulaimanqasimi/router` (dev-main)
-- **Purpose**: Custom routing functionality for the medical application
-- **Integration**: Added custom router package to composer.json with VCS repository configuration
-- **Features**: Enhanced routing capabilities beyond standard Laravel routing
+### GitHub Profiles
 
-#### Technical Contributions:
-- **Custom Router Implementation**: Developed specialized routing system for medical database application
-- **Package Management**: Integrated custom router package with proper VCS configuration
-- **Repository Configuration**: Set up GitHub repository integration for custom package development
+| Developer | GitHub Profile | Location | Role / Focus |
+|-----------|----------------|----------|--------------|
+| **Sulaiman Qasimi** | [github.com/sulaimanQasimi](https://github.com/sulaimanQasimi) | Kabul, Afghanistan (UNDP) | Primary maintainer, backend architecture, custom router package, depot/blood bank/hospitalization modules |
+| **Mohammad Rafi10** | [github.com/Mohammadrafi10](https://github.com/Mohammadrafi10) | Afghanistan | Full-stack / MERN developer; nephrology module, vital signs, patient reports, localization, Vue components |
 
-### Mohammad Rafi 10 and Sulaiman Qasimi Contributions
-**Email (Mohammad Rafi 10)**: mohammadrafishirzai83@gmail.com
-**Email (Sulaiman Qasimi)**: sulaimanqasimy@gmail.com
-**Primary Repository**: https://github.com/sulaimanQasimi/mod-health-app
-**Secondary Repository**: https://github.com/mohhamdrafi10/mod-health-app
+**Contact emails (project records)**:
+- Mohammad Rafi10: mohammadrafishirzai83@gmail.com
+- Sulaiman Qasimi: sulaimanqasimy@gmail.com
+
+### Commit Activity Summary
+
+| Contributor | Commits | Primary areas of work |
+|-------------|---------|------------------------|
+| Mohammad Rafi10 | 676 | Nephrology registrations, vital signs, patient reports, depot i18n, Vue appointment sections, Dari date pickers |
+| Sulaiman Qasimi | 461 | Depot management, blood bank, hemodialysis, disease/diagnose departments, pharmacy fulfillment dates, permissions |
+| mis4mod7 | 202 | Core application maintenance |
+| Other contributors | 107 | Seeding, lab types, clinic-type visibility, misc. fixes |
+
+> Both lead developers push to the same **`sulaimanQasimi/mod-health-app`** repository (private). Development is collaborative on `main`, with frequent merge commits from both accounts.
+
+### Sulaiman Qasimi — Key Contributions
+
+#### Custom Router Package
+- **Package**: [`sulaimanqasimi/router`](https://github.com/sulaimanQasimi/router) (`dev-main`, PHP)
+- **Repository**: [github.com/sulaimanQasimi/router](https://github.com/sulaimanQasimi/router)
+- **Integration**: VCS repository configured in `composer.json`
+- **Purpose**: Extended routing capabilities for the medical application beyond standard Laravel routing
+
+#### Recent modules (2026)
+- **Depot management**: Depots, depot users, depot transactions, depot-to-depot and depot-to-pharmacy movements
+- **Blood bank**: Blood bank requests on hospitalization show page
+- **Hemodialysis sessions**: Model, controller, routes, and nephrology registration linkage
+- **Disease & diagnose**: Department-scoped disease/diagnose creation and nephrology disease filtering
+- **Pharmacy fulfillment**: Persian date string validation with Verta parsing
+- **Nurse notes**: Verta-based date normalization in `NurseNoteController`
+- **Permissions**: `PermissionSeeder` refactored to `updateOrCreate` for idempotent seeding
+- **Hospitalization UX**: Anesthesia modal AJAX doctor loading, accordion styling for physiotherapy/blood bank
+
+### Mohammad Rafi10 — Key Contributions
 
 #### Database Seeding & Data Management
-- **User Seeding**: Implemented comprehensive user seeding with test accounts
-- **District Data Management**: Added extensive district data for Afghanistan provinces
-- **Geographic Data**: Contributed to location-based data structure for patient management
+- **UserSeeder.php**: Test user accounts for admin and medical staff
+- **DistrictSeeder.php**: District data covering Afghan provinces
+- **Data localization**: English, Dari, and Pashto support in geographic and UI strings
 
-#### Specific Contributions:
-- **UserSeeder.php**: Created test user accounts including admin and medical staff accounts
-- **DistrictSeeder.php**: Implemented comprehensive district data covering all Afghan provinces
-- **Data Localization**: Added support for multiple languages (English, Dari, Pashto) in geographic data
+#### Recent modules (2026)
+- **Nephrology module**: Registration CRUD, appointment Vue section (`NephrologyRegistrationSection.vue`), clinical record tabs (diagnose, lab tests, prescription, hemodialysis)
+- **Nephrologist role**: Doctor model/controller updates, sidebar access, permissions
+- **Visit date (Dari picker)**: Verta normalization in `NephrologyRegistrationController`, `datepicker_dari` on registration forms
+- **Vital signs**: `VitalSignManageService`, daily schedule rows, morphable vital sign management on hospitalizations
+- **Patient reports**: Server-side filtering, Excel export, print layout refactor
+- **Localization**: Nephrology Persian strings, depot labels, corrected `no` translation (نخیر)
 
 ## Repository Structure & Collaboration
 
 ### GitHub Repository Management
-- **Primary Repository**: https://github.com/sulaimanQasimi/mod-health-app
-  - Main development repository
-  - Primary source for releases and documentation
-  - Integration with custom router package
+- **Primary (and only active) repository**: [github.com/sulaimanQasimi/mod-health-app](https://github.com/sulaimanQasimi/mod-health-app)
+  - Private repository; configured as `origin` remote
+  - Main branch development with merge commits from both contributors
+  - Integrates the custom `sulaimanqasimi/router` Composer package
 
-- **Collaborative Repository**: https://github.com/mohhamdrafi10/mod-health-app
-  - Secondary development repository
-  - Database seeding and geographic data contributions
-  - Cross-repository synchronization
+- **Related public package**: [github.com/sulaimanQasimi/router](https://github.com/sulaimanQasimi/router)
 
-### Repository Synchronization
-- **Cross-Repository Development**: Both repositories maintain synchronized development
-- **Feature Branch Strategy**: Development features are shared between repositories
-- **Code Review Process**: Collaborative review process across both repositories
-- **Release Management**: Coordinated releases from primary repository
+### Collaboration Model
+- **Shared `main` branch**: Both developers commit and merge to the same remote
+- **Feature delivery**: Module ownership split by area (see commit summary above)
+- **Release source**: `sulaimanQasimi/mod-health-app` is the canonical project repository
 
 ## Recent Major Changes & New Features
 
-### 1. Users Management Interface Enhancements (NEW)
+### 1. Nephrology & Hemodialysis Module (NEW)
+**Implementation Date**: May 2026  
+**Contributors**: Mohammad Rafi10 & Sulaiman Qasimi
+
+#### Nephrology Registration System
+- **Models & migrations**: `NephrologyRegistration`, `nephrology_registrations` table, `disease_id` linkage, lab column cleanup
+- **Controllers**: `NephrologyRegistrationController`, `NephrologyAjaxController`
+- **Views**: Index, create, show (tabbed clinical record), edit, shared `_form` partial
+- **Appointment integration**: Vue `NephrologyRegistrationSection.vue` embedded in appointment show page
+- **Clinical tabs**: Diagnose, lab test registrations, prescription, hemodialysis sessions on visit show page
+- **Doctor role**: `is_nephrologist` on doctors; nephrology sidebar and permissions
+
+#### Hemodialysis Sessions
+- **Migration**: `2026_05_23_110000_create_hemodialysis_sessions_table.php`
+- **Linked to nephrology registrations** with session date, duration, attending nephrologist, status
+- **Patient profile** and registration show views list linked sessions
+
+#### Dari Date Picker for Visit Date
+- **Forms**: `visit_date` converted from HTML5 date input to `datepicker_dari` with Verta display values
+- **Backend**: `NephrologyRegistrationController::normalizeVisitDate()` parses Persian/Gregorian input via Verta
+- **AJAX**: `NephrologyAjaxController` applies the same normalization on clinical updates
+
+#### Disease & Diagnose Enhancements
+- Department selection on disease and diagnose create/edit forms
+- `Disease::forNephrology()` scope for nephrology-specific disease lists
+- Department column on diagnoses index
+
+### 2. Depot Management System (NEW)
+**Implementation Date**: May 2026  
+**Contributor**: Sulaiman Qasimi (with Mohammad Rafi10 localization commits)
+
+- **Migrations**: `depots`, `depot_transactions`, `depot_users`, movement updates
+- **Controllers**: `DepotController`, `DepotTransactionController`
+- **Features**: Depot-to-depot and depot-to-pharmacy transfers, medicine/tool mutual exclusivity, stock locking
+- **Permissions**: New depot transaction and movement permissions in `PermissionSeeder`
+- **Localization**: Persian translations for depot terms (Mohammad Rafi10)
+
+### 3. Vital Signs & Nursing Enhancements (NEW)
+**Implementation Date**: May 2026  
+**Contributors**: Mohammad Rafi10 & Sulaiman Qasimi
+
+- **VitalSignManageService**: Centralized vital sign create/store logic
+- **Daily schedules**: `syncDailyScheduleRows`, schedule row UI on vital sign create
+- **Morphable support**: Vital signs on hospitalizations and under reviews
+- **Nurse notes**: Verta date parsing in `NurseNoteController`; nullable date validation
+
+### 4. Blood Bank & Hospitalization UX (NEW)
+**Implementation Date**: May 2026  
+**Contributor**: Sulaiman Qasimi
+
+- Blood bank relationship on `Hospitalization` model
+- Blood request modal on hospitalization show page
+- Accordion styling for blood bank, physiotherapy sections
+- AJAX hospital doctor loading for anesthesia appointment modal
+
+### 5. Patient Reports & Clinic Visibility (NEW)
+**Implementation Date**: May 2026  
+**Contributors**: Mohammad Rafi10 & Sulaiman Qasimi
+
+- Server-side report filtering with export filter keys
+- Excel export; print option replaced standalone PDF export
+- Clinic-type visibility scopes on prescriptions and patient test registrations
+
+### 6. Users Management Interface Enhancements
 **Implementation Date**: January 2026
 **Contributors**: Development Team
 
@@ -121,7 +206,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Enhanced Usability**: More flexible data viewing options for different user needs
 - **Data Integrity**: Statistics reflect actual database counts, not just current page data
 
-### 2. Income Management System Enhancements (NEW)
+### 7. Income Management System Enhancements
 **Implementation Date**: January 2026
 **Contributors**: Development Team
 
@@ -161,9 +246,9 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Better Localization**: Proper Dari translation support for new income type
 - **Database Consistency**: Proper schema migration ensures data integrity
 
-### 2. Laboratory Results Interface Enhancements (NEW)
+### 8. Laboratory Results Interface Enhancements
 **Implementation Date**: January 2025
-**Contributors**: Mohammad Rafi 10 & Sulaiman Qasimi
+**Contributors**: Mohammad Rafi10 & Sulaiman Qasimi
 
 #### Dari Date Picker Integration:
 - **Laboratory Results Grouped Page** (`resources/views/pages/laboratory/results/grouped.blade.php`):
@@ -191,7 +276,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Better User Experience**: Consistent date picker implementation across laboratory modules
 - **Professional Appearance**: Optimized button layout and form styling
 
-### 3. Language Translation Improvements (NEW)
+### 9. Language Translation Improvements
 **Implementation Date**: January 2025
 **Contributor**: Development Team
 
@@ -217,7 +302,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Enhanced User Experience**: More natural language experience for Dari speakers
 - **Professional Presentation**: Proper Persian/Dari terminology instead of English loanwords
 
-### 4. Prescription Stock Management System (NEW)
+### 10. Prescription Stock Management System
 **Implementation Date**: August 2025
 
 #### New Models Created:
@@ -246,7 +331,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **New Tables**: `prescription_stocks`, `incomes`, `outcomes`
 - **Features**: Foreign key constraints, indexes, soft deletes, audit trails
 
-### 5. Nursing Management System (NEW)
+### 11. Nursing Management System
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -263,7 +348,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **MedicationAdministrationRecordController** - Medication tracking
 - **NutritionCareController** - Nutrition management
 
-### 6. Physiotherapy Management System (NEW)
+### 12. Physiotherapy Management System
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -275,7 +360,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **PhysiotherapyProcedureController** - Procedure management
 - **PhysiotherapyReportController** - Reporting system
 
-### 7. Vital Signs Management (NEW)
+### 13. Vital Signs Management
 **Implementation Date**: September 2025
 
 #### New Models:
@@ -288,7 +373,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **VitalSignTypeController** - Vital sign type management
 - **VitalSignScheduleController** - Scheduling system
 
-### 8. Enhanced Reporting System
+### 14. Enhanced Reporting System
 - **Operations Reports** - Comprehensive operation reporting
 - **Anesthesia Reports** - Anesthesia procedure reports
 - **ICU Reports** - Intensive care unit reporting
@@ -334,6 +419,17 @@ This is a comprehensive medical database application built with Laravel 10, desi
    - Role-based access control
    - Permission management
    - Multi-language support (English, Persian, Dari)
+
+8. **Nephrology & Hemodialysis** (NEW — May 2026)
+   - Nephrology visit registrations linked to appointments
+   - Clinical record tabs (diagnose, labs, prescriptions, hemodialysis)
+   - Hemodialysis session tracking
+   - Dari date picker for visit dates
+
+9. **Depot & Stock Movements** (NEW — May 2026)
+   - Depot creation and user assignment
+   - Depot-to-depot and depot-to-pharmacy transactions
+   - Medicine and tool stock movement tracking
 
 ## Identified Issues & Problems
 
@@ -419,7 +515,15 @@ This is a comprehensive medical database application built with Laravel 10, desi
 ## Database Schema Summary
 
 ### Recent Migrations (2025-2026):
-- `2026_01_03_100000_add_completion_to_income_type_enum.php` (NEW - January 2026)
+- `2026_05_24_100003_drop_lab_columns_from_nephrology_registrations_table.php` (NEW — May 2026)
+- `2026_05_24_100001_add_disease_id_to_nephrology_registrations_table.php` (NEW — May 2026)
+- `2026_05_23_110000_create_hemodialysis_sessions_table.php` (NEW — May 2026)
+- `2026_05_23_100000_create_nephrology_registrations_table.php` (NEW — May 2026)
+- `2026_05_17_081040_create_depot_users_table.php` (NEW — May 2026)
+- `2026_05_13_000001_update_depot_transactions_for_movements.php` (NEW — May 2026)
+- `2026_05_05_111114_create_depot_transactions_table.php` (NEW — May 2026)
+- `2026_05_05_110509_create_depots_table.php` (NEW — May 2026)
+- `2026_01_03_100000_add_completion_to_income_type_enum.php` (January 2026)
 - `2025_12_30_065134_create_sp_doctor_performance_dynamic_stored_procedure.php`
 - `2025_12_30_061627_add_is_dentist_to_doctors_table.php`
 - `2025_12_28_074344_create_patient_test_result_attachments_table.php`
@@ -503,7 +607,7 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - `2025_08_17_082749_create_prescription_alternative_items_table.php`
 - `2025_08_16_045531_create_militery_types_table.php`
 
-### Recent Changes & Improvements (December 2024 - January 2026):
+### Recent Changes & Improvements (December 2024 - May 2026):
 
 #### 1. Modern Login Page Design Implementation (NEW)
 **Implementation Date**: January 2025
@@ -623,39 +727,44 @@ This is a comprehensive medical database application built with Laravel 10, desi
   - **JavaScript Configuration**: Implemented proper Persian date picker with `formatDate: 'YYYY-MM-DD'` and calendar settings
   - **Form Validation**: Enhanced form validation with proper error handling for date inputs
 
-#### 5. Sulaiman Qasimi Enhanced Contributions:
+#### 5. Sulaiman Qasimi — Router Package & Backend (Updated May 2026)
 
-##### Custom Router Package Updates:
-- **Package Version**: Updated to latest development version
-- **Enhanced Routing**: Improved custom routing functionality for medical application
-- **Performance Optimization**: Optimized routing performance for large-scale medical data handling
-- **Security Enhancements**: Added additional security measures to custom router package
+##### Custom Router Package:
+- **Package**: [`sulaimanqasimi/router`](https://github.com/sulaimanQasimi/router) (`dev-main`)
+- **Public repo**: [github.com/sulaimanQasimi/router](https://github.com/sulaimanQasimi/router) (PHP, created Sep 2025)
+- **Integration**: VCS source in `composer.json`; last package update Jan 2026
 
-##### Technical Improvements:
-- **Code Quality**: Enhanced code quality standards in custom router implementation
-- **Documentation**: Improved package documentation and usage examples
-- **Integration**: Streamlined integration process with Laravel 10 medical application
-- **Testing**: Added comprehensive testing suite for custom router functionality
+##### 2026 Backend Deliverables:
+- Depot management system (models, migrations, controllers, permissions)
+- Blood bank request workflow on hospitalizations
+- Hemodialysis session module linked to nephrology
+- Department-scoped disease and diagnose management
+- Pharmacy fulfillment Persian date validation
+- PermissionSeeder idempotency via `updateOrCreate`
 
-### Recent Git Commits & Changes (January 2025 - January 2026):
+### Recent Git Commits & Changes (January 2025 - May 2026):
 
-#### Latest Commits (Recent 14):
-1. **Latest (January 2026)**: Users management interface enhancements - Fixed statistics cards accuracy and added per-page selector for pagination
-2. **Previous (January 2026)**: Income management system enhancements - Added 'completion' income type and made purchase_price optional
-3. **Previous (January 2025)**: Laboratory results interface enhancements with Dari date picker integration and UI improvements
-3. **Previous**: Modern login page design implementation with Tailwind CSS and responsive layout
-3. **9551bfc**: Refactor appointment token printing logic to use department_id directly from appointment
-4. **deff62a**: Update appointment and patient views to use null-safe operator for doctor access
-5. **54a8319**: Update appointment creation logic in PatientController and enhance appointment view
-6. **cfdd504**: Refactor Select2 initialization for improved maintainability in patient creation view
-7. **e93ebd6**: Add checks for moment.js and bootstrap-daterangepicker availability in forms-pickers.js
-8. **983bfcf**: Enhance flatpickr initialization and error handling in forms-pickers.js
-9. **0f8439b**: Fix loadPath in i18n configuration to include leading slash for correct JSON file path
-10. **4c84296**: Enhance Select2 integration for dropdowns in patient creation view
-11. **a78b5e2**: Implement department selection and dynamic doctor loading in PatientController
-12. **Previous**: Language translation standardization with Dari terminology improvements
+#### Latest Commits (May 2026):
+1. **Latest**: Nephrology visit date — Dari datepicker on forms, Verta normalization in controller/AJAX
+2. **728fe751** (Sulaiman Qasimi): Nephrology registration show/index — disease, hemodialysis, clinical form sections
+3. **44b10e7a / 764cdf18** (Sulaiman Qasimi): Department-scoped diagnose and disease management
+4. **9c5c0082 / ac238058** (Mohammad Rafi10): Nephrology Vue section UX and Persian localization
+5. **ab1dad67** (Sulaiman Qasimi): Nephrology show — prescription and lab test tabs with dynamic loading
+6. **9dafa001** (Sulaiman Qasimi): Hemodialysis session management module
+7. **b141511e** (Mohammad Rafi10): Nephrology registration support in appointments and nephrologist role
+8. **e923b043 / 6304bd04** (Sulaiman Qasimi): Depot management, transactions, and movements
+9. **791742b0 / 26efea7a** (Mohammad Rafi10): Patient report filtering and print export refactor
+10. **7933cc14 / 784ca97f** (Mohammad Rafi10): Vital signs service refactor and daily schedules
+11. **d73351f8** (Sulaiman Qasimi): Blood bank management on hospitalizations
 
-#### Key Changes Implemented:
+#### Earlier Commits (January 2025 - January 2026):
+
+#### Key Changes Implemented (2026):
+- **Nephrology & Hemodialysis (May 2026)**: Full nephrology visit workflow, clinical tabs, hemodialysis sessions, Dari visit date picker
+- **Depot Management (May 2026)**: Depots, transactions, inter-depot and depot-to-pharmacy movements
+- **Vital Signs Refactor (May 2026)**: Service layer, daily schedules, morphable hospitalization integration
+- **Blood Bank (May 2026)**: Request workflow on hospitalization show page
+- **Patient Reports (May 2026)**: Server-side filters, Excel export, print layout
 - **Users Management Enhancement (January 2026)**: Fixed statistics cards to display accurate counts using full collection, added per-page selector (10, 20, 50, 100) for pagination control
 - **Income Management Enhancement (January 2026)**: Added 'completion' income type, extended database enum, made purchase_price optional
 - **Database Schema Updates**: New migration for income_type enum extension with proper rollback support
@@ -831,9 +940,19 @@ This is a comprehensive medical database application built with Laravel 10, desi
 - **Seeder Errors**: Resolved database seeder errors and data population issues
 ## Conclusion
 
-The medical database application has undergone significant development with the addition of comprehensive stock management, nursing systems, enhanced reporting capabilities, and recent date format standardization. The project has benefited from contributions by Sulaiman Qasimi (custom router package development and integration) and Mohammad Rafi 10 (database seeding and geographic data management), along with recent improvements in date handling and form functionality.
+The medical database application has undergone significant development with the addition of comprehensive stock management, nursing systems, nephrology and hemodialysis modules, depot management, enhanced reporting capabilities, and ongoing date format standardization. The project is actively maintained on **[sulaimanQasimi/mod-health-app](https://github.com/sulaimanQasimi/mod-health-app)** by **Sulaiman Qasimi** (custom router package, depot, blood bank, backend architecture) and **Mohammad Rafi10** ([Mohammadrafi10](https://github.com/Mohammadrafi10) — nephrology, vital signs, patient reports, localization, Vue components).
 
-### Recent Achievements (December 2024 - January 2025):
+### Recent Achievements (December 2024 - May 2026):
+
+#### May 2026 Achievements:
+- **Nephrology Module**: End-to-end nephrology visit registration with appointment integration and clinical record tabs
+- **Hemodialysis Sessions**: Session tracking linked to nephrology registrations and patient profiles
+- **Dari Visit Date Picker**: Verta-backed Persian date input on nephrology registration forms
+- **Depot Management**: Full depot lifecycle with inter-depot and pharmacy transfer workflows
+- **Vital Signs Service Layer**: Refactored management with daily schedule support
+- **Blood Bank Integration**: Request workflow on hospitalization pages
+- **Patient Reports**: Filtered server-side reports with Excel export and print layout
+- **Clinic-Type Visibility**: Scoped access on prescriptions and lab registrations
 
 #### January 2026 Achievements:
 - **Users Management Interface Enhancement**: Successfully fixed statistics cards to display accurate user counts regardless of pagination
@@ -869,18 +988,24 @@ The medical database application has undergone significant development with the 
 - **User Experience**: Enhanced date picker functionality with Persian calendar integration
 
 ### Key Contributors:
-- **Sulaiman Qasimi**: 
-  - Repository: https://github.com/sulaimanQasimi/mod-health-app
-  - Custom router package development, integration, and performance optimization
-  - Primary repository management and release coordination
-- **Mohammad Rafi 10**: 
-  - Repository: https://github.com/mohhamdrafi10/mod-health-app
-  - Database seeding, user management, geographic data implementation, and recent date format improvements
-  - Collaborative repository synchronization and feature development
-- **Development Team**: Date standardization, form fixes, and user interface enhancements
+- **Sulaiman Qasimi** ([github.com/sulaimanQasimi](https://github.com/sulaimanQasimi)):
+  - Primary repository maintainer: [sulaimanQasimi/mod-health-app](https://github.com/sulaimanQasimi/mod-health-app)
+  - Custom router package: [sulaimanQasimi/router](https://github.com/sulaimanQasimi/router)
+  - ~461 commits — depot management, blood bank, hemodialysis, disease/diagnose departments, permissions, pharmacy dates
+  - Location: Kabul, Afghanistan | UNDP
+- **Mohammad Rafi10** ([github.com/Mohammadrafi10](https://github.com/Mohammadrafi10)):
+  - ~676 commits — nephrology module, vital signs, patient reports, Vue components, Dari localization, seeders
+  - Full-stack / MERN developer | Location: Afghanistan
+  - Email: mohammadrafishirzai83@gmail.com
+- **Other contributors**: mis4mod7 and team members (lab types, clinic visibility, seeders)
 
-### Current Status (January 2026):
+### Current Status (May 2026):
 The application has significantly improved in terms of:
+- **Nephrology & Hemodialysis**: Complete visit workflow with clinical tabs and session tracking
+- **Depot & Stock Movements**: Inter-depot and pharmacy transfer management
+- **Vital Signs**: Service-based architecture with daily schedule rows
+- **Blood Bank**: Integrated request workflow on hospitalizations
+- **Patient Reports**: Server-side filtering with Excel and print export
 - **Users Management**: Fixed statistics cards accuracy to display correct user counts, added per-page selector for flexible pagination control
 - **Data Accuracy**: Statistics now reflect actual database counts instead of paginated page data
 - **Pagination Control**: Users can select display options (10, 20, 50, 100 items per page) for optimized viewing
@@ -922,4 +1047,4 @@ The application has significantly improved in terms of:
    - Additional UI improvements and user experience enhancements
    - Advanced reporting features
 
-The application is now more functional with improved income management, enhanced appointment management, enhanced frontend stability, better date handling, and standardized Dari language translations, making it more suitable for production deployment with proper Persian/Dari calendar support, dynamic department-based workflows, comprehensive income tracking, and improved localization for Afghan users.
+The application is now more functional with nephrology and hemodialysis workflows, depot stock management, improved vital signs scheduling, blood bank integration, enhanced patient reporting, improved income management, enhanced appointment management, enhanced frontend stability, better date handling with Verta and Dari date pickers, and standardized Dari language translations — making it more suitable for production deployment with proper Persian/Dari calendar support, dynamic department-based workflows, comprehensive income tracking, and improved localization for Afghan users.

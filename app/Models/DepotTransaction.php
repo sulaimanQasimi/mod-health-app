@@ -21,6 +21,9 @@ class DepotTransaction extends Model
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_CANCELLED = 'cancelled';
 
+    public const ITEM_MEDICINE = 'medicine';
+    public const ITEM_TOOL = 'tool';
+
     protected $fillable = [
         'transaction_number',
         'depot_id',
@@ -121,9 +124,21 @@ class DepotTransaction extends Model
 
     public static function availableStock(int $depotId, int $medicineId): int
     {
+        return self::availableStockFor(self::ITEM_MEDICINE, $depotId, $medicineId);
+    }
+
+    public static function availableToolStock(int $depotId, int $toolId): int
+    {
+        return self::availableStockFor(self::ITEM_TOOL, $depotId, $toolId);
+    }
+
+    public static function availableStockFor(string $itemType, int $depotId, int $itemId): int
+    {
+        $column = self::itemColumn($itemType);
+
         $incoming = self::query()
             ->where('status', self::STATUS_COMPLETED)
-            ->where('medicine_id', $medicineId)
+            ->where($column, $itemId)
             ->where(function ($query) use ($depotId) {
                 $query->where(function ($q) use ($depotId) {
                     $q->where('depot_id', $depotId)
@@ -137,7 +152,7 @@ class DepotTransaction extends Model
 
         $outgoing = self::query()
             ->where('status', self::STATUS_COMPLETED)
-            ->where('medicine_id', $medicineId)
+            ->where($column, $itemId)
             ->where(function ($query) use ($depotId) {
                 $query->where(function ($q) use ($depotId) {
                     $q->where('depot_id', $depotId)
@@ -152,6 +167,28 @@ class DepotTransaction extends Model
         return (int) $incoming - (int) $outgoing;
     }
 
+    public static function itemColumn(string $itemType): string
+    {
+        return match ($itemType) {
+            self::ITEM_MEDICINE => 'medicine_id',
+            self::ITEM_TOOL => 'tool_id',
+            default => throw new \InvalidArgumentException("Unknown item type: {$itemType}"),
+        };
+    }
+
+    public function itemType(): ?string
+    {
+        if ($this->medicine_id) {
+            return self::ITEM_MEDICINE;
+        }
+
+        if ($this->tool_id) {
+            return self::ITEM_TOOL;
+        }
+
+        return null;
+    }
+
     public function scopeCompleted($query)
     {
         return $query->where('status', self::STATUS_COMPLETED);
@@ -160,6 +197,16 @@ class DepotTransaction extends Model
     public function scopeForMedicine($query, int $medicineId)
     {
         return $query->where('medicine_id', $medicineId);
+    }
+
+    public function scopeForTool($query, int $toolId)
+    {
+        return $query->where('tool_id', $toolId);
+    }
+
+    public function depotRequest()
+    {
+        return $this->hasOne(DepotRequest::class, 'depot_transaction_id');
     }
 
     public function scopeForDepot($query, int $depotId)

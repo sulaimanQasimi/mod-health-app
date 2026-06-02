@@ -4,20 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Depot\StoreDepotToDepotRequest;
 use App\Http\Requests\Depot\StoreDepotToPharmacyRequest;
+use App\Http\Requests\Depot\StoreDepotTransactionRequest;
 use App\Models\Depot;
+use App\Models\DepotRequest;
 use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
 use App\Models\PharmacyFulfillment;
 use App\Models\Tool;
 use App\Models\Unit;
+use App\Services\DepotStockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class DepotTransactionController extends Controller
 {
+    public function __construct(
+        private readonly DepotStockService $stockService
+    ) {
+    }
+
     public function index(Request $request)
     {
         $query = DepotTransaction::with([
@@ -29,6 +36,7 @@ class DepotTransactionController extends Controller
             'tool',
             'unit',
             'createdBy',
+            'depotRequest',
         ]);
 
         if ($request->filled('depot_id')) {
@@ -42,6 +50,13 @@ class DepotTransactionController extends Controller
         }
         if ($request->filled('tool_id')) {
             $query->where('tool_id', $request->tool_id);
+        }
+        if ($request->filled('item_type')) {
+            if ($request->item_type === DepotTransaction::ITEM_MEDICINE) {
+                $query->whereNotNull('medicine_id');
+            } elseif ($request->item_type === DepotTransaction::ITEM_TOOL) {
+                $query->whereNotNull('tool_id');
+            }
         }
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -61,7 +76,7 @@ class DepotTransactionController extends Controller
                 $q->where('transaction_number', 'like', "%{$search}%")
                     ->orWhere('batch_number', 'like', "%{$search}%")
                     ->orWhereHas('medicine', fn ($medicine) => $medicine->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('tool', fn ($tool) => $tool->where('id', $search))
+                    ->orWhereHas('tool', fn ($tool) => $tool->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('fromDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('toDepot', fn ($depot) => $depot->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('pharmacy', fn ($pharmacy) => $pharmacy->where('name', 'like', "%{$search}%"));
@@ -88,28 +103,20 @@ class DepotTransactionController extends Controller
         ]));
     }
 
-    public function store(Request $request)
+    public function store(StoreDepotTransactionRequest $request)
     {
-        $data = $request->validate([
-            'depot_id' => ['required', 'exists:depots,id'],
-            'medicine_id' => ['required', 'exists:medicines,id'],
-            'tool_id' => ['nullable', 'exists:tools,id'],
-            'unit_id' => ['nullable', 'exists:units,id'],
-            'batch_number' => ['nullable', 'string', 'max:255'],
-            'type' => ['required', 'in:stock_in,stock_out,adjustment'],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'transaction_date' => ['nullable', 'date'],
-            'issued_date' => ['nullable', 'date'],
-            'expiry_date' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $data = $request->validated();
+        $itemType = ! empty($data['medicine_id'])
+            ? DepotTransaction::ITEM_MEDICINE
+            : DepotTransaction::ITEM_TOOL;
+        $itemId = (int) ($data['medicine_id'] ?? $data['tool_id']);
 
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $itemType, $itemId) {
             Depot::whereKey($data['depot_id'])->lockForUpdate()->firstOrFail();
 
             if ($data['type'] === DepotTransaction::TYPE_STOCK_OUT) {
-                $this->lockDepotMedicineLedger((int) $data['depot_id'], (int) $data['medicine_id']);
-                $this->ensureAvailableStock((int) $data['depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
+                $this->stockService->lockLedger((int) $data['depot_id'], $itemType, $itemId);
+                $this->stockService->ensureAvailable($itemType, (int) $data['depot_id'], $itemId, (int) $data['quantity']);
             }
 
             DepotTransaction::create([
@@ -138,6 +145,7 @@ class DepotTransactionController extends Controller
             'createdBy',
             'updatedBy',
             'transactionable',
+            'depotRequest',
         ]);
 
         return view('pages.depots.transactions.show', compact('depotTransaction'));
@@ -179,15 +187,17 @@ class DepotTransactionController extends Controller
     public function storeDepotToDepot(StoreDepotToDepotRequest $request)
     {
         $data = $request->validated();
+        $itemType = ! empty($data['medicine_id'])
+            ? DepotTransaction::ITEM_MEDICINE
+            : DepotTransaction::ITEM_TOOL;
+        $itemId = (int) ($data['medicine_id'] ?? $data['tool_id']);
 
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $itemType, $itemId) {
             Depot::whereKey($data['from_depot_id'])->lockForUpdate()->firstOrFail();
             Depot::whereKey($data['to_depot_id'])->lockForUpdate()->firstOrFail();
 
-            if (!empty($data['medicine_id'])) {
-                $this->lockDepotMedicineLedger((int) $data['from_depot_id'], (int) $data['medicine_id']);
-                $this->ensureAvailableStock((int) $data['from_depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
-            }
+            $this->stockService->lockLedger((int) $data['from_depot_id'], $itemType, $itemId);
+            $this->stockService->ensureAvailable($itemType, (int) $data['from_depot_id'], $itemId, (int) $data['quantity']);
 
             DepotTransaction::create([
                 ...$data,
@@ -214,8 +224,8 @@ class DepotTransactionController extends Controller
 
         DB::transaction(function () use ($data) {
             Depot::whereKey($data['from_depot_id'])->lockForUpdate()->firstOrFail();
-            $this->lockDepotMedicineLedger((int) $data['from_depot_id'], (int) $data['medicine_id']);
-            $this->ensureAvailableStock((int) $data['from_depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
+            $this->stockService->lockLedger((int) $data['from_depot_id'], DepotTransaction::ITEM_MEDICINE, (int) $data['medicine_id']);
+            $this->stockService->ensureAvailable(DepotTransaction::ITEM_MEDICINE, (int) $data['from_depot_id'], (int) $data['medicine_id'], (int) $data['quantity']);
 
             $transactionNumber = DepotTransaction::nextTransactionNumber();
             $transactionDate = $data['transaction_date'] ?? now()->toDateString();
@@ -251,11 +261,32 @@ class DepotTransactionController extends Controller
     {
         $request->validate([
             'depot_id' => ['required', 'exists:depots,id'],
-            'medicine_id' => ['required', 'exists:medicines,id'],
+            'item_type' => ['nullable', 'in:medicine,tool'],
+            'medicine_id' => ['nullable', 'exists:medicines,id'],
+            'tool_id' => ['nullable', 'exists:tools,id'],
         ]);
 
+        $itemType = $request->get('item_type');
+        if (! $itemType) {
+            $itemType = $request->filled('tool_id')
+                ? DepotTransaction::ITEM_TOOL
+                : DepotTransaction::ITEM_MEDICINE;
+        }
+
+        if ($itemType === DepotTransaction::ITEM_TOOL) {
+            $request->validate(['tool_id' => ['required', 'exists:tools,id']]);
+
+            return response()->json([
+                'available_stock' => $this->stockService->availableToolStock((int) $request->depot_id, (int) $request->tool_id),
+                'item_type' => DepotTransaction::ITEM_TOOL,
+            ]);
+        }
+
+        $request->validate(['medicine_id' => ['required', 'exists:medicines,id']]);
+
         return response()->json([
-            'available_stock' => DepotTransaction::availableStock((int) $request->depot_id, (int) $request->medicine_id),
+            'available_stock' => $this->stockService->availableMedicineStock((int) $request->depot_id, (int) $request->medicine_id),
+            'item_type' => DepotTransaction::ITEM_MEDICINE,
         ]);
     }
 
@@ -265,32 +296,8 @@ class DepotTransactionController extends Controller
             'depots' => Depot::query()->where('is_active', true)->orderBy('name')->get(),
             'pharmacies' => Pharmacy::query()->orderBy('name')->get(),
             'medicines' => Medicine::query()->whereNull('deleted_at')->orderBy('name')->get(),
-            'tools' => Tool::query()->orderBy('id')->get(),
+            'tools' => Tool::query()->where('is_active', true)->orderBy('name')->get(),
             'units' => Unit::query()->where('is_active', true)->orderBy('name')->get(),
         ];
-    }
-
-    private function lockDepotMedicineLedger(int $depotId, int $medicineId): void
-    {
-        DepotTransaction::query()
-            ->where('medicine_id', $medicineId)
-            ->where(function ($query) use ($depotId) {
-                $query->where('depot_id', $depotId)
-                    ->orWhere('from_depot_id', $depotId)
-                    ->orWhere('to_depot_id', $depotId);
-            })
-            ->lockForUpdate()
-            ->get(['id']);
-    }
-
-    private function ensureAvailableStock(int $depotId, int $medicineId, int $quantity): void
-    {
-        $available = DepotTransaction::availableStock($depotId, $medicineId);
-
-        if ($available < $quantity) {
-            throw ValidationException::withMessages([
-                'quantity' => "Insufficient depot stock. Available quantity is {$available}.",
-            ]);
-        }
     }
 }

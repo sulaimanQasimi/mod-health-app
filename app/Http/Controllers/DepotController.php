@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Depot;
+use App\Models\DepotRequest;
+use App\Models\DepotTransaction;
 use App\Models\Pharmacy;
 use App\Models\User;
+use App\Services\DepotStockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +17,11 @@ use App\Models\QueryBuilder\DepotQuery;
 
 class DepotController extends Controller
 {
+    public function __construct(
+        private readonly DepotStockService $stockService
+    ) {
+    }
+
     public function index(Request $request)
     {
         $query = Depot::query()->with(['department', 'branch', 'pharmacy', 'parentDepot', 'activeUsers']);
@@ -92,7 +100,50 @@ class DepotController extends Controller
     public function show(Depot $depot)
     {
         $depot->load(['department', 'branch', 'pharmacy', 'parentDepot', 'activeUsers']);
-        return view('pages.depots.show', compact('depot'));
+
+        $stockItems = $this->stockService->stockItemsForDepot($depot->id)->take(10);
+
+        $recentTransactions = DepotTransaction::query()
+            ->with(['medicine', 'tool', 'fromDepot', 'toDepot', 'pharmacy'])
+            ->forDepot($depot->id)
+            ->latest('transaction_date')
+            ->latest('id')
+            ->limit(10)
+            ->get();
+
+        $pendingOutgoingRequests = DepotRequest::query()
+            ->with(['medicine', 'tool', 'sourceDepot'])
+            ->where('requesting_depot_id', $depot->id)
+            ->whereIn('status', [DepotRequest::STATUS_DRAFT, DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
+            ->latest('id')
+            ->limit(5)
+            ->get();
+
+        $pendingIncomingRequests = DepotRequest::query()
+            ->with(['medicine', 'tool', 'requestingDepot'])
+            ->where('source_depot_id', $depot->id)
+            ->whereIn('status', [DepotRequest::STATUS_PENDING, DepotRequest::STATUS_APPROVED])
+            ->latest('id')
+            ->limit(5)
+            ->get();
+
+        return view('pages.depots.show', compact(
+            'depot',
+            'stockItems',
+            'recentTransactions',
+            'pendingOutgoingRequests',
+            'pendingIncomingRequests'
+        ));
+    }
+
+    public function stock(Request $request, Depot $depot)
+    {
+        $itemType = $request->get('item_type');
+        $search = $request->get('search');
+
+        $stockItems = $this->stockService->stockItemsForDepot($depot->id, $itemType, $search);
+
+        return view('pages.depots.stock', compact('depot', 'stockItems', 'itemType', 'search'));
     }
     public function edit(Depot $depot)
     {

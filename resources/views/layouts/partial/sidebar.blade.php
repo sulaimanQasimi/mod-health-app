@@ -325,7 +325,7 @@
                 </ul>
             </li>
         @endif
-        <li class="menu-item {{ Route::is('depots.*') ? 'active open' : '' }}">
+        <li class="menu-item {{ Route::is('depots.*') || Route::is('tools.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-store"></i>
                 <div>{{ localize('global.depot.title') }}</div>
@@ -336,6 +336,48 @@
                         <div>{{ localize('global.depot.list') }}</div>
                     </a>
                 </li>
+                @can('depot.transaction.view')
+                <li class="menu-item {{ Route::is('depots.transactions.*') ? 'active' : '' }}">
+                    <a href="{{ route('depots.transactions.index') }}" class="menu-link">
+                        <div>{{ localize('global.depot.transactions') }}</div>
+                    </a>
+                </li>
+                @endcan
+                @canany(['depot.request.create', 'depot.request.approve', 'depot.request.fulfill'])
+                <li class="menu-item {{ Route::is('depots.requests.*') ? 'active' : '' }}">
+                    <a href="{{ route('depots.requests.index') }}" class="menu-link">
+                        <div>{{ localize('global.depot.requests') }}</div>
+                    </a>
+                </li>
+                @endcanany
+                @can('depot.movement.depot_to_depot')
+                <li class="menu-item {{ Route::is('depots.movements.depot_to_depot*') ? 'active' : '' }}">
+                    <a href="{{ route('depots.movements.depot_to_depot') }}" class="menu-link">
+                        <div>{{ localize('global.depot.depot_to_depot') }}</div>
+                    </a>
+                </li>
+                @endcan
+                @can('depot.movement.depot_to_pharmacy')
+                <li class="menu-item {{ Route::is('depots.movements.depot_to_pharmacy*') ? 'active' : '' }}">
+                    <a href="{{ route('depots.movements.depot_to_pharmacy') }}" class="menu-link">
+                        <div>{{ localize('global.depot.depot_to_pharmacy') }}</div>
+                    </a>
+                </li>
+                @endcan
+                @can('depot.view')
+                <li class="menu-item {{ Route::is('tools.*') ? 'active' : '' }}">
+                    <a href="{{ route('tools.index') }}" class="menu-link">
+                        <div>{{ localize('global.depot.tools') }}</div>
+                    </a>
+                </li>
+                @endcan
+                @can('depot.report.export')
+                <li class="menu-item {{ Route::is('depots.reports.*') ? 'active' : '' }}">
+                    <a href="{{ route('depots.reports.index') }}" class="menu-link">
+                        <div>{{ localize('global.depot.reports') }}</div>
+                    </a>
+                </li>
+                @endcan
             </ul>
         </li>
 

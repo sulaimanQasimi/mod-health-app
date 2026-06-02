@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-md-6">
                                 <label class="form-label" for="medicine_id">{{ localize('global.medicine') }}</label>
-                            <select name="medicine_id" id="medicine_id" class="form-select select2 @error('medicine_id') is-invalid @enderror" required>
+                            <select name="medicine_id" id="medicine_id" class="form-select select2 @error('medicine_id') is-invalid @enderror">
                                 <option value="">{{ localize('global.select_medicine') }}</option>
                                 @foreach($medicines as $medicine)
                                     <option value="{{ $medicine->id }}" @selected(old('medicine_id') == $medicine->id)>{{ $medicine->name }}</option>
@@ -47,11 +47,11 @@
                             @error('medicine_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="tool_id">Tool</label>
+                            <label class="form-label" for="tool_id">{{ localize('global.depot.tool') }}</label>
                             <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
                                 <option value="">Select tool</option>
                                 @foreach($tools as $tool)
-                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
+                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>{{ $tool->displayName() }}</option>
                                 @endforeach
                             </select>
                             @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
@@ -113,12 +113,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const box = document.getElementById('available-stock');
 
     function refreshStock() {
-        if (!depot.value || !medicine.value) {
+        if (!depot.value) {
             box.classList.add('d-none');
             return;
         }
 
-        fetch(`{{ route('depots.stock.available') }}?depot_id=${depot.value}&medicine_id=${medicine.value}`)
+        let url = `{{ route('depots.stock.available') }}?depot_id=${depot.value}`;
+        if (medicine.value) {
+            url += `&item_type=medicine&medicine_id=${medicine.value}`;
+        } else if (tool.value) {
+            url += `&item_type=tool&tool_id=${tool.value}`;
+        } else {
+            box.classList.add('d-none');
+            return;
+        }
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 box.textContent = `Available stock in source depot: ${data.available_stock}`;
@@ -139,11 +149,11 @@ document.addEventListener('DOMContentLoaded', function () {
     tool.addEventListener('change', function () {
         if (tool.value) {
             medicine.value = '';
-            box.classList.add('d-none');
             if (window.jQuery) {
                 $('#medicine_id').trigger('change.select2');
             }
         }
+        refreshStock();
     });
     refreshStock();
 });

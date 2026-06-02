@@ -117,8 +117,12 @@
                                 <tr>
                                     <th class="bg-body-tertiary">{{ localize('global.dialyzer_type') }}</th>
                                     <td>{{ $hemodialysisSession->dialyzer_type ?: '—' }}</td>
+                                    <th class="bg-body-tertiary">{{ localize('global.blood_type') }}</th>
+                                    <td>{{ $hemodialysisSession->blood_type ?: '—' }}</td>
+                                </tr>
+                                <tr>
                                     <th class="bg-body-tertiary">{{ localize('global.fluid_removed_ml') }}</th>
-                                    <td>{{ $hemodialysisSession->fluid_removed_ml ?? '—' }}</td>
+                                    <td colspan="3">{{ $hemodialysisSession->fluid_removed_ml ?? '—' }}</td>
                                 </tr>
                             </tbody>
                         </table>

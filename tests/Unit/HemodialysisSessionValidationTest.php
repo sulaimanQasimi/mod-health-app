@@ -20,6 +20,7 @@ class HemodialysisSessionValidationTest extends TestCase
         $this->assertArrayHasKey('pre_blood_pressure', $rules);
         $this->assertArrayHasKey('post_blood_pressure', $rules);
         $this->assertArrayHasKey('fluid_removed_ml', $rules);
+        $this->assertArrayHasKey('blood_type', $rules);
         $this->assertArrayHasKey('dialyzer_type', $rules);
         $this->assertArrayHasKey('complications_notes', $rules);
         $this->assertArrayHasKey('status', $rules);

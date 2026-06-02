@@ -64,6 +64,21 @@ class Depot extends Model
     {
         return DepotTransaction::availableStock($this->id, $medicineId);
     }
+
+    public function stockForTool(int $toolId): int
+    {
+        return DepotTransaction::availableToolStock($this->id, $toolId);
+    }
+
+    public function outgoingRequests()
+    {
+        return $this->hasMany(DepotRequest::class, 'requesting_depot_id');
+    }
+
+    public function incomingRequests()
+    {
+        return $this->hasMany(DepotRequest::class, 'source_depot_id');
+    }
     public function childrenDepots()
     {
         return $this->hasMany(Depot::class, 'parent_depot_id');

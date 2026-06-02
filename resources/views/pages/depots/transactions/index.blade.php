@@ -10,6 +10,11 @@
         <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
             <h5 class="mb-0">{{ localize('global.depot.depot_transactions') }}</h5>
             <div class="d-flex flex-wrap gap-2">
+                @can('depot.report.export')
+                <a href="{{ route('depots.reports.index') }}" class="btn btn-outline-secondary">
+                    <i class="bx bx-export me-1"></i>{{ localize('global.depot.reports') }}
+                </a>
+                @endcan
                 <a href="{{ route('depots.movements.depot_to_depot') }}" class="btn btn-outline-primary">
                     <i class="bx bx-transfer me-1"></i>{{ localize('global.depot.depot_to_depot') }}
                 </a>
@@ -44,6 +49,13 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select name="item_type" class="form-select">
+                        <option value="">All item types</option>
+                        <option value="medicine" @selected(request('item_type') === 'medicine')>Medicine</option>
+                        <option value="tool" @selected(request('item_type') === 'tool')>Tool</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <select name="medicine_id" class="form-select select2">
                         <option value="">All medicines</option>
                         @foreach($medicines as $medicine)
@@ -55,7 +67,7 @@
                     <select name="tool_id" class="form-select select2">
                         <option value="">All tools</option>
                         @foreach($tools as $tool)
-                            <option value="{{ $tool->id }}" @selected(request('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
+                            <option value="{{ $tool->id }}" @selected(request('tool_id') == $tool->id)>{{ $tool->displayName() }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -117,12 +129,15 @@
                             <td>{{ $transaction->fromDepot?->name ?? $transaction->depot?->name ?? '-' }}</td>
                             <td>{{ $transaction->toDepot?->name ?? $transaction->pharmacy?->name ?? '-' }}</td>
                             <td>{{ $transaction->medicine?->name ?? '-' }}</td>
-                            <td>{{ $transaction->tool ? 'Tool #' . $transaction->tool->id : '-' }}</td>
+                            <td>{{ $transaction->tool?->displayName() ?? '-' }}</td>
                             <td>{{ number_format($transaction->quantity) }} {{ $transaction->unit?->symbol ?? $transaction->unit?->name }}</td>
                             <td>
                                 <span class="badge bg-{{ $transaction->status === 'completed' ? 'success' : ($transaction->status === 'cancelled' ? 'danger' : 'warning') }}">
                                     {{ ucfirst($transaction->status) }}
                                 </span>
+                                @if($transaction->depotRequest)
+                                    <a href="{{ route('depots.requests.show', $transaction->depotRequest) }}" class="badge bg-info text-decoration-none">Request</a>
+                                @endif
                             </td>
                             <td>{{ $transaction->createdBy?->name ?? '-' }}</td>
                             <td>{{ optional($transaction->transaction_date)->format('Y-m-d') }}</td>

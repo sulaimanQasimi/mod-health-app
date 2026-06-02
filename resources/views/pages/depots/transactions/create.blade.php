@@ -21,20 +21,30 @@
                             <select name="depot_id" id="depot_id" class="form-select select2 @error('depot_id') is-invalid @enderror" required>
                                 <option value="">Select depot</option>
                                 @foreach($depots as $depot)
-                                    <option value="{{ $depot->id }}" @selected(old('depot_id') == $depot->id)>{{ $depot->name }}</option>
+                                    <option value="{{ $depot->id }}" @selected(old('depot_id', request('depot_id')) == $depot->id)>{{ $depot->name }}</option>
                                 @endforeach
                             </select>
                             @error('depot_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="medicine_id">Medicine</label>
-                            <select name="medicine_id" id="medicine_id" class="form-select select2 @error('medicine_id') is-invalid @enderror" required>
+                            <select name="medicine_id" id="medicine_id" class="form-select select2 @error('medicine_id') is-invalid @enderror">
                                 <option value="">Select medicine</option>
                                 @foreach($medicines as $medicine)
                                     <option value="{{ $medicine->id }}" @selected(old('medicine_id') == $medicine->id)>{{ $medicine->name }}</option>
                                 @endforeach
                             </select>
                             @error('medicine_id')<small class="text-danger">{{ $message }}</small>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="tool_id">{{ localize('global.depot.tool') }}</label>
+                            <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
+                                <option value="">Select tool</option>
+                                @foreach($tools as $tool)
+                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>{{ $tool->displayName() }}</option>
+                                @endforeach
+                            </select>
+                            @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="type">Type</label>
@@ -59,16 +69,6 @@
                                 @endforeach
                             </select>
                             @error('unit_id')<small class="text-danger">{{ $message }}</small>@enderror
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="tool_id">Tool</label>
-                            <select name="tool_id" id="tool_id" class="form-select select2 @error('tool_id') is-invalid @enderror">
-                                <option value="">Select tool</option>
-                                @foreach($tools as $tool)
-                                    <option value="{{ $tool->id }}" @selected(old('tool_id') == $tool->id)>Tool #{{ $tool->id }}</option>
-                                @endforeach
-                            </select>
-                            @error('tool_id')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="batch_number">Batch Number</label>
@@ -108,15 +108,26 @@
 document.addEventListener('DOMContentLoaded', function () {
     const depot = document.getElementById('depot_id');
     const medicine = document.getElementById('medicine_id');
+    const tool = document.getElementById('tool_id');
     const box = document.getElementById('available-stock');
 
     function refreshStock() {
-        if (!depot.value || !medicine.value) {
+        if (!depot.value) {
             box.classList.add('d-none');
             return;
         }
 
-        fetch(`{{ route('depots.stock.available') }}?depot_id=${depot.value}&medicine_id=${medicine.value}`)
+        let url = `{{ route('depots.stock.available') }}?depot_id=${depot.value}`;
+        if (medicine.value) {
+            url += `&item_type=medicine&medicine_id=${medicine.value}`;
+        } else if (tool.value) {
+            url += `&item_type=tool&tool_id=${tool.value}`;
+        } else {
+            box.classList.add('d-none');
+            return;
+        }
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 box.textContent = `Available stock: ${data.available_stock}`;
@@ -124,8 +135,21 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    medicine.addEventListener('change', function () {
+        if (this.value && tool) {
+            tool.value = '';
+            if (window.jQuery) $('#tool_id').trigger('change.select2');
+        }
+        refreshStock();
+    });
+    tool.addEventListener('change', function () {
+        if (this.value && medicine) {
+            medicine.value = '';
+            if (window.jQuery) $('#medicine_id').trigger('change.select2');
+        }
+        refreshStock();
+    });
     depot.addEventListener('change', refreshStock);
-    medicine.addEventListener('change', refreshStock);
     refreshStock();
 });
 </script>

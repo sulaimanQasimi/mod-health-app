@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\DepotController;
+use App\Http\Controllers\DepotReportController;
+use App\Http\Controllers\DepotRequestController;
 use App\Http\Controllers\DepotTransactionController;
+use App\Http\Controllers\ToolController;
 use App\Http\Controllers\ReciptionStatisticReportController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdviceController;
@@ -1384,14 +1387,50 @@ Route::group(['prefix' => 'react'], function () {
     include __DIR__ . '/react.php';
 });
 // Depots routes
-Route::prefix('depots')->name('depots.')->group(function () {
-    Route::get('/', [DepotController::class, 'index'])->name('index');
-    Route::get('/create', [DepotController::class, 'create'])->name('create');
-    Route::post('/store', [DepotController::class, 'store'])->name('store');
-    Route::get('/show/{depot}', [DepotController::class, 'show'])->name('show');
-    Route::get('/edit/{depot}', [DepotController::class, 'edit'])->name('edit');
-    Route::put('/update/{depot}', [DepotController::class, 'update'])->name('update');
-    Route::delete('/destroy/{depot}', [DepotController::class, 'destroy'])->name('destroy');
+Route::prefix('depots')->middleware(['auth'])->name('depots.')->group(function () {
+    Route::get('/', [DepotController::class, 'index'])->middleware('permission:depot.view')->name('index');
+    Route::get('/create', [DepotController::class, 'create'])->middleware('permission:depot.create')->name('create');
+    Route::post('/store', [DepotController::class, 'store'])->middleware('permission:depot.create')->name('store');
+    Route::get('/show/{depot}', [DepotController::class, 'show'])->middleware('permission:depot.view')->name('show');
+    Route::get('/edit/{depot}', [DepotController::class, 'edit'])->middleware('permission:depot.update')->name('edit');
+    Route::put('/update/{depot}', [DepotController::class, 'update'])->middleware('permission:depot.update')->name('update');
+    Route::delete('/destroy/{depot}', [DepotController::class, 'destroy'])->middleware('permission:depot.delete')->name('destroy');
+    Route::get('{depot}/stock', [DepotController::class, 'stock'])->middleware('permission:depot.view')->name('stock.index');
+
+    Route::get('reports', [DepotReportController::class, 'index'])
+        ->middleware('permission:depot.report.export')
+        ->name('reports.index');
+    Route::get('reports/export', [DepotReportController::class, 'export'])
+        ->middleware('permission:depot.report.export')
+        ->name('reports.export');
+
+    Route::get('requests', [DepotRequestController::class, 'index'])
+        ->middleware('permission:depot.request.create|depot.request.approve|depot.request.fulfill')
+        ->name('requests.index');
+    Route::get('requests/create', [DepotRequestController::class, 'create'])
+        ->middleware('permission:depot.request.create')
+        ->name('requests.create');
+    Route::post('requests', [DepotRequestController::class, 'store'])
+        ->middleware('permission:depot.request.create')
+        ->name('requests.store');
+    Route::get('requests/{depotRequest}', [DepotRequestController::class, 'show'])
+        ->middleware('permission:depot.request.create|depot.request.approve|depot.request.fulfill')
+        ->name('requests.show');
+    Route::post('requests/{depotRequest}/submit', [DepotRequestController::class, 'submit'])
+        ->middleware('permission:depot.request.create')
+        ->name('requests.submit');
+    Route::post('requests/{depotRequest}/approve', [DepotRequestController::class, 'approve'])
+        ->middleware('permission:depot.request.approve')
+        ->name('requests.approve');
+    Route::post('requests/{depotRequest}/reject', [DepotRequestController::class, 'reject'])
+        ->middleware('permission:depot.request.approve')
+        ->name('requests.reject');
+    Route::post('requests/{depotRequest}/fulfill', [DepotRequestController::class, 'fulfill'])
+        ->middleware('permission:depot.request.fulfill')
+        ->name('requests.fulfill');
+    Route::post('requests/{depotRequest}/cancel', [DepotRequestController::class, 'cancel'])
+        ->middleware('permission:depot.request.create|depot.request.approve')
+        ->name('requests.cancel');
 
     Route::get('transactions', [DepotTransactionController::class, 'index'])
         ->middleware('permission:depot.transaction.view')
@@ -1427,4 +1466,13 @@ Route::prefix('depots')->name('depots.')->group(function () {
     Route::get('stock/available', [DepotTransactionController::class, 'stock'])
         ->middleware('permission:depot.transaction.view')
         ->name('stock.available');
+});
+
+Route::prefix('tools')->middleware(['auth', 'permission:depot.view'])->name('tools.')->group(function () {
+    Route::get('/', [ToolController::class, 'index'])->name('index');
+    Route::get('/create', [ToolController::class, 'create'])->middleware('permission:depot.create')->name('create');
+    Route::post('/store', [ToolController::class, 'store'])->middleware('permission:depot.create')->name('store');
+    Route::get('/edit/{tool}', [ToolController::class, 'edit'])->middleware('permission:depot.update')->name('edit');
+    Route::put('/update/{tool}', [ToolController::class, 'update'])->middleware('permission:depot.update')->name('update');
+    Route::delete('/destroy/{tool}', [ToolController::class, 'destroy'])->middleware('permission:depot.delete')->name('destroy');
 });

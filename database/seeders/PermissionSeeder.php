@@ -330,6 +330,78 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'depot.view'],
+            [
+                'name_dr' => 'نمایش دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.create'],
+            [
+                'name_dr' => 'ایجاد دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.update'],
+            [
+                'name_dr' => 'ویرایش دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.delete'],
+            [
+                'name_dr' => 'حذف دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.request.create'],
+            [
+                'name_dr' => 'ایجاد درخواست دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.request.approve'],
+            [
+                'name_dr' => 'تایید درخواست دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.request.fulfill'],
+            [
+                'name_dr' => 'تکمیل درخواست دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'depot.report.export'],
+            [
+                'name_dr' => 'خروجی گزارش دیپو',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'depot.transaction.view'],
             [
                 'name_dr' => 'نمایش تراکنش های دیپو',

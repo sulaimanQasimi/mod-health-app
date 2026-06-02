@@ -7,12 +7,10 @@ use App\Models\DepotRequest;
 use App\Models\DepotTransaction;
 use App\Models\Medicine;
 use App\Models\Tool;
-use App\Models\User;
 use App\Services\DepotRequestService;
 use App\Services\DepotStockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 class DepotModuleTest extends TestCase

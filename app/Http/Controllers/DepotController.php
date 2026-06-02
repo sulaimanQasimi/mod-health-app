@@ -46,8 +46,15 @@ class DepotController extends Controller
         if ($request->filled('is_base')) {
             $query->where('is_base', $request->is_base);
         }
-        $depots = $query->paginate(15);
-        return view('pages.depots.index', compact('depots'));
+        $depots = $query->orderBy('name')->paginate(15)->appends($request->query());
+
+        return view('pages.depots.index', [
+            'depots' => $depots,
+            'branches' => Branch::query()->orderBy('name')->get(),
+            'departments' => Department::query()->orderBy('name')->get(),
+            'pharmacies' => Pharmacy::query()->orderBy('name')->get(),
+            'parentDepots' => Depot::query()->orderBy('name')->get(),
+        ]);
     }
     public function create()
     {

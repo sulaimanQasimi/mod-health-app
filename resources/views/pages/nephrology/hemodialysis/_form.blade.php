@@ -118,10 +118,16 @@
         @enderror
     </div>
     <div class="col-md-3 mb-3">
-        <label for="fluid_removed_ml" class="form-label">{{ localize('global.fluid_removed_ml') }}</label>
-        <input type="number" step="0.01" min="0" class="form-control @error('fluid_removed_ml') is-invalid @enderror"
-            id="fluid_removed_ml" name="fluid_removed_ml" value="{{ old('fluid_removed_ml', $session->fluid_removed_ml ?? '') }}">
-        @error('fluid_removed_ml')
+        <label for="blood_type" class="form-label">{{ localize('global.blood_type') }}</label>
+        <select class="form-select @error('blood_type') is-invalid @enderror" id="blood_type" name="blood_type">
+            <option value="">{{ localize('global.select') }}</option>
+            @foreach (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $bloodTypeOption)
+                <option value="{{ $bloodTypeOption }}" {{ old('blood_type', $session->blood_type ?? '') === $bloodTypeOption ? 'selected' : '' }}>
+                    {{ $bloodTypeOption }}
+                </option>
+            @endforeach
+        </select>
+        @error('blood_type')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
@@ -198,6 +204,14 @@
         <input type="number" step="0.1" min="30" max="45" class="form-control @error('post_temperature') is-invalid @enderror"
             id="post_temperature" name="post_temperature" value="{{ old('post_temperature', $session->post_temperature ?? '') }}">
         @error('post_temperature')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+    <div class="col-md-3 mb-3">
+        <label for="fluid_removed_ml" class="form-label">{{ localize('global.fluid_removed_ml') }}</label>
+        <input type="number" step="0.01" min="0" class="form-control @error('fluid_removed_ml') is-invalid @enderror"
+            id="fluid_removed_ml" name="fluid_removed_ml" value="{{ old('fluid_removed_ml', $session->fluid_removed_ml ?? '') }}">
+        @error('fluid_removed_ml')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>

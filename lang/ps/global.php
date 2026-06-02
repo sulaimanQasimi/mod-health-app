@@ -1296,6 +1296,7 @@ return [
 'brief_history' => 'لنډ تاریخچه',
 'previous_icus' => 'پخواني ICU',
 'blood_type' => 'د وینې ډول',
+'fluid_removed_ml' => 'ویستل شوی مایع (mL)',
 'delete' => 'حذف',
 'medicine_usage_types' => 'د دوا تطبیق ډولونه',
 'create_medicine_usage_type' => 'د دوا تطبیق ډول اضافه کول',

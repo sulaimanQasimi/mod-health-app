@@ -35,6 +35,7 @@ class HemodialysisSession extends Model
         'post_temperature',
         'fluid_removed_ml',
         'dialyzer_type',
+        'blood_type',
         'complications_notes',
         'status',
         'ref_no',

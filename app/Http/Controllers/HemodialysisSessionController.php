@@ -168,6 +168,7 @@ class HemodialysisSessionController extends Controller
             'post_temperature' => 'nullable|numeric|min:30|max:45',
             'fluid_removed_ml' => 'nullable|numeric|min:0',
             'dialyzer_type' => 'nullable|string|max:255',
+            'blood_type' => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'complications_notes' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed,cancelled',
         ];

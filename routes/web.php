@@ -814,15 +814,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
     });
 
-    // Diseases routes
+    // Diseases routes (single-page UI)
     Route::prefix('diseases')->name('diseases.')->group(function () {
         Route::get('index', [DiseaseController::class, 'index'])->name('index');
         Route::get('create', [DiseaseController::class, 'create'])->name('create');
         Route::get('show/{disease}', [DiseaseController::class, 'show'])->name('show');
-        Route::post('store', [DiseaseController::class, 'store'])->name('store');
         Route::get('edit/{disease}', [DiseaseController::class, 'edit'])->name('edit');
-        Route::put('update/{disease}', [DiseaseController::class, 'update'])->name('update');
-        Route::delete('destroy/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
     });
 
     // Reports routes
@@ -1382,8 +1379,18 @@ Route::middleware('auth')->prefix('api/categories')->name('api.categories.')->gr
     Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
 });
 
+// Diseases API Routes
+Route::middleware('auth')->prefix('api/diseases')->name('api.diseases.')->group(function () {
+    Route::get('/', [DiseaseController::class, 'list'])->name('list');
+    Route::post('/', [DiseaseController::class, 'store'])->name('store');
+    Route::get('/{disease}', [DiseaseController::class, 'apiShow'])->name('show');
+    Route::put('/{disease}', [DiseaseController::class, 'update'])->name('update');
+    Route::delete('/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
+});
+
 // Disease categories API Routes
 Route::middleware('auth')->prefix('api/disease-categories')->name('api.disease_categories.')->group(function () {
+    Route::get('/', [DiseaseCategoryController::class, 'index'])->name('index');
     Route::post('/', [DiseaseCategoryController::class, 'store'])->name('store');
     Route::put('/{diseaseCategory}', [DiseaseCategoryController::class, 'update'])->name('update');
     Route::delete('/{diseaseCategory}', [DiseaseCategoryController::class, 'destroy'])->name('destroy');

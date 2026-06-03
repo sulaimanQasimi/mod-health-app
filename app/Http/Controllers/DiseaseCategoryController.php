@@ -9,6 +9,16 @@ use Illuminate\Validation\Rule;
 
 class DiseaseCategoryController extends Controller
 {
+    public function index(): JsonResponse
+    {
+        $categories = DiseaseCategory::withCount('diseases')->orderBy('name')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories,
+        ]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -16,6 +26,7 @@ class DiseaseCategoryController extends Controller
         ]);
 
         $category = DiseaseCategory::create($data);
+        $category->loadCount('diseases');
 
         return response()->json([
             'success' => true,
@@ -36,6 +47,7 @@ class DiseaseCategoryController extends Controller
         ]);
 
         $diseaseCategory->update($data);
+        $diseaseCategory->loadCount('diseases');
 
         return response()->json([
             'success' => true,

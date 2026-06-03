@@ -4,124 +4,146 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Disease;
-use App\Models\DiseaseCategory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
 class DiseaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $diseases = Disease::with(['department', 'category'])->paginate(5);
-        $categories = DiseaseCategory::orderBy('name')->get();
-
-        return view('pages.diseases.index', compact('diseases', 'categories'));
+        return view('pages.diseases.index', [
+            'departments' => Department::orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        $departments = Department::orderBy('name')->get();
-        $categories = DiseaseCategory::orderBy('name')->get();
-
-        return view('pages.diseases.create', compact('departments', 'categories'));
+        return redirect()->route('diseases.index');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => [
-                'required',
-                'max:255',
-                Rule::unique('diseases')->where(fn ($query) => $query->where('department_id', $request->department_id)),
-            ],
-            'description' => 'nullable',
-            'department_id' => 'required|exists:departments,id',
-            'disease_category_id' => 'nullable|exists:disease_categories,id',
-        ]);
-
-        Disease::create($validatedData);
-
-        return redirect()->route('diseases.index')->with('success', localize('global.disease_created_successfully.'));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Disease  $disease
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Disease $disease)
-    {
-        $disease->load('department');
-
-        return view('pages.diseases.show', compact('disease'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Disease  $disease
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Disease $disease)
     {
-        $departments = Department::orderBy('name')->get();
-        $categories = DiseaseCategory::orderBy('name')->get();
-
-        return view('pages.diseases.edit', compact('disease', 'departments', 'categories'));
+        return redirect()->route('diseases.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Disease  $disease
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Disease $disease)
+    public function show(Disease $disease)
     {
-        $validatedData = $request->validate([
-            'name' => [
-                'required',
-                'max:255',
-                Rule::unique('diseases')->where(fn ($query) => $query->where('department_id', $request->department_id))->ignore($disease->id),
-            ],
-            'description' => 'nullable',
-            'department_id' => 'required|exists:departments,id',
-            'disease_category_id' => 'nullable|exists:disease_categories,id',
-        ]);
-
-        $disease->update($validatedData);
-
-        return redirect()->route('diseases.index')->with('success', localize('global.disease_updated_successfully.'));
+        return redirect()->route('diseases.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Disease  $disease
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Disease $disease)
+    public function apiShow(Disease $disease): JsonResponse
+    {
+        $disease->load(['department', 'category']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatDisease($disease),
+        ]);
+    }
+
+    public function list(Request $request): JsonResponse
+    {
+        $diseases = $this->diseaseQuery($request)->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => collect($diseases->items())->map(fn (Disease $d) => $this->formatDisease($d)),
+            'meta' => [
+                'current_page' => $diseases->currentPage(),
+                'last_page' => $diseases->lastPage(),
+                'per_page' => $diseases->perPage(),
+                'total' => $diseases->total(),
+                'from' => $diseases->firstItem(),
+                'to' => $diseases->lastItem(),
+            ],
+        ]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $this->validateDisease($request);
+
+        $disease = Disease::create($validated);
+        $disease->load(['department', 'category']);
+
+        return response()->json([
+            'success' => true,
+            'message' => localize('global.disease_created_successfully.'),
+            'data' => $this->formatDisease($disease),
+        ], 201);
+    }
+
+    public function update(Request $request, Disease $disease): JsonResponse
+    {
+        $validated = $this->validateDisease($request, $disease->id);
+
+        $disease->update($validated);
+        $disease->load(['department', 'category']);
+
+        return response()->json([
+            'success' => true,
+            'message' => localize('global.disease_updated_successfully.'),
+            'data' => $this->formatDisease($disease),
+        ]);
+    }
+
+    public function destroy(Disease $disease): JsonResponse
     {
         $disease->delete();
 
-        return redirect()->route('diseases.index')->with('success', localize('global.disease_deleted_successfully.'));
+        return response()->json([
+            'success' => true,
+            'message' => localize('global.disease_deleted_successfully.'),
+        ]);
+    }
+
+    private function diseaseQuery(Request $request)
+    {
+        $query = Disease::with(['department', 'category']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('category', fn ($c) => $c->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('department', fn ($d) => $d->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($request->filled('disease_category_id')) {
+            $query->where('disease_category_id', $request->disease_category_id);
+        }
+
+        return $query->orderBy('name');
+    }
+
+    private function validateDisease(Request $request, ?int $ignoreId = null): array
+    {
+        return $request->validate([
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('diseases')
+                    ->where(fn ($query) => $query->where('department_id', $request->department_id))
+                    ->ignore($ignoreId),
+            ],
+            'description' => 'nullable|string',
+            'department_id' => 'required|exists:departments,id',
+            'disease_category_id' => 'nullable|exists:disease_categories,id',
+        ]);
+    }
+
+    private function formatDisease(Disease $disease): array
+    {
+        return [
+            'id' => $disease->id,
+            'name' => $disease->name,
+            'description' => $disease->description,
+            'department_id' => $disease->department_id,
+            'department_name' => $disease->department?->name,
+            'disease_category_id' => $disease->disease_category_id,
+            'category_name' => $disease->category?->name,
+        ];
     }
 }

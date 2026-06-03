@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Disease;
+use App\Models\DiseaseCategory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -16,8 +17,10 @@ class DiseaseController extends Controller
      */
     public function index()
     {
-        $diseases = Disease::with('department')->paginate(5);
-        return view('pages.diseases.index', compact('diseases'));
+        $diseases = Disease::with(['department', 'category'])->paginate(5);
+        $categories = DiseaseCategory::orderBy('name')->get();
+
+        return view('pages.diseases.index', compact('diseases', 'categories'));
     }
 
     /**
@@ -28,8 +31,9 @@ class DiseaseController extends Controller
     public function create()
     {
         $departments = Department::orderBy('name')->get();
+        $categories = DiseaseCategory::orderBy('name')->get();
 
-        return view('pages.diseases.create', compact('departments'));
+        return view('pages.diseases.create', compact('departments', 'categories'));
     }
 
     /**
@@ -48,6 +52,7 @@ class DiseaseController extends Controller
             ],
             'description' => 'nullable',
             'department_id' => 'required|exists:departments,id',
+            'disease_category_id' => 'nullable|exists:disease_categories,id',
         ]);
 
         Disease::create($validatedData);
@@ -77,8 +82,9 @@ class DiseaseController extends Controller
     public function edit(Disease $disease)
     {
         $departments = Department::orderBy('name')->get();
+        $categories = DiseaseCategory::orderBy('name')->get();
 
-        return view('pages.diseases.edit', compact('disease', 'departments'));
+        return view('pages.diseases.edit', compact('disease', 'departments', 'categories'));
     }
 
     /**
@@ -98,6 +104,7 @@ class DiseaseController extends Controller
             ],
             'description' => 'nullable',
             'department_id' => 'required|exists:departments,id',
+            'disease_category_id' => 'nullable|exists:disease_categories,id',
         ]);
 
         $disease->update($validatedData);

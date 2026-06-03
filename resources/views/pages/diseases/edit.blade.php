@@ -23,6 +23,15 @@
                                         <input type="text" name="name" id="name" value="{{ old('name', $disease->name) }}" class="form-control">
                                     </div>
                                     <div class="mb-3">
+                                        <label for="disease_category_id">{{ localize('global.disease_category') }}</label>
+                                        <select name="disease_category_id" id="disease_category_id" class="form-select">
+                                            <option value="">{{ localize('global.select') }}</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('disease_category_id', $disease->disease_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="department_id">{{ localize('global.department') }} <span class="text-danger">*</span></label>
                                         <select name="department_id" id="department_id" class="form-select" required>
                                             <option value="">{{ localize('global.select') }}</option>

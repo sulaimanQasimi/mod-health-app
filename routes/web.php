@@ -47,6 +47,7 @@ use App\Http\Controllers\DailyIcuProgressController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\DiseaseController;
+use App\Http\Controllers\DiseaseCategoryController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\FoodTypeController;
@@ -1379,6 +1380,13 @@ Route::middleware('auth')->prefix('api/categories')->name('api.categories.')->gr
     Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
     Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
     Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+});
+
+// Disease categories API Routes
+Route::middleware('auth')->prefix('api/disease-categories')->name('api.disease_categories.')->group(function () {
+    Route::post('/', [DiseaseCategoryController::class, 'store'])->name('store');
+    Route::put('/{diseaseCategory}', [DiseaseCategoryController::class, 'update'])->name('update');
+    Route::delete('/{diseaseCategory}', [DiseaseCategoryController::class, 'destroy'])->name('destroy');
 });
 
 // Register route should be disabled be default.

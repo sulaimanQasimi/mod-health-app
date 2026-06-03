@@ -13,11 +13,16 @@ class Disease extends Model
 
     public const NEPHROLOGY_DEPARTMENT_NAME = 'نفرولوژی';
 
-    protected $fillable = ['name', 'description', 'department_id'];
+    protected $fillable = ['name', 'description', 'department_id', 'disease_category_id'];
 
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(DiseaseCategory::class, 'disease_category_id');
     }
 
     public function nephrologyRegistrations()

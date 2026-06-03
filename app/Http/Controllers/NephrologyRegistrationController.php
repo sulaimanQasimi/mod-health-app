@@ -28,6 +28,18 @@ class NephrologyRegistrationController extends Controller
             $query->where('doctor_id', $request->doctor_id);
         }
 
+        if ($request->filled('patient_id')) {
+            $patientIdInput = trim($request->patient_id);
+            $query->where(function ($q) use ($patientIdInput) {
+                if (is_numeric($patientIdInput)) {
+                    $q->where('patient_id', (int) $patientIdInput);
+                }
+                $q->orWhereHas('patient', function ($patientQ) use ($patientIdInput) {
+                    $patientQ->where('id_card', 'like', '%' . $patientIdInput . '%');
+                });
+            });
+        }
+
         if ($request->filled('patient_name')) {
             $query->whereHas('patient', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->patient_name . '%')

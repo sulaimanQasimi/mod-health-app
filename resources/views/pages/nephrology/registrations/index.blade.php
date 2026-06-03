@@ -18,7 +18,12 @@
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('nephrology-registrations.index') }}" class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                            <input type="text" class="form-control" id="patient_id" name="patient_id"
+                                value="{{ request('patient_id') }}" placeholder="{{ localize('global.search_by_patient_id') }}">
+                        </div>
+                        <div class="col-md-2">
                             <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
                             <input type="text" class="form-control" id="patient_name" name="patient_name" value="{{ request('patient_name') }}">
                         </div>

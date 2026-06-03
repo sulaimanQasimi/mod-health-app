@@ -1925,6 +1925,7 @@ return [
     'disease_category_updated_successfully.' => 'Disease category updated successfully.',
     'disease_category_deleted_successfully.' => 'Disease category deleted successfully.',
     'disease_category_has_diseases.' => 'This category has diseases and cannot be deleted.',
+    'uncategorized' => 'Uncategorized',
     'create_disease' => 'Create Disease',
     'edit_diagnose' => 'Edit Diagnose',
     'edit_advice' => 'Edit Advice',

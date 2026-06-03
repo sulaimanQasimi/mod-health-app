@@ -1,5 +1,15 @@
 @php
     $registration = $nephrologyRegistration;
+    $nephrologyDiseasesJson = ($nephrologyDiseases ?? collect())->map(function ($d) {
+        return [
+            'id' => $d->id,
+            'name' => $d->name,
+            'disease_category_id' => $d->disease_category_id,
+        ];
+    })->values();
+    $hasUncategorizedDiseases = ($nephrologyDiseases ?? collect())->contains(function ($d) {
+        return empty($d->disease_category_id);
+    });
 @endphp
 
 <h6 class="text-primary border-bottom pb-2 mb-3">
@@ -55,14 +65,21 @@
         @enderror
     </div>
     <div class="col-md-6 mb-3">
-        <label for="disease_id" class="form-label">{{ localize('global.diseases') }}</label>
-        <select class="form-select @error('disease_id') is-invalid @enderror" id="disease_id" name="disease_id">
-            <option value="">{{ localize('global.select') }}</option>
-            @foreach($nephrologyDiseases ?? [] as $disease)
-                <option value="{{ $disease->id }}" {{ old('disease_id', $registration->disease_id) == $disease->id ? 'selected' : '' }}>
-                    {{ $disease->name }}
-                </option>
+        <label for="disease_category_filter" class="form-label">{{ localize('global.disease_category') }}</label>
+        <select class="form-select" id="disease_category_filter">
+            <option value="">{{ localize('global.select_category') }}</option>
+            @foreach($diseaseCategories ?? [] as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
             @endforeach
+            @if($hasUncategorizedDiseases)
+                <option value="none">{{ localize('global.uncategorized') }}</option>
+            @endif
+        </select>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="disease_id" class="form-label">{{ localize('global.diseases') }}</label>
+        <select class="form-select @error('disease_id') is-invalid @enderror" id="disease_id" name="disease_id" disabled>
+            <option value="">{{ localize('global.select_category_first') }}</option>
         </select>
         @error('disease_id')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -140,3 +157,58 @@
         @enderror
     </div>
 </div>
+
+@push('scripts')
+<script>
+(function () {
+    const allDiseases = @json($nephrologyDiseasesJson);
+    const selectedDiseaseId = @json(old('disease_id', $registration->disease_id));
+    const selectLabel = @json(localize('global.select'));
+    const selectCategoryFirstLabel = @json(localize('global.select_category_first'));
+
+    const categorySelect = document.getElementById('disease_category_filter');
+    const diseaseSelect = document.getElementById('disease_id');
+    if (!categorySelect || !diseaseSelect) return;
+
+    function diseasesForCategory(categoryValue) {
+        if (categoryValue === 'none') {
+            return allDiseases.filter(d => !d.disease_category_id);
+        }
+        return allDiseases.filter(d => String(d.disease_category_id) === String(categoryValue));
+    }
+
+    function fillDiseaseOptions(categoryValue, preselectId = null) {
+        const list = categoryValue ? diseasesForCategory(categoryValue) : [];
+        diseaseSelect.innerHTML = `<option value="">${selectLabel}</option>`;
+
+        list.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = d.name;
+            if (preselectId && String(preselectId) === String(d.id)) {
+                opt.selected = true;
+            }
+            diseaseSelect.appendChild(opt);
+        });
+
+        diseaseSelect.disabled = !categoryValue;
+        if (!categoryValue) {
+            diseaseSelect.innerHTML = `<option value="">${selectCategoryFirstLabel}</option>`;
+        }
+    }
+
+    categorySelect.addEventListener('change', function () {
+        fillDiseaseOptions(this.value || null);
+    });
+
+    if (selectedDiseaseId) {
+        const current = allDiseases.find(d => String(d.id) === String(selectedDiseaseId));
+        if (current) {
+            const catValue = current.disease_category_id ? String(current.disease_category_id) : 'none';
+            categorySelect.value = catValue;
+            fillDiseaseOptions(catValue, selectedDiseaseId);
+        }
+    }
+})();
+</script>
+@endpush

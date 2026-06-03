@@ -1325,6 +1325,7 @@ return [
     'disease_category_updated_successfully.' => 'کتگوری مرض با موفقیت بروزرسانی شد',
     'disease_category_deleted_successfully.' => 'کتگوری مرض با موفقیت حذف شد',
     'disease_category_has_diseases.' => 'این کتگوری دارای امراض است و قابل حذف نیست',
+    'uncategorized' => 'بدون کتگوری',
     'create_disease' => 'ثبت مرض',
     'edit_diagnose' => 'تصحیح تشخیص',
     'edit_advice' => 'تصحیح توصیه',

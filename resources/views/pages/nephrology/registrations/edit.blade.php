@@ -16,7 +16,12 @@
                     <form action="{{ route('nephrology-registrations.update', $nephrologyRegistration) }}" method="POST">
                         @csrf
                         @method('PUT')
-                        @include('pages.nephrology.registrations._form', ['nephrologyRegistration' => $nephrologyRegistration, 'doctors' => $doctors, 'nephrologyDiseases' => $nephrologyDiseases])
+                        @include('pages.nephrology.registrations._form', [
+                            'nephrologyRegistration' => $nephrologyRegistration,
+                            'doctors' => $doctors,
+                            'diseaseCategories' => $diseaseCategories,
+                            'nephrologyDiseases' => $nephrologyDiseases,
+                        ])
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <a href="{{ route('nephrology-registrations.show', $nephrologyRegistration) }}" class="btn btn-secondary">{{ localize('global.cancel') }}</a>
                             <button type="submit" class="btn btn-primary">{{ localize('global.update') }}</button>

@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\Branch;
 use App\Models\Doctor;
 use App\Models\Disease;
+use App\Models\DiseaseCategory;
 use App\Models\NephrologyRegistration;
 use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
@@ -135,13 +136,13 @@ class NephrologyRegistrationController extends Controller
             'patient',
             'doctor',
             'branch',
-            'disease',
+            'disease.category',
             'hemodialysisSessions',
         ]);
 
         $doctors = Doctor::where('active_status', true)->get();
         $appointment = $nephrologyRegistration->appointment;
-        $nephrologyDiseases = Disease::forNephrology()->get();
+        [$diseaseCategories, $nephrologyDiseases] = $this->nephrologyDiseaseFormData();
         $hemodialysisSessions = $nephrologyRegistration->hemodialysisSessions()
             ->with('doctor')
             ->latest('session_date')
@@ -152,6 +153,7 @@ class NephrologyRegistrationController extends Controller
             'nephrologyRegistration',
             'doctors',
             'appointment',
+            'diseaseCategories',
             'nephrologyDiseases',
             'hemodialysisSessions'
         ));
@@ -160,9 +162,14 @@ class NephrologyRegistrationController extends Controller
     public function edit(NephrologyRegistration $nephrologyRegistration)
     {
         $doctors = Doctor::where('active_status', true)->get();
-        $nephrologyDiseases = Disease::forNephrology()->get();
+        [$diseaseCategories, $nephrologyDiseases] = $this->nephrologyDiseaseFormData();
 
-        return view('pages.nephrology.registrations.edit', compact('nephrologyRegistration', 'doctors', 'nephrologyDiseases'));
+        return view('pages.nephrology.registrations.edit', compact(
+            'nephrologyRegistration',
+            'doctors',
+            'diseaseCategories',
+            'nephrologyDiseases'
+        ));
     }
 
     public function update(Request $request, NephrologyRegistration $nephrologyRegistration)
@@ -261,5 +268,24 @@ class NephrologyRegistrationController extends Controller
     public static function normalizeVisitDate(string $visitDate): string
     {
         return Verta::parse($visitDate)->datetime()->format('Y-m-d');
+    }
+
+    /**
+     * @return array{0: \Illuminate\Support\Collection, 1: \Illuminate\Support\Collection}
+     */
+    private function nephrologyDiseaseFormData(): array
+    {
+        $nephrologyDiseases = Disease::forNephrology()
+            ->orderBy('name')
+            ->get(['id', 'name', 'disease_category_id']);
+
+        $categoryIds = $nephrologyDiseases->pluck('disease_category_id')->filter()->unique();
+
+        $diseaseCategories = DiseaseCategory::query()
+            ->whereIn('id', $categoryIds)
+            ->orderBy('name')
+            ->get();
+
+        return [$diseaseCategories, $nephrologyDiseases];
     }
 }

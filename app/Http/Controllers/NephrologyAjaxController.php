@@ -92,10 +92,20 @@ class NephrologyAjaxController extends Controller
         }
     }
 
-    public function getDiseases()
+    public function getDiseases(Request $request)
     {
         try {
-            $diseases = Disease::forNephrology()->get(['id', 'name']);
+            $query = Disease::forNephrology();
+
+            if ($request->filled('disease_category_id')) {
+                if ($request->disease_category_id === 'none') {
+                    $query->whereNull('disease_category_id');
+                } else {
+                    $query->where('disease_category_id', (int) $request->disease_category_id);
+                }
+            }
+
+            $diseases = $query->orderBy('name')->get(['id', 'name', 'disease_category_id']);
 
             return response()->json([
                 'success' => true,

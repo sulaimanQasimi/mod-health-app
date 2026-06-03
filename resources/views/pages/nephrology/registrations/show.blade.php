@@ -90,7 +90,16 @@
                     <div class="card h-100 border shadow-none">
                         <div class="card-body text-center py-3">
                             <div class="text-muted small mb-1">{{ localize('global.diseases') }}</div>
-                            <div class="fw-bold text-truncate">{{ $nephrologyRegistration->disease->name ?? '—' }}</div>
+                            <div class="fw-bold text-truncate">
+                                @if($nephrologyRegistration->disease)
+                                    @if($nephrologyRegistration->disease->category)
+                                        <span class="text-muted small">{{ $nephrologyRegistration->disease->category->name }} — </span>
+                                    @endif
+                                    {{ $nephrologyRegistration->disease->name }}
+                                @else
+                                    —
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,6 +171,7 @@
                                 @include('pages.nephrology.registrations._form', [
                                     'nephrologyRegistration' => $nephrologyRegistration,
                                     'doctors' => $doctors,
+                                    'diseaseCategories' => $diseaseCategories,
                                     'nephrologyDiseases' => $nephrologyDiseases,
                                 ])
                                 <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">

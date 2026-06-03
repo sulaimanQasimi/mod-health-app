@@ -16,7 +16,7 @@
             <form method="GET" class="row g-3">
                 <div class="col-md-2">
                     <select name="requesting_depot_id" class="form-select select2">
-                        <option value="">Requesting depot</option>
+                        <option value="">{{ localize('global.depot.requesting_depot') }}</option>
                         @foreach($depots as $depot)
                             <option value="{{ $depot->id }}" @selected(request('requesting_depot_id') == $depot->id)>{{ $depot->name }}</option>
                         @endforeach
@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="source_depot_id" class="form-select select2">
-                        <option value="">Source depot</option>
+                        <option value="">{{ localize('global.depot.source_depot') }}</option>
                         @foreach($depots as $depot)
                             <option value="{{ $depot->id }}" @selected(request('source_depot_id') == $depot->id)>{{ $depot->name }}</option>
                         @endforeach
@@ -32,7 +32,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="status" class="form-select">
-                        <option value="">Status</option>
+                        <option value="">{{ localize('global.status') }}</option>
                         @foreach($statuses as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -41,6 +41,9 @@
                 <div class="col-md-2"><input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control"></div>
                 <div class="col-md-2"><input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control"></div>
                 <div class="col-md-2"><button class="btn btn-secondary w-100" type="submit">{{ localize('global.search') }}</button></div>
+                <div class="col-md-2">
+                    <a href="{{ route('depots.requests.index') }}" class="btn btn-outline-secondary w-100">{{ localize('global.reset') }}</a>
+                </div>
             </form>
         </div>
     </div>
@@ -49,13 +52,13 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Number</th>
-                        <th>Status</th>
-                        <th>Requesting</th>
-                        <th>Source</th>
-                        <th>Item</th>
-                        <th>Qty</th>
-                        <th>Date</th>
+                        <th>{{ localize('global.number') }}</th>
+                        <th>{{ localize('global.status') }}</th>
+                        <th>{{ localize('global.depot.requesting_depot') }}</th>
+                        <th>{{ localize('global.depot.source_depot') }}</th>
+                        <th>{{ localize('global.item') }}</th>
+                        <th>{{ localize('global.quantity') }}</th>
+                        <th>{{ localize('global.date') }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -68,7 +71,7 @@
                             <td>{{ $item->sourceDepot?->name }}</td>
                             <td>{{ $item->itemName() }}</td>
                             <td>{{ $item->quantity }}</td>
-                            <td>{{ $item->created_at?->format('Y-m-d') }}</td>
+                            <td>{{ $item->created_at ? verta($item->created_at)->format('Y-m-d') : '-' }}</td>
                             <td><a href="{{ route('depots.requests.show', $item) }}" class="btn btn-sm btn-primary"><i class="bx bx-show-alt"></i></a></td>
                         </tr>
                     @empty

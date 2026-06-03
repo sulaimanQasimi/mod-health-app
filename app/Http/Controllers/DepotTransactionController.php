@@ -83,7 +83,7 @@ class DepotTransactionController extends Controller
             });
         }
 
-        $transactions = $query->latest('transaction_date')->latest('id')->paginate(15)->withQueryString();
+        $transactions = $query->latest('transaction_date')->latest('id')->paginate(15)->appends($request->query());
 
         return view('pages.depots.transactions.index', array_merge($this->formData(), [
             'transactions' => $transactions,
@@ -129,7 +129,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', 'Depot transaction created successfully.');
+            ->with('success', localize('global.depot.transaction_created_successfully.'));
     }
 
     public function show(DepotTransaction $depotTransaction)
@@ -159,7 +159,7 @@ class DepotTransactionController extends Controller
     public function cancel(DepotTransaction $depotTransaction)
     {
         if ($depotTransaction->status === DepotTransaction::STATUS_CANCELLED) {
-            return redirect()->back()->with('error', 'Transaction is already cancelled.');
+            return redirect()->back()->with('error', localize('global.depot.transaction_already_cancelled.'));
         }
 
         DB::transaction(function () use ($depotTransaction) {
@@ -176,7 +176,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', 'Depot transaction cancelled successfully.');
+            ->with('success', localize('global.depot.transaction_cancelled_successfully.'));
     }
 
     public function depotToDepot()
@@ -210,7 +210,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', 'Depot to depot movement completed successfully.');
+            ->with('success', localize('global.depot.depot_to_depot_completed_successfully.'));
     }
 
     public function depotToPharmacy()
@@ -254,7 +254,7 @@ class DepotTransactionController extends Controller
         });
 
         return redirect()->route('depots.transactions.index')
-            ->with('success', 'Depot to pharmacy movement completed successfully.');
+            ->with('success', localize('global.depot.depot_to_pharmacy_completed_successfully.'));
     }
 
     public function stock(Request $request)

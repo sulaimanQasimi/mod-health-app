@@ -63,7 +63,7 @@ class DepotRequestController extends Controller
             });
         }
 
-        $requests = $query->latest('id')->paginate(15)->withQueryString();
+        $requests = $query->latest('id')->paginate(15)->appends($request->query());
 
         return view('pages.depots.requests.index', array_merge($this->formData(), [
             'requests' => $requests,
@@ -91,7 +91,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', 'Depot request created successfully.');
+            ->with('success', localize('global.depot.request_created_successfully.'));
     }
 
     public function show(DepotRequest $depotRequest)
@@ -121,7 +121,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', 'Request submitted for approval.');
+            ->with('success', localize('global.depot.request_submitted_for_approval.'));
     }
 
     public function approve(DepotRequest $depotRequest)
@@ -133,7 +133,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', 'Request approved.');
+            ->with('success', localize('global.depot.request_approved.'));
     }
 
     public function reject(Request $request, DepotRequest $depotRequest)
@@ -149,7 +149,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', 'Request rejected.');
+            ->with('success', localize('global.depot.request_rejected.'));
     }
 
     public function fulfill(DepotRequest $depotRequest)
@@ -161,7 +161,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', 'Request fulfilled and stock transferred.');
+            ->with('success', localize('global.depot.request_fulfilled_and_transferred.'));
     }
 
     public function cancel(DepotRequest $depotRequest)
@@ -173,7 +173,7 @@ class DepotRequestController extends Controller
         }
 
         return redirect()->route('depots.requests.show', $depotRequest)
-            ->with('success', 'Request cancelled.');
+            ->with('success', localize('global.depot.request_cancelled.'));
     }
 
     private function formData(): array

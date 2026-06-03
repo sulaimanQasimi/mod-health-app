@@ -30,7 +30,7 @@
         <div class="card-body">
             <form method="GET" action="{{ route('depots.transactions.index') }}" class="row g-3">
                 <div class="col-md-3">
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search number, item, depot">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="{{ localize('global.search') }}">
                 </div>
                 <div class="col-md-2">
                     <select name="depot_id" class="form-select select2">
@@ -50,9 +50,9 @@
                 </div>
                 <div class="col-md-2">
                     <select name="item_type" class="form-select">
-                        <option value="">All item types</option>
-                        <option value="medicine" @selected(request('item_type') === 'medicine')>Medicine</option>
-                        <option value="tool" @selected(request('item_type') === 'tool')>Tool</option>
+                        <option value="">{{ localize('global.all') }}</option>
+                        <option value="medicine" @selected(request('item_type') === 'medicine')>{{ localize('global.medicine') }}</option>
+                        <option value="tool" @selected(request('item_type') === 'tool')>{{ localize('global.tool') }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -73,7 +73,7 @@
                 </div>
                 <div class="col-md-1">
                     <select name="type" class="form-select">
-                        <option value="">Type</option>
+                        <option value="">{{ localize('global.type') }}</option>
                         @foreach($types as $type)
                             <option value="{{ $type }}" @selected(request('type') === $type)>{{ str_replace('_', ' ', $type) }}</option>
                         @endforeach
@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-md-1">
                     <select name="status" class="form-select">
-                        <option value="">Status</option>
+                        <option value="">{{ localize('global.status') }}</option>
                         @foreach($statuses as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -97,7 +97,7 @@
                     <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control">
                 </div>
                 <div class="col-md-2">
-                    <a href="{{ route('depots.transactions.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
+                    <a href="{{ route('depots.transactions.index') }}" class="btn btn-outline-secondary w-100">{{ localize('global.reset') }}</a>
                 </div>
             </form>
         </div>
@@ -108,17 +108,17 @@
             <table class="table table-striped align-middle">
                 <thead>
                     <tr>
-                        <th>Number</th>
-                        <th>Type</th>
-                        <th>Source</th>
-                        <th>Destination</th>
-                        <th>Item</th>
-                        <th>Tool</th>
-                        <th>Quantity</th>
-                        <th>Status</th>
-                        <th>Created By</th>
-                        <th>Date</th>
-                        <th>Actions</th>
+                        <th>{{ localize('global.number') }}</th>
+                        <th>{{ localize('global.type') }}</th>
+                        <th>{{ localize('global.source') }}</th>
+                        <th>{{ localize('global.destination') }}</th>
+                        <th>{{ localize('global.item') }}</th>
+                        <th>{{ localize('global.tool') }}</th>
+                        <th>{{ localize('global.quantity') }}</th>
+                        <th>{{ localize('global.status') }}</th>
+                        <th>{{ localize('global.created_by') }}</th>
+                        <th>{{ localize('global.date') }}</th>
+                        <th>{{ localize('global.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -140,7 +140,7 @@
                                 @endif
                             </td>
                             <td>{{ $transaction->createdBy?->name ?? '-' }}</td>
-                            <td>{{ optional($transaction->transaction_date)->format('Y-m-d') }}</td>
+                            <td>{{ $transaction->transaction_date ? verta($transaction->transaction_date)->format('Y-m-d') : '-' }}</td>
                             <td>
                                 <a class="btn btn-sm btn-primary" href="{{ route('depots.transactions.show', $transaction) }}">
                                     <i class="bx bx-show-alt"></i>
@@ -149,7 +149,7 @@
                                     <form action="{{ route('depots.transactions.cancel', $transaction) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Cancel this depot transaction?')" type="submit">
+                                        <button class="btn btn-sm btn-danger" onclick="return confirm('{{ localize('global.confirm_delete') }}')" type="submit">
                                             <i class="bx bx-x"></i>
                                         </button>
                                     </form>

@@ -4577,4 +4577,6 @@ return [
     "registration_marked_completed" => "ثبت به عنوان تکمیل‌شده علامت‌گذاری شد",
     "registration_marked_in_progress" => "ثبت به عنوان در حال اجرا علامت‌گذاری شد",
     "registration_cancelled" => "ثبت لغو شد",
+    "please_select_visit_date" => "لطفاً تاریخ بازدید را انتخاب کنید.",
+    "failed_to_create_registration" => "ایجاد ثبت نفرولوژی ناموفق بود.",
 ];

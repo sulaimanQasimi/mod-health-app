@@ -10,18 +10,31 @@
 ])
 
 @php
+    $defaultVisitDate = !empty($entity->date)
+        ? verta($entity->date)->format('Y/m/d')
+        : verta()->format('Y/m/d');
+    $defaultDoctorId = $entity->doctor_id ?? '';
+
     $vueTranslations = [
         'global.nephrology_registrations' => localize('global.nephrology_registrations'),
         'global.start_nephrology_visit' => localize('global.start_nephrology_visit'),
         'global.ref_no' => localize('global.ref_no'),
         'global.patient' => localize('global.patient'),
         'global.doctor' => localize('global.doctor'),
+        'global.select_doctor' => localize('global.select_doctor'),
         'global.visit_date' => localize('global.visit_date'),
+        'global.notes' => localize('global.notes'),
+        'global.cancel' => localize('global.cancel'),
+        'global.create_and_continue' => localize('global.create_and_continue'),
         'global.status' => localize('global.status'),
         'global.diagnosis' => localize('global.diagnosis'),
         'global.actions' => localize('global.actions'),
         'global.no_nephrology_registrations_found' => localize('global.no_nephrology_registrations_found'),
         'global.failed_to_load_registrations' => localize('global.failed_to_load_registrations'),
+        'global.failed_to_create_registration' => localize('global.failed_to_create_registration'),
+        'global.please_select_visit_date' => localize('global.please_select_visit_date'),
+        'global.nephrology_registration_created_successfully' => localize('global.nephrology_registration_created_successfully'),
+        'global.success' => localize('global.success'),
         'global.status_pending' => localize('global.status_pending'),
         'global.status_in_progress' => localize('global.status_in_progress'),
         'global.status_completed' => localize('global.status_completed'),
@@ -47,7 +60,9 @@
                      data-entity='@json($entity)'
                      data-entity-type="{{ $entityType }}"
                      data-entity-id="{{ $entityId }}"
-                     data-open-url="{{ route('nephrology-registrations.open', $entityId) }}"
+                     data-store-url="{{ route('nephrology-registrations.store', $entityId) }}"
+                     data-default-visit-date="{{ $defaultVisitDate }}"
+                     data-default-doctor-id="{{ $defaultDoctorId }}"
                      data-translations='@json($vueTranslations)'
                      data-permissions='@json([
                          "canOpenNephrology" => $canOpenNephrology

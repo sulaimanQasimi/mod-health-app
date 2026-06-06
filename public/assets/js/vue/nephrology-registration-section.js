@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const entity = JSON.parse(container.dataset.entity || '{}');
     const entityType = container.dataset.entityType || 'appointment';
     const entityId = container.dataset.entityId || null;
-    const openUrl = container.dataset.openUrl || '';
+    const storeUrl = container.dataset.storeUrl || '';
+    const defaultVisitDate = container.dataset.defaultVisitDate || '';
+    const defaultDoctorId = container.dataset.defaultDoctorId || '';
     const permissions = JSON.parse(container.dataset.permissions || '{}');
     const translations = JSON.parse(container.dataset.translations || '{}');
     const appointmentCompleted = container.dataset.appointmentCompleted === 'true';
@@ -20,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
         appointment: entity,
         entityType,
         entityId,
-        openUrl,
+        storeUrl,
+        defaultVisitDate,
+        defaultDoctorId,
         translations,
         canOpenNephrology: permissions.canOpenNephrology || false,
         appointmentCompleted,

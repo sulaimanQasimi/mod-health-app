@@ -4450,4 +4450,6 @@ return [
     'mark_completed' => 'Mark Completed',
     'mark_in_progress' => 'Mark In Progress',
     'failed_to_load_registrations' => 'Failed to load registrations',
+    'please_select_visit_date' => 'Please select a visit date.',
+    'failed_to_create_registration' => 'Failed to create nephrology registration.',
 ];

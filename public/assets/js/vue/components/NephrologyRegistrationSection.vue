@@ -9,9 +9,8 @@
                             {{ localize('global.nephrology_registrations') }}
                         </h5>
                         <div class="d-flex gap-2" v-if="!appointmentCompleted && canOpenNephrology">
-                            <button type="button" class="btn btn-primary btn-sm" @click="openNephrology" :disabled="opening">
-                                <span v-if="opening" class="spinner-border spinner-border-sm me-2"></span>
-                                <i v-else class="bx bx-plus me-1"></i>
+                            <button type="button" class="btn btn-primary btn-sm" @click="openCreateModal">
+                                <i class="bx bx-plus me-1"></i>
                                 {{ localize('global.start_nephrology_visit') }}
                             </button>
                         </div>
@@ -22,6 +21,54 @@
 
         <div v-if="errorMessage" class="alert alert-danger">
             <i class="bx bx-error-circle me-2"></i>{{ errorMessage }}
+        </div>
+
+        <!-- Create modal -->
+        <div v-if="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index: 9999;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ localize('global.start_nephrology_visit') }}</h5>
+                        <button type="button" class="btn-close" @click="closeCreateModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="formError" class="alert alert-danger">{{ formError }}</div>
+                        <form @submit.prevent="createRegistration" id="nephrology-create-form">
+                            <div class="mb-3">
+                                <label for="nephrology_doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
+                                <select v-model="form.doctor_id" class="form-select" id="nephrology_doctor_id">
+                                    <option value="">{{ localize('global.select_doctor') }}</option>
+                                    <option v-for="doctor in doctors" :key="doctor.id" :value="String(doctor.id)">{{ doctor.name }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nephrology_visit_date" class="form-label">
+                                    {{ localize('global.visit_date') }} <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    v-model="form.visit_date"
+                                    class="form-control datepicker_dari pdp-el"
+                                    id="nephrology_visit_date"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="nephrology_notes" class="form-label">{{ localize('global.notes') }}</label>
+                                <textarea v-model="form.notes" class="form-control" id="nephrology_notes" rows="2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeCreateModal">{{ localize('global.cancel') }}</button>
+                        <button type="button" class="btn btn-primary" @click="createRegistration" :disabled="loading">
+                            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                            {{ localize('global.create_and_continue') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row mb-4">
@@ -86,23 +133,59 @@ export default {
         appointment: { type: Object, required: true },
         entityType: { type: String, default: 'appointment' },
         entityId: { type: [String, Number], default: null },
-        openUrl: { type: String, default: '' },
+        storeUrl: { type: String, default: '' },
+        defaultVisitDate: { type: String, default: '' },
+        defaultDoctorId: { type: [String, Number], default: '' },
         translations: { type: Object, default: () => ({}) },
         canOpenNephrology: { type: Boolean, default: true },
         appointmentCompleted: { type: Boolean, default: false },
     },
     data() {
         return {
+            loading: false,
             loadingList: true,
-            opening: false,
+            showCreateModal: false,
             registrations: [],
+            doctors: [],
             errorMessage: '',
+            formError: '',
+            form: {
+                doctor_id: '',
+                visit_date: '',
+                notes: '',
+            },
         };
     },
     mounted() {
+        this.loadDoctors();
         this.loadRegistrations();
     },
     methods: {
+        async loadDoctors() {
+            try {
+                const branchId = this.appointment.branch_id || '';
+                const response = await fetch('/doctor-api/doctors?is_nephrologist=1&branch_id=' + branchId, {
+                    credentials: 'same-origin',
+                    headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                const data = await response.json();
+                if (data.success && data.data) {
+                    this.doctors = data.data;
+                } else {
+                    const fallback = await fetch('/doctor-api/doctors', {
+                        credentials: 'same-origin',
+                        headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    });
+                    const fallbackData = await fallback.json();
+                    if (fallbackData.success && fallbackData.data) {
+                        this.doctors = fallbackData.data;
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        },
+
         async loadRegistrations() {
             this.loadingList = true;
             this.errorMessage = '';
@@ -131,12 +214,136 @@ export default {
             }
         },
 
-        openNephrology() {
-            if (!this.openUrl || this.opening) {
+        openCreateModal() {
+            this.resetForm();
+            this.showCreateModal = true;
+            this.$nextTick(() => this.initDatepicker());
+        },
+
+        closeCreateModal() {
+            this.showCreateModal = false;
+            this.formError = '';
+        },
+
+        resetForm() {
+            this.form = {
+                doctor_id: this.defaultDoctorId ? String(this.defaultDoctorId) : '',
+                visit_date: this.defaultVisitDate || '',
+                notes: '',
+            };
+        },
+
+        initDatepicker() {
+            if (!window.$ || !window.$.fn.persianDatepicker) {
                 return;
             }
-            this.opening = true;
-            window.location.href = this.openUrl;
+
+            const datepickerElement = $('#nephrology_visit_date');
+            if (!datepickerElement.length) {
+                return;
+            }
+
+            if (datepickerElement.data('persianDatepicker')) {
+                datepickerElement.val(this.form.visit_date);
+                return;
+            }
+
+            datepickerElement.persianDatepicker({
+                months: ['حمل', 'ثور', 'جوزا', 'سرطان', 'اسد', 'سنبله', 'میزان', 'عقرب', 'قوس', 'جدی', 'دلو', 'حوت'],
+                dowTitle: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهارشنبه', 'پنج شنبه', 'جمعه'],
+                shortDowTitle: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
+                showGregorianDate: false,
+                persianNumbers: true,
+                formatDate: 'YYYY/MM/DD',
+                selectedBefore: false,
+                theme: 'default',
+                alwaysShow: false,
+                cellWidth: 25,
+                cellHeight: 20,
+                fontSize: 13,
+                isRTL: false,
+            });
+
+            datepickerElement.attr('autocomplete', 'off');
+            datepickerElement.val(this.form.visit_date);
+
+            datepickerElement.on('change', (e) => {
+                this.form.visit_date = $(e.target).val();
+            });
+        },
+
+        async createRegistration() {
+            const visitDate = this.form.visit_date || (window.$ ? $('#nephrology_visit_date').val() : '');
+            if (!visitDate) {
+                this.formError = this.localize('global.please_select_visit_date');
+                return;
+            }
+
+            if (!this.storeUrl) {
+                this.formError = this.localize('global.failed_to_create_registration');
+                return;
+            }
+
+            this.loading = true;
+            this.formError = '';
+
+            try {
+                const formData = new FormData();
+                if (this.form.doctor_id) {
+                    formData.append('doctor_id', this.form.doctor_id);
+                }
+                formData.append('visit_date', visitDate);
+                formData.append('notes', this.form.notes || '');
+
+                const response = await fetch(this.storeUrl, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    this.showSuccess(data.message || this.localize('global.nephrology_registration_created_successfully'));
+                    await this.loadRegistrations();
+                    this.closeCreateModal();
+                    return;
+                }
+
+                if (data.errors) {
+                    const firstError = Object.values(data.errors).flat()[0];
+                    this.formError = firstError || data.message || this.localize('global.failed_to_create_registration');
+                } else {
+                    this.formError = data.message || this.localize('global.failed_to_create_registration');
+                }
+            } catch (error) {
+                this.formError = this.localize('global.failed_to_create_registration');
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        showSuccess(message) {
+            if (typeof toastr !== 'undefined') {
+                toastr.success(message);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: this.localize('global.success'),
+                    text: message,
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
+            }
         },
 
         formatDate(dateString) {

@@ -72,9 +72,11 @@ class HemodialysisSession extends Model
         });
 
         self::deleting(function ($model) {
-            $user = Auth::user();
-            $model->deleted_by = $user->id ?? 0;
-            $model->save();
+            if ($model->isForceDeleting()) {
+                return;
+            }
+
+            $model->updateQuietly(['deleted_by' => Auth::id() ?? 0]);
         });
     }
 

@@ -54,6 +54,16 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-2">
+                            <label for="visit_date_from" class="form-label">{{ localize('global.from_date') }}</label>
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="visit_date_from" name="visit_date_from"
+                                value="{{ request('visit_date_from') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="visit_date_to" class="form-label">{{ localize('global.to_date') }}</label>
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="visit_date_to" name="visit_date_to"
+                                value="{{ request('visit_date_to') }}">
+                        </div>
                         <div class="col-md-12 d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary">{{ localize('global.search') }}</button>
                             <a href="{{ route('nephrology-registrations.index') }}" class="btn btn-secondary">{{ localize('global.reset') }}</a>
@@ -108,9 +118,9 @@
                                         @endif
                                     </td>
                                     <td>{{ $registration->visit_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($registration->visit_date) : '—' }}</td>
-                                    <td>{{ $registration->doctor->name ?? 'N/A' }}</td>
+                                    <td>{{ $registration->doctor->name ?? localize('global.not_available') }}</td>
                                     <td><span class="badge bg-info">{{ localize('global.' . $registration->status) }}</span></td>
-                                    <td>{{ $registration->disease->name ?? '—' }}</td>
+                                    <td>{{ $registration->displayDiagnosis() ?? '—' }}</td>
                                     <td>
                                         <a href="{{ route('nephrology-registrations.show', $registration) }}" class="btn btn-sm btn-primary">
                                             <i class="bx bx-show"></i>

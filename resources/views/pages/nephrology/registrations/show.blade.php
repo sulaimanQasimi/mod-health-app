@@ -174,8 +174,41 @@
                                     'diseaseCategories' => $diseaseCategories,
                                     'nephrologyDiseases' => $nephrologyDiseases,
                                 ])
-                                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary px-4">
+                                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top flex-wrap">
+                                    @if($nephrologyRegistration->status !== 'completed')
+                                        <form action="{{ route('nephrology-registrations.mark-completed', $nephrologyRegistration) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="bx bx-check me-1"></i> {{ localize('global.mark_completed') }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($nephrologyRegistration->status !== 'in_progress')
+                                        <form action="{{ route('nephrology-registrations.mark-in-progress', $nephrologyRegistration) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-info">
+                                                <i class="bx bx-play me-1"></i> {{ localize('global.mark_in_progress') }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($nephrologyRegistration->status !== 'cancelled')
+                                        <form action="{{ route('nephrology-registrations.cancel', $nephrologyRegistration) }}" method="POST" class="d-inline"
+                                            onsubmit="return confirm('{{ localize('global.confirm_cancel_registration') }}');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="bx bx-x me-1"></i> {{ localize('global.cancel') }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <form action="{{ route('nephrology-registrations.destroy', $nephrologyRegistration) }}" method="POST" class="d-inline"
+                                        onsubmit="return confirm('{{ localize('global.confirm_delete') }}');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-secondary">
+                                            <i class="bx bx-trash me-1"></i> {{ localize('global.delete') }}
+                                        </button>
+                                    </form>
+                                    <button type="submit" form="nephrology-clinical-form" class="btn btn-primary px-4">
                                         <i class="bx bx-save me-1"></i> {{ localize('global.save') }}
                                     </button>
                                 </div>

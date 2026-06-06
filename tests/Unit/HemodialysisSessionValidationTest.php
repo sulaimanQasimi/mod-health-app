@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\HemodialysisSessionController;
+use App\Http\Controllers\NephrologyRegistrationController;
 use Tests\TestCase;
 
 class HemodialysisSessionValidationTest extends TestCase
@@ -25,5 +26,16 @@ class HemodialysisSessionValidationTest extends TestCase
         $this->assertArrayHasKey('complications_notes', $rules);
         $this->assertArrayHasKey('status', $rules);
         $this->assertStringContainsString('av_fistula', $rules['vascular_access_type']);
+        $this->assertSame('required|string', $rules['session_date']);
+    }
+
+    public function test_normalize_session_date_delegates_to_visit_date_normalizer(): void
+    {
+        $normalized = HemodialysisSessionController::normalizeSessionDate('2026-06-03');
+
+        $this->assertSame(
+            NephrologyRegistrationController::normalizeVisitDate('2026-06-03'),
+            $normalized
+        );
     }
 }

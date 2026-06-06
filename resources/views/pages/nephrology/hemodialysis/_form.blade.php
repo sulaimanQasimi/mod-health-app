@@ -54,7 +54,7 @@
     </div>
     <div class="col-md-6 mb-3">
         <label for="diagnosis" class="form-label">{{ localize('global.diagnosis') }}</label>
-        <textarea class="form-control @error('diagnosis') is-invalid @enderror" id="diagnosis" name="diagnosis" rows="2">{{ old('diagnosis', $session->diagnosis ?? ($selectedRegistration->diagnosis ?? '')) }}</textarea>
+        <textarea class="form-control @error('diagnosis') is-invalid @enderror" id="diagnosis" name="diagnosis" rows="2">{{ old('diagnosis', $session->diagnosis ?? ($selectedRegistration?->displayDiagnosis() ?? '')) }}</textarea>
         @error('diagnosis')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -72,8 +72,8 @@
     </div>
     <div class="col-md-4 mb-3">
         <label for="session_date" class="form-label">{{ localize('global.session_date') }} <span class="text-danger">*</span></label>
-        <input type="date" class="form-control @error('session_date') is-invalid @enderror" id="session_date" name="session_date"
-            value="{{ old('session_date', isset($session) && $session->session_date ? $session->session_date->format('Y-m-d') : now()->format('Y-m-d')) }}" required>
+        <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el @error('session_date') is-invalid @enderror" id="session_date" name="session_date"
+            value="{{ old('session_date', isset($session) && $session->session_date ? verta($session->session_date)->format('Y/m/d') : verta()->format('Y/m/d')) }}" required>
         @error('session_date')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror

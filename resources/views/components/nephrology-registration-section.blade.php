@@ -9,6 +9,26 @@
     'headerId' => 'nephrologyRegistrationHeader'
 ])
 
+@php
+    $vueTranslations = [
+        'global.nephrology_registrations' => localize('global.nephrology_registrations'),
+        'global.start_nephrology_visit' => localize('global.start_nephrology_visit'),
+        'global.ref_no' => localize('global.ref_no'),
+        'global.patient' => localize('global.patient'),
+        'global.doctor' => localize('global.doctor'),
+        'global.visit_date' => localize('global.visit_date'),
+        'global.status' => localize('global.status'),
+        'global.diagnosis' => localize('global.diagnosis'),
+        'global.actions' => localize('global.actions'),
+        'global.no_nephrology_registrations_found' => localize('global.no_nephrology_registrations_found'),
+        'global.failed_to_load_registrations' => localize('global.failed_to_load_registrations'),
+        'global.status_pending' => localize('global.status_pending'),
+        'global.status_in_progress' => localize('global.status_in_progress'),
+        'global.status_completed' => localize('global.status_completed'),
+        'global.status_cancelled' => localize('global.status_cancelled'),
+    ];
+@endphp
+
 <div class="accordion mt-2" id="{{ $accordionId }}">
     <div class="accordion-item">
         <h2 class="accordion-header" id="{{ $headerId }}">
@@ -28,13 +48,14 @@
                      data-entity-type="{{ $entityType }}"
                      data-entity-id="{{ $entityId }}"
                      data-open-url="{{ route('nephrology-registrations.open', $entityId) }}"
+                     data-translations='@json($vueTranslations)'
                      data-permissions='@json([
                          "canOpenNephrology" => $canOpenNephrology
                      ])'
                      data-appointment-completed="{{ $appointmentCompleted ? 'true' : 'false' }}">
                     <div class="text-center py-4" id="nephrology-registration-loading-fallback">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                            <span class="visually-hidden">{{ localize('global.loading') }}</span>
                         </div>
                         <p class="mt-2">{{ localize('global.loading_nephrology_section') }}</p>
                     </div>

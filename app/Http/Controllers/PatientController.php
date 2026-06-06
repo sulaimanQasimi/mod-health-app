@@ -258,7 +258,7 @@ class PatientController extends Controller
         $doctors = Doctor::all();
         $previousDiagnoses = $patient->diagnoses;
         $nephrologyRegistrations = $patient->nephrologyRegistrations()
-            ->with('doctor')
+            ->with(['doctor', 'disease'])
             ->latest('visit_date')
             ->limit(10)
             ->get();

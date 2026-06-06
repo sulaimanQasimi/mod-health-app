@@ -7,13 +7,19 @@ use App\Models\Doctor;
 use App\Models\HemodialysisSession;
 use App\Models\NephrologyRegistration;
 use App\Models\Patient;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class HemodialysisSessionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = HemodialysisSession::with(['patient', 'doctor', 'nephrologyRegistration', 'branch']);
+        $query = HemodialysisSession::with(['patient', 'doctor', 'nephrologyRegistration.disease', 'branch']);
+
+        if (auth()->user()->branch_id) {
+            $query->where('branch_id', auth()->user()->branch_id);
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -36,33 +42,38 @@ class HemodialysisSessionController extends Controller
         }
 
         if ($request->filled('session_date')) {
-            $query->whereDate('session_date', $request->session_date);
+            try {
+                $query->whereDate('session_date', self::normalizeSessionDate($request->session_date));
+            } catch (\Exception $e) {
+                // ignore invalid filter
+            }
         }
 
         if ($request->filled('date_from')) {
-            $query->whereDate('session_date', '>=', $request->date_from);
+            try {
+                $query->whereDate('session_date', '>=', self::normalizeSessionDate($request->date_from));
+            } catch (\Exception $e) {
+                // ignore invalid filter
+            }
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate('session_date', '<=', $request->date_to);
+            try {
+                $query->whereDate('session_date', '<=', self::normalizeSessionDate($request->date_to));
+            } catch (\Exception $e) {
+                // ignore invalid filter
+            }
         }
 
         $sessions = $query->latest('session_date')->latest('id')->paginate(25)->withQueryString();
-        $doctors = Doctor::where('active_status', true)->where('is_nephrologist', true)->get();
-
-        if ($doctors->isEmpty()) {
-            $doctors = Doctor::where('active_status', true)->get();
-        }
+        $doctors = NephrologyRegistrationController::nephrologistDoctors();
 
         return view('pages.nephrology.hemodialysis.index', compact('sessions', 'doctors'));
     }
 
     public function create(Request $request)
     {
-        $doctors = Doctor::where('active_status', true)->where('is_nephrologist', true)->get();
-        if ($doctors->isEmpty()) {
-            $doctors = Doctor::where('active_status', true)->get();
-        }
+        $doctors = NephrologyRegistrationController::nephrologistDoctors();
 
         $selectedPatient = null;
         $selectedRegistration = null;
@@ -72,7 +83,7 @@ class HemodialysisSessionController extends Controller
         }
 
         if ($request->filled('nephrology_registration_id')) {
-            $selectedRegistration = NephrologyRegistration::with('patient')->find($request->nephrology_registration_id);
+            $selectedRegistration = NephrologyRegistration::with('patient', 'disease')->find($request->nephrology_registration_id);
             if ($selectedRegistration && !$selectedPatient) {
                 $selectedPatient = $selectedRegistration->patient;
             }
@@ -85,16 +96,32 @@ class HemodialysisSessionController extends Controller
     {
         $validatedData = $request->validate(self::validationRules());
 
+        try {
+            $validatedData['session_date'] = self::normalizeSessionDate($validatedData['session_date']);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['session_date' => localize('global.invalid_session_date_format')]);
+        }
+
         $patient = Patient::findOrFail($validatedData['patient_id']);
         $validatedData['branch_id'] = $patient->branch_id ?? auth()->user()->branch_id;
 
         if (!empty($validatedData['nephrology_registration_id'])) {
-            $registration = NephrologyRegistration::find($validatedData['nephrology_registration_id']);
-            if ($registration) {
-                $validatedData['appointment_id'] = $registration->appointment_id;
-                if (empty($validatedData['diagnosis']) && $registration->diagnosis) {
-                    $validatedData['diagnosis'] = $registration->diagnosis;
-                }
+            $registration = NephrologyRegistration::with('disease')->find($validatedData['nephrology_registration_id']);
+            if (!$registration) {
+                throw ValidationException::withMessages([
+                    'nephrology_registration_id' => localize('global.nephrology_registration_not_found'),
+                ]);
+            }
+            if ((int) $registration->patient_id !== (int) $validatedData['patient_id']) {
+                throw ValidationException::withMessages([
+                    'nephrology_registration_id' => localize('global.registration_patient_mismatch'),
+                ]);
+            }
+            $validatedData['appointment_id'] = $registration->appointment_id;
+            if (empty($validatedData['diagnosis'])) {
+                $validatedData['diagnosis'] = $registration->displayDiagnosis();
             }
         }
 
@@ -106,6 +133,8 @@ class HemodialysisSessionController extends Controller
 
     public function show(HemodialysisSession $hemodialysisSession)
     {
+        $this->authorizeSession($hemodialysisSession);
+
         $hemodialysisSession->load([
             'patient',
             'doctor',
@@ -119,18 +148,36 @@ class HemodialysisSessionController extends Controller
 
     public function edit(HemodialysisSession $hemodialysisSession)
     {
+        $this->authorizeSession($hemodialysisSession);
+
         $hemodialysisSession->load(['patient', 'nephrologyRegistration']);
-        $doctors = Doctor::where('active_status', true)->where('is_nephrologist', true)->get();
-        if ($doctors->isEmpty()) {
-            $doctors = Doctor::where('active_status', true)->get();
-        }
+        $doctors = NephrologyRegistrationController::nephrologistDoctors();
 
         return view('pages.nephrology.hemodialysis.edit', compact('hemodialysisSession', 'doctors'));
     }
 
     public function update(Request $request, HemodialysisSession $hemodialysisSession)
     {
+        $this->authorizeSession($hemodialysisSession);
+
         $validatedData = $request->validate(self::validationRules($hemodialysisSession->id));
+
+        try {
+            $validatedData['session_date'] = self::normalizeSessionDate($validatedData['session_date']);
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['session_date' => localize('global.invalid_session_date_format')]);
+        }
+
+        if (!empty($validatedData['nephrology_registration_id'])) {
+            $registration = NephrologyRegistration::find($validatedData['nephrology_registration_id']);
+            if ($registration && (int) $registration->patient_id !== (int) $validatedData['patient_id']) {
+                throw ValidationException::withMessages([
+                    'nephrology_registration_id' => localize('global.registration_patient_mismatch'),
+                ]);
+            }
+        }
 
         $hemodialysisSession->update($validatedData);
 
@@ -140,6 +187,8 @@ class HemodialysisSessionController extends Controller
 
     public function destroy(HemodialysisSession $hemodialysisSession)
     {
+        $this->authorizeSession($hemodialysisSession);
+
         $hemodialysisSession->delete();
 
         return redirect()->route('hemodialysis-sessions.index')
@@ -154,7 +203,7 @@ class HemodialysisSessionController extends Controller
             'doctor_id' => 'nullable|exists:doctors,id',
             'diagnosis' => 'nullable|string',
             'dialysis_schedule' => 'nullable|string|max:255',
-            'session_date' => 'required|date',
+            'session_date' => 'required|string',
             'session_time' => 'nullable|date_format:H:i',
             'duration_minutes' => 'nullable|integer|min:1|max:720',
             'vascular_access_type' => 'nullable|in:av_fistula,graft,catheter',
@@ -172,5 +221,18 @@ class HemodialysisSessionController extends Controller
             'complications_notes' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed,cancelled',
         ];
+    }
+
+    public static function normalizeSessionDate(string $sessionDate): string
+    {
+        return NephrologyRegistrationController::normalizeVisitDate($sessionDate);
+    }
+
+    private function authorizeSession(HemodialysisSession $hemodialysisSession): void
+    {
+        $branchId = auth()->user()->branch_id;
+        if ($branchId && (int) $hemodialysisSession->branch_id !== (int) $branchId) {
+            abort(403, localize('global.nephrology_access_branch_denied'));
+        }
     }
 }

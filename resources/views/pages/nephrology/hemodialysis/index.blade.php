@@ -21,13 +21,25 @@
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('hemodialysis-sessions.index') }}" class="row g-3">
-                        <div class="col-md-3">
-                            <label for="patient_name" class="form-label">{{ localize('global.patient_name') }} / {{ localize('global.patient_id') }}</label>
+                        <div class="col-md-2">
+                            <label for="patient_id" class="form-label">{{ localize('global.patient_id') }}</label>
+                            <input type="text" class="form-control" id="patient_id" name="patient_id" value="{{ request('patient_id') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="patient_name" class="form-label">{{ localize('global.patient_name') }}</label>
                             <input type="text" class="form-control" id="patient_name" name="patient_name" value="{{ request('patient_name') }}">
                         </div>
                         <div class="col-md-2">
                             <label for="session_date" class="form-label">{{ localize('global.session_date') }}</label>
-                            <input type="date" class="form-control" id="session_date" name="session_date" value="{{ request('session_date') }}">
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="session_date" name="session_date" value="{{ request('session_date') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_from" class="form-label">{{ localize('global.from_date') }}</label>
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="date_from" name="date_from" value="{{ request('date_from') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="date_to" class="form-label">{{ localize('global.to_date') }}</label>
+                            <input type="text" autocomplete="off" class="form-control datepicker_dari pdp-el" id="date_to" name="date_to" value="{{ request('date_to') }}">
                         </div>
                         <div class="col-md-2">
                             <label for="doctor_id" class="form-label">{{ localize('global.attending_nephrologist') }}</label>
@@ -78,7 +90,7 @@
                                     <td>{{ $session->ref_no }}</td>
                                     <td>{{ $session->patient->patient_id ?? $session->patient_id }}</td>
                                     <td>{{ $session->patient->name ?? '' }} {{ $session->patient->last_name ?? '' }}</td>
-                                    <td>{{ Str::limit($session->diagnosis, 40) ?: '—' }}</td>
+                                    <td>{{ Str::limit($session->diagnosis ?: $session->nephrologyRegistration?->displayDiagnosis(), 40) ?: '—' }}</td>
                                     <td>{{ $session->session_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($session->session_date) : '—' }}</td>
                                     <td>{{ $session->session_time ? \Carbon\Carbon::parse($session->session_time)->format('H:i') : '—' }}</td>
                                     <td>{{ $session->duration_minutes ?? '—' }}</td>

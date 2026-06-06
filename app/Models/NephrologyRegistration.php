@@ -59,9 +59,11 @@ class NephrologyRegistration extends Model
         });
 
         self::deleting(function ($model) {
-            $user = Auth::user();
-            $model->deleted_by = $user->id ?? 0;
-            $model->save();
+            if ($model->isForceDeleting()) {
+                return;
+            }
+
+            $model->updateQuietly(['deleted_by' => Auth::id() ?? 0]);
         });
     }
 
@@ -108,6 +110,11 @@ class NephrologyRegistration extends Model
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public function displayDiagnosis(): ?string
+    {
+        return $this->disease?->name ?? $this->diagnosis;
     }
 
     public function markCompleted()

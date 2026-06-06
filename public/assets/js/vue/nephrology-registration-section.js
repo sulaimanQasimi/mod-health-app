@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const entityId = container.dataset.entityId || null;
     const openUrl = container.dataset.openUrl || '';
     const permissions = JSON.parse(container.dataset.permissions || '{}');
+    const translations = JSON.parse(container.dataset.translations || '{}');
     const appointmentCompleted = container.dataset.appointmentCompleted === 'true';
 
     const app = createApp(NephrologyRegistrationSection, {
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         entityType,
         entityId,
         openUrl,
+        translations,
         canOpenNephrology: permissions.canOpenNephrology || false,
         appointmentCompleted,
     });

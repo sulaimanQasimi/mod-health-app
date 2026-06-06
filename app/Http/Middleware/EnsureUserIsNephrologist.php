@@ -24,11 +24,11 @@ class EnsureUserIsNephrologist
         $doctor = $user->doctor;
 
         if (!$doctor) {
-            abort(403, 'Access denied. You must be associated with a doctor account to access this resource.');
+            abort(403, localize('global.nephrology_access_requires_doctor'));
         }
 
         if (!$doctor->is_nephrologist) {
-            abort(403, 'Access denied. Only nephrologists can access this resource.');
+            abort(403, localize('global.nephrology_access_nephrologist_only'));
         }
 
         return $next($request);

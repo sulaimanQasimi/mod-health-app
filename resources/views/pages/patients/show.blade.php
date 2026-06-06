@@ -190,7 +190,7 @@
                                         <td>{{ $registration->ref_no }}</td>
                                         <td>{{ $registration->visit_date ? \HanifHefaz\Dcter\Dcter::GregorianToJalali($registration->visit_date) : '—' }}</td>
                                         <td>{{ $registration->doctor->name ?? '—' }}</td>
-                                        <td>{{ Str::limit($registration->diagnosis, 50) ?: '—' }}</td>
+                                        <td>{{ Str::limit($registration->displayDiagnosis(), 50) ?: '—' }}</td>
                                         <td>
                                             <a href="{{ route('nephrology-registrations.show', $registration) }}" class="btn btn-sm btn-primary">
                                                 <i class="bx bx-show"></i>

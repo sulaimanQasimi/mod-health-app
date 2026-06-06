@@ -1286,7 +1286,9 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     // Nephrology AJAX routes
-    Route::prefix('nephrology-ajax')->name('nephrology-ajax.')->group(function () {
+    Route::prefix('nephrology-ajax')
+        ->middleware(['permission:access-nephrology-registrations', 'nephrologist'])
+        ->name('nephrology-ajax.')->group(function () {
         Route::get('registrations/{appointmentId}', [\App\Http\Controllers\NephrologyAjaxController::class, 'getRegistrations'])->name('registrations');
         Route::get('diseases', [\App\Http\Controllers\NephrologyAjaxController::class, 'getDiseases'])->name('diseases');
         Route::put('update/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyAjaxController::class, 'updateRegistration'])->name('update');

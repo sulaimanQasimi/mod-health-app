@@ -1972,7 +1972,7 @@
             :entity="$appointment"
             entity-type="appointment"
             :entity-id="$appointment->id"
-            :can-open-nephrology="true"
+            :can-open-nephrology="auth()->user()->can('access-nephrology-registrations') && optional(auth()->user()->doctor)->is_nephrologist"
             :appointment-completed="$appointment->is_completed == 1"
         />
 

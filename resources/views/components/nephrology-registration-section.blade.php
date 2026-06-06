@@ -12,7 +12,6 @@
 @php
     $todayVisitDate = verta()->format('Y-m-d');
     $todayVisitDateDisplay = verta()->format('Y/m/d');
-    $defaultDoctorId = $entity->doctor_id ?? '';
 
     $vueTranslations = [
         'global.nephrology_registrations' => localize('global.nephrology_registrations'),
@@ -20,19 +19,18 @@
         'global.ref_no' => localize('global.ref_no'),
         'global.patient' => localize('global.patient'),
         'global.doctor' => localize('global.doctor'),
-        'global.select_doctor' => localize('global.select_doctor'),
         'global.visit_date' => localize('global.visit_date'),
         'global.notes' => localize('global.notes'),
         'global.cancel' => localize('global.cancel'),
-        'global.create_and_continue' => localize('global.create_and_continue'),
+        'global.submit' => localize('global.submit'),
         'global.status' => localize('global.status'),
         'global.diagnosis' => localize('global.diagnosis'),
         'global.actions' => localize('global.actions'),
         'global.no_nephrology_registrations_found' => localize('global.no_nephrology_registrations_found'),
         'global.failed_to_load_registrations' => localize('global.failed_to_load_registrations'),
         'global.failed_to_create_registration' => localize('global.failed_to_create_registration'),
-        'global.please_select_visit_date' => localize('global.please_select_visit_date'),
-        'global.nephrology_registration_created_successfully' => localize('global.nephrology_registration_created_successfully'),
+        'global.nephrology_registration_submitted_successfully' => localize('global.nephrology_registration_submitted_successfully'),
+        'global.nephrology_accept_on_index_hint' => localize('global.nephrology_accept_on_index_hint'),
         'global.success' => localize('global.success'),
         'global.status_pending' => localize('global.status_pending'),
         'global.status_in_progress' => localize('global.status_in_progress'),
@@ -62,7 +60,6 @@
                      data-store-url="{{ route('nephrology-registrations.store', $entityId) }}"
                      data-today-visit-date="{{ $todayVisitDate }}"
                      data-today-visit-date-display="{{ $todayVisitDateDisplay }}"
-                     data-default-doctor-id="{{ $defaultDoctorId }}"
                      data-translations='@json($vueTranslations)'
                      data-permissions='@json([
                          "canOpenNephrology" => $canOpenNephrology

@@ -1282,6 +1282,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::delete('destroy/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'destroy'])->name('destroy');
         Route::post('mark-completed/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'markCompleted'])->name('mark-completed');
         Route::post('mark-in-progress/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'markInProgress'])->name('mark-in-progress');
+        Route::post('accept/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'accept'])->name('accept');
         Route::post('cancel/{nephrologyRegistration}', [\App\Http\Controllers\NephrologyRegistrationController::class, 'cancel'])->name('cancel');
     });
 

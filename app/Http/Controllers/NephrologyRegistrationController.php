@@ -110,7 +110,6 @@ class NephrologyRegistrationController extends Controller
 
         if ($registration) {
             $registration->update(array_filter([
-                'doctor_id' => $validatedData['doctor_id'] ?? null,
                 'visit_date' => $validatedData['visit_date'],
                 'notes' => $validatedData['notes'] ?? null,
             ], fn ($value) => $value !== null));
@@ -118,39 +117,35 @@ class NephrologyRegistrationController extends Controller
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => localize('global.nephrology_registration_updated_successfully'),
+                    'message' => localize('global.nephrology_registration_submitted_successfully'),
                     'data' => $registration->load(['appointment.patient', 'doctor', 'patient']),
-                    'redirect' => route('nephrology-registrations.show', $registration),
+                    'redirect' => route('nephrology-registrations.index'),
                 ]);
             }
 
-            return redirect()->route('nephrology-registrations.show', $registration)
-                ->with('success', localize('global.nephrology_registration_updated_successfully'));
+            return redirect()->route('nephrology-registrations.index')
+                ->with('success', localize('global.nephrology_registration_submitted_successfully'));
         }
 
         $validatedData['appointment_id'] = $appointment->id;
         $validatedData['patient_id'] = $appointment->patient_id;
         $validatedData['branch_id'] = $appointment->branch_id ?? auth()->user()->branch_id;
-        $validatedData['status'] = 'in_progress';
-
-        if (empty($validatedData['doctor_id']) && $appointment->doctor_id) {
-            $validatedData['doctor_id'] = $appointment->doctor_id;
-        }
+        $validatedData['status'] = 'pending';
+        $validatedData['doctor_id'] = null;
 
         $registration = NephrologyRegistration::create($validatedData);
-        $registration->assignToCurrentDoctorIfMissing();
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => localize('global.nephrology_registration_created_successfully'),
+                'message' => localize('global.nephrology_registration_submitted_successfully'),
                 'data' => $registration->load(['appointment.patient', 'doctor', 'patient']),
-                'redirect' => route('nephrology-registrations.show', $registration),
+                'redirect' => route('nephrology-registrations.index'),
             ]);
         }
 
-        return redirect()->route('nephrology-registrations.show', $registration)
-            ->with('success', localize('global.nephrology_registration_created_successfully'));
+        return redirect()->route('nephrology-registrations.index')
+            ->with('success', localize('global.nephrology_registration_submitted_successfully'));
     }
 
     /**
@@ -166,20 +161,25 @@ class NephrologyRegistrationController extends Controller
             $registration = NephrologyRegistration::create([
                 'appointment_id' => $appointment->id,
                 'patient_id' => $appointment->patient_id,
-                'doctor_id' => $appointment->doctor_id,
+                'doctor_id' => null,
                 'visit_date' => $appointment->date ?? now()->toDateString(),
                 'branch_id' => $appointment->branch_id ?? auth()->user()->branch_id,
-                'status' => 'in_progress',
+                'status' => 'pending',
             ]);
-            $registration->assignToCurrentDoctorIfMissing();
         }
 
-        return redirect()->route('nephrology-registrations.show', $registration);
+        return redirect()->route('nephrology-registrations.index')
+            ->with('success', localize('global.nephrology_registration_submitted_successfully'));
     }
 
     public function show(NephrologyRegistration $nephrologyRegistration)
     {
         $this->authorizeRegistration($nephrologyRegistration);
+
+        if ($nephrologyRegistration->needsAcceptance()) {
+            return redirect()->route('nephrology-registrations.index')
+                ->with('error', localize('global.nephrology_accept_on_index_hint'));
+        }
 
         $nephrologyRegistration->load([
             'appointment.patient',
@@ -279,6 +279,22 @@ class NephrologyRegistrationController extends Controller
         $nephrologyRegistration->markInProgress();
 
         return redirect()->back()->with('success', localize('global.registration_marked_in_progress'));
+    }
+
+    public function accept(NephrologyRegistration $nephrologyRegistration)
+    {
+        $this->authorizeRegistration($nephrologyRegistration);
+
+        if (in_array($nephrologyRegistration->status, ['completed', 'cancelled'], true)) {
+            return redirect()->back()->with('error', localize('global.registration_cannot_be_accepted'));
+        }
+
+        if (!$nephrologyRegistration->acceptByCurrentNephrologist()) {
+            return redirect()->back()->with('error', localize('global.nephrology_access_nephrologist_only'));
+        }
+
+        return redirect()->route('nephrology-registrations.show', $nephrologyRegistration)
+            ->with('success', localize('global.registration_accepted_successfully'));
     }
 
     public function cancel(NephrologyRegistration $nephrologyRegistration)

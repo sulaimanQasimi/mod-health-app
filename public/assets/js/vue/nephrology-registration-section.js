@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const storeUrl = container.dataset.storeUrl || '';
     const todayVisitDate = container.dataset.todayVisitDate || '';
     const todayVisitDateDisplay = container.dataset.todayVisitDateDisplay || '';
-    const defaultDoctorId = container.dataset.defaultDoctorId || '';
     const permissions = JSON.parse(container.dataset.permissions || '{}');
     const translations = JSON.parse(container.dataset.translations || '{}');
     const appointmentCompleted = container.dataset.appointmentCompleted === 'true';
@@ -26,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
         storeUrl,
         todayVisitDate,
         todayVisitDateDisplay,
-        defaultDoctorId,
         translations,
         canOpenNephrology: permissions.canOpenNephrology || false,
         appointmentCompleted,

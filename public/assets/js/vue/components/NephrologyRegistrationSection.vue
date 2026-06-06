@@ -39,23 +39,17 @@
                                 <input type="text" class="form-control" :value="todayVisitDateDisplay" readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="nephrology_doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
-                                <select v-model="form.doctor_id" class="form-select" id="nephrology_doctor_id">
-                                    <option value="">{{ localize('global.select_doctor') }}</option>
-                                    <option v-for="doctor in doctors" :key="doctor.id" :value="String(doctor.id)">{{ doctor.name }}</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
                                 <label for="nephrology_notes" class="form-label">{{ localize('global.notes') }}</label>
                                 <textarea v-model="form.notes" class="form-control" id="nephrology_notes" rows="2"></textarea>
                             </div>
+                            <p class="text-muted small mb-0">{{ localize('global.nephrology_accept_on_index_hint') }}</p>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="closeCreateModal">{{ localize('global.cancel') }}</button>
                         <button type="button" class="btn btn-primary" @click="createRegistration" :disabled="loading">
                             <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                            {{ localize('global.create_and_continue') }}
+                            {{ localize('global.submit') }}
                         </button>
                     </div>
                 </div>
@@ -127,7 +121,6 @@ export default {
         storeUrl: { type: String, default: '' },
         todayVisitDate: { type: String, default: '' },
         todayVisitDateDisplay: { type: String, default: '' },
-        defaultDoctorId: { type: [String, Number], default: '' },
         translations: { type: Object, default: () => ({}) },
         canOpenNephrology: { type: Boolean, default: true },
         appointmentCompleted: { type: Boolean, default: false },
@@ -138,45 +131,17 @@ export default {
             loadingList: true,
             showCreateModal: false,
             registrations: [],
-            doctors: [],
             errorMessage: '',
             formError: '',
             form: {
-                doctor_id: '',
                 notes: '',
             },
         };
     },
     mounted() {
-        this.loadDoctors();
         this.loadRegistrations();
     },
     methods: {
-        async loadDoctors() {
-            try {
-                const branchId = this.appointment.branch_id || '';
-                const response = await fetch('/doctor-api/doctors?is_nephrologist=1&branch_id=' + branchId, {
-                    credentials: 'same-origin',
-                    headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                });
-                const data = await response.json();
-                if (data.success && data.data) {
-                    this.doctors = data.data;
-                } else {
-                    const fallback = await fetch('/doctor-api/doctors', {
-                        credentials: 'same-origin',
-                        headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    });
-                    const fallbackData = await fallback.json();
-                    if (fallbackData.success && fallbackData.data) {
-                        this.doctors = fallbackData.data;
-                    }
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-
         async loadRegistrations() {
             this.loadingList = true;
             this.errorMessage = '';
@@ -216,10 +181,7 @@ export default {
         },
 
         resetForm() {
-            this.form = {
-                doctor_id: this.defaultDoctorId ? String(this.defaultDoctorId) : '',
-                notes: '',
-            };
+            this.form = { notes: '' };
         },
 
         async createRegistration() {
@@ -235,9 +197,6 @@ export default {
 
             try {
                 const formData = new FormData();
-                if (this.form.doctor_id) {
-                    formData.append('doctor_id', this.form.doctor_id);
-                }
                 formData.append('visit_date', visitDate);
                 formData.append('notes', this.form.notes || '');
 
@@ -259,7 +218,7 @@ export default {
                         window.location.href = data.redirect;
                         return;
                     }
-                    this.showSuccess(data.message || this.localize('global.nephrology_registration_created_successfully'));
+                    this.showSuccess(data.message || this.localize('global.nephrology_registration_submitted_successfully'));
                     await this.loadRegistrations();
                     this.closeCreateModal();
                     return;

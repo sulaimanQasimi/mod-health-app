@@ -4452,4 +4452,9 @@ return [
     'failed_to_load_registrations' => 'Failed to load registrations',
     'please_select_visit_date' => 'Please select a visit date.',
     'failed_to_create_registration' => 'Failed to create nephrology registration.',
+    'nephrology_registration_submitted_successfully' => 'Nephrology request submitted. Accept it from the registrations list.',
+    'nephrology_accept_on_index_hint' => 'After submitting, use Accept on the nephrology index to assign yourself and continue.',
+    'registration_accepted_successfully' => 'Registration accepted. You can continue the visit.',
+    'registration_cannot_be_accepted' => 'This registration cannot be accepted.',
+    'accept' => 'Accept',
 ];

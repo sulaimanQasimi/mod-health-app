@@ -122,9 +122,20 @@
                                     <td><span class="badge bg-info">{{ localize('global.' . $registration->status) }}</span></td>
                                     <td>{{ $registration->displayDiagnosis() ?? '—' }}</td>
                                     <td>
-                                        <a href="{{ route('nephrology-registrations.show', $registration) }}" class="btn btn-sm btn-primary">
-                                            <i class="bx bx-show"></i>
-                                        </a>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            @if($registration->needsAcceptance())
+                                                <form action="{{ route('nephrology-registrations.accept', $registration) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" title="{{ localize('global.accept') }}">
+                                                        <i class="bx bx-check me-1"></i>{{ localize('global.accept') }}
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('nephrology-registrations.show', $registration) }}" class="btn btn-sm btn-primary" title="{{ localize('global.show') }}">
+                                                    <i class="bx bx-show"></i>
+                                                </a>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

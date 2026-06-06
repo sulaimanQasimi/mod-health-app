@@ -138,19 +138,36 @@ class NephrologyRegistration extends Model
             return false;
         }
 
+        return $this->acceptByCurrentNephrologist();
+    }
+
+    public function acceptByCurrentNephrologist(): bool
+    {
         $userId = Auth::id();
         if (empty($userId)) {
             return false;
         }
 
-        $doctor = Doctor::where('user_id', $userId)->first();
+        $doctor = Doctor::where('user_id', $userId)->where('is_nephrologist', true)->first();
         if (!$doctor) {
             return false;
         }
 
-        $this->doctor_id = $doctor->id;
-        $this->save();
+        $status = in_array($this->status, ['completed', 'cancelled'], true)
+            ? $this->status
+            : 'in_progress';
+
+        $this->update([
+            'doctor_id' => $doctor->id,
+            'status' => $status,
+        ]);
 
         return true;
+    }
+
+    public function needsAcceptance(): bool
+    {
+        return empty($this->doctor_id)
+            && !in_array($this->status, ['completed', 'cancelled'], true);
     }
 }

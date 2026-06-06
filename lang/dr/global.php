@@ -4579,4 +4579,9 @@ return [
     "registration_cancelled" => "ثبت لغو شد",
     "please_select_visit_date" => "لطفاً تاریخ بازدید را انتخاب کنید.",
     "failed_to_create_registration" => "ایجاد ثبت نفرولوژی ناموفق بود.",
+    "nephrology_registration_submitted_successfully" => "درخواست نفرولوژی ثبت شد. از فهرست ثبت‌ها آن را بپذیرید.",
+    "nephrology_accept_on_index_hint" => "پس از ثبت، از صفحه فهرست نفرولوژی دکمه «پذیرش» را بزنید تا به عنوان نفرولوژست فعلی اختصاص یابد.",
+    "registration_accepted_successfully" => "ثبت پذیرفته شد. می‌توانید ادامه دهید.",
+    "registration_cannot_be_accepted" => "این ثبت قابل پذیرش نیست.",
+    "accept" => "پذیرش",
 ];

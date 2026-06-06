@@ -214,10 +214,6 @@ export default {
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
-                    }
                     this.showSuccess(data.message || this.localize('global.nephrology_registration_submitted_successfully'));
                     await this.loadRegistrations();
                     this.closeCreateModal();

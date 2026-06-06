@@ -119,11 +119,10 @@ class NephrologyRegistrationController extends Controller
                     'success' => true,
                     'message' => localize('global.nephrology_registration_submitted_successfully'),
                     'data' => $registration->load(['appointment.patient', 'doctor', 'patient']),
-                    'redirect' => route('nephrology-registrations.index'),
                 ]);
             }
 
-            return redirect()->route('nephrology-registrations.index')
+            return redirect()->back()
                 ->with('success', localize('global.nephrology_registration_submitted_successfully'));
         }
 
@@ -140,11 +139,10 @@ class NephrologyRegistrationController extends Controller
                 'success' => true,
                 'message' => localize('global.nephrology_registration_submitted_successfully'),
                 'data' => $registration->load(['appointment.patient', 'doctor', 'patient']),
-                'redirect' => route('nephrology-registrations.index'),
             ]);
         }
 
-        return redirect()->route('nephrology-registrations.index')
+        return redirect()->back()
             ->with('success', localize('global.nephrology_registration_submitted_successfully'));
     }
 

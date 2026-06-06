@@ -10,9 +10,8 @@
 ])
 
 @php
-    $defaultVisitDate = !empty($entity->date)
-        ? verta($entity->date)->format('Y/m/d')
-        : verta()->format('Y/m/d');
+    $todayVisitDate = verta()->format('Y-m-d');
+    $todayVisitDateDisplay = verta()->format('Y/m/d');
     $defaultDoctorId = $entity->doctor_id ?? '';
 
     $vueTranslations = [
@@ -61,7 +60,8 @@
                      data-entity-type="{{ $entityType }}"
                      data-entity-id="{{ $entityId }}"
                      data-store-url="{{ route('nephrology-registrations.store', $entityId) }}"
-                     data-default-visit-date="{{ $defaultVisitDate }}"
+                     data-today-visit-date="{{ $todayVisitDate }}"
+                     data-today-visit-date-display="{{ $todayVisitDateDisplay }}"
                      data-default-doctor-id="{{ $defaultDoctorId }}"
                      data-translations='@json($vueTranslations)'
                      data-permissions='@json([

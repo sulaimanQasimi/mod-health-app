@@ -90,9 +90,13 @@ class NephrologyRegistrationController extends Controller
     {
         $validatedData = $request->validate([
             'doctor_id' => 'nullable|exists:doctors,id',
-            'visit_date' => 'required|string',
+            'visit_date' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        if (empty($validatedData['visit_date'])) {
+            $validatedData['visit_date'] = verta()->format('Y-m-d');
+        }
 
         try {
             $validatedData['visit_date'] = self::normalizeVisitDate($validatedData['visit_date']);
@@ -305,11 +309,26 @@ class NephrologyRegistrationController extends Controller
 
     public static function normalizeVisitDate(string $visitDate): string
     {
-        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', trim($visitDate))) {
-            return trim($visitDate);
+        $visitDate = self::toEnglishNumbers(trim($visitDate));
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $visitDate)) {
+            $year = (int) substr($visitDate, 0, 4);
+            if ($year >= 1900 && $year <= 2100) {
+                return $visitDate;
+            }
         }
 
+        $visitDate = str_replace('-', '/', $visitDate);
+
         return Verta::parse($visitDate)->datetime()->format('Y-m-d');
+    }
+
+    public static function toEnglishNumbers(string $value): string
+    {
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+        return str_replace($persian, range(0, 9), str_replace($arabic, range(0, 9), $value));
     }
 
     public static function applyClinicalDefaults(array $validatedData, Request $request): array

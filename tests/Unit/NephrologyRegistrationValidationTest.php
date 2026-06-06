@@ -34,6 +34,22 @@ class NephrologyRegistrationValidationTest extends TestCase
         $this->assertSame('2026-06-03', $normalized);
     }
 
+    public function test_normalize_visit_date_accepts_jalali_dashed_format(): void
+    {
+        $normalized = NephrologyRegistrationController::normalizeVisitDate('1404-01-01');
+
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', $normalized);
+        $this->assertNotSame('1404-01-01', $normalized);
+    }
+
+    public function test_to_english_numbers_converts_persian_digits(): void
+    {
+        $this->assertSame(
+            '1404-03-13',
+            NephrologyRegistrationController::toEnglishNumbers('۱۴۰۴-۰۳-۱۳')
+        );
+    }
+
     public function test_apply_clinical_defaults_clears_dialysis_fields_when_not_required(): void
     {
         $request = \Illuminate\Http\Request::create('/', 'POST', [

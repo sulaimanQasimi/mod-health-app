@@ -238,7 +238,7 @@
     ]
   },
   "public/assets/js/vue/nephrology-registration-section.js": {
-    "file": "assets/nephrology-registration-section-CDsCRRzL.js",
+    "file": "assets/nephrology-registration-section-C0KuxyXB.js",
     "name": "nephrology-registration-section",
     "src": "public/assets/js/vue/nephrology-registration-section.js",
     "isEntry": true,
@@ -322,7 +322,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-D7Xz0oR7.css",
+    "file": "assets/app-DpBikUy5.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -330,7 +330,7 @@
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-gTWHF694.js",
+    "file": "assets/Example-DKe6gfXN.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
@@ -340,11 +340,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-D7Xz0oR7.css"
+      "assets/app-DpBikUy5.css"
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-ntcKLC8L.js",
+    "file": "assets/Layout-BQiUp0Nf.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -354,11 +354,11 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-D7Xz0oR7.css"
+      "assets/app-DpBikUy5.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-CbXfh9bQ.js",
+    "file": "assets/Welcome-CTcCSpzJ.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -368,7 +368,7 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-D7Xz0oR7.css"
+      "assets/app-DpBikUy5.css"
     ]
   },
   "resources/js/app.js": {
@@ -381,7 +381,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-D0TF1eyN.js",
+    "file": "assets/app-BX5xFK_8.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -395,7 +395,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-D7Xz0oR7.css"
+      "assets/app-DpBikUy5.css"
     ]
   },
   "resources/js/ckeditor.js": {

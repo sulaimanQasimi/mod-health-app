@@ -35,24 +35,15 @@
                         <div v-if="formError" class="alert alert-danger">{{ formError }}</div>
                         <form @submit.prevent="createRegistration" id="nephrology-create-form">
                             <div class="mb-3">
+                                <label class="form-label">{{ localize('global.visit_date') }}</label>
+                                <input type="text" class="form-control" :value="todayVisitDateDisplay" readonly>
+                            </div>
+                            <div class="mb-3">
                                 <label for="nephrology_doctor_id" class="form-label">{{ localize('global.doctor') }}</label>
                                 <select v-model="form.doctor_id" class="form-select" id="nephrology_doctor_id">
                                     <option value="">{{ localize('global.select_doctor') }}</option>
                                     <option v-for="doctor in doctors" :key="doctor.id" :value="String(doctor.id)">{{ doctor.name }}</option>
                                 </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nephrology_visit_date" class="form-label">
-                                    {{ localize('global.visit_date') }} <span class="text-danger">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    autocomplete="off"
-                                    v-model="form.visit_date"
-                                    class="form-control datepicker_dari pdp-el"
-                                    id="nephrology_visit_date"
-                                    required
-                                />
                             </div>
                             <div class="mb-3">
                                 <label for="nephrology_notes" class="form-label">{{ localize('global.notes') }}</label>
@@ -134,7 +125,8 @@ export default {
         entityType: { type: String, default: 'appointment' },
         entityId: { type: [String, Number], default: null },
         storeUrl: { type: String, default: '' },
-        defaultVisitDate: { type: String, default: '' },
+        todayVisitDate: { type: String, default: '' },
+        todayVisitDateDisplay: { type: String, default: '' },
         defaultDoctorId: { type: [String, Number], default: '' },
         translations: { type: Object, default: () => ({}) },
         canOpenNephrology: { type: Boolean, default: true },
@@ -151,7 +143,6 @@ export default {
             formError: '',
             form: {
                 doctor_id: '',
-                visit_date: '',
                 notes: '',
             },
         };
@@ -217,7 +208,6 @@ export default {
         openCreateModal() {
             this.resetForm();
             this.showCreateModal = true;
-            this.$nextTick(() => this.initDatepicker());
         },
 
         closeCreateModal() {
@@ -228,56 +218,12 @@ export default {
         resetForm() {
             this.form = {
                 doctor_id: this.defaultDoctorId ? String(this.defaultDoctorId) : '',
-                visit_date: this.defaultVisitDate || '',
                 notes: '',
             };
         },
 
-        initDatepicker() {
-            if (!window.$ || !window.$.fn.persianDatepicker) {
-                return;
-            }
-
-            const datepickerElement = $('#nephrology_visit_date');
-            if (!datepickerElement.length) {
-                return;
-            }
-
-            if (datepickerElement.data('persianDatepicker')) {
-                datepickerElement.val(this.form.visit_date);
-                return;
-            }
-
-            datepickerElement.persianDatepicker({
-                months: ['حمل', 'ثور', 'جوزا', 'سرطان', 'اسد', 'سنبله', 'میزان', 'عقرب', 'قوس', 'جدی', 'دلو', 'حوت'],
-                dowTitle: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهارشنبه', 'پنج شنبه', 'جمعه'],
-                shortDowTitle: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
-                showGregorianDate: false,
-                persianNumbers: true,
-                formatDate: 'YYYY/MM/DD',
-                selectedBefore: false,
-                theme: 'default',
-                alwaysShow: false,
-                cellWidth: 25,
-                cellHeight: 20,
-                fontSize: 13,
-                isRTL: false,
-            });
-
-            datepickerElement.attr('autocomplete', 'off');
-            datepickerElement.val(this.form.visit_date);
-
-            datepickerElement.on('change', (e) => {
-                this.form.visit_date = $(e.target).val();
-            });
-        },
-
         async createRegistration() {
-            const visitDate = this.form.visit_date || (window.$ ? $('#nephrology_visit_date').val() : '');
-            if (!visitDate) {
-                this.formError = this.localize('global.please_select_visit_date');
-                return;
-            }
+            const visitDate = this.todayVisitDate || new Date().toISOString().split('T')[0];
 
             if (!this.storeUrl) {
                 this.formError = this.localize('global.failed_to_create_registration');

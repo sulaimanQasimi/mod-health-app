@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class Consultation extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['title','branch_id', 'appointment_id', 'patient_id', 'result', 'date', 'time','department_id','i_c_u_id','created_by','consultation_type'];

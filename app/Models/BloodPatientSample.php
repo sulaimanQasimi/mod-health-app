@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BloodPatientSample extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'blood_bank_id',

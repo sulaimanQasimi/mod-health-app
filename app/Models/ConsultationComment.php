@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class ConsultationComment extends Model
 {
-    use HasFactory;
 
     protected  $fillable = ['comment','consultation_id','patient_id','doctor_id','appointment_id','department_id'];
 

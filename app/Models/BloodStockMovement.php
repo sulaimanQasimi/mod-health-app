@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BloodStockMovement extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'blood_unit_id',

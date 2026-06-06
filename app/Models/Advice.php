@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class Advice extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['description','appointment_id','patient_id','doctor_id','i_c_u_id','hospitalization_id'];

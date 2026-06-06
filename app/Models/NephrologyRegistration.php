@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class NephrologyRegistration extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [

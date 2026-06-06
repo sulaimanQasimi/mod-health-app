@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class BloodSample extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [

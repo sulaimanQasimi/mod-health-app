@@ -11,7 +11,6 @@ use App\Models\BloodUnitTest;
 
 class BloodUnit extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     public const COMPONENT_TYPES = ['Fresh', 'RBC', 'PRBC', 'Platelets', 'Plasma', 'Whole Blood'];

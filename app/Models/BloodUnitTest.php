@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BloodUnitTest extends Model
 {
-    use HasFactory;
 
     /**
      * Explicit table name (basename pluralization can be ambiguous for compound names).

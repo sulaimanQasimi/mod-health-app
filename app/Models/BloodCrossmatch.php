@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BloodCrossmatch extends Model
 {
-    use HasFactory;
 
     public const RESULT_VALUES = ['pending', 'compatible', 'incompatible', 'inconclusive'];
     public const STATUSES = ['pending', 'compatible', 'incompatible', 'overridden'];

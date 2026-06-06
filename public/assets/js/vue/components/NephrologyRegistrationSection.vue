@@ -35,10 +35,6 @@
                         <div v-if="formError" class="alert alert-danger">{{ formError }}</div>
                         <form @submit.prevent="createRegistration" id="nephrology-create-form">
                             <div class="mb-3">
-                                <label class="form-label">{{ localize('global.visit_date') }}</label>
-                                <input type="text" class="form-control" :value="todayVisitDateDisplay" readonly>
-                            </div>
-                            <div class="mb-3">
                                 <label for="nephrology_notes" class="form-label">{{ localize('global.notes') }}</label>
                                 <textarea v-model="form.notes" class="form-control" id="nephrology_notes" rows="2"></textarea>
                             </div>
@@ -119,8 +115,6 @@ export default {
         entityType: { type: String, default: 'appointment' },
         entityId: { type: [String, Number], default: null },
         storeUrl: { type: String, default: '' },
-        todayVisitDate: { type: String, default: '' },
-        todayVisitDateDisplay: { type: String, default: '' },
         translations: { type: Object, default: () => ({}) },
         canOpenNephrology: { type: Boolean, default: true },
         appointmentCompleted: { type: Boolean, default: false },
@@ -185,8 +179,6 @@ export default {
         },
 
         async createRegistration() {
-            const visitDate = this.todayVisitDate || new Date().toISOString().split('T')[0];
-
             if (!this.storeUrl) {
                 this.formError = this.localize('global.failed_to_create_registration');
                 return;
@@ -197,7 +189,6 @@ export default {
 
             try {
                 const formData = new FormData();
-                formData.append('visit_date', visitDate);
                 formData.append('notes', this.form.notes || '');
 
                 const response = await fetch(this.storeUrl, {

@@ -94,38 +94,7 @@ class NephrologyRegistrationController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        if (empty($validatedData['visit_date'])) {
-            $validatedData['visit_date'] = verta()->format('Y-m-d');
-        }
-
-        try {
-            $validatedData['visit_date'] = self::normalizeVisitDate($validatedData['visit_date']);
-        } catch (\Exception $e) {
-            return self::visitDateErrorResponse($request);
-        }
-
-        $registration = NephrologyRegistration::where('appointment_id', $appointment->id)
-            ->latest()
-            ->first();
-
-        if ($registration) {
-            $registration->update(array_filter([
-                'visit_date' => $validatedData['visit_date'],
-                'notes' => $validatedData['notes'] ?? null,
-            ], fn ($value) => $value !== null));
-
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => localize('global.nephrology_registration_submitted_successfully'),
-                    'data' => $registration->load(['appointment.patient', 'doctor', 'patient']),
-                ]);
-            }
-
-            return redirect()->back()
-                ->with('success', localize('global.nephrology_registration_submitted_successfully'));
-        }
-
+        $validatedData['visit_date'] = now();
         $validatedData['appointment_id'] = $appointment->id;
         $validatedData['patient_id'] = $appointment->patient_id;
         $validatedData['branch_id'] = $appointment->branch_id ?? auth()->user()->branch_id;

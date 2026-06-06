@@ -10,9 +10,6 @@
 ])
 
 @php
-    $todayVisitDate = verta()->format('Y-m-d');
-    $todayVisitDateDisplay = verta()->format('Y/m/d');
-
     $vueTranslations = [
         'global.nephrology_registrations' => localize('global.nephrology_registrations'),
         'global.start_nephrology_visit' => localize('global.start_nephrology_visit'),
@@ -58,8 +55,6 @@
                      data-entity-type="{{ $entityType }}"
                      data-entity-id="{{ $entityId }}"
                      data-store-url="{{ route('nephrology-registrations.store', $entityId) }}"
-                     data-today-visit-date="{{ $todayVisitDate }}"
-                     data-today-visit-date-display="{{ $todayVisitDateDisplay }}"
                      data-translations='@json($vueTranslations)'
                      data-permissions='@json([
                          "canOpenNephrology" => $canOpenNephrology

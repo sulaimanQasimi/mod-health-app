@@ -13,6 +13,15 @@ interface TokenModalProps {
     tokenUrl: string;
 }
 
+function InfoRow({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="flex items-start gap-2 py-1.5">
+            <span className="min-w-[80px] text-sm font-medium text-gray-500 dark:text-gray-400">{label}</span>
+            <span className="text-sm text-gray-900 dark:text-white">{value || '—'}</span>
+        </div>
+    );
+}
+
 export default function TokenModal({
     open,
     onClose,
@@ -28,40 +37,41 @@ export default function TokenModal({
 
     return (
         <Modal show={open} onClose={onClose} size="3xl">
-            <ModalHeader>{t('global.token_ready')}</ModalHeader>
+            <ModalHeader>
+                <span className="flex items-center gap-2">
+                    <i className="bx bx-printer text-xl text-green-500" />
+                    {t('global.token_ready')}
+                </span>
+            </ModalHeader>
             <ModalBody>
                 <div className="grid gap-6 md:grid-cols-2">
-                    <div>
-                        <h6 className="mb-3 text-sm font-semibold text-gray-500">{t('global.patient_information')}</h6>
-                        <p>
-                            <span className="font-medium">{t('global.name')}:</span> {patientName}
-                        </p>
-                        <p>
-                            <span className="font-medium">{t('global.last_name')}:</span> {patientLastName}
-                        </p>
+                    <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                        <h6 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <i className="bx bx-user text-blue-500" />
+                            {t('global.patient_information')}
+                        </h6>
+                        <InfoRow label={t('global.name')} value={patientName} />
+                        <InfoRow label={t('global.last_name')} value={patientLastName} />
                     </div>
-                    <div>
-                        <h6 className="mb-3 text-sm font-semibold text-gray-500">{t('global.appointment_information')}</h6>
-                        <p>
-                            <span className="font-medium">{t('global.department')}:</span> {department}
-                        </p>
-                        <p>
-                            <span className="font-medium">{t('global.doctor')}:</span> {doctor}
-                        </p>
-                        <p>
-                            <span className="font-medium">{t('global.date')}:</span> {date}
-                        </p>
-                        <p>
-                            <span className="font-medium">{t('global.time')}:</span> {time}
-                        </p>
+                    <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                        <h6 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <i className="bx bx-calendar-check text-cyan-500" />
+                            {t('global.appointment_information')}
+                        </h6>
+                        <InfoRow label={t('global.department')} value={department} />
+                        <InfoRow label={t('global.doctor')} value={doctor} />
+                        <InfoRow label={t('global.date')} value={date} />
+                        <InfoRow label={t('global.time')} value={time} />
                     </div>
                 </div>
-                <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+                <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-200">
+                    <i className="bx bx-info-circle mt-0.5 shrink-0 text-lg" />
                     {t('global.token_ready_message')}
                 </div>
             </ModalBody>
             <ModalFooter>
                 <Button color="gray" onClick={onClose}>
+                    <i className="bx bx-x me-1 text-lg" />
                     {t('global.close')}
                 </Button>
                 <Button
@@ -70,6 +80,7 @@ export default function TokenModal({
                         window.open(tokenUrl, '_blank');
                     }}
                 >
+                    <i className="bx bx-printer me-1 text-lg" />
                     {t('global.print_token')}
                 </Button>
             </ModalFooter>

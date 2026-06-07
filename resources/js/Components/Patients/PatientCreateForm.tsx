@@ -1,4 +1,4 @@
-import { Alert, Button, Label, Select, TextInput } from 'flowbite-react';
+import { Alert, Button, Spinner } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -13,6 +13,10 @@ import {
 import { buildAgeValue } from '../../utils/patientAge';
 import AppointmentSection from './AppointmentSection';
 import TokenModal from './TokenModal';
+import AgeInput from './ui/AgeInput';
+import FormSection from './ui/FormSection';
+import { FormField, IconSelect, IconTextInput } from './ui/FormField';
+import SegmentedControl from './ui/SegmentedControl';
 
 interface PatientCreateFormProps {
     patientType: PatientType;
@@ -270,240 +274,259 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <form onSubmit={handleSubmit} className="space-y-0">
                 {successMessage && (
-                    <div className="col-span-full">
-                        <Alert color="success">{successMessage}</Alert>
-                    </div>
+                    <Alert color="success" className="mb-4 border border-green-200 dark:border-green-800">
+                        <i className="bx bx-check-circle me-2 text-lg" />
+                        {successMessage}
+                    </Alert>
                 )}
                 {errors.general && (
-                    <div className="col-span-full">
-                        <Alert color="failure">{errors.general}</Alert>
-                    </div>
+                    <Alert color="failure" className="mb-4 border border-red-200 dark:border-red-800">
+                        <i className="bx bx-error-circle me-2 text-lg" />
+                        {errors.general}
+                    </Alert>
                 )}
 
-                {patientType === '0' && (
-                    <div>
-                        <Label htmlFor="id_card">{t('global.id_card')}</Label>
-                        <TextInput
-                            id="id_card"
-                            value={form.id_card}
-                            onChange={(event) => updateField('id_card', event.target.value)}
-                        />
-                    </div>
-                )}
+                <FormSection
+                    icon="bx-user-circle"
+                    title={t('global.personal_information')}
+                    accent="blue"
+                    isFirst
+                >
+                    {patientType === '0' && (
+                        <FormField label={t('global.id_card')} icon="bx-id-card" error={errors.id_card}>
+                            <IconTextInput
+                                id="id_card"
+                                icon="bx-id-card"
+                                value={form.id_card}
+                                onChange={(value) => updateField('id_card', value)}
+                            />
+                        </FormField>
+                    )}
 
-                <div>
-                    <Label htmlFor="name">{t('global.name')}</Label>
-                    <TextInput
-                        id="name"
-                        required
-                        value={form.name}
-                        onChange={(event) => updateField('name', event.target.value)}
-                    />
-                    {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-                </div>
-
-                <div>
-                    <Label htmlFor="last_name">{t('global.last_name')}</Label>
-                    <TextInput
-                        id="last_name"
-                        value={form.last_name}
-                        onChange={(event) => updateField('last_name', event.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <Label htmlFor="father_name">{t('global.father_name')}</Label>
-                    <TextInput
-                        id="father_name"
-                        value={form.father_name}
-                        onChange={(event) => updateField('father_name', event.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <Label htmlFor="nid">{t('global.nid')}</Label>
-                    <TextInput
-                        id="nid"
-                        required
-                        value={form.nid}
-                        onChange={(event) => updateField('nid', event.target.value)}
-                    />
-                    {errors.nid && <p className="mt-1 text-sm text-red-600">{errors.nid}</p>}
-                </div>
-
-                <div>
-                    <Label htmlFor="job">{jobLabel}</Label>
-                    <TextInput
-                        id="job"
-                        value={form.job}
-                        onChange={(event) => updateField('job', event.target.value)}
-                    />
-                </div>
-
-                {patientType !== '2' && (
-                    <div>
-                        <Label htmlFor="job_category">{t('global.job_category')}</Label>
-                        <Select
-                            id="job_category"
+                    <FormField label={t('global.name')} icon="bx-user" required error={errors.name}>
+                        <IconTextInput
+                            id="name"
+                            icon="bx-user"
                             required
-                            value={form.job_category}
-                            onChange={(event) => handleJobCategoryChange(event.target.value as '0' | '1')}
-                        >
-                            <option value="0">{t('global.military')}</option>
-                            <option value="1">{t('global.civilian')}</option>
-                        </Select>
-                    </div>
-                )}
-
-                {showMilitaryFields && (
-                    <div>
-                        <Label htmlFor="militery_type_id">{t('global.militery_type')}</Label>
-                        <Select
-                            id="militery_type_id"
-                            value={form.militery_type_id}
-                            onChange={(event) => updateField('militery_type_id', event.target.value)}
-                        >
-                            <option value="">{t('global.select')}</option>
-                            {formData.militeryTypes.map((type) => (
-                                <option key={type.id} value={type.id}>
-                                    {type.name}
-                                </option>
-                            ))}
-                        </Select>
-                    </div>
-                )}
-
-                {showRankField && (
-                    <div>
-                        <Label htmlFor="rank">{rankLabel}</Label>
-                        <TextInput
-                            id="rank"
-                            value={form.rank}
-                            onChange={(event) => updateField('rank', event.target.value)}
+                            value={form.name}
+                            onChange={(value) => updateField('name', value)}
                         />
-                    </div>
-                )}
+                    </FormField>
 
-                <div>
-                    <Label htmlFor="phone">{t('global.phone')}</Label>
-                    <TextInput
-                        id="phone"
-                        value={form.phone}
-                        onChange={(event) => updateField('phone', event.target.value)}
-                    />
-                </div>
+                    <FormField label={t('global.last_name')} icon="bx-user" error={errors.last_name}>
+                        <IconTextInput
+                            id="last_name"
+                            icon="bx-user"
+                            value={form.last_name}
+                            onChange={(value) => updateField('last_name', value)}
+                        />
+                    </FormField>
 
-                <div>
-                    <Label>{t('global.age')}</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                        <TextInput
-                            type="number"
-                            min={0}
-                            max={150}
-                            placeholder={t('global.year') as string}
-                            value={form.age_year}
-                            onChange={(event) => updateField('age_year', event.target.value)}
+                    <FormField label={t('global.father_name')} icon="bx-male" error={errors.father_name}>
+                        <IconTextInput
+                            id="father_name"
+                            icon="bx-male"
+                            value={form.father_name}
+                            onChange={(value) => updateField('father_name', value)}
                         />
-                        <TextInput
-                            type="number"
-                            min={0}
-                            max={11}
-                            placeholder={t('global.month') as string}
-                            value={form.age_month}
-                            onChange={(event) => updateField('age_month', event.target.value)}
-                        />
-                        <TextInput
-                            type="number"
-                            min={0}
-                            max={31}
-                            placeholder={t('global.day') as string}
-                            value={form.age_day}
-                            onChange={(event) => updateField('age_day', event.target.value)}
-                        />
-                    </div>
-                    {errors.age && <p className="mt-1 text-sm text-red-600">{errors.age}</p>}
-                </div>
+                    </FormField>
 
-                <div>
-                    <Label htmlFor="gender">{t('global.gender')}</Label>
-                    <Select
-                        id="gender"
-                        required
-                        value={form.gender}
-                        onChange={(event) => updateField('gender', event.target.value)}
-                    >
-                        {patientType === '2' && <option value="">{t('global.select')}</option>}
-                        <option value="0">{t('global.male')}</option>
-                        <option value="1">{t('global.female')}</option>
-                    </Select>
-                    {errors.gender && <p className="mt-1 text-sm text-red-600">{errors.gender}</p>}
-                </div>
+                    <FormField label={t('global.nid')} icon="bx-fingerprint" required error={errors.nid}>
+                        <IconTextInput
+                            id="nid"
+                            icon="bx-fingerprint"
+                            required
+                            value={form.nid}
+                            onChange={(value) => updateField('nid', value)}
+                        />
+                    </FormField>
+
+                    {patientType === '2' && (
+                        <FormField label={jobLabel} icon="bx-briefcase" error={errors.job}>
+                            <IconTextInput
+                                id="job"
+                                icon="bx-briefcase"
+                                value={form.job}
+                                onChange={(value) => updateField('job', value)}
+                            />
+                        </FormField>
+                    )}
+                </FormSection>
 
                 {patientType !== '2' && (
-                    <div>
-                        <Label htmlFor="referred_by">{t('global.referred_by')}</Label>
-                        <Select
-                            id="referred_by"
-                            required={patientType === '1'}
-                            value={form.referred_by}
-                            onChange={(event) => updateField('referred_by', event.target.value)}
-                        >
-                            <option value="">{t('global.select')}</option>
-                            {formData.recipients.map((recipient) => (
-                                <option key={recipient.id} value={recipient.id}>
-                                    {recipient.name}
-                                </option>
-                            ))}
-                        </Select>
-                        {errors.referred_by && <p className="mt-1 text-sm text-red-600">{errors.referred_by}</p>}
-                    </div>
+                    <FormSection
+                        icon="bx-briefcase"
+                        title={t('global.employment_information')}
+                        accent="violet"
+                    >
+                        <FormField label={jobLabel} icon="bx-briefcase" error={errors.job}>
+                            <IconTextInput
+                                id="job"
+                                icon="bx-briefcase"
+                                value={form.job}
+                                onChange={(value) => updateField('job', value)}
+                            />
+                        </FormField>
+
+                        <FormField label={t('global.job_category')} icon="bx-category" required>
+                            <SegmentedControl
+                                value={form.job_category}
+                                onChange={(value) => handleJobCategoryChange(value as '0' | '1')}
+                                options={[
+                                    { value: '0', label: t('global.military'), icon: 'bx-shield' },
+                                    { value: '1', label: t('global.civilian'), icon: 'bx-buildings' },
+                                ]}
+                            />
+                        </FormField>
+
+                        {showMilitaryFields && (
+                            <FormField
+                                label={t('global.militery_type')}
+                                icon="bx-shield-quarter"
+                                error={errors.militery_type_id}
+                            >
+                                <IconSelect
+                                    id="militery_type_id"
+                                    icon="bx-shield-quarter"
+                                    value={form.militery_type_id}
+                                    onChange={(value) => updateField('militery_type_id', value)}
+                                >
+                                    <option value="">{t('global.select')}</option>
+                                    {formData.militeryTypes.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.name}
+                                        </option>
+                                    ))}
+                                </IconSelect>
+                            </FormField>
+                        )}
+
+                        {showRankField && (
+                            <FormField label={rankLabel} icon="bx-medal" error={errors.rank}>
+                                <IconTextInput
+                                    id="rank"
+                                    icon="bx-medal"
+                                    value={form.rank}
+                                    onChange={(value) => updateField('rank', value)}
+                                />
+                            </FormField>
+                        )}
+                    </FormSection>
                 )}
 
-                <div>
-                    <Label htmlFor="province_id">{t('global.province')}</Label>
-                    <Select
-                        id="province_id"
-                        required
-                        value={form.province_id}
-                        onChange={(event) => loadDistricts(event.target.value)}
-                    >
-                        <option value="">{t('global.select')}</option>
-                        {formData.provinces.map((province) => (
-                            <option key={province.id} value={province.id}>
-                                {province.name_dr}
-                            </option>
-                        ))}
-                    </Select>
-                    {errors.province_id && <p className="mt-1 text-sm text-red-600">{errors.province_id}</p>}
-                </div>
+                <FormSection
+                    icon="bx-map-pin"
+                    title={t('global.contact_information')}
+                    description={t('global.location_details')}
+                    accent="amber"
+                >
+                    <FormField label={t('global.phone')} icon="bx-phone" error={errors.phone}>
+                        <IconTextInput
+                            id="phone"
+                            icon="bx-phone"
+                            value={form.phone}
+                            onChange={(value) => updateField('phone', value)}
+                        />
+                    </FormField>
 
-                <div>
-                    <Label htmlFor="district_id">{t('global.district')}</Label>
-                    <Select
-                        id="district_id"
-                        required
-                        disabled={!form.province_id || loadingDistricts}
-                        value={form.district_id}
-                        onChange={(event) => updateField('district_id', event.target.value)}
-                    >
-                        <option value="">
-                            {loadingDistricts ? `${t('global.loading')}...` : t('global.select')}
-                        </option>
-                        {districts.map((district) => (
-                            <option key={district.id} value={district.id}>
-                                {district.name_dr}
-                            </option>
-                        ))}
-                    </Select>
-                    {errors.district_id && <p className="mt-1 text-sm text-red-600">{errors.district_id}</p>}
-                </div>
+                    <FormField label={t('global.age')} icon="bx-calendar" error={errors.age}>
+                        <AgeInput
+                            year={form.age_year}
+                            month={form.age_month}
+                            day={form.age_day}
+                            onChange={updateField}
+                            preview={ageValue || undefined}
+                        />
+                    </FormField>
 
-                <div>
-                    <Label htmlFor="registration_date">{t('global.registration_date')}</Label>
-                    <TextInput id="registration_date" readOnly value={formData.registrationDate} />
-                </div>
+                    <FormField label={t('global.gender')} icon="bx-male-female" required error={errors.gender}>
+                        {patientType === '2' ? (
+                            <IconSelect
+                                id="gender"
+                                icon="bx-male-female"
+                                required
+                                value={form.gender}
+                                onChange={(value) => updateField('gender', value)}
+                            >
+                                <option value="">{t('global.select')}</option>
+                                <option value="0">{t('global.male')}</option>
+                                <option value="1">{t('global.female')}</option>
+                            </IconSelect>
+                        ) : (
+                            <SegmentedControl
+                                value={form.gender}
+                                onChange={(value) => updateField('gender', value)}
+                                options={[
+                                    { value: '0', label: t('global.male'), icon: 'bx-male' },
+                                    { value: '1', label: t('global.female'), icon: 'bx-female' },
+                                ]}
+                            />
+                        )}
+                    </FormField>
+
+                    {patientType !== '2' && (
+                        <FormField
+                            label={t('global.referred_by')}
+                            icon="bx-user-check"
+                            required={patientType === '1'}
+                            error={errors.referred_by}
+                        >
+                            <IconSelect
+                                id="referred_by"
+                                icon="bx-user-check"
+                                required={patientType === '1'}
+                                value={form.referred_by}
+                                onChange={(value) => updateField('referred_by', value)}
+                            >
+                                <option value="">{t('global.select')}</option>
+                                {formData.recipients.map((recipient) => (
+                                    <option key={recipient.id} value={recipient.id}>
+                                        {recipient.name}
+                                    </option>
+                                ))}
+                            </IconSelect>
+                        </FormField>
+                    )}
+
+                    <FormField label={t('global.province')} icon="bx-map" required error={errors.province_id}>
+                        <IconSelect
+                            id="province_id"
+                            icon="bx-map"
+                            required
+                            value={form.province_id}
+                            onChange={loadDistricts}
+                        >
+                            <option value="">{t('global.select')}</option>
+                            {formData.provinces.map((province) => (
+                                <option key={province.id} value={province.id}>
+                                    {province.name_dr}
+                                </option>
+                            ))}
+                        </IconSelect>
+                    </FormField>
+
+                    <FormField label={t('global.district')} icon="bx-map-alt" required error={errors.district_id}>
+                        <IconSelect
+                            id="district_id"
+                            icon="bx-map-alt"
+                            required
+                            disabled={!form.province_id || loadingDistricts}
+                            value={form.district_id}
+                            onChange={(value) => updateField('district_id', value)}
+                        >
+                            <option value="">
+                                {loadingDistricts ? `${t('global.loading')}...` : t('global.select')}
+                            </option>
+                            {districts.map((district) => (
+                                <option key={district.id} value={district.id}>
+                                    {district.name_dr}
+                                </option>
+                            ))}
+                        </IconSelect>
+                    </FormField>
+                </FormSection>
 
                 <AppointmentSection
                     clinicType={formData.clinicType}
@@ -519,115 +542,125 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
                 />
 
                 {patientType === '2' && (
-                    <div className="col-span-full mt-2">
-                        <h5 className="mb-3 rounded-lg bg-blue-50 px-3 py-2 text-base font-semibold text-blue-900">
-                            {t('global.referred_person')}
-                        </h5>
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                            <div>
-                                <Label htmlFor="referral_name">{t('global.name')}</Label>
-                                <TextInput
-                                    id="referral_name"
-                                    required
-                                    value={form.referral_name}
-                                    onChange={(event) => updateField('referral_name', event.target.value)}
-                                />
-                                {errors.referral_name && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.referral_name}</p>
-                                )}
-                            </div>
-                            <div>
-                                <Label htmlFor="referral_last_name">{t('global.last_name')}</Label>
-                                <TextInput
-                                    id="referral_last_name"
-                                    value={form.referral_last_name}
-                                    onChange={(event) => updateField('referral_last_name', event.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="referral_father_name">{t('global.father_name')}</Label>
-                                <TextInput
-                                    id="referral_father_name"
-                                    value={form.referral_father_name}
-                                    onChange={(event) => updateField('referral_father_name', event.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="referral_nid">{t('global.nid')}</Label>
-                                <TextInput
-                                    id="referral_nid"
-                                    required
-                                    value={form.referral_nid}
-                                    onChange={(event) => updateField('referral_nid', event.target.value)}
-                                />
-                                {errors.referral_nid && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.referral_nid}</p>
-                                )}
-                            </div>
-                            <div>
-                                <Label htmlFor="referral_id_card">{t('global.id_card')}</Label>
-                                <TextInput
-                                    id="referral_id_card"
-                                    value={form.referral_id_card}
-                                    onChange={(event) => updateField('referral_id_card', event.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="referral_phone">{t('global.phone')}</Label>
-                                <TextInput
-                                    id="referral_phone"
-                                    value={form.referral_phone}
-                                    onChange={(event) => updateField('referral_phone', event.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="referral_recipient">{t('global.referred_by')}</Label>
-                                <Select
-                                    id="referral_recipient"
-                                    required
-                                    value={form.referral_recipient}
-                                    onChange={(event) => updateField('referral_recipient', event.target.value)}
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    {formData.recipients.map((recipient) => (
-                                        <option key={recipient.id} value={recipient.id}>
-                                            {recipient.name}
-                                        </option>
-                                    ))}
-                                </Select>
-                                {errors.referral_recipient && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.referral_recipient}</p>
-                                )}
-                            </div>
-                            <div>
-                                <Label htmlFor="relation_id">{t('global.relation')}</Label>
-                                <Select
-                                    id="relation_id"
-                                    required
-                                    value={form.relation_id}
-                                    onChange={(event) => updateField('relation_id', event.target.value)}
-                                >
-                                    <option value="">{t('global.select')}</option>
-                                    {formData.relations.map((relation) => (
-                                        <option key={relation.id} value={relation.id}>
-                                            {relation.name}
-                                        </option>
-                                    ))}
-                                </Select>
-                                {errors.relation_id && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.relation_id}</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <FormSection
+                        icon="bx-group"
+                        title={t('global.referred_person')}
+                        accent="emerald"
+                    >
+                        <FormField label={t('global.name')} icon="bx-user" required error={errors.referral_name}>
+                            <IconTextInput
+                                id="referral_name"
+                                icon="bx-user"
+                                required
+                                value={form.referral_name}
+                                onChange={(value) => updateField('referral_name', value)}
+                            />
+                        </FormField>
+
+                        <FormField label={t('global.last_name')} icon="bx-user" error={errors.referral_last_name}>
+                            <IconTextInput
+                                id="referral_last_name"
+                                icon="bx-user"
+                                value={form.referral_last_name}
+                                onChange={(value) => updateField('referral_last_name', value)}
+                            />
+                        </FormField>
+
+                        <FormField
+                            label={t('global.father_name')}
+                            icon="bx-male"
+                            error={errors.referral_father_name}
+                        >
+                            <IconTextInput
+                                id="referral_father_name"
+                                icon="bx-male"
+                                value={form.referral_father_name}
+                                onChange={(value) => updateField('referral_father_name', value)}
+                            />
+                        </FormField>
+
+                        <FormField label={t('global.nid')} icon="bx-fingerprint" required error={errors.referral_nid}>
+                            <IconTextInput
+                                id="referral_nid"
+                                icon="bx-fingerprint"
+                                required
+                                value={form.referral_nid}
+                                onChange={(value) => updateField('referral_nid', value)}
+                            />
+                        </FormField>
+
+                        <FormField label={t('global.id_card')} icon="bx-id-card" error={errors.referral_id_card}>
+                            <IconTextInput
+                                id="referral_id_card"
+                                icon="bx-id-card"
+                                value={form.referral_id_card}
+                                onChange={(value) => updateField('referral_id_card', value)}
+                            />
+                        </FormField>
+
+                        <FormField label={t('global.phone')} icon="bx-phone" error={errors.referral_phone}>
+                            <IconTextInput
+                                id="referral_phone"
+                                icon="bx-phone"
+                                value={form.referral_phone}
+                                onChange={(value) => updateField('referral_phone', value)}
+                            />
+                        </FormField>
+
+                        <FormField
+                            label={t('global.referred_by')}
+                            icon="bx-user-check"
+                            required
+                            error={errors.referral_recipient}
+                        >
+                            <IconSelect
+                                id="referral_recipient"
+                                icon="bx-user-check"
+                                required
+                                value={form.referral_recipient}
+                                onChange={(value) => updateField('referral_recipient', value)}
+                            >
+                                <option value="">{t('global.select')}</option>
+                                {formData.recipients.map((recipient) => (
+                                    <option key={recipient.id} value={recipient.id}>
+                                        {recipient.name}
+                                    </option>
+                                ))}
+                            </IconSelect>
+                        </FormField>
+
+                        <FormField label={t('global.relation')} icon="bx-link" required error={errors.relation_id}>
+                            <IconSelect
+                                id="relation_id"
+                                icon="bx-link"
+                                required
+                                value={form.relation_id}
+                                onChange={(value) => updateField('relation_id', value)}
+                            >
+                                <option value="">{t('global.select')}</option>
+                                {formData.relations.map((relation) => (
+                                    <option key={relation.id} value={relation.id}>
+                                        {relation.name}
+                                    </option>
+                                ))}
+                            </IconSelect>
+                        </FormField>
+                    </FormSection>
                 )}
 
-                <div className="col-span-full mt-4 flex gap-3">
-                    <Button type="submit" color="blue" disabled={submitting}>
-                        {submitting ? `${t('global.creating')}...` : t('global.create')}
-                    </Button>
-                    <Button color="gray" as="a" href={urls.back}>
-                        {t('global.back')}
+                <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+                    <Button type="submit" color="blue" disabled={submitting} className="min-w-[140px]">
+                        {submitting ? (
+                            <>
+                                <Spinner size="sm" className="me-2" />
+                                {t('global.creating')}...
+                            </>
+                        ) : (
+                            <>
+                                <i className="bx bx-plus-circle me-2 text-lg" />
+                                {t('global.create')}
+                            </>
+                        )}
                     </Button>
                 </div>
             </form>

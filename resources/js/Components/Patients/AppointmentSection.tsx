@@ -1,7 +1,8 @@
-import { Label, Select } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DoctorOption, NamedOption, PatientCreateUrls } from '../../types/patient';
+import FormSection from './ui/FormSection';
+import { FormField, IconSelect } from './ui/FormField';
 
 interface AppointmentSectionProps {
     clinicType: string | null;
@@ -64,68 +65,63 @@ export default function AppointmentSection({
     }, [clinicType, urls.doctorsByDepartment, values.appointment_clinic_type, values.appointment_department_id]);
 
     return (
-        <div className="col-span-full mt-4">
-            <h5 className="mb-3 rounded-lg bg-cyan-50 px-3 py-2 text-base font-semibold text-cyan-900">
-                {t('global.create_appointment')}
-            </h5>
-            <div className="grid gap-4 md:grid-cols-2">
-                {clinicType === 'both' && (
-                    <div>
-                        <Label htmlFor="appointment_clinic_type">{t('global.clinic_type')}</Label>
-                        <Select
-                            id="appointment_clinic_type"
-                            value={values.appointment_clinic_type}
-                            onChange={(event) => onChange('appointment_clinic_type', event.target.value)}
-                        >
-                            <option value="">{t('global.select')}...</option>
-                            <option value="hospital">{t('global.hospital')}</option>
-                            <option value="clinic">{t('global.clinic')}</option>
-                        </Select>
-                        {errors.appointment_clinic_type && (
-                            <p className="mt-1 text-sm text-red-600">{errors.appointment_clinic_type}</p>
-                        )}
-                    </div>
-                )}
-                <div>
-                    <Label htmlFor="appointment_department_id">{t('global.department')}</Label>
-                    <Select
-                        id="appointment_department_id"
-                        value={values.appointment_department_id}
-                        onChange={(event) => onChange('appointment_department_id', event.target.value)}
+        <FormSection
+            icon="bx-calendar-plus"
+            title={t('global.create_appointment')}
+            description={t('global.select_department')}
+            accent="cyan"
+        >
+            {clinicType === 'both' && (
+                <FormField label={t('global.clinic_type')} icon="bx-clinic" error={errors.appointment_clinic_type}>
+                    <IconSelect
+                        id="appointment_clinic_type"
+                        icon="bx-clinic"
+                        value={values.appointment_clinic_type}
+                        onChange={(value) => onChange('appointment_clinic_type', value)}
                     >
-                        <option value="">{t('global.select_department')}</option>
-                        {departments.map((department) => (
-                            <option key={department.id} value={department.id}>
-                                {department.name}
-                            </option>
-                        ))}
-                    </Select>
-                    {errors.appointment_department_id && (
-                        <p className="mt-1 text-sm text-red-600">{errors.appointment_department_id}</p>
-                    )}
-                </div>
-                <div>
-                    <Label htmlFor="appointment_doctor_id">{t('global.doctor')}</Label>
-                    <Select
-                        id="appointment_doctor_id"
-                        value={values.appointment_doctor_id}
-                        disabled={!values.appointment_department_id || loadingDoctors}
-                        onChange={(event) => onChange('appointment_doctor_id', event.target.value)}
-                    >
-                        <option value="">
-                            {loadingDoctors ? `${t('global.loading')}...` : t('global.select_doctor')}
+                        <option value="">{t('global.select')}...</option>
+                        <option value="hospital">{t('global.hospital')}</option>
+                        <option value="clinic">{t('global.clinic')}</option>
+                    </IconSelect>
+                </FormField>
+            )}
+            <FormField
+                label={t('global.department')}
+                icon="bx-building"
+                error={errors.appointment_department_id}
+            >
+                <IconSelect
+                    id="appointment_department_id"
+                    icon="bx-building"
+                    value={values.appointment_department_id}
+                    onChange={(value) => onChange('appointment_department_id', value)}
+                >
+                    <option value="">{t('global.select_department')}</option>
+                    {departments.map((department) => (
+                        <option key={department.id} value={department.id}>
+                            {department.name}
                         </option>
-                        {doctors.map((doctor) => (
-                            <option key={doctor.id} value={doctor.id}>
-                                {doctor.name}
-                            </option>
-                        ))}
-                    </Select>
-                    {errors.appointment_doctor_id && (
-                        <p className="mt-1 text-sm text-red-600">{errors.appointment_doctor_id}</p>
-                    )}
-                </div>
-            </div>
-        </div>
+                    ))}
+                </IconSelect>
+            </FormField>
+            <FormField label={t('global.doctor')} icon="bx-user-voice" error={errors.appointment_doctor_id}>
+                <IconSelect
+                    id="appointment_doctor_id"
+                    icon="bx-user-voice"
+                    value={values.appointment_doctor_id}
+                    disabled={!values.appointment_department_id || loadingDoctors}
+                    onChange={(value) => onChange('appointment_doctor_id', value)}
+                >
+                    <option value="">
+                        {loadingDoctors ? `${t('global.loading')}...` : t('global.select_doctor')}
+                    </option>
+                    {doctors.map((doctor) => (
+                        <option key={doctor.id} value={doctor.id}>
+                            {doctor.name}
+                        </option>
+                    ))}
+                </IconSelect>
+            </FormField>
+        </FormSection>
     );
 }

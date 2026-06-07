@@ -3,10 +3,11 @@ import { Alert, Card, Label, Spinner } from 'flowbite-react';
 import { useCallback, useState } from 'react';
 import HorizontalBarChart from '../Components/Dashboard/HorizontalBarChart';
 import LineTrendChart from '../Components/Dashboard/LineTrendChart';
-import StatCard from '../Components/Dashboard/StatCard';
 import WordCloudChart from '../Components/Dashboard/WordCloudChart';
 import DashboardLayout from '../Components/Layout/DashboardLayout';
+import BedCard from '../Components/ui/BedCard';
 import SearchableSelect from '../Components/ui/SearchableSelect';
+import StatCard from '../Components/ui/StatCard';
 import { useTranslation } from '../hooks/useTranslation';
 import { DashboardData } from '../types/dashboard';
 
@@ -61,7 +62,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             title: t('global.today_patients'),
             value: formatValue(dashboard.todayPatients),
             subtitle: t('global.today_registered_patients'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white"><i className="bx bx-user-plus text-2xl" /></span>,
+            iconClass: 'bx bx-user-plus',
+            iconBgClass: 'bg-blue-600',
             borderClass: 'border-blue-500',
             valueClass: 'text-blue-600',
         },
@@ -69,7 +71,8 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             title: t('global.emergency_today_patients'),
             value: formatValue(dashboard.totalEmergencyPatients),
             subtitle: `${t('global.emergency')} ${t('global.today_registered_patients')}`,
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white"><i className="bx bx-first-aid text-2xl" /></span>,
+            iconClass: 'bx bx-first-aid',
+            iconBgClass: 'bg-red-600',
             borderClass: 'border-red-500',
             valueClass: 'text-red-600',
         },
@@ -77,43 +80,50 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             title: t('global.all_patients'),
             value: formatValue(dashboard.totalPatients),
             subtitle: t('global.all_registered_patients'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white"><i className="bx bx-user text-2xl" /></span>,
+            iconClass: 'bx bx-user',
+            iconBgClass: 'bg-blue-600',
         },
         {
             title: t('global.all_appointments'),
             value: formatValue(dashboard.totalAppointments),
             subtitle: t('global.all_registered_appointments'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white"><i className="bx bx-history text-2xl" /></span>,
+            iconClass: 'bx bx-history',
+            iconBgClass: 'bg-green-600',
         },
         {
             title: t('global.consultations'),
             value: formatValue(dashboard.totalConsultations),
             subtitle: t('global.all_registered_consultations'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-600 text-white"><i className="bx bx-chat text-2xl" /></span>,
+            iconClass: 'bx bx-chat',
+            iconBgClass: 'bg-cyan-600',
         },
         {
             title: t('global.all_hospitalized_patients'),
             value: formatValue(dashboard.totalInPatientAdmissions),
             subtitle: t('global.all_registered_hospitalizations'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-white"><i className="bx bx-bed text-2xl" /></span>,
+            iconClass: 'bx bx-bed',
+            iconBgClass: 'bg-yellow-500',
         },
         {
             title: t('global.checkups'),
             value: formatValue(dashboard.totalCheckups),
             subtitle: t('global.all_registered_checkups'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white"><i className="bx bx-hard-hat text-2xl" /></span>,
+            iconClass: 'bx bx-hard-hat',
+            iconBgClass: 'bg-red-600',
         },
         {
             title: t('global.all_icu_patients'),
             value: formatValue(dashboard.totalIcuAdmissions),
             subtitle: t('global.all_registered_icu'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white"><i className="bx bx-tv text-2xl" /></span>,
+            iconClass: 'bx bx-tv',
+            iconBgClass: 'bg-gray-800',
         },
         {
             title: t('global.all_ccu_patients'),
             value: formatValue(dashboard.totalCcuAdmissions),
             subtitle: t('global.all_registered_ccu'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-600 text-white"><i className="bx bx-heart-circle text-2xl" /></span>,
+            iconClass: 'bx bx-heart-circle',
+            iconBgClass: 'bg-cyan-600',
             borderClass: 'border-cyan-500',
             valueClass: 'text-cyan-600',
         },
@@ -121,19 +131,22 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
             title: t('global.all_prescriptions'),
             value: formatValue(dashboard.totalPrescriptions),
             subtitle: t('global.all_registered_prescriptions'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-600 text-white"><i className="bx bx-receipt text-2xl" /></span>,
+            iconClass: 'bx bx-receipt',
+            iconBgClass: 'bg-purple-600',
         },
         {
             title: t('global.all_operations'),
             value: formatValue(dashboard.totalOperations),
             subtitle: t('global.all_registered_operations'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-600 text-white"><i className="bx bx-cut text-2xl" /></span>,
+            iconClass: 'bx bx-cut',
+            iconBgClass: 'bg-pink-600',
         },
         {
             title: t('global.all_physiotherapy_procedures'),
             value: formatValue(dashboard.totalPhysiotherapyProcedures),
             subtitle: t('global.all_registered_physiotherapy_procedures'),
-            icon: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500 text-white"><i className="bx bx-spa text-2xl" /></span>,
+            iconClass: 'bx bx-spa',
+            iconBgClass: 'bg-teal-500',
         },
     ];
 
@@ -184,17 +197,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
 
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                 {bedCards.map((card) => (
-                    <Card key={card.title} className={card.className}>
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{card.title}</h4>
-                                <p className="mt-3 text-4xl font-bold text-gray-900 dark:text-white">{card.value}</p>
-                            </div>
-                            <span className={`rounded-lg p-2 ${card.badgeClass}`}>
-                                <i className="bx bx-bed text-2xl text-white" />
-                            </span>
-                        </div>
-                    </Card>
+                    <BedCard key={card.title} {...card} />
                 ))}
             </div>
 

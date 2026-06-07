@@ -316,12 +316,61 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
-    Route::get('/recipients', [RecipientController::class, 'index'])->name('recipients.index');
-    Route::get('/relations', [RelationController::class, 'index'])->name('relations.index');
-    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
-    Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
-    Route::get('/floors', [FloorController::class, 'index'])->name('floors.index');
-    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+    Route::prefix('recipients')->name('recipients.')->group(function () {
+        Route::get('/', [RecipientController::class, 'index'])->name('index');
+        Route::get('/create', [RecipientController::class, 'create'])->name('create');
+        Route::post('/', [RecipientController::class, 'store'])->name('store');
+        Route::get('/{recipient}/edit', [RecipientController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{recipient}', [RecipientController::class, 'update'])->name('update');
+        Route::delete('/{recipient}', [RecipientController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('relations')->name('relations.')->group(function () {
+        Route::get('/', [RelationController::class, 'index'])->name('index');
+        Route::get('/create', [RelationController::class, 'create'])->name('create');
+        Route::post('/', [RelationController::class, 'store'])->name('store');
+        Route::get('/{relation}/edit', [RelationController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{relation}', [RelationController::class, 'update'])->name('update');
+        Route::delete('/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('departments')->name('departments.')->group(function () {
+        Route::get('/', [DepartmentController::class, 'index'])->name('index');
+        Route::get('/create', [DepartmentController::class, 'create'])->name('create');
+        Route::post('/', [DepartmentController::class, 'store'])->name('store');
+        Route::get('/{department}', [DepartmentController::class, 'show'])->name('show');
+        Route::get('/{department}/edit', [DepartmentController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{department}', [DepartmentController::class, 'update'])->name('update');
+        Route::delete('/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('sections')->name('sections.')->group(function () {
+        Route::get('/', [SectionController::class, 'index'])->name('index');
+        Route::get('/create', [SectionController::class, 'create'])->name('create');
+        Route::post('/', [SectionController::class, 'store'])->name('store');
+        Route::get('/{section}/edit', [SectionController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{section}', [SectionController::class, 'update'])->name('update');
+        Route::delete('/{section}', [SectionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('floors')->name('floors.')->group(function () {
+        Route::get('/', [FloorController::class, 'index'])->name('index');
+        Route::get('/create', [FloorController::class, 'create'])->name('create');
+        Route::post('/', [FloorController::class, 'store'])->name('store');
+        Route::get('/{floor}/edit', [FloorController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{floor}', [FloorController::class, 'update'])->name('update');
+        Route::delete('/{floor}', [FloorController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('rooms')->name('rooms.')->group(function () {
+        Route::get('/', [RoomController::class, 'index'])->name('index');
+        Route::get('/create', [RoomController::class, 'create'])->name('create');
+        Route::post('/', [RoomController::class, 'store'])->name('store');
+        Route::get('/{room}', [RoomController::class, 'show'])->name('show');
+        Route::get('/{room}/edit', [RoomController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{room}', [RoomController::class, 'update'])->name('update');
+        Route::delete('/{room}', [RoomController::class, 'destroy'])->name('destroy');
+    });
     Route::get('/beds', [BedController::class, 'index'])->name('beds.index');
     Route::get('/militery-types', [MiliteryTypeController::class, 'index'])->name('militery-types.index');
     Route::get('/procedure-types', [ProcedureTypeController::class, 'index'])->name('procedure-types.index');

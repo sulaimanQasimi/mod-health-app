@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\V1\AnesthesiaController;
+use App\Http\Controllers\V1\AppointmentSections\AdviceController;
+use App\Http\Controllers\V1\AppointmentSections\DiagnosisController;
 use App\Http\Controllers\V1\AppointmentController;
 use App\Http\Controllers\V1\BackupController;
 use App\Http\Controllers\V1\BedController;
@@ -94,6 +96,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/doctor', [AppointmentController::class, 'doctor'])->name('doctor');
         Route::get('/completed', [AppointmentController::class, 'completed'])->name('completed');
         Route::get('/report', [AppointmentController::class, 'report'])->name('report');
+        Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
+        Route::prefix('{appointment}')->name('sections.')->group(function () {
+            Route::get('advice', [AdviceController::class, 'index'])->name('advice.index');
+            Route::post('advice', [AdviceController::class, 'store'])->name('advice.store');
+            Route::put('advice/{advice}', [AdviceController::class, 'update'])->name('advice.update');
+            Route::delete('advice/{advice}', [AdviceController::class, 'destroy'])->name('advice.destroy');
+
+            Route::get('diagnosis', [DiagnosisController::class, 'index'])->name('diagnosis.index');
+            Route::post('diagnosis', [DiagnosisController::class, 'store'])->name('diagnosis.store');
+            Route::put('diagnosis/{diagnose}', [DiagnosisController::class, 'update'])->name('diagnosis.update');
+            Route::delete('diagnosis/{diagnose}', [DiagnosisController::class, 'destroy'])->name('diagnosis.destroy');
+        });
         Route::get('/{appointment}/edit', [AppointmentController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{appointment}', [AppointmentController::class, 'update'])->name('update');
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');

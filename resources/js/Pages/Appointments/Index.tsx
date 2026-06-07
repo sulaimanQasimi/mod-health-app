@@ -389,13 +389,13 @@ export default function IndexAppointment({
                                         <TableCell align="center">
                                             <div className="flex items-center justify-center gap-1">
                                                 {appointment.permissions.view && (
-                                                    <a
+                                                    <Link
                                                         href={`${urls.show}/${appointment.id}`}
                                                         className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
                                                         title={t('global.view')}
                                                     >
                                                         <i className="bx bx-expand text-lg" />
-                                                    </a>
+                                                    </Link>
                                                 )}
                                                 {appointment.permissions.history && appointment.patient_id && (
                                                     <a

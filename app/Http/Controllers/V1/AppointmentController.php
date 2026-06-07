@@ -125,12 +125,66 @@ class AppointmentController extends Controller
             'urls' => [
                 'index' => route('react.appointments.index'),
                 'trashed' => route('react.appointments.trashed'),
-                'show' => url('/appointments/show'),
+                'show' => url('/react/appointments'),
                 'edit' => url('/react/appointments'),
                 'destroy' => url('/react/appointments'),
                 'patientHistory' => url('/patients/history'),
                 'patientsIndex' => route('react.patients.index'),
                 'patientsCreate' => route('react.patients.create'),
+            ],
+        ]);
+    }
+
+    public function show(Request $request, Appointment $appointment): Response
+    {
+        $this->authorize('view', $appointment);
+
+        $appointment->load([
+            'patient:id,name,last_name,father_name,id_card',
+            'doctor:id,name',
+            'department:id,name',
+            'processedBy:id,name,last_name',
+        ]);
+
+        $patient = $appointment->patient;
+        $previousDiagnoses = $patient?->diagnoses()->orderByDesc('created_at')->get() ?? collect();
+
+        return Inertia::render('Appointments/Show', [
+            'appointment' => [
+                'id' => $appointment->id,
+                'patient_id' => $appointment->patient_id,
+                'patient_name' => $patient?->name,
+                'patient_last_name' => $patient?->last_name,
+                'id_card' => $patient?->id_card,
+                'doctor_id' => $appointment->doctor_id,
+                'doctor_name' => $appointment->doctor?->name,
+                'department_name' => $appointment->department?->name,
+                'date' => $appointment->date ? verta($appointment->date)->format('Y-m-d') : null,
+                'time' => $appointment->time,
+                'is_completed' => (bool) $appointment->is_completed,
+                'processed_by' => (bool) $appointment->processed_by,
+            ],
+            'patientHistory' => [
+                'primary' => $previousDiagnoses->where('type', 0)->values()->map(fn ($d) => [
+                    'description' => $d->description,
+                    'date' => $d->created_at ? verta($d->created_at)->format('Y-m-d') : null,
+                ])->all(),
+                'final' => $previousDiagnoses->where('type', 1)->values()->map(fn ($d) => [
+                    'description' => $d->description,
+                    'date' => $d->created_at ? verta($d->created_at)->format('Y-m-d') : null,
+                ])->all(),
+            ],
+            'permissions' => [
+                'updateStatus' => $request->user()->can('updateStatus', $appointment),
+                'edit' => $request->user()->can('update', $appointment),
+                'printToken' => ! $appointment->is_completed,
+            ],
+            'urls' => [
+                'index' => route('react.appointments.index'),
+                'edit' => route('react.appointments.edit', $appointment),
+                'printToken' => url("/appointments/{$appointment->id}/printToken"),
+                'changeStatus' => route('appointments.changeStatus', $appointment),
+                'legacyShow' => url("/appointments/show/{$appointment->id}"),
             ],
         ]);
     }
@@ -160,7 +214,7 @@ class AppointmentController extends Controller
                 'index' => route('react.appointments.index'),
                 'update' => route('react.appointments.update', $appointment),
                 'destroy' => route('react.appointments.destroy', $appointment),
-                'show' => url("/appointments/show/{$appointment->id}"),
+                'show' => route('react.appointments.show', $appointment),
             ],
         ]);
     }

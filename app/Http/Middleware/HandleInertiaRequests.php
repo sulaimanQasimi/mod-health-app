@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\SidebarMenuService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -35,9 +37,30 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $locale = session('language', 'dr');
+        $user = $request->user();
+
         return [
             ...parent::share($request),
-            //
+            'locale' => $locale,
+            'direction' => $locale === 'en' ? 'ltr' : 'rtl',
+            'translations' => Lang::get('global', [], $locale),
+            'sidebarMenu' => app(SidebarMenuService::class)->build($request),
+            'currentRoute' => $request->route()?->getName(),
+            'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name_dr ?? $user->name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar ? asset('storage/'.$user->avatar) : asset('assets/img/avatars/1.png'),
+                ] : null,
+            ],
+            'csrfToken' => csrf_token(),
+            'urls' => [
+                'changeLanguage' => url('change_language'),
+                'profile' => route('users.profile'),
+                'logout' => route('logout'),
+            ],
         ];
     }
 }

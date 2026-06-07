@@ -1401,7 +1401,7 @@ Route::middleware('auth')->prefix('api/disease-categories')->name('api.disease_c
 
 // Register route should be disabled be default.
 Auth::routes(['register' => false]);
-Route::group(['prefix' => 'react'], function () {
+Route::group(['prefix' => 'react', 'as' => 'react.'], function () {
     include __DIR__ . '/react.php';
 });
 // Depots routes

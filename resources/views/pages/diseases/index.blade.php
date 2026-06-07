@@ -128,7 +128,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="diseaseModalTitle">{{ localize('global.create_disease') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="diseaseModalCloseBtn"></button>
             </div>
             <div class="modal-body">
                 <div class="row g-3">
@@ -162,7 +162,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="diseaseModalCancelBtn">{{ localize('global.cancel') }}</button>
                 <button type="button" class="btn btn-primary" id="diseaseSaveBtn" onclick="DiseasesApp.saveDisease()">
                     <span class="spinner-border spinner-border-sm me-1 d-none" id="diseaseSaveSpinner"></span>
                     <span id="diseaseSaveText">{{ localize('global.create') }}</span>
@@ -178,7 +178,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="diseaseCategoryModalTitle">{{ localize('global.create_disease_category') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="diseaseCategoryModalCloseBtn"></button>
             </div>
             <div class="modal-body">
                 <label class="form-label">{{ localize('global.name') }} <span class="text-danger">*</span></label>
@@ -186,7 +186,7 @@
                 <div class="invalid-feedback d-block" data-error="name"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ localize('global.cancel') }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="diseaseCategoryModalCancelBtn">{{ localize('global.cancel') }}</button>
                 <button type="button" class="btn btn-primary" id="diseaseCategorySaveBtn" onclick="DiseasesApp.saveCategory()">
                     <span class="spinner-border spinner-border-sm me-1 d-none" id="diseaseCategorySaveSpinner"></span>
                     <span id="diseaseCategorySaveText">{{ localize('global.create') }}</span>
@@ -227,8 +227,19 @@ const DiseasesApp = (function () {
     let currentPage = 1;
     let filters = { search: '', disease_category_id: '' };
 
-    const diseaseModal = new bootstrap.Modal(document.getElementById('diseaseModal'));
-    const categoryModal = new bootstrap.Modal(document.getElementById('diseaseCategoryModal'));
+    // Modal initialization moved to DOMContentLoaded to fix close button not working (modals must exist in DOM first)
+    let diseaseModal = null;
+    let categoryModal = null;
+    function initModals() {
+        diseaseModal = new bootstrap.Modal(document.getElementById('diseaseModal'));
+        categoryModal = new bootstrap.Modal(document.getElementById('diseaseCategoryModal'));
+
+        // Ensure close buttons manually close modals (defensive!)
+        document.getElementById('diseaseModalCloseBtn').addEventListener('click', () => diseaseModal.hide());
+        document.getElementById('diseaseModalCancelBtn').addEventListener('click', () => diseaseModal.hide());
+        document.getElementById('diseaseCategoryModalCloseBtn').addEventListener('click', () => categoryModal.hide());
+        document.getElementById('diseaseCategoryModalCancelBtn').addEventListener('click', () => categoryModal.hide());
+    }
 
     function apiHeaders(json = true) {
         const h = {
@@ -247,7 +258,7 @@ const DiseasesApp = (function () {
             <div id="${id}" class="toast align-items-center text-white ${bg} border-0" role="alert">
                 <div class="d-flex">
                     <div class="toast-body">${escapeHtml(message)}</div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>`);
         const el = document.getElementById(id);
@@ -574,6 +585,8 @@ const DiseasesApp = (function () {
     }
 
     function init() {
+        initModals();
+
         document.getElementById('diseaseFilterForm').addEventListener('submit', e => {
             e.preventDefault();
             filters.search = document.getElementById('filterSearch').value.trim();

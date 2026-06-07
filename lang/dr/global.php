@@ -4584,4 +4584,5 @@ return [
     "registration_accepted_successfully" => "ثبت پذیرفته شد. می‌توانید ادامه دهید.",
     "registration_cannot_be_accepted" => "این ثبت قابل پذیرش نیست.",
     "accept" => "پذیرش",
+    "is_nephrologist"=>"نفرولوژست",
 ];

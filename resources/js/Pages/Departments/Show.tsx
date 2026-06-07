@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card } from 'flowbite-react';
 import { useState } from 'react';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -27,7 +28,7 @@ export default function ShowDepartment({
     return (
         <DashboardLayout>
             <Head title={department.name} />
-            <div className="mx-auto max-w-3xl">
+            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.departments')}

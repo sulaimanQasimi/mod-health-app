@@ -1,13 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface BedItem {
     id: number;
@@ -59,15 +63,12 @@ export default function IndexBeds({
         [urls.index],
     );
 
-    const summaryLabel =
-        beds.meta.from && beds.meta.to
-            ? `${t('global.showing')} ${beds.meta.from}-${beds.meta.to} ${t('global.of')} ${beds.meta.total}`
-            : `${beds.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(beds.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('global.beds')} />
-            <div className="mx-auto max-w-6xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.beds')}
@@ -103,12 +104,8 @@ export default function IndexBeds({
                             <Label>{t('global.room')}</Label>
                             <SearchableSelect
                                 value={filters.room_id}
-                                onChange={(value) => {
-                                    const next = { ...filters, room_id: value };
-                                    setFilters(next);
-                                    applyFilters(next);
-                                }}
-                                options={filterOptions.rooms.map((room) => ({
+                                onChange={(value) => setFilters({ ...filters, room_id: value })}
+                                options={(filterOptions?.rooms ?? []).map((room) => ({
                                     value: String(room.id),
                                     label: room.name,
                                 }))}
@@ -119,31 +116,28 @@ export default function IndexBeds({
                             <Label>{t('global.status')}</Label>
                             <SearchableSelect
                                 value={filters.is_occupied}
-                                onChange={(value) => {
-                                    const next = { ...filters, is_occupied: value };
-                                    setFilters(next);
-                                    applyFilters(next);
-                                }}
+                                onChange={(value) => setFilters({ ...filters, is_occupied: value })}
                             >
                                 <option value="">{t('global.all')}</option>
                                 <option value="0">{t('global.available')}</option>
                                 <option value="1">{t('global.occupied')}</option>
                             </SearchableSelect>
                         </div>
-                        <div className="flex items-end gap-2">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : t('global.filter')}
-                            </Button>
-                            <Button
-                                type="button"
-                                color="light"
-                                disabled={processing}
-                                onClick={() =>
-                                    applyFilters({ search: '', room_id: '', is_occupied: '', per_page: '15' })
-                                }
-                            >
-                                {t('global.reset')}
-                            </Button>
+                        <div className="flex items-end xl:col-span-4">
+                            <SettingsFilterActions
+                                processing={processing}
+                                showClear
+                                onClear={() => {
+                                    const empty = {
+                                        search: '',
+                                        room_id: '',
+                                        is_occupied: '',
+                                        per_page: filters.per_page,
+                                    };
+                                    setFilters(empty);
+                                    applyFilters(empty);
+                                }}
+                            />
                         </div>
                     </form>
                     {beds.data.length > 0 ? (
@@ -175,7 +169,7 @@ export default function IndexBeds({
                                                 {permissions.edit && (
                                                     <Link
                                                         href={`${urls.edit}/${item.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                        className={settingsActionClasses.edit}
                                                     >
                                                         <i className="bx bx-edit text-lg" />
                                                     </Link>
@@ -190,7 +184,7 @@ export default function IndexBeds({
                                                                 });
                                                             }
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                        className={settingsActionClasses.delete}
                                                     >
                                                         <i className="bx bx-trash text-lg" />
                                                     </button>
@@ -202,15 +196,9 @@ export default function IndexBeds({
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="py-12 text-center text-sm text-gray-500">
-                            {t('global.no_results_found')}
-                        </p>
+                        <SettingsEmptyState />
                     )}
-                    {beds.links.length > 0 && (
-                        <ul className="mt-6 inline-flex -space-x-px text-sm">
-                            {beds.links.map((link, index) => renderPaginationLink(link, index))}
-                        </ul>
-                    )}
+                    <SettingsPagination links={beds.links} />
                 </Card>
             </div>
         </DashboardLayout>

@@ -1,12 +1,16 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface MiliteryTypeItem {
     id: number;
@@ -27,6 +31,7 @@ export default function IndexMiliteryTypes({
     const { t } = useTranslation();
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     useEffect(() => setFilters(serverFilters), [serverFilters]);
 
@@ -47,15 +52,12 @@ export default function IndexMiliteryTypes({
         [urls.index],
     );
 
-    const summaryLabel =
-        militeryTypes.meta.from && militeryTypes.meta.to
-            ? `${t('global.showing')} ${militeryTypes.meta.from}-${militeryTypes.meta.to} ${t('global.of')} ${militeryTypes.meta.total}`
-            : `${militeryTypes.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(militeryTypes.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('global.militery_types')} />
-            <div className="mx-auto max-w-5xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.simple}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.militery_types')}
@@ -77,20 +79,16 @@ export default function IndexMiliteryTypes({
                             event.preventDefault();
                             applyFilters(filters);
                         }}
-                        className="mb-6 flex gap-4"
+                        className="mb-6 flex flex-wrap items-end gap-4"
                     >
-                        <div className="flex-1">
+                        <div className="min-w-[220px] flex-1">
                             <Label>{t('global.search')}</Label>
                             <TextInput
                                 value={filters.search}
                                 onChange={(event) => setFilters({ ...filters, search: event.target.value })}
                             />
                         </div>
-                        <div className="flex items-end">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : t('global.search')}
-                            </Button>
-                        </div>
+                        <SettingsFilterActions processing={processing} />
                     </form>
                     {militeryTypes.data.length > 0 ? (
                         <Table>
@@ -111,7 +109,7 @@ export default function IndexMiliteryTypes({
                                                 {permissions.edit && (
                                                     <Link
                                                         href={`${urls.edit}/${item.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                        className={settingsActionClasses.edit}
                                                     >
                                                         <i className="bx bx-edit text-lg" />
                                                     </Link>
@@ -119,14 +117,17 @@ export default function IndexMiliteryTypes({
                                                 {permissions.delete && (
                                                     <button
                                                         type="button"
+                                                        disabled={deletingId === item.id}
                                                         onClick={() => {
                                                             if (window.confirm(t('global.are_you_sure'))) {
+                                                                setDeletingId(item.id);
                                                                 router.delete(`${urls.destroy}/${item.id}`, {
                                                                     preserveScroll: true,
+                                                                    onFinish: () => setDeletingId(null),
                                                                 });
                                                             }
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                        className={settingsActionClasses.delete}
                                                     >
                                                         <i className="bx bx-trash text-lg" />
                                                     </button>
@@ -138,15 +139,9 @@ export default function IndexMiliteryTypes({
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="py-12 text-center text-sm text-gray-500">
-                            {t('global.no_results_found')}
-                        </p>
+                        <SettingsEmptyState />
                     )}
-                    {militeryTypes.links.length > 0 && (
-                        <ul className="mt-6 inline-flex -space-x-px text-sm">
-                            {militeryTypes.links.map((link, index) => renderPaginationLink(link, index))}
-                        </ul>
-                    )}
+                    <SettingsPagination links={militeryTypes.links} />
                 </Card>
             </div>
         </DashboardLayout>

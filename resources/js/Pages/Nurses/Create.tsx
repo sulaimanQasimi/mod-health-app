@@ -1,9 +1,11 @@
-import { Head, Link } from '@inertiajs/react';
-import { Button, Card } from 'flowbite-react';
+import { Head } from '@inertiajs/react';
+import { Card } from 'flowbite-react';
 import NurseForm from '../../Components/Nurses/NurseForm';
+import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, SettingsFormUrls } from '../../types/settings';
+import { SETTINGS_WIDE_FORM_WIDTH } from '../../utils/settingsUi';
 
 interface NurseUserOption {
     id: number;
@@ -21,28 +23,17 @@ export default function CreateNurse({
     const { t } = useTranslation();
     return (
         <DashboardLayout>
-            <Head title={t('global.add_nurse')} />
-            <div className="mx-auto max-w-7xl">
+            <Head title={t('global.create')} />
+            <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH}`}>
                 <Card className="shadow-sm">
-                    <div className="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-md">
-                                <i className="bx bx-user-plus text-xl" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                                    {t('global.add_nurse')}
-                                </h1>
-                                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                                    {t('global.nurses')}
-                                </p>
-                            </div>
-                        </div>
-                        <Button color="light" as={Link} href={urls.back} className="w-fit">
-                            <i className="bx bx-arrow-back me-2 text-lg" />
-                            {t('global.back')}
-                        </Button>
-                    </div>
+                    <SettingsPageHeader
+                        title={t('global.create')}
+                        subtitle={t('global.nurses')}
+                        icon="bx-user-plus"
+                        accent="from-pink-500 to-rose-600"
+                        backHref={urls.back}
+                        backLabel={t('global.back')}
+                    />
                     <NurseForm mode="create" formData={formData} urls={urls} />
                 </Card>
             </div>

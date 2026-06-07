@@ -1,13 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, Spinner, Tabs, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface DiseaseItem {
     id: number;
@@ -33,6 +37,12 @@ interface DiseaseUrls {
     destroyCategory: string;
 }
 
+const EMPTY_FILTERS = {
+    search: '',
+    disease_category_id: '',
+    per_page: '15',
+};
+
 export default function IndexDiseases({
     diseases,
     categories,
@@ -52,6 +62,7 @@ export default function IndexDiseases({
     const [activeTab, setActiveTab] = useState(0);
     const [filters, setFilters] = useState(serverFilters);
     const [processing, setProcessing] = useState(false);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
     const [categoryName, setCategoryName] = useState('');
     const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
     const [editingCategoryName, setEditingCategoryName] = useState('');
@@ -119,15 +130,12 @@ export default function IndexDiseases({
         });
     };
 
-    const summaryLabel =
-        diseases.meta.from && diseases.meta.to
-            ? `${t('global.showing')} ${diseases.meta.from}-${diseases.meta.to} ${t('global.of')} ${diseases.meta.total}`
-            : `${diseases.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(diseases.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('global.diseases')} />
-            <div className="mx-auto max-w-7xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.diseases')}
@@ -139,7 +147,7 @@ export default function IndexDiseases({
                             permissions.create ? (
                                 <Button color="blue" as={Link} href={urls.create}>
                                     <i className="bx bx-plus me-2 text-lg" />
-                                    {t('global.create_disease')}
+                                    {t('global.create')}
                                 </Button>
                             ) : undefined
                         }
@@ -147,7 +155,7 @@ export default function IndexDiseases({
 
                     <Tabs
                         aria-label={t('global.diseases')}
-                        style="underline"
+                        variant="underline"
                         onActiveTabChange={(tab) => setActiveTab(tab)}
                     >
                         <Tabs.Item active={activeTab === 0} title={t('global.diseases')}>
@@ -156,7 +164,7 @@ export default function IndexDiseases({
                                     event.preventDefault();
                                     applyFilters(filters);
                                 }}
-                                className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+                                className="mb-6 grid gap-4 md:grid-cols-2"
                             >
                                 <div>
                                     <Label>{t('global.search')}</Label>
@@ -172,22 +180,22 @@ export default function IndexDiseases({
                                     <Label>{t('global.disease_category')}</Label>
                                     <SearchableSelect
                                         value={filters.disease_category_id}
-                                        onChange={(value) => {
-                                            const next = { ...filters, disease_category_id: value };
-                                            setFilters(next);
-                                            applyFilters(next);
-                                        }}
-                                        options={(filterOptions.diseaseCategories ?? []).map((category) => ({
+                                        onChange={(value) =>
+                                            setFilters({ ...filters, disease_category_id: value })
+                                        }
+                                        options={(filterOptions?.diseaseCategories ?? []).map((category) => ({
                                             value: String(category.id),
                                             label: category.name,
                                         }))}
                                         placeholder={t('global.all')}
                                     />
                                 </div>
-                                <div className="flex items-end">
-                                    <Button type="submit" color="blue" disabled={processing}>
-                                        {processing ? <Spinner size="sm" /> : t('global.search')}
-                                    </Button>
+                                <div className="md:col-span-2">
+                                    <SettingsFilterActions
+                                        processing={processing}
+                                        showClear
+                                        onClear={() => applyFilters(EMPTY_FILTERS)}
+                                    />
                                 </div>
                             </form>
 
@@ -218,7 +226,7 @@ export default function IndexDiseases({
                                                         {permissions.edit && (
                                                             <Link
                                                                 href={`${urls.edit}/${item.id}/edit`}
-                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                                className={settingsActionClasses.edit}
                                                             >
                                                                 <i className="bx bx-edit text-lg" />
                                                             </Link>
@@ -226,17 +234,23 @@ export default function IndexDiseases({
                                                         {permissions.delete && (
                                                             <button
                                                                 type="button"
+                                                                disabled={deletingId === item.id}
                                                                 onClick={() => {
                                                                     if (
                                                                         window.confirm(t('global.are_you_sure'))
                                                                     ) {
+                                                                        setDeletingId(item.id);
                                                                         router.delete(
                                                                             `${urls.destroy}/${item.id}`,
-                                                                            { preserveScroll: true },
+                                                                            {
+                                                                                preserveScroll: true,
+                                                                                onFinish: () =>
+                                                                                    setDeletingId(null),
+                                                                            },
                                                                         );
                                                                     }
                                                                 }}
-                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                                className={settingsActionClasses.delete}
                                                             >
                                                                 <i className="bx bx-trash text-lg" />
                                                             </button>
@@ -248,30 +262,26 @@ export default function IndexDiseases({
                                     </TableBody>
                                 </Table>
                             ) : (
-                                <p className="py-12 text-center text-sm text-gray-500">
-                                    {t('global.no_results_found')}
-                                </p>
+                                <SettingsEmptyState />
                             )}
-                            {diseases.links.length > 0 && (
-                                <ul className="mt-6 inline-flex -space-x-px text-sm">
-                                    {diseases.links.map((link, index) => renderPaginationLink(link, index))}
-                                </ul>
-                            )}
+                            <SettingsPagination links={diseases.links} />
                         </Tabs.Item>
 
                         <Tabs.Item active={activeTab === 1} title={t('global.disease_categories')}>
                             {permissions.create && (
-                                <div className="mb-6 flex flex-wrap gap-2">
-                                    <TextInput
-                                        className="min-w-[220px] flex-1"
-                                        value={editingCategoryId ? editingCategoryName : categoryName}
-                                        onChange={(event) =>
-                                            editingCategoryId
-                                                ? setEditingCategoryName(event.target.value)
-                                                : setCategoryName(event.target.value)
-                                        }
-                                        placeholder={t('global.name')}
-                                    />
+                                <div className="mb-6 flex flex-wrap items-end gap-2">
+                                    <div className="min-w-[220px] flex-1">
+                                        <Label>{t('global.name')}</Label>
+                                        <TextInput
+                                            value={editingCategoryId ? editingCategoryName : categoryName}
+                                            onChange={(event) =>
+                                                editingCategoryId
+                                                    ? setEditingCategoryName(event.target.value)
+                                                    : setCategoryName(event.target.value)
+                                            }
+                                            placeholder={t('global.name')}
+                                        />
+                                    </div>
                                     <Button
                                         color="blue"
                                         disabled={categoryProcessing}
@@ -282,7 +292,7 @@ export default function IndexDiseases({
                                         ) : editingCategoryId ? (
                                             t('global.update')
                                         ) : (
-                                            t('global.create_disease_category')
+                                            t('global.create')
                                         )}
                                     </Button>
                                     {editingCategoryId && (
@@ -325,7 +335,7 @@ export default function IndexDiseases({
                                                                     setEditingCategoryId(category.id);
                                                                     setEditingCategoryName(category.name);
                                                                 }}
-                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                                className={settingsActionClasses.edit}
                                                             >
                                                                 <i className="bx bx-edit text-lg" />
                                                             </button>
@@ -335,7 +345,7 @@ export default function IndexDiseases({
                                                                 type="button"
                                                                 disabled={categoryProcessing}
                                                                 onClick={() => handleDeleteCategory(category)}
-                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                                className={settingsActionClasses.delete}
                                                             >
                                                                 <i className="bx bx-trash text-lg" />
                                                             </button>
@@ -347,9 +357,7 @@ export default function IndexDiseases({
                                     </TableBody>
                                 </Table>
                             ) : (
-                                <p className="py-12 text-center text-sm text-gray-500">
-                                    {t('global.no_results_found')}
-                                </p>
+                                <SettingsEmptyState />
                             )}
                         </Tabs.Item>
                     </Tabs>

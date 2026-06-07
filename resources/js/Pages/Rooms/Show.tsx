@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -33,7 +34,7 @@ export default function ShowRoom({
     return (
         <DashboardLayout>
             <Head title={room.name} />
-            <div className="mx-auto max-w-3xl">
+            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.room_details')}

@@ -1,13 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface OperationTypeItem {
     id: number;
@@ -59,15 +63,12 @@ export default function IndexOperationTypes({
         [urls.index],
     );
 
-    const summaryLabel =
-        operationTypes.meta.from && operationTypes.meta.to
-            ? `${t('global.showing')} ${operationTypes.meta.from}-${operationTypes.meta.to} ${t('global.of')} ${operationTypes.meta.total}`
-            : `${operationTypes.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(operationTypes.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('global.operation_types')} />
-            <div className="mx-auto max-w-7xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.operation_types')}
@@ -102,12 +103,8 @@ export default function IndexOperationTypes({
                             <Label>{t('global.branch')}</Label>
                             <SearchableSelect
                                 value={filters.branch_id}
-                                onChange={(value) => {
-                                    const next = { ...filters, branch_id: value };
-                                    setFilters(next);
-                                    applyFilters(next);
-                                }}
-                                options={filterOptions.branches.map((branch) => ({
+                                onChange={(value) => setFilters({ ...filters, branch_id: value })}
+                                options={(filterOptions?.branches ?? []).map((branch) => ({
                                     value: String(branch.id),
                                     label: branch.name,
                                 }))}
@@ -118,22 +115,29 @@ export default function IndexOperationTypes({
                             <Label>{t('global.department')}</Label>
                             <SearchableSelect
                                 value={filters.department_id}
-                                onChange={(value) => {
-                                    const next = { ...filters, department_id: value };
-                                    setFilters(next);
-                                    applyFilters(next);
-                                }}
-                                options={filterOptions.departments.map((department) => ({
+                                onChange={(value) => setFilters({ ...filters, department_id: value })}
+                                options={(filterOptions?.departments ?? []).map((department) => ({
                                     value: String(department.id),
                                     label: department.name,
                                 }))}
                                 placeholder={t('global.all')}
                             />
                         </div>
-                        <div className="flex items-end">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : t('global.search')}
-                            </Button>
+                        <div className="flex items-end xl:col-span-4">
+                            <SettingsFilterActions
+                                processing={processing}
+                                showClear
+                                onClear={() => {
+                                    const empty = {
+                                        search: '',
+                                        branch_id: '',
+                                        department_id: '',
+                                        per_page: filters.per_page,
+                                    };
+                                    setFilters(empty);
+                                    applyFilters(empty);
+                                }}
+                            />
                         </div>
                     </form>
                     {operationTypes.data.length > 0 ? (
@@ -159,7 +163,7 @@ export default function IndexOperationTypes({
                                                 {permissions.edit && (
                                                     <Link
                                                         href={`${urls.edit}/${item.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                        className={settingsActionClasses.edit}
                                                     >
                                                         <i className="bx bx-edit text-lg" />
                                                     </Link>
@@ -174,7 +178,7 @@ export default function IndexOperationTypes({
                                                                 });
                                                             }
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                        className={settingsActionClasses.delete}
                                                     >
                                                         <i className="bx bx-trash text-lg" />
                                                     </button>
@@ -186,15 +190,9 @@ export default function IndexOperationTypes({
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="py-12 text-center text-sm text-gray-500">
-                            {t('global.no_results_found')}
-                        </p>
+                        <SettingsEmptyState />
                     )}
-                    {operationTypes.links.length > 0 && (
-                        <ul className="mt-6 inline-flex -space-x-px text-sm">
-                            {operationTypes.links.map((link, index) => renderPaginationLink(link, index))}
-                        </ul>
-                    )}
+                    <SettingsPagination links={operationTypes.links} />
                 </Card>
             </div>
         </DashboardLayout>

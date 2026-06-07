@@ -16,7 +16,7 @@ class OperationTypeController extends Controller
 {
     use PaginatesInertiaIndex;
 
-    private const FILTER_KEYS = ['search', 'per_page'];
+    private const FILTER_KEYS = ['search', 'branch_id', 'department_id', 'per_page'];
 
     public function index(Request $request): Response
     {
@@ -26,6 +26,14 @@ class OperationTypeController extends Controller
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%'.$request->search.'%');
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         $paginator = $this->paginateQuery($query->orderBy('name'), $request);
@@ -40,6 +48,10 @@ class OperationTypeController extends Controller
                 'department_name' => $operationType->department?->name,
             ]),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
+            'filterOptions' => [
+                'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
+                'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
+            ],
             'permissions' => $this->settingsPermissions(
                 $request->user(),
                 'create-operation-types',

@@ -1,7 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
+import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
+import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
 
 interface ShowVitalSignProps {
     vitalSign: {
@@ -32,35 +34,29 @@ function DetailField({ label, value }: { label: string; value: string }) {
 
 export default function ShowVitalSign({ vitalSign, urls }: ShowVitalSignProps) {
     const { t } = useTranslation();
+    const title = `${t('global.vital_sign')} #${vitalSign.id}`;
 
     return (
         <DashboardLayout>
-            <Head title={`${t('global.vital_sign')} #${vitalSign.id}`} />
-            <div className="mx-auto max-w-4xl">
+            <Head title={title} />
+            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
                 <Card className="shadow-sm">
-                    <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 text-white shadow-md">
-                                <i className="bx bx-heart-circle text-2xl" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {t('global.vital_sign')} #{vitalSign.id}
-                                </h1>
-                                {vitalSign.vital_sign_type_name && (
-                                    <Badge color="info" className="mt-2">
-                                        {vitalSign.vital_sign_type_name}
-                                    </Badge>
-                                )}
-                            </div>
-                        </div>
-                        <Button color="light" as={Link} href={urls.index} className="w-fit">
-                            <i className="bx bx-arrow-back me-2 text-lg" />
-                            {t('global.back')}
-                        </Button>
-                    </div>
+                    <SettingsPageHeader
+                        title={title}
+                        subtitle={vitalSign.vital_sign_type_name ?? t('global.vital_signs')}
+                        icon="bx-heart-circle"
+                        accent="from-red-500 to-orange-600"
+                        backHref={urls.index}
+                        backLabel={t('global.back')}
+                    />
 
-                    <dl className="mt-6 grid gap-3 sm:grid-cols-2">
+                    {vitalSign.vital_sign_type_name && (
+                        <div className="mb-6">
+                            <Badge color="info">{vitalSign.vital_sign_type_name}</Badge>
+                        </div>
+                    )}
+
+                    <dl className="grid gap-3 sm:grid-cols-2">
                         <DetailField label={t('global.id')} value={String(vitalSign.id)} />
                         <DetailField
                             label={t('global.vital_sign_type')}

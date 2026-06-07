@@ -1,9 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
+import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SettingsPermissions } from '../../types/settings';
+import { SETTINGS_WIDE_FORM_WIDTH } from '../../utils/settingsUi';
 
 interface NurseDetail {
     id: number;
@@ -76,55 +78,50 @@ export default function ShowNurse({ nurse, permissions, urls }: ShowNurseProps) 
     return (
         <DashboardLayout>
             <Head title={nurse.full_name} />
-            <div className="mx-auto max-w-7xl space-y-6">
+            <div className={`mx-auto ${SETTINGS_WIDE_FORM_WIDTH}`}>
                 <Card className="shadow-sm">
-                    <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-md">
-                                <i className="bx bx-user text-2xl" />
+                    <SettingsPageHeader
+                        title={nurse.full_name}
+                        subtitle={nurse.employee_id}
+                        icon="bx-user"
+                        accent="from-pink-500 to-rose-600"
+                        backHref={urls.index}
+                        backLabel={t('global.back')}
+                        action={
+                            <div className="flex gap-2">
+                                {permissions.edit && (
+                                    <Button color="warning" as={Link} href={urls.edit}>
+                                        <i className="bx bx-edit me-2" />
+                                        {t('global.edit')}
+                                    </Button>
+                                )}
+                                {permissions.delete && (
+                                    <Button color="failure" onClick={handleDelete} disabled={deleting}>
+                                        <i className="bx bx-trash me-2" />
+                                        {t('global.delete')}
+                                    </Button>
+                                )}
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {nurse.full_name}
-                                </h1>
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {nurse.employment_status && (
-                                        <Badge
-                                            color={
-                                                nurse.employment_status === 'active'
-                                                    ? 'success'
-                                                    : nurse.employment_status === 'on_leave'
-                                                      ? 'warning'
-                                                      : 'gray'
-                                            }
-                                        >
-                                            {statusLabel()}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            <Button color="light" as={Link} href={urls.index}>
-                                <i className="bx bx-arrow-back me-2 text-lg" />
-                                {t('global.back')}
-                            </Button>
-                            {permissions.edit && (
-                                <Button color="warning" as={Link} href={urls.edit}>
-                                    <i className="bx bx-edit me-2 text-lg" />
-                                    {t('global.edit')}
-                                </Button>
-                            )}
-                            {permissions.delete && (
-                                <Button color="failure" onClick={handleDelete} disabled={deleting}>
-                                    <i className="bx bx-trash me-2 text-lg" />
-                                    {t('global.delete')}
-                                </Button>
-                            )}
-                        </div>
-                    </div>
+                        }
+                    />
 
-                    <div className="mt-6">
+                    {nurse.employment_status && (
+                        <div className="mb-6">
+                            <Badge
+                                color={
+                                    nurse.employment_status === 'active'
+                                        ? 'success'
+                                        : nurse.employment_status === 'on_leave'
+                                          ? 'warning'
+                                          : 'gray'
+                                }
+                            >
+                                {statusLabel()}
+                            </Badge>
+                        </div>
+                    )}
+
+                    <div>
                         <h2 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
                             {t('global.user_account')}
                         </h2>

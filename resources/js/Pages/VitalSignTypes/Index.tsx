@@ -1,12 +1,16 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface VitalSignTypeItem {
     id: number;
@@ -49,15 +53,12 @@ export default function IndexVitalSignTypes({
         [urls.index],
     );
 
-    const summaryLabel =
-        vitalSignTypes.meta.from && vitalSignTypes.meta.to
-            ? `${t('global.showing')} ${vitalSignTypes.meta.from}-${vitalSignTypes.meta.to} ${t('global.of')} ${vitalSignTypes.meta.total}`
-            : `${vitalSignTypes.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(vitalSignTypes.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('global.vital_sign_types')} />
-            <div className="mx-auto max-w-6xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.simple}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.vital_sign_types')}
@@ -79,20 +80,16 @@ export default function IndexVitalSignTypes({
                             event.preventDefault();
                             applyFilters(filters);
                         }}
-                        className="mb-6 flex gap-4"
+                        className="mb-6 flex flex-wrap items-end gap-4"
                     >
-                        <div className="flex-1">
+                        <div className="min-w-[220px] flex-1">
                             <Label>{t('global.search')}</Label>
                             <TextInput
                                 value={filters.search}
                                 onChange={(event) => setFilters({ ...filters, search: event.target.value })}
                             />
                         </div>
-                        <div className="flex items-end">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : t('global.search')}
-                            </Button>
-                        </div>
+                        <SettingsFilterActions processing={processing} />
                     </form>
                     {vitalSignTypes.data.length > 0 ? (
                         <Table>
@@ -128,7 +125,7 @@ export default function IndexVitalSignTypes({
                                                 {permissions.view && (
                                                     <Link
                                                         href={`${urls.show}/${item.id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50"
+                                                        className={settingsActionClasses.view}
                                                     >
                                                         <i className="bx bx-show text-lg" />
                                                     </Link>
@@ -136,7 +133,7 @@ export default function IndexVitalSignTypes({
                                                 {permissions.edit && (
                                                     <Link
                                                         href={`${urls.edit}/${item.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                        className={settingsActionClasses.edit}
                                                     >
                                                         <i className="bx bx-edit text-lg" />
                                                     </Link>
@@ -151,7 +148,7 @@ export default function IndexVitalSignTypes({
                                                                 });
                                                             }
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                        className={settingsActionClasses.delete}
                                                     >
                                                         <i className="bx bx-trash text-lg" />
                                                     </button>
@@ -163,15 +160,9 @@ export default function IndexVitalSignTypes({
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="py-12 text-center text-sm text-gray-500">
-                            {t('global.no_vital_signs_found')}
-                        </p>
+                        <SettingsEmptyState message={t('global.no_vital_signs_found')} />
                     )}
-                    {vitalSignTypes.links.length > 0 && (
-                        <ul className="mt-6 inline-flex -space-x-px text-sm">
-                            {vitalSignTypes.links.map((link, index) => renderPaginationLink(link, index))}
-                        </ul>
-                    )}
+                    <SettingsPagination links={vitalSignTypes.links} />
                 </Card>
             </div>
         </DashboardLayout>

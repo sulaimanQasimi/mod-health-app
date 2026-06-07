@@ -1,12 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
+import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface NurseListItem {
     id: number;
@@ -28,6 +33,16 @@ interface NurseFilters {
     employment_status: string;
     per_page: string;
 }
+
+const EMPTY_FILTERS: NurseFilters = {
+    search: '',
+    department_id: '',
+    branch_id: '',
+    gender: '',
+    shift: '',
+    employment_status: '',
+    per_page: '15',
+};
 
 export default function IndexNurses({
     nurses,
@@ -66,10 +81,7 @@ export default function IndexNurses({
         [urls.index],
     );
 
-    const summaryLabel =
-        nurses.meta.from && nurses.meta.to
-            ? `${t('global.showing')} ${nurses.meta.from}-${nurses.meta.to} ${t('global.of')} ${nurses.meta.total}`
-            : `${nurses.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(nurses.meta, t);
 
     const shiftLabel = (value: string | null) => {
         if (value === 'morning') return t('global.morning_shift');
@@ -87,27 +99,23 @@ export default function IndexNurses({
     return (
         <DashboardLayout>
             <Head title={t('global.nurses')} />
-            <div className="mx-auto max-w-7xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <Card className="shadow-sm">
-                    <div className="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-md">
-                                <i className="bx bx-user text-xl" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                                    {t('global.nurses')}
-                                </h1>
-                                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{summaryLabel}</p>
-                            </div>
-                        </div>
-                        {permissions.create && (
-                            <Button color="blue" as={Link} href={urls.create} className="w-fit">
-                                <i className="bx bx-plus me-2 text-lg" />
-                                {t('global.add_nurse')}
-                            </Button>
-                        )}
-                    </div>
+                    <SettingsPageHeader
+                        title={t('global.nurses')}
+                        subtitle={summaryLabel}
+                        icon="bx-user"
+                        accent="from-pink-500 to-rose-600"
+                        backLabel={t('global.back')}
+                        action={
+                            permissions.create ? (
+                                <Button color="blue" as={Link} href={urls.create}>
+                                    <i className="bx bx-plus me-2 text-lg" />
+                                    {t('global.create')}
+                                </Button>
+                            ) : undefined
+                        }
+                    />
 
                     <form
                         onSubmit={(event: FormEvent) => {
@@ -205,29 +213,14 @@ export default function IndexNurses({
                                 </SearchableSelect>
                             </div>
                         </div>
-                        <div className="flex gap-2">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : t('global.apply_filters')}
-                            </Button>
-                            <Button
-                                type="button"
-                                color="light"
-                                disabled={processing}
-                                onClick={() =>
-                                    applyFilters({
-                                        search: '',
-                                        department_id: '',
-                                        branch_id: '',
-                                        gender: '',
-                                        shift: '',
-                                        employment_status: '',
-                                        per_page: '15',
-                                    })
-                                }
-                            >
-                                {t('global.clear_all')}
-                            </Button>
-                        </div>
+                        <SettingsFilterActions
+                            processing={processing}
+                            showClear
+                            onClear={() => {
+                                setFilters(EMPTY_FILTERS);
+                                applyFilters(EMPTY_FILTERS);
+                            }}
+                        />
                     </form>
 
                     {nurses.data.length > 0 ? (
@@ -280,7 +273,7 @@ export default function IndexNurses({
                                                 {permissions.view && (
                                                     <Link
                                                         href={`${urls.show}/${nurse.id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50"
+                                                        className={settingsActionClasses.view}
                                                     >
                                                         <i className="bx bx-show text-lg" />
                                                     </Link>
@@ -288,7 +281,7 @@ export default function IndexNurses({
                                                 {permissions.edit && (
                                                     <Link
                                                         href={`${urls.edit}/${nurse.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
+                                                        className={settingsActionClasses.edit}
                                                     >
                                                         <i className="bx bx-edit text-lg" />
                                                     </Link>
@@ -306,7 +299,7 @@ export default function IndexNurses({
                                                                 });
                                                             }
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                        className={settingsActionClasses.delete}
                                                     >
                                                         <i className="bx bx-trash text-lg" />
                                                     </button>
@@ -318,15 +311,9 @@ export default function IndexNurses({
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="py-12 text-center text-sm text-gray-500">
-                            {t('global.no_nurses_found')}
-                        </p>
+                        <SettingsEmptyState message={t('global.no_nurses_found')} />
                     )}
-                    {nurses.links.length > 0 && (
-                        <ul className="mt-6 inline-flex -space-x-px text-sm">
-                            {nurses.links.map((link, index) => renderPaginationLink(link, index))}
-                        </ul>
-                    )}
+                    <SettingsPagination links={nurses.links} />
                 </Card>
             </div>
         </DashboardLayout>

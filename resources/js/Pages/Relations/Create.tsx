@@ -2,6 +2,7 @@ import { Head } from '@inertiajs/react';
 import { Card } from 'flowbite-react';
 import RelationForm from '../../Components/Relations/RelationForm';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import { SETTINGS_FORM_WIDTH } from '../../utils/settingsUi';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SettingsFormUrls } from '../../types/settings';
@@ -11,7 +12,7 @@ export default function CreateRelation({ urls }: { urls: SettingsFormUrls }) {
     return (
         <DashboardLayout>
             <Head title={t('global.relations')} />
-            <div className="mx-auto max-w-2xl">
+            <div className={`mx-auto ${SETTINGS_FORM_WIDTH}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.create')}

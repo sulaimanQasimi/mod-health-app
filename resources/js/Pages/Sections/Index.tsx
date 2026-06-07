@@ -1,13 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Button, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface SectionItem {
     id: number;
@@ -47,14 +51,16 @@ export default function IndexSections({
         [urls.index],
     );
 
+    const summaryLabel = buildPaginationSummary(sections.meta, t);
+
     return (
         <DashboardLayout>
             <Head title={t('global.sections')} />
-            <div className="mx-auto max-w-6xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.simple}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.sections')}
-                        subtitle={`${sections.meta.total} ${t('global.results')}`}
+                        subtitle={summaryLabel}
                         icon="bx-grid-alt"
                         accent="from-cyan-500 to-teal-600"
                         backLabel={t('global.back')}
@@ -85,67 +91,76 @@ export default function IndexSections({
                             <Label>{t('global.department')}</Label>
                             <SearchableSelect
                                 value={filters.department_id}
-                                onChange={(value) => {
-                                    const next = { ...filters, department_id: value };
-                                    setFilters(next);
-                                    applyFilters(next);
-                                }}
-                                options={filterOptions.departments.map((d) => ({
+                                onChange={(value) => setFilters({ ...filters, department_id: value })}
+                                options={(filterOptions?.departments ?? []).map((d) => ({
                                     value: String(d.id),
                                     label: d.name,
                                 }))}
                                 placeholder={t('global.all')}
                             />
                         </div>
+                        <div className="md:col-span-2">
+                            <SettingsFilterActions
+                                processing={processing}
+                                showClear
+                                onClear={() => {
+                                    const empty = { search: '', department_id: '', per_page: filters.per_page };
+                                    setFilters(empty);
+                                    applyFilters(empty);
+                                }}
+                            />
+                        </div>
                     </form>
-                    <Table>
-                        <TableHead>
-                            <TableRow variant="header">
-                                <TableHeader>#</TableHeader>
-                                <TableHeader>{t('global.name')}</TableHeader>
-                                <TableHeader>{t('global.department')}</TableHeader>
-                                <TableHeader align="center">{t('global.actions')}</TableHeader>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {sections.data.map((item, i) => (
-                                <TableRow key={item.id}>
-                                    <TableCell>{(sections.meta.from ?? 1) + i}</TableCell>
-                                    <TableCell>{item.name}</TableCell>
-                                    <TableCell muted>{item.department_name ?? '—'}</TableCell>
-                                    <TableCell align="center">
-                                        <div className="flex justify-center gap-1">
-                                            {permissions.edit && (
-                                                <Link
-                                                    href={`${urls.edit}/${item.id}/edit`}
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50"
-                                                >
-                                                    <i className="bx bx-edit text-lg" />
-                                                </Link>
-                                            )}
-                                            {permissions.delete && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        window.confirm(t('global.are_you_sure')) &&
-                                                        router.delete(`${urls.destroy}/${item.id}`, {
-                                                            preserveScroll: true,
-                                                        })
-                                                    }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
-                                                >
-                                                    <i className="bx bx-trash text-lg" />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </TableCell>
+                    {sections.data.length > 0 ? (
+                        <Table>
+                            <TableHead>
+                                <TableRow variant="header">
+                                    <TableHeader>#</TableHeader>
+                                    <TableHeader>{t('global.name')}</TableHeader>
+                                    <TableHeader>{t('global.department')}</TableHeader>
+                                    <TableHeader align="center">{t('global.actions')}</TableHeader>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    <ul className="mt-6 inline-flex -space-x-px text-sm">
-                        {sections.links.map((link, i) => renderPaginationLink(link, i))}
-                    </ul>
+                            </TableHead>
+                            <TableBody>
+                                {sections.data.map((item, i) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell>{(sections.meta.from ?? 1) + i}</TableCell>
+                                        <TableCell>{item.name}</TableCell>
+                                        <TableCell muted>{item.department_name ?? '—'}</TableCell>
+                                        <TableCell align="center">
+                                            <div className="flex justify-center gap-1">
+                                                {permissions.edit && (
+                                                    <Link
+                                                        href={`${urls.edit}/${item.id}/edit`}
+                                                        className={settingsActionClasses.edit}
+                                                    >
+                                                        <i className="bx bx-edit text-lg" />
+                                                    </Link>
+                                                )}
+                                                {permissions.delete && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            window.confirm(t('global.are_you_sure')) &&
+                                                            router.delete(`${urls.destroy}/${item.id}`, {
+                                                                preserveScroll: true,
+                                                            })
+                                                        }
+                                                        className={settingsActionClasses.delete}
+                                                    >
+                                                        <i className="bx bx-trash text-lg" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <SettingsEmptyState />
+                    )}
+                    <SettingsPagination links={sections.links} />
                 </Card>
             </div>
         </DashboardLayout>

@@ -1,13 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
+import { Badge, Card, Label, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import SettingsEmptyState from '../../Components/Settings/SettingsEmptyState';
+import SettingsFilterActions from '../../Components/Settings/SettingsFilterActions';
 import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
+import SettingsPagination from '../../Components/Settings/SettingsPagination';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { OptionItem, PaginatedResult, SettingsPermissions } from '../../types/settings';
-import { renderPaginationLink } from '../../utils/pagination';
+import { buildPaginationSummary } from '../../utils/pagination';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface VitalSignItem {
     id: number;
@@ -63,15 +67,12 @@ export default function IndexVitalSigns({
         [urls.index],
     );
 
-    const summaryLabel =
-        vitalSigns.meta.from && vitalSigns.meta.to
-            ? `${t('global.showing')} ${vitalSigns.meta.from}-${vitalSigns.meta.to} ${t('global.of')} ${vitalSigns.meta.total}`
-            : `${vitalSigns.meta.total} ${t('global.results')}`;
+    const summaryLabel = buildPaginationSummary(vitalSigns.meta, t);
 
     return (
         <DashboardLayout>
             <Head title={t('global.vital_signs')} />
-            <div className="mx-auto max-w-7xl">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.wide}`}>
                 <Card className="shadow-sm">
                     <SettingsPageHeader
                         title={t('global.vital_signs')}
@@ -91,12 +92,8 @@ export default function IndexVitalSigns({
                             <Label>{t('global.vital_sign_type')}</Label>
                             <SearchableSelect
                                 value={filters.vital_sign_type_id}
-                                onChange={(value) => {
-                                    const next = { ...filters, vital_sign_type_id: value };
-                                    setFilters(next);
-                                    applyFilters(next);
-                                }}
-                                options={filterOptions.vitalSignTypes.map((type) => ({
+                                onChange={(value) => setFilters({ ...filters, vital_sign_type_id: value })}
+                                options={(filterOptions?.vitalSignTypes ?? []).map((type) => ({
                                     value: String(type.id),
                                     label: type.name,
                                 }))}
@@ -128,26 +125,22 @@ export default function IndexVitalSigns({
                                 onChange={(event) => setFilters({ ...filters, search: event.target.value })}
                             />
                         </div>
-                        <div className="flex items-end gap-2 xl:col-span-4">
-                            <Button type="submit" color="blue" disabled={processing}>
-                                {processing ? <Spinner size="sm" /> : t('global.apply_filters')}
-                            </Button>
-                            <Button
-                                type="button"
-                                color="light"
-                                disabled={processing}
-                                onClick={() =>
-                                    applyFilters({
+                        <div className="xl:col-span-4">
+                            <SettingsFilterActions
+                                processing={processing}
+                                showClear
+                                onClear={() => {
+                                    const empty = {
                                         search: '',
                                         vital_sign_type_id: '',
                                         date_from: '',
                                         date_to: '',
-                                        per_page: '15',
-                                    })
-                                }
-                            >
-                                {t('global.clear_all')}
-                            </Button>
+                                        per_page: filters.per_page,
+                                    };
+                                    setFilters(empty);
+                                    applyFilters(empty);
+                                }}
+                            />
                         </div>
                     </form>
 
@@ -180,7 +173,7 @@ export default function IndexVitalSigns({
                                                 {permissions.view && (
                                                     <Link
                                                         href={`${urls.show}/${item.id}`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50"
+                                                        className={settingsActionClasses.view}
                                                     >
                                                         <i className="bx bx-show text-lg" />
                                                     </Link>
@@ -195,7 +188,7 @@ export default function IndexVitalSigns({
                                                                 });
                                                             }
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                                                        className={settingsActionClasses.delete}
                                                     >
                                                         <i className="bx bx-trash text-lg" />
                                                     </button>
@@ -207,15 +200,9 @@ export default function IndexVitalSigns({
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="py-12 text-center text-sm text-gray-500">
-                            {t('global.no_vital_signs_found')}
-                        </p>
+                        <SettingsEmptyState message={t('global.no_vital_signs_found')} />
                     )}
-                    {vitalSigns.links.length > 0 && (
-                        <ul className="mt-6 inline-flex -space-x-px text-sm">
-                            {vitalSigns.links.map((link, index) => renderPaginationLink(link, index))}
-                        </ul>
-                    )}
+                    <SettingsPagination links={vitalSigns.links} />
                 </Card>
             </div>
         </DashboardLayout>

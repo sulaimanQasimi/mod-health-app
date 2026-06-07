@@ -1,10 +1,12 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { useState } from 'react';
+import SettingsPageHeader from '../../Components/Settings/SettingsPageHeader';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SettingsPermissions } from '../../types/settings';
+import { settingsActionClasses, SETTINGS_INDEX_WIDTH } from '../../utils/settingsUi';
 
 interface VitalSignSummary {
     id: number;
@@ -56,43 +58,34 @@ export default function ShowVitalSignType({
     return (
         <DashboardLayout>
             <Head title={vitalSignType.name} />
-            <div className="mx-auto max-w-6xl space-y-6">
+            <div className={`mx-auto ${SETTINGS_INDEX_WIDTH.simple} space-y-6`}>
                 <Card className="shadow-sm">
-                    <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 text-white shadow-md">
-                                <i className="bx bx-heart text-2xl" />
+                    <SettingsPageHeader
+                        title={vitalSignType.name}
+                        subtitle={`${vitalSignType.vital_signs_count} ${t('global.vital_signs')}`}
+                        icon="bx-heart"
+                        accent="from-red-500 to-pink-600"
+                        backHref={urls.index}
+                        backLabel={t('global.back')}
+                        action={
+                            <div className="flex gap-2">
+                                {permissions.edit && (
+                                    <Button color="warning" as={Link} href={urls.edit}>
+                                        <i className="bx bx-edit me-2" />
+                                        {t('global.edit')}
+                                    </Button>
+                                )}
+                                {permissions.delete && (
+                                    <Button color="failure" onClick={handleDelete} disabled={deleting}>
+                                        <i className="bx bx-trash me-2" />
+                                        {t('global.delete')}
+                                    </Button>
+                                )}
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {vitalSignType.name}
-                                </h1>
-                                <Badge color="info" className="mt-2">
-                                    {vitalSignType.vital_signs_count} {t('global.vital_signs')}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            <Button color="light" as={Link} href={urls.index}>
-                                <i className="bx bx-arrow-back me-2 text-lg" />
-                                {t('global.back')}
-                            </Button>
-                            {permissions.edit && (
-                                <Button color="warning" as={Link} href={urls.edit}>
-                                    <i className="bx bx-edit me-2 text-lg" />
-                                    {t('global.edit')}
-                                </Button>
-                            )}
-                            {permissions.delete && (
-                                <Button color="failure" onClick={handleDelete} disabled={deleting}>
-                                    <i className="bx bx-trash me-2 text-lg" />
-                                    {t('global.delete')}
-                                </Button>
-                            )}
-                        </div>
-                    </div>
+                        }
+                    />
 
-                    <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         <DetailField label={t('global.id')} value={String(vitalSignType.id)} />
                         <DetailField label={t('global.name')} value={vitalSignType.name} />
                         <DetailField
@@ -132,7 +125,7 @@ export default function ShowVitalSignType({
                                             {item.show_url && (
                                                 <Link
                                                     href={item.show_url}
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50"
+                                                    className={settingsActionClasses.view}
                                                 >
                                                     <i className="bx bx-show text-lg" />
                                                 </Link>

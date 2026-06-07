@@ -1,5 +1,16 @@
 import { Link } from '@inertiajs/react';
-import { PaginationLink } from '../types/settings';
+import { PaginationLink, PaginationMeta } from '../types/settings';
+
+export function buildPaginationSummary(
+    meta: PaginationMeta,
+    t: (key: string) => string,
+): string {
+    if (meta.from && meta.to) {
+        return `${t('global.showing')} ${meta.from}-${meta.to} ${t('global.of')} ${meta.total}`;
+    }
+
+    return `${meta.total} ${t('global.results')}`;
+}
 
 export function decodePaginationLabel(label: string): string {
     return label

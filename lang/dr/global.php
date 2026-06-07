@@ -4109,6 +4109,7 @@ return [
     'search_by_name_contact_specialization' => 'جستجوی با نام، شماره تماس و تخصص',
     'doctor_created_successfully' => 'دکتر با موفقیت ایجاد شد',
     'doctor_updated_successfully' => 'دکتر با موفقیت بروزرسانی شد',
+    'doctor_deleted_successfully' => 'دکتر با موفقیت حذف شد',
     'completed_date' => 'تاریخ تکمیل',
     'doctor_assigned_successfully' => 'دکتر با موفقیت اختصاص داده شد',
     'search_by_card' => 'جستجو به اساس کارت',

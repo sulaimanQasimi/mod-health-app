@@ -22,10 +22,24 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
 
+        $userId = $this->route('user')?->id ?? $this->route('user');
+
         return [
             'name' => 'required|max:120',
             'last_name' => 'required|max:120',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email,'.$userId,
+            'password' => 'nullable|min:6|confirmed',
+            'branch_id' => 'required|exists:branches,id',
+            'department_id' => 'required|exists:departments,id',
+            'section_id' => 'required|exists:sections,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'clinic_type' => 'nullable|in:hospital,clinic,both',
+            'is_doctor' => 'nullable|boolean',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'roles' => 'nullable|array',
+            'roles.*' => 'integer|exists:roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'integer|exists:permissions,id',
         ];
     }
 

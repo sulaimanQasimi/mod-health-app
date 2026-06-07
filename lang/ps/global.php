@@ -3806,6 +3806,7 @@ return [
 'search_by_name_contact_specialization' => 'لټون د نوم، تماس شمېره او تخصص له مخې',
 'doctor_created_successfully' => 'ډاکټر په بریالیتوب سره جوړ شو',
 'doctor_updated_successfully' => 'ډاکټر په بریالیتوب سره تازه شو',
+'doctor_deleted_successfully' => 'ډاکټر په بریالیتوب سره حذف شو',
 'completed_date' => 'د تکمیل نېټه',
 'doctor_assigned_successfully' => 'ډاکټر په بریالیتوب سره اختصاص شو',
 'search_by_card' => 'د کارت له مخې لټون',

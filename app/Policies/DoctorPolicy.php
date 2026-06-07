@@ -70,4 +70,9 @@ class DoctorPolicy
         return $user->hasRole(['super_admin', 'admin', 'hr']) || 
                $user->hasPermissionTo('force-delete-doctors');
     }
+
+    public function toggleStatus(User $user, Doctor $doctor): bool
+    {
+        return $this->update($user, $doctor);
+    }
 }

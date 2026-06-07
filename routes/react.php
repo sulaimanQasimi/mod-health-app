@@ -137,7 +137,10 @@ Route::middleware(['auth'])->group(function () {
             Route::put('advice/{advice}', [AdviceController::class, 'update'])->name('advice.update');
             Route::delete('advice/{advice}', [AdviceController::class, 'destroy'])->name('advice.destroy');
 
+            Route::get('lab-tests/meta', [LabTestController::class, 'meta'])->name('lab-tests.meta');
             Route::get('lab-tests', [LabTestController::class, 'index'])->name('lab-tests.index');
+            Route::post('lab-tests', [LabTestController::class, 'store'])->name('lab-tests.store');
+            Route::get('lab-tests/{registration}', [LabTestController::class, 'show'])->name('lab-tests.show');
             Route::get('hospitalization-checkups', [HospitalizationCheckupController::class, 'index'])->name('hospitalization-checkups.index');
             Route::get('consultations', [AppointmentConsultationController::class, 'index'])->name('consultations.index');
             Route::delete('consultations/{consultation}', [AppointmentConsultationController::class, 'destroy'])->name('consultations.destroy');

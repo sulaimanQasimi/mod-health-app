@@ -1,0 +1,538 @@
+import {
+    Badge,
+    Button,
+    Label,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    Spinner,
+    Textarea,
+    TextInput,
+} from 'flowbite-react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { usePage } from '@inertiajs/react';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '../../ui/Table';
+import SearchableSelect from '../../ui/SearchableSelect';
+import { useTranslation } from '../../../hooks/useTranslation';
+import { SharedPageProps } from '../../../types';
+import AppointmentSectionAccordion, {
+    SectionEmptyState,
+    SectionLoadingState,
+} from './AppointmentSectionAccordion';
+import { SectionActionButton } from './SimpleTableSection';
+
+interface LabTestSectionProps {
+    appointmentId: number;
+}
+
+interface LabTestListItem {
+    id: number;
+    ref_no: string | number | null;
+    patient_name: string | null;
+    test_name: string | null;
+    category_name: string | null;
+    parameters_count: number;
+    status: string;
+    priority: string;
+    doctor_name: string | null;
+    section_name: string | null;
+    assigned_to_name: string | null;
+    created_at: string | null;
+    urls?: { print?: string | null };
+}
+
+interface LabTypeOption {
+    id: number;
+    name: string;
+    category_name: string | null;
+    parameters_count: number;
+}
+
+interface LabParameter {
+    id: number;
+    parameter_name: string;
+    unit: string | null;
+    normal_range: string | null;
+    result: string | null;
+}
+
+interface LabTestDetail {
+    id: number;
+    ref_no: string | number | null;
+    test_name: string | null;
+    category_name: string | null;
+    status: string;
+    priority: string;
+    doctor_name: string | null;
+    section_name: string | null;
+    assigned_to_name: string | null;
+    assigned_at: string | null;
+    notes: string | null;
+    parameters: LabParameter[];
+    urls?: { print?: string | null };
+}
+
+interface LabTestSectionData {
+    items: LabTestListItem[];
+    count: number;
+    permissions: {
+        create: boolean;
+    };
+}
+
+const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'failure' | 'gray'> = {
+    pending: 'warning',
+    in_progress: 'info',
+    completed: 'success',
+    cancelled: 'failure',
+};
+
+const PRIORITY_COLORS: Record<string, 'gray' | 'warning' | 'failure'> = {
+    normal: 'gray',
+    urgent: 'warning',
+    stat: 'failure',
+};
+
+export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
+    const { t } = useTranslation();
+    const { csrfToken } = usePage<SharedPageProps>().props;
+    const baseUrl = `/react/appointments/${appointmentId}/lab-tests`;
+
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [metaLoading, setMetaLoading] = useState(false);
+    const [data, setData] = useState<LabTestSectionData | null>(null);
+    const [labTypes, setLabTypes] = useState<LabTypeOption[]>([]);
+    const [createOpen, setCreateOpen] = useState(false);
+    const [detailsOpen, setDetailsOpen] = useState(false);
+    const [selectedLabTypeIds, setSelectedLabTypeIds] = useState<number[]>([]);
+    const [priority, setPriority] = useState('normal');
+    const [notes, setNotes] = useState('');
+    const [labTypeFilter, setLabTypeFilter] = useState('');
+    const [selectedRegistration, setSelectedRegistration] = useState<LabTestDetail | null>(null);
+
+    const loadData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(baseUrl, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const payload = await response.json();
+            if (payload.success) {
+                setData(payload.data);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [baseUrl]);
+
+    const loadMeta = useCallback(async () => {
+        setMetaLoading(true);
+        try {
+            const response = await fetch(`${baseUrl}/meta`, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const payload = await response.json();
+            if (payload.success) {
+                setLabTypes(payload.data.lab_types ?? []);
+            }
+        } finally {
+            setMetaLoading(false);
+        }
+    }, [baseUrl]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+    const filteredLabTypes = useMemo(() => {
+        const query = labTypeFilter.trim().toLowerCase();
+        if (!query) {
+            return labTypes;
+        }
+        return labTypes.filter((labType) => {
+            const haystack = `${labType.name} ${labType.category_name ?? ''}`.toLowerCase();
+            return haystack.includes(query);
+        });
+    }, [labTypeFilter, labTypes]);
+
+    const resetCreateForm = () => {
+        setSelectedLabTypeIds([]);
+        setPriority('normal');
+        setNotes('');
+        setLabTypeFilter('');
+    };
+
+    const openCreate = async () => {
+        resetCreateForm();
+        setCreateOpen(true);
+        if (labTypes.length === 0) {
+            await loadMeta();
+        }
+    };
+
+    const closeCreate = () => {
+        setCreateOpen(false);
+        resetCreateForm();
+    };
+
+    const toggleLabType = (labTypeId: number) => {
+        setSelectedLabTypeIds((current) =>
+            current.includes(labTypeId)
+                ? current.filter((id) => id !== labTypeId)
+                : [...current, labTypeId],
+        );
+    };
+
+    const handleCreate = async (event: FormEvent, closeAfter = false) => {
+        event.preventDefault();
+        if (selectedLabTypeIds.length === 0) {
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const response = await fetch(baseUrl, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    lab_type_ids: selectedLabTypeIds,
+                    priority,
+                    notes,
+                }),
+            });
+            const payload = await response.json();
+            if (!response.ok || !payload.success) {
+                return;
+            }
+
+            resetCreateForm();
+            await loadData();
+            if (closeAfter) {
+                setCreateOpen(false);
+            }
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const viewRegistration = async (registrationId: number) => {
+        const response = await fetch(`${baseUrl}/${registrationId}`, {
+            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const payload = await response.json();
+        if (payload.success) {
+            setSelectedRegistration(payload.data);
+            setDetailsOpen(true);
+        }
+    };
+
+    const statusLabel = (status: string) => {
+        const labels: Record<string, string> = {
+            pending: t('global.status_pending'),
+            in_progress: t('global.status_in_progress'),
+            completed: t('global.status_completed'),
+            cancelled: t('global.status_cancelled'),
+        };
+        return labels[status] ?? status;
+    };
+
+    const priorityLabel = (value: string) => {
+        const labels: Record<string, string> = {
+            normal: t('global.normal'),
+            urgent: t('global.urgent'),
+            stat: t('global.stat'),
+        };
+        return labels[value] ?? value;
+    };
+
+    return (
+        <AppointmentSectionAccordion
+            id={`lab-tests-${appointmentId}`}
+            icon="bx-test-tube"
+            iconClassName="text-violet-500"
+            title={t('global.lab_test_registrations')}
+            count={data?.count}
+            badgeColor="info"
+        >
+            {loading ? (
+                <SectionLoadingState />
+            ) : (
+                <>
+                    {data?.permissions.create && (
+                        <div className="mb-4 flex justify-end">
+                            <Button size="sm" color="blue" onClick={openCreate}>
+                                <i className="bx bx-plus me-2" />
+                                {t('global.add_lab_test_registration')}
+                            </Button>
+                        </div>
+                    )}
+
+                    {data && data.items.length > 0 ? (
+                        <Table>
+                            <TableHead>
+                                <TableRow variant="header">
+                                    <TableHeader>{t('global.number')}</TableHeader>
+                                    <TableHeader>{t('global.ref_number')}</TableHeader>
+                                    <TableHeader>{t('global.patient_name')}</TableHeader>
+                                    <TableHeader>{t('global.lab_type')}</TableHeader>
+                                    <TableHeader>{t('global.category')}</TableHeader>
+                                    <TableHeader>{t('global.parameters_count')}</TableHeader>
+                                    <TableHeader>{t('global.status')}</TableHeader>
+                                    <TableHeader>{t('global.priority')}</TableHeader>
+                                    <TableHeader>{t('global.doctor_name')}</TableHeader>
+                                    <TableHeader>{t('global.assigned_to')}</TableHeader>
+                                    <TableHeader>{t('global.created_at')}</TableHeader>
+                                    <TableHeader align="center">{t('global.actions')}</TableHeader>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {data.items.map((item, index) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>
+                                            <Badge color="info">{item.ref_no ?? '—'}</Badge>
+                                        </TableCell>
+                                        <TableCell>{item.patient_name ?? '—'}</TableCell>
+                                        <TableCell>{item.test_name ?? '—'}</TableCell>
+                                        <TableCell muted>{item.category_name ?? '—'}</TableCell>
+                                        <TableCell>{item.parameters_count}</TableCell>
+                                        <TableCell>
+                                            <Badge color={STATUS_COLORS[item.status] ?? 'gray'}>
+                                                {statusLabel(item.status)}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge color={PRIORITY_COLORS[item.priority] ?? 'gray'}>
+                                                {priorityLabel(item.priority)}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell muted>{item.doctor_name ?? '—'}</TableCell>
+                                        <TableCell muted>{item.assigned_to_name ?? '—'}</TableCell>
+                                        <TableCell muted>{item.created_at ?? '—'}</TableCell>
+                                        <TableCell align="center">
+                                            <div className="flex justify-center gap-1">
+                                                <SectionActionButton
+                                                    icon="bx-show"
+                                                    title={t('global.view_test_parameters')}
+                                                    onClick={() => viewRegistration(item.id)}
+                                                    colorClass="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                                />
+                                                {item.urls?.print && (
+                                                    <SectionActionButton
+                                                        icon="bx-printer"
+                                                        title={t('global.print_report')}
+                                                        href={item.urls.print}
+                                                        colorClass="text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-900/30"
+                                                    />
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <SectionEmptyState message={t('global.no_test_registrations_found')} />
+                    )}
+                </>
+            )}
+
+            <Modal show={createOpen} onClose={closeCreate} size="3xl">
+                <ModalHeader>{t('global.add_lab_test_registration')}</ModalHeader>
+                <form onSubmit={(event) => handleCreate(event, false)}>
+                    <ModalBody className="space-y-4">
+                        {metaLoading ? (
+                            <SectionLoadingState />
+                        ) : (
+                            <>
+                                <div>
+                                    <Label>{t('global.lab_type')} ({t('global.select_multiple')})</Label>
+                                    <TextInput
+                                        className="mb-3"
+                                        placeholder={t('global.select_lab_types')}
+                                        value={labTypeFilter}
+                                        onChange={(event) => setLabTypeFilter(event.target.value)}
+                                    />
+                                    <div className="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-gray-200 p-3 dark:border-gray-700">
+                                        {filteredLabTypes.map((labType) => (
+                                            <label
+                                                key={labType.id}
+                                                className="flex cursor-pointer items-start gap-3 rounded-lg px-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="mt-1"
+                                                    checked={selectedLabTypeIds.includes(labType.id)}
+                                                    onChange={() => toggleLabType(labType.id)}
+                                                />
+                                                <span className="text-sm">
+                                                    <span className="font-medium text-gray-900 dark:text-white">
+                                                        {labType.name}
+                                                    </span>
+                                                    {labType.category_name && (
+                                                        <span className="ms-2 text-gray-500 dark:text-gray-400">
+                                                            ({labType.category_name})
+                                                        </span>
+                                                    )}
+                                                    <span className="ms-2 text-xs text-gray-400">
+                                                        {labType.parameters_count} {t('global.parameters')}
+                                                    </span>
+                                                </span>
+                                            </label>
+                                        ))}
+                                        {filteredLabTypes.length === 0 && (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                {t('global.no_records_found')}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div>
+                                    <Label>{t('global.priority')}</Label>
+                                    <SearchableSelect
+                                        value={priority}
+                                        onChange={setPriority}
+                                    >
+                                        <option value="normal">{t('global.normal')}</option>
+                                        <option value="urgent">{t('global.urgent')}</option>
+                                        <option value="stat">{t('global.stat')}</option>
+                                    </SearchableSelect>
+                                </div>
+                                <div>
+                                    <Label>{t('global.notes')}</Label>
+                                    <Textarea
+                                        rows={3}
+                                        value={notes}
+                                        onChange={(event) => setNotes(event.target.value)}
+                                        placeholder={t('global.optional_notes')}
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="gray" type="button" onClick={closeCreate} disabled={submitting}>
+                            {t('global.cancel')}
+                        </Button>
+                        <Button
+                            color="success"
+                            type="submit"
+                            disabled={submitting || metaLoading || selectedLabTypeIds.length === 0}
+                        >
+                            {submitting ? <Spinner size="sm" /> : t('global.create_and_continue')}
+                        </Button>
+                        <Button
+                            color="blue"
+                            type="button"
+                            disabled={submitting || metaLoading || selectedLabTypeIds.length === 0}
+                            onClick={(event) => handleCreate(event, true)}
+                        >
+                            {submitting ? <Spinner size="sm" /> : t('global.create_and_close')}
+                        </Button>
+                    </ModalFooter>
+                </form>
+            </Modal>
+
+            <Modal show={detailsOpen} onClose={() => setDetailsOpen(false)} size="7xl">
+                <ModalHeader>{t('global.test_parameters')}</ModalHeader>
+                <ModalBody>
+                    {selectedRegistration && (
+                        <div className="space-y-4">
+                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                                    <p className="text-xs text-gray-500">{t('global.lab_type')}</p>
+                                    <p className="font-semibold">{selectedRegistration.test_name ?? '—'}</p>
+                                </div>
+                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                                    <p className="text-xs text-gray-500">{t('global.status')}</p>
+                                    <Badge color={STATUS_COLORS[selectedRegistration.status] ?? 'gray'}>
+                                        {statusLabel(selectedRegistration.status)}
+                                    </Badge>
+                                </div>
+                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                                    <p className="text-xs text-gray-500">{t('global.doctor_name')}</p>
+                                    <p className="font-semibold">{selectedRegistration.doctor_name ?? '—'}</p>
+                                </div>
+                                <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/40">
+                                    <p className="text-xs text-gray-500">{t('global.assigned_to')}</p>
+                                    <p className="font-semibold">{selectedRegistration.assigned_to_name ?? '—'}</p>
+                                </div>
+                            </div>
+
+                            {selectedRegistration.notes && (
+                                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-900/40 dark:bg-emerald-900/20">
+                                    <strong>{t('global.notes')}:</strong> {selectedRegistration.notes}
+                                </div>
+                            )}
+
+                            {selectedRegistration.parameters.length > 0 ? (
+                                <Table>
+                                    <TableHead>
+                                        <TableRow variant="header">
+                                            <TableHeader>{t('global.number')}</TableHeader>
+                                            <TableHeader>{t('global.parameter_name')}</TableHeader>
+                                            <TableHeader>{t('global.unit')}</TableHeader>
+                                            <TableHeader>{t('global.normal_range')}</TableHeader>
+                                            <TableHeader>{t('global.result')}</TableHeader>
+                                            <TableHeader>{t('global.status')}</TableHeader>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {selectedRegistration.parameters.map((parameter, index) => (
+                                            <TableRow key={parameter.id}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{parameter.parameter_name}</TableCell>
+                                                <TableCell muted>{parameter.unit ?? '—'}</TableCell>
+                                                <TableCell muted>{parameter.normal_range ?? '—'}</TableCell>
+                                                <TableCell>{parameter.result ?? '—'}</TableCell>
+                                                <TableCell>
+                                                    <Badge color={parameter.result ? 'success' : 'gray'}>
+                                                        {parameter.result
+                                                            ? t('global.completed')
+                                                            : t('global.pending')}
+                                                    </Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            ) : (
+                                <SectionEmptyState message={t('global.no_parameters_found')} />
+                            )}
+                        </div>
+                    )}
+                </ModalBody>
+                <ModalFooter>
+                    {selectedRegistration?.urls?.print && (
+                        <Button
+                            color="light"
+                            as="a"
+                            href={selectedRegistration.urls.print}
+                            target="_blank"
+                        >
+                            <i className="bx bx-printer me-2" />
+                            {t('global.print_report')}
+                        </Button>
+                    )}
+                    <Button color="gray" type="button" onClick={() => setDetailsOpen(false)}>
+                        {t('global.close')}
+                    </Button>
+                </ModalFooter>
+            </Modal>
+        </AppointmentSectionAccordion>
+    );
+}

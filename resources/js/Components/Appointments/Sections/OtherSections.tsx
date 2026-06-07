@@ -7,28 +7,6 @@ interface SectionProps {
     appointmentId: number;
 }
 
-export function LabTestSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="lab-tests"
-            accordionId={`lab-tests-${appointmentId}`}
-            icon="bx-test-tube"
-            iconClassName="text-violet-500"
-            title={t('global.lab_test_registrations')}
-            emptyMessage={t('global.no_previous_labs')}
-            columns={[
-                { key: 'test_name', header: t('global.test_name') },
-                { key: 'doctor_name', header: t('global.doctor_name'), muted: true },
-                { key: 'section_name', header: t('global.department'), muted: true },
-                { key: 'status', header: t('global.status'), muted: true },
-                { key: 'created_at', header: t('global.date'), muted: true },
-            ]}
-        />
-    );
-}
-
 export function HospitalizationCheckupSection({ appointmentId }: SectionProps) {
     const { t } = useTranslation();
     return (

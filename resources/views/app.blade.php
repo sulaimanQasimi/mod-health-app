@@ -17,6 +17,25 @@
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.tsx'])
     @inertiaHead
+
+    <script>
+        (function () {
+            try {
+                var key = 'flowbite-theme-mode';
+                var storageMode = localStorage.getItem(key);
+                var isValid = storageMode === 'light' || storageMode === 'dark' || storageMode === 'auto';
+                var resolvedMode = (isValid ? storageMode : null) ?? 'auto';
+                var computedMode =
+                    resolvedMode === 'auto'
+                        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                            ? 'dark'
+                            : 'light'
+                        : resolvedMode;
+
+                document.documentElement.classList.toggle('dark', computedMode === 'dark');
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body class="font-sans antialiased" dir="{{ $reactDirection }}">
     @inertia

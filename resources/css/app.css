@@ -1,8 +1,9 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @import "flowbite-react/plugin/tailwindcss";
-@import "simple-datatables/dist/style.css";
 
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
 @source "../../storage/framework/views/*.php";

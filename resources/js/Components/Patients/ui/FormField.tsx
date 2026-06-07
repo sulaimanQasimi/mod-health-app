@@ -1,5 +1,6 @@
-import { Label, Select, TextInput } from 'flowbite-react';
+import { Label, TextInput } from 'flowbite-react';
 import { ReactNode } from 'react';
+import SearchableSelect from '../../ui/SearchableSelect';
 
 interface FormFieldProps {
     label: string;
@@ -127,17 +128,17 @@ export function IconSelect({
             >
                 <i className={`bx ${icon} text-gray-400 ${compact ? 'text-sm' : 'text-lg'}`} />
             </div>
-            <Select
+            <SearchableSelect
                 id={id}
-                sizing={compact ? 'sm' : undefined}
+                compact={compact}
                 required={required}
                 disabled={disabled}
                 value={value}
-                onChange={(event) => onChange(event.target.value)}
-                className={compact ? 'ps-7 text-sm' : 'ps-10'}
+                onChange={onChange}
+                className={compact ? '[&>button]:ps-7 text-sm' : '[&>button]:ps-10'}
             >
                 {children}
-            </Select>
+            </SearchableSelect>
         </div>
     );
 }

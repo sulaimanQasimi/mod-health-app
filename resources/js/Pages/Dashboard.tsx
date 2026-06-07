@@ -1,11 +1,12 @@
 import { Head } from '@inertiajs/react';
-import { Alert, Card, Label, Select, Spinner } from 'flowbite-react';
+import { Alert, Card, Label, Spinner } from 'flowbite-react';
 import { useCallback, useState } from 'react';
 import HorizontalBarChart from '../Components/Dashboard/HorizontalBarChart';
 import LineTrendChart from '../Components/Dashboard/LineTrendChart';
 import StatCard from '../Components/Dashboard/StatCard';
 import WordCloudChart from '../Components/Dashboard/WordCloudChart';
 import DashboardLayout from '../Components/Layout/DashboardLayout';
+import SearchableSelect from '../Components/ui/SearchableSelect';
 import { useTranslation } from '../hooks/useTranslation';
 import { DashboardData } from '../types/dashboard';
 
@@ -49,8 +50,7 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
         }
     }, [t]);
 
-    const handleBranchChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const branchId = event.target.value;
+    const handleBranchChange = (branchId: string) => {
         if (branchId) {
             loadDashboardData(branchId);
         }
@@ -230,19 +230,17 @@ export default function Dashboard({ dashboard: initialDashboard }: DashboardProp
                         <Label htmlFor="chart-branch-select" className="mb-0 whitespace-nowrap">
                             {t('global.filter_by_branch')}:
                         </Label>
-                        <Select
+                        <SearchableSelect
                             id="chart-branch-select"
-                            sizing="sm"
+                            compact
                             value={String(dashboard.chartBranchId ?? '')}
                             onChange={handleBranchChange}
                             className="min-w-[180px]"
-                        >
-                            {dashboard.branches?.map((branch) => (
-                                <option key={branch.id} value={branch.id}>
-                                    {branch.name}
-                                </option>
-                            ))}
-                        </Select>
+                            options={dashboard.branches?.map((branch) => ({
+                                value: String(branch.id),
+                                label: branch.name,
+                            }))}
+                        />
                     </div>
                 </div>
                 <HorizontalBarChart

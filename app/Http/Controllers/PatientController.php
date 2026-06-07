@@ -129,7 +129,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => 'required',
+            'nid' => ['required', $this->nidUniqueRule(branchId: (int) $request->branch_id)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',
@@ -336,7 +336,7 @@ class PatientController extends Controller
             'age_day' => 'nullable|integer|min:0|max:31',
             'age_month' => 'nullable|integer|min:0|max:11',
             'age_year' => 'nullable|integer|min:0|max:150',
-            'nid' => ['required', Rule::unique('patients', 'nid')->ignore($patient->id)],
+            'nid' => ['required', $this->nidUniqueRule($patient)],
             'province_id' => 'required',
             'district_id' => 'required',
             'relation_id' => 'nullable',
@@ -893,5 +893,21 @@ class PatientController extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="item_report.xls"');
         $response->headers->set('Cache-Control', 'max-age=0');
         return $response;
+    }
+
+    private function nidUniqueRule(?Patient $patient = null, ?int $branchId = null): \Illuminate\Validation\Rules\Unique
+    {
+        $rule = Rule::unique(Patient::class, 'nid');
+
+        if ($patient) {
+            $rule->ignore($patient);
+            $branchId = (int) $patient->branch_id;
+        }
+
+        if ($branchId) {
+            $rule->where('branch_id', $branchId);
+        }
+
+        return $rule;
     }
 }

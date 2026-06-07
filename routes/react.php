@@ -80,6 +80,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/districts/{provinceId}', [PatientController::class, 'districts'])->name('districts');
         Route::get('/doctors-by-department/{departmentId}', [PatientController::class, 'doctorsByDepartment'])->name('doctors-by-department');
         Route::get('/report', [PatientController::class, 'report'])->name('report');
+        Route::get('/{patient}/edit', [PatientController::class, 'edit'])->name('edit');
+        Route::get('/{patient}', [PatientController::class, 'show'])->name('show');
+        Route::match(['put', 'post'], '/{patient}', [PatientController::class, 'update'])->name('update');
+        Route::delete('/{patient}', [PatientController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('appointments')->name('appointments.')->group(function () {

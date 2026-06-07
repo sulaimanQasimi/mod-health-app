@@ -1,14 +1,18 @@
 import { Alert, Button, Spinner } from 'flowbite-react';
 import { FormEvent, useMemo, useState } from 'react';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
 import {
     NamedOption,
-    PatientCreateUrls,
     PatientFormData,
+    PatientFormMode,
+    PatientFormPermissions,
+    PatientFormUrls,
+    PatientFormValues,
     PatientType,
     StorePatientResponse,
+    UpdatePatientResponse,
 } from '../../types/patient';
 import { buildAgeValue } from '../../utils/patientAge';
 import AppointmentSection from './AppointmentSection';
@@ -19,9 +23,12 @@ import { FormField, IconSelect, IconTextInput } from './ui/FormField';
 import SegmentedControl from './ui/SegmentedControl';
 
 interface PatientCreateFormProps {
+    mode?: PatientFormMode;
     patientType: PatientType;
     formData: PatientFormData;
-    urls: PatientCreateUrls;
+    urls: PatientFormUrls;
+    patient?: PatientFormValues;
+    permissions?: PatientFormPermissions;
 }
 
 interface FormState {
@@ -55,7 +62,40 @@ interface FormState {
     appointment_doctor_id: string;
 }
 
-function createInitialState(patientType: PatientType): FormState {
+function createInitialState(patientType: PatientType, patient?: PatientFormValues): FormState {
+    if (patient) {
+        return {
+            id_card: patient.id_card,
+            name: patient.name,
+            last_name: patient.last_name,
+            father_name: patient.father_name,
+            nid: patient.nid,
+            job: patient.job,
+            job_category: patient.job_category,
+            militery_type_id: patient.militery_type_id,
+            rank: patient.rank,
+            phone: patient.phone,
+            age_year: patient.age_year,
+            age_month: patient.age_month,
+            age_day: patient.age_day,
+            gender: patient.gender || (patientType === '2' ? '' : '0'),
+            referred_by: patient.referred_by,
+            province_id: patient.province_id,
+            district_id: patient.district_id,
+            referral_name: patient.referral_name,
+            referral_last_name: patient.referral_last_name,
+            referral_father_name: patient.referral_father_name,
+            referral_nid: patient.referral_nid,
+            referral_id_card: patient.referral_id_card,
+            referral_phone: patient.referral_phone,
+            referral_recipient: patient.referral_recipient,
+            relation_id: patient.relation_id,
+            appointment_clinic_type: '',
+            appointment_department_id: '',
+            appointment_doctor_id: '',
+        };
+    }
+
     return {
         id_card: '',
         name: '',
@@ -88,13 +128,22 @@ function createInitialState(patientType: PatientType): FormState {
     };
 }
 
-export default function PatientCreateForm({ patientType, formData, urls }: PatientCreateFormProps) {
+export default function PatientCreateForm({
+    mode = 'create',
+    patientType,
+    formData,
+    urls,
+    patient,
+    permissions,
+}: PatientCreateFormProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
-    const [form, setForm] = useState<FormState>(() => createInitialState(patientType));
-    const [districts, setDistricts] = useState<NamedOption[]>([]);
+    const isEdit = mode === 'edit';
+    const [form, setForm] = useState<FormState>(() => createInitialState(patientType, patient));
+    const [districts, setDistricts] = useState<NamedOption[]>(formData.districts ?? []);
     const [loadingDistricts, setLoadingDistricts] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [tokenModal, setTokenModal] = useState<StorePatientResponse['appointment'] | null>(null);
@@ -226,18 +275,28 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
             payload.append('relation_id', form.relation_id);
         }
 
-        if (form.appointment_department_id) {
-            payload.append('appointment_department_id', form.appointment_department_id);
+        if (!isEdit) {
+            if (form.appointment_department_id) {
+                payload.append('appointment_department_id', form.appointment_department_id);
+            }
+            if (form.appointment_doctor_id) {
+                payload.append('appointment_doctor_id', form.appointment_doctor_id);
+            }
+            if (formData.clinicType === 'both' && form.appointment_clinic_type) {
+                payload.append('appointment_clinic_type', form.appointment_clinic_type);
+            }
         }
-        if (form.appointment_doctor_id) {
-            payload.append('appointment_doctor_id', form.appointment_doctor_id);
-        }
-        if (formData.clinicType === 'both' && form.appointment_clinic_type) {
-            payload.append('appointment_clinic_type', form.appointment_clinic_type);
+
+        const submitUrl = isEdit ? urls.update : urls.store;
+
+        if (!submitUrl) {
+            setErrors({ general: t('global.error_occurred') });
+            setSubmitting(false);
+            return;
         }
 
         try {
-            const response = await fetch(urls.store, {
+            const response = await fetch(submitUrl, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -247,7 +306,7 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
                 body: payload,
             });
 
-            const result: StorePatientResponse = await response.json();
+            const result: StorePatientResponse | UpdatePatientResponse = await response.json();
 
             if (!response.ok) {
                 const fieldErrors: Record<string, string> = {};
@@ -258,11 +317,16 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
                 return;
             }
 
+            if (isEdit) {
+                router.visit(urls.show ?? urls.back);
+                return;
+            }
+
             setSuccessMessage(result.message);
             setCreatedPatient(result.patient ?? null);
             resetForm();
 
-            if (result.appointment) {
+            if ('appointment' in result && result.appointment) {
                 setTokenModal(result.appointment);
             }
         } catch {
@@ -270,6 +334,17 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleDelete = () => {
+        if (!urls.destroy || !window.confirm(t('global.confirm_delete'))) {
+            return;
+        }
+
+        setDeleting(true);
+        router.delete(urls.destroy, {
+            onFinish: () => setDeleting(false),
+        });
     };
 
     return (
@@ -528,18 +603,20 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
                     </FormField>
                 </FormSection>
 
-                <AppointmentSection
-                    clinicType={formData.clinicType}
-                    departments={formData.departments}
-                    urls={urls}
-                    values={{
-                        appointment_clinic_type: form.appointment_clinic_type,
-                        appointment_department_id: form.appointment_department_id,
-                        appointment_doctor_id: form.appointment_doctor_id,
-                    }}
-                    onChange={updateAppointmentField}
-                    errors={errors}
-                />
+                {!isEdit && (
+                    <AppointmentSection
+                        clinicType={formData.clinicType}
+                        departments={formData.departments}
+                        urls={urls}
+                        values={{
+                            appointment_clinic_type: form.appointment_clinic_type,
+                            appointment_department_id: form.appointment_department_id,
+                            appointment_doctor_id: form.appointment_doctor_id,
+                        }}
+                        onChange={updateAppointmentField}
+                        errors={errors}
+                    />
+                )}
 
                 {patientType === '2' && (
                     <FormSection
@@ -648,17 +725,40 @@ export default function PatientCreateForm({ patientType, formData, urls }: Patie
                     </FormSection>
                 )}
 
-                <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
-                    <Button type="submit" color="blue" disabled={submitting} className="min-w-[140px]">
+                <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+                    {isEdit && permissions?.delete ? (
+                        <Button
+                            type="button"
+                            color="failure"
+                            outline
+                            disabled={deleting || submitting}
+                            onClick={handleDelete}
+                        >
+                            {deleting ? (
+                                <>
+                                    <Spinner size="sm" className="me-2" />
+                                    {t('global.deleting')}...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="bx bx-trash me-2 text-lg" />
+                                    {t('global.delete')}
+                                </>
+                            )}
+                        </Button>
+                    ) : (
+                        <span />
+                    )}
+                    <Button type="submit" color="blue" disabled={submitting || deleting} className="min-w-[140px]">
                         {submitting ? (
                             <>
                                 <Spinner size="sm" className="me-2" />
-                                {t('global.creating')}...
+                                {isEdit ? `${t('global.updating')}...` : `${t('global.creating')}...`}
                             </>
                         ) : (
                             <>
-                                <i className="bx bx-plus-circle me-2 text-lg" />
-                                {t('global.create')}
+                                <i className={`bx ${isEdit ? 'bx-save' : 'bx-plus-circle'} me-2 text-lg`} />
+                                {isEdit ? t('global.update') : t('global.create')}
                             </>
                         )}
                     </Button>

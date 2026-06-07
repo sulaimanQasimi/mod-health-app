@@ -1,1 +1,12 @@
 @import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@import "flowbite-react/plugin/tailwindcss";
+
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../views/**/*.blade.php";
+@source "../js/**/*.{js,jsx,ts,tsx,vue}";
+@source "../../public/assets/js/**/*.{js,vue}";
+@source "../../node_modules/flowbite";
+@source "../../.flowbite-react/class-list.json";

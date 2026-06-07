@@ -3,6 +3,7 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import flowbiteReact from "flowbite-react/plugin/vite";
 
 export default defineConfig({
     plugins: [
@@ -43,6 +44,7 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        flowbiteReact()
     ],
     resolve: {
         alias: {

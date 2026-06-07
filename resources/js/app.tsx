@@ -2,6 +2,7 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { ThemeInit } from '../../.flowbite-react/init';
 import 'flowbite';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -11,7 +12,12 @@ createInertiaApp({
     resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
     setup({ el, App, props }) {
         const root = createRoot(el);
-        root.render(<App {...props} />);
+        root.render(
+            <>
+                <ThemeInit />
+                <App {...props} />
+            </>
+        );
     },
     progress: {
         color: '#4B5563',

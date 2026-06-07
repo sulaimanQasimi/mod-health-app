@@ -204,7 +204,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/report', [OutcomeController::class, 'report'])->name('report');
     });
 
-    Route::get('/medicine-types', [MedicineTypeController::class, 'index'])->name('medicine-types.index');
+    Route::prefix('medicine-types')->name('medicine-types.')->group(function () {
+        Route::get('/', [MedicineTypeController::class, 'index'])->name('index');
+        Route::get('/create', [MedicineTypeController::class, 'create'])->name('create');
+        Route::post('/', [MedicineTypeController::class, 'store'])->name('store');
+        Route::get('/{medicineType}/edit', [MedicineTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{medicineType}', [MedicineTypeController::class, 'update'])->name('update');
+        Route::delete('/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('depots')->name('depots.')->group(function () {
         Route::get('/', [DepotController::class, 'index'])->name('index');
@@ -247,8 +254,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/report', [HospitalizationController::class, 'report'])->name('report');
     });
 
-    Route::get('/vital-sign-types', [VitalSignTypeController::class, 'index'])->name('vital-sign-types.index');
-    Route::get('/vital-signs', [VitalSignController::class, 'index'])->name('vital-signs.index');
+    Route::prefix('vital-sign-types')->name('vital-sign-types.')->group(function () {
+        Route::get('/', [VitalSignTypeController::class, 'index'])->name('index');
+        Route::get('/create', [VitalSignTypeController::class, 'create'])->name('create');
+        Route::post('/', [VitalSignTypeController::class, 'store'])->name('store');
+        Route::get('/{vitalSignType}', [VitalSignTypeController::class, 'show'])->name('show');
+        Route::get('/{vitalSignType}/edit', [VitalSignTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{vitalSignType}', [VitalSignTypeController::class, 'update'])->name('update');
+        Route::delete('/{vitalSignType}', [VitalSignTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('vital-signs')->name('vital-signs.')->group(function () {
+        Route::get('/', [VitalSignController::class, 'index'])->name('index');
+        Route::get('/{vitalSign}', [VitalSignController::class, 'show'])->name('show');
+    });
 
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
         Route::get('/scan', [LaboratoryController::class, 'scan'])->name('scan');
@@ -316,20 +335,152 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
-    Route::get('/recipients', [RecipientController::class, 'index'])->name('recipients.index');
-    Route::get('/relations', [RelationController::class, 'index'])->name('relations.index');
-    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
-    Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
-    Route::get('/floors', [FloorController::class, 'index'])->name('floors.index');
-    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
-    Route::get('/beds', [BedController::class, 'index'])->name('beds.index');
-    Route::get('/militery-types', [MiliteryTypeController::class, 'index'])->name('militery-types.index');
-    Route::get('/procedure-types', [ProcedureTypeController::class, 'index'])->name('procedure-types.index');
-    Route::get('/operation-types', [OperationTypeController::class, 'index'])->name('operation-types.index');
-    Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines.index');
-    Route::get('/medicine-usage-types', [MedicineUsageTypeController::class, 'index'])->name('medicine-usage-types.index');
-    Route::get('/food-types', [FoodTypeController::class, 'index'])->name('food-types.index');
-    Route::get('/diseases', [DiseaseController::class, 'index'])->name('diseases.index');
-    Route::get('/branches', [BranchController::class, 'index'])->name('branches.index');
-    Route::get('/nurses', [NurseController::class, 'index'])->name('nurses.index');
+    Route::prefix('recipients')->name('recipients.')->group(function () {
+        Route::get('/', [RecipientController::class, 'index'])->name('index');
+        Route::get('/create', [RecipientController::class, 'create'])->name('create');
+        Route::post('/', [RecipientController::class, 'store'])->name('store');
+        Route::get('/{recipient}/edit', [RecipientController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{recipient}', [RecipientController::class, 'update'])->name('update');
+        Route::delete('/{recipient}', [RecipientController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('relations')->name('relations.')->group(function () {
+        Route::get('/', [RelationController::class, 'index'])->name('index');
+        Route::get('/create', [RelationController::class, 'create'])->name('create');
+        Route::post('/', [RelationController::class, 'store'])->name('store');
+        Route::get('/{relation}/edit', [RelationController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{relation}', [RelationController::class, 'update'])->name('update');
+        Route::delete('/{relation}', [RelationController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('departments')->name('departments.')->group(function () {
+        Route::get('/', [DepartmentController::class, 'index'])->name('index');
+        Route::get('/create', [DepartmentController::class, 'create'])->name('create');
+        Route::post('/', [DepartmentController::class, 'store'])->name('store');
+        Route::get('/{department}', [DepartmentController::class, 'show'])->name('show');
+        Route::get('/{department}/edit', [DepartmentController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{department}', [DepartmentController::class, 'update'])->name('update');
+        Route::delete('/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('sections')->name('sections.')->group(function () {
+        Route::get('/', [SectionController::class, 'index'])->name('index');
+        Route::get('/create', [SectionController::class, 'create'])->name('create');
+        Route::post('/', [SectionController::class, 'store'])->name('store');
+        Route::get('/{section}/edit', [SectionController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{section}', [SectionController::class, 'update'])->name('update');
+        Route::delete('/{section}', [SectionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('floors')->name('floors.')->group(function () {
+        Route::get('/', [FloorController::class, 'index'])->name('index');
+        Route::get('/create', [FloorController::class, 'create'])->name('create');
+        Route::post('/', [FloorController::class, 'store'])->name('store');
+        Route::get('/{floor}/edit', [FloorController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{floor}', [FloorController::class, 'update'])->name('update');
+        Route::delete('/{floor}', [FloorController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('rooms')->name('rooms.')->group(function () {
+        Route::get('/', [RoomController::class, 'index'])->name('index');
+        Route::get('/create', [RoomController::class, 'create'])->name('create');
+        Route::post('/', [RoomController::class, 'store'])->name('store');
+        Route::get('/{room}', [RoomController::class, 'show'])->name('show');
+        Route::get('/{room}/edit', [RoomController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{room}', [RoomController::class, 'update'])->name('update');
+        Route::delete('/{room}', [RoomController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('beds')->name('beds.')->group(function () {
+        Route::get('/', [BedController::class, 'index'])->name('index');
+        Route::get('/create', [BedController::class, 'create'])->name('create');
+        Route::post('/', [BedController::class, 'store'])->name('store');
+        Route::get('/{bed}/edit', [BedController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{bed}', [BedController::class, 'update'])->name('update');
+        Route::delete('/{bed}', [BedController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('militery-types')->name('militery-types.')->group(function () {
+        Route::get('/', [MiliteryTypeController::class, 'index'])->name('index');
+        Route::get('/create', [MiliteryTypeController::class, 'create'])->name('create');
+        Route::post('/', [MiliteryTypeController::class, 'store'])->name('store');
+        Route::get('/{militeryType}/edit', [MiliteryTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{militeryType}', [MiliteryTypeController::class, 'update'])->name('update');
+        Route::delete('/{militeryType}', [MiliteryTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('procedure-types')->name('procedure-types.')->group(function () {
+        Route::get('/', [ProcedureTypeController::class, 'index'])->name('index');
+        Route::get('/create', [ProcedureTypeController::class, 'create'])->name('create');
+        Route::post('/', [ProcedureTypeController::class, 'store'])->name('store');
+        Route::get('/{icuProcedureType}/edit', [ProcedureTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{icuProcedureType}', [ProcedureTypeController::class, 'update'])->name('update');
+        Route::delete('/{icuProcedureType}', [ProcedureTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('operation-types')->name('operation-types.')->group(function () {
+        Route::get('/', [OperationTypeController::class, 'index'])->name('index');
+        Route::get('/create', [OperationTypeController::class, 'create'])->name('create');
+        Route::post('/', [OperationTypeController::class, 'store'])->name('store');
+        Route::get('/{operationType}/edit', [OperationTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{operationType}', [OperationTypeController::class, 'update'])->name('update');
+        Route::delete('/{operationType}', [OperationTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('medicines')->name('medicines.')->group(function () {
+        Route::get('/', [MedicineController::class, 'index'])->name('index');
+        Route::get('/create', [MedicineController::class, 'create'])->name('create');
+        Route::post('/', [MedicineController::class, 'store'])->name('store');
+        Route::get('/{medicine}/edit', [MedicineController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{medicine}', [MedicineController::class, 'update'])->name('update');
+        Route::delete('/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('medicine-usage-types')->name('medicine-usage-types.')->group(function () {
+        Route::get('/', [MedicineUsageTypeController::class, 'index'])->name('index');
+        Route::get('/create', [MedicineUsageTypeController::class, 'create'])->name('create');
+        Route::post('/', [MedicineUsageTypeController::class, 'store'])->name('store');
+        Route::get('/{medicineUsageType}/edit', [MedicineUsageTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{medicineUsageType}', [MedicineUsageTypeController::class, 'update'])->name('update');
+        Route::delete('/{medicineUsageType}', [MedicineUsageTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('food-types')->name('food-types.')->group(function () {
+        Route::get('/', [FoodTypeController::class, 'index'])->name('index');
+        Route::get('/create', [FoodTypeController::class, 'create'])->name('create');
+        Route::post('/', [FoodTypeController::class, 'store'])->name('store');
+        Route::get('/{foodType}/edit', [FoodTypeController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{foodType}', [FoodTypeController::class, 'update'])->name('update');
+        Route::delete('/{foodType}', [FoodTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('diseases')->name('diseases.')->group(function () {
+        Route::get('/', [DiseaseController::class, 'index'])->name('index');
+        Route::get('/create', [DiseaseController::class, 'create'])->name('create');
+        Route::post('/', [DiseaseController::class, 'store'])->name('store');
+        Route::post('/categories', [DiseaseController::class, 'storeCategory'])->name('categories.store');
+        Route::match(['put', 'post'], '/categories/{diseaseCategory}', [DiseaseController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{diseaseCategory}', [DiseaseController::class, 'destroyCategory'])->name('categories.destroy');
+        Route::get('/{disease}/edit', [DiseaseController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{disease}', [DiseaseController::class, 'update'])->name('update');
+        Route::delete('/{disease}', [DiseaseController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('branches')->name('branches.')->group(function () {
+        Route::get('/', [BranchController::class, 'index'])->name('index');
+        Route::get('/create', [BranchController::class, 'create'])->name('create');
+        Route::post('/', [BranchController::class, 'store'])->name('store');
+        Route::get('/{branch}/edit', [BranchController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{branch}', [BranchController::class, 'update'])->name('update');
+        Route::delete('/{branch}', [BranchController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('nurses')->name('nurses.')->group(function () {
+        Route::get('/', [NurseController::class, 'index'])->name('index');
+        Route::get('/create', [NurseController::class, 'create'])->name('create');
+        Route::post('/', [NurseController::class, 'store'])->name('store');
+        Route::get('/{nurse}', [NurseController::class, 'show'])->name('show');
+        Route::get('/{nurse}/edit', [NurseController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{nurse}', [NurseController::class, 'update'])->name('update');
+        Route::delete('/{nurse}', [NurseController::class, 'destroy'])->name('destroy');
+    });
 });

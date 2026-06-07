@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from 'flowbite-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { SharedPageProps } from '../../types';
+import ThemeToggle from './ThemeToggle';
 
 const languages = [
     { code: 'en', label: 'English' },
@@ -17,6 +18,8 @@ export default function Navbar() {
     return (
         <header className="sticky top-0 z-20 border-b border-gray-200 bg-white px-6 py-3 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-end gap-3">
+                <ThemeToggle />
+
                 <Dropdown
                     label=""
                     dismissOnClick={false}

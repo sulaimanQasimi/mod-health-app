@@ -124,7 +124,12 @@ Route::middleware(['auth'])->group(function () {
             Route::put('diagnosis/{diagnose}', [DiagnosisController::class, 'update'])->name('diagnosis.update');
             Route::delete('diagnosis/{diagnose}', [DiagnosisController::class, 'destroy'])->name('diagnosis.destroy');
 
+            Route::get('prescription/meta', [AppointmentPrescriptionController::class, 'meta'])->name('prescription.meta');
             Route::get('prescription', [AppointmentPrescriptionController::class, 'index'])->name('prescription.index');
+            Route::post('prescription', [AppointmentPrescriptionController::class, 'store'])->name('prescription.store');
+            Route::get('prescription/{prescription}', [AppointmentPrescriptionController::class, 'show'])->name('prescription.show');
+            Route::post('prescription/items/{prescriptionItem}/status', [AppointmentPrescriptionController::class, 'updateItemStatus'])->name('prescription.items.status');
+            Route::delete('prescription/items/{prescriptionItem}', [AppointmentPrescriptionController::class, 'destroyItem'])->name('prescription.items.destroy');
             Route::delete('prescription/{prescription}', [AppointmentPrescriptionController::class, 'destroy'])->name('prescription.destroy');
 
             Route::get('advice', [AdviceController::class, 'index'])->name('advice.index');

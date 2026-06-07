@@ -7,41 +7,6 @@ interface SectionProps {
     appointmentId: number;
 }
 
-export function PrescriptionSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="prescription"
-            accordionId={`prescription-${appointmentId}`}
-            icon="bx-notepad"
-            iconClassName="text-emerald-500"
-            title={t('global.prescription')}
-            badgeColor="success"
-            emptyMessage={t('global.no_previous_prescriptions')}
-            columns={[
-                { key: 'doctor_name', header: t('global.doctor_name'), muted: true },
-                { key: 'items_count', header: t('global.items') },
-                { key: 'created_at', header: t('global.date'), muted: true },
-            ]}
-            rowActions={(item, ctx) =>
-                ctx.permissions.delete && item.id ? (
-                    <SectionActionButton
-                        icon="bx-trash"
-                        title={t('global.delete')}
-                        onClick={() => {
-                            if (window.confirm(t('global.confirm_delete'))) {
-                                ctx.destroy(`/${item.id}`);
-                            }
-                        }}
-                        colorClass="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                    />
-                ) : null
-            }
-        />
-    );
-}
-
 export function LabTestSection({ appointmentId }: SectionProps) {
     const { t } = useTranslation();
     return (

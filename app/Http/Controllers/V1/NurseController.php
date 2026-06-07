@@ -344,10 +344,12 @@ class NurseController extends Controller
      */
     private function nursePermissions(User $user): array
     {
+        $isPrivileged = $user->hasRole(['super_admin', 'admin', 'hr']);
+
         return [
             'create' => $user->can('create', Nurse::class),
-            'edit' => $user->can('update', Nurse::class),
-            'delete' => $user->can('delete', Nurse::class),
+            'edit' => $isPrivileged || $user->hasPermissionTo('edit-nurses'),
+            'delete' => $isPrivileged || $user->hasPermissionTo('delete-nurses'),
         ];
     }
 }

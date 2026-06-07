@@ -1114,6 +1114,33 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'edit-appointments'],
+            [
+                'name_dr' => 'ویرایش ملاقات',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'delete-appointments'],
+            [
+                'name_dr' => 'حذف ملاقات',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'restore-appointments'],
+            [
+                'name_dr' => 'بازیابی ملاقات',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'add-diagnose'],
             [
                 'name_dr' => 'اضافه نمودن تشخیص',

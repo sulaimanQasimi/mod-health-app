@@ -88,11 +88,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('/', [AppointmentController::class, 'index'])->name('index');
+        Route::get('/trashed', [AppointmentController::class, 'trashed'])->name('trashed');
         Route::get('/department-report', [AppointmentController::class, 'departmentReport'])->name('department-report');
         Route::get('/department', [AppointmentController::class, 'department'])->name('department');
         Route::get('/doctor', [AppointmentController::class, 'doctor'])->name('doctor');
         Route::get('/completed', [AppointmentController::class, 'completed'])->name('completed');
         Route::get('/report', [AppointmentController::class, 'report'])->name('report');
+        Route::get('/{appointment}/edit', [AppointmentController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{appointment}', [AppointmentController::class, 'update'])->name('update');
+        Route::delete('/{appointment}', [AppointmentController::class, 'destroy'])->name('destroy');
+        Route::post('/{appointment}/restore', [AppointmentController::class, 'restore'])->name('restore');
     });
 
     Route::get('/doctor-performance-report', [DoctorPerformanceReportController::class, 'performance'])->name('doctor-performance-report');

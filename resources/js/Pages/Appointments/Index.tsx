@@ -100,6 +100,16 @@ export default function IndexAppointment({
         applyFilters(EMPTY_FILTERS);
     };
 
+    const handleDelete = (appointmentId: number) => {
+        if (!window.confirm(t('global.confirm_delete'))) {
+            return;
+        }
+
+        router.delete(`${urls.destroy}/${appointmentId}`, {
+            preserveScroll: true,
+        });
+    };
+
     const summaryLabel =
         appointments.meta.from && appointments.meta.to
             ? `${t('global.showing')} ${appointments.meta.from}-${appointments.meta.to} ${t('global.of')} ${appointments.meta.total} ${t('global.results')}`
@@ -184,12 +194,20 @@ export default function IndexAppointment({
                                 </p>
                             </div>
                         </div>
-                        {permissions.create && (
-                            <Button color="blue" as={Link} href={urls.patientsCreate} className="w-fit">
-                                <i className="bx bx-user-plus me-2 text-lg" />
-                                {t('global.create_patient')}
-                            </Button>
-                        )}
+                        <div className="flex flex-wrap gap-2">
+                            {permissions.restore && (
+                                <Button color="light" as={Link} href={urls.trashed} className="w-fit">
+                                    <i className="bx bx-trash me-2 text-lg" />
+                                    {t('global.deleted')}
+                                </Button>
+                            )}
+                            {permissions.create && (
+                                <Button color="blue" as={Link} href={urls.patientsCreate} className="w-fit">
+                                    <i className="bx bx-user-plus me-2 text-lg" />
+                                    {t('global.create_patient')}
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
@@ -387,6 +405,25 @@ export default function IndexAppointment({
                                                     >
                                                         <i className="bx bx-history text-lg" />
                                                     </a>
+                                                )}
+                                                {appointment.permissions.edit && (
+                                                    <Link
+                                                        href={`${urls.edit}/${appointment.id}/edit`}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                                                        title={t('global.edit')}
+                                                    >
+                                                        <i className="bx bx-edit text-lg" />
+                                                    </Link>
+                                                )}
+                                                {appointment.permissions.delete && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDelete(appointment.id)}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                                                        title={t('global.delete')}
+                                                    >
+                                                        <i className="bx bx-trash text-lg" />
+                                                    </button>
                                                 )}
                                             </div>
                                         </TableCell>

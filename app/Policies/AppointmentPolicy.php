@@ -38,6 +38,33 @@ class AppointmentPolicy
             );
     }
 
+    public function update(User $user, Appointment $appointment): bool
+    {
+        return $this->belongsToUserBranch($user, $appointment)
+            && (
+                $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('edit-appointments')
+            );
+    }
+
+    public function delete(User $user, Appointment $appointment): bool
+    {
+        return $this->belongsToUserBranch($user, $appointment)
+            && (
+                $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('delete-appointments')
+            );
+    }
+
+    public function restore(User $user, Appointment $appointment): bool
+    {
+        return $this->belongsToUserBranch($user, $appointment)
+            && (
+                $user->hasRole(['super_admin', 'admin'])
+                || $user->hasPermissionTo('restore-appointments')
+            );
+    }
+
     private function belongsToUserBranch(User $user, Appointment $appointment): bool
     {
         if ($user->hasRole(['super_admin', 'admin'])) {

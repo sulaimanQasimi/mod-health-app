@@ -1767,6 +1767,7 @@ return [
     'appointment_updated_successfully' => 'نوبت با موفقیت بروزرسانی شد',
     'appointment_created_successfully' => 'نوبت با موفقیت ایجاد شد',
     'appointment_deleted_successfully' => 'نوبت با موفقیت حذف شد',
+    'appointment_restored_successfully' => 'نوبت با موفقیت بازیابی شد',
     'appointment_not_found' => 'نوبت یافت نشد',
     'appointment_item_status_updated_successfully' => 'حالت قلم نوبت با موفقیت ابدیت شد',
     'appointment_item_deleted_successfully' => 'قلم نوبت با موفقیت حذف شد',

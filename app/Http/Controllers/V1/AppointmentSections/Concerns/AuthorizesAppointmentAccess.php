@@ -34,4 +34,26 @@ trait AuthorizesAppointmentAccess
 
         return (int) $user->branch_id === (int) $appointment->branch_id;
     }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     * @param  array<string, bool>  $permissions
+     * @param  array<string, mixed>  $extra
+     */
+    protected function sectionIndexResponse(
+        array $items,
+        Appointment $appointment,
+        array $permissions,
+        array $extra = [],
+    ): \Illuminate\Http\JsonResponse {
+        return response()->json([
+            'success' => true,
+            'data' => array_merge([
+                'items' => $items,
+                'count' => count($items),
+                'meta' => $this->appointmentMeta($appointment),
+                'permissions' => $permissions,
+            ], $extra),
+        ]);
+    }
 }

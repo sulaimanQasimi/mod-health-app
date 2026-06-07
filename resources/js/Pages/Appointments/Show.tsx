@@ -1,7 +1,26 @@
 import { Head, Link } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import AdviceSection from '../../Components/Appointments/Sections/AdviceSection';
+import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
 import DiagnosisSection from '../../Components/Appointments/Sections/DiagnosisSection';
+import {
+    AnesthesiaSection,
+    ConsultationSection,
+    DentistSection,
+    HospitalizationCheckupSection,
+    HospitalizationSection,
+    HospitalizationVisitsSection,
+    IcuSection,
+    IcuVisitsSection,
+    LabTestSection,
+    NephrologySection,
+    OperationSection,
+    PhysiotherapySection,
+    PrescriptionSection,
+    ReferDepartmentSection,
+    RelatedVisitsSection,
+    UnderReviewSection,
+} from '../../Components/Appointments/Sections/OtherSections';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -51,6 +70,7 @@ export default function ShowAppointment({
     urls,
 }: ShowAppointmentProps) {
     const { t } = useTranslation();
+    const id = appointment.id;
 
     return (
         <DashboardLayout>
@@ -64,20 +84,14 @@ export default function ShowAppointment({
                                 <i className="bx bx-calendar-check text-cyan-500" />
                                 {t('global.appointment_details')}
                             </h1>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">#{appointment.id}</p>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">#{id}</p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {appointment.is_completed ? (
                                 <Badge color="success">{t('global.appointment_completed')}</Badge>
                             ) : (
                                 permissions.printToken && (
-                                    <Button
-                                        size="sm"
-                                        color="success"
-                                        as="a"
-                                        href={urls.printToken}
-                                        target="_blank"
-                                    >
+                                    <Button size="sm" color="success" as="a" href={urls.printToken} target="_blank">
                                         <i className="bx bx-printer me-2" />
                                         {t('global.token')}
                                     </Button>
@@ -131,13 +145,8 @@ export default function ShowAppointment({
                             </h3>
                             <ul className="space-y-2">
                                 {patientHistory.primary.map((item, index) => (
-                                    <li
-                                        key={`primary-${index}`}
-                                        className="rounded-lg border-s-4 border-amber-400 bg-gray-50 p-3 text-sm dark:bg-gray-800/40"
-                                    >
-                                        <Badge color="warning" className="mb-1">
-                                            {item.date ?? '—'}
-                                        </Badge>
+                                    <li key={`primary-${index}`} className="rounded-lg border-s-4 border-amber-400 bg-gray-50 p-3 text-sm dark:bg-gray-800/40">
+                                        <Badge color="warning" className="mb-1">{item.date ?? '—'}</Badge>
                                         <p>{item.description}</p>
                                     </li>
                                 ))}
@@ -149,13 +158,8 @@ export default function ShowAppointment({
                             </h3>
                             <ul className="space-y-2">
                                 {patientHistory.final.map((item, index) => (
-                                    <li
-                                        key={`final-${index}`}
-                                        className="rounded-lg border-s-4 border-emerald-400 bg-gray-50 p-3 text-sm dark:bg-gray-800/40"
-                                    >
-                                        <Badge color="success" className="mb-1">
-                                            {item.date ?? '—'}
-                                        </Badge>
+                                    <li key={`final-${index}`} className="rounded-lg border-s-4 border-emerald-400 bg-gray-50 p-3 text-sm dark:bg-gray-800/40">
+                                        <Badge color="success" className="mb-1">{item.date ?? '—'}</Badge>
                                         <p>{item.description}</p>
                                     </li>
                                 ))}
@@ -165,8 +169,25 @@ export default function ShowAppointment({
                 </Card>
 
                 <div className="space-y-4">
-                    <AdviceSection appointmentId={appointment.id} />
-                    <DiagnosisSection appointmentId={appointment.id} />
+                    <BloodBankSection appointmentId={id} />
+                    <DiagnosisSection appointmentId={id} />
+                    <PrescriptionSection appointmentId={id} />
+                    <AdviceSection appointmentId={id} />
+                    <LabTestSection appointmentId={id} />
+                    <HospitalizationCheckupSection appointmentId={id} />
+                    <ConsultationSection appointmentId={id} />
+                    <ReferDepartmentSection appointmentId={id} />
+                    <UnderReviewSection appointmentId={id} />
+                    <RelatedVisitsSection appointmentId={id} />
+                    <HospitalizationSection appointmentId={id} />
+                    <HospitalizationVisitsSection appointmentId={id} />
+                    <AnesthesiaSection appointmentId={id} />
+                    <OperationSection appointmentId={id} />
+                    <IcuSection appointmentId={id} />
+                    <IcuVisitsSection appointmentId={id} />
+                    <PhysiotherapySection appointmentId={id} />
+                    <DentistSection appointmentId={id} />
+                    <NephrologySection appointmentId={id} />
                 </div>
             </div>
         </DashboardLayout>

@@ -2,7 +2,24 @@
 
 use App\Http\Controllers\V1\AnesthesiaController;
 use App\Http\Controllers\V1\AppointmentSections\AdviceController;
+use App\Http\Controllers\V1\AppointmentSections\AnesthesiaController as AppointmentAnesthesiaController;
+use App\Http\Controllers\V1\AppointmentSections\BloodBankController as AppointmentBloodBankController;
+use App\Http\Controllers\V1\AppointmentSections\ConsultationController as AppointmentConsultationController;
+use App\Http\Controllers\V1\AppointmentSections\DentistController as AppointmentDentistController;
 use App\Http\Controllers\V1\AppointmentSections\DiagnosisController;
+use App\Http\Controllers\V1\AppointmentSections\HospitalizationCheckupController;
+use App\Http\Controllers\V1\AppointmentSections\HospitalizationController as AppointmentHospitalizationController;
+use App\Http\Controllers\V1\AppointmentSections\HospitalizationVisitsController;
+use App\Http\Controllers\V1\AppointmentSections\IcuController as AppointmentIcuController;
+use App\Http\Controllers\V1\AppointmentSections\IcuVisitsController;
+use App\Http\Controllers\V1\AppointmentSections\LabTestController;
+use App\Http\Controllers\V1\AppointmentSections\NephrologyController as AppointmentNephrologyController;
+use App\Http\Controllers\V1\AppointmentSections\OperationController as AppointmentOperationController;
+use App\Http\Controllers\V1\AppointmentSections\PhysiotherapyController as AppointmentPhysiotherapyController;
+use App\Http\Controllers\V1\AppointmentSections\PrescriptionController as AppointmentPrescriptionController;
+use App\Http\Controllers\V1\AppointmentSections\ReferDepartmentController;
+use App\Http\Controllers\V1\AppointmentSections\RelatedVisitsController;
+use App\Http\Controllers\V1\AppointmentSections\UnderReviewController as AppointmentUnderReviewController;
 use App\Http\Controllers\V1\AppointmentController;
 use App\Http\Controllers\V1\BackupController;
 use App\Http\Controllers\V1\BedController;
@@ -98,15 +115,43 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/report', [AppointmentController::class, 'report'])->name('report');
         Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
         Route::prefix('{appointment}')->name('sections.')->group(function () {
-            Route::get('advice', [AdviceController::class, 'index'])->name('advice.index');
-            Route::post('advice', [AdviceController::class, 'store'])->name('advice.store');
-            Route::put('advice/{advice}', [AdviceController::class, 'update'])->name('advice.update');
-            Route::delete('advice/{advice}', [AdviceController::class, 'destroy'])->name('advice.destroy');
+            Route::get('blood-bank', [AppointmentBloodBankController::class, 'index'])->name('blood-bank.index');
+            Route::post('blood-bank', [AppointmentBloodBankController::class, 'store'])->name('blood-bank.store');
+            Route::delete('blood-bank/{bloodBank}', [AppointmentBloodBankController::class, 'destroy'])->name('blood-bank.destroy');
 
             Route::get('diagnosis', [DiagnosisController::class, 'index'])->name('diagnosis.index');
             Route::post('diagnosis', [DiagnosisController::class, 'store'])->name('diagnosis.store');
             Route::put('diagnosis/{diagnose}', [DiagnosisController::class, 'update'])->name('diagnosis.update');
             Route::delete('diagnosis/{diagnose}', [DiagnosisController::class, 'destroy'])->name('diagnosis.destroy');
+
+            Route::get('prescription', [AppointmentPrescriptionController::class, 'index'])->name('prescription.index');
+            Route::delete('prescription/{prescription}', [AppointmentPrescriptionController::class, 'destroy'])->name('prescription.destroy');
+
+            Route::get('advice', [AdviceController::class, 'index'])->name('advice.index');
+            Route::post('advice', [AdviceController::class, 'store'])->name('advice.store');
+            Route::put('advice/{advice}', [AdviceController::class, 'update'])->name('advice.update');
+            Route::delete('advice/{advice}', [AdviceController::class, 'destroy'])->name('advice.destroy');
+
+            Route::get('lab-tests', [LabTestController::class, 'index'])->name('lab-tests.index');
+            Route::get('hospitalization-checkups', [HospitalizationCheckupController::class, 'index'])->name('hospitalization-checkups.index');
+            Route::get('consultations', [AppointmentConsultationController::class, 'index'])->name('consultations.index');
+            Route::delete('consultations/{consultation}', [AppointmentConsultationController::class, 'destroy'])->name('consultations.destroy');
+            Route::get('refer-department', [ReferDepartmentController::class, 'index'])->name('refer-department.index');
+            Route::get('under-review', [AppointmentUnderReviewController::class, 'index'])->name('under-review.index');
+            Route::delete('under-review/{underReview}', [AppointmentUnderReviewController::class, 'destroy'])->name('under-review.destroy');
+            Route::get('related-visits', [RelatedVisitsController::class, 'index'])->name('related-visits.index');
+            Route::get('hospitalization', [AppointmentHospitalizationController::class, 'index'])->name('hospitalization.index');
+            Route::delete('hospitalization/{hospitalization}', [AppointmentHospitalizationController::class, 'destroy'])->name('hospitalization.destroy');
+            Route::get('hospitalization-visits', [HospitalizationVisitsController::class, 'index'])->name('hospitalization-visits.index');
+            Route::get('anesthesia', [AppointmentAnesthesiaController::class, 'index'])->name('anesthesia.index');
+            Route::delete('anesthesia/{anesthesia}', [AppointmentAnesthesiaController::class, 'destroy'])->name('anesthesia.destroy');
+            Route::get('operations', [AppointmentOperationController::class, 'index'])->name('operations.index');
+            Route::get('icu', [AppointmentIcuController::class, 'index'])->name('icu.index');
+            Route::delete('icu/{icu}', [AppointmentIcuController::class, 'destroy'])->name('icu.destroy');
+            Route::get('icu-visits', [IcuVisitsController::class, 'index'])->name('icu-visits.index');
+            Route::get('physiotherapy', [AppointmentPhysiotherapyController::class, 'index'])->name('physiotherapy.index');
+            Route::get('dentist', [AppointmentDentistController::class, 'index'])->name('dentist.index');
+            Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
         });
         Route::get('/{appointment}/edit', [AppointmentController::class, 'edit'])->name('edit');
         Route::match(['put', 'post'], '/{appointment}', [AppointmentController::class, 'update'])->name('update');

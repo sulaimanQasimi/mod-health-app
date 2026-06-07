@@ -445,7 +445,12 @@ export default function PatientCreateForm({
                             />
                         </FormField>
 
-                        <FormField label={t('global.job_category')} icon="bx-category" required>
+                        <FormField
+                            label={t('global.job_category')}
+                            icon="bx-category"
+                            required
+                            className="md:col-span-2 xl:col-span-3"
+                        >
                             <SegmentedControl
                                 value={form.job_category}
                                 onChange={(value) => handleJobCategoryChange(value as '0' | '1')}
@@ -516,7 +521,13 @@ export default function PatientCreateForm({
                         />
                     </FormField>
 
-                    <FormField label={t('global.gender')} icon="bx-male-female" required error={errors.gender}>
+                    <FormField
+                        label={t('global.gender')}
+                        icon="bx-male-female"
+                        required
+                        error={errors.gender}
+                        className={patientType === '2' ? undefined : 'md:col-span-2 xl:col-span-3'}
+                    >
                         {patientType === '2' ? (
                             <IconSelect
                                 id="gender"
@@ -725,7 +736,7 @@ export default function PatientCreateForm({
                     </FormSection>
                 )}
 
-                <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+                <div className="mt-8 flex flex-col-reverse gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700">
                     {isEdit && permissions?.delete ? (
                         <Button
                             type="button"
@@ -749,7 +760,7 @@ export default function PatientCreateForm({
                     ) : (
                         <span />
                     )}
-                    <Button type="submit" color="blue" disabled={submitting || deleting} className="min-w-[140px]">
+                    <Button type="submit" color="blue" disabled={submitting || deleting} className="w-full sm:ms-auto sm:w-auto sm:min-w-[140px]">
                         {submitting ? (
                             <>
                                 <Spinner size="sm" className="me-2" />

@@ -15,8 +15,8 @@ export default function AgeInput({ year, month, day, onChange, error, preview, c
     const { t } = useTranslation();
 
     return (
-        <div className="space-y-1">
-            <div className="grid grid-cols-3 gap-1.5">
+        <div className="space-y-1.5">
+            <div className="grid grid-cols-3 gap-2">
                 {[
                     { field: 'age_year' as const, label: t('global.year'), max: 150 },
                     { field: 'age_month' as const, label: t('global.month'), max: 11 },

@@ -12,27 +12,18 @@ const patientTypes = [
         icon: 'bx-shield-quarter',
         labelKey: 'global.mod',
         descKey: 'global.military',
-        gradient: 'from-blue-500 to-indigo-600',
-        ring: 'ring-blue-500',
-        bg: 'bg-blue-50 dark:bg-blue-950/30',
     },
     {
         type: '1' as PatientType,
         icon: 'bx-buildings',
         labelKey: 'global.recipient',
         descKey: 'global.referred_by',
-        gradient: 'from-violet-500 to-purple-600',
-        ring: 'ring-violet-500',
-        bg: 'bg-violet-50 dark:bg-violet-950/30',
     },
     {
         type: '2' as PatientType,
         icon: 'bx-group',
         labelKey: 'global.family',
         descKey: 'global.referred_person',
-        gradient: 'from-emerald-500 to-teal-600',
-        ring: 'ring-emerald-500',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
 ];
 
@@ -40,7 +31,7 @@ export default function PatientTypeSelector({ value, onChange }: PatientTypeSele
     const { t } = useTranslation();
 
     return (
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {patientTypes.map((item) => {
                 const selected = value === item.type;
 
@@ -49,24 +40,29 @@ export default function PatientTypeSelector({ value, onChange }: PatientTypeSele
                         key={item.type}
                         type="button"
                         onClick={() => onChange(item.type)}
-                        className={`group relative overflow-hidden rounded-2xl border-2 p-5 text-start transition-all duration-200 ${
+                        className={`flex items-start gap-3 rounded-lg border px-4 py-3 text-start transition-colors ${
                             selected
-                                ? `border-transparent ${item.bg} shadow-lg ring-2 ${item.ring} ring-offset-2 dark:ring-offset-gray-900`
-                                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600'
+                                ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600/20 dark:border-blue-500 dark:bg-blue-950/30 dark:ring-blue-500/30'
+                                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800/50 dark:hover:border-gray-500 dark:hover:bg-gray-800'
                         }`}
                     >
-                        <div
-                            className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient} text-white shadow-md transition-transform group-hover:scale-105`}
+                        <span
+                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                                selected
+                                    ? 'bg-blue-600 text-white dark:bg-blue-500'
+                                    : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                            }`}
                         >
-                            <i className={`bx ${item.icon} text-2xl`} />
-                        </div>
-                        <h3 className="text-base font-bold text-gray-900 dark:text-white">{t(item.labelKey)}</h3>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t(item.descKey)}</p>
-                        {selected && (
-                            <div className="absolute end-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow dark:bg-gray-900">
-                                <i className="bx bx-check text-lg text-green-500" />
-                            </div>
-                        )}
+                            <i className={`bx ${item.icon} text-lg`} />
+                        </span>
+                        <span className="min-w-0">
+                            <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                                {t(item.labelKey)}
+                            </span>
+                            <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                {t(item.descKey)}
+                            </span>
+                        </span>
                     </button>
                 );
             })}

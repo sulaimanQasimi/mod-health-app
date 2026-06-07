@@ -14,7 +14,7 @@ interface SegmentedControlProps {
 export default function SegmentedControl({ value, options, onChange, compact = false }: SegmentedControlProps) {
     return (
         <div
-            className={`inline-flex w-full rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700/50 ${
+            className={`grid w-full grid-cols-2 rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700/40 ${
                 compact ? 'p-0.5' : 'p-1'
             }`}
         >

@@ -1,5 +1,6 @@
 import {
     Children,
+    CSSProperties,
     ReactNode,
     isValidElement,
     useEffect,
@@ -8,6 +9,7 @@ import {
     useRef,
     useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export interface SearchableSelectOption {
@@ -76,9 +78,12 @@ export default function SearchableSelect({
     const isRtl = dir === 'rtl';
     const listboxId = useId();
     const containerRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
 
     const options = useMemo(
         () => optionsProp ?? optionsFromChildren(children),
@@ -103,10 +108,17 @@ export default function SearchableSelect({
         }
 
         const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-                setSearchQuery('');
+            const target = event.target as Node;
+
+            if (
+                containerRef.current?.contains(target) ||
+                dropdownRef.current?.contains(target)
+            ) {
+                return;
             }
+
+            setIsOpen(false);
+            setSearchQuery('');
         };
 
         const handleEscape = (event: KeyboardEvent) => {
@@ -131,6 +143,37 @@ export default function SearchableSelect({
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        if (!isOpen || !triggerRef.current) {
+            return;
+        }
+
+        const updatePosition = () => {
+            if (!triggerRef.current) {
+                return;
+            }
+
+            const rect = triggerRef.current.getBoundingClientRect();
+
+            setDropdownStyle({
+                position: 'fixed',
+                top: rect.bottom + 4,
+                left: rect.left,
+                width: rect.width,
+                zIndex: 9999,
+            });
+        };
+
+        updatePosition();
+        window.addEventListener('scroll', updatePosition, true);
+        window.addEventListener('resize', updatePosition);
+
+        return () => {
+            window.removeEventListener('scroll', updatePosition, true);
+            window.removeEventListener('resize', updatePosition);
+        };
+    }, [isOpen]);
+
     const handleSelect = (optionValue: string) => {
         onChange(optionValue);
         setIsOpen(false);
@@ -153,6 +196,7 @@ export default function SearchableSelect({
     return (
         <div ref={containerRef} className={mergeClasses('relative w-full', className)} dir={dir}>
             <button
+                ref={triggerRef}
                 id={id}
                 type="button"
                 disabled={disabled}
@@ -203,81 +247,90 @@ export default function SearchableSelect({
                 ))}
             </select>
 
-            {isOpen && (
-                <div
-                    className={mergeClasses(
-                        'absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
-                        'dark:border-gray-600 dark:bg-gray-800',
-                    )}
-                >
-                    <div className="border-b border-gray-100 p-2 dark:border-gray-700">
-                        <div className="relative">
-                            <i
-                                className={mergeClasses(
-                                    'bx bx-search pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray-400',
-                                    isRtl ? 'end-3' : 'start-3',
-                                )}
-                            />
-                            <input
-                                ref={searchRef}
-                                type="text"
-                                value={searchQuery}
-                                onChange={(event) => setSearchQuery(event.target.value)}
-                                placeholder={searchPlaceholder ?? t('global.search')}
-                                dir={dir}
-                                className={mergeClasses(
-                                    'w-full rounded-md border border-gray-200 bg-gray-50 py-2 text-sm text-gray-900',
-                                    'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500',
-                                    'dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
-                                    isRtl ? 'pe-9 ps-3 text-right' : 'ps-9 pe-3 text-left',
-                                )}
-                            />
-                        </div>
-                    </div>
-
-                    <ul
-                        id={listboxId}
-                        role="listbox"
+            {isOpen &&
+                createPortal(
+                    <div
+                        ref={dropdownRef}
+                        style={dropdownStyle}
+                        dir={dir}
                         className={mergeClasses(
-                            'max-h-56 overflow-y-auto py-1',
-                            isRtl ? 'text-right' : 'text-left',
+                            'overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
+                            'dark:border-gray-600 dark:bg-gray-800',
                         )}
                     >
-                        {filteredOptions.length === 0 ? (
-                            <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
-                                {emptyMessage ?? t('global.no_results_found')}
-                            </li>
-                        ) : (
-                            filteredOptions.map((option) => {
-                                const isSelected = option.value === value;
+                        <div className="border-b border-gray-100 p-2 dark:border-gray-700">
+                            <div className="relative">
+                                <i
+                                    className={mergeClasses(
+                                        'bx bx-search pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray-400',
+                                        isRtl ? 'end-3' : 'start-3',
+                                    )}
+                                />
+                                <input
+                                    ref={searchRef}
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(event) => setSearchQuery(event.target.value)}
+                                    placeholder={searchPlaceholder ?? t('global.search')}
+                                    dir={dir}
+                                    className={mergeClasses(
+                                        'w-full rounded-md border border-gray-200 bg-gray-50 py-2 text-sm text-gray-900',
+                                        'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500',
+                                        'dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
+                                        isRtl ? 'pe-9 ps-3 text-right' : 'ps-9 pe-3 text-left',
+                                    )}
+                                />
+                            </div>
+                        </div>
 
-                                return (
-                                    <li key={`${option.value}-${option.label}`} role="option" aria-selected={isSelected}>
-                                        <button
-                                            type="button"
-                                            disabled={option.disabled}
-                                            onClick={() => handleSelect(option.value)}
-                                            className={mergeClasses(
-                                                'flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors',
-                                                isRtl ? 'flex-row-reverse text-right' : 'text-left',
-                                                isSelected
-                                                    ? 'bg-blue-50 font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                                                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700/60',
-                                                option.disabled && 'cursor-not-allowed opacity-50',
-                                            )}
+                        <ul
+                            id={listboxId}
+                            role="listbox"
+                            className={mergeClasses(
+                                'max-h-56 overflow-y-auto py-1',
+                                isRtl ? 'text-right' : 'text-left',
+                            )}
+                        >
+                            {filteredOptions.length === 0 ? (
+                                <li className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                    {emptyMessage ?? t('global.no_results_found')}
+                                </li>
+                            ) : (
+                                filteredOptions.map((option) => {
+                                    const isSelected = option.value === value;
+
+                                    return (
+                                        <li
+                                            key={`${option.value}-${option.label}`}
+                                            role="option"
+                                            aria-selected={isSelected}
                                         >
-                                            {isSelected && (
-                                                <i className="bx bx-check shrink-0 text-base text-blue-600 dark:text-blue-400" />
-                                            )}
-                                            <span className="truncate">{option.label}</span>
-                                        </button>
-                                    </li>
-                                );
-                            })
-                        )}
-                    </ul>
-                </div>
-            )}
+                                            <button
+                                                type="button"
+                                                disabled={option.disabled}
+                                                onClick={() => handleSelect(option.value)}
+                                                className={mergeClasses(
+                                                    'flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors',
+                                                    isRtl ? 'flex-row-reverse text-right' : 'text-left',
+                                                    isSelected
+                                                        ? 'bg-blue-50 font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                                        : 'text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700/60',
+                                                    option.disabled && 'cursor-not-allowed opacity-50',
+                                                )}
+                                            >
+                                                {isSelected && (
+                                                    <i className="bx bx-check shrink-0 text-base text-blue-600 dark:text-blue-400" />
+                                                )}
+                                                <span className="truncate">{option.label}</span>
+                                            </button>
+                                        </li>
+                                    );
+                                })
+                            )}
+                        </ul>
+                    </div>,
+                    document.body,
+                )}
         </div>
     );
 }

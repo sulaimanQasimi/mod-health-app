@@ -15,7 +15,6 @@ interface FormFieldProps {
 
 export function FormField({
     label,
-    icon,
     required,
     error,
     hint,
@@ -26,13 +25,12 @@ export function FormField({
     return (
         <div className={`${compact ? 'space-y-1' : 'space-y-1.5'} ${className}`}>
             <Label
-                className={`flex items-center gap-1 font-medium text-gray-700 dark:text-gray-300 ${
+                className={`block font-medium text-gray-700 dark:text-gray-300 ${
                     compact ? 'text-xs' : 'text-sm'
                 }`}
             >
-                {icon && <i className={`bx ${icon} text-gray-400 ${compact ? 'text-sm' : 'text-base'}`} />}
                 {label}
-                {required && <span className="text-red-500">*</span>}
+                {required && <span className="ms-0.5 text-red-500">*</span>}
             </Label>
             {children}
             {hint && !error && (

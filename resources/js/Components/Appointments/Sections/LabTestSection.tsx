@@ -8,7 +8,6 @@ import {
     ModalHeader,
     Spinner,
     Textarea,
-    TextInput,
 } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { usePage } from '@inertiajs/react';
@@ -20,6 +19,7 @@ import {
     TableHeader,
     TableRow,
 } from '../../ui/Table';
+import SearchableMultiSelect from '../../ui/SearchableMultiSelect';
 import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
@@ -113,10 +113,9 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
     const [labTypes, setLabTypes] = useState<LabTypeOption[]>([]);
     const [createOpen, setCreateOpen] = useState(false);
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [selectedLabTypeIds, setSelectedLabTypeIds] = useState<number[]>([]);
+    const [selectedLabTypeIds, setSelectedLabTypeIds] = useState<string[]>([]);
     const [priority, setPriority] = useState('normal');
     const [notes, setNotes] = useState('');
-    const [labTypeFilter, setLabTypeFilter] = useState('');
     const [selectedRegistration, setSelectedRegistration] = useState<LabTestDetail | null>(null);
 
     const loadData = useCallback(async () => {
@@ -153,22 +152,21 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
         loadData();
     }, [loadData]);
 
-    const filteredLabTypes = useMemo(() => {
-        const query = labTypeFilter.trim().toLowerCase();
-        if (!query) {
-            return labTypes;
-        }
-        return labTypes.filter((labType) => {
-            const haystack = `${labType.name} ${labType.category_name ?? ''}`.toLowerCase();
-            return haystack.includes(query);
-        });
-    }, [labTypeFilter, labTypes]);
+    const labTypeOptions = useMemo(
+        () =>
+            labTypes.map((labType) => ({
+                value: String(labType.id),
+                label: labType.category_name
+                    ? `${labType.name} (${labType.category_name})`
+                    : labType.name,
+            })),
+        [labTypes],
+    );
 
     const resetCreateForm = () => {
         setSelectedLabTypeIds([]);
         setPriority('normal');
         setNotes('');
-        setLabTypeFilter('');
     };
 
     const openCreate = async () => {
@@ -182,14 +180,6 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
     const closeCreate = () => {
         setCreateOpen(false);
         resetCreateForm();
-    };
-
-    const toggleLabType = (labTypeId: number) => {
-        setSelectedLabTypeIds((current) =>
-            current.includes(labTypeId)
-                ? current.filter((id) => id !== labTypeId)
-                : [...current, labTypeId],
-        );
     };
 
     const handleCreate = async (event: FormEvent, closeAfter = false) => {
@@ -209,7 +199,7 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
                     'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify({
-                    lab_type_ids: selectedLabTypeIds,
+                    lab_type_ids: selectedLabTypeIds.map(Number),
                     priority,
                     notes,
                 }),
@@ -361,45 +351,14 @@ export default function LabTestSection({ appointmentId }: LabTestSectionProps) {
                             <>
                                 <div>
                                     <Label>{t('global.lab_type')} ({t('global.select_multiple')})</Label>
-                                    <TextInput
-                                        className="mb-3"
+                                    <SearchableMultiSelect
+                                        values={selectedLabTypeIds}
+                                        onChange={setSelectedLabTypeIds}
+                                        options={labTypeOptions}
                                         placeholder={t('global.select_lab_types')}
-                                        value={labTypeFilter}
-                                        onChange={(event) => setLabTypeFilter(event.target.value)}
+                                        searchPlaceholder={t('global.search')}
+                                        emptyMessage={t('global.no_results_found')}
                                     />
-                                    <div className="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-gray-200 p-3 dark:border-gray-700">
-                                        {filteredLabTypes.map((labType) => (
-                                            <label
-                                                key={labType.id}
-                                                className="flex cursor-pointer items-start gap-3 rounded-lg px-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    className="mt-1"
-                                                    checked={selectedLabTypeIds.includes(labType.id)}
-                                                    onChange={() => toggleLabType(labType.id)}
-                                                />
-                                                <span className="text-sm">
-                                                    <span className="font-medium text-gray-900 dark:text-white">
-                                                        {labType.name}
-                                                    </span>
-                                                    {labType.category_name && (
-                                                        <span className="ms-2 text-gray-500 dark:text-gray-400">
-                                                            ({labType.category_name})
-                                                        </span>
-                                                    )}
-                                                    <span className="ms-2 text-xs text-gray-400">
-                                                        {labType.parameters_count} {t('global.parameters')}
-                                                    </span>
-                                                </span>
-                                            </label>
-                                        ))}
-                                        {filteredLabTypes.length === 0 && (
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                {t('global.no_records_found')}
-                                            </p>
-                                        )}
-                                    </div>
                                 </div>
                                 <div>
                                     <Label>{t('global.priority')}</Label>

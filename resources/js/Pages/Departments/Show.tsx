@@ -30,7 +30,7 @@ export default function ShowDepartment({
             <div className="mx-auto max-w-3xl">
                 <Card className="shadow-sm">
                     <SettingsPageHeader
-                        title={t('global.department_details')}
+                        title={t('global.departments')}
                         subtitle={department.name}
                         icon="bx-buildings"
                         accent="from-blue-500 to-indigo-600"

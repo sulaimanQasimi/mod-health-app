@@ -1,0 +1,1 @@
+import{j as o}from"./app-BKuqaZap.js";function t(...r){return r.filter(Boolean).join(" ")}function a({className:r=""}){return o.jsx("i",{className:t("bx bx-arrow-back rtl:rotate-180",r)})}export{a as B};

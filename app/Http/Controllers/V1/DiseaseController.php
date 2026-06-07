@@ -39,7 +39,7 @@ class DiseaseController extends Controller
                 'department_id' => $disease->department_id,
                 'department_name' => $disease->department?->name,
                 'disease_category_id' => $disease->disease_category_id,
-                'category_name' => $disease->category?->name,
+                'disease_category_name' => $disease->category?->name,
             ]),
             'categories' => $categories->map(fn (DiseaseCategory $category) => [
                 'id' => $category->id,
@@ -48,7 +48,7 @@ class DiseaseController extends Controller
             ])->values()->all(),
             'filters' => $this->collectFilters($request, self::FILTER_KEYS),
             'filterOptions' => [
-                'categories' => $categories->map(fn (DiseaseCategory $category) => [
+                'diseaseCategories' => $categories->map(fn (DiseaseCategory $category) => [
                     'id' => $category->id,
                     'name' => $category->name,
                 ])->values()->all(),
@@ -236,7 +236,7 @@ class DiseaseController extends Controller
     {
         return [
             'departments' => Department::query()->orderBy('name')->get(['id', 'name']),
-            'categories' => DiseaseCategory::query()->orderBy('name')->get(['id', 'name']),
+            'diseaseCategories' => DiseaseCategory::query()->orderBy('name')->get(['id', 'name']),
         ];
     }
 

@@ -177,7 +177,7 @@ export default function IndexDiseases({
                                             setFilters(next);
                                             applyFilters(next);
                                         }}
-                                        options={filterOptions.diseaseCategories.map((category) => ({
+                                        options={(filterOptions.diseaseCategories ?? []).map((category) => ({
                                             value: String(category.id),
                                             label: category.name,
                                         }))}

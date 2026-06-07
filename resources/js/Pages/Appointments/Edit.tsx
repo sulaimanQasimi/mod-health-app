@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Button, Card } from 'flowbite-react';
 import AppointmentEditForm from '../../Components/Appointments/AppointmentEditForm';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     AppointmentEditFormData,
@@ -46,7 +47,7 @@ export default function EditAppointment({
                             </div>
                         </div>
                         <Button color="light" as={Link} href={urls.index} className="w-fit">
-                            <i className="bx bx-arrow-back me-2 text-lg" />
+                            <BackArrowIcon className="me-2 text-lg" />
                             {t('global.back')}
                         </Button>
                     </div>

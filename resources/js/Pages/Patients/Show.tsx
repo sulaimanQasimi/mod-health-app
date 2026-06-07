@@ -1,9 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge, Button, Card } from 'flowbite-react';
+import { Badge, Button } from 'flowbite-react';
 import { ReactNode, useState } from 'react';
 import CreateAppointmentModal from '../../Components/Patients/CreateAppointmentModal';
 import PatientQrCode from '../../Components/Patients/PatientQrCode';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import {
     Table,
     TableBody,
@@ -39,52 +40,44 @@ interface ShowPatientProps {
 interface DetailFieldProps {
     label: string;
     value: string | null | undefined;
-    icon?: string;
 }
 
 interface SectionCardProps {
-    icon: string;
     title: string;
-    accent?: 'blue' | 'cyan' | 'violet' | 'amber' | 'emerald' | 'rose';
     action?: ReactNode;
     children: ReactNode;
 }
 
-const accentStyles = {
-    blue: 'from-blue-500 to-indigo-600',
-    cyan: 'from-cyan-500 to-blue-600',
-    violet: 'from-violet-500 to-purple-600',
-    amber: 'from-amber-500 to-orange-600',
-    emerald: 'from-emerald-500 to-teal-600',
-    rose: 'from-rose-500 to-pink-600',
-};
+function mergeClasses(...classes: (string | false | null | undefined)[]) {
+    return classes.filter(Boolean).join(' ');
+}
 
-function DetailField({ label, value, icon }: DetailFieldProps) {
+function displayValue(value: string | number | null | undefined) {
+    if (value === null || value === undefined || value === '') {
+        return '—';
+    }
+
+    return String(value);
+}
+
+function DetailField({ label, value }: DetailFieldProps) {
     return (
-        <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-700/60 dark:bg-gray-800/40">
-            <dt className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                {icon && <i className={`bx ${icon} text-sm`} />}
-                {label}
-            </dt>
-            <dd className="mt-1.5 text-sm font-medium text-gray-900 dark:text-white">{value || '—'}</dd>
+        <div className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/50">
+            <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white">{displayValue(value)}</dd>
         </div>
     );
 }
 
-function SectionCard({ icon, title, accent = 'blue', action, children }: SectionCardProps) {
+function SectionCard({ title, action, children }: SectionCardProps) {
     return (
-        <Card className="overflow-hidden shadow-sm">
-            <div
-                className={`flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gradient-to-r ${accentStyles[accent]} px-5 py-3.5 dark:border-gray-700`}
-            >
-                <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <i className={`bx ${icon} text-lg`} />
-                    {title}
-                </h2>
+        <section className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-3 dark:border-gray-700">
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h2>
                 {action}
             </div>
-            <div className="p-5">{children}</div>
-        </Card>
+            <div className="min-w-0 p-5">{children}</div>
+        </section>
     );
 }
 
@@ -100,7 +93,7 @@ function DiagnosisList({
 
     if (items.length === 0) {
         return (
-            <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                 {t('global.no_results_found')}
             </p>
         );
@@ -111,11 +104,12 @@ function DiagnosisList({
             {items.map((item) => (
                 <li
                     key={item.id}
-                    className={`flex flex-wrap items-start gap-2 rounded-lg border p-3 text-sm ${
+                    className={mergeClasses(
+                        'flex flex-wrap items-start gap-2 rounded-lg border p-3 text-sm',
                         isPrimary
-                            ? 'border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/20'
-                            : 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-900/40 dark:bg-emerald-950/20'
-                    }`}
+                            ? 'border-amber-200/80 bg-amber-50/50 dark:border-amber-900/30 dark:bg-amber-950/20'
+                            : 'border-emerald-200/80 bg-emerald-50/50 dark:border-emerald-900/30 dark:bg-emerald-950/20',
+                    )}
                 >
                     <Badge color={isPrimary ? 'warning' : 'success'} className="shrink-0">
                         {item.date}
@@ -130,7 +124,7 @@ function DiagnosisList({
 function EmptyTableRow({ colSpan, message }: { colSpan: number; message: string }) {
     return (
         <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
-            <TableCell colSpan={colSpan} align="center" muted className="py-10">
+            <TableCell colSpan={colSpan} align="center" muted className="py-8">
                 {message}
             </TableCell>
         </TableRow>
@@ -188,48 +182,39 @@ export default function ShowPatient({
         <DashboardLayout>
             <Head title={t('global.view_patient')} />
 
-            <div className="mx-auto max-w-7xl space-y-6">
-                {/* Header */}
-                <Card className="overflow-hidden shadow-sm">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg ring-4 ring-blue-100 dark:ring-blue-900/40">
-                                    {patient.image ? (
-                                        <img
-                                            src={patient.image}
-                                            alt={fullName}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <i className="bx bx-user text-3xl" />
-                                    )}
-                                </div>
-                                <span className="absolute -bottom-1 -end-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-blue-600 shadow dark:bg-gray-800">
-                                    #{patient.id}
-                                </span>
+            <div className="mx-auto min-w-0 max-w-7xl space-y-6">
+                <div className="rounded-xl border border-gray-200 bg-white px-5 py-5 dark:border-gray-700 dark:bg-gray-800">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="flex min-w-0 items-start gap-4">
+                            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
+                                {patient.image ? (
+                                    <img src={patient.image} alt={fullName} className="h-full w-full object-cover" />
+                                ) : (
+                                    <i className="bx bx-user text-2xl text-gray-400" />
+                                )}
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{fullName}</h1>
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="min-w-0">
+                                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">#{patient.id}</p>
+                                <h1 className="truncate text-xl font-semibold text-gray-900 dark:text-white">{fullName}</h1>
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
                                     {patient.id_card && (
-                                        <span className="me-3">
-                                            <i className="bx bx-id-card me-1" />
+                                        <span className="inline-flex items-center gap-1">
+                                            <i className="bx bx-id-card" />
                                             {patient.id_card}
                                         </span>
                                     )}
                                     {patient.phone && (
-                                        <span>
-                                            <i className="bx bx-phone me-1" />
+                                        <span className="inline-flex items-center gap-1">
+                                            <i className="bx bx-phone" />
                                             {patient.phone}
                                         </span>
                                     )}
-                                </p>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex shrink-0 flex-wrap gap-2">
                             <Button color="light" as={Link} href={urls.index}>
-                                <i className="bx bx-arrow-back me-2 text-lg" />
+                                <BackArrowIcon className="me-2 text-lg" />
                                 {t('global.back')}
                             </Button>
                             {permissions.edit && (
@@ -246,35 +231,34 @@ export default function ShowPatient({
                             )}
                         </div>
                     </div>
-                </Card>
+                </div>
 
-                <div className="grid gap-6 xl:grid-cols-[1fr_300px]">
-                    {/* Main column */}
-                    <div className="space-y-6">
-                        <SectionCard icon="bx-user-circle" title={t('global.personal_information')} accent="blue">
-                            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                <DetailField label={t('global.patient_name')} value={patient.name} icon="bx-user" />
-                                <DetailField label={t('global.last_name')} value={patient.last_name} icon="bx-user" />
-                                <DetailField label={t('global.father_name')} value={patient.father_name} icon="bx-male" />
-                                <DetailField label={t('global.nid')} value={patient.nid} icon="bx-fingerprint" />
-                                <DetailField label={t('global.phone')} value={patient.phone} icon="bx-phone" />
-                                <DetailField label={t('global.age')} value={patient.age} icon="bx-calendar" />
-                                <DetailField label={t('global.gender')} value={genderLabel} icon="bx-male-female" />
-                                <DetailField label={t('global.job')} value={patient.job} icon="bx-briefcase" />
-                                <DetailField label={t('global.job_category')} value={jobCategoryLabel} icon="bx-category" />
-                                <DetailField label={t('global.rank')} value={patient.rank} icon="bx-medal" />
-                                <DetailField label={t('global.militery_type')} value={patient.militery_type} icon="bx-shield" />
-                                <DetailField label={t('global.province')} value={patient.province} icon="bx-map" />
-                                <DetailField label={t('global.district')} value={patient.district} icon="bx-map-pin" />
-                                <DetailField label={t('global.referred_by')} value={patient.referred_by} icon="bx-user-check" />
-                                <DetailField label={t('global.creation_date')} value={patient.created_at} icon="bx-time" />
-                                <DetailField label={t('global.created_by')} value={patient.created_by} icon="bx-user-pin" />
+                <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+                    <div className="min-w-0 space-y-6">
+                        <SectionCard title={t('global.personal_information')}>
+                            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                <DetailField label={t('global.patient_name')} value={patient.name} />
+                                <DetailField label={t('global.last_name')} value={patient.last_name} />
+                                <DetailField label={t('global.father_name')} value={patient.father_name} />
+                                <DetailField label={t('global.nid')} value={patient.nid} />
+                                <DetailField label={t('global.phone')} value={patient.phone} />
+                                <DetailField label={t('global.age')} value={patient.age} />
+                                <DetailField label={t('global.gender')} value={genderLabel} />
+                                <DetailField label={t('global.job')} value={patient.job} />
+                                <DetailField label={t('global.job_category')} value={jobCategoryLabel} />
+                                <DetailField label={t('global.rank')} value={patient.rank} />
+                                <DetailField label={t('global.militery_type')} value={patient.militery_type} />
+                                <DetailField label={t('global.province')} value={patient.province} />
+                                <DetailField label={t('global.district')} value={patient.district} />
+                                <DetailField label={t('global.referred_by')} value={patient.referred_by} />
+                                <DetailField label={t('global.creation_date')} value={patient.created_at} />
+                                <DetailField label={t('global.created_by')} value={patient.created_by} />
                             </dl>
                         </SectionCard>
 
                         {(patient.referral_name || patient.referral_nid) && (
-                            <SectionCard icon="bx-group" title={t('global.referred_person')} accent="violet">
-                                <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            <SectionCard title={t('global.referred_person')}>
+                                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                     <DetailField label={t('global.name')} value={patient.referral_name} />
                                     <DetailField label={t('global.last_name')} value={patient.referral_last_name} />
                                     <DetailField label={t('global.father_name')} value={patient.referral_father_name} />
@@ -286,7 +270,7 @@ export default function ShowPatient({
                             </SectionCard>
                         )}
 
-                        <SectionCard icon="bx-calendar" title={t('global.previous_appointments')} accent="cyan">
+                        <SectionCard title={t('global.previous_appointments')}>
                             <Table>
                                 <TableHead>
                                     <TableRow variant="header">
@@ -297,15 +281,12 @@ export default function ShowPatient({
                                 </TableHead>
                                 <TableBody>
                                     {appointments.length === 0 ? (
-                                        <EmptyTableRow
-                                            colSpan={3}
-                                            message={t('global.no_results_found')}
-                                        />
+                                        <EmptyTableRow colSpan={3} message={t('global.no_results_found')} />
                                     ) : (
                                         appointments.map((appointment) => (
                                             <TableRow key={appointment.id}>
                                                 <TableCell className="font-medium">{appointment.number}</TableCell>
-                                                <TableCell>{appointment.doctor_name ?? '—'}</TableCell>
+                                                <TableCell>{displayValue(appointment.doctor_name)}</TableCell>
                                                 <TableCell muted>{appointment.date}</TableCell>
                                             </TableRow>
                                         ))
@@ -316,17 +297,9 @@ export default function ShowPatient({
 
                         {permissions.nephrology && (
                             <SectionCard
-                                icon="bx-donate-heart"
                                 title={t('global.nephrology_history')}
-                                accent="rose"
                                 action={
-                                    <Button
-                                        size="xs"
-                                        color="light"
-                                        as="a"
-                                        href={urls.hemodialysisCreate}
-                                        className="!text-rose-700"
-                                    >
+                                    <Button size="xs" color="light" as="a" href={urls.hemodialysisCreate}>
                                         <i className="bx bx-plus me-1" />
                                         {t('global.add_hemodialysis_session')}
                                     </Button>
@@ -335,86 +308,94 @@ export default function ShowPatient({
                                 <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                     {t('global.nephrology_registrations')}
                                 </h3>
-                                <Table className="mb-6">
-                                    <TableHead>
-                                        <TableRow variant="header">
-                                            <TableHeader>{t('global.ref_no')}</TableHeader>
-                                            <TableHeader>{t('global.visit_date')}</TableHeader>
-                                            <TableHeader>{t('global.doctor')}</TableHeader>
-                                            <TableHeader>{t('global.diagnosis')}</TableHeader>
-                                            <TableHeader align="center">{t('global.actions')}</TableHeader>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {nephrologyRegistrations.length === 0 ? (
-                                            <EmptyTableRow
-                                                colSpan={5}
-                                                message={t('global.no_registrations_found')}
-                                            />
-                                        ) : (
-                                            nephrologyRegistrations.map((registration) => (
-                                                <TableRow key={registration.id}>
-                                                    <TableCell className="font-medium">{registration.ref_no ?? '—'}</TableCell>
-                                                    <TableCell muted>{registration.visit_date ?? '—'}</TableCell>
-                                                    <TableCell>{registration.doctor_name ?? '—'}</TableCell>
-                                                    <TableCell className="max-w-[200px] truncate">
-                                                        {registration.diagnosis ?? '—'}
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <a
-                                                            href={registration.show_url}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                                                        >
-                                                            <i className="bx bx-show text-lg" />
-                                                        </a>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
+                                <div className="mb-6 min-w-0">
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow variant="header">
+                                                <TableHeader>{t('global.ref_no')}</TableHeader>
+                                                <TableHeader>{t('global.visit_date')}</TableHeader>
+                                                <TableHeader>{t('global.doctor')}</TableHeader>
+                                                <TableHeader>{t('global.diagnosis')}</TableHeader>
+                                                <TableHeader align="center">{t('global.actions')}</TableHeader>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {nephrologyRegistrations.length === 0 ? (
+                                                <EmptyTableRow
+                                                    colSpan={5}
+                                                    message={t('global.no_registrations_found')}
+                                                />
+                                            ) : (
+                                                nephrologyRegistrations.map((registration) => (
+                                                    <TableRow key={registration.id}>
+                                                        <TableCell className="font-medium">
+                                                            {displayValue(registration.ref_no)}
+                                                        </TableCell>
+                                                        <TableCell muted>{displayValue(registration.visit_date)}</TableCell>
+                                                        <TableCell>{displayValue(registration.doctor_name)}</TableCell>
+                                                        <TableCell className="max-w-[200px] truncate">
+                                                            {displayValue(registration.diagnosis)}
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <a
+                                                                href={registration.show_url}
+                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                                            >
+                                                                <i className="bx bx-show text-lg" />
+                                                            </a>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
 
                                 <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                     {t('global.hemodialysis_sessions')}
                                 </h3>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow variant="header">
-                                            <TableHeader>{t('global.ref_no')}</TableHeader>
-                                            <TableHeader>{t('global.session_date')}</TableHeader>
-                                            <TableHeader>{t('global.duration_minutes')}</TableHeader>
-                                            <TableHeader>{t('global.status')}</TableHeader>
-                                            <TableHeader align="center">{t('global.actions')}</TableHeader>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {hemodialysisSessions.length === 0 ? (
-                                            <EmptyTableRow
-                                                colSpan={5}
-                                                message={t('global.no_hemodialysis_sessions_found')}
-                                            />
-                                        ) : (
-                                            hemodialysisSessions.map((session) => (
-                                                <TableRow key={session.id}>
-                                                    <TableCell className="font-medium">{session.ref_no ?? '—'}</TableCell>
-                                                    <TableCell muted>{session.session_date ?? '—'}</TableCell>
-                                                    <TableCell>{session.duration_minutes ?? '—'}</TableCell>
-                                                    <TableCell>
-                                                        <Badge color="info">{statusLabel(session.status)}</Badge>
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <a
-                                                            href={session.show_url}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                                                        >
-                                                            <i className="bx bx-show text-lg" />
-                                                        </a>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
+                                <div className="min-w-0">
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow variant="header">
+                                                <TableHeader>{t('global.ref_no')}</TableHeader>
+                                                <TableHeader>{t('global.session_date')}</TableHeader>
+                                                <TableHeader>{t('global.duration_minutes')}</TableHeader>
+                                                <TableHeader>{t('global.status')}</TableHeader>
+                                                <TableHeader align="center">{t('global.actions')}</TableHeader>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {hemodialysisSessions.length === 0 ? (
+                                                <EmptyTableRow
+                                                    colSpan={5}
+                                                    message={t('global.no_hemodialysis_sessions_found')}
+                                                />
+                                            ) : (
+                                                hemodialysisSessions.map((session) => (
+                                                    <TableRow key={session.id}>
+                                                        <TableCell className="font-medium">
+                                                            {displayValue(session.ref_no)}
+                                                        </TableCell>
+                                                        <TableCell muted>{displayValue(session.session_date)}</TableCell>
+                                                        <TableCell>{displayValue(session.duration_minutes)}</TableCell>
+                                                        <TableCell>
+                                                            <Badge color="info">{statusLabel(session.status)}</Badge>
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <a
+                                                                href={session.show_url}
+                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                                            >
+                                                                <i className="bx bx-show text-lg" />
+                                                            </a>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
 
                                 {hemodialysisSessions.length > 0 && (
                                     <div className="mt-4">
@@ -426,18 +407,16 @@ export default function ShowPatient({
                             </SectionCard>
                         )}
 
-                        <SectionCard icon="bx-pulse" title={t('global.all_diagnoses')} accent="amber">
+                        <SectionCard title={t('global.all_diagnoses')}>
                             <div className="grid gap-6 lg:grid-cols-2">
-                                <div>
-                                    <h3 className="mb-3 rounded-lg bg-amber-100 py-2 text-center text-sm font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                                        <i className="bx bx-popsicle me-1" />
+                                <div className="min-w-0">
+                                    <h3 className="mb-3 text-sm font-medium text-amber-700 dark:text-amber-300">
                                         {t('global.primary_diagnoses')}
                                     </h3>
                                     <DiagnosisList items={diagnoses.primary} variant="primary" />
                                 </div>
-                                <div>
-                                    <h3 className="mb-3 rounded-lg bg-emerald-100 py-2 text-center text-sm font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                        <i className="bx bx-popsicle me-1" />
+                                <div className="min-w-0">
+                                    <h3 className="mb-3 text-sm font-medium text-emerald-700 dark:text-emerald-300">
                                         {t('global.final_diagnoses')}
                                     </h3>
                                     <DiagnosisList items={diagnoses.final} variant="final" />
@@ -446,12 +425,11 @@ export default function ShowPatient({
                         </SectionCard>
                     </div>
 
-                    {/* Sidebar */}
-                    <aside className="space-y-4">
-                        <Card className="shadow-sm">
-                            <div className="space-y-5 p-2">
+                    <aside className="min-w-0 space-y-4 xl:sticky xl:top-24 xl:self-start">
+                        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+                            <div className="space-y-5">
                                 <div className="text-center">
-                                    <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                    <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                                         {t('global.qr_code')}
                                     </p>
                                     <div className="flex justify-center">
@@ -459,11 +437,11 @@ export default function ShowPatient({
                                     </div>
                                 </div>
 
-                                <div className="border-t border-gray-100 pt-5 dark:border-gray-700">
-                                    <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                <div className="border-t border-gray-200 pt-5 dark:border-gray-700">
+                                    <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
                                         {t('global.patient_image')}
                                     </p>
-                                    <div className="flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
+                                    <div className="mx-auto flex aspect-square max-w-[220px] items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700/50">
                                         {patient.image ? (
                                             <img
                                                 src={patient.image}
@@ -479,7 +457,7 @@ export default function ShowPatient({
                                     </div>
                                 </div>
 
-                                <div className="space-y-2 border-t border-gray-100 pt-5 dark:border-gray-700">
+                                <div className="space-y-2 border-t border-gray-200 pt-5 dark:border-gray-700">
                                     {permissions.printCard && (
                                         <Button
                                             color="blue"
@@ -510,7 +488,7 @@ export default function ShowPatient({
                                     )}
                                 </div>
                             </div>
-                        </Card>
+                        </div>
                     </aside>
                 </div>
             </div>

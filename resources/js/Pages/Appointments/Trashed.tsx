@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import {
     Table,
     TableBody,
@@ -177,7 +178,7 @@ export default function TrashedAppointments({
                             </div>
                         </div>
                         <Button color="light" as={Link} href={urls.index} className="w-fit">
-                            <i className="bx bx-arrow-back me-2 text-lg" />
+                            <BackArrowIcon className="me-2 text-lg" />
                             {t('global.back')}
                         </Button>
                     </div>

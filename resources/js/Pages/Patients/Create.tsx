@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Button } from 'flowbite-react';
 import { useState } from 'react';
+import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import PatientCreateForm from '../../Components/Patients/PatientCreateForm';
 import PatientTypeSelector from '../../Components/Patients/ui/PatientTypeSelector';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
@@ -55,7 +56,7 @@ export function PatientFormPage({
                             </p>
                         </div>
                         <Button color="light" as={Link} href={backHref} className="w-fit shrink-0">
-                            <i className="bx bx-arrow-back me-2 text-lg" />
+                            <BackArrowIcon className="me-2 text-lg" />
                             {t('global.back')}
                         </Button>
                     </div>

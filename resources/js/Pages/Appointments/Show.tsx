@@ -22,6 +22,7 @@ import {
     UnderReviewSection,
 } from '../../Components/Appointments/Sections';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface ShowAppointmentHeader {
@@ -104,7 +105,7 @@ export default function ShowAppointment({
                                 </Button>
                             )}
                             <Button size="sm" color="light" as={Link} href={urls.index}>
-                                <i className="bx bx-arrow-back me-2" />
+                                <BackArrowIcon className="me-2" />
                                 {t('global.back')}
                             </Button>
                         </div>

@@ -2,15 +2,8 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Button, Card, Label, Spinner, TextInput } from 'flowbite-react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import PatientsTable from '../../Components/Patients/PatientsTable';
 import SearchableSelect from '../../Components/ui/SearchableSelect';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '../../Components/ui/Table';
 import { useTranslation } from '../../hooks/useTranslation';
 import {
     PaginatedPatients,
@@ -179,31 +172,28 @@ export default function IndexPatient({
         <DashboardLayout>
             <Head title={t('global.patients_list')} />
 
-            <div className="mx-auto max-w-[1600px]">
-                <Card className="shadow-sm">
-                    <div className="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md">
-                                <i className="bx bx-group text-xl" />
-                            </div>
+            <div className="mx-auto max-w-[1600px] min-w-0">
+                <Card className="shadow-sm [&>div]:justify-start! [&>div]:gap-0 [&>div]:p-0">
+                    <div className="border-b border-gray-200 px-6 py-5 dark:border-gray-700">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
                                     {t('global.patients_list')}
                                 </h1>
-                                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     {patients.meta.total} {t('global.patients')}
                                 </p>
                             </div>
+                            {permissions.create && (
+                                <Button color="blue" as={Link} href={urls.create} className="w-fit shrink-0">
+                                    <i className="bx bx-plus me-2 text-lg" />
+                                    {t('global.create')}
+                                </Button>
+                            )}
                         </div>
-                        {permissions.create && (
-                            <Button color="blue" as={Link} href={urls.create} className="w-fit">
-                                <i className="bx bx-plus me-2 text-lg" />
-                                {t('global.create')}
-                            </Button>
-                        )}
                     </div>
 
-                    <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                    <div className="border-b border-gray-200 px-6 py-5 dark:border-gray-700">
                         <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
                             <i className="bx bx-filter-alt text-blue-500" />
                             {t('global.filters')}
@@ -336,104 +326,25 @@ export default function IndexPatient({
                         </form>
                     </div>
 
-                    <Table id="patients-table">
-                        <TableHead>
-                            <TableRow variant="header">
-                                <TableHeader>{t('global.id')}</TableHeader>
-                                <TableHeader>{t('global.id_card')}</TableHeader>
-                                <TableHeader>{t('global.name')}</TableHeader>
-                                <TableHeader>{t('global.last_name')}</TableHeader>
-                                <TableHeader>{t('global.father_name')}</TableHeader>
-                                <TableHeader>
-                                    {t('global.province')} / {t('global.district')}
-                                </TableHeader>
-                                <TableHeader>{t('global.age')}</TableHeader>
-                                <TableHeader>{t('global.militery_type')}</TableHeader>
-                                <TableHeader>{t('global.phone')}</TableHeader>
-                                <TableHeader>{t('global.created_by')}</TableHeader>
-                                <TableHeader align="center">{t('global.actions')}</TableHeader>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {patients.data.length === 0 ? (
-                                <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
-                                    <TableCell
-                                        colSpan={11}
-                                        align="center"
-                                        muted
-                                        className="py-12 text-base"
-                                    >
-                                        <div className="flex flex-col items-center gap-2">
-                                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                                                <i className="bx bx-search-alt text-xl text-gray-400" />
-                                            </div>
-                                            {t('global.no_results_found')}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                patients.data.map((patient) => (
-                                    <TableRow key={patient.id}>
-                                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                            {patient.id}
-                                        </TableCell>
-                                        <TableCell>{patient.id_card ?? '-'}</TableCell>
-                                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                            {patient.name}
-                                        </TableCell>
-                                        <TableCell>{patient.last_name ?? '-'}</TableCell>
-                                        <TableCell>{patient.father_name ?? '-'}</TableCell>
-                                        <TableCell>{patient.location}</TableCell>
-                                        <TableCell>{patient.age ?? '-'}</TableCell>
-                                        <TableCell>{patient.militery_type ?? '-'}</TableCell>
-                                        <TableCell>{patient.phone ?? '-'}</TableCell>
-                                        <TableCell>{patient.created_by ?? '-'}</TableCell>
-                                        <TableCell align="center">
-                                            <div className="flex items-center justify-center gap-1">
-                                                <Link
-                                                    href={`${urls.show}/${patient.id}`}
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                                                    title={t('global.view')}
-                                                >
-                                                    <i className="bx bx-expand text-lg" />
-                                                </Link>
-                                                {permissions.edit && (
-                                                    <Link
-                                                        href={`${urls.edit}/${patient.id}/edit`}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                                                        title={t('global.edit')}
-                                                    >
-                                                        <i className="bx bx-edit text-lg" />
-                                                    </Link>
-                                                )}
-                                                {permissions.delete && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDelete(patient.id)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
-                                                        title={t('global.delete')}
-                                                    >
-                                                        <i className="bx bx-trash text-lg" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                    <div className="min-w-0 px-6 py-6">
+                        <PatientsTable
+                            patients={patients.data}
+                            permissions={permissions}
+                            urls={urls}
+                            onDelete={handleDelete}
+                        />
 
-                    {patients.links.length > 3 && (
-                        <div className="mt-4 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-4 dark:border-gray-700 sm:flex-row">
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{summaryLabel}</p>
-                            <nav aria-label="Pagination">
-                                <ul className="inline-flex items-center -space-x-px text-sm">
-                                    {patients.links.map(renderPaginationLink)}
-                                </ul>
-                            </nav>
-                        </div>
-                    )}
+                        {patients.links.length > 3 && (
+                            <div className="mt-4 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-4 dark:border-gray-700 sm:flex-row">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{summaryLabel}</p>
+                                <nav aria-label="Pagination">
+                                    <ul className="inline-flex items-center -space-x-px text-sm">
+                                        {patients.links.map(renderPaginationLink)}
+                                    </ul>
+                                </nav>
+                            </div>
+                        )}
+                    </div>
                 </Card>
             </div>
         </DashboardLayout>

@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
 import { ReactNode, useState } from 'react';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
+import BackArrowIcon from '../../Components/ui/BackArrowIcon';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DoctorDetail, DoctorShowPermissions, DoctorShowUrls } from '../../types/doctor';
 
@@ -123,7 +124,7 @@ export default function ShowDoctor({ doctor, permissions, urls }: ShowDoctorProp
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <Button color="light" as={Link} href={urls.index}>
-                                <i className="bx bx-arrow-back me-2 text-lg" />
+                                <BackArrowIcon className="me-2 text-lg" />
                                 {t('global.back')}
                             </Button>
                             {permissions.edit && (

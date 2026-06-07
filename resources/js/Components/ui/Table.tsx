@@ -21,16 +21,16 @@ const alignClasses: Record<TableAlign, string> = {
 
 const rowVariantClasses: Record<TableRowVariant, string> = {
     header: 'border-0 bg-transparent hover:bg-transparent dark:hover:bg-transparent',
-    body: 'border-b border-gray-100 bg-white transition-colors duration-150 last:border-b-0 hover:bg-blue-50/40 dark:border-gray-700/60 dark:bg-transparent dark:hover:bg-gray-700/25',
-    footer: 'border-t border-gray-200 bg-gray-50/80 font-medium dark:border-gray-700 dark:bg-gray-800/60',
+    body: 'border-b border-gray-100 transition-colors duration-150 last:border-b-0 hover:bg-gray-50/80 dark:border-gray-800 dark:hover:bg-gray-800/40',
+    footer: 'border-t border-gray-200 bg-gray-50 font-medium dark:border-gray-700 dark:bg-gray-800/60',
 };
 
 export function Table({ className = '', children, ...props }: TableHTMLAttributes<HTMLTableElement>) {
     return (
-        <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ring-1 ring-gray-950/5 dark:border-gray-700 dark:bg-gray-900/40 dark:ring-white/10">
-            <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        <div className="min-w-0 w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+            <div className="overflow-x-auto">
                 <table
-                    className={mergeClasses('w-full min-w-full border-collapse text-left text-sm', className)}
+                    className={mergeClasses('w-full min-w-[960px] border-collapse text-sm', className)}
                     {...props}
                 >
                     {children}
@@ -48,7 +48,7 @@ export function TableCaption({
     return (
         <caption
             className={mergeClasses(
-                'border-b border-gray-100 px-5 py-3 text-start text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400',
+                'border-b border-gray-100 px-4 py-3 text-start text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400',
                 className,
             )}
             {...props}
@@ -62,7 +62,7 @@ export function TableHead({ className = '', children, ...props }: HTMLAttributes
     return (
         <thead
             className={mergeClasses(
-                'sticky top-0 z-10 border-b border-gray-200 bg-gradient-to-b from-gray-50 to-gray-50/90 backdrop-blur-sm dark:border-gray-700 dark:from-gray-800 dark:to-gray-800/90',
+                'border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/80',
                 className,
             )}
             {...props}
@@ -73,18 +73,14 @@ export function TableHead({ className = '', children, ...props }: HTMLAttributes
 }
 
 export function TableBody({ className = '', children, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-    return (
-        <tbody className={mergeClasses('divide-y divide-gray-100 dark:divide-gray-700/70', className)} {...props}>
-            {children}
-        </tbody>
-    );
+    return <tbody className={mergeClasses('', className)} {...props}>{children}</tbody>;
 }
 
 export function TableFooter({ className = '', children, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
     return (
         <tfoot
             className={mergeClasses(
-                'border-t border-gray-200 bg-gray-50/90 dark:border-gray-700 dark:bg-gray-800/70',
+                'border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/70',
                 className,
             )}
             {...props}
@@ -138,7 +134,7 @@ export function TableHeader({
         <th
             scope="col"
             className={mergeClasses(
-                'px-4 py-3.5 text-xs font-semibold tracking-wide text-gray-600 first:pl-5 last:pr-5 dark:text-gray-300',
+                'whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
                 alignClasses[align],
                 sortable && 'select-none',
                 className,
@@ -165,7 +161,7 @@ export function TableCell({
     return (
         <td
             className={mergeClasses(
-                'px-4 py-3.5 align-middle first:pl-5 last:pr-5',
+                'px-4 py-3 align-middle',
                 alignClasses[align],
                 muted ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300',
                 className,
@@ -235,13 +231,13 @@ export function TableEmpty({
 }: TableEmptyProps) {
     return (
         <TableRow variant="body" className="hover:bg-transparent dark:hover:bg-transparent">
-            <TableCell colSpan={colSpan} align="center" className={mergeClasses('py-14', className)}>
-                <div className="mx-auto flex max-w-sm flex-col items-center gap-3 text-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500">
-                        <i className={`bx ${icon} text-2xl`} />
+            <TableCell colSpan={colSpan} align="center" className={mergeClasses('py-12', className)}>
+                <div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-center">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500">
+                        <i className={`bx ${icon} text-xl`} />
                     </div>
                     {title && (
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{title}</p>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{title}</p>
                     )}
                     {description && (
                         <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>

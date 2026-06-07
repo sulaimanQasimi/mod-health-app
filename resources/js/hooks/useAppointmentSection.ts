@@ -36,7 +36,19 @@ export function useAppointmentSection<TItem = Record<string, unknown>>(
             const payload = await response.json();
             if (payload.success) {
                 setData(payload.data);
+            } else {
+                setData({
+                    items: [],
+                    count: 0,
+                    permissions: {},
+                });
             }
+        } catch {
+            setData({
+                items: [],
+                count: 0,
+                permissions: {},
+            });
         } finally {
             setLoading(false);
         }

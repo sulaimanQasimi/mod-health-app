@@ -1,12 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
 import { Badge, Button, Card } from 'flowbite-react';
-import AdviceSection from '../../Components/Appointments/Sections/AdviceSection';
-import BloodBankSection from '../../Components/Appointments/Sections/BloodBankSection';
-import DiagnosisSection from '../../Components/Appointments/Sections/DiagnosisSection';
 import {
+    AdviceSection,
     AnesthesiaSection,
+    BloodBankSection,
     ConsultationSection,
     DentistSection,
+    DiagnosisSection,
     HospitalizationCheckupSection,
     HospitalizationSection,
     HospitalizationVisitsSection,
@@ -20,7 +20,7 @@ import {
     ReferDepartmentSection,
     RelatedVisitsSection,
     UnderReviewSection,
-} from '../../Components/Appointments/Sections/OtherSections';
+} from '../../Components/Appointments/Sections';
 import DashboardLayout from '../../Components/Layout/DashboardLayout';
 import { useTranslation } from '../../hooks/useTranslation';
 

@@ -37,7 +37,7 @@ export default function AppointmentSectionAccordion({
                 <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
                     <i className={`bx ${icon} text-lg ${iconClassName}`} />
                     {title}
-                    {count !== undefined && count > 0 && (
+                    {count !== undefined && (
                         <Badge color={badgeColor} size="sm">
                             {count}
                         </Badge>
@@ -45,11 +45,13 @@ export default function AppointmentSectionAccordion({
                 </span>
                 <i className={`bx ${open ? 'bx-chevron-up' : 'bx-chevron-down'} text-xl text-gray-400`} />
             </button>
-            {open && (
-                <div id={`${id}-panel`} className="border-t border-gray-200 p-4 dark:border-gray-700">
-                    {children}
-                </div>
-            )}
+            <div
+                id={`${id}-panel`}
+                hidden={!open}
+                className="border-t border-gray-200 p-4 dark:border-gray-700"
+            >
+                {children}
+            </div>
         </div>
     );
 }

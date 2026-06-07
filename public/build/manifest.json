@@ -13,11 +13,19 @@
     "file": "assets/AdviceSection-CLfLkI1n.css",
     "src": "_AdviceSection-CLfLkI1n.css"
   },
-  "_Button-C2e0mL-X.js": {
-    "file": "assets/Button-C2e0mL-X.js",
+  "_Button-Be5O2dyy.js": {
+    "file": "assets/Button-Be5O2dyy.js",
     "name": "Button",
     "imports": [
       "resources/js/app.tsx"
+    ]
+  },
+  "_Card-D-vLxrLS.js": {
+    "file": "assets/Card-D-vLxrLS.js",
+    "name": "Card",
+    "imports": [
+      "resources/js/app.tsx",
+      "_Button-Be5O2dyy.js"
     ]
   },
   "_ConsultationSection-BDVCI-jw.js": {
@@ -35,12 +43,12 @@
     "file": "assets/ConsultationSection-Dix3BxDs.css",
     "src": "_ConsultationSection-Dix3BxDs.css"
   },
-  "_DashboardLayout-CHB2kYFa.js": {
-    "file": "assets/DashboardLayout-CHB2kYFa.js",
+  "_DashboardLayout-YLS1UtZY.js": {
+    "file": "assets/DashboardLayout-YLS1UtZY.js",
     "name": "DashboardLayout",
     "imports": [
       "resources/js/app.tsx",
-      "_Button-C2e0mL-X.js"
+      "_Button-Be5O2dyy.js"
     ]
   },
   "_PrescriptionShowApp-CqLsQG9M.js": {
@@ -337,7 +345,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CR7TI5M7.css",
+    "file": "assets/app-BN8mT7DE.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -345,38 +353,40 @@
     ]
   },
   "resources/js/Pages/Dashboard.tsx": {
-    "file": "assets/Dashboard-Codme1d1.js",
+    "file": "assets/Dashboard-DSEeXFNv.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Dashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CHB2kYFa.js",
+      "_Card-D-vLxrLS.js",
+      "_DashboardLayout-YLS1UtZY.js",
+      "_Button-Be5O2dyy.js",
       "__commonjsHelpers-DsqdWQfm.js",
-      "_index-BetwS6Uc.js",
-      "_Button-C2e0mL-X.js"
+      "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CR7TI5M7.css"
+      "assets/app-BN8mT7DE.css"
     ]
   },
   "resources/js/Pages/Example.tsx": {
-    "file": "assets/Example-CziRngBi.js",
+    "file": "assets/Example-CLN1bohx.js",
     "name": "Example",
     "src": "resources/js/Pages/Example.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_Button-C2e0mL-X.js",
+      "_Card-D-vLxrLS.js",
+      "_Button-Be5O2dyy.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CR7TI5M7.css"
+      "assets/app-BN8mT7DE.css"
     ]
   },
   "resources/js/Pages/Layout.tsx": {
-    "file": "assets/Layout-Dru26je4.js",
+    "file": "assets/Layout-Cva6tTqv.js",
     "name": "Layout",
     "src": "resources/js/Pages/Layout.tsx",
     "isDynamicEntry": true,
@@ -386,27 +396,27 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CR7TI5M7.css"
+      "assets/app-BN8mT7DE.css"
     ]
   },
   "resources/js/Pages/Placeholder.tsx": {
-    "file": "assets/Placeholder-DavxofIX.js",
+    "file": "assets/Placeholder-DVV-wGyY.js",
     "name": "Placeholder",
     "src": "resources/js/Pages/Placeholder.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_DashboardLayout-CHB2kYFa.js",
+      "_DashboardLayout-YLS1UtZY.js",
       "__commonjsHelpers-DsqdWQfm.js",
       "_index-BetwS6Uc.js",
-      "_Button-C2e0mL-X.js"
+      "_Button-Be5O2dyy.js"
     ],
     "css": [
-      "assets/app-CR7TI5M7.css"
+      "assets/app-BN8mT7DE.css"
     ]
   },
   "resources/js/Pages/Welcome.tsx": {
-    "file": "assets/Welcome-BQuM4iaB.js",
+    "file": "assets/Welcome-CcGUCyUm.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.tsx",
     "isDynamicEntry": true,
@@ -416,7 +426,7 @@
       "_index-BetwS6Uc.js"
     ],
     "css": [
-      "assets/app-CR7TI5M7.css"
+      "assets/app-BN8mT7DE.css"
     ]
   },
   "resources/js/app.js": {
@@ -429,7 +439,7 @@
     ]
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-CKGPG84n.js",
+    "file": "assets/app-DiN6t1Qf.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -445,7 +455,7 @@
       "resources/js/Pages/Welcome.tsx"
     ],
     "css": [
-      "assets/app-CR7TI5M7.css"
+      "assets/app-BN8mT7DE.css"
     ]
   },
   "resources/js/ckeditor.js": {

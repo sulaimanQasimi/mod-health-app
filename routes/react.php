@@ -69,6 +69,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/data', [DashboardController::class, 'data'])->name('dashboard.data');
 
     Route::get('/scan-code', [ScanCodeController::class, 'index'])->name('scan-code');
 

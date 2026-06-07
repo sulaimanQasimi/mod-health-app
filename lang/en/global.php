@@ -3734,6 +3734,7 @@ return [
     'search_by_name_contact_specialization' => 'Search By Name Contact Specialization',
     'doctor_created_successfully' => 'Doctor Created Successfully',
     'doctor_updated_successfully' => 'Doctor Updated Successfully',
+    'doctor_deleted_successfully' => 'Doctor Deleted Successfully',
     'completed_date' => 'Completed Date',
     'doctor_assigned_successfully' => 'Doctor Assigned Successfully',
     'search_by_card' => 'Search By Card',

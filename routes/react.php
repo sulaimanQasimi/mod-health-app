@@ -303,7 +303,16 @@ Route::middleware(['auth'])->group(function () {
         Route::match(['put', 'post'], '/{user}', [UserController::class, 'update'])->name('update');
         Route::post('/{user}/status', [UserController::class, 'updateStatus'])->name('update-status');
     });
-    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+    Route::prefix('doctors')->name('doctors.')->group(function () {
+        Route::get('/', [DoctorController::class, 'index'])->name('index');
+        Route::get('/create', [DoctorController::class, 'create'])->name('create');
+        Route::post('/', [DoctorController::class, 'store'])->name('store');
+        Route::get('/{doctor}', [DoctorController::class, 'show'])->name('show');
+        Route::get('/{doctor}/edit', [DoctorController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{doctor}', [DoctorController::class, 'update'])->name('update');
+        Route::post('/{doctor}/status', [DoctorController::class, 'updateStatus'])->name('update-status');
+        Route::delete('/{doctor}', [DoctorController::class, 'destroy'])->name('destroy');
+    });
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');

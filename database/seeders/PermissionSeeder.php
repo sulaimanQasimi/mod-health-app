@@ -1024,9 +1024,54 @@ class PermissionSeeder extends Seeder
         );
 
         Permission::updateOrCreate(
+            ['name' => 'view-patients'],
+            [
+                'name_dr' => 'مشاهده مریضان',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'create-patients'],
+            [
+                'name_dr' => 'ایجاد مریضان',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
             ['name' => 'edit-patients'],
             [
                 'name_dr' => 'تصحیح مریضان',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'delete-patients'],
+            [
+                'name_dr' => 'حذف مریضان',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'restore-patients'],
+            [
+                'name_dr' => 'بازیابی مریضان',
+                'name_pa' => NULL,
+                'guard_name' => 'web',
+            ]
+        );
+
+        Permission::updateOrCreate(
+            ['name' => 'force-delete-patients'],
+            [
+                'name_dr' => 'حذف دائمی مریضان',
                 'name_pa' => NULL,
                 'guard_name' => 'web',
             ]

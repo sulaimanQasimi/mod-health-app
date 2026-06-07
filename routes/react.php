@@ -76,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('patients')->name('patients.')->group(function () {
         Route::get('/', [PatientController::class, 'index'])->name('index');
         Route::get('/create', [PatientController::class, 'create'])->name('create');
+        Route::post('/', [PatientController::class, 'store'])->name('store');
+        Route::get('/districts/{provinceId}', [PatientController::class, 'districts'])->name('districts');
+        Route::get('/doctors-by-department/{departmentId}', [PatientController::class, 'doctorsByDepartment'])->name('doctors-by-department');
         Route::get('/report', [PatientController::class, 'report'])->name('report');
     });
 

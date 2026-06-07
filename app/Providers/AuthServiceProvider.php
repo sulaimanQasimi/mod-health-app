@@ -23,6 +23,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\NursingAssessment::class => \App\Policies\NursingAssessmentPolicy::class,
         \App\Models\Category::class => \App\Policies\CategoryPolicy::class,
         \App\Models\Doctor::class => \App\Policies\DoctorPolicy::class,
+        \App\Models\Patient::class => \App\Policies\PatientPolicy::class,
     ];
 
     /**

@@ -295,7 +295,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/report', [OperationController::class, 'report'])->name('report');
     });
 
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::match(['put', 'post'], '/{user}', [UserController::class, 'update'])->name('update');
+        Route::post('/{user}/status', [UserController::class, 'updateStatus'])->name('update-status');
+    });
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');

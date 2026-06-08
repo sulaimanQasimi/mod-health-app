@@ -4,6 +4,7 @@
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @import "flowbite-react/plugin/tailwindcss";
+@import "./fonts.css";
 
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
 @source "../../storage/framework/views/*.php";

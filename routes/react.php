@@ -161,7 +161,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('physiotherapy', [AppointmentPhysiotherapyController::class, 'index'])->name('physiotherapy.index');
             Route::post('physiotherapy', [AppointmentPhysiotherapyController::class, 'store'])->name('physiotherapy.store');
             Route::get('physiotherapy/{physiotherapyProcedure}', [AppointmentPhysiotherapyController::class, 'show'])->name('physiotherapy.show');
+            Route::get('dentist/meta', [AppointmentDentistController::class, 'meta'])->name('dentist.meta');
             Route::get('dentist', [AppointmentDentistController::class, 'index'])->name('dentist.index');
+            Route::post('dentist', [AppointmentDentistController::class, 'store'])->name('dentist.store');
+            Route::get('dentist/{dentistRegistration}', [AppointmentDentistController::class, 'show'])->name('dentist.show');
             Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
         });
         Route::post('/{appointment}/accept', [AppointmentController::class, 'accept'])->name('accept');

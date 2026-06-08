@@ -176,6 +176,7 @@ export default function ShowAppointment({
                     <AdviceSection appointmentId={id} />
                     <LabTestSection appointmentId={id} />
                     <PhysiotherapySection appointmentId={id} />
+                    <DentistSection appointmentId={id} />
                     <HospitalizationCheckupSection appointmentId={id} />
                     <ConsultationSection appointmentId={id} />
                     <ReferDepartmentSection appointmentId={id} />
@@ -187,7 +188,6 @@ export default function ShowAppointment({
                     <OperationSection appointmentId={id} />
                     <IcuSection appointmentId={id} />
                     <IcuVisitsSection appointmentId={id} />
-                    <DentistSection appointmentId={id} />
                     <NephrologySection appointmentId={id} />
                 </div>
             </div>

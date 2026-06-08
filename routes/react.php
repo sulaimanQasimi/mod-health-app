@@ -184,9 +184,22 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
         Route::get('/scan-code', [PrescriptionController::class, 'scanCode'])->name('scan-code');
+        Route::post('/scan', [PrescriptionController::class, 'scan'])->name('scan');
         Route::get('/', [PrescriptionController::class, 'index'])->name('index');
         Route::get('/delivered', [PrescriptionController::class, 'delivered'])->name('delivered');
         Route::get('/report', [PrescriptionController::class, 'report'])->name('report');
+        Route::post('/bulk-update-status', [PrescriptionController::class, 'bulkUpdateStatus'])->name('bulk-update-status');
+        Route::post('/bulk-delete', [PrescriptionController::class, 'bulkDelete'])->name('bulk-delete');
+        Route::post('/alternatives', [PrescriptionController::class, 'addAlternative'])->name('alternatives.store');
+        Route::put('/alternatives/{alternativeItem}/select', [PrescriptionController::class, 'selectAlternative'])->name('alternatives.select');
+        Route::put('/alternatives/{alternativeItem}/status', [PrescriptionController::class, 'updateAlternativeStatus'])->name('alternatives.status');
+        Route::delete('/alternatives/{alternativeItem}', [PrescriptionController::class, 'deleteAlternative'])->name('alternatives.destroy');
+        Route::put('/items/{prescriptionItem}/status', [PrescriptionController::class, 'updateItemStatus'])->name('items.status');
+        Route::put('/items/{prescriptionItem}/amount', [PrescriptionController::class, 'updateItemAmount'])->name('items.amount');
+        Route::get('/{prescription}', [PrescriptionController::class, 'show'])->name('show');
+        Route::put('/{prescription}/status', [PrescriptionController::class, 'updateStatus'])->name('update-status');
+        Route::post('/{prescription}/mark-all-delivered', [PrescriptionController::class, 'markAllDelivered'])->name('mark-all-delivered');
+        Route::delete('/{prescription}', [PrescriptionController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/pharmacies', [PharmacyController::class, 'index'])->name('pharmacies.index');

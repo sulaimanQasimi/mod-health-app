@@ -202,7 +202,13 @@ export default function ShowNephrologyRegistration({
                                 </Button>
                             )}
                             {registration.status !== 'cancelled' && registration.status !== 'completed' && (
-                                <Button size="sm" color="failure" disabled={processing} onClick={handleCancel}>
+                                <Button
+                                    size="sm"
+                                    color="failure"
+                                    outline
+                                    disabled={processing}
+                                    onClick={handleCancel}
+                                >
                                     {t('global.cancel')}
                                 </Button>
                             )}
@@ -295,7 +301,7 @@ export default function ShowNephrologyRegistration({
                                             </Button>
                                         )}
                                         {urls.hemodialysisIndex && (
-                                            <Button as={Link} href={urls.hemodialysisIndex} size="sm" color="gray" outline>
+                                            <Button as={Link} href={urls.hemodialysisIndex} size="sm" color="light">
                                                 {t('global.view_all_hemodialysis_sessions')}
                                             </Button>
                                         )}

@@ -92,7 +92,7 @@ export default function IndexHemodialysisSessions({
                     accent="from-sky-500 to-blue-600"
                     backLabel={t('global.back')}
                     action={
-                        <Button as={Link} href={urls.create} color="blue" size="sm">
+                        <Button as={Link} href={urls.create} color="blue">
                             <i className="bx bx-plus me-2" />
                             {t('global.add_hemodialysis_session')}
                         </Button>

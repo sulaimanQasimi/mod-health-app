@@ -83,7 +83,7 @@ function NavIcon({ icon }: { icon: string | null }) {
 
 function topLevelLinkClasses(active: boolean) {
     return mergeClasses(
-        'menu-link relative flex w-full items-center rounded-md px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
+        'menu-link relative flex w-full min-w-0 items-center rounded-md px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
         active
             ? 'bg-blue-600/15 font-semibold text-blue-600 dark:bg-blue-600 dark:text-white'
             : 'text-[#697a8d] hover:bg-[rgba(67,89,113,0.04)] hover:text-[#566a7f] dark:text-[#c4cdd5] dark:hover:bg-white/4 dark:hover:text-white',
@@ -92,7 +92,7 @@ function topLevelLinkClasses(active: boolean) {
 
 function subLinkClasses(active: boolean, isRtl: boolean) {
     return mergeClasses(
-        'menu-link relative mx-4 flex items-center rounded-md py-2.5 text-[0.9375rem] transition-colors duration-300',
+        'menu-link relative flex w-full min-w-0 items-center rounded-md py-2.5 text-[0.9375rem] transition-colors duration-300',
         isRtl ? 'pl-4 pr-12' : 'pl-12 pr-4',
         'before:absolute before:top-1/2 before:size-1.5 before:-translate-y-1/2 before:rounded-full before:content-[""]',
         isRtl ? 'before:right-[1.4375rem]' : 'before:left-[1.4375rem]',
@@ -174,7 +174,7 @@ function SidebarLink({
                 <Link
                     href={item.href ?? '#'}
                     onClick={onNavigate}
-                    className={mergeClasses(topLevelLinkClasses(active), 'mx-4')}
+                    className={topLevelLinkClasses(active)}
                 >
                     <NavIcon icon={item.icon} />
                     <span className="truncate">{t(item.label)}</span>
@@ -211,7 +211,7 @@ function SidebarGroup({
                     onClick={() => setOpen((value) => !value)}
                     className={mergeClasses(
                         topLevelLinkClasses(groupActive),
-                        'menu-toggle mx-4 text-start',
+                        'menu-toggle text-start',
                         isRtl ? 'pe-4 ps-[calc(1rem+1.26em)]' : 'pe-[calc(1rem+1.26em)] ps-4',
                         open && !groupActive && 'bg-[rgba(67,89,113,0.04)] text-[#566a7f] dark:bg-white/4 dark:text-white',
                     )}
@@ -249,7 +249,7 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
         <aside
             style={{ width: SIDEBAR_WIDTH }}
             className={mergeClasses(
-                'menu menu-vertical bg-menu-theme fixed inset-y-0 z-40 flex max-w-[85vw] flex-col bg-white text-[#697a8d] shadow-[0_0.125rem_0.375rem_0_rgba(161,172,184,0.12)] transition-transform duration-300 ease-in-out dark:bg-[#191924] dark:text-[#c4cdd5] dark:shadow-[0_0.125rem_0.375rem_0_rgba(0,0,0,0.25)]',
+                'menu menu-vertical bg-menu-theme fixed inset-y-0 z-40 flex max-w-[85vw] flex-col overflow-x-hidden bg-white text-[#697a8d] shadow-[0_0.125rem_0.375rem_0_rgba(161,172,184,0.12)] transition-transform duration-300 ease-in-out dark:bg-[#191924] dark:text-[#c4cdd5] dark:shadow-[0_0.125rem_0.375rem_0_rgba(0,0,0,0.25)]',
                 isRtl ? 'right-0' : 'left-0',
                 isOpen
                     ? 'translate-x-0'
@@ -289,9 +289,9 @@ export default function Sidebar({ isOpen, onClose, isRtl }: SidebarProps) {
                 </button>
             </div>
 
-            <div className="relative flex min-h-0 flex-1 flex-col">
-                <nav className="menu-inner flex-1 overflow-y-auto overscroll-contain py-1">
-                    <ul className="m-0 list-none p-0">
+            <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden">
+                <nav className="menu-inner flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4 py-1">
+                    <ul className="m-0 min-w-0 list-none p-0">
                         {menu.map((item) =>
                             item.children.length > 0 ? (
                                 <SidebarGroup

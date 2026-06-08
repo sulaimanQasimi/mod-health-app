@@ -5,6 +5,7 @@ import {
     isValidElement,
     useEffect,
     useId,
+    useLayoutEffect,
     useMemo,
     useRef,
     useState,
@@ -137,13 +138,7 @@ export default function SearchableSelect({
         };
     }, [isOpen]);
 
-    useEffect(() => {
-        if (isOpen) {
-            searchRef.current?.focus();
-        }
-    }, [isOpen]);
-
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!isOpen || !triggerRef.current) {
             return;
         }
@@ -165,6 +160,7 @@ export default function SearchableSelect({
         };
 
         updatePosition();
+        searchRef.current?.focus({ preventScroll: true });
         window.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
 
@@ -178,6 +174,7 @@ export default function SearchableSelect({
         onChange(optionValue);
         setIsOpen(false);
         setSearchQuery('');
+        triggerRef.current?.focus({ preventScroll: true });
     };
 
     const toggleOpen = () => {

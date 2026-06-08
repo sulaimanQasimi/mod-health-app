@@ -83,7 +83,7 @@ export default function SearchableMultiSelect({
 
     useEffect(() => {
         if (isOpen) {
-            searchRef.current?.focus();
+            searchRef.current?.focus({ preventScroll: true });
         }
     }, [isOpen]);
 

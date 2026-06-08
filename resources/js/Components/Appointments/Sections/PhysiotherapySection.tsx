@@ -20,6 +20,7 @@ import {
     TableHeader,
     TableRow,
 } from '../../ui/Table';
+import PersianDateInput from '../../ui/PersianDateInput';
 import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
@@ -436,13 +437,10 @@ export default function PhysiotherapySection({ appointmentId }: PhysiotherapySec
                                 </div>
                                 <div>
                                     <Label>{t('global.start_date')} *</Label>
-                                    <TextInput
+                                    <PersianDateInput
                                         value={form.start_date}
-                                        onChange={(event) =>
-                                            setForm((current) => ({
-                                                ...current,
-                                                start_date: event.target.value,
-                                            }))
+                                        onChange={(start_date) =>
+                                            setForm((current) => ({ ...current, start_date }))
                                         }
                                         placeholder="1403/01/01"
                                         required
@@ -450,13 +448,10 @@ export default function PhysiotherapySection({ appointmentId }: PhysiotherapySec
                                 </div>
                                 <div>
                                     <Label>{t('global.end_date')}</Label>
-                                    <TextInput
+                                    <PersianDateInput
                                         value={form.end_date}
-                                        onChange={(event) =>
-                                            setForm((current) => ({
-                                                ...current,
-                                                end_date: event.target.value,
-                                            }))
+                                        onChange={(end_date) =>
+                                            setForm((current) => ({ ...current, end_date }))
                                         }
                                         placeholder="1403/01/01"
                                     />

@@ -43,4 +43,27 @@ class LaboratoryPolicy
     {
         return $this->manageResults($user) && $this->view($user, $registration);
     }
+
+    public function fillResults(User $user, PatientTestRegistration $registration): bool
+    {
+        if (! $this->manageResults($user) || ! $this->view($user, $registration)) {
+            return false;
+        }
+
+        if ($user->hasRole(['super_admin', 'admin']) || $user->can('view-all-sections')) {
+            return true;
+        }
+
+        if ($registration->assigned_to && (int) $registration->assigned_to !== (int) $user->id) {
+            return false;
+        }
+
+        if ($registration->status === 'completed'
+            && (int) $registration->completed_by !== (int) $user->id
+            && (int) $registration->assigned_to !== (int) $user->id) {
+            return false;
+        }
+
+        return true;
+    }
 }

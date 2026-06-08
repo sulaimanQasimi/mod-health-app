@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\V1\Concerns;
 
 use App\Models\PatientTestRegistration;
+use App\Models\PatientTestResult;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Hekmatinasser\Verta\Verta;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -210,8 +212,8 @@ trait ManagesLaboratoryRegistrations
                 : null,
             'permissions' => [
                 'accept' => $user->can('accept', $registration),
-                'enterResults' => in_array($registration->status, ['in_progress', 'completed'], true)
-                    && $user->can('manageResults', PatientTestRegistration::class),
+                'enterResults' => in_array($registration->status, ['pending', 'in_progress'], true)
+                    && $user->can('fillResults', $registration),
                 'markCompleted' => $registration->status === 'in_progress'
                     && $user->can('updateStatus', $registration),
                 'cancel' => in_array($registration->status, ['pending', 'in_progress'], true)
@@ -220,7 +222,7 @@ trait ManagesLaboratoryRegistrations
             ],
             'urls' => [
                 'accept' => route('react.laboratory.results.accept', $registration),
-                'enterResults' => route('laboratory.results.show', $registration),
+                'enterResults' => route('react.laboratory.results.show', $registration),
                 'print' => route('laboratory.reports.print', $registration->ref_no),
                 'markCompleted' => route('react.laboratory.registrations.mark-completed', $registration),
                 'cancel' => route('react.laboratory.registrations.cancel', $registration),
@@ -241,6 +243,49 @@ trait ManagesLaboratoryRegistrations
             'date_from' => (string) $request->input('date_from', ''),
             'date_to' => (string) $request->input('date_to', ''),
             'per_page' => (string) $request->input('per_page', '50'),
+        ];
+    }
+
+    /**
+     * @return Collection<int, PatientTestResult>
+     */
+    protected function loadOrCreateResultEntries(PatientTestRegistration $registration): Collection
+    {
+        $results = PatientTestResult::query()
+            ->where('test_registration_id', $registration->id)
+            ->with('parameter')
+            ->get();
+
+        if ($results->isNotEmpty()) {
+            return $results;
+        }
+
+        $registration->loadMissing('labType.directLabTestParameters');
+
+        return collect($registration->labType?->directLabTestParameters ?? [])
+            ->map(fn ($parameter) => new PatientTestResult([
+                'lab_parameter_id' => $parameter->id,
+                'parameter' => $parameter,
+                'unit' => $parameter->unit,
+                'normal_range' => $parameter->normal_range,
+                'result' => null,
+                'text_result' => null,
+            ]));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function transformResultEntry(PatientTestResult $result): array
+    {
+        return [
+            'id' => $result->id,
+            'lab_parameter_id' => $result->lab_parameter_id,
+            'parameter_name' => $result->parameter?->parameter_name,
+            'unit' => $result->unit ?? $result->parameter?->unit,
+            'normal_range' => $result->normal_range ?? $result->parameter?->normal_range,
+            'result' => $result->result,
+            'text_result' => $result->text_result,
         ];
     }
 

@@ -160,3 +160,44 @@ export interface SectionOption extends SelectOption {
     department_id: number;
     department?: { id: number; name: string };
 }
+
+export interface LaboratoryResultParameter {
+    id: number | null;
+    lab_parameter_id: number | null;
+    parameter_name: string | null;
+    unit: string | null;
+    normal_range: string | null;
+    result: string | null;
+    text_result: string | null;
+}
+
+export interface LaboratoryResultShowPatient {
+    id: number;
+    name: string;
+    father_name: string | null;
+    age: string | number | null;
+    phone: string | null;
+    id_card: string | null;
+    gender: string | null;
+}
+
+export interface LaboratoryResultShowRegistration {
+    id: number;
+    ref_no: string;
+    status: LaboratoryStatus;
+    priority: LaboratoryPriority;
+    lab_type_name: string | null;
+    category_name: string | null;
+    doctor_name: string | null;
+    assigned_to_name: string | null;
+    registration_date: string | null;
+    notes: string | null;
+}
+
+export interface LaboratoryRelatedTest {
+    id: number;
+    ref_no: string;
+    lab_type_name: string | null;
+    status: LaboratoryStatus;
+    url: string;
+}

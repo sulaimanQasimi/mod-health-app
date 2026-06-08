@@ -37,7 +37,6 @@ export default function LaboratoryResultsFilters({
                         <Label htmlFor="lab-search">{t('global.search_patient')}</Label>
                         <TextInput
                             id="lab-search"
-                            icon={() => <i className="bx bx-search" />}
                             value={filters.search}
                             onChange={(e) => onChange('search', e.target.value)}
                             placeholder={t('global.search_by_patient_name')}

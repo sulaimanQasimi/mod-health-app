@@ -314,6 +314,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/in-progress', [LaboratoryController::class, 'inProgress'])->name('in-progress');
             Route::get('/completed', [LaboratoryController::class, 'completed'])->name('completed');
             Route::get('/grouped', [LaboratoryController::class, 'grouped'])->name('grouped');
+            Route::get('/registration/{registration}', [LaboratoryController::class, 'showResults'])->name('show');
+            Route::post('/registration/{registration}', [LaboratoryController::class, 'updateResults'])->name('update');
             Route::post('/{registration}/accept', [LaboratoryController::class, 'accept'])->name('accept');
         });
         Route::prefix('registrations')->name('registrations.')->group(function () {

@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\LabType;
 use App\Models\PatientTestRegistration;
+use App\Models\PatientTestResult;
 use App\Models\Section;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -120,7 +121,206 @@ class LaboratoryController extends Controller
             return redirect()->route('laboratory.reports.print', $registration->ref_no);
         }
 
-        return redirect()->route('laboratory.results.show', $registration->id);
+        return redirect()->route('react.laboratory.results.show', $registration);
+    }
+
+    public function showResults(PatientTestRegistration $registration): Response|RedirectResponse
+    {
+        $this->authorize('fillResults', $registration);
+
+        $user = request()->user();
+
+        $registration = $this->scopedRegistrationQuery($user)
+            ->with([
+                'testable.patient',
+                'labType.category',
+                'labType.directLabTestParameters',
+                'doctor',
+                'assignedTo',
+            ])
+            ->findOrFail($registration->id);
+
+        if ($registration->status === 'completed') {
+            return redirect()->route('laboratory.reports.print', $registration->ref_no);
+        }
+
+        $patient = $registration->testable?->patient;
+        if (! $patient) {
+            abort(404, 'Patient not found for this registration');
+        }
+
+        $parameterCount = $registration->labType?->directLabTestParameters?->count() ?? 0;
+        $isParametered = $parameterCount > 0;
+        $resultEntries = $this->loadOrCreateResultEntries($registration);
+
+        $textResult = $resultEntries->first(fn ($r) => $r->lab_parameter_id === null)?->text_result ?? '';
+
+        if (! $isParametered && $textResult === '') {
+            $textResult = (string) PatientTestResult::query()
+                ->where('test_registration_id', $registration->id)
+                ->whereNull('lab_parameter_id')
+                ->value('text_result');
+        }
+
+        $relatedTests = $this->relatedPatientTests($user, $patient->id, $registration->id);
+
+        $needsAccept = $registration->status === 'pending' && ! $registration->assigned_to;
+        $canSave = ! $needsAccept && $user->can('fillResults', $registration);
+
+        return Inertia::render('Laboratory/Results/Show', [
+            'registration' => [
+                'id' => $registration->id,
+                'ref_no' => $registration->ref_no,
+                'status' => $registration->status,
+                'priority' => $registration->priority,
+                'lab_type_name' => $registration->labType?->name,
+                'category_name' => $registration->labType?->category?->name,
+                'doctor_name' => $registration->doctor?->name,
+                'assigned_to_name' => $registration->assignedTo
+                    ? trim("{$registration->assignedTo->name} {$registration->assignedTo->last_name}")
+                    : null,
+                'registration_date' => $registration->registration_date
+                    ? verta($registration->registration_date)->format('Y-m-d')
+                    : null,
+                'notes' => $registration->notes,
+            ],
+            'patient' => [
+                'id' => $patient->id,
+                'name' => trim("{$patient->name} {$patient->last_name}"),
+                'father_name' => $patient->father_name,
+                'age' => $patient->age,
+                'phone' => $patient->phone,
+                'id_card' => $patient->id_card,
+                'gender' => $patient->gender,
+            ],
+            'is_parametered' => $isParametered,
+            'results' => $isParametered
+                ? $resultEntries
+                    ->filter(fn ($r) => $r->lab_parameter_id !== null)
+                    ->map(fn ($r) => $this->transformResultEntry($r))
+                    ->values()
+                    ->all()
+                : [],
+            'text_result' => $textResult ?? '',
+            'relatedTests' => $relatedTests,
+            'permissions' => [
+                'accept' => $user->can('accept', $registration),
+                'canSave' => $canSave,
+            ],
+            'urls' => [
+                'update' => route('react.laboratory.results.update', $registration),
+                'accept' => route('react.laboratory.results.accept', $registration),
+                'print' => route('laboratory.reports.print', $registration->ref_no),
+                'back' => route('react.laboratory.results.in-progress'),
+            ],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+                'completed' => session('completed'),
+            ],
+        ]);
+    }
+
+    public function updateResults(Request $request, PatientTestRegistration $registration): RedirectResponse
+    {
+        $this->authorize('fillResults', $registration);
+
+        $request->validate([
+            'results' => 'nullable|array',
+            'results.*' => 'nullable|string',
+            'text_result' => 'nullable|string',
+            'notes' => 'nullable|string',
+        ]);
+
+        $user = $request->user();
+
+        $registration = $this->scopedRegistrationQuery($user)
+            ->with('labType.directLabTestParameters')
+            ->findOrFail($registration->id);
+
+        if ($registration->status === 'completed') {
+            return redirect()
+                ->route('laboratory.reports.print', $registration->ref_no)
+                ->with('error', localize('global.cannot_update_completed_test'));
+        }
+
+        if ($registration->status === 'pending' && ! $registration->assigned_to) {
+            return back()->with('error', localize('global.accept_test_to_continue'));
+        }
+
+        $patientId = $registration->testable?->patient_id ?? $registration->testable?->patient?->id;
+        $parameterCount = $registration->labType?->directLabTestParameters?->count() ?? 0;
+        $isParametered = $parameterCount > 0;
+
+        if (! $isParametered) {
+            $existingResult = PatientTestResult::query()
+                ->where('test_registration_id', $registration->id)
+                ->whereNull('lab_parameter_id')
+                ->first();
+
+            if ($existingResult) {
+                $existingResult->update(['text_result' => $request->input('text_result')]);
+            } else {
+                PatientTestResult::create([
+                    'patient_id' => $patientId,
+                    'ref_no' => $registration->ref_no,
+                    'lab_parameter_id' => null,
+                    'text_result' => $request->input('text_result'),
+                    'test_registration_id' => $registration->id,
+                ]);
+            }
+        } elseif ($request->has('results')) {
+            foreach ($request->input('results', []) as $parameterId => $resultValue) {
+                $existingResult = PatientTestResult::query()
+                    ->where('ref_no', $registration->ref_no)
+                    ->where('lab_parameter_id', $parameterId)
+                    ->first();
+
+                if ($existingResult) {
+                    $existingResult->update(['result' => $resultValue]);
+                } else {
+                    PatientTestResult::create([
+                        'patient_id' => $patientId,
+                        'ref_no' => $registration->ref_no,
+                        'lab_parameter_id' => $parameterId,
+                        'result' => $resultValue,
+                        'test_registration_id' => $registration->id,
+                    ]);
+                }
+            }
+        }
+
+        $registration->notes = $request->input('notes');
+        $registration->save();
+
+        $allResults = PatientTestResult::query()
+            ->where('test_registration_id', $registration->id)
+            ->get();
+
+        $allFilled = false;
+
+        if (! $isParametered && filled($request->input('text_result'))) {
+            $allFilled = true;
+        } elseif ($isParametered && $request->has('results')) {
+            $expectedCount = $parameterCount;
+            $filledCount = $allResults
+                ->whereNotNull('lab_parameter_id')
+                ->filter(fn ($r) => $r->result !== null && $r->result !== '')
+                ->count();
+            $allFilled = $expectedCount > 0 && $filledCount >= $expectedCount;
+        }
+
+        if ($allFilled) {
+            $registration->markCompleted();
+
+            return redirect()
+                ->route('laboratory.reports.print', $registration->ref_no)
+                ->with('success', localize('global.results_updated_successfully'))
+                ->with('completed', true);
+        }
+
+        return back()
+            ->with('success', localize('global.results_updated_successfully'));
     }
 
     public function grouped(Request $request): Response
@@ -629,6 +829,40 @@ class LaboratoryController extends Controller
             'assigned_section_name' => $row->assignedSection?->name,
             'department_name' => $row->assignedSection?->department?->name,
             'notes' => $row->notes,
+        ];
+    }
+
+    /**
+     * @return array{pending: array<int, array<string, mixed>>, completed: array<int, array<string, mixed>>}
+     */
+    private function relatedPatientTests(User $user, int $patientId, int $excludeRegistrationId): array
+    {
+        $baseQuery = fn (string $status) => $this->scopedRegistrationQuery($user)
+            ->where('id', '!=', $excludeRegistrationId)
+            ->where('status', $status)
+            ->whereHas('testable', function ($testableQuery) use ($patientId) {
+                $testableQuery->whereHas('patient', function ($patientQuery) use ($patientId) {
+                    $patientQuery->where('id', $patientId);
+                });
+            })
+            ->with(['labType'])
+            ->latest()
+            ->limit(8)
+            ->get()
+            ->map(fn (PatientTestRegistration $row) => [
+                'id' => $row->id,
+                'ref_no' => $row->ref_no,
+                'lab_type_name' => $row->labType?->name,
+                'status' => $row->status,
+                'url' => $row->status === 'completed'
+                    ? route('laboratory.reports.print', $row->ref_no)
+                    : route('react.laboratory.results.show', $row),
+            ])
+            ->all();
+
+        return [
+            'pending' => $baseQuery('pending'),
+            'completed' => $baseQuery('completed'),
         ];
     }
 

@@ -1,6 +1,11 @@
 import { InputHTMLAttributes, useEffect, useRef } from 'react';
-import { $, ensurePersianDatepickerLoaded } from '../../lib/persianDatepickerSetup';
-import type { PersianDatepickerInstance } from '../../types/jquery-persian-datepicker';
+import {
+    $,
+    DARI_MONTHS,
+    DARI_WEEKDAYS,
+    DARI_WEEKDAYS_SHORT,
+    ensurePersianDatepickerLoaded,
+} from '../../lib/persianDatepickerSetup';
 
 interface PersianDateInputProps
     extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> {
@@ -31,7 +36,6 @@ export default function PersianDateInput({
             return;
         }
 
-        let picker: PersianDatepickerInstance | null = null;
         let notifyChange: (() => void) | null = null;
         let cancelled = false;
 
@@ -48,29 +52,16 @@ export default function PersianDateInput({
                 onChangeRef.current(String($input.val() ?? ''));
             };
 
-            picker = $input.persianDatepicker({
-                format: 'YYYY/MM/DD',
-                autoClose: true,
-                initialValue: false,
-                observer: true,
-                calendar: {
-                    persian: {
-                        locale: 'fa',
-                        showHint: true,
-                        leapYearMode: 'algorithmic',
-                    },
-                    gregorian: {
-                        enabled: false,
-                    },
-                },
-                dayPicker: {
-                    onSelect: () => notifyChange?.(),
-                },
-                toolbox: {
-                    todayButton: {
-                        onToday: () => notifyChange?.(),
-                    },
-                },
+            $input.persianDatepicker({
+                months: DARI_MONTHS,
+                dowTitle: DARI_WEEKDAYS,
+                shortDowTitle: DARI_WEEKDAYS_SHORT,
+                formatDate: 'YYYY/MM/DD',
+                showGregorianDate: false,
+                persianNumbers: true,
+                theme: 'default',
+                closeOnBlur: true,
+                onSelect: () => notifyChange?.(),
             });
 
             $input.on('change', notifyChange);
@@ -90,10 +81,17 @@ export default function PersianDateInput({
             }
 
             const $input = $(inputRef.current);
+
             if (notifyChange) {
                 $input.off('change', notifyChange);
             }
-            picker?.destroy();
+
+            const instance = $input.data('persianDatepicker');
+            instance?.calendar?.remove();
+            $input.removeData('persianDatepicker');
+            $input.off('click focus blur');
+            $input.removeClass('pdp-el rtl');
+            $input.removeAttr('pdp-id');
         };
     }, []);
 

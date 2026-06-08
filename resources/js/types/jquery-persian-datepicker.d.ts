@@ -1,22 +1,19 @@
 export interface PersianDatepickerOptions {
-    format?: string;
-    autoClose?: boolean;
-    initialValue?: boolean;
-    observer?: boolean;
-    calendar?: Record<string, unknown>;
-    dayPicker?: {
-        onSelect?: (unix: number) => void;
-    };
-    toolbox?: {
-        todayButton?: {
-            onToday?: () => void;
-        };
-    };
+    months?: string[];
+    dowTitle?: string[];
+    shortDowTitle?: string[];
+    formatDate?: string;
+    showGregorianDate?: boolean;
+    persianNumbers?: boolean;
+    theme?: string;
+    closeOnBlur?: boolean;
+    onSelect?: () => void;
 }
 
 export interface PersianDatepickerInstance {
-    destroy(): void;
-    setDate(unix: number): void;
+    calendar?: {
+        remove(): void;
+    };
 }
 
 declare module 'jquery' {
@@ -25,13 +22,17 @@ declare module 'jquery' {
         val(value: string): JQuery;
         on(events: string, handler?: () => void): JQuery;
         off(events?: string, handler?: () => void): JQuery;
-        persianDatepicker(options?: PersianDatepickerOptions): PersianDatepickerInstance;
+        removeClass(className: string): JQuery;
+        removeAttr(attr: string): JQuery;
+        removeData(key?: string): JQuery;
+        data(key: 'persianDatepicker'): PersianDatepickerInstance | undefined;
+        persianDatepicker(options?: PersianDatepickerOptions): JQuery;
     }
 
     interface JQueryStatic {
         (element: Element): JQuery;
         fn: {
-            persianDatepicker?: (options?: PersianDatepickerOptions) => PersianDatepickerInstance;
+            persianDatepicker?: (options?: PersianDatepickerOptions) => JQuery;
         };
     }
 
@@ -43,9 +44,6 @@ declare global {
     interface Window {
         $: import('jquery').default;
         jQuery: import('jquery').default;
-        persianDate: new (input?: unknown) => {
-            format(template: string): string;
-        };
     }
 }
 

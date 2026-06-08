@@ -29,6 +29,7 @@ use App\Http\Controllers\V1\BranchController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ConsultationController;
 use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\DentalChartController;
 use App\Http\Controllers\V1\DentistRegistrationController;
 use App\Http\Controllers\V1\DepartmentController;
 use App\Http\Controllers\V1\DepotController;
@@ -161,7 +162,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('physiotherapy', [AppointmentPhysiotherapyController::class, 'index'])->name('physiotherapy.index');
             Route::post('physiotherapy', [AppointmentPhysiotherapyController::class, 'store'])->name('physiotherapy.store');
             Route::get('physiotherapy/{physiotherapyProcedure}', [AppointmentPhysiotherapyController::class, 'show'])->name('physiotherapy.show');
+            Route::get('dentist/meta', [AppointmentDentistController::class, 'meta'])->name('dentist.meta');
             Route::get('dentist', [AppointmentDentistController::class, 'index'])->name('dentist.index');
+            Route::post('dentist', [AppointmentDentistController::class, 'store'])->name('dentist.store');
+            Route::get('dentist/{dentistRegistration}', [AppointmentDentistController::class, 'show'])->name('dentist.show');
             Route::get('nephrology', [AppointmentNephrologyController::class, 'index'])->name('nephrology.index');
         });
         Route::post('/{appointment}/accept', [AppointmentController::class, 'accept'])->name('accept');
@@ -189,7 +193,35 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/physiotherapy-reports', [PhysiotherapyReportController::class, 'index'])->name('physiotherapy-reports.index');
     Route::get('/physiotherapy-types', [PhysiotherapyTypeController::class, 'index'])->name('physiotherapy-types.index');
 
-    Route::get('/dentist-registrations', [DentistRegistrationController::class, 'index'])->name('dentist-registrations.index');
+    Route::prefix('dentist-registrations')->name('dentist-registrations.')->group(function () {
+        Route::get('/', [DentistRegistrationController::class, 'index'])->name('index');
+        Route::get('/{dentistRegistration}', [DentistRegistrationController::class, 'show'])->name('show');
+        Route::put('/{dentistRegistration}', [DentistRegistrationController::class, 'update'])->name('update');
+        Route::delete('/{dentistRegistration}', [DentistRegistrationController::class, 'destroy'])->name('destroy');
+        Route::post('/{dentistRegistration}/mark-completed', [DentistRegistrationController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('/{dentistRegistration}/mark-in-progress', [DentistRegistrationController::class, 'markInProgress'])->name('mark-in-progress');
+        Route::post('/{dentistRegistration}/cancel', [DentistRegistrationController::class, 'cancel'])->name('cancel');
+        Route::post('/{dentistRegistration}/treatments', [DentistRegistrationController::class, 'storeTreatment'])->name('treatments.store');
+        Route::delete('/{dentistRegistration}/treatments/{dentalTreatment}', [DentistRegistrationController::class, 'destroyTreatment'])->name('treatments.destroy');
+        Route::post('/{dentistRegistration}/xrays', [DentistRegistrationController::class, 'storeXray'])->name('xrays.store');
+        Route::delete('/{dentistRegistration}/xrays/{dentalXray}', [DentistRegistrationController::class, 'destroyXray'])->name('xrays.destroy');
+        Route::post('/{dentistRegistration}/notes', [DentistRegistrationController::class, 'storeNote'])->name('notes.store');
+        Route::delete('/{dentistRegistration}/notes/{dentalNote}', [DentistRegistrationController::class, 'destroyNote'])->name('notes.destroy');
+    });
+
+    Route::prefix('dental-charts')->name('dental-charts.')->group(function () {
+        Route::get('/{dentistRegistration}', [DentalChartController::class, 'index'])->name('index');
+        Route::get('/{dentistRegistration}/create', [DentalChartController::class, 'create'])->name('create');
+        Route::post('/{dentistRegistration}', [DentalChartController::class, 'store'])->name('store');
+        Route::get('/{dentistRegistration}/history', [DentalChartController::class, 'history'])->name('history');
+        Route::get('/{dentistRegistration}/compare', [DentalChartController::class, 'compare'])->name('compare');
+        Route::get('/{dentistRegistration}/print', [DentalChartController::class, 'print'])->name('print');
+        Route::get('/{dentistRegistration}/export', [DentalChartController::class, 'export'])->name('export');
+        Route::get('/entry/{dentalChart}/edit', [DentalChartController::class, 'edit'])->name('edit');
+        Route::put('/entry/{dentalChart}', [DentalChartController::class, 'update'])->name('update');
+        Route::delete('/entry/{dentalChart}', [DentalChartController::class, 'destroy'])->name('destroy');
+    });
+
     Route::get('/nephrology-registrations', [NephrologyRegistrationController::class, 'index'])->name('nephrology-registrations.index');
     Route::get('/hemodialysis-sessions', [HemodialysisSessionController::class, 'index'])->name('hemodialysis-sessions.index');
     Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');

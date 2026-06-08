@@ -342,31 +342,6 @@ export function IcuVisitsSection({ appointmentId }: SectionProps) {
     );
 }
 
-export function DentistSection({ appointmentId }: SectionProps) {
-    const { t } = useTranslation();
-    return (
-        <SimpleTableSection
-            appointmentId={appointmentId}
-            sectionPath="dentist"
-            accordionId={`dentist-${appointmentId}`}
-            icon="bx-brush"
-            title={t('global.dentist_registration')}
-            emptyMessage={t('global.no_records_found')}
-            columns={[
-                { key: 'ref_no', header: t('global.ref_no') },
-                { key: 'dentist_name', header: t('global.dentist'), muted: true },
-                { key: 'visit_date', header: t('global.visit_date'), muted: true },
-                { key: 'status', header: t('global.status'), muted: true },
-            ]}
-            rowActions={(item) =>
-                item.urls?.show ? (
-                    <SectionActionButton icon="bx-expand" title={t('global.view')} href={item.urls.show as string} colorClass="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30" />
-                ) : null
-            }
-        />
-    );
-}
-
 export function NephrologySection({ appointmentId }: SectionProps) {
     const { t } = useTranslation();
     const { loading, data } = useAppointmentSection(appointmentId, 'nephrology');

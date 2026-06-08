@@ -22,14 +22,16 @@ import {
 import SearchableSelect from '../../ui/SearchableSelect';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SharedPageProps } from '../../../types';
-import AppointmentSectionAccordion, {
+import {
     SectionEmptyState,
     SectionLoadingState,
+    SectionShell,
 } from './AppointmentSectionAccordion';
 import { SectionActionButton } from './SimpleTableSection';
 
 interface PrescriptionSectionProps {
     appointmentId: number;
+    embedded?: boolean;
 }
 
 interface PrescriptionListItem {
@@ -102,7 +104,7 @@ const EMPTY_ITEM: PrescriptionFormItem = {
     amount: '',
 };
 
-export default function PrescriptionSection({ appointmentId }: PrescriptionSectionProps) {
+export default function PrescriptionSection({ appointmentId, embedded = false }: PrescriptionSectionProps) {
     const { t } = useTranslation();
     const { csrfToken } = usePage<SharedPageProps>().props;
     const baseUrl = `/react/appointments/${appointmentId}/prescription`;
@@ -364,7 +366,8 @@ export default function PrescriptionSection({ appointmentId }: PrescriptionSecti
     };
 
     return (
-        <AppointmentSectionAccordion
+        <SectionShell
+            embedded={embedded}
             id={`prescription-${appointmentId}`}
             icon="bx-notepad"
             iconClassName="text-emerald-500"
@@ -713,6 +716,6 @@ export default function PrescriptionSection({ appointmentId }: PrescriptionSecti
                     </Button>
                 </ModalFooter>
             </Modal>
-        </AppointmentSectionAccordion>
+        </SectionShell>
     );
 }
